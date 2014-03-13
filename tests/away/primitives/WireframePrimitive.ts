@@ -61,11 +61,16 @@ module tests.primitives
         {
 
             var primitives : Array<away.primitives.WireframePrimitiveBase> = new Array<away.primitives.WireframePrimitiveBase>();
-            primitives.push( new away.primitives.WireframeCube() );
-            primitives.push( new away.primitives.WireframePlane( 200 , 200 ) );
-            primitives.push( new away.primitives.WireframeCylinder() );
-            primitives.push( new away.primitives.WireframeTetrahedron(200 , 200) );
-            primitives.push( new away.primitives.WireframeRegularPolygon(200 , 20) );
+			primitives.push( new away.primitives.WireframeRegularPolygon());
+            primitives.push( new away.primitives.WireframeSphere());
+			primitives.push( new away.primitives.WireframeTetrahedron());
+			primitives.push( new away.primitives.WireframeCylinder());
+			primitives.push( new away.primitives.WireframePlane());
+			primitives.push( new away.primitives.WireframeCone());
+			primitives.push( new away.primitives.WireframeCube());
+
+
+
 
 
             var mesh : away.entities.Mesh;
@@ -78,7 +83,7 @@ module tests.primitives
                 primitives[c].x = Math.cos(t)*this.radius;
                 primitives[c].y = Math.sin(t)*this.radius;
                 primitives[c].z = 0;
-                primitives[c].transform.scale = new away.geom.Vector3D( 200, 200, 200 );
+                primitives[c].transform.scale = new away.geom.Vector3D( 2, 2, 2 );
                 //mesh.material.lightPicker = this.staticLightPicker;
 
                 this.view.scene.addChild( primitives[c] );

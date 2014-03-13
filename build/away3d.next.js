@@ -27519,11 +27519,12 @@ var away;
             __extends(WireframeSphere, _super);
             /**
             * Creates a new WireframeSphere object.
-            * @param radius The radius of the sphere.
-            * @param segmentsW Defines the number of horizontal segments that make up the sphere.
-            * @param segmentsH Defines the number of vertical segments that make up the sphere.
-            * @param color The colour of the wireframe lines
-            * @param thickness The thickness of the wireframe lines
+            *
+            * @param radius The radius of the sphere. Defaults to 50.
+            * @param segmentsW Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+            * @param segmentsH Defines the number of vertical segments that make up the sphere. Defaults to 12.
+            * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+            * @param thickness The thickness of the wireframe lines. Defaults to 1.
             */
             function WireframeSphere(radius, segmentsW, segmentsH, color, thickness) {
                 if (typeof radius === "undefined") { radius = 50; }
@@ -27537,6 +27538,66 @@ var away;
                 this._segmentsW = segmentsW;
                 this._segmentsH = segmentsH;
             }
+            Object.defineProperty(WireframeSphere.prototype, "radius", {
+                /**
+                * The radius of the sphere. Defaults to 50.
+                */
+                get: function () {
+                    return this._radius;
+                },
+                set: function (value) {
+                    if (this._radius == value)
+                        return;
+
+                    this._radius = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeSphere.prototype, "segmentsH", {
+                /**
+                * Defines the number of vertical segments that make up the sphere. Defaults to 12.
+                */
+                get: function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    if (this._segmentsH == value)
+                        return;
+
+                    this._segmentsH = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeSphere.prototype, "segmentsW", {
+                /**
+                * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+                */
+                get: function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    if (this._segmentsW == value)
+                        return;
+
+                    this._segmentsW = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             /**
             * @inheritDoc
             */
@@ -27618,39 +27679,259 @@ var away;
     (function (primitives) {
         //TODO - convert to geometry primitive
         /**
+        * Generates a wireframeCone primitive.
+        */
+        var WireframeCone = (function (_super) {
+            __extends(WireframeCone, _super);
+            /**
+            * Creates a new WireframeCone instance
+            *
+            * @param topRadius Top radius of the cone. Defaults to 50.
+            * @param radius Bottom radius of the cone. Defaults to 50.
+            * @param coneHeight The height of the cone. Defaults to 100.
+            * @param segmentsW Number of radial segments. Defaults to 16.
+            * @param segmentsH Number of vertical segments. Defaults to 1.
+            * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+            * @param thickness The thickness of the wireframe lines. Defaults to 1.
+            */
+            function WireframeCone(radius, coneHeight, segmentsW, segmentsH, color, thickness) {
+                if (typeof radius === "undefined") { radius = 50; }
+                if (typeof coneHeight === "undefined") { coneHeight = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 16; }
+                if (typeof segmentsH === "undefined") { segmentsH = 1; }
+                if (typeof color === "undefined") { color = 0xFFFFFF; }
+                if (typeof thickness === "undefined") { thickness = 1; }
+                _super.call(this, color, thickness);
+                this._radius = radius;
+                this._segmentsW = segmentsW;
+                this._segmentsH = segmentsH;
+
+                this._coneHeight = coneHeight;
+            }
+            Object.defineProperty(WireframeCone.prototype, "radius", {
+                /**
+                * Bottom radius of the cone. Defaults to 50.
+                */
+                get: function () {
+                    return this._radius;
+                },
+                set: function (value) {
+                    if (this._coneHeight == value)
+                        return;
+                    this._radius = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCone.prototype, "coneHeight", {
+                /**
+                * The size of the cone along its Y-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._coneHeight;
+                },
+                set: function (value) {
+                    if (this._coneHeight == value)
+                        return;
+
+                    this._coneHeight == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCone.prototype, "segmentsH", {
+                /**
+                * Defines the number of vertical segments that make up the cone. Defaults to 1.
+                */
+                get: function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    if (this._segmentsH == value)
+                        return;
+
+                    this._segmentsH = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCone.prototype, "segmentsW", {
+                /**
+                * Defines the number of horizontal segments that make up the cone. Defaults to 16.
+                */
+                get: function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    if (this._segmentsW == value)
+                        return;
+
+                    this._segmentsW = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            WireframeCone.prototype.pBuildGeometry = function () {
+                var i, j;
+                var radius;
+                var revolutionAngle;
+                var revolutionAngleDelta = WireframeCone.TWO_PI / this._segmentsW;
+                var nextVertexIndex = 0;
+                var x, y, z;
+
+                var lastLayer = new Array(this._segmentsH + 1);
+
+                for (j = 0; j <= this._segmentsH; ++j) {
+                    lastLayer[j] = new Array(this._segmentsW + 1);
+
+                    radius = ((j / this._segmentsH) * this._radius);
+                    z = this._coneHeight * (j / this._segmentsH - 0.5);
+
+                    var previousV = null;
+
+                    for (i = 0; i <= this._segmentsW; ++i) {
+                        // revolution vertex
+                        revolutionAngle = i * revolutionAngleDelta;
+                        x = radius * Math.cos(revolutionAngle);
+                        y = radius * Math.sin(revolutionAngle);
+                        var vertex;
+                        if (previousV) {
+                            vertex = new away.geom.Vector3D(x, -z, y);
+                            this.pUpdateOrAddSegment(nextVertexIndex++, vertex, previousV);
+                            previousV = vertex;
+                        } else
+                            previousV = new away.geom.Vector3D(x, -z, y);
+
+                        if (j > 0) {
+                            this.pUpdateOrAddSegment(nextVertexIndex++, vertex, lastLayer[j - 1][i]);
+                        }
+                        lastLayer[j][i] = previousV;
+                    }
+                }
+            };
+            WireframeCone.TWO_PI = 2 * Math.PI;
+            return WireframeCone;
+        })(away.primitives.WireframePrimitiveBase);
+        primitives.WireframeCone = WireframeCone;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (primitives) {
+        //TODO - convert to geometry primitive
+        /**
         * A WirefameCube primitive mesh.
         */
         var WireframeCube = (function (_super) {
             __extends(WireframeCube, _super);
             /**
             * Creates a new WireframeCube object.
-            * @param width The size of the cube along its X-axis.
-            * @param height The size of the cube along its Y-axis.
-            * @param depth The size of the cube along its Z-axis.
-            * @param color The colour of the wireframe lines
-            * @param thickness The thickness of the wireframe lines
+            *
+            * @param cubeWidth The size of the cube along its X-axis. Defaults to 100.
+            * @param cubeHeight The size of the cube along its Y-axis. Defaults to 100.
+            * @param cubeDepth The size of the cube along its Z-axis. Defaults to 100.
+            * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+            * @param thickness The thickness of the wireframe lines. Defaults to 1.
             */
-            function WireframeCube(width, height, depth, color, thickness) {
-                if (typeof width === "undefined") { width = 100; }
-                if (typeof height === "undefined") { height = 100; }
-                if (typeof depth === "undefined") { depth = 100; }
+            function WireframeCube(cubeWidth, cubeHeight, cubeDepth, color, thickness) {
+                if (typeof cubeWidth === "undefined") { cubeWidth = 100; }
+                if (typeof cubeHeight === "undefined") { cubeHeight = 100; }
+                if (typeof cubeDepth === "undefined") { cubeDepth = 100; }
                 if (typeof color === "undefined") { color = 0xFFFFFF; }
                 if (typeof thickness === "undefined") { thickness = 1; }
                 _super.call(this, color, thickness);
 
-                this.width = width;
-                this.height = height;
-                this.depth = depth;
+                this._cubeWidth = cubeWidth;
+                this._cubeHeight = cubeHeight;
+                this._cubeDepth = cubeDepth;
             }
+            Object.defineProperty(WireframeCube.prototype, "cubeDepth", {
+                /**
+                * The size of the cube along its Z-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._cubeDepth;
+                },
+                set: function (value) {
+                    if (this._cubeDepth == value)
+                        return;
+
+                    this._cubeDepth == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCube.prototype, "cubeHeight", {
+                /**
+                * The size of the cube along its Y-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._cubeHeight;
+                },
+                set: function (value) {
+                    if (this._cubeHeight == value)
+                        return;
+
+                    this._cubeHeight == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCube.prototype, "cubeWidth", {
+                /**
+                * The size of the cube along its X-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._cubeWidth;
+                },
+                set: function (value) {
+                    if (this._cubeWidth == value)
+                        return;
+
+                    this._cubeWidth == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             /**
             * @inheritDoc
             */
             WireframeCube.prototype.pBuildGeometry = function () {
                 var v0 = new away.geom.Vector3D();
                 var v1 = new away.geom.Vector3D();
-                var hw = 0.5;
-                var hh = 0.5;
-                var hd = 0.5;
+                var hw = this._cubeWidth / 2;
+                var hh = this._cubeHeight / 2;
+                var hd = this._cubeDepth / 2;
 
                 v0.x = -hw;
                 v0.y = hh;
@@ -27722,18 +28003,19 @@ var away;
             __extends(WireframeCylinder, _super);
             /**
             * Creates a new WireframeCylinder instance
-            * @param topRadius Top radius of the cylinder
-            * @param bottomRadius Bottom radius of the cylinder
-            * @param height The height of the cylinder
-            * @param segmentsW Number of radial segments
-            * @param segmentsH Number of vertical segments
-            * @param color The color of the wireframe lines
-            * @param thickness The thickness of the wireframe lines
+            *
+            * @param topRadius Top radius of the cylinder. Defaults to 50.
+            * @param bottomRadius Bottom radius of the cylinder. Defaults to 50.
+            * @param cylinderHeight The height of the cylinder. Defaults to 100.
+            * @param segmentsW Number of radial segments. Defaults to 16.
+            * @param segmentsH Number of vertical segments. Defaults to 1.
+            * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+            * @param thickness The thickness of the wireframe lines. Defaults to 1.
             */
-            function WireframeCylinder(topRadius, bottomRadius, height, segmentsW, segmentsH, color, thickness) {
+            function WireframeCylinder(topRadius, bottomRadius, cylinderHeight, segmentsW, segmentsH, color, thickness) {
                 if (typeof topRadius === "undefined") { topRadius = 50; }
                 if (typeof bottomRadius === "undefined") { bottomRadius = 50; }
-                if (typeof height === "undefined") { height = 100; }
+                if (typeof cylinderHeight === "undefined") { cylinderHeight = 100; }
                 if (typeof segmentsW === "undefined") { segmentsW = 16; }
                 if (typeof segmentsH === "undefined") { segmentsH = 1; }
                 if (typeof color === "undefined") { color = 0xFFFFFF; }
@@ -27744,8 +28026,107 @@ var away;
                 this._segmentsW = segmentsW;
                 this._segmentsH = segmentsH;
 
-                this.height = height;
+                this._cylinderHeight = cylinderHeight;
             }
+            Object.defineProperty(WireframeCylinder.prototype, "bottomRadius", {
+                /**
+                * Bottom radius of the cylinder. Defaults to 50.
+                */
+                get: function () {
+                    return this._bottomRadius;
+                },
+                set: function (value) {
+                    if (this._cylinderHeight == value)
+                        return;
+                    this._bottomRadius = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCylinder.prototype, "cylinderHeight", {
+                /**
+                * The size of the cylinder along its Y-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._cylinderHeight;
+                },
+                set: function (value) {
+                    if (this._cylinderHeight == value)
+                        return;
+
+                    this._cylinderHeight == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCylinder.prototype, "segmentsH", {
+                /**
+                * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
+                */
+                get: function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    if (this._segmentsH == value)
+                        return;
+
+                    this._segmentsH = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCylinder.prototype, "segmentsW", {
+                /**
+                * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
+                */
+                get: function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    if (this._segmentsW == value)
+                        return;
+
+                    this._segmentsW = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCylinder.prototype, "topRadius", {
+                /**
+                * Top radius of the cylinder. Defaults to 50.
+                */
+                get: function () {
+                    return this._topRadius;
+                },
+                set: function (value) {
+                    if (this._cylinderHeight == value)
+                        return;
+
+                    this._topRadius = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             WireframeCylinder.prototype.pBuildGeometry = function () {
                 var i, j;
                 var radius = this._topRadius;
@@ -27760,7 +28141,7 @@ var away;
                     lastLayer[j] = new Array(this._segmentsW + 1);
 
                     radius = this._topRadius - ((j / this._segmentsH) * (this._topRadius - this._bottomRadius));
-                    z = -(1 / 2) + (j / this._segmentsH * 1);
+                    z = this._cylinderHeight * (j / this._segmentsH - 0.5);
 
                     var previousV = null;
 
@@ -27784,38 +28165,6 @@ var away;
                     }
                 }
             };
-
-            Object.defineProperty(WireframeCylinder.prototype, "topRadius", {
-                /**
-                * Top radius of the cylinder
-                */
-                get: function () {
-                    return this._topRadius;
-                },
-                set: function (value) {
-                    this._topRadius = value;
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeCylinder.prototype, "bottomRadius", {
-                /**
-                * Bottom radius of the cylinder
-                */
-                get: function () {
-                    return this._bottomRadius;
-                },
-                set: function (value) {
-                    this._bottomRadius = value;
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
             WireframeCylinder.TWO_PI = 2 * Math.PI;
             return WireframeCylinder;
         })(away.primitives.WireframePrimitiveBase);
@@ -27835,38 +28184,45 @@ var away;
             __extends(WireframePlane, _super);
             /**
             * Creates a new WireframePlane object.
-            * @param width The size of the cube along its X-axis.
-            * @param height The size of the cube along its Y-axis.
-            * @param segmentsW The number of segments that make up the cube along the X-axis.
-            * @param segmentsH The number of segments that make up the cube along the Y-axis.
-            * @param color The colour of the wireframe lines
-            * @param thickness The thickness of the wireframe lines
-            * @param orientation The orientaion in which the plane lies.
+            *
+            * @param planeWidth The size of the plane along its X-axis. Defaults to 100.
+            * @param planeHeight The size of the plane along its Y-axis. Defaults to 100.
+            * @param segmentsW The number of segments that make up the plane along the X-axis. Defaults to 10.
+            * @param segmentsH The number of segments that make up the plane along the Y-axis. Defaults to 10.
+            * @param color The colour of the wireframe lines. Defaults to 0xFFFFFF.
+            * @param thickness The thickness of the wireframe lines. Defaults to 1.
+            * @param orientation The orientaion in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
             */
-            function WireframePlane(width, height, segmentsW, segmentsH, color, thickness, orientation) {
+            function WireframePlane(planeWidth, planeHeight, segmentsW, segmentsH, color, thickness, orientation) {
+                if (typeof planeWidth === "undefined") { planeWidth = 100; }
+                if (typeof planeHeight === "undefined") { planeHeight = 100; }
                 if (typeof segmentsW === "undefined") { segmentsW = 10; }
                 if (typeof segmentsH === "undefined") { segmentsH = 10; }
                 if (typeof color === "undefined") { color = 0xFFFFFF; }
                 if (typeof thickness === "undefined") { thickness = 1; }
-                if (typeof orientation === "undefined") { orientation = "yz"; }
+                if (typeof orientation === "undefined") { orientation = "xz"; }
                 _super.call(this, color, thickness);
 
                 this._segmentsW = segmentsW;
                 this._segmentsH = segmentsH;
                 this._orientation = orientation;
 
-                this.width = width;
-                this.height = height;
+                this._planeWidth = planeWidth;
+                this._planeHeight = planeHeight;
             }
-            Object.defineProperty(WireframePlane.prototype, "orientation", {
+            Object.defineProperty(WireframePlane.prototype, "planeHeight", {
                 /**
-                * The orientaion in which the plane lies.
+                * The size of the plane along its Y-axis. Defaults to 100.
                 */
                 get: function () {
-                    return this._orientation;
+                    return this._planeHeight;
                 },
                 set: function (value) {
-                    this._orientation = value;
+                    if (this._planeHeight == value)
+                        return;
+
+                    this._planeHeight == value;
+
                     this.pInvalidateGeometry();
                 },
                 enumerable: true,
@@ -27874,16 +28230,39 @@ var away;
             });
 
 
-            Object.defineProperty(WireframePlane.prototype, "segmentsW", {
+            Object.defineProperty(WireframePlane.prototype, "planeWidth", {
                 /**
-                * The number of segments that make up the plane along the X-axis.
+                * The size of the plane along its X-axis. Defaults to 100.
                 */
                 get: function () {
-                    return this._segmentsW;
+                    return this._planeWidth;
                 },
                 set: function (value) {
-                    this._segmentsW = value;
-                    this.removeAllSegments();
+                    if (this._planeWidth == value)
+                        return;
+
+                    this._planeWidth == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframePlane.prototype, "orientation", {
+                /**
+                * The orientaion in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
+                */
+                get: function () {
+                    return this._orientation;
+                },
+                set: function (value) {
+                    if (this._orientation == value)
+                        return;
+
+                    this._orientation = value;
+
                     this.pInvalidateGeometry();
                 },
                 enumerable: true,
@@ -27893,13 +28272,38 @@ var away;
 
             Object.defineProperty(WireframePlane.prototype, "segmentsH", {
                 /**
-                * The number of segments that make up the plane along the Y-axis.
+                * The number of segments that make up the plane along the Y-axis. Defaults to 10.
                 */
                 get: function () {
                     return this._segmentsH;
                 },
                 set: function (value) {
+                    if (this._segmentsH == value)
+                        return;
+
                     this._segmentsH = value;
+
+                    this.removeAllSegments();
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframePlane.prototype, "segmentsW", {
+                /**
+                * The number of segments that make up the plane along the X-axis. Defaults to 10.
+                */
+                get: function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    if (this._segmentsW == value)
+                        return;
+
+                    this._segmentsW = value;
+
                     this.removeAllSegments();
                     this.pInvalidateGeometry();
                 },
@@ -27914,8 +28318,8 @@ var away;
             WireframePlane.prototype.pBuildGeometry = function () {
                 var v0 = new away.geom.Vector3D();
                 var v1 = new away.geom.Vector3D();
-                var hw = 0.5;
-                var hh = 0.5;
+                var hw = this._planeWidth / 2;
+                var hh = this._planeHeight / 2;
                 var index = 0;
                 var ws, hs;
 
@@ -27926,7 +28330,7 @@ var away;
                     v1.z = 0;
 
                     for (ws = 0; ws <= this._segmentsW; ++ws) {
-                        v0.x = v1.x = (ws / this._segmentsW - .5);
+                        v0.x = v1.x = this._planeWidth * ws / this._segmentsW - hw;
                         this.pUpdateOrAddSegment(index++, v0, v1);
                     }
 
@@ -27934,7 +28338,7 @@ var away;
                     v1.x = hw;
 
                     for (hs = 0; hs <= this._segmentsH; ++hs) {
-                        v0.y = v1.y = (hs / this._segmentsH - .5);
+                        v0.y = v1.y = this._planeHeight * hs / this._segmentsH - hh;
                         this.pUpdateOrAddSegment(index++, v0, v1);
                     }
                 } else if (this._orientation == WireframePlane.ORIENTATION_XZ) {
@@ -27944,7 +28348,7 @@ var away;
                     v1.y = 0;
 
                     for (ws = 0; ws <= this._segmentsW; ++ws) {
-                        v0.x = v1.x = (ws / this._segmentsW - .5);
+                        v0.x = v1.x = this._planeWidth * ws / this._segmentsW - hw;
                         this.pUpdateOrAddSegment(index++, v0, v1);
                     }
 
@@ -27952,7 +28356,7 @@ var away;
                     v1.x = hw;
 
                     for (hs = 0; hs <= this._segmentsH; ++hs) {
-                        v0.z = v1.z = (hs / this._segmentsH - .5);
+                        v0.z = v1.z = this._planeHeight * hs / this._segmentsH - hh;
                         this.pUpdateOrAddSegment(index++, v0, v1);
                     }
                 } else if (this._orientation == WireframePlane.ORIENTATION_YZ) {
@@ -27962,7 +28366,7 @@ var away;
                     v1.x = 0;
 
                     for (ws = 0; ws <= this._segmentsW; ++ws) {
-                        v0.z = v1.z = (ws / this._segmentsW - .5);
+                        v0.z = v1.z = this._planeWidth * ws / this._segmentsW - hw;
                         this.pUpdateOrAddSegment(index++, v0, v1);
                     }
 
@@ -27970,7 +28374,7 @@ var away;
                     v1.z = -hw;
 
                     for (hs = 0; hs <= this._segmentsH; ++hs) {
-                        v0.y = v1.y = (hs / this._segmentsH - .5);
+                        v0.y = v1.y = this._planeHeight * hs / this._segmentsH - hh;
                         this.pUpdateOrAddSegment(index++, v0, v1);
                     }
                 }
@@ -27996,16 +28400,19 @@ var away;
             __extends(WireframeRegularPolygon, _super);
             /**
             * Creates a new WireframeRegularPolygon object.
-            * @param radius The radius of the polygon.
-            * @param sides The number of sides on the polygon.
-            * @param color The colour of the wireframe lines
-            * @param thickness The thickness of the wireframe lines
-            * @param orientation The orientaion in which the plane lies.
+            *
+            * @param radius The radius of the polygon. Defaults to 50.
+            * @param sides The number of sides on the polygon. Defaults to 16.
+            * @param color The colour of the wireframe lines.  Defaults to <code>0xFFFFFF</code>.
+            * @param thickness The thickness of the wireframe lines.  Defaults to 1.
+            * @param orientation The orientaion in which the plane lies. Defaults to <code>ORIENTATION_YZ</code>.
             */
             function WireframeRegularPolygon(radius, sides, color, thickness, orientation) {
+                if (typeof radius === "undefined") { radius = 50; }
+                if (typeof sides === "undefined") { sides = 16; }
                 if (typeof color === "undefined") { color = 0xFFFFFF; }
                 if (typeof thickness === "undefined") { thickness = 1; }
-                if (typeof orientation === "undefined") { orientation = "yz"; }
+                if (typeof orientation === "undefined") { orientation = "xz"; }
                 _super.call(this, color, thickness);
 
                 this._radius = radius;
@@ -28014,13 +28421,17 @@ var away;
             }
             Object.defineProperty(WireframeRegularPolygon.prototype, "orientation", {
                 /**
-                * The orientaion in which the polygon lies.
+                * The orientaion in which the polygon lies. Defaults to <code>ORIENTATION_XZ</code>.
                 */
                 get: function () {
                     return this._orientation;
                 },
                 set: function (value) {
+                    if (this._orientation == value)
+                        return;
+
                     this._orientation = value;
+
                     this.pInvalidateGeometry();
                 },
                 enumerable: true,
@@ -28030,13 +28441,17 @@ var away;
 
             Object.defineProperty(WireframeRegularPolygon.prototype, "radius", {
                 /**
-                * The radius of the regular polygon.
+                * The radius of the regular polygon. Defaults to 100.
                 */
                 get: function () {
                     return this._radius;
                 },
                 set: function (value) {
+                    if (this._radius == value)
+                        return;
+
                     this._radius = value;
+
                     this.pInvalidateGeometry();
                 },
                 enumerable: true,
@@ -28046,13 +28461,17 @@ var away;
 
             Object.defineProperty(WireframeRegularPolygon.prototype, "sides", {
                 /**
-                * The number of sides to the regular polygon.
+                * The number of sides to the regular polygon. Defaults to 16.
                 */
                 get: function () {
                     return this._sides;
                 },
                 set: function (value) {
+                    if (this._sides == value)
+                        return;
+
                     this._sides = value;
+
                     this.removeAllSegments();
                     this.pInvalidateGeometry();
                 },
@@ -28126,31 +28545,101 @@ var away;
             __extends(WireframeTetrahedron, _super);
             /**
             * Creates a new WireframeTetrahedron object.
-            * @param width The size of the tetrahedron buttom size.
-            * @param height The size of the tetranhedron height.
-            * @param color The color of the wireframe lines.
-            * @param thickness The thickness of the wireframe lines.
+            *
+            * @param tetrahedronWidth The size of the tetrahedron along its X-axis. Defaults to 100.
+            * @param tetrahedronHeight The size of the tetranhedron along its Y-axis. Defaults to 100.
+            * @param tetrahedronDepth The size of the tetranhedron along its Z-axis. Defaults to 100.
+            * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+            * @param thickness The thickness of the wireframe lines. Defaults to <code>ORIENTATION_XZ</code>.
             */
-            function WireframeTetrahedron(width, height, color, thickness, orientation) {
+            function WireframeTetrahedron(tetrahedronWidth, tetrahedronHeight, tetrahedronDepth, color, thickness, orientation) {
+                if (typeof tetrahedronWidth === "undefined") { tetrahedronWidth = 100; }
+                if (typeof tetrahedronHeight === "undefined") { tetrahedronHeight = 100; }
+                if (typeof tetrahedronDepth === "undefined") { tetrahedronDepth = 100; }
                 if (typeof color === "undefined") { color = 0xffffff; }
                 if (typeof thickness === "undefined") { thickness = 1; }
-                if (typeof orientation === "undefined") { orientation = "yz"; }
+                if (typeof orientation === "undefined") { orientation = "xz"; }
                 _super.call(this, color, thickness);
 
                 this._orientation = orientation;
 
-                this.width = width;
-                this.height = height;
+                this._tetrahedronHeight = tetrahedronHeight;
+                this._tetrahedronWidth = tetrahedronWidth;
+                this._tetrahedronDepth = tetrahedronDepth;
             }
             Object.defineProperty(WireframeTetrahedron.prototype, "orientation", {
                 /**
-                * The orientation in which the plane lies
+                * The orientation in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
                 */
                 get: function () {
                     return this._orientation;
                 },
                 set: function (value) {
+                    if (this._orientation == value)
+                        return;
+
                     this._orientation = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeTetrahedron.prototype, "tetrahedronDepth", {
+                /**
+                * The size of the tetrahedron along its Z-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._tetrahedronDepth;
+                },
+                set: function (value) {
+                    if (this._tetrahedronDepth == value)
+                        return;
+
+                    this._tetrahedronDepth == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeTetrahedron.prototype, "tetrahedronHeight", {
+                /**
+                * The size of the tetrahedron along its Y-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._tetrahedronHeight;
+                },
+                set: function (value) {
+                    if (this._tetrahedronHeight == value)
+                        return;
+
+                    this._tetrahedronHeight == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeTetrahedron.prototype, "tetrahedronWidth", {
+                /**
+                * The size of the tetrahedron along its X-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._tetrahedronWidth;
+                },
+                set: function (value) {
+                    if (this._tetrahedronWidth == value)
+                        return;
+
+                    this._tetrahedronWidth == value;
+
                     this.pInvalidateGeometry();
                 },
                 enumerable: true,
@@ -28168,29 +28657,30 @@ var away;
                 var bv3;
                 var top;
 
-                var hw = 0.5;
+                var hw = this._tetrahedronWidth / 2;
+                var hd = this._tetrahedronDepth / 2;
 
                 switch (this._orientation) {
                     case WireframeTetrahedron.ORIENTATION_XY:
-                        bv0 = new away.geom.Vector3D(-hw, hw, 0);
-                        bv1 = new away.geom.Vector3D(hw, hw, 0);
-                        bv2 = new away.geom.Vector3D(hw, -hw, 0);
-                        bv3 = new away.geom.Vector3D(-hw, -hw, 0);
-                        top = new away.geom.Vector3D(0, 0, 1);
+                        bv0 = new away.geom.Vector3D(-hw, hd, 0);
+                        bv1 = new away.geom.Vector3D(hw, hd, 0);
+                        bv2 = new away.geom.Vector3D(hw, -hd, 0);
+                        bv3 = new away.geom.Vector3D(-hw, -hd, 0);
+                        top = new away.geom.Vector3D(0, 0, this._tetrahedronHeight);
                         break;
                     case WireframeTetrahedron.ORIENTATION_XZ:
-                        bv0 = new away.geom.Vector3D(-hw, 0, hw);
-                        bv1 = new away.geom.Vector3D(hw, 0, hw);
-                        bv2 = new away.geom.Vector3D(hw, 0, -hw);
-                        bv3 = new away.geom.Vector3D(-hw, 0, -hw);
-                        top = new away.geom.Vector3D(0, 1, 0);
+                        bv0 = new away.geom.Vector3D(-hw, 0, hd);
+                        bv1 = new away.geom.Vector3D(hw, 0, hd);
+                        bv2 = new away.geom.Vector3D(hw, 0, -hd);
+                        bv3 = new away.geom.Vector3D(-hw, 0, -hd);
+                        top = new away.geom.Vector3D(0, this._tetrahedronHeight, 0);
                         break;
                     case WireframeTetrahedron.ORIENTATION_YZ:
-                        bv0 = new away.geom.Vector3D(0, -hw, hw);
-                        bv1 = new away.geom.Vector3D(0, hw, hw);
-                        bv2 = new away.geom.Vector3D(0, hw, -hw);
-                        bv3 = new away.geom.Vector3D(0, -hw, -hw);
-                        top = new away.geom.Vector3D(1, 0, 0);
+                        bv0 = new away.geom.Vector3D(0, -hw, hd);
+                        bv1 = new away.geom.Vector3D(0, hw, hd);
+                        bv2 = new away.geom.Vector3D(0, hw, -hd);
+                        bv3 = new away.geom.Vector3D(0, -hw, -hd);
+                        top = new away.geom.Vector3D(this._tetrahedronHeight, 0, 0);
                         break;
                 }
 

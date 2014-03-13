@@ -184,6 +184,7 @@
 ///<reference path="primitives/SphereGeometry.ts" />
 ///<reference path="primitives/WireframePrimitiveBase.ts" />
 ///<reference path="primitives/WireframeSphere.ts" />
+///<reference path="primitives/WireframeCone.ts" />
 ///<reference path="primitives/WireframeCube.ts" />
 ///<reference path="primitives/WireframeCylinder.ts" />
 ///<reference path="primitives/WireframePlane.ts" />

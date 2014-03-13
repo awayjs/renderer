@@ -9,21 +9,80 @@ module away.primitives
 	 */
 	export class WireframeCube extends away.primitives.WireframePrimitiveBase
 	{
+		private _cubeDepth:number;
+		private _cubeHeight:number;
+		private _cubeWidth:number;
+
+		/**
+		 * The size of the cube along its Z-axis. Defaults to 100.
+		 */
+		public get cubeDepth():number
+		{
+			return this._cubeDepth;
+		}
+
+		public set cubeDepth(value:number)
+		{
+			if (this._cubeDepth == value)
+				return;
+
+			this._cubeDepth == value
+
+			this.pInvalidateGeometry();
+		}
+
+		/**
+		 * The size of the cube along its Y-axis. Defaults to 100.
+		 */
+		public get cubeHeight():number
+		{
+			return this._cubeHeight;
+		}
+
+		public set cubeHeight(value:number)
+		{
+			if (this._cubeHeight == value)
+				return;
+
+			this._cubeHeight == value
+
+			this.pInvalidateGeometry();
+		}
+
+		/**
+		 * The size of the cube along its X-axis. Defaults to 100.
+		 */
+		public get cubeWidth():number
+		{
+			return this._cubeWidth;
+		}
+
+		public set cubeWidth(value:number)
+		{
+			if (this._cubeWidth == value)
+				return;
+
+			this._cubeWidth == value
+
+			this.pInvalidateGeometry();
+		}
+
 		/**
 		 * Creates a new WireframeCube object.
-		 * @param width The size of the cube along its X-axis.
-		 * @param height The size of the cube along its Y-axis.
-		 * @param depth The size of the cube along its Z-axis.
-		 * @param color The colour of the wireframe lines
-		 * @param thickness The thickness of the wireframe lines
+		 *
+		 * @param cubeWidth The size of the cube along its X-axis. Defaults to 100.
+		 * @param cubeHeight The size of the cube along its Y-axis. Defaults to 100.
+		 * @param cubeDepth The size of the cube along its Z-axis. Defaults to 100.
+		 * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+		 * @param thickness The thickness of the wireframe lines. Defaults to 1.
 		 */
-		constructor(width:number = 100, height:number = 100, depth:number = 100, color:number = 0xFFFFFF, thickness:number = 1)
+		constructor(cubeWidth:number = 100, cubeHeight:number = 100, cubeDepth:number = 100, color:number = 0xFFFFFF, thickness:number = 1)
 		{
 			super(color, thickness);
 
-			this.width = width;
-			this.height = height;
-			this.depth = depth;
+			this._cubeWidth = cubeWidth;
+			this._cubeHeight = cubeHeight;
+			this._cubeDepth = cubeDepth;
 		}
 
 		/**
@@ -33,9 +92,9 @@ module away.primitives
 		{
 			var v0:away.geom.Vector3D = new away.geom.Vector3D();
 			var v1:away.geom.Vector3D = new away.geom.Vector3D();
-			var hw:number = 0.5;
-			var hh:number = 0.5;
-			var hd:number = 0.5;
+			var hw:number = this._cubeWidth/2;
+			var hh:number = this._cubeHeight/2;
+			var hd:number = this._cubeDepth/2;
 
 			v0.x = -hw;
 			v0.y = hh;

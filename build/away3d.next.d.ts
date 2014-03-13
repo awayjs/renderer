@@ -8390,12 +8390,25 @@ declare module away.primitives {
         private _segmentsH;
         private _radius;
         /**
+        * The radius of the sphere. Defaults to 50.
+        */
+        public radius : number;
+        /**
+        * Defines the number of vertical segments that make up the sphere. Defaults to 12.
+        */
+        public segmentsH : number;
+        /**
+        * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+        */
+        public segmentsW : number;
+        /**
         * Creates a new WireframeSphere object.
-        * @param radius The radius of the sphere.
-        * @param segmentsW Defines the number of horizontal segments that make up the sphere.
-        * @param segmentsH Defines the number of vertical segments that make up the sphere.
-        * @param color The colour of the wireframe lines
-        * @param thickness The thickness of the wireframe lines
+        *
+        * @param radius The radius of the sphere. Defaults to 50.
+        * @param segmentsW Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+        * @param segmentsH Defines the number of vertical segments that make up the sphere. Defaults to 12.
+        * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+        * @param thickness The thickness of the wireframe lines. Defaults to 1.
         */
         constructor(radius?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
         /**
@@ -8406,18 +8419,75 @@ declare module away.primitives {
 }
 declare module away.primitives {
     /**
+    * Generates a wireframeCone primitive.
+    */
+    class WireframeCone extends primitives.WireframePrimitiveBase {
+        private static TWO_PI;
+        private _radius;
+        private _coneHeight;
+        private _segmentsH;
+        private _segmentsW;
+        /**
+        * Bottom radius of the cone. Defaults to 50.
+        */
+        public radius : number;
+        /**
+        * The size of the cone along its Y-axis. Defaults to 100.
+        */
+        public coneHeight : number;
+        /**
+        * Defines the number of vertical segments that make up the cone. Defaults to 1.
+        */
+        public segmentsH : number;
+        /**
+        * Defines the number of horizontal segments that make up the cone. Defaults to 16.
+        */
+        public segmentsW : number;
+        /**
+        * Creates a new WireframeCone instance
+        *
+        * @param topRadius Top radius of the cone. Defaults to 50.
+        * @param radius Bottom radius of the cone. Defaults to 50.
+        * @param coneHeight The height of the cone. Defaults to 100.
+        * @param segmentsW Number of radial segments. Defaults to 16.
+        * @param segmentsH Number of vertical segments. Defaults to 1.
+        * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+        * @param thickness The thickness of the wireframe lines. Defaults to 1.
+        */
+        constructor(radius?: number, coneHeight?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
+        public pBuildGeometry(): void;
+    }
+}
+declare module away.primitives {
+    /**
     * A WirefameCube primitive mesh.
     */
     class WireframeCube extends primitives.WireframePrimitiveBase {
+        private _cubeDepth;
+        private _cubeHeight;
+        private _cubeWidth;
+        /**
+        * The size of the cube along its Z-axis. Defaults to 100.
+        */
+        public cubeDepth : number;
+        /**
+        * The size of the cube along its Y-axis. Defaults to 100.
+        */
+        public cubeHeight : number;
+        /**
+        * The size of the cube along its X-axis. Defaults to 100.
+        */
+        public cubeWidth : number;
         /**
         * Creates a new WireframeCube object.
-        * @param width The size of the cube along its X-axis.
-        * @param height The size of the cube along its Y-axis.
-        * @param depth The size of the cube along its Z-axis.
-        * @param color The colour of the wireframe lines
-        * @param thickness The thickness of the wireframe lines
+        *
+        * @param cubeWidth The size of the cube along its X-axis. Defaults to 100.
+        * @param cubeHeight The size of the cube along its Y-axis. Defaults to 100.
+        * @param cubeDepth The size of the cube along its Z-axis. Defaults to 100.
+        * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+        * @param thickness The thickness of the wireframe lines. Defaults to 1.
         */
-        constructor(width?: number, height?: number, depth?: number, color?: number, thickness?: number);
+        constructor(cubeWidth?: number, cubeHeight?: number, cubeDepth?: number, color?: number, thickness?: number);
         /**
         * @inheritDoc
         */
@@ -8430,30 +8500,44 @@ declare module away.primitives {
     */
     class WireframeCylinder extends primitives.WireframePrimitiveBase {
         private static TWO_PI;
-        private _topRadius;
         private _bottomRadius;
-        private _segmentsW;
+        private _cylinderHeight;
         private _segmentsH;
+        private _segmentsW;
+        private _topRadius;
         /**
-        * Creates a new WireframeCylinder instance
-        * @param topRadius Top radius of the cylinder
-        * @param bottomRadius Bottom radius of the cylinder
-        * @param height The height of the cylinder
-        * @param segmentsW Number of radial segments
-        * @param segmentsH Number of vertical segments
-        * @param color The color of the wireframe lines
-        * @param thickness The thickness of the wireframe lines
+        * Bottom radius of the cylinder. Defaults to 50.
         */
-        constructor(topRadius?: number, bottomRadius?: number, height?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
-        public pBuildGeometry(): void;
+        public bottomRadius : number;
         /**
-        * Top radius of the cylinder
+        * The size of the cylinder along its Y-axis. Defaults to 100.
+        */
+        public cylinderHeight : number;
+        /**
+        * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
+        */
+        public segmentsH : number;
+        /**
+        * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
+        */
+        public segmentsW : number;
+        /**
+        * Top radius of the cylinder. Defaults to 50.
         */
         public topRadius : number;
         /**
-        * Bottom radius of the cylinder
+        * Creates a new WireframeCylinder instance
+        *
+        * @param topRadius Top radius of the cylinder. Defaults to 50.
+        * @param bottomRadius Bottom radius of the cylinder. Defaults to 50.
+        * @param cylinderHeight The height of the cylinder. Defaults to 100.
+        * @param segmentsW Number of radial segments. Defaults to 16.
+        * @param segmentsH Number of vertical segments. Defaults to 1.
+        * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+        * @param thickness The thickness of the wireframe lines. Defaults to 1.
         */
-        public bottomRadius : number;
+        constructor(topRadius?: number, bottomRadius?: number, cylinderHeight?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
+        public pBuildGeometry(): void;
     }
 }
 declare module away.primitives {
@@ -8464,32 +8548,43 @@ declare module away.primitives {
         static ORIENTATION_YZ: string;
         static ORIENTATION_XY: string;
         static ORIENTATION_XZ: string;
+        private _planeHeight;
+        private _planeWidth;
+        private _orientation;
         private _segmentsW;
         private _segmentsH;
-        private _orientation;
         /**
-        * Creates a new WireframePlane object.
-        * @param width The size of the cube along its X-axis.
-        * @param height The size of the cube along its Y-axis.
-        * @param segmentsW The number of segments that make up the cube along the X-axis.
-        * @param segmentsH The number of segments that make up the cube along the Y-axis.
-        * @param color The colour of the wireframe lines
-        * @param thickness The thickness of the wireframe lines
-        * @param orientation The orientaion in which the plane lies.
+        * The size of the plane along its Y-axis. Defaults to 100.
         */
-        constructor(width: number, height: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number, orientation?: string);
+        public planeHeight : number;
         /**
-        * The orientaion in which the plane lies.
+        * The size of the plane along its X-axis. Defaults to 100.
+        */
+        public planeWidth : number;
+        /**
+        * The orientaion in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
         */
         public orientation : string;
         /**
-        * The number of segments that make up the plane along the X-axis.
+        * The number of segments that make up the plane along the Y-axis. Defaults to 10.
+        */
+        public segmentsH : number;
+        /**
+        * The number of segments that make up the plane along the X-axis. Defaults to 10.
         */
         public segmentsW : number;
         /**
-        * The number of segments that make up the plane along the Y-axis.
+        * Creates a new WireframePlane object.
+        *
+        * @param planeWidth The size of the plane along its X-axis. Defaults to 100.
+        * @param planeHeight The size of the plane along its Y-axis. Defaults to 100.
+        * @param segmentsW The number of segments that make up the plane along the X-axis. Defaults to 10.
+        * @param segmentsH The number of segments that make up the plane along the Y-axis. Defaults to 10.
+        * @param color The colour of the wireframe lines. Defaults to 0xFFFFFF.
+        * @param thickness The thickness of the wireframe lines. Defaults to 1.
+        * @param orientation The orientaion in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
         */
-        public segmentsH : number;
+        constructor(planeWidth?: number, planeHeight?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number, orientation?: string);
         /**
         * @inheritDoc
         */
@@ -8508,26 +8603,27 @@ declare module away.primitives {
         private _sides;
         private _orientation;
         /**
-        * Creates a new WireframeRegularPolygon object.
-        * @param radius The radius of the polygon.
-        * @param sides The number of sides on the polygon.
-        * @param color The colour of the wireframe lines
-        * @param thickness The thickness of the wireframe lines
-        * @param orientation The orientaion in which the plane lies.
-        */
-        constructor(radius: number, sides: number, color?: number, thickness?: number, orientation?: string);
-        /**
-        * The orientaion in which the polygon lies.
+        * The orientaion in which the polygon lies. Defaults to <code>ORIENTATION_XZ</code>.
         */
         public orientation : string;
         /**
-        * The radius of the regular polygon.
+        * The radius of the regular polygon. Defaults to 100.
         */
         public radius : number;
         /**
-        * The number of sides to the regular polygon.
+        * The number of sides to the regular polygon. Defaults to 16.
         */
         public sides : number;
+        /**
+        * Creates a new WireframeRegularPolygon object.
+        *
+        * @param radius The radius of the polygon. Defaults to 50.
+        * @param sides The number of sides on the polygon. Defaults to 16.
+        * @param color The colour of the wireframe lines.  Defaults to <code>0xFFFFFF</code>.
+        * @param thickness The thickness of the wireframe lines.  Defaults to 1.
+        * @param orientation The orientaion in which the plane lies. Defaults to <code>ORIENTATION_YZ</code>.
+        */
+        constructor(radius?: number, sides?: number, color?: number, thickness?: number, orientation?: string);
         /**
         * @inheritDoc
         */
@@ -8543,18 +8639,35 @@ declare module away.primitives {
         static ORIENTATION_XY: string;
         static ORIENTATION_XZ: string;
         private _orientation;
+        private _tetrahedronDepth;
+        private _tetrahedronHeight;
+        private _tetrahedronWidth;
         /**
-        * Creates a new WireframeTetrahedron object.
-        * @param width The size of the tetrahedron buttom size.
-        * @param height The size of the tetranhedron height.
-        * @param color The color of the wireframe lines.
-        * @param thickness The thickness of the wireframe lines.
-        */
-        constructor(width: number, height: number, color?: number, thickness?: number, orientation?: string);
-        /**
-        * The orientation in which the plane lies
+        * The orientation in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
         */
         public orientation : string;
+        /**
+        * The size of the tetrahedron along its Z-axis. Defaults to 100.
+        */
+        public tetrahedronDepth : number;
+        /**
+        * The size of the tetrahedron along its Y-axis. Defaults to 100.
+        */
+        public tetrahedronHeight : number;
+        /**
+        * The size of the tetrahedron along its X-axis. Defaults to 100.
+        */
+        public tetrahedronWidth : number;
+        /**
+        * Creates a new WireframeTetrahedron object.
+        *
+        * @param tetrahedronWidth The size of the tetrahedron along its X-axis. Defaults to 100.
+        * @param tetrahedronHeight The size of the tetranhedron along its Y-axis. Defaults to 100.
+        * @param tetrahedronDepth The size of the tetranhedron along its Z-axis. Defaults to 100.
+        * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+        * @param thickness The thickness of the wireframe lines. Defaults to <code>ORIENTATION_XZ</code>.
+        */
+        constructor(tetrahedronWidth?: number, tetrahedronHeight?: number, tetrahedronDepth?: number, color?: number, thickness?: number, orientation?: string);
         /**
         * @inheritDoc
         */

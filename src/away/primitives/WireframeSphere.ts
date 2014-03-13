@@ -14,12 +14,67 @@ module away.primitives
 		private _radius:number;
 
 		/**
+		 * The radius of the sphere. Defaults to 50.
+		 */
+		public get radius():number
+		{
+			return this._radius;
+		}
+
+		public set radius(value:number)
+		{
+			if (this._radius == value)
+				return;
+
+			this._radius = value;
+
+			this.pInvalidateGeometry();
+		}
+
+		/**
+		 * Defines the number of vertical segments that make up the sphere. Defaults to 12.
+		 */
+		public get segmentsH():number
+		{
+			return this._segmentsH;
+		}
+
+		public set segmentsH(value:number)
+		{
+			if (this._segmentsH == value)
+				return;
+
+			this._segmentsH = value;
+
+			this.pInvalidateGeometry();
+		}
+
+		/**
+		 * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+		 */
+		public get segmentsW():number
+		{
+			return this._segmentsW;
+		}
+
+		public set segmentsW(value:number)
+		{
+			if (this._segmentsW == value)
+				return;
+
+			this._segmentsW = value;
+
+			this.pInvalidateGeometry();
+		}
+
+		/**
 		 * Creates a new WireframeSphere object.
-		 * @param radius The radius of the sphere.
-		 * @param segmentsW Defines the number of horizontal segments that make up the sphere.
-		 * @param segmentsH Defines the number of vertical segments that make up the sphere.
-		 * @param color The colour of the wireframe lines
-		 * @param thickness The thickness of the wireframe lines
+		 *
+		 * @param radius The radius of the sphere. Defaults to 50.
+		 * @param segmentsW Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+		 * @param segmentsH Defines the number of vertical segments that make up the sphere. Defaults to 12.
+		 * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+		 * @param thickness The thickness of the wireframe lines. Defaults to 1.
 		 */
 		constructor(radius:number = 50, segmentsW:number = 16, segmentsH:number = 12, color:number = 0xFFFFFF, thickness:number = 1)
 		{
