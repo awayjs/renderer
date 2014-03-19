@@ -41,8 +41,8 @@ var tests;
                 this._projection.coordinateSystem = away.projections.CoordinateSystem.RIGHT_HANDED;
                 this._projection.focalLength = 1000;
                 this._projection.preserveFocalLength = true;
-                this._projection.origin.x = 0;
-                this._projection.origin.y = 0;
+                this._projection.originX = 0;
+                this._projection.originY = 0;
 
                 //create a bitmap material
                 this._bitmapMaterial = new away.materials.TextureMaterial(this._imageTexture);
@@ -60,6 +60,7 @@ var tests;
                         billboard.x = j * 300;
                         billboard.y = i * 300;
                         billboard.z = 0;
+                        billboard.addEventListener(away.events.MouseEvent.MOUSE_MOVE, this.onMouseEvent);
 
                         //billboard.orientationMode = away.base.OrientationMode.CAMERA_PLANE;
                         //billboard.alignmentMode = away.base.AlignmentMode.PIVOT_POINT;
@@ -92,6 +93,10 @@ var tests;
                 //setup the RAF for a render listener
                 this._timer = new away.utils.RequestAnimationFrame(this.render, this);
                 this._timer.start();
+            };
+
+            LayoutTest.prototype.onMouseEvent = function (event) {
+                console.log(event);
             };
 
             LayoutTest.prototype.onResize = function (event) {
