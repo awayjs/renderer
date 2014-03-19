@@ -18,6 +18,9 @@ module away.pick
 	 */
 	export class ShaderPicker implements IPicker
 	{
+		private _opaqueRenderableHead:away.pool.RenderableBase;
+		private _blendedRenderableHead:away.pool.RenderableBase;
+
 		private _stageGL:away.base.StageGL;
 		private _context:away.gl.ContextGL;
 		private _onlyMouseEnabled:boolean = true;
@@ -74,9 +77,9 @@ module away.pick
 		{
 			this._shaderPickingDetails = shaderPickingDetails;
 
-			this._id = new Array<number>(4);//new Vector.<Number>(4, true);
-			this._viewportData = new Array<number>(4);//new Vector.<Number>(4, true); // first 2 contain scale, last 2 translation
-			this._boundOffsetScale = new Array<number>(8);//new Vector.<Number>(8, true); // first 2 contain scale, last 2 translation
+			this._id = new Array<number>(4);
+			this._viewportData = new Array<number>(4); // first 2 contain scale, last 2 translation
+			this._boundOffsetScale = new Array<number>(8); // first 2 contain scale, last 2 translation
 			this._boundOffsetScale[3] = 0;
 			this._boundOffsetScale[7] = 1;
 		}
@@ -86,11 +89,6 @@ module away.pick
 		 */
 		public getViewCollision(x:number, y:number, view:away.containers.View):PickingCollisionVO
 		{
-
-			away.Debug.throwPIR('ShaderPicker', 'getViewCollision', 'implement');
-
-			return null;
-
 			var collector:away.traverse.EntityCollector = <away.traverse.EntityCollector> view.iEntityCollector;
 
 			this._stageGL = (<away.render.DefaultRenderer> view.renderer).stageGL;
@@ -107,6 +105,10 @@ module away.pick
 
 			// _potentialFound will be set to true if any object is actually rendered
 			this._potentialFound = false;
+
+			//reset head values
+			this._blendedRenderableHead = null;
+			this._opaqueRenderableHead = null;
 
 			this.pDraw(collector, null);
 
@@ -182,9 +184,9 @@ module away.pick
 			this._context.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
 			this._context.setProgram(this._objectProgram);
 			this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
-//			this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
-//			this.drawRenderables(entityCollector.blendedRenderableHead, camera);
-
+			//this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
+			//this.drawRenderables(entityCollector.blendedRenderableHead, camera);
+			//TODO: reimplement ShaderPicker inheriting from RendererBase
 		}
 
 		/**
@@ -194,10 +196,6 @@ module away.pick
 		 */
 		private drawRenderables(renderable:away.pool.RenderableBase, camera:away.entities.Camera)
 		{
-
-			away.Debug.throwPIR('ShaderPicker', 'drawRenderables', 'implement');
-
-
 			var matrix:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
 			var viewProjection:away.geom.Matrix3D = camera.viewProjection;
 

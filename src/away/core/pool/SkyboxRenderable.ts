@@ -10,6 +10,8 @@ module away.pool
 	 */
 	export class SkyboxRenderable extends RenderableBase
 	{
+		public static id:string = "skybox";
+
 		// TODO: Replace with CompactSubGeometry
 		private static _geometry:away.base.SubGeometry;
 

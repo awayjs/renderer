@@ -8,7 +8,7 @@ module away.traverse
 	/**
 	 * @class away.traverse.EntityCollector
 	 */
-	export class EntityCollector extends RenderableCollectorBase
+	export class EntityCollector extends CollectorBase
 	{
 		public _pSkybox:away.pool.RenderableBase;
 		public _pLights:Array<away.lights.LightBase>;
@@ -17,8 +17,7 @@ module away.traverse
 		private _lightProbes:Array<away.lights.LightProbe>;
 
 		public _pNumLights:number = 0;
-		public _pNumEntities:number = 0;
-		public _pNumInteractiveEntities:number = 0;
+
 		private _numDirectionalLights:number = 0;
 		private _numPointLights:number = 0;
 		private _numLightProbes:number = 0;
@@ -50,22 +49,6 @@ module away.traverse
 		/**
 		 *
 		 */
-		public get numEntities():number
-		{
-			return this._pNumEntities;
-		}
-
-		/**
-		 *
-		 */
-		public get numInteractiveEntities():number
-		{
-			return this._pNumInteractiveEntities;
-		}
-
-		/**
-		 *
-		 */
 		public get pointLights():Array<away.lights.PointLight>
 		{
 			return this._pointLights;
@@ -91,26 +74,29 @@ module away.traverse
 
 		/**
 		 *
+		 * @param entity
 		 */
-		public applyEntity(entity:away.entities.IEntity)
+		public applyDirectionalLight(entity:away.entities.IEntity)
 		{
-			super.applyEntity(entity);
+			this._directionalLights[ this._numDirectionalLights++ ] = <away.lights.DirectionalLight> entity;
+		}
 
-			this._pNumEntities++;
+		/**
+		 *
+		 * @param entity
+		 */
+		public applyLightProbe(entity:away.entities.IEntity)
+		{
+			this._lightProbes[ this._numLightProbes++ ] = <away.lights.LightProbe> entity;
+		}
 
-			if (entity._iIsMouseEnabled())
-				this._pNumInteractiveEntities++;
-
-			if (entity.assetType === away.library.AssetType.LIGHT) {
-				this._pLights[ this._pNumLights++ ] = <away.lights.LightBase> entity;
-
-				if (entity instanceof away.lights.DirectionalLight)
-					this._directionalLights[ this._numDirectionalLights++ ] = <away.lights.DirectionalLight> entity;
-				else if (entity instanceof away.lights.PointLight)
-					this._pointLights[ this._numPointLights++ ] = <away.lights.PointLight> entity;
-				else if (entity instanceof away.lights.LightProbe)
-					this._lightProbes[ this._numLightProbes++ ] = <away.lights.LightProbe> entity;
-			}
+		/**
+		 *
+		 * @param entity
+		 */
+		public applyPointLight(entity:away.entities.IEntity)
+		{
+			this._pointLights[ this._numPointLights++ ] = <away.lights.PointLight> entity;
 		}
 
 		/**
@@ -120,7 +106,6 @@ module away.traverse
 		{
 			super.clear();
 
-			this._pNumEntities = this._pNumInteractiveEntities = 0;
 			this._pSkybox = null;
 
 			if (this._pNumLights > 0)

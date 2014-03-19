@@ -10,6 +10,8 @@ module away.pool
 	 */
 	export class SegmentSetRenderable extends RenderableBase
 	{
+		public static id:string = "segmentset";
+
 		constructor(pool:RenderablePool, segmentSet:away.entities.SegmentSet)
 		{
 			super(pool, segmentSet, segmentSet, segmentSet.subGeometry, null);

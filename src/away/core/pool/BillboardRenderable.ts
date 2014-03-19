@@ -12,6 +12,8 @@ module away.pool
 	{
 		private static _materialGeometry:Object = new Object();
 
+		public static id:string = "billboard";
+
 		private _billboard:away.entities.Billboard;
 
 		constructor(pool:RenderablePool, billboard:away.entities.Billboard)

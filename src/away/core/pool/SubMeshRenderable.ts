@@ -10,6 +10,8 @@ module away.pool
 	 */
 	export class SubMeshRenderable extends RenderableBase
 	{
+		public static id:string = "submesh";
+
 		public subMesh:away.base.SubMesh;
 
 		constructor(pool:RenderablePool, subMesh:away.base.SubMesh)

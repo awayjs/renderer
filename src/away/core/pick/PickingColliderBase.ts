@@ -12,12 +12,16 @@ module away.pick
 	 */
 	export class PickingColliderBase
 	{
+		private _billboardRenderablePool:away.pool.RenderablePool;
+		private _subMeshRenderablePool:away.pool.RenderablePool;
+
 		public rayPosition:away.geom.Vector3D;
 		public rayDirection:away.geom.Vector3D;
 
 		constructor()
 		{
-
+			this._billboardRenderablePool = away.pool.RenderablePool.getPool(away.pool.BillboardRenderable);
+			this._subMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.SubMeshRenderable);
 		}
 
 		public _pPetCollisionNormal(indexData:Array<number> /*uint*/, vertexData:Array<number>, triangleIndex:number):away.geom.Vector3D // PROTECTED
@@ -50,7 +54,10 @@ module away.pick
 			return uv;
 		}
 
-		public testRenderableCollision(renderable:away.pool.RenderableBase, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
+		/**
+		 * @inheritDoc
+		 */
+		public _pTestRenderableCollision(renderable:away.pool.RenderableBase, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
 		{
 			throw new away.errors.AbstractMethodError();
 		}
@@ -62,6 +69,62 @@ module away.pick
 		{
 			this.rayPosition = localPosition;
 			this.rayDirection = localDirection;
+		}
+
+		/**
+		 * Tests a <code>Billboard</code> object for a collision with the picking ray.
+		 *
+		 * @param billboard The billboard instance to be tested.
+		 * @param pickingCollisionVO The collision object used to store the collision results
+		 * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
+		 * @param findClosest
+		 */
+		public testBillboardCollision(billboard:away.entities.Billboard, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number)
+		{
+			this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
+			pickingCollisionVO.materialOwner = null;
+
+			if (this._pTestRenderableCollision(<away.pool.RenderableBase> this._billboardRenderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
+				shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+
+				pickingCollisionVO.materialOwner = billboard;
+
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Tests a <code>Mesh</code> object for a collision with the picking ray.
+		 *
+		 * @param mesh The mesh instance to be tested.
+		 * @param pickingCollisionVO The collision object used to store the collision results
+		 * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
+		 * @param findClosest
+		 */
+		public testMeshCollision(mesh:away.entities.Mesh, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number, findClosest:boolean):boolean
+		{
+			this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
+			pickingCollisionVO.materialOwner = null;
+
+			var subMesh:away.base.SubMesh;
+
+			var len:number = mesh.subMeshes.length;
+			for (var i:number = 0; i < len; ++i) {
+				subMesh = mesh.subMeshes[i];
+
+				if (this._pTestRenderableCollision(<away.pool.RenderableBase> this._subMeshRenderablePool.getItem(subMesh), pickingCollisionVO, shortestCollisionDistance)) {
+					shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+
+					pickingCollisionVO.materialOwner = subMesh;
+
+					if (!findClosest)
+						return true;
+				}
+			}
+
+			return pickingCollisionVO.materialOwner != null;
 		}
 	}
 }

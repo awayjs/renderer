@@ -19,7 +19,6 @@
 ///<reference path="errors/AnimationSetError.ts"/>
 
 ///<reference path="events/LightEvent.ts" />
-///<reference path="events/MouseEvent3D.ts"/>
 ///<reference path="events/AnimationStateEvent.ts" />
 ///<reference path="events/AnimatorEvent.ts" />
 ///<reference path="events/ShadingMethodEvent.ts"/>
@@ -42,10 +41,8 @@
 ///<reference path="core/pool/SubMeshRenderable.ts"/>
 ///<reference path="core/pool/SkyboxRenderable.ts"/>
 
-///<reference path="core/traverse/RenderableCollectorBase.ts" />
 ///<reference path="core/traverse/EntityCollector.ts" />
 ///<reference path="core/traverse/ShadowCasterCollector.ts" />
-///<reference path="core/traverse/RaycastCollector.ts" />
 
 ///<reference path="core/partition/DirectionalLightNode.ts" />
 ///<reference path="core/partition/LightProbeNode.ts" />
@@ -55,9 +52,6 @@
 ///<reference path="core/pick/PickingColliderBase.ts" />
 ///<reference path="core/pick/JSPickingCollider.ts" />
 ///<reference path="core/pick/ShaderPicker.ts" />
-///<reference path="core/pick/RaycastPicker.ts" />
-///<reference path="core/pick/PickingType.ts"/>
-///<reference path="core/pick/PickingColliderType.ts" />
 
 ///<reference path="core/render/RendererBase.ts"/>
 
@@ -84,7 +78,6 @@
 ///<reference path="lights/shadowmaps/CascadeShadowMapper.ts"/>
 ///<reference path="lights/shadowmaps/NearDirectionalShadowMapper.ts"/>
 
-///<reference path="managers/Mouse3DManager.ts"/>
 ///<reference path="managers/AGALProgramCache.ts"/>
 
 ///<reference path="materials/passes/MaterialPassBase.ts"/>

@@ -29,7 +29,7 @@ module away.partition
 		public acceptTraverser(traverser:away.traverse.ICollector)
 		{
 			//do not run frustum checks on lights
-			traverser.applyEntity(this._directionalLight);
+			traverser.applyDirectionalLight(this._directionalLight);
 		}
 
 		/**

@@ -33,8 +33,9 @@ module away.pick
 		/**
 		 * @inheritDoc
 		 */
-		public testRenderableCollision(renderable:away.pool.RenderableBase, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
+		public _pTestRenderableCollision(renderable:away.pool.RenderableBase, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
 		{
+
 			var subGeometry:away.base.ISubGeometry = renderable.subGeometry;
 
 			var t:number;

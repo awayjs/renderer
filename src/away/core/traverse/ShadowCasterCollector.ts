@@ -8,7 +8,7 @@ module away.traverse
 	/**
 	 * @class away.traverse.ShadowCasterCollector
 	 */
-	export class ShadowCasterCollector extends RenderableCollectorBase
+	export class ShadowCasterCollector extends CollectorBase
 	{
 		constructor()
 		{

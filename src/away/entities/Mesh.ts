@@ -19,7 +19,7 @@ module away.entities
 	 * state. It consists out of SubMeshes, which in turn correspond to SubGeometries. SubMeshes allow different parts
 	 * of the geometry to be assigned different materials.
 	 */
-	export class Mesh extends away.containers.DisplayObjectContainer implements IEntity, away.base.IMaterialOwner, away.library.IAsset
+	export class Mesh extends away.containers.DisplayObjectContainer implements IEntity, away.base.IMaterialOwner
 	{
 		private _uvTransform:away.geom.UVTransform;
 
@@ -352,16 +352,19 @@ module away.entities
 			var maxX:number, maxY:number, maxZ:number;
 
 			if (numSubGeoms > 0) {
+				var subGeom:ISubGeometry = subGeoms[0];
+				var vertices:Array<number> = subGeom.vertexData;
+				var i:number = subGeom.vertexOffset;
+				minX = maxX = vertices[i];
+				minY = maxY = vertices[i + 1];
+				minZ = maxZ = vertices[i + 2];
+
 				var j:number = 0;
-
-				minX = minY = minZ = Number.POSITIVE_INFINITY;
-				maxX = maxY = maxZ = Number.NEGATIVE_INFINITY;
-
 				while (j < numSubGeoms) {
-					var subGeom:away.base.ISubGeometry = subGeoms[j++];
-					var vertices:Array<number> = subGeom.vertexData;
+					subGeom = subGeoms[j++];
+					vertices = subGeom.vertexData;
 					var vertexDataLen:number = vertices.length;
-					var i:number = subGeom.vertexOffset;
+					i = subGeom.vertexOffset;
 					var stride:number = subGeom.vertexStride;
 
 					while (i < vertexDataLen) {
@@ -481,6 +484,21 @@ module away.entities
 				this._subMeshes[i].uvTransform.scaleV = scaleV;
 				this._subMeshes[i].uvTransform.rotationUV = rotationUV;
 			}
+		}
+
+
+		/**
+		 * //TODO
+		 *
+		 * @param shortestCollisionDistance
+		 * @param findClosest
+		 * @returns {boolean}
+		 *
+		 * @internal
+		 */
+		public _iTestCollision(shortestCollisionDistance:number, findClosest:boolean):boolean
+		{
+			return this._pPickingCollider.testMeshCollision(this, this._pPickingCollisionVO, shortestCollisionDistance, findClosest);
 		}
 	}
 }
