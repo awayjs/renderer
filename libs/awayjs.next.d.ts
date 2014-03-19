@@ -396,6 +396,140 @@ declare module away.events {
 * @module away.events
 */
 declare module away.events {
+    /**
+    * A MouseEvent is dispatched when a mouse event occurs over a mouseEnabled object in View.
+    * TODO: we don't have screenZ data, tho this should be easy to implement
+    */
+    class MouseEvent extends events.Event {
+        public _iAllowedToPropagate: boolean;
+        public _iParentEvent: MouseEvent;
+        /**
+        * Defines the value of the type property of a mouseOver3d event object.
+        */
+        static MOUSE_OVER: string;
+        /**
+        * Defines the value of the type property of a mouseOut3d event object.
+        */
+        static MOUSE_OUT: string;
+        /**
+        * Defines the value of the type property of a mouseUp3d event object.
+        */
+        static MOUSE_UP: string;
+        /**
+        * Defines the value of the type property of a mouseDown3d event object.
+        */
+        static MOUSE_DOWN: string;
+        /**
+        * Defines the value of the type property of a mouseMove3d event object.
+        */
+        static MOUSE_MOVE: string;
+        /**
+        * Defines the value of the type property of a click3d event object.
+        */
+        static CLICK: string;
+        /**
+        * Defines the value of the type property of a doubleClick3d event object.
+        */
+        static DOUBLE_CLICK: string;
+        /**
+        * Defines the value of the type property of a mouseWheel3d event object.
+        */
+        static MOUSE_WHEEL: string;
+        /**
+        * The horizontal coordinate at which the event occurred in view coordinates.
+        */
+        public screenX: number;
+        /**
+        * The vertical coordinate at which the event occurred in view coordinates.
+        */
+        public screenY: number;
+        /**
+        * The view object inside which the event took place.
+        */
+        public view: away.containers.View;
+        /**
+        * The 3d object inside which the event took place.
+        */
+        public object: away.base.DisplayObject;
+        /**
+        * The material owner inside which the event took place.
+        */
+        public materialOwner: away.base.IMaterialOwner;
+        /**
+        * The material of the 3d element inside which the event took place.
+        */
+        public material: away.materials.IMaterial;
+        /**
+        * The uv coordinate inside the draw primitive where the event took place.
+        */
+        public uv: away.geom.Point;
+        /**
+        * The index of the face where the event took place.
+        */
+        public index: number;
+        /**
+        * The index of the subGeometry where the event took place.
+        */
+        public subGeometryIndex: number;
+        /**
+        * The position in object space where the event took place
+        */
+        public localPosition: away.geom.Vector3D;
+        /**
+        * The normal in object space where the event took place
+        */
+        public localNormal: away.geom.Vector3D;
+        /**
+        * Indicates whether the Control key is active (true) or inactive (false).
+        */
+        public ctrlKey: boolean;
+        /**
+        * Indicates whether the Alt key is active (true) or inactive (false).
+        */
+        public altKey: boolean;
+        /**
+        * Indicates whether the Shift key is active (true) or inactive (false).
+        */
+        public shiftKey: boolean;
+        /**
+        * Indicates how many lines should be scrolled for each unit the user rotates the mouse wheel.
+        */
+        public delta: number;
+        /**
+        * Create a new MouseEvent object.
+        * @param type The type of the MouseEvent.
+        */
+        constructor(type: string);
+        /**
+        * @inheritDoc
+        */
+        public bubbles : boolean;
+        /**
+        * @inheritDoc
+        */
+        public stopPropagation(): void;
+        /**
+        * @inheritDoc
+        */
+        public stopImmediatePropagation(): void;
+        /**
+        * Creates a copy of the MouseEvent object and sets the value of each property to match that of the original.
+        */
+        public clone(): events.Event;
+        /**
+        * The position in scene space where the event took place
+        */
+        public scenePosition : away.geom.Vector3D;
+        /**
+        * The normal in scene space where the event took place
+        */
+        public sceneNormal : away.geom.Vector3D;
+    }
+}
+/**
+* @module away.events
+*/
+declare module away.events {
     class MaterialEvent extends events.Event {
         static SIZE_CHANGED: string;
         constructor(type: string);
@@ -1873,6 +2007,12 @@ declare module away.base {
         public setPixel(x: any, y: any, color: number): void;
         /**
         *
+        * @param rect
+        * @param inputByteArray
+        */
+        public setPixels(rect: away.geom.Rectangle, inputByteArray: away.utils.ByteArray): void;
+        /**
+        *
         * @param x
         * @param y
         * @param color
@@ -2191,12 +2331,12 @@ declare module away.base {
         private _showBounds;
         private _boundsIsShown;
         private _shaderPickingDetails;
-        private _pickingCollisionVO;
+        public _pPickingCollisionVO: away.pick.PickingCollisionVO;
         public _pBounds: away.bounds.BoundingVolumeBase;
         public _pBoundsInvalid: boolean;
         private _worldBounds;
         private _worldBoundsInvalid;
-        private _pickingCollider;
+        public _pPickingCollider: away.pick.IPickingCollider;
         public _pRenderables: away.pool.IRenderable[];
         /**
         *
@@ -3082,9 +3222,15 @@ declare module away.base {
         public _iAddRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
         public _iRemoveRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
         /**
+        * //TODO
+        *
+        * @param shortestCollisionDistance
+        * @param findClosest
+        * @returns {boolean}
+        *
         * @internal
         */
-        public _iCollidesBefore(shortestCollisionDistance: number, findClosest: boolean): boolean;
+        public _iTestCollision(shortestCollisionDistance: number, findClosest: boolean): boolean;
         /**
         *
         */
@@ -3135,6 +3281,10 @@ declare module away.base {
         * @private
         */
         private invalidateMatrix3D();
+        /**
+        * @private
+        */
+        private invalidatePartition();
         /**
         * @private
         */
@@ -3915,9 +4065,9 @@ declare module away.base {
     *
     * @interface away.base.IMaterialOwner
     */
-    interface IMaterialOwner {
+    interface IMaterialOwner extends away.library.IAsset {
         /**
-        * The animation used by the material to assemble the vertex code.
+        * The animation used by the material owner to assemble the vertex code.
         */
         animator: away.animators.IAnimator;
         /**
@@ -4567,14 +4717,65 @@ declare module away.pool {
 */
 declare module away.pool {
     /**
+    * IRenderableClass is an interface for the constructable class definition IRenderable that is used to
+    * create renderable objects in the rendering pipeline to render the contents of a partition
+    *
+    * @class away.render.IRenderableClass
+    */
+    interface IRenderableClass {
+        /**
+        *
+        */
+        id: string;
+        /**
+        *
+        */
+        new(pool: pool.RenderablePool, materialOwner: away.base.IMaterialOwner): pool.IRenderable;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
     * @class away.pool.RenderablePool
     */
     class RenderablePool {
+        private static _pools;
         private _pool;
         private _renderableClass;
-        constructor(renderableClass: any);
+        /**
+        * //TODO
+        *
+        * @param renderableClass
+        */
+        constructor(renderableClass: pool.IRenderableClass);
+        /**
+        * //TODO
+        *
+        * @param materialOwner
+        * @returns IRenderable
+        */
         public getItem(materialOwner: away.base.IMaterialOwner): pool.IRenderable;
+        /**
+        * //TODO
+        *
+        * @param materialOwner
+        */
         public disposeItem(materialOwner: away.base.IMaterialOwner): void;
+        /**
+        * //TODO
+        *
+        * @param renderableClass
+        * @returns RenderablePool
+        */
+        static getPool(renderableClass: pool.IRenderableClass): RenderablePool;
+        /**
+        * //TODO
+        *
+        * @param renderableClass
+        */
+        static disposePool(renderableClass: any): void;
     }
 }
 /**
@@ -4650,6 +4851,7 @@ declare module away.pool {
     * @class away.pool.RenderableListItem
     */
     class CSSBillboardRenderable extends pool.CSSRenderableBase {
+        static id: string;
         constructor(pool: pool.RenderablePool, billboard: away.entities.Billboard);
     }
 }
@@ -4672,6 +4874,14 @@ declare module away.traverse {
         /**
         *
         */
+        numEntities: number;
+        /**
+        *
+        */
+        numInteractiveEntities: number;
+        /**
+        *
+        */
         clear(): any;
         /**
         *
@@ -4686,7 +4896,22 @@ declare module away.traverse {
         *
         * @param entity
         */
+        applyDirectionalLight(entity: away.entities.IEntity): any;
+        /**
+        *
+        * @param entity
+        */
         applyEntity(entity: away.entities.IEntity): any;
+        /**
+        *
+        * @param entity
+        */
+        applyLightProbe(entity: away.entities.IEntity): any;
+        /**
+        *
+        * @param entity
+        */
+        applyPointLight(entity: away.entities.IEntity): any;
     }
 }
 /**
@@ -4694,22 +4919,18 @@ declare module away.traverse {
 */
 declare module away.traverse {
     /**
-    * @class away.traverse.EntityCollector
+    * @class away.traverse.CollectorBase
     */
-    class CSSEntityCollector implements traverse.ICollector {
+    class CollectorBase implements traverse.ICollector {
         public scene: away.containers.Scene;
-        private _entityHead;
+        public _pEntityHead: away.pool.EntityListItem;
         public _pEntityListItemPool: away.pool.EntityListItemPool;
-        public _pNumEntities: number;
-        public _pNumInteractiveEntities: number;
-        public _pNumLights: number;
         public _pCamera: away.entities.Camera;
-        private _numDirectionalLights;
-        private _numPointLights;
-        private _numLightProbes;
         private _customCullPlanes;
         private _cullPlanes;
         private _numCullPlanes;
+        public _pNumEntities: number;
+        public _pNumInteractiveEntities: number;
         constructor();
         /**
         *
@@ -4722,27 +4943,93 @@ declare module away.traverse {
         /**
         *
         */
-        public numInteractiveEntities : number;
+        public entityHead : away.pool.EntityListItem;
         /**
         *
         */
-        public entityHead : away.pool.EntityListItem;
+        public numEntities : number;
+        /**
+        *
+        */
+        public numInteractiveEntities : number;
         /**
         *
         */
         public clear(): void;
         /**
         *
+        * @param node
+        * @returns {boolean}
         */
         public enterNode(node: away.partition.NodeBase): boolean;
         /**
         *
+        * @param entity
+        */
+        public applyDirectionalLight(entity: away.entities.IEntity): void;
+        /**
+        *
+        * @param entity
         */
         public applyEntity(entity: away.entities.IEntity): void;
         /**
-        * Cleans up any data at the end of a frame.
+        *
+        * @param entity
         */
-        public cleanUp(): void;
+        public applyLightProbe(entity: away.entities.IEntity): void;
+        /**
+        *
+        * @param entity
+        */
+        public applyPointLight(entity: away.entities.IEntity): void;
+    }
+}
+/**
+* @module away.traverse
+*/
+declare module away.traverse {
+    /**
+    * The RaycastCollector class is a traverser for scene partitions that collects all scene graph entities that are
+    * considered intersecting with the defined ray.
+    *
+    * @see away.partition.Partition
+    * @see away.entities.IEntity
+    *
+    * @class away.traverse.RaycastCollector
+    */
+    class RaycastCollector extends traverse.CollectorBase implements traverse.ICollector {
+        private _rayPosition;
+        private _rayDirection;
+        public _iCollectionMark: number;
+        /**
+        * Provides the starting position of the ray.
+        */
+        public rayPosition : away.geom.Vector3D;
+        /**
+        * Provides the direction vector of the ray.
+        */
+        public rayDirection : away.geom.Vector3D;
+        /**
+        * Creates a new RaycastCollector object.
+        */
+        constructor();
+        /**
+        * Returns true if the current node is at least partly in the frustum. If so, the partition node knows to pass on the traverser to its children.
+        *
+        * @param node The Partition3DNode object to frustum-test.
+        */
+        public enterNode(node: away.partition.NodeBase): boolean;
+    }
+}
+/**
+* @module away.traverse
+*/
+declare module away.traverse {
+    /**
+    * @class away.traverse.CSSEntityCollector
+    */
+    class CSSEntityCollector extends traverse.CollectorBase implements traverse.ICollector {
+        constructor();
     }
 }
 /**
@@ -4927,6 +5214,23 @@ declare module away.pick {
         * @param localPosition The direction vector in local coordinates
         */
         setLocalRay(localPosition: away.geom.Vector3D, localDirection: away.geom.Vector3D): any;
+        /**
+        * Tests a <code>Billboard</code> object for a collision with the picking ray.
+        *
+        * @param entity The entity instance to be tested.
+        * @param pickingCollisionVO The collision object used to store the collision results
+        * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
+        */
+        testBillboardCollision(entity: away.entities.IEntity, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number): boolean;
+        /**
+        * Tests a <code>Mesh</code> object for a collision with the picking ray.
+        *
+        * @param entity The entity instance to be tested.
+        * @param pickingCollisionVO The collision object used to store the collision results
+        * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
+        * @param findClosest
+        */
+        testMeshCollision(entity: away.entities.IEntity, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number, findClosest: boolean): boolean;
     }
 }
 /**
@@ -5037,6 +5341,52 @@ declare module away.pick {
     }
 }
 /**
+* @module away.pick
+*/
+declare module away.pick {
+    /**
+    * Picks a 3d object from a view or scene by 3D raycast calculations.
+    * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
+    * then triggers an optional picking collider on individual entity objects to further determine the precise values of the picking ray collision.
+    *
+    * @class away.pick.RaycastPicker
+    */
+    class RaycastPicker implements pick.IPicker {
+        private _findClosestCollision;
+        private _raycastCollector;
+        private _ignoredEntities;
+        private _onlyMouseEnabled;
+        private _entities;
+        private _numEntities;
+        private _hasCollisions;
+        /**
+        * @inheritDoc
+        */
+        public onlyMouseEnabled : boolean;
+        /**
+        * Creates a new <code>RaycastPicker</code> object.
+        *
+        * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
+        * or simply returns the first collision encountered. Defaults to false.
+        */
+        constructor(findClosestCollision?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public getViewCollision(x: number, y: number, view: away.containers.View): pick.PickingCollisionVO;
+        /**
+        * @inheritDoc
+        */
+        public getSceneCollision(rayPosition: away.geom.Vector3D, rayDirection: away.geom.Vector3D, scene: away.containers.Scene): pick.PickingCollisionVO;
+        public setIgnoreList(entities: any): void;
+        private isIgnored(entity);
+        private sortOnNearT(entity1, entity2);
+        private getPickingCollisionVO(collector);
+        private updateLocalPosition(pickingCollisionVO);
+        public dispose(): void;
+    }
+}
+/**
 * @module away.render
 */
 declare module away.render {
@@ -5051,6 +5401,7 @@ declare module away.render {
         *
         */
         renderableSorter: away.sort.IEntitySorter;
+        shareContext: boolean;
         x: number;
         y: number;
         width: number;
@@ -5092,7 +5443,7 @@ declare module away.render {
     * @class away.render.RendererBase
     */
     class CSSRendererBase extends away.events.EventDispatcher {
-        static billboardRenderablePool: away.pool.RenderablePool;
+        private _billboardRenderablePool;
         public _pCamera: away.entities.Camera;
         public _iEntryPoint: away.geom.Vector3D;
         public _pCameraForward: away.geom.Vector3D;
@@ -5100,6 +5451,7 @@ declare module away.render {
         private _backgroundG;
         private _backgroundB;
         private _backgroundAlpha;
+        private _shareContext;
         public _pBackBufferInvalid: boolean;
         public _depthTextureInvalid: boolean;
         public _renderableHead: away.pool.CSSRenderableBase;
@@ -5107,7 +5459,6 @@ declare module away.render {
         * Creates a new RendererBase object.
         */
         constructor(renderToTexture?: boolean, forceSoftware?: boolean, profile?: string);
-        public _iCreateEntityCollector(): away.traverse.ICollector;
         /**
         * The background color's red component, used when clearing.
         *
@@ -5126,6 +5477,7 @@ declare module away.render {
         * @private
         */
         public _iBackgroundB : number;
+        public shareContext : boolean;
         /**
         * Disposes the resources used by the RendererBase.
         */
@@ -5172,17 +5524,6 @@ declare module away.render {
         * @param entity
         */
         public pFindRenderables(entity: away.entities.IEntity): void;
-        /**
-        * //TODO
-        *
-        * @param entity
-        * @param shortestCollisionDistance
-        * @param findClosest
-        * @returns {boolean}
-        *
-        * @internal
-        */
-        static _iCollidesBefore(entity: away.entities.IEntity, shortestCollisionDistance: number, findClosest: boolean): boolean;
     }
 }
 /**
@@ -5282,6 +5623,7 @@ declare module away.render {
         *
         */
         public updateGlobalPos(): void;
+        public _iCreateEntityCollector(): away.traverse.ICollector;
     }
 }
 /**
@@ -10239,9 +10581,15 @@ declare module away.entities {
         */
         _iAssignedPartition: away.partition.Partition;
         /**
+        * //TODO
+        *
+        * @param shortestCollisionDistance
+        * @param findClosest
+        * @returns {boolean}
+        *
         * @internal
         */
-        _iCollidesBefore(shortestCollisionDistance: number, findClosest: boolean): boolean;
+        _iTestCollision(shortestCollisionDistance: number, findClosest: boolean): boolean;
         /**
         * @internal
         */
@@ -10294,7 +10642,7 @@ declare module away.entities {
 * contains the Billboard object.</p>
 */
 declare module away.entities {
-    class Billboard extends away.base.DisplayObject implements entities.IEntity, away.base.IMaterialOwner, away.library.IAsset {
+    class Billboard extends away.base.DisplayObject implements entities.IEntity, away.base.IMaterialOwner {
         private _animator;
         private _billboardWidth;
         private _billboardHeight;
@@ -10351,6 +10699,10 @@ declare module away.entities {
         /**
         *
         */
+        public sourceEntity : entities.IEntity;
+        /**
+        *
+        */
         public uvTransform : away.geom.UVTransform;
         constructor(material: away.materials.IMaterial, pixelSnapping?: string, smoothing?: boolean);
         /**
@@ -10362,13 +10714,19 @@ declare module away.entities {
         */
         public pUpdateBounds(): void;
         /**
-        * @protected
-        */
-        public pInvalidateBounds(): void;
-        /**
         * @internal
         */
         public _iSetUVMatrixComponents(offsetU: number, offsetV: number, scaleU: number, scaleV: number, rotationUV: number): void;
+        /**
+        * //TODO
+        *
+        * @param shortestCollisionDistance
+        * @param findClosest
+        * @returns {boolean}
+        *
+        * @internal
+        */
+        public _iTestCollision(shortestCollisionDistance: number, findClosest: boolean): boolean;
         /**
         * @private
         */
@@ -10428,8 +10786,8 @@ declare module away.entities {
         /**
         * Calculates the scene position of the given normalized coordinates in screen space.
         *
-        * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
-        * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
+        * @param nX The normalised x coordinate in screen space, minus the originX offset of the projection property.
+        * @param nY The normalised y coordinate in screen space, minus the originY offset of the projection property.
         * @param sZ The z coordinate in screen space, representing the distance into the screen.
         * @return The scene position of the given screen coordinates.
         */
@@ -11370,6 +11728,8 @@ declare module away.projections {
         frustumCorners: number[];
         matrix: away.geom.Matrix3D;
         near: number;
+        originX: number;
+        originY: number;
         far: number;
         _iAspectRatio: number;
         project(point3d: away.geom.Vector3D): away.geom.Vector3D;
@@ -11389,6 +11749,8 @@ declare module away.projections {
         public _pMatrixInvalid: boolean;
         public _pFrustumCorners: number[];
         public _pCoordinateSystem: string;
+        public _pOriginX: number;
+        public _pOriginY: number;
         private _unprojection;
         private _unprojectionInvalid;
         constructor(coordinateSystem?: string);
@@ -11399,6 +11761,8 @@ declare module away.projections {
         public frustumCorners : number[];
         public matrix : away.geom.Matrix3D;
         public near : number;
+        public originX : number;
+        public originY : number;
         public far : number;
         public project(point3d: away.geom.Vector3D): away.geom.Vector3D;
         public unprojectionMatrix : away.geom.Matrix3D;
@@ -11419,7 +11783,6 @@ declare module away.projections {
         private _hFocalLength;
         private _preserveAspectRatio;
         private _preserveFocalLength;
-        private _origin;
         constructor(fieldOfView?: number, coordinateSystem?: string);
         /**
         *
@@ -11445,7 +11808,6 @@ declare module away.projections {
         *
         */
         public hFocalLength : number;
-        public origin : away.geom.Point;
         public unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
         public clone(): projections.ProjectionBase;
         public pUpdateMatrix(): void;
@@ -11504,6 +11866,167 @@ declare module away.projections {
         private onProjectionMatrixChanged(event);
         public pUpdateMatrix(): void;
     }
+}
+declare module away.managers {
+    /**
+    * MouseManager enforces a singleton pattern and is not intended to be instanced.
+    * it provides a manager class for detecting mouse hits on scene objects and sending out mouse events.
+    */
+    class MouseManager {
+        private static _instance;
+        private _viewLookup;
+        public _iActiveDiv: HTMLDivElement;
+        public _iUpdateDirty: boolean;
+        public _iCollidingObject: away.pick.PickingCollisionVO;
+        private _nullVector;
+        private _previousCollidingObject;
+        private _queuedEvents;
+        private _mouseMoveEvent;
+        private _mouseUp;
+        private _mouseClick;
+        private _mouseOut;
+        private _mouseDown;
+        private _mouseMove;
+        private _mouseOver;
+        private _mouseWheel;
+        private _mouseDoubleClick;
+        private onClickDelegate;
+        private onDoubleClickDelegate;
+        private onMouseDownDelegate;
+        private onMouseMoveDelegate;
+        private onMouseUpDelegate;
+        private onMouseWheelDelegate;
+        private onMouseOverDelegate;
+        private onMouseOutDelegate;
+        /**
+        * Creates a new <code>MouseManager</code> object.
+        */
+        constructor();
+        static getInstance(): MouseManager;
+        public fireMouseEvents(forceMouseMove: boolean): void;
+        public registerView(view: away.containers.View): void;
+        public unregisterView(view: away.containers.View): void;
+        private queueDispatch(event, sourceEvent, collider?);
+        private onMouseMove(event);
+        private onMouseOut(event);
+        private onMouseOver(event);
+        private onClick(event);
+        private onDoubleClick(event);
+        private onMouseDown(event);
+        private onMouseUp(event);
+        private onMouseWheel(event);
+        private updateColliders(event);
+    }
+}
+declare module away.managers {
+    class RTTBufferManager extends away.events.EventDispatcher {
+        private static _instances;
+        private _renderToTextureVertexBuffer;
+        private _renderToScreenVertexBuffer;
+        private _indexBuffer;
+        private _stageGL;
+        private _viewWidth;
+        private _viewHeight;
+        private _textureWidth;
+        private _textureHeight;
+        private _renderToTextureRect;
+        private _buffersInvalid;
+        private _textureRatioX;
+        private _textureRatioY;
+        constructor(se: SingletonEnforcer, stageGL: away.base.StageGL);
+        static getInstance(stageGL: away.base.StageGL): RTTBufferManager;
+        private static getRTTBufferManagerFromStageGL(stageGL);
+        private static deleteRTTBufferManager(stageGL);
+        public textureRatioX : number;
+        public textureRatioY : number;
+        public viewWidth : number;
+        public viewHeight : number;
+        public renderToTextureVertexBuffer : away.gl.VertexBuffer;
+        public renderToScreenVertexBuffer : away.gl.VertexBuffer;
+        public indexBuffer : away.gl.IndexBuffer;
+        public renderToTextureRect : away.geom.Rectangle;
+        public textureWidth : number;
+        public textureHeight : number;
+        public dispose(): void;
+        private updateRTTBuffers();
+    }
+}
+declare class RTTBufferManagerVO {
+    public stage3d: away.base.StageGL;
+    public rttbfm: away.managers.RTTBufferManager;
+}
+declare class SingletonEnforcer {
+}
+declare module away.managers {
+    /**
+    * The StageGLManager class provides a multiton object that handles management for StageGL objects. StageGL objects
+    * should not be requested directly, but are exposed by a StageGLProxy.
+    *
+    * @see away.base.StageGLProxy
+    */
+    class StageGLManager extends away.events.EventDispatcher {
+        private static STAGEGL_MAX_QUANTITY;
+        private _stageGLs;
+        private static _instance;
+        private static _numStageGLs;
+        private _onContextCreatedDelegate;
+        /**
+        * Creates a new StageGLManager class.
+        * @param stage The Stage object that contains the StageGL objects to be managed.
+        * @private
+        */
+        constructor(StageGLManagerSingletonEnforcer: StageGLManagerSingletonEnforcer);
+        /**
+        * Gets a StageGLManager instance for the given Stage object.
+        * @param stage The Stage object that contains the StageGL objects to be managed.
+        * @return The StageGLManager instance for the given Stage object.
+        */
+        static getInstance(): StageGLManager;
+        /**
+        * Requests the StageGL for the given index.
+        *
+        * @param index The index of the requested StageGL.
+        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
+        * @param profile The compatibility profile, an enumeration of ContextGLProfile
+        * @return The StageGL for the given index.
+        */
+        public getStageGLAt(index: number, forceSoftware?: boolean, profile?: string): away.base.StageGL;
+        /**
+        * Removes a StageGL from the manager.
+        * @param stageGL
+        * @private
+        */
+        public iRemoveStageGL(stageGL: away.base.StageGL): void;
+        /**
+        * Get the next available stageGL. An error is thrown if there are no StageGLProxies available
+        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
+        * @param profile The compatibility profile, an enumeration of ContextGLProfile
+        * @return The allocated stageGL
+        */
+        public getFreeStageGL(forceSoftware?: boolean, profile?: string): away.base.StageGL;
+        /**
+        * Checks if a new stageGL can be created and managed by the class.
+        * @return true if there is one slot free for a new stageGL
+        */
+        public hasFreeStageGL : boolean;
+        /**
+        * Returns the amount of stageGL objects that can be created and managed by the class
+        * @return the amount of free slots
+        */
+        public numSlotsFree : number;
+        /**
+        * Returns the amount of StageGL objects currently managed by the class.
+        * @return the amount of slots used
+        */
+        public numSlotsUsed : number;
+        /**
+        * The maximum amount of StageGL objects that can be managed by the class
+        */
+        public numSlotsTotal : number;
+        private onContextCreated(e);
+    }
+}
+declare class StageGLManagerSingletonEnforcer {
 }
 /**
 * The Loader class is used to load SWF files or image(JPG, PNG, or GIF)
@@ -12034,23 +12557,35 @@ declare module away.containers {
         private _onProjectionChangedDelegate;
         private _onViewportUpdatedDelegate;
         private _onScissorUpdatedDelegate;
+        private _mouseManager;
+        private _mousePicker;
+        private _htmlElement;
+        private _shareContext;
+        public _pMouseX: number;
+        public _pMouseY: number;
         constructor(renderer: away.render.IRenderer, scene?: containers.Scene, camera?: away.entities.Camera);
         /**
         *
         * @param e
         */
         private onScenePartitionChanged(e);
+        public layeredView: boolean;
+        public mouseX : number;
+        public mouseY : number;
+        /**
+        *
+        */
+        public htmlElement : HTMLDivElement;
         /**
         *
         */
         public renderer : away.render.IRenderer;
         /**
         *
-        * @returns {number}
         */
+        public shareContext : boolean;
         /**
         *
-        * @param value
         */
         public backgroundColor : number;
         /**
@@ -12091,6 +12626,10 @@ declare module away.containers {
         *
         */
         public height : number;
+        /**
+        *
+        */
+        public mousePicker : away.pick.IPicker;
         /**
         *
         */
@@ -12139,6 +12678,8 @@ declare module away.containers {
         public project(point3d: away.geom.Vector3D): away.geom.Vector3D;
         public unproject(sX: number, sY: number, sZ: number): away.geom.Vector3D;
         public getRay(sX: number, sY: number, sZ: number): away.geom.Vector3D;
+        public forceMouseMove: boolean;
+        public updateCollider(): void;
     }
 }
 declare module away.bounds {
@@ -12649,116 +13190,6 @@ declare module away.materials {
         public iOwners : away.base.IMaterialOwner[];
         private notifySizeChanged();
     }
-}
-declare module away.managers {
-    class RTTBufferManager extends away.events.EventDispatcher {
-        private static _instances;
-        private _renderToTextureVertexBuffer;
-        private _renderToScreenVertexBuffer;
-        private _indexBuffer;
-        private _stageGL;
-        private _viewWidth;
-        private _viewHeight;
-        private _textureWidth;
-        private _textureHeight;
-        private _renderToTextureRect;
-        private _buffersInvalid;
-        private _textureRatioX;
-        private _textureRatioY;
-        constructor(se: SingletonEnforcer, stageGL: away.base.StageGL);
-        static getInstance(stageGL: away.base.StageGL): RTTBufferManager;
-        private static getRTTBufferManagerFromStageGL(stageGL);
-        private static deleteRTTBufferManager(stageGL);
-        public textureRatioX : number;
-        public textureRatioY : number;
-        public viewWidth : number;
-        public viewHeight : number;
-        public renderToTextureVertexBuffer : away.gl.VertexBuffer;
-        public renderToScreenVertexBuffer : away.gl.VertexBuffer;
-        public indexBuffer : away.gl.IndexBuffer;
-        public renderToTextureRect : away.geom.Rectangle;
-        public textureWidth : number;
-        public textureHeight : number;
-        public dispose(): void;
-        private updateRTTBuffers();
-    }
-}
-declare class RTTBufferManagerVO {
-    public stage3d: away.base.StageGL;
-    public rttbfm: away.managers.RTTBufferManager;
-}
-declare class SingletonEnforcer {
-}
-declare module away.managers {
-    /**
-    * The StageGLManager class provides a multiton object that handles management for StageGL objects. StageGL objects
-    * should not be requested directly, but are exposed by a StageGLProxy.
-    *
-    * @see away.base.StageGLProxy
-    */
-    class StageGLManager extends away.events.EventDispatcher {
-        private static STAGEGL_MAX_QUANTITY;
-        private _stageGLs;
-        private static _instance;
-        private static _numStageGLs;
-        private _onContextCreatedDelegate;
-        /**
-        * Creates a new StageGLManager class.
-        * @param stage The Stage object that contains the StageGL objects to be managed.
-        * @private
-        */
-        constructor(StageGLManagerSingletonEnforcer: StageGLManagerSingletonEnforcer);
-        /**
-        * Gets a StageGLManager instance for the given Stage object.
-        * @param stage The Stage object that contains the StageGL objects to be managed.
-        * @return The StageGLManager instance for the given Stage object.
-        */
-        static getInstance(): StageGLManager;
-        /**
-        * Requests the StageGL for the given index.
-        *
-        * @param index The index of the requested StageGL.
-        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
-        * @param profile The compatibility profile, an enumeration of ContextGLProfile
-        * @return The StageGL for the given index.
-        */
-        public getStageGLAt(index: number, forceSoftware?: boolean, profile?: string): away.base.StageGL;
-        /**
-        * Removes a StageGL from the manager.
-        * @param stageGL
-        * @private
-        */
-        public iRemoveStageGL(stageGL: away.base.StageGL): void;
-        /**
-        * Get the next available stageGL. An error is thrown if there are no StageGLProxies available
-        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
-        * @param profile The compatibility profile, an enumeration of ContextGLProfile
-        * @return The allocated stageGL
-        */
-        public getFreeStageGL(forceSoftware?: boolean, profile?: string): away.base.StageGL;
-        /**
-        * Checks if a new stageGL can be created and managed by the class.
-        * @return true if there is one slot free for a new stageGL
-        */
-        public hasFreeStageGL : boolean;
-        /**
-        * Returns the amount of stageGL objects that can be created and managed by the class
-        * @return the amount of free slots
-        */
-        public numSlotsFree : number;
-        /**
-        * Returns the amount of StageGL objects currently managed by the class.
-        * @return the amount of slots used
-        */
-        public numSlotsUsed : number;
-        /**
-        * The maximum amount of StageGL objects that can be managed by the class
-        */
-        public numSlotsTotal : number;
-        private onContextCreated(e);
-    }
-}
-declare class StageGLManagerSingletonEnforcer {
 }
 declare module away.animators {
     /**
