@@ -1,12 +1,12 @@
 ///<reference path="../_definitions.ts"/>
 
-module away.primitives
+module away.prefabs
 {
 
 	/**
 	 * A UV Cone primitive mesh.
 	 */
-	export class ConeGeometry extends away.primitives.CylinderGeometry
+	export class PrimitiveConePrefab extends away.prefabs.PrimitiveCylinderPrefab implements away.library.IAsset
 	{
 
 		/**
@@ -20,7 +20,8 @@ module away.primitives
 		public set radius(value:number)
 		{
 			this._pBottomRadius = value;
-			this.pInvalidateGeometry();
+
+			this._pInvalidateGeometry();
 		}
 
 		/**

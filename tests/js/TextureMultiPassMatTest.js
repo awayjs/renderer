@@ -33,7 +33,7 @@ var tests;
                 this.view = new away.containers.View(new away.render.DefaultRenderer());
                 this.view.camera.z = -1000;
                 this.view.backgroundColor = 0x000000;
-                this.torus = new away.primitives.TorusGeometry(50, 10, 32, 32, false);
+                this.torus = new away.prefabs.PrimitiveTorusPrefab(50, 10, 32, 32, false);
 
                 var l = 20;
                 var radius = 500;
@@ -41,10 +41,12 @@ var tests;
                 var ts = new away.textures.ImageTexture(this._image, false);
                 var mat = new away.materials.TextureMultiPassMaterial(ts, true, true, false);
 
+                this.torus.material = mat;
+
                 for (var c = 0; c < l; c++) {
                     var t = Math.PI * 2 * c / l;
 
-                    var m = new away.entities.Mesh(this.torus, mat);
+                    var m = this.torus.getNewObject();
                     m.x = Math.cos(t) * radius;
                     m.y = 0;
                     m.z = Math.sin(t) * radius;

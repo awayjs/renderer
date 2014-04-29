@@ -2,12 +2,12 @@
 
 module away.animators
 {
-	import ISubGeometry				= away.base.ISubGeometry;
-	import SubMesh					= away.base.SubMesh;
+	import TriangleSubGeometry		= away.base.TriangleSubGeometry;
+	import SubMesh					= away.base.TriangleSubMesh;
 	import Geometry					= away.base.Geometry;
 	import StageGL					= away.base.StageGL;
 	import RenderableBase			= away.pool.RenderableBase;
-	import SubMeshRenderable		= away.pool.SubMeshRenderable;
+	import SubMeshRenderable		= away.pool.TriangleSubMeshRenderable;
 
 
 	/**
@@ -91,6 +91,10 @@ module away.animators
 			this._poses[0] = this._activeVertexState.currentGeometry;
 			this._poses[1] = this._activeVertexState.nextGeometry;
 			this._weights[0] = 1 - (this._weights[1] = this._activeVertexState.blendWeight);
+
+			//TODO fire a check when the current active geometry changes
+			//send geometry invalidation to renderables
+
 		}
 
 		/**
@@ -108,29 +112,25 @@ module away.animators
 
 			// this type of animation can only be SubMesh
 			var subMesh:SubMesh = <SubMesh> (<SubMeshRenderable> renderable).subMesh;
-			var subGeom:ISubGeometry;
+			var subGeom:TriangleSubGeometry;
 			var i:number /*uint*/;
 			var len:number /*uint*/ = this._numPoses;
 
 			stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
-			if (this._blendMode == VertexAnimationMode.ABSOLUTE) {
+			if (this._blendMode == VertexAnimationMode.ABSOLUTE)
 				i = 1;
-				subGeom = this._poses[0].subGeometries[subMesh._iIndex];
-				// set the base sub-geometry so the material can simply pick up on this data
-				if (subGeom)
-					renderable.subGeometry = subGeom; //TODO more elegant way to swap subgeometry that doesn't involve changing it on the SubMesh
-			} else
+			else
 				i = 0;
 
 			for (; i < len; ++i) {
-				subGeom = this._poses[i].subGeometries[subMesh._iIndex] || renderable.subGeometry;
+				//TODO this needs fixing
+				//subGeom = this._poses[i].subGeometries[subMesh._iIndex] || renderable.subGeometry;
 
-				subGeom.activateVertexBuffer(vertexStreamOffset++, stageGL);
+				stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
 				if (this._vertexAnimationSet.useNormals)
-					subGeom.activateVertexNormalBuffer(vertexStreamOffset++, stageGL);
-
+					stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 			}
 		}
 
@@ -141,10 +141,10 @@ module away.animators
 			if (this._blendMode == VertexAnimationMode.ABSOLUTE) {
 				var len:number /*uint*/ = this._numPoses;
 				for (var i:number /*uint*/ = 1; i < len; ++i) {
-					renderable.subGeometry.activateVertexBuffer(vertexStreamOffset++, stageGL);
+					stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
 					if (this._vertexAnimationSet.useNormals)
-						renderable.subGeometry.activateVertexNormalBuffer(vertexStreamOffset++, stageGL);
+						stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 				}
 			}
 			// todo: set temp data for additive?
@@ -156,6 +156,15 @@ module away.animators
 		 */
 		public testGPUCompatibility(pass:away.materials.MaterialPassBase)
 		{
+		}
+
+		public getRenderableSubGeometry(renderable:away.pool.TriangleSubMeshRenderable, sourceSubGeometry:TriangleSubGeometry):TriangleSubGeometry
+		{
+			if (this._blendMode == VertexAnimationMode.ABSOLUTE && this._poses.length)
+				return <TriangleSubGeometry> this._poses[0].subGeometries[renderable.subMesh._iIndex] || sourceSubGeometry;
+
+			//nothing to do here
+			return sourceSubGeometry;
 		}
 	}
 }

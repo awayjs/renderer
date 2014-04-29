@@ -2,16 +2,17 @@
 
 module away.animators
 {
-	import SkinnedSubGeometry               = away.base.SkinnedSubGeometry;
-	import SubMesh                          = away.base.SubMesh;
+	import TriangleSubGeometry       		= away.base.TriangleSubGeometry;
+	import SubMesh                          = away.base.TriangleSubMesh;
 	import StageGL                     		= away.base.StageGL;
 	import Camera                         	= away.entities.Camera;
 	import AnimationStateEvent              = away.events.AnimationStateEvent;
+	import SubGeometryEvent              	= away.events.SubGeometryEvent;
 	import ContextGLProgramType             = away.gl.ContextGLProgramType;
 	import Quaternion                       = away.geom.Quaternion;
 	import Vector3D                         = away.geom.Vector3D;
 	import RenderableBase                   = away.pool.RenderableBase;
-	import SubMeshRenderable				= away.pool.SubMeshRenderable;
+	import TriangleSubMeshRenderable		= away.pool.TriangleSubMeshRenderable;
 	import MaterialPassBase                 = away.materials.MaterialPassBase;
 
 	/**
@@ -25,7 +26,8 @@ module away.animators
 		private _globalPose:SkeletonPose = new SkeletonPose();
 		private _globalPropertiesDirty:boolean;
 		private _numJoints:number /*uint*/;
-		private _subGeomAnimationStates:Object = new Object();
+		private _morphedSubGeometry:Object = new Object();
+		private _morphedSubGeometryDirty:Object = new Object();
 		private _condensedMatrices:Array<number>;
 
 		private _skeleton:Skeleton;
@@ -33,7 +35,10 @@ module away.animators
 		private _useCondensedIndices:boolean;
 		private _jointsPerVertex:number /*uint*/;
 		private _activeSkeletonState:ISkeletonAnimationState;
-		private _onTransitionCompleteDelegate:Function;
+		private _onTransitionCompleteDelegate:(event:AnimationStateEvent) => void;
+
+		private _onIndicesUpdateDelegate:(event:SubGeometryEvent) => void;
+		private _onVerticesUpdateDelegate:(event:SubGeometryEvent) => void;
 
 		/**
 		 * returns the calculated global matrices of the current skeleton pose.
@@ -128,7 +133,9 @@ module away.animators
 				this._globalMatrices[j++] = 0;
 			}
 
-			this._onTransitionCompleteDelegate = away.utils.Delegate.create(this, this.onTransitionComplete);
+			this._onTransitionCompleteDelegate = (event:AnimationStateEvent) => this.onTransitionComplete(event);
+			this._onIndicesUpdateDelegate = (event:SubGeometryEvent) => this.onIndicesUpdate(event);
+			this._onVerticesUpdateDelegate = (event:SubGeometryEvent) => this.onVerticesUpdate(event);
 		}
 
 		/**
@@ -191,36 +198,26 @@ module away.animators
 			if (this._globalPropertiesDirty)
 				this.updateGlobalProperties();
 
-			var skinnedGeom:SkinnedSubGeometry = <SkinnedSubGeometry> (<SubMesh> (<SubMeshRenderable> renderable).subMesh).subGeometry;
+			var subGeometry:TriangleSubGeometry = <TriangleSubGeometry> (<SubMesh> (<TriangleSubMeshRenderable> renderable).subMesh).subGeometry;
 
-			// using condensed data
-			var numCondensedJoints:number /*uint*/ = skinnedGeom.numCondensedJoints;
+			subGeometry.useCondensedIndices = this._useCondensedIndices;
+
 			if (this._useCondensedIndices) {
-				if (skinnedGeom.numCondensedJoints == 0) {
-					skinnedGeom.iCondenseIndexData();
-					numCondensedJoints = skinnedGeom.numCondensedJoints;
-				}
-				this.updateCondensedMatrices(skinnedGeom.condensedIndexLookUp, numCondensedJoints);
-				stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, numCondensedJoints*3);
+				// using a condensed data set
+				this.updateCondensedMatrices(subGeometry.condensedIndexLookUp, subGeometry.numCondensedJoints);
+				stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, subGeometry.numCondensedJoints*3);
 			} else {
 				if (this._pAnimationSet.usesCPU) {
-					var subGeomAnimState:SubGeomAnimationState = this._subGeomAnimationStates[skinnedGeom.id];
+					if (this._morphedSubGeometryDirty[subGeometry.id])
+						this.morphSubGeometry(<TriangleSubMeshRenderable> renderable, subGeometry);
 
-					if (subGeomAnimState == null)
-						subGeomAnimState = this._subGeomAnimationStates[skinnedGeom.id] = new SubGeomAnimationState(skinnedGeom);
-
-					if (subGeomAnimState.dirty) {
-						this.morphGeometry(subGeomAnimState, skinnedGeom);
-						subGeomAnimState.dirty = false;
-					}
-					skinnedGeom.updateAnimatedData(subGeomAnimState.animatedVertexData);
-					return;
+					return
 				}
 				stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints*3);
 			}
 
-			skinnedGeom.activateJointIndexBuffer(vertexStreamOffset, stageGL);
-			skinnedGeom.activateJointWeightsBuffer(vertexStreamOffset + 1, stageGL);
+			stageGL.activateBuffer(vertexStreamOffset, renderable.getVertexData(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.JOINT_INDEX_FORMAT);
+			stageGL.activateBuffer(vertexStreamOffset + 1, renderable.getVertexData(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.JOINT_WEIGHT_FORMAT);
 		}
 
 		/**
@@ -242,8 +239,10 @@ module away.animators
 			//invalidate pose matrices
 			this._globalPropertiesDirty = true;
 
-			for (var key in this._subGeomAnimationStates)
-				(<SubGeomAnimationState> this._subGeomAnimationStates[key]).dirty = true;
+			//trigger geometry invalidation if using CPU animation
+			if (this._pAnimationSet.usesCPU)
+				for (var key in this._morphedSubGeometryDirty)
+					this._morphedSubGeometryDirty[key] = true;
 		}
 
 		private updateCondensedMatrices(condensedIndexLookUp:Array<number> /*uint*/, numJoints:number /*uint*/)
@@ -255,7 +254,7 @@ module away.animators
 			this._condensedMatrices = new Array<number>();
 
 			do {
-				srcIndex = condensedIndexLookUp[i*3]*4;
+				srcIndex = condensedIndexLookUp[i]*4;
 				len = srcIndex + 12;
 				// copy into condensed
 				while (srcIndex < len)
@@ -355,24 +354,61 @@ module away.animators
 			}
 		}
 
+
+		public getRenderableSubGeometry(renderable:TriangleSubMeshRenderable, sourceSubGeometry:TriangleSubGeometry):TriangleSubGeometry
+		{
+			this._morphedSubGeometryDirty[sourceSubGeometry.id] = true;
+
+			//early out for GPU animations
+			if (!this._pAnimationSet.usesCPU)
+				return sourceSubGeometry;
+
+			var targetSubGeometry:TriangleSubGeometry;
+
+			if (!(targetSubGeometry = this._morphedSubGeometry[sourceSubGeometry.id])) {
+				//not yet stored
+				targetSubGeometry = this._morphedSubGeometry[sourceSubGeometry.id] = sourceSubGeometry.clone();
+				//turn off auto calculations on the morphed geometry
+				targetSubGeometry.autoDeriveNormals = false;
+				targetSubGeometry.autoDeriveTangents = false;
+				targetSubGeometry.autoDeriveUVs = false;
+				//add event listeners for any changes in UV values on the source geometry
+				sourceSubGeometry.addEventListener(away.events.SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdateDelegate);
+				sourceSubGeometry.addEventListener(away.events.SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdateDelegate);
+			}
+
+			return targetSubGeometry;
+		}
+
 		/**
 		 * If the animation can't be performed on GPU, transform vertices manually
 		 * @param subGeom The subgeometry containing the weights and joint index data per vertex.
 		 * @param pass The material pass for which we need to transform the vertices
 		 */
-		private morphGeometry(state:SubGeomAnimationState, subGeom:SkinnedSubGeometry)
+		public morphSubGeometry(renderable:TriangleSubMeshRenderable, sourceSubGeometry:TriangleSubGeometry)
 		{
-			var vertexData:Array<number> = subGeom.vertexData;
-			var targetData:Array<number> = state.animatedVertexData;
-			var jointIndices:Array<number> = subGeom.iJointIndexData;
-			var jointWeights:Array<number> = subGeom.iJointWeightsData;
+			this._morphedSubGeometryDirty[sourceSubGeometry.id] = false;
+
+			var sourcePositions:Array<number> = sourceSubGeometry.positions;
+			var sourceNormals:Array<number> = sourceSubGeometry.vertexNormals;
+			var sourceTangents:Array<number> = sourceSubGeometry.vertexTangents;
+
+			var jointIndices:Array<number> = sourceSubGeometry.jointIndices;
+			var jointWeights:Array<number> = sourceSubGeometry.jointWeights;
+
+			var targetSubGeometry = this._morphedSubGeometry[sourceSubGeometry.id];
+
+			var targetPositions:Array<number> = targetSubGeometry.positions;
+			var targetNormals:Array<number> = targetSubGeometry.vertexNormals;
+			var targetTangents:Array<number> = targetSubGeometry.vertexTangents;
+
 			var index:number /*uint*/ = 0;
 			var j:number /*uint*/ = 0;
 			var k:number /*uint*/;
 			var vx:number, vy:number, vz:number;
 			var nx:number, ny:number, nz:number;
 			var tx:number, ty:number, tz:number;
-			var len:number /*int*/ = vertexData.length;
+			var len:number /*int*/ = sourcePositions.length;
 			var weight:number;
 			var vertX:number, vertY:number, vertZ:number;
 			var normX:number, normY:number, normZ:number;
@@ -382,15 +418,15 @@ module away.animators
 			var m31:number, m32:number, m33:number, m34:number;
 
 			while (index < len) {
-				vertX = vertexData[index];
-				vertY = vertexData[index + 1];
-				vertZ = vertexData[index + 2];
-				normX = vertexData[index + 3];
-				normY = vertexData[index + 4];
-				normZ = vertexData[index + 5];
-				tangX = vertexData[index + 6];
-				tangY = vertexData[index + 7];
-				tangZ = vertexData[index + 8];
+				vertX = sourcePositions[index];
+				vertY = sourcePositions[index + 1];
+				vertZ = sourcePositions[index + 2];
+				normX = sourceNormals[index];
+				normY = sourceNormals[index + 1];
+				normZ = sourceNormals[index + 2];
+				tangX = sourceTangents[index];
+				tangY = sourceTangents[index + 1];
+				tangZ = sourceTangents[index + 2];
 				vx = 0;
 				vy = 0;
 				vz = 0;
@@ -434,18 +470,22 @@ module away.animators
 					}
 				}
 
-				targetData[index] = vx;
-				targetData[index + 1] = vy;
-				targetData[index + 2] = vz;
-				targetData[index + 3] = nx;
-				targetData[index + 4] = ny;
-				targetData[index + 5] = nz;
-				targetData[index + 6] = tx;
-				targetData[index + 7] = ty;
-				targetData[index + 8] = tz;
+				targetPositions[index] = vx;
+				targetPositions[index + 1] = vy;
+				targetPositions[index + 2] = vz;
+				targetNormals[index] = nx;
+				targetNormals[index + 1] = ny;
+				targetNormals[index + 2] = nz;
+				targetTangents[index] = tx;
+				targetTangents[index + 1] = ty;
+				targetTangents[index + 2] = tz;
 
-				index = index + 13;
+				index += 3;
 			}
+
+			targetSubGeometry.updatePositions(targetPositions);
+			targetSubGeometry.updateVertexNormals(targetNormals);
+			targetSubGeometry.updateVertexTangents(targetTangents);
 		}
 
 		/**
@@ -557,18 +597,25 @@ module away.animators
 				}
 			}
 		}
-	}
-}
 
-import CompactSubGeometry = away.base.CompactSubGeometry;
+		private onIndicesUpdate(event:SubGeometryEvent)
+		{
+			var subGeometry:TriangleSubGeometry = <TriangleSubGeometry> event.target;
 
-class SubGeomAnimationState
-{
-	public animatedVertexData:Array<number>;
-	public dirty:boolean = true;
+			(<TriangleSubGeometry> this._morphedSubGeometry[subGeometry.id]).updateIndices(subGeometry.indices);
+		}
 
-	constructor(subGeom:CompactSubGeometry)
-	{
-		this.animatedVertexData = subGeom.vertexData.concat();
+		private onVerticesUpdate(event:SubGeometryEvent)
+		{
+			var subGeometry:TriangleSubGeometry = <TriangleSubGeometry> event.target;
+			var morphGeometry:TriangleSubGeometry = <TriangleSubGeometry> this._morphedSubGeometry[subGeometry.id];
+
+			switch(event.dataType) {
+				case TriangleSubGeometry.UV_DATA:
+					morphGeometry.updateUVs(subGeometry.uvs);
+				case TriangleSubGeometry.SECONDARY_UV_DATA:
+					morphGeometry.updateUVs(subGeometry.secondaryUVs);
+			}
+		}
 	}
 }

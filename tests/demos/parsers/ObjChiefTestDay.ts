@@ -3,85 +3,90 @@
 
 module demos.parsers
 {
-
-    export class ObjChiefTestDay//extends away.events.EventDispatcher
+	import DisplayObjectContainer		= away.containers.DisplayObjectContainer;
+	import Scene						= away.containers.Scene;
+	import View							= away.containers.View;
+	import Mesh							= away.entities.Mesh;
+	import LoaderEvent					= away.events.LoaderEvent;
+	import Vector3D						= away.geom.Vector3D;
+	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetType					= away.library.AssetType;
+	import IAsset						= away.library.IAsset;
+	import DirectionalLight				= away.lights.DirectionalLight;
+	import ColorMaterial				= away.materials.ColorMaterial;
+	import StaticLightPicker			= away.materials.StaticLightPicker;
+	import TextureMaterial				= away.materials.TextureMaterial;
+	import TextureMultiPassMaterial		= away.materials.TextureMultiPassMaterial;
+	import AssetLoader					= away.net.AssetLoader;
+	import AssetLoaderToken				= away.net.AssetLoaderToken;
+	import URLRequest					= away.net.URLRequest;
+	import OBJParser					= away.parsers.OBJParser;
+	import DefaultRenderer				= away.render.DefaultRenderer;
+	import ImageTexture					= away.textures.ImageTexture;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
+	
+    export class ObjChiefTestDay
     {
 
-        private height : number = 0;
+        private height:number = 0;
 
-        private token   : away.net.AssetLoaderToken;
-        private view    : away.containers.View;
-        private raf     : away.utils.RequestAnimationFrame;
-        private mesh    : away.entities.Mesh;
-        private meshes  : Array<away.entities.Mesh> = new Array<away.entities.Mesh>();
-        private mat     : away.materials.TextureMaterial;
+        private token:AssetLoaderToken;
+        private view:View;
+        private raf:RequestAnimationFrame;
+        private meshes:Array<Mesh> = new Array<Mesh>();
+        private mat:TextureMaterial;
 
-        private terrainMaterial : away.materials.TextureMaterial;
+        private terrainMaterial:TextureMaterial;
 
-        private multiMat: away.materials.TextureMultiPassMaterial;
-        private light   : away.lights.DirectionalLight;
-        private t800M   : away.entities.Mesh;
+        private light:DirectionalLight;
 
-        private spartan : away.containers.DisplayObjectContainer = new away.containers.DisplayObjectContainer();
-        private terrain : away.entities.Mesh;
+        private spartan:DisplayObjectContainer = new DisplayObjectContainer();
+        private terrain:Mesh;
 
         constructor()
-        {
+		{
+			away.Debug.LOG_PI_ERRORS = false;
+			away.Debug.THROW_ERRORS = false;
 
-            away.Debug.LOG_PI_ERRORS    = false;
-            away.Debug.THROW_ERRORS     = false;
+			this.view = new View(new DefaultRenderer());
+			this.view.camera.z = -50;
+			this.view.camera.y = 20;
+			this.view.camera.projection.near = 0.1;
+			this.view.backgroundColor = 0xCEC8C6;
 
-            this.view                  = new away.containers.View( new away.render.DefaultRenderer() );
-            this.view.camera.z          = -50;
-            this.view.camera.y          = 20;
-            this.view.camera.projection.near  = 0.1;
-			//(<away.projections.PerspectiveProjection> this.view.camera.projection).coordinateSystem = away.projections.CoordinateSystem.RIGHT_HANDED;
-            this.view.backgroundColor   = 0xCEC8C6//A0A7DE;//0E0E10;
+			this.raf = new RequestAnimationFrame(this.render, this);
 
-            //this.view.backgroundColor   = 0xFF0000;
-            this.raf                    = new away.utils.RequestAnimationFrame( this.render , this );
+			this.light = new DirectionalLight();
+			this.light.color = 0xc1582d;
+			this.light.direction = new Vector3D(1, 0, 0);
+			this.light.ambient = 0.4;
+			this.light.ambientColor = 0x85b2cd;
+			this.light.diffuse = 2.8;
+			this.light.specular = 1.8;
 
-            this.light                  = new away.lights.DirectionalLight();
-            this.light.color            = 0xc1582d;//683019;
-            this.light.direction        = new away.geom.Vector3D( 1 , 0 ,0 );
-            this.light.ambient          = 0.4;//0.05;//.4;
-            this.light.ambientColor     = 0x85b2cd;//4F6877;//313D51;
-            this.light.diffuse          = 2.8;
-            this.light.specular         = 1.8;
-            //this.light.x                = 800;
-            //this.light.y                = 800;
+			this.spartan.transform.scale = new Vector3D(.25, .25, .25);
+			this.spartan.y = 0;
 
-            this.spartan.transform.scale = new away.geom.Vector3D(.25, .25, .25 );
-            this.spartan.y = 0;
+			this.view.scene.addChild(this.light);
 
-            this.view.scene.addChild( this.light );
+			AssetLibrary.enableParser(OBJParser);
 
-            away.library.AssetLibrary.enableParser( away.parsers.OBJParser ) ;
+			this.token = AssetLibrary.load(new away.net.URLRequest('assets/Halo_3_SPARTAN4.obj'));
+			this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/Halo_3_SPARTAN4.obj') );
-            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , away.utils.Delegate.create(this, this.onAssetComplete) );
+			this.token = AssetLibrary.load(new URLRequest('assets/terrain.obj'));
+			this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/terrain.obj') );
-            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , away.utils.Delegate.create(this, this.onAssetComplete) );
+			this.token = AssetLibrary.load(new URLRequest('assets/masterchief_base.png'));
+			this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
+			this.token = AssetLibrary.load(new away.net.URLRequest('assets/stone_tx.jpg'));
+			this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
-            //*
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/masterchief_base.png') );
-            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , away.utils.Delegate.create(this, this.onAssetComplete) );
+			window.onresize = (event:UIEvent) => this.onResize();
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/stone_tx.jpg' ) );
-            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , away.utils.Delegate.create(this, this.onAssetComplete) );
-            // */
-            window.onresize = () => this.resize();
-
-        }
-
-
-        private t : number = 0;
+			this.raf.start();
+		}
 
         private render()
         {
@@ -92,134 +97,76 @@ module demos.parsers
             this.view.render();
         }
 
-        public onAssetComplete ( e : away.events.AssetEvent )
+        private spartanFlag    :boolean = false;
+        private terrainObjFlag :boolean = false;
+
+        public onResourceComplete (event:LoaderEvent)
         {
-
-        }
-
-        private spartanFlag     : boolean = false;
-        private terrainObjFlag  : boolean = false;
-
-        public onResourceComplete ( e : away.events.LoaderEvent )
-        {
-
-            var loader  : away.net.AssetLoader   = <away.net.AssetLoader> e.target;
-            var l       : number                     = loader.baseDependency.assets.length//dependencies.length;
-
+            var loader:AssetLoader = <AssetLoader> event.target;
+            var l:number = loader.baseDependency.assets.length;
 
             console.log( '------------------------------------------------------------------------------');
-            console.log( 'away.events.LoaderEvent.RESOURCE_COMPLETE' , e , l , loader );
+            console.log( 'away.events.LoaderEvent.RESOURCE_COMPLETE' , event , l , loader );
             console.log( '------------------------------------------------------------------------------');
 
+            var loader:AssetLoader = <AssetLoader> event.target;
+            var l:number = loader.baseDependency.assets.length;
 
-            //*
-            var loader  : away.net.AssetLoader   = <away.net.AssetLoader> e.target;
-            var l       : number                     = loader.baseDependency.assets.length//dependencies.length;
+            for (var c:number = 0; c < l; c++) {
 
-            for ( var c : number = 0 ; c < l ; c ++ )
-            {
+                var d:IAsset = loader.baseDependency.assets[c];
 
-                var d : away.library.IAsset = loader.baseDependency.assets[c];
+                console.log( d.name , event.url);
 
-                console.log( d.name , e.url );
+                switch (d.assetType) {
+                    case AssetType.MESH:
+                        if (event.url =='assets/Halo_3_SPARTAN4.obj') {
+                            var mesh:Mesh = <Mesh> d;
 
-                switch (d.assetType)
-                {
-
-                    case away.library.AssetType.MESH:
-
-
-                        if (e.url =='assets/Halo_3_SPARTAN4.obj')
-                        {
-
-                            var mesh : away.entities.Mesh = <away.entities.Mesh> away.library.AssetLibrary.getAsset( d.name );
-
-                            this.spartan.addChild( mesh );
-                            this.raf.start();
+                            this.spartan.addChild(mesh);
                             this.spartanFlag = true;
-
-
-                            this.meshes.push( mesh );
-
-
-
-                        }
-
-                        if (e.url =='assets/terrain.obj')
-                        {
-
+                            this.meshes.push(mesh);
+                        } else if (event.url =='assets/terrain.obj') {
                             this.terrainObjFlag = true;
-                            this.terrain = <away.entities.Mesh> away.library.AssetLibrary.getAsset( d.name );
+                            this.terrain = <Mesh> d;
                             this.terrain.y = 98;
-                            this.view.scene.addChild( this.terrain );
-
-                        }
-
-
-                        break;
-
-
-                    case away.library.AssetType.TEXTURE :
-
-                        if (e.url == 'assets/masterchief_base.png' )
-                        {
-
-                            var lightPicker:away.materials.StaticLightPicker    = new away.materials.StaticLightPicker( [this.light] );
-                            var tx  : away.textures.ImageTexture     = <away.textures.ImageTexture> away.library.AssetLibrary.getAsset( d.name );
-
-                            this.mat                                            = new away.materials.TextureMaterial( tx, true, true, false );
-                            this.mat.lightPicker                                = lightPicker;
-
-
-                        }
-
-                        if (e.url == 'assets/stone_tx.jpg')
-                        {
-
-                            var lp:away.materials.StaticLightPicker    = new away.materials.StaticLightPicker( [this.light] );
-                            var txT  : away.textures.ImageTexture    = <away.textures.ImageTexture> away.library.AssetLibrary.getAsset( d.name );
-
-                            this.terrainMaterial                                = new away.materials.TextureMaterial( txT, true, true, false );
-                            this.terrainMaterial.lightPicker                    = lp;
-
+                            this.view.scene.addChild(this.terrain);
                         }
 
                         break;
+                    case AssetType.TEXTURE :
+                        if (event.url == 'assets/masterchief_base.png' ) {
+                            this.mat = new TextureMaterial( <ImageTexture> d, true, true, false );
+                            this.mat.lightPicker = new StaticLightPicker([this.light]);
+                        } else if (event.url == 'assets/stone_tx.jpg') {
+                            this.terrainMaterial = new TextureMaterial(<ImageTexture> d, true, true, false);
+                            this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
+                        }
 
+                        break;
                 }
-
             }
 
-            if ( this.terrainObjFlag && this.terrainMaterial )
-            {
+            if (this.terrainObjFlag && this.terrainMaterial) {
                 this.terrain.material = this.terrainMaterial;
-                this.terrain.geometry.scaleUV( 20 , 20 );
-
-
+                this.terrain.geometry.scaleUV(20, 20);
             }
 
-            if ( this.mat && this.spartanFlag )
-            {
-                for ( var c : number = 0 ; c < this.meshes.length ; c++ )
-                {
+            if (this.mat && this.spartanFlag)
+                for (var c:number = 0; c < this.meshes.length; c++)
                     this.meshes[c].material = this.mat;
-                }
-            }
 
-            this.view.scene.addChild( this.spartan );
-            this.resize();
-
+            this.view.scene.addChild(this.spartan);
+            this.onResize();
         }
 
-        public resize()
+        public onResize(event:UIEvent = null)
         {
-            this.view.y         = 0;
-            this.view.x         = 0;
+            this.view.y = 0;
+            this.view.x = 0;
 
-            this.view.width     = window.innerWidth;
-            this.view.height    = window.innerHeight;
+            this.view.width = window.innerWidth;
+            this.view.height = window.innerHeight;
         }
-
     }
-
 }

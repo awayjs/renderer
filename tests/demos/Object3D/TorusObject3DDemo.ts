@@ -3,27 +3,24 @@
 
 module demos.object3d
 {
-	import Event						= away.events.Event;
-	import URLLoader					= away.net.URLLoader;
-	import URLRequest					= away.net.URLRequest;
-	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
-	import Delegate						= away.utils.Delegate;
-
 	import PerspectiveProjection		= away.projections.PerspectiveProjection;
-	import View						= away.containers.View;
+	import View							= away.containers.View;
 	import Mesh							= away.entities.Mesh;
 	import PointLight					= away.lights.PointLight;
+	import URLLoader					= away.net.URLLoader;
+	import URLRequest					= away.net.URLRequest;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import TextureMaterial				= away.materials.TextureMaterial;
-	import TorusGeometry				= away.primitives.TorusGeometry;
+	import PrimitiveTorusPrefab			= away.prefabs.PrimitiveTorusPrefab;
 	import DefaultRenderer				= away.render.DefaultRenderer;
 	import ImageTexture					= away.textures.ImageTexture;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
     export class TorusObject3DDemo
     {
 
         private view:View;
-        private torus:TorusGeometry;
+        private torus:PrimitiveTorusPrefab;
 
         private light:PointLight;
         private raf:RequestAnimationFrame;
@@ -58,7 +55,7 @@ module demos.object3d
             this.view.camera.z = 0;
             this.view.backgroundColor = 0x000000;
             this.view.backgroundAlpha = 1;
-            this.torus = new TorusGeometry(150 , 50 , 32 , 32 , false);
+            this.torus = new PrimitiveTorusPrefab(150, 50, 32, 32, false);
 
             var l:number = 10;
             //var radius:number = 1000;
@@ -67,23 +64,25 @@ module demos.object3d
 
                 var t : number=Math.PI * 2 * c / l;
 
-                var m : Mesh = new Mesh(this.torus);
-                    m.x = Math.cos(t)*this.radius;
-                    m.y = 0;
-                    m.z = Math.sin(t)*this.radius;
+                var mesh:Mesh = <Mesh> this.torus.getNewObject();
+				mesh.x = Math.cos(t)*this.radius;
+				mesh.y = 0;
+				mesh.z = Math.sin(t)*this.radius;
 
-                this.view.scene.addChild(m);
-                this.meshes.push(m);
+                this.view.scene.addChild(mesh);
+                this.meshes.push(mesh);
 
             }
 
             this.view.scene.addChild(this.light);
 
-            this.raf = new RequestAnimationFrame(this.tick , this);
+            this.raf = new RequestAnimationFrame(this.tick, this);
             this.raf.start();
-            this.resize(null);
+            this.onResize();
 
-            document.onmousedown = (e) => this.followObject(e);
+            document.onmousedown = (event:MouseEvent) => this.followObject(event);
+
+			window.onresize = (event:UIEvent) => this.onResize(event);
 
             this.loadResources();
         }
@@ -93,31 +92,29 @@ module demos.object3d
             var urlRequest:URLRequest = new URLRequest("assets/custom_uv_horizontal.png");
             var urlLoader:URLLoader = new URLLoader();
 			urlLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
-            urlLoader.addEventListener(Event.COMPLETE, Delegate.create(this, this.imageCompleteHandler));
+            urlLoader.addEventListener(away.events.Event.COMPLETE, (event:away.events.Event) => this.imageCompleteHandler(event));
             urlLoader.load(urlRequest);
         }
 
-        private imageCompleteHandler(e)
+        private imageCompleteHandler(event:away.events.Event)
         {
-            var urlLoader:URLLoader = <URLLoader> e.target;
+            var urlLoader:URLLoader = <URLLoader> event.target;
 
 			this._image = away.parsers.ParserUtils.blobToImage(urlLoader.data);
-			this._image.onload = (event) => this.onImageLoadComplete(event);
+			this._image.onload = (event:Event) => this.onImageLoadComplete(event);
 
         }
 
-		private onImageLoadComplete(event)
+		private onImageLoadComplete(event:Event)
 		{
-			var ts : ImageTexture = new ImageTexture(this._image, false);
-
-			var matTx: TextureMaterial = new TextureMaterial(ts, true, true, false);
+			var matTx: TextureMaterial = new TextureMaterial(new ImageTexture(this._image, false), true, true, false);
 			matTx.lightPicker =  this.lightPicker;
 
-			for (var c : number = 0 ; c < this.meshes.length ; c ++)
+			for (var c:number = 0; c < this.meshes.length; c ++)
 				this.meshes[c].material = matTx;
 		}
 
-        private tick( e )
+        private tick(dt:number)
         {
             this.tPos += .02;
 
@@ -144,12 +141,9 @@ module demos.object3d
             this.view.camera.y = Math.sin(this.tPos) * 1500;
 
             this.view.render();
-
-            window.onresize = () => this.resize(null);
-            this.resize(null);
         }
 
-        public resize(e)
+        public onResize(event:UIEvent = null)
         {
             this.view.y = 0;
             this.view.x = 0;

@@ -4,10 +4,10 @@ module away.commands
 {
 	import DisplayObjectContainer		= away.containers.DisplayObjectContainer;
 	import Geometry						= away.base.Geometry;
-	import ISubGeometry					= away.base.ISubGeometry
+	import TriangleSubGeometry			= away.base.TriangleSubGeometry
 	import Matrix3DUtils				= away.geom.Matrix3DUtils;
 	import Mesh							= away.entities.Mesh;
-	import GeometryUtils				= away.utils.GeometryUtils;
+	import IMaterial					= away.materials.IMaterial;
 	
 	/**
 	 *  Class Merge merges two or more static meshes into one.<code>Merge</code>
@@ -159,27 +159,29 @@ module away.commands
 			oldGeom = destMesh.geometry;
 			destGeom = destMesh.geometry = new Geometry();
 			subIdx = destMesh.subMeshes.length;
-			
+
 			// Only apply materials directly to sub-meshes if necessary,
 			// i.e. if there is more than one material available.
 			useSubMaterials = (this._geomVOs.length > 1);
-			
+
 			for (i = 0; i < this._geomVOs.length; i++) {
 				var s:number /*uint*/;
 				var data:GeometryVO;
-				var subs:Array<ISubGeometry>;
-				
+				var sub:TriangleSubGeometry = new TriangleSubGeometry(true);
+				sub.autoDeriveNormals = false;
+				sub.autoDeriveTangents = false;
+
 				data = this._geomVOs[i];
-				subs = GeometryUtils.fromVectors(data.vertices, data.indices, data.uvs, data.normals, null, null, null);
-				
-				for (s = 0; s < subs.length; s++) {
-					destGeom.addSubGeometry(subs[s]);
-					
-					if (this._keepMaterial && useSubMaterials)
-						destMesh.subMeshes[subIdx].material = data.material;
-					
-					subIdx++;
-				}
+				sub.updateIndices(data.indices);
+				sub.updatePositions(data.vertices);
+				sub.updateVertexNormals(data.normals);
+				sub.updateVertexTangents(data.tangents);
+				sub.updateUVs(data.uvs);
+
+				destGeom.addSubGeometry(sub);
+
+				if (this._keepMaterial && useSubMaterials)
+					destMesh.subMeshes[subIdx].material = data.material;
 			}
 			
 			if (this._keepMaterial && !useSubMaterials && this._geomVOs.length)
@@ -205,31 +207,25 @@ module away.commands
 		{
 			if (mesh.geometry) {
 				var subIdx:number /*uint*/;
-				var subGeometries:Array<ISubGeometry> = mesh.geometry.subGeometries;
+				var subGeometries:Array<TriangleSubGeometry> = <Array<TriangleSubGeometry>> mesh.geometry.subGeometries;
 				var calc:number /*uint*/;
 				for (subIdx = 0; subIdx < subGeometries.length; subIdx++) {
 					var i:number /*uint*/;
 					var len:number /*uint*/;
-					var iIdx:number /*uint*/, vIdx:number /*uint*/, nIdx:number /*uint*/, uIdx:number /*uint*/;
+					var iIdx:number /*uint*/, vIdx:number /*uint*/, nIdx:number /*uint*/, tIdx:number /*uint*/, uIdx:number /*uint*/;
 					var indexOffset:number /*uint*/;
-					var subGeom:ISubGeometry;
+					var subGeom:TriangleSubGeometry;
 					var vo:GeometryVO;
 					var vertices:Array<number>;
 					var normals:Array<number>;
-					var vStride:number /*uint*/, nStride:number /*uint*/, uStride:number /*uint*/;
-					var vOffs:number /*uint*/, nOffs:number /*uint*/, uOffs:number /*uint*/;
-					var vd:Array<number>, nd:Array<number>, ud:Array<number>;
+					var tangents:Array<number>;
+					var pd:Array<number>, nd:Array<number>, td:Array<number>, ud:Array<number>;
 					
 					subGeom = subGeometries[subIdx];
-					vd = subGeom.vertexData;
-					vStride = subGeom.vertexStride;
-					vOffs = subGeom.vertexOffset;
-					nd = subGeom.vertexNormalData;
-					nStride = subGeom.vertexNormalStride;
-					nOffs = subGeom.vertexNormalOffset;
-					ud = subGeom.UVData;
-					uStride = subGeom.UVStride;
-					uOffs = subGeom.UVOffset;
+					pd = subGeom.positions;
+					nd = subGeom.vertexNormals;
+					td = subGeom.vertexTangents;
+					ud = subGeom.uvs;
 					
 					// Get (or create) a VO for this material
 					vo = this.getSubGeomData(mesh.subMeshes[subIdx].material || mesh.material);
@@ -239,29 +235,35 @@ module away.commands
 					// transformation will be performed, i.e. for object space merging.
 					vertices = (this._objectSpace)? vo.vertices : new Array<number>();
 					normals = (this._objectSpace)? vo.normals : new Array<number>();
+					tangents = (this._objectSpace)? vo.tangents : new Array<number>();
 					
 					// Copy over vertex attributes
 					vIdx = vertices.length;
 					nIdx = normals.length;
+					tIdx = tangents.length;
 					uIdx = vo.uvs.length;
 					len = subGeom.numVertices;
 					for (i = 0; i < len; i++) {
+						calc = i*3;
+
 						// Position
-						calc = vOffs + i*vStride;
-						vertices[vIdx++] = vd[calc];
-						vertices[vIdx++] = vd[calc + 1];
-						vertices[vIdx++] = vd[calc + 2];
+						vertices[vIdx++] = pd[calc];
+						vertices[vIdx++] = pd[calc + 1];
+						vertices[vIdx++] = pd[calc + 2];
 						
 						// Normal
-						calc = nOffs + i*nStride;
 						normals[nIdx++] = nd[calc];
 						normals[nIdx++] = nd[calc + 1];
 						normals[nIdx++] = nd[calc + 2];
-						
+
+						// Tangent
+						tangents[tIdx++] = td[calc];
+						tangents[tIdx++] = td[calc + 1];
+						tangents[tIdx++] = td[calc + 2];
+
 						// UV
-						calc = uOffs + i*uStride;
-						vo.uvs[uIdx++] = ud[calc];
-						vo.uvs[uIdx++] = ud[calc + 1];
+						vo.uvs[uIdx++] = ud[i*2];
+						vo.uvs[uIdx++] = ud[i*2 + 1];
 					}
 					
 					// Copy over triangle indices
@@ -270,22 +272,25 @@ module away.commands
 					len = subGeom.numTriangles;
 					for (i = 0; i < len; i++) {
 						calc = i*3;
-						vo.indices[iIdx++] = subGeom.indexData[calc] + indexOffset;
-						vo.indices[iIdx++] = subGeom.indexData[calc + 1] + indexOffset;
-						vo.indices[iIdx++] = subGeom.indexData[calc + 2] + indexOffset;
+						vo.indices[iIdx++] = subGeom.indices[calc] + indexOffset;
+						vo.indices[iIdx++] = subGeom.indices[calc + 1] + indexOffset;
+						vo.indices[iIdx++] = subGeom.indices[calc + 2] + indexOffset;
 					}
 					
 					if (!this._objectSpace) {
 						mesh.sceneTransform.transformVectors(vertices, vertices);
-						Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform,normals, normals);
-						
+						Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, normals, normals);
+						Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, tangents, tangents);
+
 						// Copy vertex data from temporary (transformed) vectors
 						vIdx = vo.vertices.length;
 						nIdx = vo.normals.length;
+						tIdx = vo.tangents.length;
 						len = vertices.length;
 						for (i = 0; i < len; i++) {
 							vo.vertices[vIdx++] = vertices[i];
 							vo.normals[nIdx++] = normals[i];
+							vo.tangents[tIdx++] = tangents[i];
 						}
 					}
 				}
@@ -295,7 +300,7 @@ module away.commands
 			}
 		}
 		
-		private getSubGeomData(material:MaterialBase):GeometryVO
+		private getSubGeomData(material:IMaterial):GeometryVO
 		{
 			var data:GeometryVO;
 			
@@ -321,6 +326,7 @@ module away.commands
 				data = new GeometryVO();
 				data.vertices = new Array<number>();
 				data.normals = new Array<number>();
+				data.tangents = new Array<number>();
 				data.uvs = new Array<number>();
 				data.indices = new Array<number /*uint*/>();
 				data.material = material;
@@ -352,6 +358,7 @@ class GeometryVO
 	public uvs:Array<number>;
 	public vertices:Array<number>;
 	public normals:Array<number>;
+	public tangents:Array<number>;
 	public indices:Array<number /*uint*/>;
-	public material:away.materials.MaterialBase;
+	public material:away.materials.IMaterial;
 }

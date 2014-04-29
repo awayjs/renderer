@@ -102,7 +102,7 @@ module demos.parsers {
 
 
                         this._suzane = mesh;
-                        this._suzane.material.lightPicker = this._lightPicker;
+						(<away.materials.TextureMaterial> this._suzane.material).lightPicker = this._lightPicker;
                         this._suzane.y = -100;
 
 

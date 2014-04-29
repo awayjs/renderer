@@ -2,9 +2,9 @@
 
 module away.animators
 {
-	import ISubGeometry			= away.base.ISubGeometry;
+	import SubGeometryBase			= away.base.SubGeometryBase;
 	import ParticleGeometry		= away.base.ParticleGeometry;
-	import SubMesh				= away.base.SubMesh;
+	import ISubMesh		= away.base.ISubMesh;
 	import ContextGL			= away.gl.ContextGL;
 	import Mesh					= away.entities.Mesh;
 	import StageGL				= away.base.StageGL;
@@ -51,7 +51,7 @@ module away.animators
 		public hasColorAddNode:boolean;
 		
 		/**
-		 * Initialiser function for static particle properties. Needs to reference a with teh following format
+		 * Initialiser function for static particle properties. Needs to reference a with the following format
 		 *
 		 * <code>
 		 * initParticleFunc(prop:ParticleProperties)
@@ -260,7 +260,21 @@ module away.animators
 			
 			super.dispose();
 		}
-		
+
+		public getAnimationSubGeometry(subMesh:ISubMesh)
+		{
+			var mesh:Mesh = subMesh.parentMesh;
+			var animationSubGeometry:AnimationSubGeometry = (mesh.shareAnimationGeometry)? this._animationSubGeometries[subMesh.subGeometry.id] : this._animationSubGeometries[subMesh.id];
+
+			if (animationSubGeometry)
+				return animationSubGeometry;
+
+			this._iGenerateAnimationSubGeometries(mesh);
+
+			return (mesh.shareAnimationGeometry)? this._animationSubGeometries[subMesh.subGeometry.id] : this._animationSubGeometries[subMesh.id];
+		}
+
+
 		/** @private */
 		public _iGenerateAnimationSubGeometries(mesh:Mesh)
 		{
@@ -275,8 +289,8 @@ module away.animators
 			var i:number /*int*/, j:number /*int*/, k:number /*int*/;
 			var animationSubGeometry:AnimationSubGeometry;
 			var newAnimationSubGeometry:boolean = false;
-			var subGeometry:ISubGeometry;
-			var subMesh:SubMesh;
+			var subGeometry:SubGeometryBase;
+			var subMesh:ISubMesh;
 			var localNode:ParticleNodeBase;
 			
 			for (i = 0; i < mesh.subMeshes.length; i++) {
@@ -285,16 +299,17 @@ module away.animators
 				if (mesh.shareAnimationGeometry) {
 					animationSubGeometry = this._animationSubGeometries[subGeometry.id];
 					
-					if (animationSubGeometry) {
-						subMesh.animationSubGeometry = animationSubGeometry;
+					if (animationSubGeometry)
 						continue;
-					}
 				}
 				
-				animationSubGeometry = subMesh.animationSubGeometry = new AnimationSubGeometry();
+				animationSubGeometry = new AnimationSubGeometry();
+
 				if (mesh.shareAnimationGeometry)
 					this._animationSubGeometries[subGeometry.id] = animationSubGeometry;
-				
+				else
+					this._animationSubGeometries[subMesh.id] = animationSubGeometry;
+
 				newAnimationSubGeometry = true;
 				
 				//create the vertexData vector that will be used for local node data
@@ -314,9 +329,9 @@ module away.animators
 			var oneDataOffset:number /*int*/;
 			var counterForVertex:number /*int*/;
 			var counterForOneData:number /*int*/;
-			var oneData:Array<Number>;
+			var oneData:Array<number>;
 			var numVertices:number /*uint*/;
-			var vertexData:Array<Number>;
+			var vertexData:Array<number>;
 			var vertexLength:number /*uint*/;
 			var startingOffset:number /*uint*/;
 			var vertexOffset:number /*uint*/;
@@ -345,7 +360,7 @@ module away.animators
 					for (k = 0; k < mesh.subMeshes.length; k++) {
 						subMesh = mesh.subMeshes[k];
 						if (subMesh.subGeometry == particle.subGeometry) {
-							animationSubGeometry = subMesh.animationSubGeometry;
+							animationSubGeometry = (mesh.shareAnimationGeometry)? this._animationSubGeometries[subMesh.subGeometry.id] : this._animationSubGeometries[subMesh.id];
 							break;
 						}
 					}

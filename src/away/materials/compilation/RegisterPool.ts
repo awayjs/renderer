@@ -76,17 +76,11 @@ module away.materials
 					continue;
 
 				for (var j:number = 0; j < 4; ++j) {
-
 					if (this._usedSingleCount[j][i] == 0) {
-
-						if (this._persistent) {
-
+						if (this._persistent)
 							this._usedSingleCount[j][i]++;
 
-						}
-
 						return this._registerComponents[j][i];
-
 					}
 				}
 			}
@@ -102,16 +96,10 @@ module away.materials
 		 */
 		public addUsage(register:ShaderRegisterElement, usageCount:number)
 		{
-			if (register._component > -1) {
-
+			if (register._component > -1)
 				this._usedSingleCount[register._component][register.index] += usageCount;
-
-			} else {
-
+			else
 				this._usedVectorCount[register.index] += usageCount;
-
-			}
-
 		}
 
 		/**
@@ -121,21 +109,11 @@ module away.materials
 		public removeUsage(register:ShaderRegisterElement)
 		{
 			if (register._component > -1) {
-
-				if (--this._usedSingleCount[register._component][register.index] < 0) {
-
+				if (--this._usedSingleCount[register._component][register.index] < 0)
 					throw new Error("More usages removed than exist!");
-
-				}
-
-
 			} else {
-				if (--this._usedVectorCount[register.index] < 0) {
-
+				if (--this._usedVectorCount[register.index] < 0)
 					throw new Error("More usages removed than exist!");
-
-				}
-
 			}
 		}
 
@@ -155,12 +133,9 @@ module away.materials
 		 */
 		public hasRegisteredRegs():boolean
 		{
-			for (var i:number = 0; i < this._regCount; ++i) {
-
+			for (var i:number = 0; i < this._regCount; ++i)
 				if (this.isRegisterUsed(i))
 					return true;
-
-			}
 
 			return false;
 		}
@@ -193,11 +168,8 @@ module away.materials
 		{
 			var hash:string = regName + regCount;
 
-			if (RegisterPool._regPool[hash] != undefined) {
-
+			if (RegisterPool._regPool[hash] != undefined)
 				return hash;
-
-			}
 
 			var vectorRegisters:ShaderRegisterElement[] = new Array<ShaderRegisterElement>(regCount);///Vector.<ShaderRegisterElement> = new Vector.<ShaderRegisterElement>(regCount, true);
 			RegisterPool._regPool[hash] = vectorRegisters;
@@ -214,12 +186,8 @@ module away.materials
 
 				vectorRegisters[i] = new ShaderRegisterElement(regName, i);
 
-				for (var j:number = 0; j < 4; ++j) {
-
+				for (var j:number = 0; j < 4; ++j)
 					registerComponents[j][i] = new ShaderRegisterElement(regName, i, j);
-
-				}
-
 			}
 
 			//console.log ( 'RegisterPool._regCompsPool[hash] : ' , RegisterPool._regCompsPool[hash]  );
@@ -234,21 +202,12 @@ module away.materials
 		 */
 		private isRegisterUsed(index:number):boolean
 		{
-			if (this._usedVectorCount[index] > 0) {
-
+			if (this._usedVectorCount[index] > 0)
 				return true;
 
-			}
-
-			for (var i:number = 0; i < 4; ++i) {
-
-				if (this._usedSingleCount[i][index] > 0) {
-
+			for (var i:number = 0; i < 4; ++i)
+				if (this._usedSingleCount[i][index] > 0)
 					return true;
-
-				}
-
-			}
 
 			return false;
 		}
@@ -256,14 +215,10 @@ module away.materials
 
 		private _initArray(a:Array<any>, val:any):Array<any>
 		{
-
 			var l:number = a.length;
 
-			for (var c:number = 0; c < l; c++) {
-
+			for (var c:number = 0; c < l; c++)
 				a[c] = val;
-
-			}
 
 			return a;
 

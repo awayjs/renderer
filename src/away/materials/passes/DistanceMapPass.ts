@@ -1,20 +1,8 @@
 ﻿///<reference path="../../_definitions.ts"/>
 module away.materials
 {
-	//import away3d.arcane;
-	//import away3d.cameras.Camera;
-	//import away3d.core.base.IRenderable;
-	//import away3d.base.StageGL;
-	//import away3d.core.geom.Matrix3DUtils;
-	//import away3d.textures.Texture2DBase;
+	import SubGeometry								= away.base.TriangleSubGeometry;
 
-	//import flash.displayGL.ContextGL;
-	//import flash.displayGL.ContextGLProgramType;
-	//import flash.displayGL.ContextGLTextureFormat;
-	//import flash.geom.Matrix3D;
-	//import flash.geom.Vector3D;
-
-	//use namespace arcane;
 	/**
 	 * DistanceMapPass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
 	 * This is used to render omnidirectional shadow maps.
@@ -171,7 +159,8 @@ module away.materials
 			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
 
 			if (this._alphaThreshold > 0)
-				renderable.subGeometry.activateUVBuffer(1, stageGL);
+				stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(SubGeometry.SECONDARY_UV_DATA), SubGeometry.SECONDARY_UV_FORMAT);
+
 
 			var matrix:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
 
@@ -179,8 +168,9 @@ module away.materials
 			matrix.append(viewProjection);
 
 			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
-			renderable.subGeometry.activateVertexBuffer(0, stageGL);
-			context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
+
+			stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 		}
 
 		/**

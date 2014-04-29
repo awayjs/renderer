@@ -14,9 +14,9 @@ module away.render
 	export class RendererBase extends away.events.EventDispatcher
 	{
 		private _billboardRenderablePool:away.pool.RenderablePool;
-		private _segmentSetRenderablePool:away.pool.RenderablePool;
 		private _skyboxRenderablePool:away.pool.RenderablePool;
-		private _subMeshRenderablePool:away.pool.RenderablePool;
+		private _triangleSubMeshRenderablePool:away.pool.RenderablePool;
+		private _lineSubMeshRenderablePool:away.pool.RenderablePool;
 
 		public _pContext:away.gl.ContextGL;
 		public _pStageGL:away.base.StageGL;
@@ -25,7 +25,13 @@ module away.render
 		public _iEntryPoint:away.geom.Vector3D;
 		public _pCameraForward:away.geom.Vector3D;
 
+		public _pRttBufferManager:away.managers.RTTBufferManager;
+		private _viewPort:away.geom.Rectangle = new away.geom.Rectangle();
+		private _viewportDirty:boolean;
+		private _scissorDirty:boolean;
+
 		public _pBackBufferInvalid:boolean = true;
+		public _pDepthTextureInvalid:boolean = true;
 		public _depthPrepass:boolean = false;
 		private _backgroundR:number = 0;
 		private _backgroundG:number = 0;
@@ -49,7 +55,16 @@ module away.render
 
 		public _pRttViewProjectionMatrix:away.geom.Matrix3D = new away.geom.Matrix3D();
 
+		private _localPos:away.geom.Point = new away.geom.Point();
+		private _globalPos:away.geom.Point = new away.geom.Point();
+		public _pScissorRect:away.geom.Rectangle = new away.geom.Rectangle();
+
+		private _scissorUpdated:away.events.RendererEvent;
+		private _viewPortUpdated:away.events.RendererEvent;
+
 		private _onContextUpdateDelegate:Function;
+		private _onViewportUpdatedDelegate;
+
 		public _pNumTriangles:number = 0;
 
 		public _pOpaqueRenderableHead:away.pool.RenderableBase;
@@ -68,6 +83,109 @@ module away.render
 		 */
 		public renderableSorter:away.sort.IEntitySorter;
 
+
+		/**
+		 * A viewPort rectangle equivalent of the StageGL size and position.
+		 */
+		public get viewPort():away.geom.Rectangle
+		{
+			return this._viewPort;
+		}
+
+		/**
+		 * A scissor rectangle equivalent of the view size and position.
+		 */
+		public get scissorRect():away.geom.Rectangle
+		{
+			return this._pScissorRect;
+		}
+
+		/**
+		 *
+		 */
+		public get x():number
+		{
+			return this._localPos.x;
+		}
+
+		public set x(value:number)
+		{
+			if (this.x == value)
+				return;
+
+			this._globalPos.x = this._localPos.x = value;
+
+			this.updateGlobalPos();
+		}
+
+		/**
+		 *
+		 */
+		public get y():number
+		{
+			return this._localPos.y;
+		}
+
+		public set y(value:number)
+		{
+			if (this.y == value)
+				return;
+
+			this._globalPos.y = this._localPos.y = value;
+
+			this.updateGlobalPos();
+		}
+
+		/**
+		 *
+		 */
+		public get width():number
+		{
+			return this._width;
+		}
+
+		public set width(value:number)
+		{
+			if (this._width == value)
+				return;
+
+			this._width = value;
+			this._pScissorRect.width = value;
+
+			if (this._pRttBufferManager)
+				this._pRttBufferManager.viewWidth = value;
+
+			this._pBackBufferInvalid = true;
+			this._pDepthTextureInvalid = true;
+
+			this.notifyScissorUpdate();
+		}
+
+		/**
+		 *
+		 */
+		public get height():number
+		{
+			return this._height;
+		}
+
+		public set height(value:number)
+		{
+			if (this._height == value)
+				return;
+
+			this._height = value;
+			this._pScissorRect.height = value;
+
+			if (this._pRttBufferManager)
+				this._pRttBufferManager.viewHeight = value;
+
+			this._pBackBufferInvalid = true;
+			this._pDepthTextureInvalid = true;
+
+			this.notifyScissorUpdate();
+		}
+
 		/**
 		 * Creates a new RendererBase object.
 		 */
@@ -75,10 +193,12 @@ module away.render
 		{
 			super();
 
+			this._onViewportUpdatedDelegate = away.utils.Delegate.create(this, this.onViewportUpdated);
+
 			this._billboardRenderablePool = away.pool.RenderablePool.getPool(away.pool.BillboardRenderable);
-			this._segmentSetRenderablePool = away.pool.RenderablePool.getPool(away.pool.SegmentSetRenderable);
 			this._skyboxRenderablePool = away.pool.RenderablePool.getPool(away.pool.SkyboxRenderable);
-			this._subMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.SubMeshRenderable);
+			this._triangleSubMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.TriangleSubMeshRenderable);
+			this._lineSubMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.LineSubMeshRenderable);
 
 			this._renderToTexture = renderToTexture;
 
@@ -179,7 +299,7 @@ module away.render
 			if (this._pStageGL) {
 				this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
 				this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
-
+				this._pStageGL.removeEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 			}
 
 			if (!value) {
@@ -189,6 +309,7 @@ module away.render
 				this._pStageGL = value;
 				this._pStageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
 				this._pStageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
+				this._pStageGL.addEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
 				/*
 				 if (_backgroundImageRenderer)
@@ -227,8 +348,14 @@ module away.render
 		 */
 		public dispose()
 		{
+			if (this._pRttBufferManager)
+				this._pRttBufferManager.dispose();
+
+			this._pRttBufferManager = null;
+
 			this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
 			this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
+			this._pStageGL.removeEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
 			this._pStageGL = null;
 
@@ -242,6 +369,8 @@ module away.render
 
 		public render(entityCollector:away.traverse.ICollector)
 		{
+			this._viewportDirty = false;
+			this._scissorDirty = false;
 		}
 
 		/**
@@ -280,7 +409,7 @@ module away.render
 			this._pNumTriangles = 0;
 
 			//grab entity head
-			var entity:away.pool.EntityListItem = entityCollector.entityHead;
+			var item:away.pool.EntityListItem = entityCollector.entityHead;
 
 			//set temp values for entry point and camera forward vector
 			this._pCamera = entityCollector.camera;
@@ -288,9 +417,9 @@ module away.render
 			this._pCameraForward = this._pCamera.transform.forwardVector;
 
 			//iterate through all entities
-			while (entity) {
-				this.pFindRenderables(entity.entity)
-				entity = entity.next;
+			while (item) {
+				item.entity._iCollectRenderables(this);
+				item = item.next;
 			}
 
 			//sort the resulting renderables
@@ -427,11 +556,71 @@ module away.render
 
 
 		/**
+		 * @private
+		 */
+		private notifyScissorUpdate()
+		{
+			if (this._scissorDirty)
+				return;
+
+			this._scissorDirty = true;
+
+			if (!this._scissorUpdated)
+				this._scissorUpdated = new away.events.RendererEvent(away.events.RendererEvent.SCISSOR_UPDATED);
+
+			this.dispatchEvent(this._scissorUpdated);
+		}
+
+
+		/**
+		 * @private
+		 */
+		private notifyViewportUpdate()
+		{
+			if (this._viewportDirty)
+				return;
+
+			this._viewportDirty = true;
+
+			if (!this._viewPortUpdated)
+				this._viewPortUpdated = new away.events.RendererEvent(away.events.RendererEvent.VIEWPORT_UPDATED);
+
+			this.dispatchEvent(this._viewPortUpdated);
+		}
+
+		/**
+		 *
+		 */
+		public onViewportUpdated(event:away.events.StageGLEvent)
+		{
+			this._viewPort = this._pStageGL.viewPort;
+			//TODO stop firing viewport updated for every stagegl viewport change
+
+			if (this._shareContext) {
+				this._pScissorRect.x = this._globalPos.x - this._pStageGL.x;
+				this._pScissorRect.y = this._globalPos.y - this._pStageGL.y;
+				this.notifyScissorUpdate();
+			}
+
+			this.notifyViewportUpdate();
+		}
+
+		/**
 		 *
 		 */
 		public updateGlobalPos()
 		{
+			if (this._shareContext) {
+				this._pScissorRect.x = this._globalPos.x - this._viewPort.x;
+				this._pScissorRect.y = this._globalPos.y - this._viewPort.y;
+			} else {
+				this._pScissorRect.x = 0;
+				this._pScissorRect.y = 0;
+				this._viewPort.x = this._globalPos.x;
+				this._viewPort.y = this._globalPos.y;
+			}
 
+			this.notifyScissorUpdate();
 		}
 
 
@@ -440,89 +629,78 @@ module away.render
 		 * @param billboard
 		 * @protected
 		 */
-		public pApplyBillboard(billboard:away.entities.Billboard)
+		public applyBillboard(billboard:away.entities.Billboard)
 		{
-			this.pApplyRenderable(<away.pool.RenderableBase> this._billboardRenderablePool.getItem(billboard));
+			this._applyRenderable(<away.pool.RenderableBase> this._billboardRenderablePool.getItem(billboard));
 		}
-
 
 		/**
 		 *
-		 * @param mesh
-		 * @protected
+		 * @param triangleSubMesh
 		 */
-		public pApplyMesh(mesh:away.entities.Mesh)
+		public applyTriangleSubMesh(triangleSubMesh:away.base.TriangleSubMesh)
 		{
-			var subMesh:away.base.SubMesh;
-			var renderable:away.pool.SubMeshRenderable;
-
-			var len:number /*uint*/ = mesh.subMeshes.length;
-			for (var i:number /*uint*/ = 0; i < len; i++)
-				this.pApplyRenderable(<away.pool.RenderableBase> this._subMeshRenderablePool.getItem(mesh.subMeshes[i]));
+			this._applyRenderable(<away.pool.RenderableBase> this._triangleSubMeshRenderablePool.getItem(triangleSubMesh));
 		}
+
+		/**
+		 *
+		 * @param lineSubMesh
+		 */
+		public applyLineSubMesh(lineSubMesh:away.base.LineSubMesh)
+		{
+			this._applyRenderable(<away.pool.RenderableBase> this._lineSubMeshRenderablePool.getItem(lineSubMesh));
+		}
+
+		/**
+		 *
+		 * @param skybox
+		 */
+		public applySkybox(skybox:away.entities.Skybox)
+		{
+			this._applyRenderable(<away.pool.RenderableBase> this._skyboxRenderablePool.getItem(skybox));
+		}
+
 		/**
 		 *
 		 * @param renderable
 		 * @protected
 		 */
-		public pApplyRenderable(renderable:away.pool.RenderableBase)
+		private _applyRenderable(renderable:away.pool.RenderableBase)
 		{
-			var material:away.materials.MaterialBase = <away.materials.MaterialBase> renderable.materialOwner.material;
+			var material:away.materials.IMaterial = renderable.materialOwner.material;
 			var entity:away.entities.IEntity = renderable.sourceEntity;
 			var position:away.geom.Vector3D = entity.scenePosition;
 
-			if (material) {
-				//set ids for faster referencing
-				renderable.materialId = material._iMaterialId;
-				renderable.renderOrderId = material._iRenderOrderId;
-				renderable.cascaded = false;
+			if (!material)
+				material = away.materials.DefaultMaterialManager.getDefaultMaterial(renderable.materialOwner);
 
-				// project onto camera's z-axis
-				position = this._iEntryPoint.subtract(position);
-				renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
+			//set ids for faster referencing
+			renderable.material = <away.materials.MaterialBase> material;
+			renderable.materialId = material._iMaterialId;
+			renderable.renderOrderId = material._iRenderOrderId;
+			renderable.cascaded = false;
 
-				//store reference to scene transform
-				renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
+			// project onto camera's z-axis
+			position = this._iEntryPoint.subtract(position);
+			renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
 
-				if (material.requiresBlending) {
-					renderable.next = this._pBlendedRenderableHead;
-					this._pBlendedRenderableHead = renderable;
-				} else {
-					renderable.next = this._pOpaqueRenderableHead;
-					this._pOpaqueRenderableHead = renderable;
-				}
+			//store reference to scene transform
+			renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
+
+			if (material.requiresBlending) {
+				renderable.next = this._pBlendedRenderableHead;
+				this._pBlendedRenderableHead = renderable;
+			} else {
+				renderable.next = this._pOpaqueRenderableHead;
+				this._pOpaqueRenderableHead = renderable;
 			}
 
-			this._pNumTriangles += renderable.subGeometry.numTriangles;
-		}
+			this._pNumTriangles += renderable.numTriangles;
 
-		public pApplySkybox(skybox:away.entities.Skybox)
-		{
-			this.pApplyRenderable(<away.pool.RenderableBase> this._skyboxRenderablePool.getItem(skybox));
-		}
-
-
-		public pApplySegmentSet(segmentSet:away.entities.SegmentSet)
-		{
-			this.pApplyRenderable(<away.pool.RenderableBase> this._segmentSetRenderablePool.getItem(segmentSet));
-		}
-
-		/**
-		 *
-		 * @param entity
-		 */
-		public pFindRenderables(entity:away.entities.IEntity)
-		{
-			//TODO abstract conditional in the entity with a callback to IRenderer
-			if (entity.assetType === away.library.AssetType.BILLBOARD) {
-				this.pApplyBillboard(<away.entities.Billboard> entity);
-			} else if (entity.assetType === away.library.AssetType.MESH) {
-				this.pApplyMesh(<away.entities.Mesh> entity);
-			} else if (entity.assetType === away.library.AssetType.SKYBOX) {
-				this.pApplySkybox(<away.entities.Skybox> entity)
-			} else if (entity.assetType === away.library.AssetType.SEGMENT_SET) {
-				this.pApplySegmentSet(<away.entities.SegmentSet> entity)
-			}
+			//handle any overflow for renderables with data that exceeds GPU limitations
+			if (renderable.overflow)
+				this._applyRenderable(renderable.overflow);
 		}
 	}
 }

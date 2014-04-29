@@ -115,18 +115,14 @@ module away.materials
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
 			this._calcMatrix.append(camera.inverseSceneTransform);
+			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
 
-			var subGeometry:away.base.SegmentSubGeometry = <away.base.SegmentSubGeometry> (<away.pool.SegmentSetRenderable> renderable).subGeometry;
+			stageGL.activateBuffer(0, renderable.getVertexData(away.base.LineSubGeometry.START_POSITION_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.START_POSITION_DATA), away.base.LineSubGeometry.POSITION_FORMAT);
+			stageGL.activateBuffer(1, renderable.getVertexData(away.base.LineSubGeometry.END_POSITION_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.END_POSITION_DATA), away.base.LineSubGeometry.POSITION_FORMAT);
+			stageGL.activateBuffer(2, renderable.getVertexData(away.base.LineSubGeometry.THICKNESS_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.THICKNESS_DATA), away.base.LineSubGeometry.THICKNESS_FORMAT);
+			stageGL.activateBuffer(3, renderable.getVertexData(away.base.LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.COLOR_DATA), away.base.LineSubGeometry.COLOR_FORMAT);
 
-			var subSetCount:number = subGeometry.iSubSetCount;
-
-			if (subGeometry.hasData) {
-				for (var i:number = 0; i < subSetCount; ++i) {
-					subGeometry.activateVertexBuffer(i, stageGL);
-					context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
-					context.drawTriangles(subGeometry.getIndexBuffer(stageGL), 0, subGeometry.numTriangles);
-				}
-			}
+			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 		}
 
 		/**

@@ -2,6 +2,10 @@
 
 module away.animators
 {
+	import StageGL                     		= away.base.StageGL;
+	import AbstractMethodError				= away.errors.AbstractMethodError;
+	import MaterialPassBase                 = away.materials.MaterialPassBase;
+
 	/**
 	 * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
 	 *
@@ -44,7 +48,7 @@ module away.animators
 
 		/**
 		 * Indicates whether the properties of the animation data contained within the set combined with
-		 * the vertex registers aslready in use on shading materials allows the animation data to utilise
+		 * the vertex registers already in use on shading materials allows the animation data to utilise
 		 * GPU calls.
 		 */
 		public get usesCPU():boolean
@@ -66,6 +70,55 @@ module away.animators
 		public cancelGPUCompatibility()
 		{
 			this._usesCPU = true;
+		}
+
+
+		/**
+		 * @inheritDoc
+		 */
+		public getAGALVertexCode(pass:MaterialPassBase, sourceRegisters:Array<string>, targetRegisters:Array<string>, profile:string):string
+		{
+			throw new AbstractMethodError();
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public activate(stageGL:StageGL, pass:MaterialPassBase)
+		{
+			throw new AbstractMethodError();
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public deactivate(stageGL:StageGL, pass:MaterialPassBase)
+		{
+			throw new AbstractMethodError();
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public getAGALFragmentCode(pass:MaterialPassBase, shadedTarget:string, profile:string):string
+		{
+			throw new AbstractMethodError();
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public getAGALUVCode(pass:MaterialPassBase, UVSource:string, UVTarget:string):string
+		{
+			throw new AbstractMethodError();
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public doneAGALCode(pass:MaterialPassBase)
+		{
+			throw new AbstractMethodError();
 		}
 
 		/**

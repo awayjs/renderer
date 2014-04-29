@@ -3,32 +3,59 @@
 var demos;
 (function (demos) {
     (function (materials) {
+        var BlendMode = away.base.BlendMode;
+        var Scene = away.containers.Scene;
+        var View = away.containers.View;
+        var Mesh = away.entities.Mesh;
+        var LoaderEvent = away.events.LoaderEvent;
+        var Vector3D = away.geom.Vector3D;
+        var AssetLibrary = away.library.AssetLibrary;
+        var AssetType = away.library.AssetType;
+        var DirectionalLight = away.lights.DirectionalLight;
+        var ColorMaterial = away.materials.ColorMaterial;
+        var StaticLightPicker = away.materials.StaticLightPicker;
+        var TextureMaterial = away.materials.TextureMaterial;
+        var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
+        var AssetLoader = away.net.AssetLoader;
+        var AssetLoaderToken = away.net.AssetLoaderToken;
+        var URLLoader = away.net.URLLoader;
+        var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
+        var URLRequest = away.net.URLRequest;
+        var OBJParser = away.parsers.OBJParser;
+        var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
+        var PrimitiveCubePrefab = away.prefabs.PrimitiveCubePrefab;
+        var PrimitiveCapsulePrefab = away.prefabs.PrimitiveCapsulePrefab;
+        var PerspectiveProjection = away.projections.PerspectiveProjection;
+        var DefaultRenderer = away.render.DefaultRenderer;
+        var ImageTexture = away.textures.ImageTexture;
+        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+
         var MaterialAlphaTest = (function () {
             function MaterialAlphaTest() {
                 var _this = this;
                 this.height = 0;
                 this.meshes = new Array();
-                this.aValues = [0, .1, .5, .8, .9, .99, 1];
+                this.aValues = Array(0, .1, .5, .8, .9, .99, 1);
                 this.aValuesP = 0;
-                this.t = 0;
-                //away.Debug.LOG_PI_ERRORS    = false;
+                away.Debug.LOG_PI_ERRORS = false;
                 away.Debug.THROW_ERRORS = false;
 
-                this.view = new away.containers.View(new away.render.DefaultRenderer());
-                this.raf = new away.utils.RequestAnimationFrame(this.render, this);
+                this.view = new View(new DefaultRenderer());
+                this.raf = new RequestAnimationFrame(this.render, this);
+                this.onResize();
 
-                this.light = new away.lights.DirectionalLight();
+                this.light = new DirectionalLight();
                 this.light.color = 0xFFFFFF;
-                this.light.direction = new away.geom.Vector3D(1, 1, 0);
-                this.light.ambient = 0; //0.05;//.4;
+                this.light.direction = new Vector3D(1, 1, 0);
+                this.light.ambient = 0;
                 this.light.ambientColor = 0xFFFFFF;
                 this.light.diffuse = 1;
                 this.light.specular = 1;
 
-                this.lightB = new away.lights.DirectionalLight();
+                this.lightB = new DirectionalLight();
                 this.lightB.color = 0xFF0000;
-                this.lightB.direction = new away.geom.Vector3D(-1, 0, 1);
-                this.lightB.ambient = 0; //0.05;//.4;
+                this.lightB.direction = new Vector3D(-1, 0, 1);
+                this.lightB.ambient = 0;
                 this.lightB.ambientColor = 0xFFFFFF;
                 this.lightB.diffuse = 1;
                 this.lightB.specular = 1;
@@ -38,48 +65,46 @@ var demos;
 
                 this.view.backgroundColor = 0x222222;
 
-                away.library.AssetLibrary.enableParser(away.parsers.OBJParser);
+                AssetLibrary.enableParser(OBJParser);
 
-                this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/platonic.obj'));
-                this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
+                this.token = AssetLibrary.load(new URLRequest('assets/platonic.obj'));
+                this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                    return _this.onResourceComplete(event);
+                });
 
-                this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/dots.png'));
-                this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
+                this.token = AssetLibrary.load(new URLRequest('assets/dots.png'));
+                this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                    return _this.onResourceComplete(event);
+                });
 
-                window.onresize = function () {
-                    return _this.resize();
+                window.onresize = function (event) {
+                    return _this.onResize(event);
                 };
-
-                document.onmousedown = function () {
-                    return _this.mouseDown();
+                document.onmousedown = function (event) {
+                    return _this.onMouseDown(event);
                 };
             }
-            MaterialAlphaTest.prototype.mouseDown = function () {
-                this.torusColorMaterial.alpha = this.torusTextureMaterial.alpha = this.loadedMeshMaterial.alpha = this.aValues[this.aValuesP];
+            MaterialAlphaTest.prototype.onMouseDown = function (event) {
+                this.cubeColorMaterial.alpha = this.torusTextureMaterial.alpha = this.loadedMeshMaterial.alpha = this.aValues[this.aValuesP];
 
-                //this.torusColorMaterial.alpha =this.aValues[this.aValuesP];
                 alert('Alpha: ' + this.aValues[this.aValuesP]);
 
                 this.aValuesP++;
 
                 if (this.aValuesP > this.aValues.length - 1)
                     this.aValuesP = 0;
-
-                this.render();
             };
 
-            MaterialAlphaTest.prototype.render = function () {
-                if (this.meshes) {
-                    for (var c = 0; c < this.meshes.length; c++) {
+            MaterialAlphaTest.prototype.render = function (dt) {
+                if (this.meshes)
+                    for (var c = 0; c < this.meshes.length; c++)
                         this.meshes[c].rotationY += .35;
-                    }
-                }
 
                 this.view.render();
             };
 
-            MaterialAlphaTest.prototype.onResourceComplete = function (e) {
-                var loader = e.target;
+            MaterialAlphaTest.prototype.onResourceComplete = function (event) {
+                var loader = event.target;
                 var l = loader.baseDependency.assets.length;
 
                 for (var c = 0; c < l; c++) {
@@ -88,13 +113,13 @@ var demos;
                     console.log(d.name);
 
                     switch (d.assetType) {
-                        case away.library.AssetType.MESH:
-                            var mesh = away.library.AssetLibrary.getAsset(d.name);
+                        case AssetType.MESH:
+                            var mesh = d;
 
-                            this.t800M = mesh;
+                            this.loadedMesh = mesh;
 
                             if (d.name == 'Mesh_g0') {
-                                this.t800M = mesh;
+                                this.loadedMesh = mesh;
                                 mesh.y = -400;
                                 mesh.transform.scale = new away.geom.Vector3D(5, 5, 5);
                             } else {
@@ -103,89 +128,84 @@ var demos;
 
                             if (this.loadedMeshMaterial)
                                 mesh.material = this.loadedMeshMaterial;
-                            mesh.material.bothSides = true;
+
                             this.view.scene.addChild(mesh);
                             this.meshes.push(mesh);
 
                             this.raf.start();
                             break;
-
-                        case away.library.AssetType.TEXTURE:
+                        case AssetType.TEXTURE:
                             // Loaded Texture
-                            var tx = away.library.AssetLibrary.getAsset(d.name);
+                            var tx = d;
 
                             // Light Picker
-                            this.staticLightPicker = new away.materials.StaticLightPicker([this.light, this.lightB]);
+                            this.staticLightPicker = new StaticLightPicker([this.light, this.lightB]);
 
                             // Material for loaded mesh
-                            this.loadedMeshMaterial = new away.materials.TextureMaterial(tx, true, true, false);
+                            this.loadedMeshMaterial = new TextureMaterial(tx, true, true, false);
                             this.loadedMeshMaterial.lightPicker = this.staticLightPicker;
                             this.loadedMeshMaterial.alpha = 1;
                             this.loadedMeshMaterial.bothSides = true;
 
-                            if (this.t800M) {
-                                this.t800M.material = this.loadedMeshMaterial;
-                            }
-
-                            // MultiMaterial
-                            this.multiMat = new away.materials.TextureMultiPassMaterial(tx, true, true, false);
-                            this.multiMat.lightPicker = this.staticLightPicker;
+                            if (this.loadedMesh)
+                                this.loadedMesh.material = this.loadedMeshMaterial;
 
                             // Torus
-                            var torus = new away.primitives.TorusGeometry(150, 50, 64, 64);
+                            var torus = new PrimitiveTorusPrefab(150, 50, 64, 64);
 
                             // Torus Texture Material
-                            this.torusTextureMaterial = new away.materials.TextureMaterial(tx, true, true, false);
+                            this.torusTextureMaterial = new TextureMaterial(tx, true, true, false);
                             this.torusTextureMaterial.lightPicker = this.staticLightPicker;
                             this.torusTextureMaterial.bothSides = true;
                             this.torusTextureMaterial.alpha = .8;
 
+                            torus.material = this.torusTextureMaterial;
+
                             // Torus Mesh ( left )
-                            var torusMesh = new away.entities.Mesh(torus, this.torusTextureMaterial);
+                            var torusMesh = torus.getNewObject();
                             torusMesh.rotationX = 90;
                             torusMesh.x = 600;
                             this.meshes.push(torusMesh);
                             this.view.scene.addChild(torusMesh);
 
+                            var cube = new PrimitiveCubePrefab(300, 300, 300, 20, 20, 20);
+
                             // Torus Color Material
-                            this.torusColorMaterial = new away.materials.ColorMaterial(0x0090ff);
-                            this.torusColorMaterial.lightPicker = this.staticLightPicker;
-                            this.torusColorMaterial.alpha = .8;
-                            this.torusColorMaterial.bothSides = true;
+                            this.cubeColorMaterial = new ColorMaterial(0x0090ff);
+                            this.cubeColorMaterial.lightPicker = this.staticLightPicker;
+                            this.cubeColorMaterial.alpha = .8;
+                            this.cubeColorMaterial.bothSides = true;
 
-                            var cube = new away.primitives.CubeGeometry(300, 300, 300, 20, 20, 20);
-
-                            // Torus Mesh ( right )
-                            torusMesh = new away.entities.Mesh(cube, this.torusColorMaterial);
-                            torusMesh.rotationX = 90;
-                            torusMesh.x = -600;
-                            this.meshes.push(torusMesh);
-                            this.view.scene.addChild(torusMesh);
-
-                            this.capsuleColorMAterial = new away.materials.ColorMaterial(0x00ffff);
-                            this.capsuleColorMAterial.lightPicker = this.staticLightPicker;
-
-                            var caps = new away.primitives.CapsuleGeometry(100, 200);
+                            cube.material = this.cubeColorMaterial;
 
                             // Torus Mesh ( right )
-                            torusMesh = new away.entities.Mesh(caps, this.capsuleColorMAterial);
+                            var cubeMesh = cube.getNewObject();
+                            cubeMesh.rotationX = 90;
+                            cubeMesh.x = -600;
+                            this.meshes.push(cubeMesh);
+                            this.view.scene.addChild(cubeMesh);
 
-                            //torusMesh.rotationX                               = 90;
-                            //torusMesh.scale( 2 );
-                            this.meshes.push(torusMesh);
-                            this.view.scene.addChild(torusMesh);
+                            this.capsuleColorMaterial = new away.materials.ColorMaterial(0x00ffff);
+                            this.capsuleColorMaterial.lightPicker = this.staticLightPicker;
 
-                            this.torusColorMaterial.alpha = this.torusTextureMaterial.alpha = this.loadedMeshMaterial.alpha = 1;
+                            var capsule = new PrimitiveCapsulePrefab(100, 200);
+
+                            capsule.material = this.capsuleColorMaterial;
+
+                            // Torus Mesh ( right )
+                            var capsuleMesh = capsule.getNewObject();
+                            this.meshes.push(capsuleMesh);
+                            this.view.scene.addChild(capsuleMesh);
+
+                            this.cubeColorMaterial.alpha = this.torusTextureMaterial.alpha = this.loadedMeshMaterial.alpha = 1;
 
                             break;
                     }
                 }
-
-                this.render();
-                this.resize();
             };
 
-            MaterialAlphaTest.prototype.resize = function () {
+            MaterialAlphaTest.prototype.onResize = function (event) {
+                if (typeof event === "undefined") { event = null; }
                 this.view.y = 0;
                 this.view.x = 0;
 

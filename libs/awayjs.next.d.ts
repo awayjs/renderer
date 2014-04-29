@@ -124,7 +124,7 @@ declare module away.events {
         * @property target
         * @type Object
         */
-        public target: Object;
+        public target: any;
         constructor(type: string);
         /**
         * Clones the current event.
@@ -251,6 +251,41 @@ declare module away.events {
         * @param {Function} Callback function
         */
         public hasEventListener(type: string, listener?: Function): boolean;
+    }
+}
+declare module away.events {
+    /**
+    * Dispatched to notify changes in a geometry object's state.
+    *
+    * @class away.events.GeometryEvent
+    * @see away3d.core.base.Geometry
+    */
+    class GeometryEvent extends events.Event {
+        /**
+        * Dispatched when a TriangleSubGeometry was added to the dispatching Geometry.
+        */
+        static SUB_GEOMETRY_ADDED: string;
+        /**
+        * Dispatched when a TriangleSubGeometry was removed from the dispatching Geometry.
+        */
+        static SUB_GEOMETRY_REMOVED: string;
+        static BOUNDS_INVALID: string;
+        private _subGeometry;
+        /**
+        * Create a new GeometryEvent
+        * @param type The event type.
+        * @param subGeometry An optional TriangleSubGeometry object that is the subject of this event.
+        */
+        constructor(type: string, subGeometry?: away.base.SubGeometryBase);
+        /**
+        * The TriangleSubGeometry object that is the subject of this event, if appropriate.
+        */
+        public subGeometry : away.base.SubGeometryBase;
+        /**
+        * Clones the event.
+        * @return An exact duplicate of the current object.
+        */
+        public clone(): events.Event;
     }
 }
 declare module away.events {
@@ -590,6 +625,41 @@ declare module away.events {
         static CONTEXTGL_RECREATED: string;
         static VIEWPORT_UPDATED: string;
         constructor(type: string);
+    }
+}
+declare module away.events {
+    /**
+    * Dispatched to notify changes in a sub geometry object's state.
+    *
+    * @class away.events.SubGeometryEvent
+    * @see away3d.core.base.Geometry
+    */
+    class SubGeometryEvent extends events.Event {
+        /**
+        * Dispatched when a TriangleSubGeometry's index data has been updated.
+        */
+        static INDICES_UPDATED: string;
+        /**
+        * Dispatched when a TriangleSubGeometry's vertex data has been updated.
+        */
+        static VERTICES_UPDATED: string;
+        private _dataType;
+        /**
+        * Create a new GeometryEvent
+        * @param type The event type.
+        * @param dataType An optional data type of the vertex data being updated.
+        */
+        constructor(type: string, dataType?: string);
+        /**
+        * The data type of the vertex data.
+        */
+        public dataType : string;
+        /**
+        * Clones the event.
+        *
+        * @return An exact duplicate of the current object.
+        */
+        public clone(): events.Event;
     }
 }
 /**
@@ -1303,11 +1373,14 @@ declare module away.library {
         static CONTAINER: string;
         static EFFECTS_METHOD: string;
         static GEOMETRY: string;
+        static LINE_SEGMENT: string;
         static LIGHT: string;
         static LIGHT_PICKER: string;
         static MATERIAL: string;
         static MESH: string;
-        static SEGMENT_SET: string;
+        static TRIANGLE_SUB_MESH: string;
+        static LINE_SUB_MESH: string;
+        static PRIMITIVE_PREFAB: string;
         static SHADOW_MAP_METHOD: string;
         static SKELETON: string;
         static SKELETON_POSE: string;
@@ -1751,6 +1824,359 @@ declare module away.library {
     }
 }
 declare class AssetLibrarySingletonEnforcer {
+}
+declare module away.gl {
+    class ContextGLClearMask {
+        static COLOR: number;
+        static DEPTH: number;
+        static STENCIL: number;
+        static ALL: number;
+    }
+}
+declare module away.gl {
+    class VertexBuffer {
+        private _gl;
+        private _numVertices;
+        private _data32PerVertex;
+        private _buffer;
+        constructor(gl: WebGLRenderingContext, numVertices: number, data32PerVertex: number);
+        public uploadFromArray(vertices: number[], startVertex: number, numVertices: number): void;
+        public numVertices : number;
+        public data32PerVertex : number;
+        public glBuffer : WebGLBuffer;
+        public dispose(): void;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.gl {
+    /**
+    *
+    */
+    class VertexData {
+        private _dataDirty;
+        public invalid: boolean[];
+        public buffers: gl.VertexBuffer[];
+        public stageGLs: away.base.StageGL[];
+        public data: number[];
+        public dataPerVertex: number;
+        constructor();
+        public updateData(vertices: number[], dataPerVertex: number, originalIndices?: number[], indexMappings?: number[]): void;
+        public invalidateData(): void;
+        public dispose(): void;
+        /**
+        * @private
+        */
+        private disposeBuffers();
+        /**
+        * @private
+        */
+        private invalidateBuffers();
+        /**
+        *
+        * @param data
+        * @param dataPerVertex
+        * @private
+        */
+        private setData(data, dataPerVertex);
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.gl {
+    /**
+    *
+    */
+    class VertexDataPool {
+        private static _pool;
+        constructor();
+        static getItem(id: string, level: number, dataType: string): gl.VertexData;
+        static disposeItem(id: string, level: number, dataType: string): void;
+        public disposeData(id: string): void;
+    }
+}
+declare module away.gl {
+    class IndexBuffer {
+        private _gl;
+        private _numIndices;
+        private _buffer;
+        constructor(gl: WebGLRenderingContext, numIndices: number);
+        public uploadFromArray(data: number[], startOffset: number, count: number): void;
+        public dispose(): void;
+        public numIndices : number;
+        public glBuffer : WebGLBuffer;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.gl {
+    /**
+    *
+    */
+    class IndexData {
+        private static LIMIT_VERTS;
+        private static LIMIT_INDICES;
+        private _dataDirty;
+        public invalid: boolean[];
+        public stageGLs: away.base.StageGL[];
+        public buffers: gl.IndexBuffer[];
+        public data: number[];
+        public indexMappings: number[];
+        public originalIndices: number[];
+        public offset: number;
+        constructor();
+        public updateData(offset: number, indices: number[], numVertices: number): void;
+        public invalidateData(): void;
+        public dispose(): void;
+        /**
+        * @private
+        */
+        private disposeBuffers();
+        /**
+        * @private
+        */
+        private invalidateBuffers();
+        /**
+        *
+        * @param data
+        * @private
+        */
+        private setData(data);
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.gl {
+    /**
+    *
+    */
+    class IndexDataPool {
+        private static _pool;
+        constructor();
+        static getItem(id: string, level: number): gl.IndexData;
+        static disposeItem(id: string, level: number): void;
+        public disposeData(id: string): void;
+    }
+}
+declare module away.gl {
+    class Program {
+        private _gl;
+        private _program;
+        private _vertexShader;
+        private _fragmentShader;
+        constructor(gl: WebGLRenderingContext);
+        public upload(vertexProgram: string, fragmentProgram: string): any;
+        public dispose(): void;
+        public focusProgram(): void;
+        public glProgram : WebGLProgram;
+    }
+}
+declare module away.gl {
+    class SamplerState {
+        public wrap: number;
+        public filter: number;
+        public mipfilter: number;
+    }
+}
+declare module away.gl {
+    class ContextGLTextureFormat {
+        static BGRA: string;
+        static BGRA_PACKED: string;
+        static BGR_PACKED: string;
+        static COMPRESSED: string;
+        static COMPRESSED_ALPHA: string;
+    }
+}
+declare module away.gl {
+    class TextureBase {
+        public textureType: string;
+        public _gl: WebGLRenderingContext;
+        constructor(gl: WebGLRenderingContext);
+        public dispose(): void;
+    }
+}
+declare module away.gl {
+    class Texture extends gl.TextureBase {
+        public textureType: string;
+        private _width;
+        private _height;
+        private _frameBuffer;
+        private _glTexture;
+        constructor(gl: WebGLRenderingContext, width: number, height: number);
+        public dispose(): void;
+        public width : number;
+        public height : number;
+        public frameBuffer : WebGLFramebuffer;
+        public uploadFromHTMLImageElement(image: HTMLImageElement, miplevel?: number): void;
+        public uploadFromBitmapData(data: away.base.BitmapData, miplevel?: number): void;
+        public uploadCompressedTextureFromByteArray(data: away.utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
+        public glTexture : WebGLTexture;
+        public generateFromRenderBuffer(data: away.base.BitmapData): void;
+        public generateMipmaps(): void;
+    }
+}
+declare module away.gl {
+    class CubeTexture extends gl.TextureBase {
+        public textureType: string;
+        private _texture;
+        private _size;
+        constructor(gl: WebGLRenderingContext, size: number);
+        public dispose(): void;
+        public uploadFromHTMLImageElement(image: HTMLImageElement, side: number, miplevel?: number): void;
+        public uploadFromBitmapData(data: away.base.BitmapData, side: number, miplevel?: number): void;
+        public uploadCompressedTextureFromByteArray(data: away.utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
+        public size : number;
+        public glTexture : WebGLTexture;
+    }
+}
+declare module away.gl {
+    class ContextGLTriangleFace {
+        static BACK: string;
+        static FRONT: string;
+        static FRONT_AND_BACK: string;
+        static NONE: string;
+    }
+}
+declare module away.gl {
+    class ContextGLVertexBufferFormat {
+        static BYTES_4: string;
+        static FLOAT_1: string;
+        static FLOAT_2: string;
+        static FLOAT_3: string;
+        static FLOAT_4: string;
+    }
+}
+declare module away.gl {
+    class ContextGLProgramType {
+        static FRAGMENT: string;
+        static VERTEX: string;
+    }
+}
+declare module away.gl {
+    class ContextGLBlendFactor {
+        static DESTINATION_ALPHA: string;
+        static DESTINATION_COLOR: string;
+        static ONE: string;
+        static ONE_MINUS_DESTINATION_ALPHA: string;
+        static ONE_MINUS_DESTINATION_COLOR: string;
+        static ONE_MINUS_SOURCE_ALPHA: string;
+        static ONE_MINUS_SOURCE_COLOR: string;
+        static SOURCE_ALPHA: string;
+        static SOURCE_COLOR: string;
+        static ZERO: string;
+    }
+}
+declare module away.gl {
+    class ContextGLCompareMode {
+        static ALWAYS: string;
+        static EQUAL: string;
+        static GREATER: string;
+        static GREATER_EQUAL: string;
+        static LESS: string;
+        static LESS_EQUAL: string;
+        static NEVER: string;
+        static NOT_EQUAL: string;
+    }
+}
+declare module away.gl {
+    class ContextGLMipFilter {
+        static MIPLINEAR: string;
+        static MIPNEAREST: string;
+        static MIPNONE: string;
+    }
+}
+declare module away.gl {
+    class ContextGLProfile {
+        static BASELINE: string;
+        static BASELINE_CONSTRAINED: string;
+        static BASELINE_EXTENDED: string;
+    }
+}
+declare module away.gl {
+    class ContextGLStencilAction {
+        static DECREMENT_SATURATE: string;
+        static DECREMENT_WRAP: string;
+        static INCREMENT_SATURATE: string;
+        static INCREMENT_WRAP: string;
+        static INVERT: string;
+        static KEEP: string;
+        static SET: string;
+        static ZERO: string;
+    }
+}
+declare module away.gl {
+    class ContextGLTextureFilter {
+        static LINEAR: string;
+        static NEAREST: string;
+    }
+}
+declare module away.gl {
+    class ContextGLWrapMode {
+        static CLAMP: string;
+        static REPEAT: string;
+    }
+}
+declare module away.gl {
+    class ContextGL {
+        private _drawing;
+        private _blendEnabled;
+        private _blendSourceFactor;
+        private _blendDestinationFactor;
+        private _currentWrap;
+        private _currentFilter;
+        private _currentMipFilter;
+        private _indexBufferList;
+        private _vertexBufferList;
+        private _textureList;
+        private _programList;
+        private _samplerStates;
+        static MAX_SAMPLERS: number;
+        public _gl: WebGLRenderingContext;
+        public _currentProgram: gl.Program;
+        constructor(canvas: HTMLCanvasElement);
+        public gl(): WebGLRenderingContext;
+        public clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): void;
+        public configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): void;
+        public createCubeTexture(size: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): gl.CubeTexture;
+        public createIndexBuffer(numIndices: number): gl.IndexBuffer;
+        public createProgram(): gl.Program;
+        public createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): gl.Texture;
+        public createVertexBuffer(numVertices: number, data32PerVertex: number): gl.VertexBuffer;
+        public dispose(): void;
+        public drawToBitmapData(destination: away.base.BitmapData): void;
+        public drawTriangles(indexBuffer: gl.IndexBuffer, firstIndex?: number, numTriangles?: number): void;
+        public present(): void;
+        public setBlendFactors(sourceFactor: string, destinationFactor: string): void;
+        public setColorMask(red: boolean, green: boolean, blue: boolean, alpha: boolean): void;
+        public setCulling(triangleFaceToCull: string, coordinateSystem?: string): void;
+        public setDepthTest(depthMask: boolean, passCompareMode: string): void;
+        public setProgram(program: gl.Program): void;
+        private getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister);
+        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
+        static modulo: number;
+        public setProgramConstantsFromArray(programType: string, firstRegister: number, data: number[], numRegisters?: number): void;
+        public setGLSLProgramConstantsFromMatrix(locationName: string, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
+        public setGLSLProgramConstantsFromArray(locationName: string, data: number[], startIndex?: number): void;
+        public setScissorRectangle(rectangle: away.geom.Rectangle): void;
+        public setTextureAt(sampler: number, texture: gl.TextureBase): void;
+        public setGLSLTextureAt(locationName: string, texture: gl.TextureBase, textureIndex: number): void;
+        public setSamplerStateAt(sampler: number, wrap: string, filter: string, mipfilter: string): void;
+        public setVertexBufferAt(index: number, buffer: gl.VertexBuffer, bufferOffset?: number, format?: string): void;
+        public setGLSLVertexBufferAt(locationName: any, buffer: gl.VertexBuffer, bufferOffset?: number, format?: string): void;
+        public setRenderToTexture(target: gl.TextureBase, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): void;
+        public setRenderToBackBuffer(): void;
+        private updateBlendStatus();
+    }
+}
+declare module away.gl {
+    class AGLSLContextGL extends gl.ContextGL {
+        constructor(canvas: HTMLCanvasElement);
+        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
+    }
 }
 /**
 * A class that provides constant values for visual blend mode effects. These
@@ -2272,6 +2698,7 @@ declare module away.base {
         private _mouseY;
         private _root;
         private _bounds;
+        private _boundsVisible;
         private _depth;
         private _height;
         private _width;
@@ -2328,8 +2755,6 @@ declare module away.base {
         private _sca;
         private _transformComponents;
         public _pIgnoreTransform: boolean;
-        private _showBounds;
-        private _boundsIsShown;
         private _shaderPickingDetails;
         public _pPickingCollisionVO: away.pick.PickingCollisionVO;
         public _pBounds: away.bounds.BoundingVolumeBase;
@@ -2338,6 +2763,7 @@ declare module away.base {
         private _worldBoundsInvalid;
         public _pPickingCollider: away.pick.IPickingCollider;
         public _pRenderables: away.pool.IRenderable[];
+        public _iSourcePrefab: away.prefabs.PrefabBase;
         /**
         *
         */
@@ -2794,7 +3220,7 @@ declare module away.base {
         /**
         *
         */
-        public showBounds : boolean;
+        public boundsVisible : boolean;
         /**
         * An object with properties pertaining to a display object's matrix, color
         * transform, and pixel bounds. The specific properties  -  matrix,
@@ -3254,10 +3680,6 @@ declare module away.base {
         /**
         * @private
         */
-        private addBounds();
-        /**
-        * @private
-        */
         private notifyPositionChanged();
         /**
         * @private
@@ -3301,10 +3723,70 @@ declare module away.base {
         * @private
         */
         private invalidateScale();
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.base {
+    /**
+    *
+    * Geometry is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
+    * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
+    * A Geometry object is assigned to a Mesh, a scene graph occurence of the geometry, which in turn assigns
+    * the SubGeometries to its respective TriangleSubMesh objects.
+    *
+    *
+    *
+    * @see away.core.base.SubGeometry
+    * @see away.entities.Mesh
+    *
+    * @class away.base.Geometry
+    */
+    class Geometry extends away.library.NamedAssetBase implements away.library.IAsset {
+        private _subGeometries;
+        public assetType : string;
         /**
-        * @private
+        * A collection of TriangleSubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.
         */
-        private removeBounds();
+        public subGeometries : base.SubGeometryBase[];
+        public getSubGeometries(): base.SubGeometryBase[];
+        /**
+        * Creates a new Geometry object.
+        */
+        constructor();
+        public applyTransformation(transform: away.geom.Matrix3D): void;
+        /**
+        * Adds a new TriangleSubGeometry object to the list.
+        * @param subGeometry The TriangleSubGeometry object to be added.
+        */
+        public addSubGeometry(subGeometry: base.SubGeometryBase): void;
+        /**
+        * Removes a new TriangleSubGeometry object from the list.
+        * @param subGeometry The TriangleSubGeometry object to be removed.
+        */
+        public removeSubGeometry(subGeometry: base.SubGeometryBase): void;
+        /**
+        * Clones the geometry.
+        * @return An exact duplicate of the current Geometry object.
+        */
+        public clone(): Geometry;
+        /**
+        * Scales the geometry.
+        * @param scale The amount by which to scale.
+        */
+        public scale(scale: number): void;
+        /**
+        * Clears all resources used by the Geometry object, including SubGeometries.
+        */
+        public dispose(): void;
+        /**
+        * Scales the uv coordinates (tiling)
+        * @param scaleU The amount by which to scale on the u axis. Default is 1;
+        * @param scaleV The amount by which to scale on the v axis. Default is 1;
+        */
+        public scaleUV(scaleU?: number, scaleV?: number): void;
+        public iInvalidateBounds(subGeom: base.SubGeometryBase): void;
     }
 }
 /**
@@ -4071,10 +4553,6 @@ declare module away.base {
         */
         animator: away.animators.IAnimator;
         /**
-        *
-        */
-        id: string;
-        /**
         * The material with which to render the object.
         */
         material: away.materials.IMaterial;
@@ -4084,16 +4562,22 @@ declare module away.base {
         uvTransform: away.geom.UVTransform;
         /**
         *
-        */
-        _iSetUVMatrixComponents(offsetU: number, offsetV: number, scaleU: number, scaleV: number, rotationUV: number): any;
-        /**
-        *
+        * @param renderable
+        * @private
         */
         _iAddRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
         /**
         *
+        * @param renderable
+        * @private
         */
         _iRemoveRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
+        /**
+        *
+        * @param renderer
+        * @private
+        */
+        _iCollectRenderable(renderer: away.render.IRenderer): any;
     }
 }
 /**
@@ -4131,6 +4615,189 @@ declare module away.base {
         * affect the appearance as follows: </p>
         */
         static RGB: string;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.base {
+    /**
+    * ISubMeshClass is an interface for the constructable class definition SubMesh that is used to
+    * create apply a marterial to a SubGeometry class
+    *
+    * @class away.base.ISubMeshClass
+    */
+    interface ISubMesh extends base.IMaterialOwner {
+        subGeometry: base.SubGeometryBase;
+        parentMesh: away.entities.Mesh;
+        _iIndex: number;
+        _iInvalidateRenderableGeometry(): any;
+        _iGetExplicitMaterial(): away.materials.IMaterial;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.base {
+    /**
+    * ISubMeshClass is an interface for the constructable class definition ISubMesh that is used to
+    * apply a material to a SubGeometry class
+    *
+    * @class away.base.ISubMeshClass
+    */
+    interface ISubMeshClass {
+        /**
+        *
+        */
+        new(subGeometry: base.SubGeometryBase, parentMesh: away.entities.Mesh, material?: away.materials.IMaterial): base.ISubMesh;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.base {
+    /**
+    * @class away.base.TriangleSubGeometry
+    */
+    class SubGeometryBase extends away.library.NamedAssetBase {
+        public _pStrideOffsetDirty: boolean;
+        public _pIndices: number[];
+        public _pVertices: number[];
+        private _numIndices;
+        private _numTriangles;
+        public _pNumVertices: number;
+        public _pConcatenateArrays: boolean;
+        private _indicesUpdated;
+        public _pStride: Object;
+        public _pOffset: Object;
+        public _pUpdateStrideOffset(): void;
+        public _pSubMeshClass: base.ISubMeshClass;
+        public subMeshClass : base.ISubMeshClass;
+        /**
+        *
+        */
+        public concatenateArrays : boolean;
+        /**
+        * The raw index data that define the faces.
+        */
+        public indices : number[];
+        /**
+        *
+        */
+        public vertices : number[];
+        /**
+        * The total amount of triangles in the TriangleSubGeometry.
+        */
+        public numTriangles : number;
+        public numVertices : number;
+        /**
+        *
+        */
+        constructor(concatenatedArrays: boolean);
+        /**
+        *
+        */
+        public getStride(dataType: string): any;
+        /**
+        *
+        */
+        public getOffset(dataType: string): any;
+        public updateVertices(): void;
+        /**
+        *
+        */
+        public dispose(): void;
+        /**
+        * Updates the face indices of the TriangleSubGeometry.
+        *
+        * @param indices The face indices to upload.
+        */
+        public updateIndices(indices: number[]): void;
+        /**
+        * @protected
+        */
+        public pInvalidateBounds(): void;
+        /**
+        * The Geometry object that 'owns' this TriangleSubGeometry object.
+        *
+        * @private
+        */
+        public parentGeometry: base.Geometry;
+        /**
+        * Clones the current object
+        * @return An exact duplicate of the current object.
+        */
+        public clone(): SubGeometryBase;
+        public applyTransformation(transform: away.geom.Matrix3D): void;
+        /**
+        * Scales the geometry.
+        * @param scale The amount by which to scale.
+        */
+        public scale(scale: number): void;
+        public scaleUV(scaleU?: number, scaleV?: number): void;
+        public getBoundingPositions(): number[];
+        private notifyIndicesUpdate();
+        public _pNotifyVerticesUpdate(): void;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.base {
+    /**
+    * SubMeshBase wraps a TriangleSubGeometry as a scene graph instantiation. A SubMeshBase is owned by a Mesh object.
+    *
+    *
+    * @see away.base.TriangleSubGeometry
+    * @see away.entities.Mesh
+    *
+    * @class away.base.SubMeshBase
+    */
+    class SubMeshBase extends away.library.NamedAssetBase {
+        public _pParentMesh: away.entities.Mesh;
+        public _uvTransform: away.geom.UVTransform;
+        public _iIndex: number;
+        public _material: away.materials.IMaterial;
+        private _renderables;
+        /**
+        * The animator object that provides the state for the TriangleSubMesh's animation.
+        */
+        public animator : away.animators.IAnimator;
+        /**
+        * The material used to render the current TriangleSubMesh. If set to null, its parent Mesh's material will be used instead.
+        */
+        public material : away.materials.IMaterial;
+        /**
+        * The scene transform object that transforms from model to world space.
+        */
+        public sceneTransform : away.geom.Matrix3D;
+        /**
+        * The entity that that initially provided the IRenderable to the render pipeline (ie: the owning Mesh object).
+        */
+        public parentMesh : away.entities.Mesh;
+        /**
+        *
+        */
+        public uvTransform : away.geom.UVTransform;
+        /**
+        * Creates a new SubMeshBase object
+        */
+        constructor();
+        /**
+        *
+        */
+        public dispose(): void;
+        /**
+        *
+        * @param camera
+        * @returns {away.geom.Matrix3D}
+        */
+        public getRenderSceneTransform(camera: away.entities.Camera): away.geom.Matrix3D;
+        public _iAddRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
+        public _iRemoveRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
+        public _iInvalidateRenderableGeometry(): void;
+        public _iCollectRenderable(renderer: away.render.IRenderer): void;
+        public _iGetExplicitMaterial(): away.materials.IMaterial;
     }
 }
 /**
@@ -4197,6 +4864,144 @@ declare module away.base {
         * both vertically and horizontally.
         */
         static VERTICAL: string;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.base {
+    /**
+    * @class away.base.TriangleSubGeometry
+    */
+    class LineSubGeometry extends base.SubGeometryBase {
+        static VERTEX_DATA: string;
+        static START_POSITION_DATA: string;
+        static END_POSITION_DATA: string;
+        static THICKNESS_DATA: string;
+        static COLOR_DATA: string;
+        static POSITION_FORMAT: string;
+        static COLOR_FORMAT: string;
+        static THICKNESS_FORMAT: string;
+        private _positionsDirty;
+        private _boundingPositionDirty;
+        private _thicknessDirty;
+        private _colorsDirty;
+        private _startPositions;
+        private _endPositions;
+        private _boundingPositions;
+        private _thickness;
+        private _startColors;
+        private _endColors;
+        private _numSegments;
+        private _positionsUpdated;
+        private _thicknessUpdated;
+        private _colorUpdated;
+        public _pUpdateStrideOffset(): void;
+        /**
+        *
+        */
+        public vertices : number[];
+        /**
+        *
+        */
+        public startPositions : number[];
+        /**
+        *
+        */
+        public endPositions : number[];
+        /**
+        *
+        */
+        public thickness : number[];
+        /**
+        *
+        */
+        public startColors : number[];
+        /**
+        *
+        */
+        public endColors : number[];
+        /**
+        * The total amount of segments in the TriangleSubGeometry.
+        */
+        public numSegments : number;
+        /**
+        *
+        */
+        constructor();
+        public getBoundingPositions(): number[];
+        /**
+        *
+        */
+        public updatePositions(startValues: number[], endValues: number[]): void;
+        /**
+        * Updates the thickness.
+        */
+        public updateThickness(values: number[]): void;
+        /**
+        *
+        */
+        public updateColors(startValues: number[], endValues: number[]): void;
+        /**
+        *
+        */
+        public dispose(): void;
+        /**
+        * @protected
+        */
+        public pInvalidateBounds(): void;
+        /**
+        * The Geometry object that 'owns' this TriangleSubGeometry object.
+        *
+        * @private
+        */
+        public parentGeometry: base.Geometry;
+        /**
+        * Clones the current object
+        * @return An exact duplicate of the current object.
+        */
+        public clone(): LineSubGeometry;
+        public _pNotifyVerticesUpdate(): void;
+        private notifyPositionsUpdate();
+        private notifyThicknessUpdate();
+        private notifyColorsUpdate();
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.base {
+    /**
+    * LineSubMesh wraps a LineSubGeometry as a scene graph instantiation. A LineSubMesh is owned by a Mesh object.
+    *
+    *
+    * @see away.base.LineSubGeometry
+    * @see away.entities.Mesh
+    *
+    * @class away.base.LineSubMesh
+    */
+    class LineSubMesh extends base.SubMeshBase implements base.ISubMesh {
+        private _subGeometry;
+        /**
+        *
+        */
+        public assetType : string;
+        /**
+        * The LineSubGeometry object which provides the geometry data for this LineSubMesh.
+        */
+        public subGeometry : base.LineSubGeometry;
+        /**
+        * Creates a new LineSubMesh object
+        * @param subGeometry The LineSubGeometry object which provides the geometry data for this LineSubMesh.
+        * @param parentMesh The Mesh object to which this LineSubMesh belongs.
+        * @param material An optional material used to render this LineSubMesh.
+        */
+        constructor(subGeometry: base.LineSubGeometry, parentMesh: away.entities.Mesh, material?: away.materials.IMaterial);
+        /**
+        *
+        */
+        public dispose(): void;
+        public _iCollectRenderable(renderer: away.render.IRenderer): void;
     }
 }
 /**
@@ -4581,6 +5386,24 @@ declare module away.base {
         */
         public bufferClear : boolean;
         /**
+        * Assigns an attribute stream
+        *
+        * @param index The attribute stream index for the vertex shader
+        * @param buffer
+        * @param offset
+        * @param stride
+        * @param format
+        */
+        public activateBuffer(index: number, buffer: away.gl.VertexData, offset: number, format: string): void;
+        public disposeVertexData(buffer: away.gl.VertexData): void;
+        /**
+        * Retrieves the VertexBuffer object that contains triangle indices.
+        * @param context The ContextGL for which we request the buffer
+        * @return The VertexBuffer object that contains triangle indices.
+        */
+        public getIndexBuffer(buffer: away.gl.IndexData): away.gl.IndexBuffer;
+        public disposeIndexData(buffer: away.gl.IndexData): void;
+        /**
         * Frees the ContextGL associated with this StageGLProxy.
         */
         private freeContextGL();
@@ -4629,6 +5452,256 @@ declare module away.base {
         * point. This is also known as backface culling.
         */
         static POSITIVE: string;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.base {
+    /**
+    * @class away.base.TriangleSubGeometry
+    */
+    class TriangleSubGeometry extends base.SubGeometryBase {
+        static VERTEX_DATA: string;
+        static POSITION_DATA: string;
+        static NORMAL_DATA: string;
+        static TANGENT_DATA: string;
+        static UV_DATA: string;
+        static SECONDARY_UV_DATA: string;
+        static JOINT_INDEX_DATA: string;
+        static JOINT_WEIGHT_DATA: string;
+        static POSITION_FORMAT: string;
+        static NORMAL_FORMAT: string;
+        static TANGENT_FORMAT: string;
+        static UV_FORMAT: string;
+        static SECONDARY_UV_FORMAT: string;
+        private _positionsDirty;
+        private _faceNormalsDirty;
+        private _faceTangentsDirty;
+        private _vertexNormalsDirty;
+        private _vertexTangentsDirty;
+        private _uvsDirty;
+        private _secondaryUVsDirty;
+        private _jointIndicesDirty;
+        private _jointWeightsDirty;
+        private _positions;
+        private _vertexNormals;
+        private _vertexTangents;
+        private _uvs;
+        private _secondaryUVs;
+        private _jointIndices;
+        private _jointWeights;
+        private _useCondensedIndices;
+        private _condensedJointIndices;
+        private _condensedIndexLookUp;
+        private _numCondensedJoints;
+        private _jointsPerVertex;
+        private _concatenateArrays;
+        private _autoDeriveNormals;
+        private _autoDeriveTangents;
+        private _autoDeriveUVs;
+        private _useFaceWeights;
+        private _faceNormals;
+        private _faceTangents;
+        private _faceWeights;
+        private _scaleU;
+        private _scaleV;
+        private _positionsUpdated;
+        private _normalsUpdated;
+        private _tangentsUpdated;
+        private _uvsUpdated;
+        private _secondaryUVsUpdated;
+        private _jointIndicesUpdated;
+        private _jointWeightsUpdated;
+        /**
+        *
+        */
+        public scaleU : number;
+        /**
+        *
+        */
+        public scaleV : number;
+        /**
+        * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
+        * by condensing the number of joint index values required per mesh. Only applicable to
+        * skeleton animations that utilise more than one mesh object. Defaults to false.
+        */
+        public useCondensedIndices : boolean;
+        public _pUpdateStrideOffset(): void;
+        /**
+        *
+        */
+        public jointsPerVertex : number;
+        /**
+        * Defines whether a UV buffer should be automatically generated to contain dummy UV coordinates.
+        * Set to true if a geometry lacks UV data but uses a material that requires it, or leave as false
+        * in cases where UV data is explicitly defined or the material does not require UV data.
+        */
+        public autoDeriveUVs : boolean;
+        /**
+        * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
+        * explicitly.
+        */
+        public autoDeriveNormals : boolean;
+        /**
+        * True if the vertex tangents should be derived from the geometry, false if the vertex normals are set
+        * explicitly.
+        */
+        public autoDeriveTangents : boolean;
+        /**
+        *
+        */
+        public vertices : number[];
+        /**
+        *
+        */
+        public positions : number[];
+        /**
+        *
+        */
+        public vertexNormals : number[];
+        /**
+        *
+        */
+        public vertexTangents : number[];
+        /**
+        * The raw data of the face normals, in the same order as the faces are listed in the index list.
+        */
+        public faceNormals : number[];
+        /**
+        * The raw data of the face tangets, in the same order as the faces are listed in the index list.
+        */
+        public faceTangents : number[];
+        /**
+        *
+        */
+        public uvs : number[];
+        /**
+        *
+        */
+        public secondaryUVs : number[];
+        /**
+        *
+        */
+        public jointIndices : number[];
+        /**
+        *
+        */
+        public jointWeights : number[];
+        /**
+        * Indicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.
+        */
+        public useFaceWeights : boolean;
+        public numCondensedJoints : number;
+        public condensedIndexLookUp : number[];
+        /**
+        *
+        */
+        constructor(concatenatedArrays: boolean);
+        public getBoundingPositions(): number[];
+        /**
+        *
+        */
+        public updatePositions(values: number[]): void;
+        /**
+        * Updates the vertex normals based on the geometry.
+        */
+        public updateVertexNormals(values: number[]): void;
+        /**
+        * Updates the vertex tangents based on the geometry.
+        */
+        public updateVertexTangents(values: number[]): void;
+        /**
+        * Updates the uvs based on the geometry.
+        */
+        public updateUVs(values: number[]): void;
+        /**
+        * Updates the secondary uvs based on the geometry.
+        */
+        public updateSecondaryUVs(values: number[]): void;
+        /**
+        * Updates the joint indices
+        */
+        public updateJointIndices(values: number[]): void;
+        /**
+        * Updates the joint weights.
+        */
+        public updateJointWeights(values: number[]): void;
+        /**
+        *
+        */
+        public dispose(): void;
+        /**
+        * Updates the face indices of the TriangleSubGeometry.
+        *
+        * @param indices The face indices to upload.
+        */
+        public updateIndices(indices: number[]): void;
+        /**
+        * Clones the current object
+        * @return An exact duplicate of the current object.
+        */
+        public clone(): TriangleSubGeometry;
+        public scaleUV(scaleU?: number, scaleV?: number): void;
+        /**
+        * Scales the geometry.
+        * @param scale The amount by which to scale.
+        */
+        public scale(scale: number): void;
+        public applyTransformation(transform: away.geom.Matrix3D): void;
+        /**
+        * Updates the tangents for each face.
+        */
+        private updateFaceTangents();
+        /**
+        * Updates the normals for each face.
+        */
+        private updateFaceNormals();
+        public _pNotifyVerticesUpdate(): void;
+        private notifyPositionsUpdate();
+        private notifyNormalsUpdate();
+        private notifyTangentsUpdate();
+        private notifyUVsUpdate();
+        private notifySecondaryUVsUpdate();
+        private notifyJointIndicesUpdate();
+        private notifyJointWeightsUpdate();
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.base {
+    /**
+    * TriangleSubMesh wraps a TriangleSubGeometry as a scene graph instantiation. A TriangleSubMesh is owned by a Mesh object.
+    *
+    *
+    * @see away.base.TriangleSubGeometry
+    * @see away.entities.Mesh
+    *
+    * @class away.base.TriangleSubMesh
+    */
+    class TriangleSubMesh extends base.SubMeshBase implements base.ISubMesh {
+        private _subGeometry;
+        /**
+        *
+        */
+        public assetType : string;
+        /**
+        * The TriangleSubGeometry object which provides the geometry data for this TriangleSubMesh.
+        */
+        public subGeometry : base.TriangleSubGeometry;
+        /**
+        * Creates a new TriangleSubMesh object
+        * @param subGeometry The TriangleSubGeometry object which provides the geometry data for this TriangleSubMesh.
+        * @param parentMesh The Mesh object to which this TriangleSubMesh belongs.
+        * @param material An optional material used to render this TriangleSubMesh.
+        */
+        constructor(subGeometry: base.TriangleSubGeometry, parentMesh: away.entities.Mesh, material?: away.materials.IMaterial);
+        /**
+        *
+        */
+        public dispose(): void;
+        public _iCollectRenderable(renderer: away.render.IRenderer): void;
     }
 }
 /**
@@ -4709,7 +5782,15 @@ declare module away.pool {
         /**
         *
         */
-        _iUpdate(): any;
+        invalidateGeometry(): any;
+        /**
+        *
+        */
+        invalidateIndexData(): any;
+        /**
+        *
+        */
+        invalidateVertexData(dataType: string): any;
     }
 }
 /**
@@ -4840,7 +5921,15 @@ declare module away.pool {
         /**
         *
         */
-        public _iUpdate(): void;
+        public invalidateGeometry(): void;
+        /**
+        *
+        */
+        public invalidateIndexData(): void;
+        /**
+        *
+        */
+        public invalidateVertexData(dataType: string): void;
     }
 }
 /**
@@ -4853,6 +5942,18 @@ declare module away.pool {
     class CSSBillboardRenderable extends pool.CSSRenderableBase {
         static id: string;
         constructor(pool: pool.RenderablePool, billboard: away.entities.Billboard);
+    }
+}
+/**
+* @module away.data
+*/
+declare module away.pool {
+    /**
+    * @class away.pool.RenderableListItem
+    */
+    class CSSLineSegmentRenderable extends pool.CSSRenderableBase {
+        static id: string;
+        constructor(pool: pool.RenderablePool, lineSegment: away.entities.LineSegment);
     }
 }
 /**
@@ -5040,16 +6141,20 @@ declare module away.partition {
     * @class away.partition.NodeBase
     */
     class NodeBase {
+        private _boundsChildrenVisible;
+        private _explicitBoundsVisible;
+        private _implicitBoundsVisible;
         public _iParent: NodeBase;
         public _pChildNodes: NodeBase[];
         public _pNumChildNodes: number;
-        public _pDebugPrimitive: away.entities.IEntity;
+        public _pBoundsPrimitive: away.entities.IEntity;
         public _iNumEntities: number;
         public _iCollectionMark: number;
         /**
         *
         */
-        public showDebugBounds : boolean;
+        public boundsVisible : boolean;
+        public boundsChildrenVisible : boolean;
         /**
         *
         */
@@ -5098,7 +6203,7 @@ declare module away.partition {
         *
         * @protected
         */
-        public pCreateDebugBounds(): away.entities.IEntity;
+        public _pCreateBoundsPrimitive(): away.entities.IEntity;
         /**
         *
         * @param node
@@ -5111,6 +6216,12 @@ declare module away.partition {
         * @internal
         */
         public iRemoveNode(node: NodeBase): void;
+        private _iUpdateImplicitBoundsVisible(value);
+        /**
+        * @internal
+        */
+        public _iIsBoundsVisible(): boolean;
+        public _iUpdateEntityBounds(): void;
     }
 }
 /**
@@ -5138,8 +6249,8 @@ declare module away.partition {
         constructor(rootNode: partition.NodeBase);
         public rootNode : partition.NodeBase;
         public traverse(traverser: away.traverse.ICollector): void;
-        public iMarkForUpdate(entity: away.entities.IEntity): void;
-        public iRemoveEntity(entity: away.entities.IEntity): void;
+        public iMarkForUpdate(entity: away.base.DisplayObject): void;
+        public iRemoveEntity(entity: away.base.DisplayObject): void;
         private updateEntities();
     }
 }
@@ -5176,6 +6287,11 @@ declare module away.partition {
         * @inheritDoc
         */
         public isIntersectingRay(rayPosition: away.geom.Vector3D, rayDirection: away.geom.Vector3D): boolean;
+        /**
+        *
+        * @protected
+        */
+        public _pCreateBoundsPrimitive(): away.entities.IEntity;
     }
 }
 /**
@@ -5191,6 +6307,31 @@ declare module away.partition {
         * @inheritDoc
         */
         public acceptTraverser(traverser: away.traverse.ICollector): void;
+    }
+}
+/**
+* @module away.partition
+*/
+declare module away.partition {
+    /**
+    * SkyboxNode is a space partitioning leaf node that contains a Skybox object.
+    *
+    * @class away.partition.SkyboxNode
+    */
+    class SkyboxNode extends partition.EntityNode {
+        private _skyBox;
+        /**
+        * Creates a new SkyboxNode object.
+        * @param skyBox The Skybox to be contained in the node.
+        */
+        constructor(skyBox: away.entities.IEntity);
+        /**
+        *
+        * @param planes
+        * @param numPlanes
+        * @returns {boolean}
+        */
+        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
     }
 }
 /**
@@ -5401,14 +6542,62 @@ declare module away.render {
         *
         */
         renderableSorter: away.sort.IEntitySorter;
+        /**
+        *
+        */
         shareContext: boolean;
+        /**
+        *
+        */
         x: number;
+        /**
+        *
+        */
         y: number;
+        /**
+        *
+        */
         width: number;
+        /**
+        *
+        */
         height: number;
+        /**
+        *
+        */
         viewPort: away.geom.Rectangle;
+        /**
+        *
+        */
         scissorRect: away.geom.Rectangle;
+        /**
+        *
+        * @param billboard
+        */
+        applyBillboard(billboard: away.entities.Billboard): any;
+        /**
+        *
+        * @param triangleSubMesh
+        */
+        applyLineSubMesh(triangleSubMesh: away.base.LineSubMesh): any;
+        /**
+        *
+        * @param skybox
+        */
+        applySkybox(skybox: away.entities.Skybox): any;
+        /**
+        *
+        * @param triangleSubMesh
+        */
+        applyTriangleSubMesh(triangleSubMesh: away.base.TriangleSubMesh): any;
+        /**
+        *
+        */
         dispose(): any;
+        /**
+        *
+        * @param entityCollector
+        */
         render(entityCollector: away.traverse.ICollector): any;
         /**
         * @internal
@@ -5444,6 +6633,7 @@ declare module away.render {
     */
     class CSSRendererBase extends away.events.EventDispatcher {
         private _billboardRenderablePool;
+        private _lineSegmentRenderablePool;
         public _pCamera: away.entities.Camera;
         public _iEntryPoint: away.geom.Vector3D;
         public _pCameraForward: away.geom.Vector3D;
@@ -5455,6 +6645,44 @@ declare module away.render {
         public _pBackBufferInvalid: boolean;
         public _depthTextureInvalid: boolean;
         public _renderableHead: away.pool.CSSRenderableBase;
+        public _width: number;
+        public _height: number;
+        private _viewPort;
+        private _viewportDirty;
+        private _scissorRect;
+        private _scissorDirty;
+        private _localPos;
+        private _globalPos;
+        private _scissorUpdated;
+        private _viewPortUpdated;
+        /**
+        * A viewPort rectangle equivalent of the StageGL size and position.
+        */
+        public viewPort : away.geom.Rectangle;
+        /**
+        * A scissor rectangle equivalent of the view size and position.
+        */
+        public scissorRect : away.geom.Rectangle;
+        /**
+        *
+        */
+        public x : number;
+        /**
+        *
+        */
+        public y : number;
+        /**
+        *
+        */
+        public width : number;
+        /**
+        *
+        */
+        public height : number;
+        /**
+        *
+        */
+        public renderableSorter: away.sort.IEntitySorter;
         /**
         * Creates a new RendererBase object.
         */
@@ -5505,25 +6733,43 @@ declare module away.render {
         public _iBackgroundAlpha : number;
         /**
         *
-        */
-        public updateGlobalPos(): void;
-        /**
-        *
         * @param billboard
-        * @protected
         */
         public applyBillboard(billboard: away.entities.Billboard): void;
+        /**
+        *
+        * @param lineSubMesh
+        */
+        public applyLineSubMesh(lineSubMesh: away.base.LineSubMesh): void;
+        /**
+        *
+        * @param skybox
+        */
+        public applySkybox(skybox: away.entities.Skybox): void;
+        /**
+        *
+        * @param triangleSubMesh
+        */
+        public applyTriangleSubMesh(triangleSubMesh: away.base.TriangleSubMesh): void;
         /**
         *
         * @param renderable
         * @private
         */
-        private applyRenderable(renderable);
+        private _applyRenderable(renderable);
+        /**
+        * @private
+        */
+        private notifyScissorUpdate();
+        /**
+        * @private
+        */
+        private notifyViewportUpdate();
         /**
         *
-        * @param entity
         */
-        public pFindRenderables(entity: away.entities.IEntity): void;
+        public updateGlobalPos(): void;
+        public _iCreateEntityCollector(): away.traverse.ICollector;
     }
 }
 /**
@@ -5544,44 +6790,6 @@ declare module away.render {
         private _activeMaterial;
         private _skyboxProjection;
         private _transform;
-        public _width: number;
-        public _height: number;
-        private _viewPort;
-        private _viewportDirty;
-        private _scissorRect;
-        private _scissorDirty;
-        private _localPos;
-        private _globalPos;
-        private _scissorUpdated;
-        private _viewPortUpdated;
-        /**
-        * A viewPort rectangle equivalent of the StageGL size and position.
-        */
-        public viewPort : away.geom.Rectangle;
-        /**
-        * A scissor rectangle equivalent of the view size and position.
-        */
-        public scissorRect : away.geom.Rectangle;
-        /**
-        *
-        */
-        public x : number;
-        /**
-        *
-        */
-        public y : number;
-        /**
-        *
-        */
-        public width : number;
-        /**
-        *
-        */
-        public height : number;
-        /**
-        *
-        */
-        public renderableSorter: away.sort.IEntitySorter;
         /**
         * Creates a new CSSDefaultRenderer object.
         */
@@ -5611,18 +6819,6 @@ declare module away.render {
         */
         private drawRenderables(item, entityCollector);
         public dispose(): void;
-        /**
-        * @private
-        */
-        private notifyScissorUpdate();
-        /**
-        * @private
-        */
-        private notifyViewportUpdate();
-        /**
-        *
-        */
-        public updateGlobalPos(): void;
         public _iCreateEntityCollector(): away.traverse.ICollector;
     }
 }
@@ -5648,256 +6844,6 @@ declare module away.sort {
     class RenderableMergeSort implements sort.IEntitySorter {
         public sortBlendedRenderables(head: away.pool.IRenderable): away.pool.IRenderable;
         public sortOpaqueRenderables(head: away.pool.IRenderable): away.pool.IRenderable;
-    }
-}
-declare module away.gl {
-    class ContextGLClearMask {
-        static COLOR: number;
-        static DEPTH: number;
-        static STENCIL: number;
-        static ALL: number;
-    }
-}
-declare module away.gl {
-    class VertexBuffer {
-        private _gl;
-        private _numVertices;
-        private _data32PerVertex;
-        private _buffer;
-        constructor(gl: WebGLRenderingContext, numVertices: number, data32PerVertex: number);
-        public uploadFromArray(vertices: number[], startVertex: number, numVertices: number): void;
-        public numVertices : number;
-        public data32PerVertex : number;
-        public glBuffer : WebGLBuffer;
-        public dispose(): void;
-    }
-}
-declare module away.gl {
-    class IndexBuffer {
-        private _gl;
-        private _numIndices;
-        private _buffer;
-        constructor(gl: WebGLRenderingContext, numIndices: number);
-        public uploadFromArray(data: number[], startOffset: number, count: number): void;
-        public dispose(): void;
-        public numIndices : number;
-        public glBuffer : WebGLBuffer;
-    }
-}
-declare module away.gl {
-    class Program {
-        private _gl;
-        private _program;
-        private _vertexShader;
-        private _fragmentShader;
-        constructor(gl: WebGLRenderingContext);
-        public upload(vertexProgram: string, fragmentProgram: string): any;
-        public dispose(): void;
-        public focusProgram(): void;
-        public glProgram : WebGLProgram;
-    }
-}
-declare module away.gl {
-    class SamplerState {
-        public wrap: number;
-        public filter: number;
-        public mipfilter: number;
-    }
-}
-declare module away.gl {
-    class ContextGLTextureFormat {
-        static BGRA: string;
-        static BGRA_PACKED: string;
-        static BGR_PACKED: string;
-        static COMPRESSED: string;
-        static COMPRESSED_ALPHA: string;
-    }
-}
-declare module away.gl {
-    class TextureBase {
-        public textureType: string;
-        public _gl: WebGLRenderingContext;
-        constructor(gl: WebGLRenderingContext);
-        public dispose(): void;
-    }
-}
-declare module away.gl {
-    class Texture extends gl.TextureBase {
-        public textureType: string;
-        private _width;
-        private _height;
-        private _frameBuffer;
-        private _glTexture;
-        constructor(gl: WebGLRenderingContext, width: number, height: number);
-        public dispose(): void;
-        public width : number;
-        public height : number;
-        public frameBuffer : WebGLFramebuffer;
-        public uploadFromHTMLImageElement(image: HTMLImageElement, miplevel?: number): void;
-        public uploadFromBitmapData(data: away.base.BitmapData, miplevel?: number): void;
-        public uploadCompressedTextureFromByteArray(data: away.utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
-        public glTexture : WebGLTexture;
-        public generateFromRenderBuffer(data: away.base.BitmapData): void;
-        public generateMipmaps(): void;
-    }
-}
-declare module away.gl {
-    class CubeTexture extends gl.TextureBase {
-        public textureType: string;
-        private _texture;
-        private _size;
-        constructor(gl: WebGLRenderingContext, size: number);
-        public dispose(): void;
-        public uploadFromHTMLImageElement(image: HTMLImageElement, side: number, miplevel?: number): void;
-        public uploadFromBitmapData(data: away.base.BitmapData, side: number, miplevel?: number): void;
-        public uploadCompressedTextureFromByteArray(data: away.utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
-        public size : number;
-        public glTexture : WebGLTexture;
-    }
-}
-declare module away.gl {
-    class ContextGLTriangleFace {
-        static BACK: string;
-        static FRONT: string;
-        static FRONT_AND_BACK: string;
-        static NONE: string;
-    }
-}
-declare module away.gl {
-    class ContextGLVertexBufferFormat {
-        static BYTES_4: string;
-        static FLOAT_1: string;
-        static FLOAT_2: string;
-        static FLOAT_3: string;
-        static FLOAT_4: string;
-    }
-}
-declare module away.gl {
-    class ContextGLProgramType {
-        static FRAGMENT: string;
-        static VERTEX: string;
-    }
-}
-declare module away.gl {
-    class ContextGLBlendFactor {
-        static DESTINATION_ALPHA: string;
-        static DESTINATION_COLOR: string;
-        static ONE: string;
-        static ONE_MINUS_DESTINATION_ALPHA: string;
-        static ONE_MINUS_DESTINATION_COLOR: string;
-        static ONE_MINUS_SOURCE_ALPHA: string;
-        static ONE_MINUS_SOURCE_COLOR: string;
-        static SOURCE_ALPHA: string;
-        static SOURCE_COLOR: string;
-        static ZERO: string;
-    }
-}
-declare module away.gl {
-    class ContextGLCompareMode {
-        static ALWAYS: string;
-        static EQUAL: string;
-        static GREATER: string;
-        static GREATER_EQUAL: string;
-        static LESS: string;
-        static LESS_EQUAL: string;
-        static NEVER: string;
-        static NOT_EQUAL: string;
-    }
-}
-declare module away.gl {
-    class ContextGLMipFilter {
-        static MIPLINEAR: string;
-        static MIPNEAREST: string;
-        static MIPNONE: string;
-    }
-}
-declare module away.gl {
-    class ContextGLProfile {
-        static BASELINE: string;
-        static BASELINE_CONSTRAINED: string;
-        static BASELINE_EXTENDED: string;
-    }
-}
-declare module away.gl {
-    class ContextGLStencilAction {
-        static DECREMENT_SATURATE: string;
-        static DECREMENT_WRAP: string;
-        static INCREMENT_SATURATE: string;
-        static INCREMENT_WRAP: string;
-        static INVERT: string;
-        static KEEP: string;
-        static SET: string;
-        static ZERO: string;
-    }
-}
-declare module away.gl {
-    class ContextGLTextureFilter {
-        static LINEAR: string;
-        static NEAREST: string;
-    }
-}
-declare module away.gl {
-    class ContextGLWrapMode {
-        static CLAMP: string;
-        static REPEAT: string;
-    }
-}
-declare module away.gl {
-    class ContextGL {
-        private _drawing;
-        private _blendEnabled;
-        private _blendSourceFactor;
-        private _blendDestinationFactor;
-        private _currentWrap;
-        private _currentFilter;
-        private _currentMipFilter;
-        private _indexBufferList;
-        private _vertexBufferList;
-        private _textureList;
-        private _programList;
-        private _samplerStates;
-        static MAX_SAMPLERS: number;
-        public _gl: WebGLRenderingContext;
-        public _currentProgram: gl.Program;
-        constructor(canvas: HTMLCanvasElement);
-        public gl(): WebGLRenderingContext;
-        public clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): void;
-        public configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): void;
-        public createCubeTexture(size: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): gl.CubeTexture;
-        public createIndexBuffer(numIndices: number): gl.IndexBuffer;
-        public createProgram(): gl.Program;
-        public createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): gl.Texture;
-        public createVertexBuffer(numVertices: number, data32PerVertex: number): gl.VertexBuffer;
-        public dispose(): void;
-        public drawToBitmapData(destination: away.base.BitmapData): void;
-        public drawTriangles(indexBuffer: gl.IndexBuffer, firstIndex?: number, numTriangles?: number): void;
-        public present(): void;
-        public setBlendFactors(sourceFactor: string, destinationFactor: string): void;
-        public setColorMask(red: boolean, green: boolean, blue: boolean, alpha: boolean): void;
-        public setCulling(triangleFaceToCull: string, coordinateSystem?: string): void;
-        public setDepthTest(depthMask: boolean, passCompareMode: string): void;
-        public setProgram(program: gl.Program): void;
-        private getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister);
-        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
-        static modulo: number;
-        public setProgramConstantsFromArray(programType: string, firstRegister: number, data: number[], numRegisters?: number): void;
-        public setGLSLProgramConstantsFromMatrix(locationName: string, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
-        public setGLSLProgramConstantsFromArray(locationName: string, data: number[], startIndex?: number): void;
-        public setScissorRectangle(rectangle: away.geom.Rectangle): void;
-        public setTextureAt(sampler: number, texture: gl.TextureBase): void;
-        public setGLSLTextureAt(locationName: string, texture: gl.TextureBase, textureIndex: number): void;
-        public setSamplerStateAt(sampler: number, wrap: string, filter: string, mipfilter: string): void;
-        public setVertexBufferAt(index: number, buffer: gl.VertexBuffer, bufferOffset?: number, format?: string): void;
-        public setGLSLVertexBufferAt(locationName: any, buffer: gl.VertexBuffer, bufferOffset?: number, format?: string): void;
-        public setRenderToTexture(target: gl.TextureBase, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): void;
-        public setRenderToBackBuffer(): void;
-        private updateBlendStatus();
-    }
-}
-declare module away.gl {
-    class AGLSLContextGL extends gl.ContextGL {
-        constructor(canvas: HTMLCanvasElement);
-        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
     }
 }
 /**
@@ -7699,10 +8645,9 @@ declare module away.geom {
 }
 declare module away.geom {
     class UVTransform {
-        private _materialOwner;
         private _uvMatrix;
         private _uvMatrixDirty;
-        private _rotationUV;
+        private _rotation;
         private _scaleU;
         private _scaleV;
         private _offsetU;
@@ -7718,7 +8663,7 @@ declare module away.geom {
         /**
         *
         */
-        public rotationUV : number;
+        public rotation : number;
         /**
         *
         */
@@ -7731,7 +8676,7 @@ declare module away.geom {
         *
         */
         public matrix : geom.Matrix;
-        constructor(materialOwner: away.base.IMaterialOwner);
+        constructor();
         /**
         * @private
         */
@@ -10605,6 +11550,12 @@ declare module away.entities {
         * return the scene transform.
         */
         getRenderSceneTransform(camera: entities.Camera): away.geom.Matrix3D;
+        /**
+        *
+        * @param renderer
+        * @private
+        */
+        _iCollectRenderables(renderer: away.render.IRenderer): any;
     }
 }
 /**
@@ -10699,10 +11650,6 @@ declare module away.entities {
         /**
         *
         */
-        public sourceEntity : entities.IEntity;
-        /**
-        *
-        */
         public uvTransform : away.geom.UVTransform;
         constructor(material: away.materials.IMaterial, pixelSnapping?: string, smoothing?: boolean);
         /**
@@ -10713,10 +11660,6 @@ declare module away.entities {
         * @protected
         */
         public pUpdateBounds(): void;
-        /**
-        * @internal
-        */
-        public _iSetUVMatrixComponents(offsetU: number, offsetV: number, scaleU: number, scaleV: number, rotationUV: number): void;
         /**
         * //TODO
         *
@@ -10731,6 +11674,8 @@ declare module away.entities {
         * @private
         */
         private onSizeChanged(event);
+        public _iCollectRenderables(renderer: away.render.IRenderer): void;
+        public _iCollectRenderable(renderer: away.render.IRenderer): void;
     }
 }
 declare module away.entities {
@@ -10792,6 +11737,225 @@ declare module away.entities {
         * @return The scene position of the given screen coordinates.
         */
         public unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
+        public _iCollectRenderables(renderer: away.render.IRenderer): void;
+        public _iCollectRenderable(renderer: away.render.IRenderer): void;
+    }
+}
+declare module away.entities {
+    /**
+    * A Line Segment primitive.
+    */
+    class LineSegment extends away.base.DisplayObject implements entities.IEntity, away.base.IMaterialOwner {
+        private _animator;
+        private _material;
+        private _uvTransform;
+        private onSizeChangedDelegate;
+        public _startPosition: away.geom.Vector3D;
+        public _endPosition: away.geom.Vector3D;
+        public _halfThickness: number;
+        /**
+        * Defines the animator of the line segment. Act on the line segment's geometry. Defaults to null
+        */
+        public animator : away.animators.IAnimator;
+        /**
+        *
+        */
+        public assetType : string;
+        /**
+        *
+        */
+        public startPostion : away.geom.Vector3D;
+        public startPosition : away.geom.Vector3D;
+        /**
+        *
+        */
+        public endPosition : away.geom.Vector3D;
+        /**
+        *
+        */
+        public material : away.materials.IMaterial;
+        /**
+        *
+        */
+        public thickness : number;
+        /**
+        *
+        */
+        public uvTransform : away.geom.UVTransform;
+        /**
+        * Create a line segment
+        *
+        * @param startPosition Start position of the line segment
+        * @param endPosition Ending position of the line segment
+        * @param thickness Thickness of the line
+        */
+        constructor(material: away.materials.IMaterial, startPosition: away.geom.Vector3D, endPosition: away.geom.Vector3D, thickness?: number);
+        public dispose(): void;
+        /**
+        * @protected
+        */
+        public pCreateEntityPartitionNode(): away.partition.EntityNode;
+        /**
+        * @protected
+        */
+        public pUpdateBounds(): void;
+        /**
+        * @private
+        */
+        private onSizeChanged(event);
+        /**
+        * @private
+        */
+        private notifyRenderableUpdate();
+        public _iCollectRenderables(renderer: away.render.IRenderer): void;
+        public _iCollectRenderable(renderer: away.render.IRenderer): void;
+    }
+}
+declare module away.entities {
+    /**
+    * Mesh is an instance of a Geometry, augmenting it with a presence in the scene graph, a material, and an animation
+    * state. It consists out of SubMeshes, which in turn correspond to SubGeometries. SubMeshes allow different parts
+    * of the geometry to be assigned different materials.
+    */
+    class Mesh extends away.containers.DisplayObjectContainer implements entities.IEntity {
+        private _uvTransform;
+        private _subMeshes;
+        private _geometry;
+        private _material;
+        private _animator;
+        private _castsShadows;
+        private _shareAnimationGeometry;
+        private _onGeometryBoundsInvalidDelegate;
+        private _onSubGeometryAddedDelegate;
+        private _onSubGeometryRemovedDelegate;
+        /**
+        * Defines the animator of the mesh. Act on the mesh's geometry.  Default value is <code>null</code>.
+        */
+        public animator : away.animators.IAnimator;
+        /**
+        *
+        */
+        public assetType : string;
+        /**
+        * Indicates whether or not the Mesh can cast shadows. Default value is <code>true</code>.
+        */
+        public castsShadows : boolean;
+        /**
+        * The geometry used by the mesh that provides it with its shape.
+        */
+        public geometry : away.base.Geometry;
+        /**
+        * The material with which to render the Mesh.
+        */
+        public material : away.materials.IMaterial;
+        /**
+        * Indicates whether or not the mesh share the same animation geometry.
+        */
+        public shareAnimationGeometry : boolean;
+        /**
+        * The SubMeshes out of which the Mesh consists. Every SubMesh can be assigned a material to override the Mesh's
+        * material.
+        */
+        public subMeshes : away.base.ISubMesh[];
+        /**
+        *
+        */
+        public uvTransform : away.geom.UVTransform;
+        /**
+        * Create a new Mesh object.
+        *
+        * @param geometry                    The geometry used by the mesh that provides it with its shape.
+        * @param material    [optional]        The material with which to render the Mesh.
+        */
+        constructor(geometry: away.base.Geometry, material?: away.materials.IMaterial);
+        /**
+        *
+        */
+        public bakeTransformations(): void;
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        * Disposes mesh including the animator and children. This is a merely a convenience method.
+        * @return
+        */
+        public disposeWithAnimatorAndChildren(): void;
+        /**
+        * Clones this Mesh instance along with all it's children, while re-using the same
+        * material, geometry and animation set. The returned result will be a copy of this mesh,
+        * containing copies of all of it's children.
+        *
+        * Properties that are re-used (i.e. not cloned) by the new copy include name,
+        * geometry, and material. Properties that are cloned or created anew for the copy
+        * include subMeshes, children of the mesh, and the animator.
+        *
+        * If you want to copy just the mesh, reusing it's geometry and material while not
+        * cloning it's children, the simplest way is to create a new mesh manually:
+        *
+        * <code>
+        * var clone : Mesh = new Mesh(original.geometry, original.material);
+        * </code>
+        */
+        public clone(): away.base.DisplayObject;
+        /**
+        * //TODO
+        *
+        * @param subGeometry
+        * @returns {SubMeshBase}
+        */
+        public getSubMeshFromSubGeometry(subGeometry: away.base.TriangleSubGeometry): away.base.ISubMesh;
+        /**
+        * @protected
+        */
+        public pCreateEntityPartitionNode(): away.partition.EntityNode;
+        /**
+        * //TODO
+        *
+        * @protected
+        */
+        public pUpdateBounds(): void;
+        /**
+        * //TODO
+        *
+        * @private
+        */
+        private onGeometryBoundsInvalid(event);
+        /**
+        * Called when a SubGeometry was added to the Geometry.
+        *
+        * @private
+        */
+        private onSubGeometryAdded(event);
+        /**
+        * Called when a SubGeometry was removed from the Geometry.
+        *
+        * @private
+        */
+        private onSubGeometryRemoved(event);
+        /**
+        * Adds a SubMeshBase wrapping a SubGeometry.
+        *
+        * @param subGeometry
+        */
+        private addSubMesh(subGeometry);
+        /**
+        * //TODO
+        *
+        * @param shortestCollisionDistance
+        * @param findClosest
+        * @returns {boolean}
+        *
+        * @internal
+        */
+        public _iTestCollision(shortestCollisionDistance: number, findClosest: boolean): boolean;
+        /**
+        *
+        * @param renderer
+        *
+        * @internal
+        */
+        public _iCollectRenderables(renderer: away.render.IRenderer): void;
     }
 }
 /**
@@ -10820,6 +11984,53 @@ declare module away.entities {
         * Creates a new Shape object.
         */
         constructor();
+    }
+}
+declare module away.entities {
+    /**
+    * A Skybox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
+    * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
+    * the sky box is always as large as possible without being clipped.
+    */
+    class Skybox extends away.base.DisplayObject implements entities.IEntity, away.base.IMaterialOwner {
+        private _uvTransform;
+        private _material;
+        private _animator;
+        public animator : away.animators.IAnimator;
+        /**
+        *
+        */
+        public uvTransform : away.geom.UVTransform;
+        /**
+        * Create a new Skybox object.
+        *
+        * @param material	The material with which to render the Skybox.
+        */
+        constructor(material: away.materials.IMaterial);
+        /**
+        * The material with which to render the Skybox.
+        */
+        public material : away.materials.IMaterial;
+        public assetType : string;
+        /**
+        * @protected
+        */
+        public pInvalidateBounds(): void;
+        /**
+        * @protected
+        */
+        public pCreateEntityPartitionNode(): away.partition.EntityNode;
+        /**
+        * @protected
+        */
+        public pGetDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
+        /**
+        * @protected
+        */
+        public pUpdateBounds(): void;
+        public castsShadows : boolean;
+        public _iCollectRenderables(renderer: away.render.IRenderer): void;
+        public _iCollectRenderable(renderer: away.render.IRenderer): void;
     }
 }
 /**
@@ -12695,6 +13906,12 @@ declare module away.bounds {
         public nullify(): void;
         public disposeRenderable(): void;
         public fromVertices(vertices: number[]): void;
+        /**
+        * Updates the bounds to fit a Geometry object.
+        *
+        * @param geometry The Geometry object to be bounded.
+        */
+        public fromGeometry(geometry: away.base.Geometry): void;
         public fromSphere(center: away.geom.Vector3D, radius: number): void;
         public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
         public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
@@ -12799,10 +14016,10 @@ declare module away.bounds {
 declare module away.controllers {
     class ControllerBase {
         public _pAutoUpdate: boolean;
-        public _pTargetObject: away.entities.IEntity;
-        constructor(targetObject?: away.entities.IEntity);
+        public _pTargetObject: away.base.DisplayObject;
+        constructor(targetObject?: away.base.DisplayObject);
         public pNotifyUpdate(): void;
-        public targetObject : away.entities.IEntity;
+        public targetObject : away.base.DisplayObject;
         public autoUpdate : boolean;
         public update(interpolate?: boolean): void;
     }
@@ -12813,7 +14030,7 @@ declare module away.controllers {
         public _pLookAtObject: away.base.DisplayObject;
         public _pOrigin: away.geom.Vector3D;
         private _onLookAtObjectChangedDelegate;
-        constructor(targetObject?: away.entities.IEntity, lookAtObject?: away.base.DisplayObject);
+        constructor(targetObject?: away.base.DisplayObject, lookAtObject?: away.base.DisplayObject);
         public lookAtPosition : away.geom.Vector3D;
         public lookAtObject : away.base.DisplayObject;
         public update(interpolate?: boolean): void;
@@ -12839,6 +14056,7 @@ declare module away.controllers {
         private _steps;
         private _yFactor;
         private _wrapPanAngle;
+        private _upAxis;
         /**
         * Fractional step taken each time the <code>hover()</code> method is called. Defaults to 8.
         *
@@ -12897,7 +14115,7 @@ declare module away.controllers {
         /**
         * Creates a new <code>HoverController</code> object.
         */
-        constructor(targetObject?: away.entities.IEntity, lookAtObject?: away.base.DisplayObject, panAngle?: number, tiltAngle?: number, distance?: number, minTiltAngle?: number, maxTiltAngle?: number, minPanAngle?: number, maxPanAngle?: number, steps?: number, yFactor?: number, wrapPanAngle?: boolean);
+        constructor(targetObject?: away.base.DisplayObject, lookAtObject?: away.base.DisplayObject, panAngle?: number, tiltAngle?: number, distance?: number, minTiltAngle?: number, maxTiltAngle?: number, minPanAngle?: number, maxPanAngle?: number, steps?: number, yFactor?: number, wrapPanAngle?: boolean);
         /**
         * Updates the current tilt angle and pan angle values.
         *
@@ -12966,7 +14184,7 @@ declare module away.controllers {
         /**
         * Creates a new <code>HoverController</code> object.
         */
-        constructor(targetObject?: away.entities.IEntity, panAngle?: number, tiltAngle?: number, minTiltAngle?: number, maxTiltAngle?: number, steps?: number, wrapPanAngle?: boolean);
+        constructor(targetObject?: away.base.DisplayObject, panAngle?: number, tiltAngle?: number, minTiltAngle?: number, maxTiltAngle?: number, steps?: number, wrapPanAngle?: boolean);
         /**
         * Updates the current tilt angle and pan angle values.
         *
@@ -12991,7 +14209,7 @@ declare module away.controllers {
     * @see    away3d.containers.View3D
     */
     class FollowController extends controllers.HoverController {
-        constructor(targetObject?: away.entities.IEntity, lookAtObject?: away.base.DisplayObject, tiltAngle?: number, distance?: number);
+        constructor(targetObject?: away.base.DisplayObject, lookAtObject?: away.base.DisplayObject, tiltAngle?: number, distance?: number);
         public update(interpolate?: boolean): void;
     }
 }
@@ -13026,7 +14244,7 @@ declare module away.controllers {
         * Offset of spring center from target in target object space, ie: Where the camera should ideally be in the target object space.
         */
         public positionOffset: away.geom.Vector3D;
-        constructor(targetObject?: away.entities.IEntity, lookAtObject?: away.base.DisplayObject, stiffness?: number, mass?: number, damping?: number);
+        constructor(targetObject?: away.base.DisplayObject, lookAtObject?: away.base.DisplayObject, stiffness?: number, mass?: number, damping?: number);
         public update(interpolate?: boolean): void;
     }
 }
@@ -13037,7 +14255,7 @@ declare module away.materials {
     /**
     * @class away.materials.IMaterial
     */
-    interface IMaterial extends away.events.IEventDispatcher {
+    interface IMaterial extends away.library.IAsset {
         id: string;
         /**
         *
@@ -13046,7 +14264,23 @@ declare module away.materials {
         /**
         *
         */
+        requiresBlending: boolean;
+        /**
+        *
+        */
         width: number;
+        /**
+        * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
+        *
+        * @private
+        */
+        _iMaterialId: number;
+        /**
+        * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
+        *
+        * @private
+        */
+        _iRenderOrderId: number;
         /**
         *
         *
@@ -13073,7 +14307,7 @@ declare module away.materials {
     * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
     * shaders, or entire new material frameworks.
     */
-    class CSSMaterialBase extends away.library.NamedAssetBase implements away.library.IAsset, materials.IMaterial {
+    class CSSMaterialBase extends away.library.NamedAssetBase implements materials.IMaterial {
         private _height;
         private _sizeChanged;
         private _width;
@@ -13191,13 +14425,97 @@ declare module away.materials {
         private notifySizeChanged();
     }
 }
+declare module away.prefabs {
+    /**
+    * PrefabBase is an abstract base class for prefabs, which are prebuilt display objects that allow easy cloning and updating
+    */
+    class PrefabBase extends away.library.NamedAssetBase {
+        public _pObjects: away.base.DisplayObject[];
+        /**
+        * Creates a new PrefabBase object.
+        */
+        constructor();
+        /**
+        * Returns a display object generated from this prefab
+        */
+        public getNewObject(): away.base.DisplayObject;
+        public _pCreateObject(): away.base.DisplayObject;
+        public _iValidate(): void;
+    }
+}
+declare module away.animators {
+    /**
+    * Provides an abstract base class for nodes in an animation blend tree.
+    */
+    class AnimationNodeBase extends away.library.NamedAssetBase implements away.library.IAsset {
+        public _pStateClass: any;
+        public stateClass : any;
+        /**
+        * Creates a new <code>AnimationNodeBase</code> object.
+        */
+        constructor();
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        * @inheritDoc
+        */
+        public assetType : string;
+    }
+}
+declare module away.animators {
+    /**
+    * Provides an interface for data set classes that hold animation data for use in animator classes.
+    *
+    * @see away3d.animators.AnimatorBase
+    */
+    interface IAnimationSet {
+        /**
+        * Check to determine whether a state is registered in the animation set under the given name.
+        *
+        * @param stateName The name of the animation state object to be checked.
+        */
+        hasAnimation(name: string): boolean;
+        /**
+        * Retrieves the animation state object registered in the animation data set under the given name.
+        *
+        * @param stateName The name of the animation state object to be retrieved.
+        */
+        getAnimation(name: string): animators.AnimationNodeBase;
+        /**
+        * Indicates whether the properties of the animation data contained within the set combined with
+        * the vertex registers aslready in use on shading materials allows the animation data to utilise
+        * GPU calls.
+        */
+        usesCPU: boolean;
+        /**
+        * Called by the material to reset the GPU indicator before testing whether register space in the shader
+        * is available for running GPU-based animation code.
+        *
+        * @private
+        */
+        resetGPUCompatibility(): any;
+        /**
+        * Called by the animator to void the GPU indicator when register space in the shader
+        * is no longer available for running GPU-based animation code.
+        *
+        * @private
+        */
+        cancelGPUCompatibility(): any;
+    }
+}
 declare module away.animators {
     /**
     * Provides an interface for animator classes that control animation output from a data set subtype of <code>AnimationSetBase</code>.
     *
     * @see away.animators.IAnimationSet
     */
-    interface IAnimator {
+    interface IAnimator extends away.library.IAsset {
+        /**
+        *
+        */
+        animationSet: animators.IAnimationSet;
         /**
         *
         */
@@ -13218,6 +14536,12 @@ declare module away.animators {
         * @private
         */
         removeOwner(mesh: away.entities.IEntity): any;
+        /**
+        * //TODO
+        *
+        * @param sourceSubGeometry
+        */
+        getRenderableSubGeometry(renderable: away.pool.IRenderable, sourceSubGeometry: away.base.SubGeometryBase): away.base.SubGeometryBase;
     }
 }
 declare module away.textures {

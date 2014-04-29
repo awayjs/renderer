@@ -1,17 +1,26 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
 //<reference path="../../../src/Away3D.ts" />
 
-module tests.base{
+module tests.base
+{
+	import View							= away.containers.View;
+	import Mesh							= away.entities.Mesh;
+	import PointLight					= away.lights.PointLight;
+	import ColorMaterial				= away.materials.ColorMaterial;
+	import PrimitiveTorusPrefab			= away.prefabs.PrimitiveTorusPrefab;
+	import PerspectiveProjection		= away.projections.PerspectiveProjection;
+	import DefaultRenderer				= away.render.DefaultRenderer;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
     export class Object3DTestV2
     {
 
-        private view        : away.containers.View;
-        private torus       : away.primitives.TorusGeometry;
+        private view        : View;
+        private torus       : PrimitiveTorusPrefab;
 
-        private light       : away.lights.PointLight;
-        private raf         : away.utils.RequestAnimationFrame;
-        private meshes      : away.entities.Mesh[];
+        private light       : PointLight;
+        private raf         : RequestAnimationFrame;
+        private meshes      : Array<Mesh>;
 
         private t           : number = 0;
         private tPos        : number = 0;
@@ -24,40 +33,38 @@ module tests.base{
             away.Debug.THROW_ERRORS     = false;
             away.Debug.LOG_PI_ERRORS    = false;
 
-            this.meshes                 = new Array<away.entities.Mesh>();
-            this.light                  = new away.lights.PointLight();
-            this.view                   = new away.containers.View(new away.render.DefaultRenderer());
+            this.meshes                 = new Array<Mesh>();
+            this.light                  = new PointLight();
+            this.view                   = new View(new DefaultRenderer());
 
-            var perspectiveProjection : away.projections.PerspectiveProjection = <away.projections.PerspectiveProjection> this.view.camera.projection;
+            var perspectiveProjection : PerspectiveProjection = <PerspectiveProjection> this.view.camera.projection;
 			perspectiveProjection.fieldOfView = 75;
 
 
-            this.view.camera.z          = 0;
-            this.view.backgroundColor   = 0x000000;
-            this.view.backgroundAlpha   = 0;
-            this.torus                  = new away.primitives.TorusGeometry(150 , 50 , 32 , 32 , false );
+            this.view.camera.z = 0;
+            this.view.backgroundColor = 0x000000;
+            this.view.backgroundAlpha = 0;
+            this.torus = new PrimitiveTorusPrefab(150, 50, 32, 32, false);
 
-            var l       : number        = 10;
+            var l:number = 10;
             //var radius  : number        = 1000;
 
-            for (var c : number = 0; c < l ; c++)
-            {
+            for (var c:number = 0; c < l; c++) {
 
-                var t : number=Math.PI * 2 * c / l;
+                var t:number=Math.PI * 2 * c / l;
 
-                var m : away.entities.Mesh = new away.entities.Mesh( this.torus );
-                    m.x = Math.cos(t)*this.radius;
-                    m.y = 0;
-                    m.z = Math.sin(t)*this.radius;
+                var mesh:Mesh = <Mesh> this.torus.getNewObject();
+				mesh.x = Math.cos(t)*this.radius;
+				mesh.y = 0;
+				mesh.z = Math.sin(t)*this.radius;
 
-                this.view.scene.addChild( m );
-                this.meshes.push( m );
-
+                this.view.scene.addChild(mesh);
+                this.meshes.push(mesh);
             }
 
             this.view.scene.addChild( this.light );
 
-            this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
+            this.raf = new RequestAnimationFrame( this.tick , this );
             this.raf.start();
             this.resize( null );
 
@@ -68,56 +75,47 @@ module tests.base{
 
         private tick( e )
         {
-
             this.tPos += .02;
 
-            for ( var c : number = 0 ; c < this.meshes.length ; c ++ )
-            {
+            for ( var c:number = 0; c < this.meshes.length; c ++ ) {
 
-                var objPos : number=Math.PI * 2 * c / this.meshes.length;
+                var objPos:number = Math.PI*2*c/this.meshes.length;
 
                 this.t += .005;
-                var s : number = 1.2 + Math.sin( this.t + objPos );
+                var s:number = 1.2 + Math.sin( this.t + objPos );
 
-
-                this.meshes[c].rotationY    += 2 * ( c / this.meshes.length );
-                this.meshes[c].rotationX    += 2* ( c / this.meshes.length );
-                this.meshes[c].rotationZ    += 2* ( c / this.meshes.length );
-                this.meshes[c].scaleX       = this.meshes[c].scaleY = this.meshes[c].scaleZ = s
-                this.meshes[c].x            = Math.cos(objPos + this.tPos)*this.radius;
-                this.meshes[c].y            = Math.sin( this.t ) * 500;
-                this.meshes[c].z            = Math.sin(objPos + this.tPos)*this.radius;
-
+                this.meshes[c].rotationY += 2*(c/this.meshes.length);
+                this.meshes[c].rotationX += 2*(c/this.meshes.length);
+                this.meshes[c].rotationZ += 2*(c/this.meshes.length);
+                this.meshes[c].scaleX = this.meshes[c].scaleY = this.meshes[c].scaleZ = s;
+                this.meshes[c].x = Math.cos(objPos + this.tPos)*this.radius;
+                this.meshes[c].y = Math.sin(this.t)*500;
+                this.meshes[c].z = Math.sin(objPos + this.tPos)*this.radius;
             }
 
 
             //this.view.camera.y = Math.sin( this.tPos ) * 1500;
 
-            if ( this.follow )
-            {
-                this.view.camera.lookAt( this.meshes[0].transform.position );
-            }
+            if (this.follow)
+                this.view.camera.lookAt(this.meshes[0].transform.position);
 
-            this.view.camera.y = Math.sin( this.tPos ) * 1500;
+            this.view.camera.y = Math.sin(this.tPos) * 1500;
             this.view.render();
-
         }
 
-        public resize( e )
+        public resize(e)
         {
-            this.view.y         = ( window.innerHeight - this.view.height ) / 2;
-            this.view.x         = ( window.innerWidth - this.view.width) / 2;
-            this.view.render();
+			this.view.y = 0;
+			this.view.x = 0;
+
+			this.view.width = window.innerWidth;
+			this.view.height = window.innerHeight;
         }
 
         public followObject( e )
         {
-
             this.follow = !this.follow;
-
         }
-
     }
-
 }
 

@@ -3,6 +3,14 @@
 var tests;
 (function (tests) {
     (function (containers) {
+        var View = away.containers.View;
+        var Mesh = away.entities.Mesh;
+        var PointLight = away.lights.PointLight;
+        var ColorMaterial = away.materials.ColorMaterial;
+        var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
+        var DefaultRenderer = away.render.DefaultRenderer;
+        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+
         var View3DTest = (function () {
             function View3DTest() {
                 var _this = this;
@@ -10,26 +18,28 @@ var tests;
                 away.Debug.LOG_PI_ERRORS = false;
 
                 this.meshes = new Array();
-                this.light = new away.lights.PointLight();
-                this.view = new away.containers.View(new away.render.DefaultRenderer());
+                this.light = new PointLight();
+                this.view = new View(new DefaultRenderer());
                 this.view.camera.z = 0;
                 this.view.backgroundColor = 0x776655;
-                this.torus = new away.primitives.TorusGeometry(150, 50, 32, 32, false);
+                this.torus = new PrimitiveTorusPrefab(150, 50, 32, 32, false);
 
                 var l = 10;
                 var radius = 1000;
-                var matB = new away.materials.ColorMaterial();
+                var matB = new ColorMaterial();
+
+                this.torus.material = matB;
 
                 for (var c = 0; c < l; c++) {
                     var t = Math.PI * 2 * c / l;
 
-                    var m = new away.entities.Mesh(this.torus, matB);
-                    m.x = Math.cos(t) * radius;
-                    m.y = 0;
-                    m.z = Math.sin(t) * radius;
+                    var mesh = this.torus.getNewObject();
+                    mesh.x = Math.cos(t) * radius;
+                    mesh.y = 0;
+                    mesh.z = Math.sin(t) * radius;
 
-                    this.view.scene.addChild(m);
-                    this.meshes.push(m);
+                    this.view.scene.addChild(mesh);
+                    this.meshes.push(mesh);
                 }
 
                 this.view.scene.addChild(this.light);
@@ -43,9 +53,8 @@ var tests;
                 };
             }
             View3DTest.prototype.tick = function (e) {
-                for (var c = 0; c < this.meshes.length; c++) {
+                for (var c = 0; c < this.meshes.length; c++)
                     this.meshes[c].rotationY += 2;
-                }
 
                 this.view.camera.rotationY += .5;
                 this.view.render();

@@ -2,6 +2,8 @@
 
 module away.materials
 {
+	import SubGeometry								= away.base.TriangleSubGeometry;
+
 	/**
 	 * The SingleObjectDepthPass provides a material pass that renders a single object to a depth map from the point
 	 * of view from a light.
@@ -166,9 +168,10 @@ module away.materials
 			context.clear(1.0, 1.0, 1.0);
 			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
 			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
-			renderable.subGeometry.activateVertexBuffer(0, stageGL);
-			renderable.subGeometry.activateVertexNormalBuffer(1, stageGL);
-			context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
+
+			stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+			stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.NORMAL_DATA), renderable.getVertexOffset(SubGeometry.NORMAL_DATA), SubGeometry.NORMAL_FORMAT);
+			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 		}
 		
 		/**

@@ -22,23 +22,13 @@
 ///<reference path="events/AnimationStateEvent.ts" />
 ///<reference path="events/AnimatorEvent.ts" />
 ///<reference path="events/ShadingMethodEvent.ts"/>
-///<reference path="events/GeometryEvent.ts"/>
 
-///<reference path="core/base/SubMesh.ts"/>
-///<reference path="core/base/Segment.ts" />
-///<reference path="core/base/SubGeometryBase.ts"/>
-///<reference path="core/base/ISubGeometry.ts"/>
-///<reference path="core/base/CompactSubGeometry.ts"/>
-///<reference path="core/base/SkinnedSubGeometry.ts"/>
-///<reference path="core/base/Geometry.ts"/>
 ///<reference path="core/base/ParticleGeometry.ts"/>
-///<reference path="core/base/SubGeometry.ts"/>
-///<reference path="core/base/SegmentSubGeometry.ts"/>
 
 ///<reference path="core/pool/RenderableBase.ts"/>
 ///<reference path="core/pool/BillboardRenderable.ts"/>
-///<reference path="core/pool/SegmentSetRenderable.ts"/>
-///<reference path="core/pool/SubMeshRenderable.ts"/>
+///<reference path="core/pool/LineSubMeshRenderable.ts"/>
+///<reference path="core/pool/TriangleSubMeshRenderable.ts"/>
 ///<reference path="core/pool/SkyboxRenderable.ts"/>
 
 ///<reference path="core/traverse/EntityCollector.ts" />
@@ -47,7 +37,6 @@
 ///<reference path="core/partition/DirectionalLightNode.ts" />
 ///<reference path="core/partition/LightProbeNode.ts" />
 ///<reference path="core/partition/PointLightNode.ts" />
-///<reference path="core/partition/SkyboxNode.ts" />
 
 ///<reference path="core/pick/PickingColliderBase.ts" />
 ///<reference path="core/pick/JSPickingCollider.ts" />
@@ -60,10 +49,6 @@
 ///<reference path="core/render/Filter3DRenderer.ts"/>
 
 ///<reference path="materials/utils/DefaultMaterialManager.ts"/>
-
-///<reference path="entities/SegmentSet.ts" />
-///<reference path="entities/Mesh.ts"/>
-///<reference path="entities/Skybox.ts" />
 
 ///<reference path="filters/tasks/Filter3DTaskBase.ts"/>
 ///<reference path="filters/Filter3DBase.ts"/>
@@ -165,26 +150,16 @@
 ///<reference path="materials/SegmentMaterial.ts"/>
 ///<reference path="materials/SkyboxMaterial.ts"/>
 
-///<reference path="primitives/PrimitiveBase.ts"/>
-///<reference path="primitives/LineSegment.ts"/>
-///<reference path="primitives/TorusGeometry.ts"/>
-///<reference path="primitives/CubeGeometry.ts"/>
-///<reference path="primitives/PlaneGeometry.ts"/>
-///<reference path="primitives/CapsuleGeometry.ts" />
-///<reference path="primitives/CylinderGeometry.ts" />
-///<reference path="primitives/ConeGeometry.ts" />
-///<reference path="primitives/RegularPolygonGeometry.ts" />
-///<reference path="primitives/SphereGeometry.ts" />
-///<reference path="primitives/WireframePrimitiveBase.ts" />
-///<reference path="primitives/WireframeSphere.ts" />
-///<reference path="primitives/WireframeCone.ts" />
-///<reference path="primitives/WireframeCube.ts" />
-///<reference path="primitives/WireframeCylinder.ts" />
-///<reference path="primitives/WireframePlane.ts" />
-///<reference path="primitives/WireframeRegularPolygon.ts" />
-///<reference path="primitives/WireframeTetrahedron.ts" />
+///<reference path="prefabs/PrimitivePrefabBase.ts"/>
+///<reference path="prefabs/PrimitiveTorusPrefab.ts"/>
+///<reference path="prefabs/PrimitiveCubePrefab.ts"/>
+///<reference path="prefabs/PrimitivePlanePrefab.ts"/>
+///<reference path="prefabs/PrimitiveCapsulePrefab.ts" />
+///<reference path="prefabs/PrimitiveCylinderPrefab.ts" />
+///<reference path="prefabs/PrimitiveConePrefab.ts" />
+///<reference path="prefabs/PrimitivePolygonPrefab.ts" />
+///<reference path="prefabs/PrimitiveSpherePrefab.ts" />
 
-///<reference path="utils/GeometryUtils.ts"/>
 ///<reference path="utils/PerspectiveMatrix3D.ts"/>
 
 ///<reference path="animators/data/AnimationRegisterCache.ts"/>
@@ -201,7 +176,6 @@
 ///<reference path="animators/data/SkeletonPose.ts"/>
 ///<reference path="animators/data/VertexAnimationMode.ts"/>
 
-///<reference path="animators/nodes/AnimationNodeBase.ts"/>
 ///<reference path="animators/nodes/AnimationClipNodeBase.ts"/>
 ///<reference path="animators/nodes/ParticleNodeBase.ts"/>
 ///<reference path="animators/nodes/ParticleAccelerationNode.ts"/>
@@ -267,7 +241,6 @@
 
 ///<reference path="animators/AnimationSetBase.ts"/>
 ///<reference path="animators/AnimatorBase.ts"/>
-///<reference path="animators/IAnimationSet.ts"/>
 ///<reference path="animators/ParticleAnimationSet.ts"/>
 ///<reference path="animators/ParticleAnimator.ts"/>
 ///<reference path="animators/SkeletonAnimator.ts"/>

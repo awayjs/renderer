@@ -1,85 +1,87 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
 //<reference path="../../../src/Away3D.ts" />
 
-module tests.controllers{
+module tests.controllers
+{
+	import View							= away.containers.View;
+	import HoverController				= away.controllers.HoverController;
+	import Mesh							= away.entities.Mesh;
+	import PrimitiveCubePrefab			= away.prefabs.PrimitiveCubePrefab;
+	import DefaultRenderer				= away.render.DefaultRenderer;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
     export class HoverControllerTest
     {
 
-        private _view           : away.containers.View;
-        private _timer          : away.utils.RequestAnimationFrame;
-        private _light          : away.lights.DirectionalLight;
-        private _lightPicker    : away.materials.StaticLightPicker;
-        private _hoverControl   : away.controllers.HoverController;
+        private _view:View;
+        private _timer:RequestAnimationFrame;
+        private _hoverControl:HoverController;
 
-        private _move           : boolean = false;
-        private _lastPanAngle   : number;
-        private _lastTiltAngle  : number;
-        private _lastMouseX     : number;
-        private _lastMouseY     : number;
-        private _wireframeCube  : away.primitives.WireframeCube;
+        private _move:boolean = false;
+        private _lastPanAngle:number;
+        private _lastTiltAngle:number;
+        private _lastMouseX:number;
+        private _lastMouseY:number;
+        private _cube:PrimitiveCubePrefab;
+		private _mesh:Mesh;
 
         constructor()
         {
+            this._view = new View(new DefaultRenderer());
 
-            this._view                = new away.containers.View(new away.render.DefaultRenderer());
+            this._cube = new PrimitiveCubePrefab(400, 400, 400);
+			this._cube.geometryType = "lineSubGeometry";
+			this._mesh = <Mesh> this._cube.getNewObject();
+            this._view.scene.addChild(this._mesh);
 
-            this._wireframeCube         = new away.primitives.WireframeCube( 400 , 400 , 400 )
-            this._view.scene.addChild( this._wireframeCube );
+            this._hoverControl = new away.controllers.HoverController(this._view.camera, this._mesh, 150, 10);
 
-            this._hoverControl          = new away.controllers.HoverController( this._view.camera , this._wireframeCube , 150, 10);
+			window.onresize  = (event:UIEvent) => this.onResize(event);
 
-            window.onresize             = () => this.resize();
-
-            document.onmousedown        = ( e ) => this.onMouseDownHandler( e );
-            document.onmouseup          = ( e ) => this.onMouseUpHandler( e );
-            document.onmousemove        = ( e ) => this.onMouseMove( e );
+			document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
+			document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
+			document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
 
 
-            this.resize();
+            this.onResize();
 
-            this._timer                 = new away.utils.RequestAnimationFrame( this.render , this );
+            this._timer = new RequestAnimationFrame(this.render , this);
             this._timer.start();
-
         }
 
-        private resize( )
+        private onResize(event:UIEvent = null)
         {
-            this._view.y         = 0;
-            this._view.x         = 0;
-            this._view.width     = window.innerWidth;
-            this._view.height    = window.innerHeight;
+            this._view.y = 0;
+            this._view.x = 0;
+            this._view.width = window.innerWidth;
+            this._view.height = window.innerHeight;
         }
 
-        private render( dt : number ) //animate based on dt for firefox
+        private render(dt:number)
         {
             this._view.render();
-
         }
 
-        private onMouseUpHandler( e  )
+        private onMouseUp(event:MouseEvent)
         {
             this._move = false;
         }
 
-        private onMouseMove( e )
+        private onMouseMove(event:MouseEvent)
         {
-            if (this._move)
-            {
-                this._hoverControl.panAngle = 0.3 * (e.clientX - this._lastMouseX) + this._lastPanAngle;
-                this._hoverControl.tiltAngle = 0.3 * (e.clientY - this._lastMouseY) + this._lastTiltAngle;
+            if (this._move) {
+                this._hoverControl.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
+                this._hoverControl.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
             }
         }
 
-        private onMouseDownHandler( e  )
+        private onMouseDown(event:MouseEvent)
         {
-            this._lastPanAngle      = this._hoverControl.panAngle;
-            this._lastTiltAngle     = this._hoverControl.tiltAngle;
-            this._lastMouseX        = e.clientX;//e.clientX;
-            this._lastMouseY        = e.clientY;//e.clientX;
-            this._move              = true;
+            this._lastPanAngle = this._hoverControl.panAngle;
+            this._lastTiltAngle = this._hoverControl.tiltAngle;
+            this._lastMouseX = event.clientX;
+            this._lastMouseY = event.clientY;
+            this._move = true;
         }
-
     }
-
 }

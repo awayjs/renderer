@@ -180,2144 +180,6 @@ var away;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../_definitions.ts"/>
-    (function (events) {
-        /**
-        * Dispatched to notify changes in a geometry object's state.
-        *
-        * @class away.events.GeometryEvent
-        * @see away3d.core.base.Geometry
-        */
-        var GeometryEvent = (function (_super) {
-            __extends(GeometryEvent, _super);
-            /**
-            * Create a new GeometryEvent
-            * @param type The event type.
-            * @param subGeometry An optional SubGeometry object that is the subject of this event.
-            */
-            function GeometryEvent(type, subGeometry) {
-                if (typeof subGeometry === "undefined") { subGeometry = null; }
-                _super.call(this, type);
-                this._subGeometry = subGeometry;
-            }
-            Object.defineProperty(GeometryEvent.prototype, "subGeometry", {
-                /**
-                * The SubGeometry object that is the subject of this event, if appropriate.
-                */
-                get: function () {
-                    return this._subGeometry;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Clones the event.
-            * @return An exact duplicate of the current object.
-            */
-            GeometryEvent.prototype.clone = function () {
-                return new GeometryEvent(this.type, this._subGeometry);
-            };
-            GeometryEvent.SUB_GEOMETRY_ADDED = "SubGeometryAdded";
-
-            GeometryEvent.SUB_GEOMETRY_REMOVED = "SubGeometryRemoved";
-
-            GeometryEvent.BOUNDS_INVALID = "BoundsInvalid";
-            return GeometryEvent;
-        })(away.events.Event);
-        events.GeometryEvent = GeometryEvent;
-    })(away.events || (away.events = {}));
-    var events = away.events;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.base
-    */
-    (function (base) {
-        /**
-        * SubMesh wraps a SubGeometry as a scene graph instantiation. A SubMesh is owned by a Mesh object.
-        *
-        *
-        * @see away.base.SubGeometry
-        * @see away.entities.Mesh
-        *
-        * @class away.base.SubMesh
-        */
-        var SubMesh = (function (_super) {
-            __extends(SubMesh, _super);
-            /**
-            * Creates a new SubMesh object
-            * @param subGeometry The SubGeometry object which provides the geometry data for this SubMesh.
-            * @param parentMesh The Mesh object to which this SubMesh belongs.
-            * @param material An optional material used to render this SubMesh.
-            */
-            function SubMesh(subGeometry, parentMesh, material) {
-                if (typeof material === "undefined") { material = null; }
-                _super.call(this);
-                this._iIndex = 0;
-                this._renderables = new Array();
-
-                this._parentMesh = parentMesh;
-                this._subGeometry = subGeometry;
-                this.material = material;
-
-                this._uvTransform = new away.geom.UVTransform(this);
-            }
-            Object.defineProperty(SubMesh.prototype, "animator", {
-                //TODO test shader picking
-                //		public get shaderPickingDetails():boolean
-                //		{
-                //
-                //			return this.sourceEntity.shaderPickingDetails;
-                //		}
-                /**
-                * The animator object that provides the state for the SubMesh's animation.
-                */
-                get: function () {
-                    return this._parentMesh.animator;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubMesh.prototype, "material", {
-                /**
-                * The material used to render the current SubMesh. If set to null, its parent Mesh's material will be used instead.
-                */
-                get: function () {
-                    return this._iMaterial || this._parentMesh.material;
-                },
-                set: function (value) {
-                    if (this._iMaterial)
-                        this._iMaterial.iRemoveOwner(this);
-
-                    this._iMaterial = value;
-
-                    if (this._iMaterial)
-                        this._iMaterial.iAddOwner(this);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SubMesh.prototype, "sceneTransform", {
-                /**
-                * The scene transform object that transforms from model to world space.
-                */
-                get: function () {
-                    return this._parentMesh.sceneTransform;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubMesh.prototype, "sourceEntity", {
-                /**
-                * The entity that that initially provided the IRenderable to the render pipeline (ie: the owning Mesh object).
-                */
-                get: function () {
-                    return this._parentMesh;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubMesh.prototype, "subGeometry", {
-                /**
-                * The SubGeometry object which provides the geometry data for this SubMesh.
-                */
-                get: function () {
-                    return this._subGeometry;
-                },
-                set: function (value) {
-                    this._subGeometry = value; //TODO remove setter
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SubMesh.prototype, "uvTransform", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._uvTransform;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            *
-            */
-            SubMesh.prototype.dispose = function () {
-                this.material = null;
-
-                var len = this._renderables.length;
-                for (var i = 0; i < len; i++)
-                    this._renderables[i].dispose();
-            };
-
-            /**
-            *
-            * @param camera
-            * @returns {away.geom.Matrix3D}
-            */
-            SubMesh.prototype.getRenderSceneTransform = function (camera) {
-                return this._parentMesh.getRenderSceneTransform(camera);
-            };
-
-            SubMesh.prototype._iAddRenderable = function (renderable) {
-                this._renderables.push(renderable);
-
-                return renderable;
-            };
-
-            SubMesh.prototype._iRemoveRenderable = function (renderable) {
-                var index = this._renderables.indexOf(renderable);
-
-                this._renderables.splice(index, 1);
-
-                return renderable;
-            };
-
-            /**
-            * @internal
-            */
-            SubMesh.prototype._iSetUVMatrixComponents = function (offsetU, offsetV, scaleU, scaleV, rotationUV) {
-            };
-            return SubMesh;
-        })(away.library.NamedAssetBase);
-        base.SubMesh = SubMesh;
-    })(away.base || (away.base = {}));
-    var base = away.base;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (base) {
-        var Segment = (function () {
-            function Segment(start, end, anchor, colorStart, colorEnd, thickness) {
-                if (typeof colorStart === "undefined") { colorStart = 0x333333; }
-                if (typeof colorEnd === "undefined") { colorEnd = 0x333333; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                this._index = -1;
-                this._subSetIndex = -1;
-                // TODO: not yet used: for CurveSegment support
-                anchor = null;
-
-                this._pThickness = thickness * 0.5;
-
-                // TODO: add support for curve using anchor v1
-                // Prefer removing v1 from this, and make Curve a separate class extending Segment? (- David)
-                this._pStart = start;
-                this._pEnd = end;
-                this.startColor = colorStart;
-                this.endColor = colorEnd;
-            }
-            Segment.prototype.updateSegment = function (start, end, anchor, colorStart, colorEnd, thickness) {
-                if (typeof colorStart === "undefined") { colorStart = 0x333333; }
-                if (typeof colorEnd === "undefined") { colorEnd = 0x333333; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                // TODO: not yet used: for CurveSegment support
-                anchor = null;
-                this._pStart = start;
-                this._pEnd = end;
-
-                if (this._startColor != colorStart) {
-                    this.startColor = colorStart;
-                }
-                if (this._endColor != colorEnd) {
-                    this.endColor = colorEnd;
-                }
-                this._pThickness = thickness * 0.5;
-                this.update();
-            };
-
-            Object.defineProperty(Segment.prototype, "start", {
-                get: function () {
-                    return this._pStart;
-                },
-                set: function (value) {
-                    this._pStart = value;
-                    this.update();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Segment.prototype, "end", {
-                get: function () {
-                    return this._pEnd;
-                },
-                set: function (value) {
-                    this._pEnd = value;
-                    this.update();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Segment.prototype, "thickness", {
-                get: function () {
-                    return this._pThickness * 2;
-                },
-                set: function (value) {
-                    this._pThickness = value * 0.5;
-                    this.update();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Segment.prototype, "startColor", {
-                get: function () {
-                    return this._startColor;
-                },
-                set: function (color) {
-                    this._pStartR = ((color >> 16) & 0xff) / 255;
-                    this._pStartG = ((color >> 8) & 0xff) / 255;
-                    this._pStartB = (color & 0xff) / 255;
-
-                    this._startColor = color;
-
-                    this.update();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Segment.prototype, "endColor", {
-                get: function () {
-                    return this._endColor;
-                },
-                set: function (color) {
-                    this._pEndR = ((color >> 16) & 0xff) / 255;
-                    this._pEndG = ((color >> 8) & 0xff) / 255;
-                    this._pEndB = (color & 0xff) / 255;
-
-                    this._endColor = color;
-
-                    this.update();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Segment.prototype.dispose = function () {
-                this._pStart = null;
-                this._pEnd = null;
-            };
-
-            Object.defineProperty(Segment.prototype, "iIndex", {
-                get: function () {
-                    return this._index;
-                },
-                set: function (ind) {
-                    this._index = ind;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Segment.prototype, "iSubSetIndex", {
-                get: function () {
-                    return this._subSetIndex;
-                },
-                set: function (ind) {
-                    this._subSetIndex = ind;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Segment.prototype, "iSegmentsBase", {
-                set: function (segBase) {
-                    this._pSegmentsBase = segBase;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Segment.prototype.update = function () {
-                if (!this._pSegmentsBase) {
-                    return;
-                }
-                this._pSegmentsBase.iUpdateSegment(this);
-            };
-            return Segment;
-        })();
-        base.Segment = Segment;
-    })(away.base || (away.base = {}));
-    var base = away.base;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.base
-    */
-    (function (base) {
-        /**
-        * @class away.base.SubGeometryBase
-        */
-        var SubGeometryBase = (function (_super) {
-            __extends(SubGeometryBase, _super);
-            function SubGeometryBase() {
-                _super.call(this);
-                this._faceNormalsDirty = true;
-                this._faceTangentsDirty = true;
-                this._indexBuffer = new Array(8);
-                this._indexBufferContext = new Array(8);
-                this._indicesInvalid = new Array(8);
-                this._autoDeriveVertexNormals = true;
-                this._autoDeriveVertexTangents = true;
-                this._autoGenerateUVs = false;
-                this._useFaceWeights = false;
-                this._vertexNormalsDirty = true;
-                this._vertexTangentsDirty = true;
-                this._scaleU = 1;
-                this._scaleV = 1;
-                this._uvsDirty = true;
-            }
-            Object.defineProperty(SubGeometryBase.prototype, "autoGenerateDummyUVs", {
-                /**
-                * Defines whether a UV buffer should be automatically generated to contain dummy UV coordinates.
-                * Set to true if a geometry lacks UV data but uses a material that requires it, or leave as false
-                * in cases where UV data is explicitly defined or the material does not require UV data.
-                */
-                get: function () {
-                    return this._autoGenerateUVs;
-                },
-                set: function (value) {
-                    this._autoGenerateUVs = value;
-                    this._uvsDirty = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SubGeometryBase.prototype, "autoDeriveVertexNormals", {
-                /**
-                * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
-                * explicitly.
-                */
-                get: function () {
-                    return this._autoDeriveVertexNormals;
-                },
-                set: function (value) {
-                    this._autoDeriveVertexNormals = value;
-                    this._vertexNormalsDirty = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SubGeometryBase.prototype, "useFaceWeights", {
-                /**
-                * Indicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.
-                */
-                get: function () {
-                    return this._useFaceWeights;
-                },
-                set: function (value) {
-                    this._useFaceWeights = value;
-
-                    if (this._autoDeriveVertexNormals) {
-                        this._vertexNormalsDirty = true;
-                    }
-
-                    if (this._autoDeriveVertexTangents) {
-                        this._vertexTangentsDirty = true;
-                    }
-
-                    this._faceNormalsDirty = true;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SubGeometryBase.prototype, "numTriangles", {
-                /**
-                * The total amount of triangles in the SubGeometry.
-                */
-                get: function () {
-                    return this._numTriangles;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Retrieves the VertexBuffer object that contains triangle indices.
-            * @param context The ContextGL for which we request the buffer
-            * @return The VertexBuffer object that contains triangle indices.
-            */
-            SubGeometryBase.prototype.getIndexBuffer = function (stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-
-                if (!this._indexBuffer[contextIndex] || this._indexBufferContext[contextIndex] != context) {
-                    this._indexBuffer[contextIndex] = context.createIndexBuffer(this._numIndices);
-                    this._indexBufferContext[contextIndex] = context;
-                    this._indicesInvalid[contextIndex] = true;
-                }
-
-                if (this._indicesInvalid[contextIndex]) {
-                    this._indexBuffer[contextIndex].uploadFromArray(this._indices, 0, this._numIndices);
-                    this._indicesInvalid[contextIndex] = false;
-                }
-
-                return this._indexBuffer[contextIndex];
-            };
-
-            /**
-            * Updates the tangents for each face.
-            */
-            SubGeometryBase.prototype.pUpdateFaceTangents = function () {
-                var i = 0;
-                var index1;
-                var index2;
-                var index3;
-                var len = this._indices.length;
-                var ui;
-                var vi;
-                var v0;
-                var dv1;
-                var dv2;
-                var denom;
-                var x0, y0, z0;
-                var dx1, dy1, dz1;
-                var dx2, dy2, dz2;
-                var cx, cy, cz;
-                var vertices = this._vertexData;
-                var uvs = this.UVData;
-                var posStride = this.vertexStride;
-                var posOffset = this.vertexOffset;
-                var texStride = this.UVStride;
-                var texOffset = this.UVOffset;
-
-                if (this._faceTangents == null) {
-                    this._faceTangents = new Array(this._indices.length); //||= new Vector.<Number>(_indices.length, true);
-                }
-
-                while (i < len) {
-                    index1 = this._indices[i];
-                    index2 = this._indices[i + 1];
-                    index3 = this._indices[i + 2];
-
-                    ui = texOffset + index1 * texStride + 1;
-                    v0 = uvs[ui];
-                    ui = texOffset + index2 * texStride + 1;
-                    dv1 = uvs[ui] - v0;
-                    ui = texOffset + index3 * texStride + 1;
-                    dv2 = uvs[ui] - v0;
-
-                    vi = posOffset + index1 * posStride;
-                    x0 = vertices[vi];
-                    y0 = vertices[(vi + 1)];
-                    z0 = vertices[(vi + 2)];
-                    vi = posOffset + index2 * posStride;
-                    dx1 = vertices[(vi)] - x0;
-                    dy1 = vertices[(vi + 1)] - y0;
-                    dz1 = vertices[(vi + 2)] - z0;
-                    vi = posOffset + index3 * posStride;
-                    dx2 = vertices[(vi)] - x0;
-                    dy2 = vertices[(vi + 1)] - y0;
-                    dz2 = vertices[(vi + 2)] - z0;
-
-                    cx = dv2 * dx1 - dv1 * dx2;
-                    cy = dv2 * dy1 - dv1 * dy2;
-                    cz = dv2 * dz1 - dv1 * dz2;
-                    denom = 1 / Math.sqrt(cx * cx + cy * cy + cz * cz);
-
-                    this._faceTangents[i++] = denom * cx;
-                    this._faceTangents[i++] = denom * cy;
-                    this._faceTangents[i++] = denom * cz;
-                }
-
-                this._faceTangentsDirty = false;
-            };
-
-            /**
-            * Updates the normals for each face.
-            */
-            SubGeometryBase.prototype.updateFaceNormals = function () {
-                var i = 0;
-                var j = 0;
-                var k = 0;
-                var index;
-
-                var len = this._indices.length;
-                var x1, x2, x3;
-                var y1, y2, y3;
-                var z1, z2, z3;
-                var dx1, dy1, dz1;
-                var dx2, dy2, dz2;
-                var cx, cy, cz;
-                var d;
-                var vertices = this._vertexData;
-                var posStride = this.vertexStride;
-                var posOffset = this.vertexOffset;
-
-                if (this._faceNormals == null) {
-                    this._faceNormals = new Array(len); //_faceNormals ||= new Vector.<Number>(len, true);
-                }
-
-                if (this._useFaceWeights) {
-                    if (this._faceWeights == null) {
-                        this._faceWeights = new Array(len / 3); //_faceWeights ||= new Vector.<Number>(len/3, true);
-                    }
-                }
-
-                while (i < len) {
-                    index = posOffset + this._indices[i++] * posStride;
-                    x1 = vertices[index];
-                    y1 = vertices[index + 1];
-                    z1 = vertices[index + 2];
-                    index = posOffset + this._indices[i++] * posStride;
-                    x2 = vertices[index];
-                    y2 = vertices[index + 1];
-                    z2 = vertices[index + 2];
-                    index = posOffset + this._indices[i++] * posStride;
-                    x3 = vertices[index];
-                    y3 = vertices[index + 1];
-                    z3 = vertices[index + 2];
-                    dx1 = x3 - x1;
-                    dy1 = y3 - y1;
-                    dz1 = z3 - z1;
-                    dx2 = x2 - x1;
-                    dy2 = y2 - y1;
-                    dz2 = z2 - z1;
-                    cx = dz1 * dy2 - dy1 * dz2;
-                    cy = dx1 * dz2 - dz1 * dx2;
-                    cz = dy1 * dx2 - dx1 * dy2;
-                    d = Math.sqrt(cx * cx + cy * cy + cz * cz);
-
-                    // length of cross product = 2*triangle area
-                    if (this._useFaceWeights) {
-                        var w = d * 10000;
-
-                        if (w < 1) {
-                            w = 1;
-                        }
-
-                        this._faceWeights[k++] = w;
-                    }
-
-                    d = 1 / d;
-
-                    this._faceNormals[j++] = cx * d;
-                    this._faceNormals[j++] = cy * d;
-                    this._faceNormals[j++] = cz * d;
-                }
-
-                this._faceNormalsDirty = false;
-            };
-
-            /**
-            * Updates the vertex normals based on the geometry.
-            */
-            SubGeometryBase.prototype.pUpdateVertexNormals = function (target) {
-                if (this._faceNormalsDirty) {
-                    this.updateFaceNormals();
-                }
-
-                var v1;
-                var f1 = 0;
-                var f2 = 1;
-                var f3 = 2;
-                var lenV = this._vertexData.length;
-                var normalStride = this.vertexNormalStride;
-                var normalOffset = this.vertexNormalOffset;
-
-                if (target == null) {
-                    target = new Array(lenV); //target ||= new Vector.<Number>(lenV, true);
-                }
-
-                v1 = normalOffset;
-
-                while (v1 < lenV) {
-                    target[v1] = 0.0;
-                    target[v1 + 1] = 0.0;
-                    target[v1 + 2] = 0.0;
-                    v1 += normalStride;
-                }
-
-                var i = 0;
-                var k = 0;
-                var lenI = this._indices.length;
-                var index;
-                var weight;
-
-                while (i < lenI) {
-                    weight = this._useFaceWeights ? this._faceWeights[k++] : 1;
-                    index = normalOffset + this._indices[i++] * normalStride;
-                    target[index++] += this._faceNormals[f1] * weight;
-                    target[index++] += this._faceNormals[f2] * weight;
-                    target[index] += this._faceNormals[f3] * weight;
-                    index = normalOffset + this._indices[i++] * normalStride;
-                    target[index++] += this._faceNormals[f1] * weight;
-                    target[index++] += this._faceNormals[f2] * weight;
-                    target[index] += this._faceNormals[f3] * weight;
-                    index = normalOffset + this._indices[i++] * normalStride;
-                    target[index++] += this._faceNormals[f1] * weight;
-                    target[index++] += this._faceNormals[f2] * weight;
-                    target[index] += this._faceNormals[f3] * weight;
-                    f1 += 3;
-                    f2 += 3;
-                    f3 += 3;
-                }
-
-                v1 = normalOffset;
-                while (v1 < lenV) {
-                    var vx = target[v1];
-                    var vy = target[v1 + 1];
-                    var vz = target[v1 + 2];
-                    var d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
-                    target[v1] = vx * d;
-                    target[v1 + 1] = vy * d;
-                    target[v1 + 2] = vz * d;
-                    v1 += normalStride;
-                }
-
-                this._vertexNormalsDirty = false;
-
-                return target;
-            };
-
-            /**
-            * Updates the vertex tangents based on the geometry.
-            */
-            SubGeometryBase.prototype.pUpdateVertexTangents = function (target) {
-                if (this._faceTangentsDirty) {
-                    this.pUpdateFaceTangents();
-                }
-
-                var i;
-                var lenV = this._vertexData.length;
-                var tangentStride = this.vertexTangentStride;
-                var tangentOffset = this.vertexTangentOffset;
-
-                if (target == null) {
-                    target = new Array(lenV); //target ||= new Vector.<Number>(lenV, true);
-                }
-
-                i = tangentOffset;
-
-                while (i < lenV) {
-                    target[i] = 0.0;
-                    target[i + 1] = 0.0;
-                    target[i + 2] = 0.0;
-                    i += tangentStride;
-                }
-
-                var k = 0;
-                var lenI = this._indices.length;
-                var index;
-                var weight;
-                var f1 = 0;
-                var f2 = 1;
-                var f3 = 2;
-
-                i = 0;
-
-                while (i < lenI) {
-                    weight = this._useFaceWeights ? this._faceWeights[k++] : 1;
-                    index = tangentOffset + this._indices[i++] * tangentStride;
-                    target[index++] += this._faceTangents[f1] * weight;
-                    target[index++] += this._faceTangents[f2] * weight;
-                    target[index] += this._faceTangents[f3] * weight;
-                    index = tangentOffset + this._indices[i++] * tangentStride;
-                    target[index++] += this._faceTangents[f1] * weight;
-                    target[index++] += this._faceTangents[f2] * weight;
-                    target[index] += this._faceTangents[f3] * weight;
-                    index = tangentOffset + this._indices[i++] * tangentStride;
-                    target[index++] += this._faceTangents[f1] * weight;
-                    target[index++] += this._faceTangents[f2] * weight;
-                    target[index] += this._faceTangents[f3] * weight;
-                    f1 += 3;
-                    f2 += 3;
-                    f3 += 3;
-                }
-
-                i = tangentOffset;
-
-                while (i < lenV) {
-                    var vx = target[i];
-                    var vy = target[i + 1];
-                    var vz = target[i + 2];
-                    var d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
-                    target[i] = vx * d;
-                    target[i + 1] = vy * d;
-                    target[i + 2] = vz * d;
-                    i += tangentStride;
-                }
-
-                this._vertexTangentsDirty = false;
-
-                return target;
-            };
-
-            SubGeometryBase.prototype.dispose = function () {
-                this.pDisposeIndexBuffers(this._indexBuffer);
-                this._indices = null;
-                this._indexBufferContext = null;
-                this._faceNormals = null;
-                this._faceWeights = null;
-                this._faceTangents = null;
-                this._vertexData = null;
-            };
-
-            Object.defineProperty(SubGeometryBase.prototype, "indexData", {
-                /**
-                * The raw index data that define the faces.
-                *
-                * @private
-                */
-                get: function () {
-                    return this._indices;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Updates the face indices of the SubGeometry.
-            * @param indices The face indices to upload.
-            */
-            SubGeometryBase.prototype.updateIndexData = function (indices /*uint*/ ) {
-                this._indices = indices;
-                this._numIndices = indices.length;
-
-                var numTriangles = this._numIndices / 3;
-
-                if (this._numTriangles != numTriangles) {
-                    this.pDisposeIndexBuffers(this._indexBuffer);
-                }
-
-                this._numTriangles = numTriangles;
-                this.pInvalidateBuffers(this._indicesInvalid);
-                this._faceNormalsDirty = true;
-
-                if (this._autoDeriveVertexNormals) {
-                    this._vertexNormalsDirty = true;
-                }
-
-                if (this._autoDeriveVertexTangents) {
-                    this._vertexTangentsDirty = true;
-                }
-            };
-
-            /**
-            * Disposes all buffers in a given vector.
-            * @param buffers The vector of buffers to dispose.
-            */
-            SubGeometryBase.prototype.pDisposeIndexBuffers = function (buffers) {
-                for (var i = 0; i < 8; ++i) {
-                    if (buffers[i]) {
-                        buffers[i].dispose();
-                        buffers[i] = null;
-                    }
-                }
-            };
-
-            /**
-            * Disposes all buffers in a given vector.
-            * @param buffers The vector of buffers to dispose.
-            */
-            SubGeometryBase.prototype.pDisposeVertexBuffers = function (buffers) {
-                for (var i = 0; i < 8; ++i) {
-                    if (buffers[i]) {
-                        buffers[i].dispose();
-                        buffers[i] = null;
-                    }
-                }
-            };
-
-            Object.defineProperty(SubGeometryBase.prototype, "autoDeriveVertexTangents", {
-                /**
-                * True if the vertex tangents should be derived from the geometry, false if the vertex normals are set
-                * explicitly.
-                */
-                get: function () {
-                    return this._autoDeriveVertexTangents;
-                },
-                set: function (value) {
-                    this._autoDeriveVertexTangents = value;
-                    this._vertexTangentsDirty = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SubGeometryBase.prototype, "faceNormals", {
-                /**
-                * The raw data of the face normals, in the same order as the faces are listed in the index list.
-                *
-                * @private
-                */
-                get: function () {
-                    if (this._faceNormalsDirty) {
-                        this.updateFaceNormals();
-                    }
-
-                    return this._faceNormals;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Invalidates all buffers in a vector, causing them the update when they are first requested.
-            * @param buffers The vector of buffers to invalidate.
-            */
-            SubGeometryBase.prototype.pInvalidateBuffers = function (invalid) {
-                for (var i = 0; i < 8; ++i) {
-                    invalid[i] = true;
-                }
-            };
-
-            Object.defineProperty(SubGeometryBase.prototype, "UVStride", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "vertexData", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "vertexPositionData", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "vertexNormalData", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "vertexTangentData", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "UVData", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "vertexStride", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "vertexNormalStride", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "vertexTangentStride", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "vertexOffset", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "vertexNormalOffset", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "vertexTangentOffset", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "UVOffset", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            SubGeometryBase.prototype.pInvalidateBounds = function () {
-                if (this._parentGeometry) {
-                    var me = this;
-                    this._parentGeometry.iInvalidateBounds(me);
-                }
-            };
-
-            Object.defineProperty(SubGeometryBase.prototype, "parentGeometry", {
-                /**
-                * The Geometry object that 'owns' this SubGeometry object.
-                *
-                * @private
-                */
-                get: function () {
-                    return this._parentGeometry;
-                },
-                set: function (value) {
-                    this._parentGeometry = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SubGeometryBase.prototype, "scaleU", {
-                /**
-                * Scales the uv coordinates
-                * @param scaleU The amount by which to scale on the u axis. Default is 1;
-                * @param scaleV The amount by which to scale on the v axis. Default is 1;
-                */
-                get: function () {
-                    return this._scaleU;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometryBase.prototype, "scaleV", {
-                get: function () {
-                    return this._scaleV;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            SubGeometryBase.prototype.scaleUV = function (scaleU, scaleV) {
-                if (typeof scaleU === "undefined") { scaleU = 1; }
-                if (typeof scaleV === "undefined") { scaleV = 1; }
-                var offset = this.UVOffset;
-                var stride = this.UVStride;
-                var uvs = this.UVData;
-                var len = uvs.length;
-                var ratioU = scaleU / this._scaleU;
-                var ratioV = scaleV / this._scaleV;
-
-                for (var i = offset; i < len; i += stride) {
-                    uvs[i] *= ratioU;
-                    uvs[i + 1] *= ratioV;
-                }
-
-                this._scaleU = scaleU;
-                this._scaleV = scaleV;
-            };
-
-            /**
-            * Scales the geometry.
-            * @param scale The amount by which to scale.
-            */
-            SubGeometryBase.prototype.scale = function (scale) {
-                var vertices = this.UVData;
-                var len = vertices.length;
-                var offset = this.vertexOffset;
-                var stride = this.vertexStride;
-
-                for (var i = offset; i < len; i += stride) {
-                    vertices[i] *= scale;
-                    vertices[i + 1] *= scale;
-                    vertices[i + 2] *= scale;
-                }
-            };
-
-            SubGeometryBase.prototype.applyTransformation = function (transform) {
-                var vertices = this._vertexData;
-                var normals = this.vertexNormalData;
-                var tangents = this.vertexTangentData;
-                var posStride = this.vertexStride;
-                var normalStride = this.vertexNormalStride;
-                var tangentStride = this.vertexTangentStride;
-                var posOffset = this.vertexOffset;
-                var normalOffset = this.vertexNormalOffset;
-                var tangentOffset = this.vertexTangentOffset;
-                var len = vertices.length / posStride;
-                var i;
-                var i1;
-                var i2;
-                var vector = new away.geom.Vector3D();
-
-                var bakeNormals = normals != null;
-                var bakeTangents = tangents != null;
-                var invTranspose;
-
-                if (bakeNormals || bakeTangents) {
-                    invTranspose = transform.clone();
-                    invTranspose.invert();
-                    invTranspose.transpose();
-                }
-
-                var vi0 = posOffset;
-                var ni0 = normalOffset;
-                var ti0 = tangentOffset;
-
-                for (i = 0; i < len; ++i) {
-                    i1 = vi0 + 1;
-                    i2 = vi0 + 2;
-
-                    // bake position
-                    vector.x = vertices[vi0];
-                    vector.y = vertices[i1];
-                    vector.z = vertices[i2];
-                    vector = transform.transformVector(vector);
-                    vertices[vi0] = vector.x;
-                    vertices[i1] = vector.y;
-                    vertices[i2] = vector.z;
-                    vi0 += posStride;
-
-                    // bake normal
-                    if (bakeNormals) {
-                        i1 = ni0 + 1;
-                        i2 = ni0 + 2;
-                        vector.x = normals[ni0];
-                        vector.y = normals[i1];
-                        vector.z = normals[i2];
-                        vector = invTranspose.deltaTransformVector(vector);
-                        vector.normalize();
-                        normals[ni0] = vector.x;
-                        normals[i1] = vector.y;
-                        normals[i2] = vector.z;
-                        ni0 += normalStride;
-                    }
-
-                    // bake tangent
-                    if (bakeTangents) {
-                        i1 = ti0 + 1;
-                        i2 = ti0 + 2;
-                        vector.x = tangents[ti0];
-                        vector.y = tangents[i1];
-                        vector.z = tangents[i2];
-                        vector = invTranspose.deltaTransformVector(vector);
-                        vector.normalize();
-                        tangents[ti0] = vector.x;
-                        tangents[i1] = vector.y;
-                        tangents[i2] = vector.z;
-                        ti0 += tangentStride;
-                    }
-                }
-            };
-
-            SubGeometryBase.prototype.pUpdateDummyUVs = function (target) {
-                this._uvsDirty = false;
-                var idx;
-                var uvIdx;
-                var stride = this.UVStride;
-                var skip = stride - 2;
-                var len = this._vertexData.length / this.vertexStride * stride;
-
-                if (!target) {
-                    target = new Array();
-                }
-
-                target.length = len;
-
-                idx = this.UVOffset;
-                uvIdx = 0;
-
-                while (idx < len) {
-                    target[idx++] = uvIdx * .5;
-                    target[idx++] = 1.0 - (uvIdx & 1);
-                    idx += skip;
-
-                    if (++uvIdx == 3) {
-                        uvIdx = 0;
-                    }
-                }
-
-                return target;
-            };
-            return SubGeometryBase;
-        })(away.library.NamedAssetBase);
-        base.SubGeometryBase = SubGeometryBase;
-    })(away.base || (away.base = {}));
-    var base = away.base;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.base
-    */
-    (function (base) {
-        /**
-        * @class away.base.CompactSubGeometry
-        */
-        var CompactSubGeometry = (function (_super) {
-            __extends(CompactSubGeometry, _super);
-            function CompactSubGeometry() {
-                _super.call(this);
-                this._pVertexDataInvalid = Array(8);
-                this._vertexBuffer = new Array(8);
-                this._bufferContext = new Array(8);
-
-                this._autoDeriveVertexNormals = false;
-                this._autoDeriveVertexTangents = false;
-            }
-            Object.defineProperty(CompactSubGeometry.prototype, "numVertices", {
-                get: function () {
-                    return this._pNumVertices;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Updates the vertex data. All vertex properties are contained in a single Vector, and the order is as follows:
-            * 0 - 2: vertex position X, Y, Z
-            * 3 - 5: normal X, Y, Z
-            * 6 - 8: tangent X, Y, Z
-            * 9 - 10: U V
-            * 11 - 12: Secondary U V
-            */
-            CompactSubGeometry.prototype.updateData = function (data) {
-                if (this._autoDeriveVertexNormals) {
-                    this._vertexNormalsDirty = true;
-                }
-
-                if (this._autoDeriveVertexTangents) {
-                    this._vertexTangentsDirty = true;
-                }
-
-                this._faceNormalsDirty = true;
-                this._faceTangentsDirty = true;
-                this._isolatedVertexPositionDataDirty = true;
-                this._vertexData = data;
-
-                var numVertices = this._vertexData.length / 13;
-
-                if (numVertices != this._pNumVertices) {
-                    this.pDisposeVertexBuffers(this._vertexBuffer);
-                }
-
-                this._pNumVertices = numVertices;
-
-                if (this._pNumVertices == 0) {
-                    throw new Error("Bad data: geometry can't have zero triangles");
-                }
-
-                this.pInvalidateBuffers(this._pVertexDataInvalid);
-                this.pInvalidateBounds();
-            };
-
-            CompactSubGeometry.prototype.activateVertexBuffer = function (index, stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-
-                if (contextIndex != this._contextIndex) {
-                    this.pUpdateActiveBuffer(contextIndex);
-                }
-
-                if (!this._pActiveBuffer || this._activeContext != context) {
-                    this.pCreateBuffer(contextIndex, context);
-                }
-
-                if (this._pActiveDataInvalid) {
-                    this.pUploadData(contextIndex);
-                }
-
-                context.setVertexBufferAt(index, this._pActiveBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
-            };
-
-            CompactSubGeometry.prototype.activateUVBuffer = function (index, stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-
-                if (this._uvsDirty && this._autoGenerateUVs) {
-                    this._vertexData = this.pUpdateDummyUVs(this._vertexData);
-                    this.pInvalidateBuffers(this._pVertexDataInvalid);
-                }
-
-                if (contextIndex != this._contextIndex) {
-                    this.pUpdateActiveBuffer(contextIndex);
-                }
-
-                if (!this._pActiveBuffer || this._activeContext != context) {
-                    this.pCreateBuffer(contextIndex, context);
-                }
-
-                if (this._pActiveDataInvalid) {
-                    this.pUploadData(contextIndex);
-                }
-
-                context.setVertexBufferAt(index, this._pActiveBuffer, 9, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
-            };
-
-            CompactSubGeometry.prototype.activateSecondaryUVBuffer = function (index, stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-
-                if (contextIndex != this._contextIndex) {
-                    this.pUpdateActiveBuffer(contextIndex);
-                }
-
-                if (!this._pActiveBuffer || this._activeContext != context) {
-                    this.pCreateBuffer(contextIndex, context);
-                }
-
-                if (this._pActiveDataInvalid) {
-                    this.pUploadData(contextIndex);
-                }
-
-                context.setVertexBufferAt(index, this._pActiveBuffer, 11, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
-            };
-
-            CompactSubGeometry.prototype.pUploadData = function (contextIndex) {
-                this._pActiveBuffer.uploadFromArray(this._vertexData, 0, this._pNumVertices);
-                this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = false;
-            };
-
-            CompactSubGeometry.prototype.activateVertexNormalBuffer = function (index, stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-
-                if (contextIndex != this._contextIndex) {
-                    this.pUpdateActiveBuffer(contextIndex);
-                }
-
-                if (!this._pActiveBuffer || this._activeContext != context) {
-                    this.pCreateBuffer(contextIndex, context);
-                }
-
-                if (this._pActiveDataInvalid) {
-                    this.pUploadData(contextIndex);
-                }
-
-                context.setVertexBufferAt(index, this._pActiveBuffer, 3, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
-            };
-
-            CompactSubGeometry.prototype.activateVertexTangentBuffer = function (index, stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-
-                if (contextIndex != this._contextIndex) {
-                    this.pUpdateActiveBuffer(contextIndex);
-                }
-
-                if (!this._pActiveBuffer || this._activeContext != context) {
-                    this.pCreateBuffer(contextIndex, context);
-                }
-
-                if (this._pActiveDataInvalid) {
-                    this.pUploadData(contextIndex);
-                }
-
-                context.setVertexBufferAt(index, this._pActiveBuffer, 6, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
-            };
-
-            CompactSubGeometry.prototype.pCreateBuffer = function (contextIndex, context) {
-                this._vertexBuffer[contextIndex] = this._pActiveBuffer = context.createVertexBuffer(this._pNumVertices, 13);
-                this._bufferContext[contextIndex] = this._activeContext = context;
-                this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = true;
-            };
-
-            CompactSubGeometry.prototype.pUpdateActiveBuffer = function (contextIndex) {
-                this._contextIndex = contextIndex;
-                this._pActiveDataInvalid = this._pVertexDataInvalid[contextIndex];
-                this._pActiveBuffer = this._vertexBuffer[contextIndex];
-                this._activeContext = this._bufferContext[contextIndex];
-            };
-
-            Object.defineProperty(CompactSubGeometry.prototype, "vertexData", {
-                get: function () {
-                    if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
-                        this._vertexData = this.pUpdateVertexNormals(this._vertexData);
-                    }
-
-                    if (this._autoDeriveVertexTangents && this._vertexTangentsDirty) {
-                        this._vertexData = this.pUpdateVertexTangents(this._vertexData);
-                    }
-
-                    if (this._uvsDirty && this._autoGenerateUVs) {
-                        this._vertexData = this.pUpdateDummyUVs(this._vertexData);
-                    }
-
-                    return this._vertexData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            CompactSubGeometry.prototype.pUpdateVertexNormals = function (target) {
-                this.pInvalidateBuffers(this._pVertexDataInvalid);
-                return _super.prototype.pUpdateVertexNormals.call(this, target);
-            };
-
-            CompactSubGeometry.prototype.pUpdateVertexTangents = function (target) {
-                if (this._vertexNormalsDirty) {
-                    this._vertexData = this.pUpdateVertexNormals(this._vertexData);
-                }
-
-                this.pInvalidateBuffers(this._pVertexDataInvalid);
-
-                return _super.prototype.pUpdateVertexTangents.call(this, target);
-            };
-
-            Object.defineProperty(CompactSubGeometry.prototype, "vertexNormalData", {
-                get: function () {
-                    if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
-                        this._vertexData = this.pUpdateVertexNormals(this._vertexData);
-                    }
-
-                    return this._vertexData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CompactSubGeometry.prototype, "vertexTangentData", {
-                get: function () {
-                    if (this._autoDeriveVertexTangents && this._vertexTangentsDirty) {
-                        this._vertexData = this.pUpdateVertexTangents(this._vertexData);
-                    }
-
-                    return this._vertexData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CompactSubGeometry.prototype, "UVData", {
-                get: function () {
-                    if (this._uvsDirty && this._autoGenerateUVs) {
-                        this._vertexData = this.pUpdateDummyUVs(this._vertexData);
-                        this.pInvalidateBuffers(this._pVertexDataInvalid);
-                    }
-
-                    return this._vertexData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            CompactSubGeometry.prototype.applyTransformation = function (transform) {
-                _super.prototype.applyTransformation.call(this, transform);
-                this.pInvalidateBuffers(this._pVertexDataInvalid);
-            };
-
-            CompactSubGeometry.prototype.scale = function (scale) {
-                _super.prototype.scale.call(this, scale);
-                this.pInvalidateBuffers(this._pVertexDataInvalid);
-            };
-
-            CompactSubGeometry.prototype.clone = function () {
-                var clone = new CompactSubGeometry();
-
-                clone._autoDeriveVertexNormals = this._autoDeriveVertexNormals;
-                clone._autoDeriveVertexTangents = this._autoDeriveVertexTangents;
-
-                clone.updateData(this._vertexData.concat());
-                clone.updateIndexData(this._indices.concat());
-
-                return clone;
-            };
-
-            CompactSubGeometry.prototype.scaleUV = function (scaleU, scaleV) {
-                if (typeof scaleU === "undefined") { scaleU = 1; }
-                if (typeof scaleV === "undefined") { scaleV = 1; }
-                _super.prototype.scaleUV.call(this, scaleU, scaleV);
-
-                this.pInvalidateBuffers(this._pVertexDataInvalid);
-            };
-
-            Object.defineProperty(CompactSubGeometry.prototype, "vertexStride", {
-                get: function () {
-                    return 13;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CompactSubGeometry.prototype, "vertexNormalStride", {
-                get: function () {
-                    return 13;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CompactSubGeometry.prototype, "vertexTangentStride", {
-                get: function () {
-                    return 13;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CompactSubGeometry.prototype, "UVStride", {
-                get: function () {
-                    return 13;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CompactSubGeometry.prototype, "secondaryUVStride", {
-                get: function () {
-                    return 13;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CompactSubGeometry.prototype, "vertexOffset", {
-                get: function () {
-                    return 0;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CompactSubGeometry.prototype, "vertexNormalOffset", {
-                get: function () {
-                    return 3;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CompactSubGeometry.prototype, "vertexTangentOffset", {
-                get: function () {
-                    return 6;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CompactSubGeometry.prototype, "UVOffset", {
-                get: function () {
-                    return 9;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CompactSubGeometry.prototype, "secondaryUVOffset", {
-                get: function () {
-                    return 11;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            CompactSubGeometry.prototype.dispose = function () {
-                _super.prototype.dispose.call(this);
-                this.pDisposeVertexBuffers(this._vertexBuffer);
-                this._vertexBuffer = null;
-            };
-
-            CompactSubGeometry.prototype.pDisposeVertexBuffers = function (buffers) {
-                _super.prototype.pDisposeVertexBuffers.call(this, buffers);
-                this._pActiveBuffer = null;
-            };
-
-            CompactSubGeometry.prototype.pInvalidateBuffers = function (invalid) {
-                _super.prototype.pInvalidateBuffers.call(this, invalid);
-                this._pActiveDataInvalid = true;
-            };
-
-            CompactSubGeometry.prototype.cloneWithSeperateBuffers = function () {
-                var clone = new away.base.SubGeometry();
-
-                clone.updateVertexData(this._isolatedVertexPositionData ? this._isolatedVertexPositionData : this._isolatedVertexPositionData = this.stripBuffer(0, 3));
-                clone.autoDeriveVertexNormals = this._autoDeriveVertexNormals;
-                clone.autoDeriveVertexTangents = this._autoDeriveVertexTangents;
-
-                if (!this._autoDeriveVertexNormals) {
-                    clone.updateVertexNormalData(this.stripBuffer(3, 3));
-                }
-
-                if (!this._autoDeriveVertexTangents) {
-                    clone.updateVertexTangentData(this.stripBuffer(6, 3));
-                }
-
-                clone.updateUVData(this.stripBuffer(9, 2));
-                clone.updateSecondaryUVData(this.stripBuffer(11, 2));
-                clone.updateIndexData(this.indexData.concat());
-
-                return clone;
-            };
-
-            Object.defineProperty(CompactSubGeometry.prototype, "vertexPositionData", {
-                get: function () {
-                    if (this._isolatedVertexPositionDataDirty || !this._isolatedVertexPositionData) {
-                        this._isolatedVertexPositionData = this.stripBuffer(0, 3);
-                        this._isolatedVertexPositionDataDirty = false;
-                    }
-
-                    return this._isolatedVertexPositionData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CompactSubGeometry.prototype, "strippedUVData", {
-                get: function () {
-                    return this.stripBuffer(9, 2);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Isolate and returns a Vector.Number of a specific buffer type
-            *
-            * - stripBuffer(0, 3), return only the vertices
-            * - stripBuffer(3, 3): return only the normals
-            * - stripBuffer(6, 3): return only the tangents
-            * - stripBuffer(9, 2): return only the uv's
-            * - stripBuffer(11, 2): return only the secondary uv's
-            */
-            CompactSubGeometry.prototype.stripBuffer = function (offset, numEntries) {
-                var data = new Array(this._pNumVertices * numEntries);
-                var i = 0;
-                var j = offset;
-                var skip = 13 - numEntries;
-
-                for (var v = 0; v < this._pNumVertices; ++v) {
-                    for (var k = 0; k < numEntries; ++k) {
-                        data[i++] = this._vertexData[j++];
-                    }
-
-                    j += skip;
-                }
-
-                return data;
-            };
-
-            CompactSubGeometry.prototype.fromVectors = function (verts, uvs, normals, tangents) {
-                var vertLen = verts.length / 3 * 13;
-
-                var index = 0;
-                var v = 0;
-                var n = 0;
-                var t = 0;
-                var u = 0;
-
-                var data = new Array(vertLen);
-
-                while (index < vertLen) {
-                    data[index++] = verts[v++];
-                    data[index++] = verts[v++];
-                    data[index++] = verts[v++];
-
-                    if (normals && normals.length) {
-                        data[index++] = normals[n++];
-                        data[index++] = normals[n++];
-                        data[index++] = normals[n++];
-                    } else {
-                        data[index++] = 0;
-                        data[index++] = 0;
-                        data[index++] = 0;
-                    }
-
-                    if (tangents && tangents.length) {
-                        data[index++] = tangents[t++];
-                        data[index++] = tangents[t++];
-                        data[index++] = tangents[t++];
-                    } else {
-                        data[index++] = 0;
-                        data[index++] = 0;
-                        data[index++] = 0;
-                    }
-
-                    if (uvs && uvs.length) {
-                        data[index++] = uvs[u];
-                        data[index++] = uvs[u + 1];
-
-                        // use same secondary uvs as primary
-                        data[index++] = uvs[u++];
-                        data[index++] = uvs[u++];
-                    } else {
-                        data[index++] = 0;
-                        data[index++] = 0;
-                        data[index++] = 0;
-                        data[index++] = 0;
-                    }
-                }
-
-                this.autoDeriveVertexNormals = !(normals && normals.length);
-                this.autoDeriveVertexTangents = !(tangents && tangents.length);
-                this.autoGenerateDummyUVs = !(uvs && uvs.length);
-                this.updateData(data);
-            };
-            return CompactSubGeometry;
-        })(away.base.SubGeometryBase);
-        base.CompactSubGeometry = CompactSubGeometry;
-    })(away.base || (away.base = {}));
-    var base = away.base;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.base
-    */
-    (function (base) {
-        /**
-        * SkinnedSubGeometry provides a SubGeometry extension that contains data needed to skin vertices. In particular,
-        * it provides joint indices and weights.
-        * Important! Joint indices need to be pre-multiplied by 3, since they index the matrix array (and each matrix has 3 float4 elements)
-        *
-        * @class away.base.SkinnedSubGeometry
-        *
-        */
-        var SkinnedSubGeometry = (function (_super) {
-            __extends(SkinnedSubGeometry, _super);
-            /**
-            * Creates a new SkinnedSubGeometry object.
-            * @param jointsPerVertex The amount of joints that can be assigned per vertex.
-            */
-            function SkinnedSubGeometry(jointsPerVertex) {
-                _super.call(this);
-                this._jointWeightsBuffer = new Array(8);
-                this._jointIndexBuffer = new Array(8);
-                this._jointWeightsInvalid = new Array(8);
-                this._jointIndicesInvalid = new Array(8);
-                this._jointWeightContext = new Array(8);
-                this._jointIndexContext = new Array(8);
-
-                this._jointsPerVertex = jointsPerVertex;
-                this._bufferFormat = "float" + this._jointsPerVertex;
-            }
-            Object.defineProperty(SkinnedSubGeometry.prototype, "condensedIndexLookUp", {
-                /**
-                * If indices have been condensed, this will contain the original index for each condensed index.
-                */
-                get: function () {
-                    return this._condensedIndexLookUp;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SkinnedSubGeometry.prototype, "numCondensedJoints", {
-                /**
-                * The amount of joints used when joint indices have been condensed.
-                */
-                get: function () {
-                    return this._numCondensedJoints;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SkinnedSubGeometry.prototype, "animatedData", {
-                /**
-                * The animated vertex positions when set explicitly if the skinning transformations couldn't be performed on GPU.
-                */
-                get: function () {
-                    return this._animatedData || this._vertexData.concat();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            SkinnedSubGeometry.prototype.updateAnimatedData = function (value) {
-                this._animatedData = value;
-                this.pInvalidateBuffers(this._pVertexDataInvalid);
-            };
-
-            /**
-            * Assigns the attribute stream for joint weights
-            * @param index The attribute stream index for the vertex shader
-            * @param stageGL The StageGL to assign the stream to
-            */
-            SkinnedSubGeometry.prototype.activateJointWeightsBuffer = function (index, stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-                if (this._jointWeightContext[contextIndex] != context || !this._jointWeightsBuffer[contextIndex]) {
-                    this._jointWeightsBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);
-                    this._jointWeightContext[contextIndex] = context;
-                    this._jointWeightsInvalid[contextIndex] = true;
-                }
-                if (this._jointWeightsInvalid[contextIndex]) {
-                    this._jointWeightsBuffer[contextIndex].uploadFromArray(this._jointWeightsData, 0, this._jointWeightsData.length / this._jointsPerVertex);
-                    this._jointWeightsInvalid[contextIndex] = false;
-                }
-                context.setVertexBufferAt(index, this._jointWeightsBuffer[contextIndex], 0, this._bufferFormat);
-            };
-
-            /**
-            * Assigns the attribute stream for joint indices
-            * @param index The attribute stream index for the vertex shader
-            * @param stageGL The StageGL to assign the stream to
-            */
-            SkinnedSubGeometry.prototype.activateJointIndexBuffer = function (index, stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-
-                if (this._jointIndexContext[contextIndex] != context || !this._jointIndexBuffer[contextIndex]) {
-                    this._jointIndexBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);
-                    this._jointIndexContext[contextIndex] = context;
-                    this._jointIndicesInvalid[contextIndex] = true;
-                }
-                if (this._jointIndicesInvalid[contextIndex]) {
-                    this._jointIndexBuffer[contextIndex].uploadFromArray(this._numCondensedJoints > 0 ? this._condensedJointIndexData : this._jointIndexData, 0, this._jointIndexData.length / this._jointsPerVertex);
-                    this._jointIndicesInvalid[contextIndex] = false;
-                }
-                context.setVertexBufferAt(index, this._jointIndexBuffer[contextIndex], 0, this._bufferFormat);
-            };
-
-            SkinnedSubGeometry.prototype.pUploadData = function (contextIndex) {
-                if (this._animatedData) {
-                    this._pActiveBuffer.uploadFromArray(this._animatedData, 0, this._pNumVertices);
-                    this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = false;
-                } else {
-                    _super.prototype.pUploadData.call(this, contextIndex);
-                }
-            };
-
-            /**
-            * Clones the current object.
-            * @return An exact duplicate of the current object.
-            */
-            SkinnedSubGeometry.prototype.clone = function () {
-                var clone = new SkinnedSubGeometry(this._jointsPerVertex);
-
-                clone.updateData(this._vertexData.concat());
-                clone.updateIndexData(this._indices.concat());
-                clone.iUpdateJointIndexData(this._jointIndexData.concat());
-                clone.iUpdateJointWeightsData(this._jointWeightsData.concat());
-                clone._autoDeriveVertexNormals = this._autoDeriveVertexNormals;
-                clone._autoDeriveVertexTangents = this._autoDeriveVertexTangents;
-                clone._numCondensedJoints = this._numCondensedJoints;
-                clone._condensedIndexLookUp = this._condensedIndexLookUp;
-                clone._condensedJointIndexData = this._condensedJointIndexData;
-
-                return clone;
-            };
-
-            /**
-            * Cleans up any resources used by this object.
-            */
-            SkinnedSubGeometry.prototype.dispose = function () {
-                _super.prototype.dispose.call(this);
-                this.pDisposeVertexBuffers(this._jointWeightsBuffer);
-                this.pDisposeVertexBuffers(this._jointIndexBuffer);
-            };
-
-            /**
-            */
-            SkinnedSubGeometry.prototype.iCondenseIndexData = function () {
-                var len = this._jointIndexData.length;
-                var oldIndex;
-                var newIndex = 0;
-                var dic = new Object();
-
-                this._condensedJointIndexData = new Array(len);
-                this._condensedIndexLookUp = new Array();
-
-                for (var i = 0; i < len; ++i) {
-                    oldIndex = this._jointIndexData[i];
-
-                    // if we encounter a new index, assign it a new condensed index
-                    if (dic[oldIndex] == undefined) {
-                        dic[oldIndex] = newIndex;
-                        this._condensedIndexLookUp[newIndex++] = oldIndex;
-                        this._condensedIndexLookUp[newIndex++] = oldIndex + 1;
-                        this._condensedIndexLookUp[newIndex++] = oldIndex + 2;
-                    }
-                    this._condensedJointIndexData[i] = dic[oldIndex];
-                }
-                this._numCondensedJoints = newIndex / 3;
-
-                this.pInvalidateBuffers(this._jointIndicesInvalid);
-            };
-
-            Object.defineProperty(SkinnedSubGeometry.prototype, "iJointWeightsData", {
-                /**
-                * The raw joint weights data.
-                */
-                get: function () {
-                    return this._jointWeightsData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            SkinnedSubGeometry.prototype.iUpdateJointWeightsData = function (value) {
-                // invalidate condensed stuff
-                this._numCondensedJoints = 0;
-                this._condensedIndexLookUp = null;
-                this._condensedJointIndexData = null;
-
-                this._jointWeightsData = value;
-                this.pInvalidateBuffers(this._jointWeightsInvalid);
-            };
-
-            Object.defineProperty(SkinnedSubGeometry.prototype, "iJointIndexData", {
-                /**
-                * The raw joint index data.
-                */
-                get: function () {
-                    return this._jointIndexData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            SkinnedSubGeometry.prototype.iUpdateJointIndexData = function (value) {
-                this._jointIndexData = value;
-                this.pInvalidateBuffers(this._jointIndicesInvalid);
-            };
-            return SkinnedSubGeometry;
-        })(away.base.CompactSubGeometry);
-        base.SkinnedSubGeometry = SkinnedSubGeometry;
-    })(away.base || (away.base = {}));
-    var base = away.base;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.base
-    */
-    (function (base) {
-        /**
-        *
-        * Geometry is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
-        * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
-        * A Geometry object is assigned to a Mesh, a scene graph occurence of the geometry, which in turn assigns
-        * the SubGeometries to its respective SubMesh objects.
-        *
-        *
-        *
-        * @see away.core.base.SubGeometry
-        * @see away.entities.Mesh
-        *
-        * @class away.base.Geometry
-        */
-        var Geometry = (function (_super) {
-            __extends(Geometry, _super);
-            /**
-            * Creates a new Geometry object.
-            */
-            function Geometry() {
-                _super.call(this);
-
-                this._subGeometries = new Array(); //Vector.<ISubGeometry>();
-            }
-            Object.defineProperty(Geometry.prototype, "assetType", {
-                get: function () {
-                    return away.library.AssetType.GEOMETRY;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Geometry.prototype, "subGeometries", {
-                /**
-                * A collection of SubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.
-                */
-                get: function () {
-                    return this._subGeometries;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Geometry.prototype.getSubGeometries = function () {
-                return this._subGeometries;
-            };
-
-            Geometry.prototype.applyTransformation = function (transform) {
-                var len = this._subGeometries.length;
-                for (var i = 0; i < len; ++i) {
-                    this._subGeometries[i].applyTransformation(transform);
-                }
-            };
-
-            /**
-            * Adds a new SubGeometry object to the list.
-            * @param subGeometry The SubGeometry object to be added.
-            */
-            Geometry.prototype.addSubGeometry = function (subGeometry) {
-                this._subGeometries.push(subGeometry);
-
-                subGeometry.parentGeometry = this;
-
-                // TODO: add hasEventListener optimisation;
-                //if (hasEventListener(GeometryEvent.SUB_GEOMETRY_ADDED))
-                this.dispatchEvent(new away.events.GeometryEvent(away.events.GeometryEvent.SUB_GEOMETRY_ADDED, subGeometry));
-
-                this.iInvalidateBounds(subGeometry);
-            };
-
-            /**
-            * Removes a new SubGeometry object from the list.
-            * @param subGeometry The SubGeometry object to be removed.
-            */
-            Geometry.prototype.removeSubGeometry = function (subGeometry) {
-                this._subGeometries.splice(this._subGeometries.indexOf(subGeometry), 1);
-
-                subGeometry.parentGeometry = null;
-
-                // TODO: add hasEventListener optimisation;
-                //if (hasEventListener(GeometryEvent.SUB_GEOMETRY_REMOVED))
-                this.dispatchEvent(new away.events.GeometryEvent(away.events.GeometryEvent.SUB_GEOMETRY_REMOVED, subGeometry));
-
-                this.iInvalidateBounds(subGeometry);
-            };
-
-            /**
-            * Clones the geometry.
-            * @return An exact duplicate of the current Geometry object.
-            */
-            Geometry.prototype.clone = function () {
-                var clone = new Geometry();
-                var len = this._subGeometries.length;
-
-                for (var i = 0; i < len; ++i) {
-                    clone.addSubGeometry(this._subGeometries[i].clone());
-                }
-
-                return clone;
-            };
-
-            /**
-            * Scales the geometry.
-            * @param scale The amount by which to scale.
-            */
-            Geometry.prototype.scale = function (scale) {
-                var numSubGeoms = this._subGeometries.length;
-                for (var i = 0; i < numSubGeoms; ++i) {
-                    this._subGeometries[i].scale(scale);
-                }
-            };
-
-            /**
-            * Clears all resources used by the Geometry object, including SubGeometries.
-            */
-            Geometry.prototype.dispose = function () {
-                var numSubGeoms = this._subGeometries.length;
-
-                for (var i = 0; i < numSubGeoms; ++i) {
-                    var subGeom = this._subGeometries[0];
-                    this.removeSubGeometry(subGeom);
-                    subGeom.dispose();
-                }
-            };
-
-            /**
-            * Scales the uv coordinates (tiling)
-            * @param scaleU The amount by which to scale on the u axis. Default is 1;
-            * @param scaleV The amount by which to scale on the v axis. Default is 1;
-            */
-            Geometry.prototype.scaleUV = function (scaleU, scaleV) {
-                if (typeof scaleU === "undefined") { scaleU = 1; }
-                if (typeof scaleV === "undefined") { scaleV = 1; }
-                var numSubGeoms = this._subGeometries.length;
-
-                for (var i = 0; i < numSubGeoms; ++i) {
-                    this._subGeometries[i].scaleUV(scaleU, scaleV);
-                }
-            };
-
-            /**
-            * Updates the SubGeometries so all vertex data is represented in different buffers.
-            * Use this for compatibility with Pixel Bender and PBPickingCollider
-            */
-            Geometry.prototype.convertToSeparateBuffers = function () {
-                var subGeom;
-                var numSubGeoms = this._subGeometries.length;
-                var _removableCompactSubGeometries = new Array();
-
-                for (var i = 0; i < numSubGeoms; ++i) {
-                    subGeom = this._subGeometries[i];
-
-                    if (subGeom instanceof away.base.SubGeometry) {
-                        continue;
-                    }
-
-                    _removableCompactSubGeometries.push(subGeom);
-
-                    this.addSubGeometry(subGeom.cloneWithSeperateBuffers());
-                }
-
-                var l = _removableCompactSubGeometries.length;
-                var s;
-
-                for (var c = 0; c < l; c++) {
-                    s = _removableCompactSubGeometries[c];
-                    this.removeSubGeometry(s);
-                    s.dispose();
-                }
-            };
-
-            Geometry.prototype.iValidate = function () {
-                // To be overridden when necessary
-            };
-
-            Geometry.prototype.iInvalidateBounds = function (subGeom) {
-                //if (hasEventListener(GeometryEvent.BOUNDS_INVALID))
-                this.dispatchEvent(new away.events.GeometryEvent(away.events.GeometryEvent.BOUNDS_INVALID, subGeom));
-            };
-            return Geometry;
-        })(away.library.NamedAssetBase);
-        base.Geometry = Geometry;
-    })(away.base || (away.base = {}));
-    var base = away.base;
-})(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
@@ -2343,1272 +205,11 @@ var away;
 var away;
 (function (away) {
     /**
-    * @module away.base
-    */
-    (function (base) {
-        /**
-        * The SubGeometry class is a collections of geometric data that describes a triangle mesh. It is owned by a
-        * Geometry instance, and wrapped by a SubMesh in the scene graph.
-        * Several SubGeometries are grouped so they can be rendered with different materials, but still represent a single
-        * object.
-        *
-        * @see away.base.Geometry
-        * @see away.base.SubMesh
-        *
-        * @class away.base.SubGeometry
-        */
-        var SubGeometry = (function (_super) {
-            __extends(SubGeometry, _super);
-            /**
-            * Creates a new SubGeometry object.
-            */
-            function SubGeometry() {
-                _super.call(this);
-                this._verticesInvalid = new Array(8);
-                this._uvsInvalid = new Array(8);
-                this._secondaryUvsInvalid = new Array(8);
-                this._normalsInvalid = new Array(8);
-                this._tangentsInvalid = new Array(8);
-                // buffers:
-                this._vertexBuffer = new Array(8);
-                this._uvBuffer = new Array(8);
-                this._secondaryUvBuffer = new Array(8);
-                this._vertexNormalBuffer = new Array(8);
-                this._vertexTangentBuffer = new Array(8);
-                // buffer dirty flags, per context:
-                this._vertexBufferContext = new Array(8);
-                this._uvBufferContext = new Array(8);
-                this._secondaryUvBufferContext = new Array(8);
-                this._vertexNormalBufferContext = new Array(8);
-                this._vertexTangentBufferContext = new Array(8);
-            }
-            Object.defineProperty(SubGeometry.prototype, "numVertices", {
-                /**
-                * The total amount of vertices in the SubGeometry.
-                */
-                get: function () {
-                    return this._numVertices;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * @inheritDoc
-            */
-            SubGeometry.prototype.activateVertexBuffer = function (index, stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-
-                if (!this._vertexBuffer[contextIndex] || this._vertexBufferContext[contextIndex] != context) {
-                    this._vertexBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 3);
-                    this._vertexBufferContext[contextIndex] = context;
-                    this._verticesInvalid[contextIndex] = true;
-                }
-
-                if (this._verticesInvalid[contextIndex]) {
-                    this._vertexBuffer[contextIndex].uploadFromArray(this._vertexData, 0, this._numVertices);
-                    this._verticesInvalid[contextIndex] = false;
-                }
-
-                context.setVertexBufferAt(index, this._vertexBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
-            };
-
-            /**
-            * @inheritDoc
-            */
-            SubGeometry.prototype.activateUVBuffer = function (index, stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-
-                if (this._autoGenerateUVs && this._uvsDirty) {
-                    this._uvs = this.pUpdateDummyUVs(this._uvs);
-                }
-
-                if (!this._uvBuffer[contextIndex] || this._uvBufferContext[contextIndex] != context) {
-                    this._uvBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 2);
-                    this._uvBufferContext[contextIndex] = context;
-                    this._uvsInvalid[contextIndex] = true;
-                }
-
-                if (this._uvsInvalid[contextIndex]) {
-                    this._uvBuffer[contextIndex].uploadFromArray(this._uvs, 0, this._numVertices);
-                    this._uvsInvalid[contextIndex] = false;
-                }
-
-                context.setVertexBufferAt(index, this._uvBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
-            };
-
-            /**
-            * @inheritDoc
-            */
-            SubGeometry.prototype.activateSecondaryUVBuffer = function (index, stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-
-                if (!this._secondaryUvBuffer[contextIndex] || this._secondaryUvBufferContext[contextIndex] != context) {
-                    this._secondaryUvBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 2);
-                    this._secondaryUvBufferContext[contextIndex] = context;
-                    this._secondaryUvsInvalid[contextIndex] = true;
-                }
-
-                if (this._secondaryUvsInvalid[contextIndex]) {
-                    this._secondaryUvBuffer[contextIndex].uploadFromArray(this._secondaryUvs, 0, this._numVertices);
-                    this._secondaryUvsInvalid[contextIndex] = false;
-                }
-
-                context.setVertexBufferAt(index, this._secondaryUvBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
-            };
-
-            /**
-            * Retrieves the VertexBuffer object that contains vertex normals.
-            * @param context The ContextGL for which we request the buffer
-            * @return The VertexBuffer object that contains vertex normals.
-            */
-            SubGeometry.prototype.activateVertexNormalBuffer = function (index, stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-
-                if (this._autoDeriveVertexNormals && this._vertexNormalsDirty)
-                    this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
-
-                if (!this._vertexNormalBuffer[contextIndex] || this._vertexNormalBufferContext[contextIndex] != context) {
-                    this._vertexNormalBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 3);
-                    this._vertexNormalBufferContext[contextIndex] = context;
-                    this._normalsInvalid[contextIndex] = true;
-                }
-
-                if (this._normalsInvalid[contextIndex]) {
-                    this._vertexNormalBuffer[contextIndex].uploadFromArray(this._vertexNormals, 0, this._numVertices);
-                    this._normalsInvalid[contextIndex] = false;
-                }
-
-                context.setVertexBufferAt(index, this._vertexNormalBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
-            };
-
-            /**
-            * Retrieves the VertexBuffer object that contains vertex tangents.
-            * @param context The ContextGL for which we request the buffer
-            * @return The VertexBuffer object that contains vertex tangents.
-            */
-            SubGeometry.prototype.activateVertexTangentBuffer = function (index, stageGL) {
-                var contextIndex = stageGL._iStageGLIndex;
-                var context = stageGL.contextGL;
-
-                if (this._vertexTangentsDirty) {
-                    this._vertexTangents = this.pUpdateVertexTangents(this._vertexTangents);
-                }
-
-                if (!this._vertexTangentBuffer[contextIndex] || this._vertexTangentBufferContext[contextIndex] != context) {
-                    this._vertexTangentBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 3);
-                    this._vertexTangentBufferContext[contextIndex] = context;
-                    this._tangentsInvalid[contextIndex] = true;
-                }
-
-                if (this._tangentsInvalid[contextIndex]) {
-                    this._vertexTangentBuffer[contextIndex].uploadFromArray(this._vertexTangents, 0, this._numVertices);
-                    this._tangentsInvalid[contextIndex] = false;
-                }
-
-                context.setVertexBufferAt(index, this._vertexTangentBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
-            };
-
-            SubGeometry.prototype.applyTransformation = function (transform) {
-                _super.prototype.applyTransformation.call(this, transform);
-                this.pInvalidateBuffers(this._verticesInvalid);
-                this.pInvalidateBuffers(this._normalsInvalid);
-                this.pInvalidateBuffers(this._tangentsInvalid);
-            };
-
-            /**
-            * Clones the current object
-            * @return An exact duplicate of the current object.
-            */
-            SubGeometry.prototype.clone = function () {
-                var clone = new SubGeometry();
-                clone.updateVertexData(this._vertexData.concat());
-                clone.updateUVData(this._uvs.concat());
-                clone.updateIndexData(this._indices.concat());
-
-                if (this._secondaryUvs) {
-                    clone.updateSecondaryUVData(this._secondaryUvs.concat());
-                }
-
-                if (!this._autoDeriveVertexNormals) {
-                    clone.updateVertexNormalData(this._vertexNormals.concat());
-                }
-
-                if (!this._autoDeriveVertexTangents) {
-                    clone.updateVertexTangentData(this._vertexTangents.concat());
-                }
-
-                return clone;
-            };
-
-            /**
-            * @inheritDoc
-            */
-            SubGeometry.prototype.scale = function (scale) {
-                _super.prototype.scale.call(this, scale);
-                this.pInvalidateBuffers(this._verticesInvalid);
-            };
-
-            /**
-            * @inheritDoc
-            */
-            SubGeometry.prototype.scaleUV = function (scaleU, scaleV) {
-                if (typeof scaleU === "undefined") { scaleU = 1; }
-                if (typeof scaleV === "undefined") { scaleV = 1; }
-                _super.prototype.scaleUV.call(this, scaleU, scaleV);
-                this.pInvalidateBuffers(this._uvsInvalid);
-            };
-
-            /**
-            * Clears all resources used by the SubGeometry object.
-            */
-            SubGeometry.prototype.dispose = function () {
-                _super.prototype.dispose.call(this);
-                this.pDisposeAllVertexBuffers();
-                this._vertexBuffer = null;
-                this._vertexNormalBuffer = null;
-                this._uvBuffer = null;
-                this._secondaryUvBuffer = null;
-                this._vertexTangentBuffer = null;
-                this._indexBuffer = null;
-                this._uvs = null;
-                this._secondaryUvs = null;
-                this._vertexNormals = null;
-                this._vertexTangents = null;
-                this._vertexBufferContext = null;
-                this._uvBufferContext = null;
-                this._secondaryUvBufferContext = null;
-                this._vertexNormalBufferContext = null;
-                this._vertexTangentBufferContext = null;
-            };
-
-            SubGeometry.prototype.pDisposeAllVertexBuffers = function () {
-                this.pDisposeVertexBuffers(this._vertexBuffer);
-                this.pDisposeVertexBuffers(this._vertexNormalBuffer);
-                this.pDisposeVertexBuffers(this._uvBuffer);
-                this.pDisposeVertexBuffers(this._secondaryUvBuffer);
-                this.pDisposeVertexBuffers(this._vertexTangentBuffer);
-            };
-
-            Object.defineProperty(SubGeometry.prototype, "vertexData", {
-                /**
-                * The raw vertex position data.
-                */
-                get: function () {
-                    return this._vertexData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometry.prototype, "vertexPositionData", {
-                get: function () {
-                    return this._vertexData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Updates the vertex data of the SubGeometry.
-            * @param vertices The new vertex data to upload.
-            */
-            SubGeometry.prototype.updateVertexData = function (vertices) {
-                if (this._autoDeriveVertexNormals) {
-                    this._vertexNormalsDirty = true;
-                }
-
-                if (this._autoDeriveVertexTangents) {
-                    this._vertexTangentsDirty = true;
-                }
-
-                this._faceNormalsDirty = true;
-                this._vertexData = vertices;
-                var numVertices = vertices.length / 3;
-
-                if (numVertices != this._numVertices) {
-                    this.pDisposeAllVertexBuffers();
-                }
-
-                this._numVertices = numVertices;
-                this.pInvalidateBuffers(this._verticesInvalid);
-                this.pInvalidateBounds(); //invalidateBounds();
-            };
-
-            Object.defineProperty(SubGeometry.prototype, "UVData", {
-                /**
-                * The raw texture coordinate data.
-                */
-                get: function () {
-                    if (this._uvsDirty && this._autoGenerateUVs) {
-                        this._uvs = this.pUpdateDummyUVs(this._uvs);
-                    }
-
-                    return this._uvs;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometry.prototype, "secondaryUVData", {
-                get: function () {
-                    return this._secondaryUvs;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Updates the uv coordinates of the SubGeometry.
-            * @param uvs The uv coordinates to upload.
-            */
-            SubGeometry.prototype.updateUVData = function (uvs) {
-                // normals don't get dirty from this
-                if (this._autoDeriveVertexTangents) {
-                    this._vertexTangentsDirty = true;
-                }
-
-                this._faceTangentsDirty = true;
-                this._uvs = uvs;
-                this.pInvalidateBuffers(this._uvsInvalid);
-            };
-
-            SubGeometry.prototype.updateSecondaryUVData = function (uvs) {
-                this._secondaryUvs = uvs;
-                this.pInvalidateBuffers(this._secondaryUvsInvalid);
-            };
-
-            Object.defineProperty(SubGeometry.prototype, "vertexNormalData", {
-                /**
-                * The raw vertex normal data.
-                */
-                get: function () {
-                    if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
-                        this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
-                    }
-
-                    return this._vertexNormals;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Updates the vertex normals of the SubGeometry. When updating the vertex normals like this,
-            * autoDeriveVertexNormals will be set to false and vertex normals will no longer be calculated automatically.
-            * @param vertexNormals The vertex normals to upload.
-            */
-            SubGeometry.prototype.updateVertexNormalData = function (vertexNormals) {
-                this._vertexNormalsDirty = false;
-                this._autoDeriveVertexNormals = (vertexNormals == null);
-                this._vertexNormals = vertexNormals;
-                this.pInvalidateBuffers(this._normalsInvalid);
-            };
-
-            Object.defineProperty(SubGeometry.prototype, "vertexTangentData", {
-                /**
-                * The raw vertex tangent data.
-                *
-                * @private
-                */
-                get: function () {
-                    if (this._autoDeriveVertexTangents && this._vertexTangentsDirty) {
-                        this._vertexTangents = this.pUpdateVertexTangents(this._vertexTangents);
-                    }
-
-                    return this._vertexTangents;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Updates the vertex tangents of the SubGeometry. When updating the vertex tangents like this,
-            * autoDeriveVertexTangents will be set to false and vertex tangents will no longer be calculated automatically.
-            * @param vertexTangents The vertex tangents to upload.
-            */
-            SubGeometry.prototype.updateVertexTangentData = function (vertexTangents) {
-                this._vertexTangentsDirty = false;
-                this._autoDeriveVertexTangents = (vertexTangents == null);
-                this._vertexTangents = vertexTangents;
-                this.pInvalidateBuffers(this._tangentsInvalid);
-            };
-
-            SubGeometry.prototype.fromVectors = function (vertices, uvs, normals, tangents) {
-                this.updateVertexData(vertices);
-                this.updateUVData(uvs);
-                this.updateVertexNormalData(normals);
-                this.updateVertexTangentData(tangents);
-            };
-
-            SubGeometry.prototype.pUpdateVertexNormals = function (target) {
-                this.pInvalidateBuffers(this._normalsInvalid);
-                return _super.prototype.pUpdateVertexNormals.call(this, target);
-            };
-
-            SubGeometry.prototype.pUpdateVertexTangents = function (target) {
-                if (this._vertexNormalsDirty) {
-                    this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
-                }
-
-                this.pInvalidateBuffers(this._tangentsInvalid);
-                return _super.prototype.pUpdateVertexTangents.call(this, target);
-            };
-
-            SubGeometry.prototype.pUpdateDummyUVs = function (target) {
-                this.pInvalidateBuffers(this._uvsInvalid);
-                return _super.prototype.pUpdateDummyUVs.call(this, target);
-            };
-
-            SubGeometry.prototype.pDisposeForStageGL = function (stageGL) {
-                var index = stageGL._iStageGLIndex;
-                if (this._vertexBuffer[index]) {
-                    this._vertexBuffer[index].dispose();
-                    this._vertexBuffer[index] = null;
-                }
-                if (this._uvBuffer[index]) {
-                    this._uvBuffer[index].dispose();
-                    this._uvBuffer[index] = null;
-                }
-                if (this._secondaryUvBuffer[index]) {
-                    this._secondaryUvBuffer[index].dispose();
-                    this._secondaryUvBuffer[index] = null;
-                }
-                if (this._vertexNormalBuffer[index]) {
-                    this._vertexNormalBuffer[index].dispose();
-                    this._vertexNormalBuffer[index] = null;
-                }
-                if (this._vertexTangentBuffer[index]) {
-                    this._vertexTangentBuffer[index].dispose();
-                    this._vertexTangentBuffer[index] = null;
-                }
-                if (this._indexBuffer[index]) {
-                    this._indexBuffer[index].dispose();
-                    this._indexBuffer[index] = null;
-                }
-            };
-
-            Object.defineProperty(SubGeometry.prototype, "vertexStride", {
-                get: function () {
-                    return 3;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometry.prototype, "vertexTangentStride", {
-                get: function () {
-                    return 3;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometry.prototype, "vertexNormalStride", {
-                get: function () {
-                    return 3;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometry.prototype, "UVStride", {
-                get: function () {
-                    return 2;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometry.prototype, "secondaryUVStride", {
-                get: function () {
-                    return 2;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometry.prototype, "vertexOffset", {
-                get: function () {
-                    return 0;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometry.prototype, "vertexNormalOffset", {
-                get: function () {
-                    return 0;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometry.prototype, "vertexTangentOffset", {
-                get: function () {
-                    return 0;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometry.prototype, "UVOffset", {
-                get: function () {
-                    return 0;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SubGeometry.prototype, "secondaryUVOffset", {
-                get: function () {
-                    return 0;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            SubGeometry.prototype.cloneWithSeperateBuffers = function () {
-                var obj = this.clone();
-                return obj;
-            };
-            return SubGeometry;
-        })(away.base.SubGeometryBase);
-        base.SubGeometry = SubGeometry;
-    })(away.base || (away.base = {}));
-    var base = away.base;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.base
-    */
-    (function (base) {
-        /**
-        * The SubGeometry class is a collections of geometric data that describes a triangle mesh. It is owned by a
-        * Geometry instance, and wrapped by a SubMesh in the scene graph.
-        * Several SubGeometries are grouped so they can be rendered with different materials, but still represent a single
-        * object.
-        *
-        * @see away.base.Geometry
-        * @see away.base.SubMesh
-        *
-        * @class away.base.SubGeometry
-        */
-        var SegmentSubGeometry = (function (_super) {
-            __extends(SegmentSubGeometry, _super);
-            /**
-            * Creates a new SubGeometry object.
-            */
-            function SegmentSubGeometry() {
-                _super.call(this);
-                // raw data:
-                this._verticesInvalid = new Array(8);
-                // buffers:
-                this._vertexBuffer = new Array(8);
-                // buffer dirty flags, per context:
-                this._vertexBufferContext = new Array(8);
-                this.LIMIT = 3 * 0xFFFF;
-                this._indexSegments = 0;
-
-                this._subSetCount = 0;
-                this._subSets = [];
-                this.addSubSet();
-
-                this._pSegments = new Object();
-            }
-            Object.defineProperty(SegmentSubGeometry.prototype, "hasData", {
-                get: function () {
-                    return this._hasData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "numTriangles", {
-                get: function () {
-                    return this._numIndices / 3;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "segmentCount", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._indexSegments;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "iSubSetCount", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._subSetCount;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "numVertices", {
-                /**
-                * The total amount of vertices in the SubGeometry.
-                */
-                get: function () {
-                    return this._numVertices;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * @inheritDoc
-            */
-            SegmentSubGeometry.prototype.activateVertexBuffer = function (index, stageGL) {
-                var subSet = this._subSets[index];
-
-                this._activeSubSet = subSet;
-                this._numIndices = subSet.numIndices;
-
-                var vertexBuffer = subSet.vertexBuffer;
-
-                if (subSet.vertexContextGL != stageGL.contextGL || subSet.vertexBufferDirty) {
-                    subSet.vertexBuffer = stageGL.contextGL.createVertexBuffer(subSet.numVertices, 11);
-                    subSet.vertexBuffer.uploadFromArray(subSet.vertices, 0, subSet.numVertices);
-                    subSet.vertexBufferDirty = false;
-                    subSet.vertexContextGL = stageGL.contextGL;
-                }
-
-                var context3d = stageGL.contextGL;
-                context3d.setVertexBufferAt(0, vertexBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
-                context3d.setVertexBufferAt(1, vertexBuffer, 3, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
-                context3d.setVertexBufferAt(2, vertexBuffer, 6, away.gl.ContextGLVertexBufferFormat.FLOAT_1);
-                context3d.setVertexBufferAt(3, vertexBuffer, 7, away.gl.ContextGLVertexBufferFormat.FLOAT_4);
-            };
-
-            /**
-            * @inheritDoc
-            */
-            SegmentSubGeometry.prototype.activateUVBuffer = function (index, stageGL) {
-            };
-
-            /**
-            * @inheritDoc
-            */
-            SegmentSubGeometry.prototype.activateSecondaryUVBuffer = function (index, stageGL) {
-            };
-
-            /**
-            * Retrieves the VertexBuffer object that contains vertex normals.
-            * @param context The ContextGL for which we request the buffer
-            * @return The VertexBuffer object that contains vertex normals.
-            */
-            SegmentSubGeometry.prototype.activateVertexNormalBuffer = function (index, stageGL) {
-            };
-
-            /**
-            * Retrieves the VertexBuffer object that contains vertex tangents.
-            * @param context The ContextGL for which we request the buffer
-            * @return The VertexBuffer object that contains vertex tangents.
-            */
-            SegmentSubGeometry.prototype.activateVertexTangentBuffer = function (index, stageGL) {
-            };
-
-            SegmentSubGeometry.prototype.getIndexBuffer = function (stageGL) {
-                if (this._activeSubSet.indexContextGL != stageGL.contextGL || this._activeSubSet.indexBufferDirty) {
-                    this._activeSubSet.indexBuffer = stageGL.contextGL.createIndexBuffer(this._activeSubSet.numIndices);
-                    this._activeSubSet.indexBuffer.uploadFromArray(this._activeSubSet.indices, 0, this._activeSubSet.numIndices);
-                    this._activeSubSet.indexBufferDirty = false;
-                    this._activeSubSet.indexContextGL = stageGL.contextGL;
-                }
-
-                return this._activeSubSet.indexBuffer;
-            };
-
-            SegmentSubGeometry.prototype.applyTransformation = function (transform) {
-                _super.prototype.applyTransformation.call(this, transform);
-                this.pInvalidateBuffers(this._verticesInvalid);
-            };
-
-            /**
-            * Clones the current object
-            * @return An exact duplicate of the current object.
-            */
-            SegmentSubGeometry.prototype.clone = function () {
-                var clone = new SegmentSubGeometry();
-                clone.updateVertexData(this._vertexData.concat());
-                clone.updateIndexData(this._indices.concat());
-
-                return clone;
-            };
-
-            /**
-            * @inheritDoc
-            */
-            SegmentSubGeometry.prototype.scale = function (scale) {
-                _super.prototype.scale.call(this, scale);
-                this.pInvalidateBuffers(this._verticesInvalid);
-            };
-
-            /**
-            * Clears all resources used by the SubGeometry object.
-            */
-            SegmentSubGeometry.prototype.dispose = function () {
-                _super.prototype.dispose.call(this);
-                this.pDisposeAllVertexBuffers();
-                this._vertexBuffer = null;
-                this._indexBuffer = null;
-                this._vertexBufferContext = null;
-
-                this.removeAllSegments();
-
-                this._pSegments = null;
-
-                var subSet = this._subSets[0];
-                subSet.vertices = null;
-                subSet.indices = null;
-                this._subSets = null;
-            };
-
-            SegmentSubGeometry.prototype.pDisposeAllVertexBuffers = function () {
-                this.pDisposeVertexBuffers(this._vertexBuffer);
-            };
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "vertexData", {
-                /**
-                * The raw vertex position data.
-                */
-                get: function () {
-                    return this._vertexData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "vertexPositionData", {
-                get: function () {
-                    return this._vertexData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Updates the vertex data of the SubGeometry.
-            * @param vertices The new vertex data to upload.
-            */
-            SegmentSubGeometry.prototype.updateVertexData = function (vertices) {
-                if (this._autoDeriveVertexNormals) {
-                    this._vertexNormalsDirty = true;
-                }
-
-                if (this._autoDeriveVertexTangents) {
-                    this._vertexTangentsDirty = true;
-                }
-
-                this._faceNormalsDirty = true;
-                this._vertexData = vertices;
-                var numVertices = vertices.length / 3;
-
-                if (numVertices != this._numVertices) {
-                    this.pDisposeAllVertexBuffers();
-                }
-
-                this._numVertices = numVertices;
-                this.pInvalidateBuffers(this._verticesInvalid);
-                this.pInvalidateBounds(); //invalidateBounds();
-            };
-
-            SegmentSubGeometry.prototype.fromVectors = function (vertices, uvs, normals, tangents) {
-                this.updateVertexData(vertices);
-            };
-
-            SegmentSubGeometry.prototype.pDisposeForStageGL = function (stageGL) {
-                var index = stageGL._iStageGLIndex;
-                if (this._vertexBuffer[index]) {
-                    this._vertexBuffer[index].dispose();
-                    this._vertexBuffer[index] = null;
-                }
-                if (this._indexBuffer[index]) {
-                    this._indexBuffer[index].dispose();
-                    this._indexBuffer[index] = null;
-                }
-            };
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "vertexStride", {
-                get: function () {
-                    return 3;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "vertexTangentStride", {
-                get: function () {
-                    return 3;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "vertexNormalStride", {
-                get: function () {
-                    return 3;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "UVStride", {
-                get: function () {
-                    return 2;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "secondaryUVStride", {
-                get: function () {
-                    return 2;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "vertexOffset", {
-                get: function () {
-                    return 0;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "vertexNormalOffset", {
-                get: function () {
-                    return 0;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "vertexTangentOffset", {
-                get: function () {
-                    return 0;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "UVOffset", {
-                get: function () {
-                    return 0;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSubGeometry.prototype, "secondaryUVOffset", {
-                get: function () {
-                    return 0;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            SegmentSubGeometry.prototype.cloneWithSeperateBuffers = function () {
-                var obj = this.clone();
-                return obj;
-            };
-
-            /**
-            * //TODO
-            *
-            * @param segment
-            */
-            SegmentSubGeometry.prototype.addSegment = function (segment) {
-                segment.iSegmentsBase = this;
-
-                this._hasData = true;
-
-                var subSetIndex = this._subSets.length - 1;
-                var subSet = this._subSets[subSetIndex];
-
-                if (subSet.vertices.length + 44 > this.LIMIT) {
-                    subSet = this.addSubSet();
-                    subSetIndex++;
-                }
-
-                segment.iIndex = subSet.vertices.length;
-                segment.iSubSetIndex = subSetIndex;
-
-                this.iUpdateSegment(segment);
-
-                var index = subSet.lineCount << 2;
-
-                subSet.indices.push(index, index + 1, index + 2, index + 3, index + 2, index + 1);
-                subSet.numVertices = subSet.vertices.length / 11;
-                subSet.numIndices = subSet.indices.length;
-                subSet.lineCount++;
-
-                var segRef = new SegRef();
-                segRef.index = index;
-                segRef.subSetIndex = subSetIndex;
-                segRef.segment = segment;
-
-                this._pSegments[this._indexSegments] = segRef;
-
-                this._indexSegments++;
-            };
-
-            /**
-            * //TODO
-            *
-            * @param index
-            * @returns {*}
-            */
-            SegmentSubGeometry.prototype.getSegment = function (index) {
-                if (index > this._indexSegments - 1)
-                    return null;
-
-                return this._pSegments[index].segment;
-            };
-
-            /**
-            * //TODO
-            *
-            * @param index
-            * @param dispose
-            */
-            SegmentSubGeometry.prototype.removeSegmentByIndex = function (index, dispose) {
-                if (typeof dispose === "undefined") { dispose = false; }
-                var segRef;
-                if (index >= this._indexSegments)
-                    return;
-
-                if (this._pSegments[index])
-                    segRef = this._pSegments[index];
-                else
-                    return;
-
-                var subSet;
-                if (!this._subSets[segRef.subSetIndex])
-                    return;
-
-                var subSetIndex = segRef.subSetIndex;
-                subSet = this._subSets[segRef.subSetIndex];
-
-                var segment = segRef.segment;
-                var indices = subSet.indices;
-
-                var ind = index * 6;
-                for (var i = ind; i < indices.length; ++i) {
-                    indices[i] -= 4;
-                }
-                subSet.indices.splice(index * 6, 6);
-                subSet.vertices.splice(index * 44, 44);
-                subSet.numVertices = subSet.vertices.length / 11;
-                subSet.numIndices = indices.length;
-                subSet.vertexBufferDirty = true;
-                subSet.indexBufferDirty = true;
-                subSet.lineCount--;
-
-                if (dispose) {
-                    segment.dispose();
-                    segment = null;
-                } else {
-                    segment.iIndex = -1;
-                    segment.iSegmentsBase = null;
-                }
-
-                if (subSet.lineCount == 0) {
-                    if (subSetIndex == 0) {
-                        this._hasData = false;
-                    } else {
-                        subSet.dispose();
-                        this._subSets[subSetIndex] = null;
-                        this._subSets.splice(subSetIndex, 1);
-                    }
-                }
-
-                this.reOrderIndices(subSetIndex, index);
-
-                segRef = null;
-                this._pSegments[this._indexSegments] = null;
-                this._indexSegments--;
-            };
-
-            /**
-            * //TODO
-            */
-            SegmentSubGeometry.prototype.removeAllSegments = function () {
-                var subSet;
-                for (var i = 0; i < this._subSetCount; ++i) {
-                    subSet = this._subSets[i];
-                    subSet.vertices = null;
-                    subSet.indices = null;
-                    if (subSet.vertexBuffer)
-                        subSet.vertexBuffer.dispose();
-
-                    if (subSet.indexBuffer)
-                        subSet.indexBuffer.dispose();
-
-                    subSet = null;
-                }
-
-                for (var segRef in this._pSegments)
-                    segRef = null;
-
-                this._pSegments = null; //WHY?
-                this._subSetCount = 0;
-                this._activeSubSet = null;
-                this._indexSegments = 0;
-                this._subSets = [];
-                this._pSegments = new Object();
-
-                this.addSubSet();
-
-                this._hasData = false;
-            };
-
-            /**
-            * //TODO
-            *
-            * @param segment
-            * @param dispose
-            */
-            SegmentSubGeometry.prototype.removeSegment = function (segment, dispose) {
-                if (typeof dispose === "undefined") { dispose = false; }
-                if (segment.iIndex == -1)
-                    return;
-
-                this.removeSegmentByIndex(segment.iIndex / 44);
-            };
-
-            /**
-            * //TODO
-            *
-            * @protected
-            */
-            SegmentSubGeometry.prototype.updateBounds = function (bounds) {
-                var subSet;
-                var len;
-                var v;
-                var index;
-
-                var minX = Infinity;
-                var minY = Infinity;
-                var minZ = Infinity;
-                var maxX = -Infinity;
-                var maxY = -Infinity;
-                var maxZ = -Infinity;
-                var vertices;
-
-                for (var i = 0; i < this._subSetCount; ++i) {
-                    subSet = this._subSets[i];
-                    index = 0;
-                    vertices = subSet.vertices;
-                    len = vertices.length;
-
-                    if (len == 0)
-                        continue;
-
-                    while (index < len) {
-                        v = vertices[index++];
-                        if (v < minX)
-                            minX = v;
-                        else if (v > maxX)
-                            maxX = v;
-
-                        v = vertices[index++];
-                        if (v < minY)
-                            minY = v;
-                        else if (v > maxY)
-                            maxY = v;
-
-                        v = vertices[index++];
-                        if (v < minZ)
-                            minZ = v;
-                        else if (v > maxZ)
-                            maxZ = v;
-
-                        index += 8;
-                    }
-                }
-
-                if (minX != Infinity) {
-                    bounds.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
-                } else {
-                    var min = .5;
-                    bounds.fromExtremes(-min, -min, -min, min, min, min);
-                }
-            };
-
-            SegmentSubGeometry.prototype._iSetColor = function (color) {
-                for (var segRef in this._pSegments)
-                    segRef.segment.startColor = segRef.segment.endColor = color;
-            };
-
-            SegmentSubGeometry.prototype._iSetThickness = function (thickness) {
-                for (var segRef in this._pSegments)
-                    segRef.segment.thickness = segRef.segment.thickness = thickness;
-            };
-
-            /**
-            * //TODO
-            *
-            * @param segment
-            *
-            * @internal
-            */
-            SegmentSubGeometry.prototype.iUpdateSegment = function (segment) {
-                var start = segment._pStart;
-                var end = segment._pEnd;
-                var startX = start.x, startY = start.y, startZ = start.z;
-                var endX = end.x, endY = end.y, endZ = end.z;
-                var startR = segment._pStartR, startG = segment._pStartG, startB = segment._pStartB;
-                var endR = segment._pEndR, endG = segment._pEndG, endB = segment._pEndB;
-                var index = segment.iIndex;
-                var t = segment.thickness;
-
-                var subSet = this._subSets[segment.iSubSetIndex];
-                var vertices = subSet.vertices;
-
-                vertices[index++] = startX;
-                vertices[index++] = startY;
-                vertices[index++] = startZ;
-                vertices[index++] = endX;
-                vertices[index++] = endY;
-                vertices[index++] = endZ;
-                vertices[index++] = t;
-                vertices[index++] = startR;
-                vertices[index++] = startG;
-                vertices[index++] = startB;
-                vertices[index++] = 1;
-
-                vertices[index++] = endX;
-                vertices[index++] = endY;
-                vertices[index++] = endZ;
-                vertices[index++] = startX;
-                vertices[index++] = startY;
-                vertices[index++] = startZ;
-                vertices[index++] = -t;
-                vertices[index++] = endR;
-                vertices[index++] = endG;
-                vertices[index++] = endB;
-                vertices[index++] = 1;
-
-                vertices[index++] = startX;
-                vertices[index++] = startY;
-                vertices[index++] = startZ;
-                vertices[index++] = endX;
-                vertices[index++] = endY;
-                vertices[index++] = endZ;
-                vertices[index++] = -t;
-                vertices[index++] = startR;
-                vertices[index++] = startG;
-                vertices[index++] = startB;
-                vertices[index++] = 1;
-
-                vertices[index++] = endX;
-                vertices[index++] = endY;
-                vertices[index++] = endZ;
-                vertices[index++] = startX;
-                vertices[index++] = startY;
-                vertices[index++] = startZ;
-                vertices[index++] = t;
-                vertices[index++] = endR;
-                vertices[index++] = endG;
-                vertices[index++] = endB;
-                vertices[index++] = 1;
-
-                subSet.vertexBufferDirty = true;
-            };
-
-            /**
-            * //TODO
-            * @returns {SubSet}
-            *
-            * @private
-            */
-            SegmentSubGeometry.prototype.addSubSet = function () {
-                var subSet = new SubSet();
-                this._subSets.push(subSet);
-
-                subSet.vertices = [];
-                subSet.numVertices = 0;
-                subSet.indices = [];
-                subSet.numIndices = 0;
-                subSet.vertexBufferDirty = true;
-                subSet.indexBufferDirty = true;
-                subSet.lineCount = 0;
-
-                this._subSetCount++;
-
-                return subSet;
-            };
-
-            /**
-            * //TODO
-            * @param subSetIndex
-            * @param index
-            *
-            * @private
-            */
-            SegmentSubGeometry.prototype.reOrderIndices = function (subSetIndex, index) {
-                var segRef;
-
-                for (var i = index; i < this._indexSegments - 1; ++i) {
-                    segRef = this._pSegments[i + 1];
-                    segRef.index = i;
-                    if (segRef.subSetIndex == subSetIndex)
-                        segRef.segment.iIndex -= 44;
-
-                    this._pSegments[i] = segRef;
-                }
-            };
-            return SegmentSubGeometry;
-        })(away.base.SubGeometryBase);
-        base.SegmentSubGeometry = SegmentSubGeometry;
-
-        var SegRef = (function () {
-            function SegRef() {
-            }
-            return SegRef;
-        })();
-
-        var SubSet = (function () {
-            function SubSet() {
-            }
-            SubSet.prototype.dispose = function () {
-                this.vertices = null;
-                if (this.vertexBuffer)
-                    this.vertexBuffer.dispose();
-
-                if (this.indexBuffer)
-                    this.indexBuffer.dispose();
-            };
-            return SubSet;
-        })();
-    })(away.base || (away.base = {}));
-    var base = away.base;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
     * @module away.pool
     */
     (function (pool) {
+        var SubGeometryEvent = away.events.SubGeometryEvent;
+
         /**
         * @class away.pool.RenderableListItem
         */
@@ -3620,24 +221,306 @@ var away;
             * @param subGeometry
             * @param animationSubGeometry
             */
-            function RenderableBase(pool, sourceEntity, materialOwner, subGeometry, animationSubGeometry) {
+            function RenderableBase(pool, sourceEntity, materialOwner, level, indexOffset) {
+                if (typeof level === "undefined") { level = 0; }
+                if (typeof indexOffset === "undefined") { indexOffset = 0; }
+                var _this = this;
+                this._geometryDirty = true;
+                this._vertexData = new Object();
+                this._pVertexDataDirty = new Object();
+                this._vertexOffset = new Object();
+                this._onIndicesUpdatedDelegate = function (event) {
+                    return _this._onIndicesUpdated(event);
+                };
+                this._onVerticesUpdatedDelegate = function (event) {
+                    return _this._onVerticesUpdated(event);
+                };
+
                 //store a reference to the pool for later disposal
                 this._pool = pool;
 
+                //reference to level of overflow
+                this._level = level;
+
+                //reference to the offset on indices (if this is an overflow renderable)
+                this._indexOffset = indexOffset;
+
                 this.sourceEntity = sourceEntity;
                 this.materialOwner = materialOwner;
-                this.subGeometry = subGeometry;
-                this.animationSubGeometry = animationSubGeometry;
             }
-            RenderableBase.prototype.dispose = function () {
-                this._pool.disposeItem(this.materialOwner);
+            Object.defineProperty(RenderableBase.prototype, "overflow", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._geometryDirty)
+                        this._updateGeometry();
+
+                    return this._overflow;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RenderableBase.prototype, "numTriangles", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._numTriangles;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            *
+            */
+            RenderableBase.prototype.getIndexData = function () {
+                if (this._indexDataDirty)
+                    this._updateIndexData();
+
+                return this._indexData;
             };
 
             /**
             *
             */
-            RenderableBase.prototype._iUpdate = function () {
-                //nothing to do here
+            RenderableBase.prototype.getVertexData = function (dataType) {
+                if (this._pVertexDataDirty[dataType])
+                    this._updateVertexData(dataType);
+
+                return this._vertexData[this._concatenateArrays ? away.base.TriangleSubGeometry.VERTEX_DATA : dataType];
+            };
+
+            /**
+            *
+            */
+            RenderableBase.prototype.getVertexOffset = function (dataType) {
+                if (this._pVertexDataDirty[dataType])
+                    this._updateVertexData(dataType);
+
+                return this._vertexOffset[dataType];
+            };
+
+            RenderableBase.prototype.dispose = function () {
+                this._pool.disposeItem(this.materialOwner);
+
+                this._indexData.dispose();
+                this._indexData = null;
+
+                for (var dataType in this._vertexData) {
+                    this._vertexData[dataType].dispose();
+                    this._vertexData[dataType] = null;
+                }
+
+                if (this._overflow) {
+                    this._overflow.dispose();
+                    this._overflow = null;
+                }
+            };
+
+            RenderableBase.prototype.invalidateGeometry = function () {
+                this._geometryDirty = true;
+
+                if (this._overflow)
+                    this._overflow.invalidateGeometry();
+            };
+
+            /**
+            *
+            */
+            RenderableBase.prototype.invalidateIndexData = function () {
+                this._indexDataDirty = true;
+
+                if (this._overflow)
+                    this._overflow.invalidateIndexData();
+
+                if (this._indexData)
+                    this._indexData.invalidateData();
+            };
+
+            /**
+            * //TODO
+            *
+            * @param dataType
+            */
+            RenderableBase.prototype.invalidateVertexData = function (dataType) {
+                this._pVertexDataDirty[dataType] = true;
+
+                if (this._overflow)
+                    this._overflow.invalidateVertexData(dataType);
+
+                if (this._concatenateArrays)
+                    dataType = away.base.TriangleSubGeometry.VERTEX_DATA;
+
+                if (this._vertexData[dataType])
+                    this._vertexData[dataType].invalidateData();
+            };
+
+            RenderableBase.prototype._pGetSubGeometry = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * //TODO
+            *
+            * @param subGeometry
+            * @param offset
+            * @internal
+            */
+            RenderableBase.prototype._iFillIndexData = function (subGeometry, indexOffset) {
+                this._constructIndices(subGeometry, indexOffset);
+
+                indexOffset = this._indexData.offset;
+
+                //check if there is more to split
+                if (indexOffset < subGeometry.indices.length) {
+                    if (!this._overflow)
+                        this._overflow = this._pGetOverflowRenderable(this._pool, this.materialOwner, indexOffset, this._level + 1);
+                    else
+                        this._overflow._iFillIndexData(subGeometry, indexOffset);
+                } else if (this._overflow) {
+                    this._overflow.dispose();
+                    this._overflow = null;
+                }
+            };
+
+            /**
+            * //TODO
+            *
+            * @param subGeometry
+            * @param dataType
+            * @internal
+            */
+            RenderableBase.prototype._iFillVertexData = function (subGeometry, dataType) {
+                this._vertexOffset[dataType] = subGeometry.getOffset(dataType);
+
+                this._constructVertices(subGeometry, this._concatenateArrays ? away.base.TriangleSubGeometry.VERTEX_DATA : dataType, this.getIndexData().originalIndices, this.getIndexData().indexMappings);
+
+                if (this._overflow)
+                    this._overflow._iFillVertexData(subGeometry, dataType);
+            };
+
+            RenderableBase.prototype._pGetOverflowRenderable = function (pool, materialOwner, level, indexOffset) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * //TODO
+            *
+            * @param subGeometry
+            * @param offset
+            * @private
+            */
+            RenderableBase.prototype._constructIndices = function (subGeometry, offset) {
+                if (!this._indexData)
+                    this._indexData = away.gl.IndexDataPool.getItem(subGeometry.id, this._level);
+
+                this._indexData.updateData(offset, subGeometry.indices, subGeometry.numVertices);
+
+                this._numTriangles = this._indexData.data.length / 3;
+            };
+
+            /**
+            * //TODO
+            *
+            * @param subGeometry
+            * @param dataType
+            * @param originalIndices
+            * @param indexMappings
+            * @private
+            */
+            RenderableBase.prototype._constructVertices = function (subGeometry, dataType, originalIndices, indexMappings) {
+                if (typeof originalIndices === "undefined") { originalIndices = null; }
+                if (typeof indexMappings === "undefined") { indexMappings = null; }
+                if (!this._vertexData[dataType])
+                    this._vertexData[dataType] = away.gl.VertexDataPool.getItem(subGeometry.id, this._level, dataType);
+
+                this._vertexData[dataType].updateData(subGeometry[dataType], subGeometry.getStride(dataType), originalIndices, indexMappings);
+            };
+
+            /**
+            * //TODO
+            *
+            * @private
+            */
+            RenderableBase.prototype._updateGeometry = function () {
+                if (this._subGeometry && this._level == 0) {
+                    this._subGeometry.removeEventListener(SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdatedDelegate);
+                    this._subGeometry.removeEventListener(SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdatedDelegate);
+                }
+
+                this._subGeometry = this._pGetSubGeometry();
+
+                this._concatenateArrays = this._subGeometry.concatenateArrays;
+
+                if (this._subGeometry && this._level == 0) {
+                    this._subGeometry.addEventListener(SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdatedDelegate);
+                    this._subGeometry.addEventListener(SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdatedDelegate);
+                }
+
+                //dispose
+                if (this._indexData) {
+                    this._indexData.dispose();
+                    this._indexData = null;
+                }
+
+                for (var dataType in this._vertexData) {
+                    this._vertexData[dataType].dispose();
+                    this._vertexData[dataType] = null;
+                }
+
+                this._geometryDirty = false;
+
+                //invalidate indices
+                this._indexDataDirty = true;
+                //specific vertex data types have to be invalidated in the specific renderable
+            };
+
+            /**
+            * //TODO
+            *
+            * @private
+            */
+            RenderableBase.prototype._updateIndexData = function () {
+                this._iFillIndexData(this._subGeometry, this._indexOffset);
+
+                this._indexDataDirty = false;
+            };
+
+            /**
+            * //TODO
+            *
+            * @param dataType
+            * @private
+            */
+            RenderableBase.prototype._updateVertexData = function (dataType) {
+                this._iFillVertexData(this._subGeometry, dataType);
+
+                this._pVertexDataDirty[dataType] = false;
+            };
+
+            /**
+            * //TODO
+            *
+            * @param event
+            * @private
+            */
+            RenderableBase.prototype._onIndicesUpdated = function (event) {
+                this.invalidateIndexData();
+            };
+
+            /**
+            * //TODO
+            *
+            * @param event
+            * @private
+            */
+            RenderableBase.prototype._onVerticesUpdated = function (event) {
+                this._concatenateArrays = event.target.concatenateArrays;
+
+                this.invalidateVertexData(event.dataType);
             };
             return RenderableBase;
         })();
@@ -3657,32 +540,45 @@ var away;
         */
         var BillboardRenderable = (function (_super) {
             __extends(BillboardRenderable, _super);
+            /**
+            * //TODO
+            *
+            * @param pool
+            * @param billboard
+            */
             function BillboardRenderable(pool, billboard) {
-                _super.call(this, pool, billboard, billboard, null, null);
+                _super.call(this, pool, billboard, billboard);
 
                 this._billboard = billboard;
 
-                this.subGeometry = this.getGeometry(billboard.material);
+                this._iFillIndexData(this._pGetSubGeometry(), 0);
+
+                this.invalidateVertexData(away.base.TriangleSubGeometry.POSITION_DATA);
+                this.invalidateVertexData(away.base.TriangleSubGeometry.NORMAL_DATA);
+                this.invalidateVertexData(away.base.TriangleSubGeometry.TANGENT_DATA);
+                this.invalidateVertexData(away.base.TriangleSubGeometry.UV_DATA);
             }
             /**
+            * //TODO
             *
+            * @returns {away.base.TriangleSubGeometry}
             */
-            BillboardRenderable.prototype._iUpdate = function () {
+            BillboardRenderable.prototype._pGetSubGeometry = function () {
                 var material = this._billboard.material;
 
-                this.getGeometry(material).updateVertexData(Array(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
-            };
-
-            BillboardRenderable.prototype.getGeometry = function (material) {
                 var geometry = BillboardRenderable._materialGeometry[material.id];
 
                 if (!geometry) {
-                    geometry = BillboardRenderable._materialGeometry[material.id] = new away.base.SubGeometry();
-                    geometry.updateVertexData(Array(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
-                    geometry.updateUVData(Array(0, 0, 1, 0, 1, 1, 0, 1));
-                    geometry.updateIndexData(Array(0, 1, 2, 0, 2, 3));
-                    geometry.updateVertexTangentData(Array(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
-                    geometry.updateVertexNormalData(Array(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
+                    geometry = BillboardRenderable._materialGeometry[material.id] = new away.base.TriangleSubGeometry(true);
+                    geometry.autoDeriveNormals = false;
+                    geometry.autoDeriveTangents = false;
+                    geometry.updateIndices(Array(0, 1, 2, 0, 2, 3));
+                    geometry.updatePositions(Array(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
+                    geometry.updateVertexNormals(Array(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
+                    geometry.updateVertexTangents(Array(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
+                    geometry.updateUVs(Array(0, 0, 1, 0, 1, 1, 0, 1));
+                } else {
+                    geometry.updatePositions(Array(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
                 }
 
                 return geometry;
@@ -3703,42 +599,67 @@ var away;
     * @module away.pool
     */
     (function (pool) {
+        var LineSubGeometry = away.base.LineSubGeometry;
+        var SubGeometryEvent = away.events.SubGeometryEvent;
+
         /**
-        * @class away.pool.RenderableListItem
+        * @class away.pool.LineSubMeshRenderable
         */
-        var SegmentSetRenderable = (function (_super) {
-            __extends(SegmentSetRenderable, _super);
-            function SegmentSetRenderable(pool, segmentSet) {
-                _super.call(this, pool, segmentSet, segmentSet, segmentSet.subGeometry, null);
-            }
-            SegmentSetRenderable.id = "segmentset";
-            return SegmentSetRenderable;
-        })(away.pool.RenderableBase);
-        pool.SegmentSetRenderable = SegmentSetRenderable;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.pool
-    */
-    (function (pool) {
-        /**
-        * @class away.pool.SubMeshRenderable
-        */
-        var SubMeshRenderable = (function (_super) {
-            __extends(SubMeshRenderable, _super);
-            function SubMeshRenderable(pool, subMesh) {
-                _super.call(this, pool, subMesh.sourceEntity, subMesh, subMesh.subGeometry, subMesh.animationSubGeometry);
+        var LineSubMeshRenderable = (function (_super) {
+            __extends(LineSubMeshRenderable, _super);
+            /**
+            * //TODO
+            *
+            * @param pool
+            * @param subMesh
+            * @param level
+            * @param dataOffset
+            */
+            function LineSubMeshRenderable(pool, subMesh, level, indexOffset) {
+                if (typeof level === "undefined") { level = 0; }
+                if (typeof indexOffset === "undefined") { indexOffset = 0; }
+                _super.call(this, pool, subMesh.parentMesh, subMesh, level, indexOffset);
 
                 this.subMesh = subMesh;
             }
-            SubMeshRenderable.id = "submesh";
-            return SubMeshRenderable;
+            /**
+            * //TODO
+            *
+            * @returns {base.LineSubGeometry}
+            * @protected
+            */
+            LineSubMeshRenderable.prototype._pGetSubGeometry = function () {
+                var subGeometry = this.subMesh.subGeometry;
+
+                this._pVertexDataDirty[LineSubGeometry.START_POSITION_DATA] = true;
+                this._pVertexDataDirty[LineSubGeometry.END_POSITION_DATA] = true;
+
+                if (subGeometry.thickness)
+                    this._pVertexDataDirty[LineSubGeometry.THICKNESS_DATA] = true;
+
+                if (subGeometry.startColors)
+                    this._pVertexDataDirty[LineSubGeometry.COLOR_DATA] = true;
+
+                return subGeometry;
+            };
+
+            /**
+            * //TODO
+            *
+            * @param pool
+            * @param materialOwner
+            * @param level
+            * @param indexOffset
+            * @returns {away.pool.LineSubMeshRenderable}
+            * @private
+            */
+            LineSubMeshRenderable.prototype._pGetOverflowRenderable = function (pool, materialOwner, level, indexOffset) {
+                return new LineSubMeshRenderable(pool, materialOwner, level, indexOffset);
+            };
+            LineSubMeshRenderable.id = "linesubmesh";
+            return LineSubMeshRenderable;
         })(away.pool.RenderableBase);
-        pool.SubMeshRenderable = SubMeshRenderable;
+        pool.LineSubMeshRenderable = LineSubMeshRenderable;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -3749,22 +670,149 @@ var away;
     * @module away.pool
     */
     (function (pool) {
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+        var TriangleSubMesh = away.base.TriangleSubMesh;
+
+        /**
+        * @class away.pool.TriangleSubMeshRenderable
+        */
+        var TriangleSubMeshRenderable = (function (_super) {
+            __extends(TriangleSubMeshRenderable, _super);
+            /**
+            * //TODO
+            *
+            * @param pool
+            * @param subMesh
+            * @param level
+            * @param indexOffset
+            */
+            function TriangleSubMeshRenderable(pool, subMesh, level, indexOffset) {
+                if (typeof level === "undefined") { level = 0; }
+                if (typeof indexOffset === "undefined") { indexOffset = 0; }
+                _super.call(this, pool, subMesh.parentMesh, subMesh, level, indexOffset);
+
+                this.subMesh = subMesh;
+            }
+            /**
+            *
+            * @returns {away.base.SubGeometryBase}
+            * @protected
+            */
+            TriangleSubMeshRenderable.prototype._pGetSubGeometry = function () {
+                var subGeometry;
+
+                if (this.subMesh.animator)
+                    subGeometry = this.subMesh.animator.getRenderableSubGeometry(this, this.subMesh.subGeometry);
+                else
+                    subGeometry = this.subMesh.subGeometry;
+
+                this._pVertexDataDirty[TriangleSubGeometry.POSITION_DATA] = true;
+
+                if (subGeometry.vertexNormals)
+                    this._pVertexDataDirty[TriangleSubGeometry.NORMAL_DATA] = true;
+
+                if (subGeometry.vertexTangents)
+                    this._pVertexDataDirty[TriangleSubGeometry.TANGENT_DATA] = true;
+
+                if (subGeometry.uvs)
+                    this._pVertexDataDirty[TriangleSubGeometry.UV_DATA] = true;
+
+                if (subGeometry.secondaryUVs)
+                    this._pVertexDataDirty[TriangleSubGeometry.SECONDARY_UV_DATA] = true;
+
+                if (subGeometry.jointIndices)
+                    this._pVertexDataDirty[TriangleSubGeometry.JOINT_INDEX_DATA] = true;
+
+                if (subGeometry.jointWeights)
+                    this._pVertexDataDirty[TriangleSubGeometry.JOINT_WEIGHT_DATA] = true;
+
+                switch (subGeometry.jointsPerVertex) {
+                    case 1:
+                        this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_1;
+                        break;
+                    case 2:
+                        this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_2;
+                        break;
+                    case 3:
+                        this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_3;
+                        break;
+                    case 4:
+                        this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_4;
+                        break;
+                    default:
+                }
+
+                return subGeometry;
+            };
+
+            /**
+            * //TODO
+            *
+            * @param pool
+            * @param materialOwner
+            * @param level
+            * @param indexOffset
+            * @returns {away.pool.TriangleSubMeshRenderable}
+            * @protected
+            */
+            TriangleSubMeshRenderable.prototype._pGetOverflowRenderable = function (pool, materialOwner, level, indexOffset) {
+                return new TriangleSubMeshRenderable(pool, materialOwner, level, indexOffset);
+            };
+            TriangleSubMeshRenderable.id = "trianglesubmesh";
+            return TriangleSubMeshRenderable;
+        })(away.pool.RenderableBase);
+        pool.TriangleSubMeshRenderable = TriangleSubMeshRenderable;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.pool
+    */
+    (function (pool) {
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+
         /**
         * @class away.pool.SkyboxRenderable
         */
         var SkyboxRenderable = (function (_super) {
             __extends(SkyboxRenderable, _super);
+            /**
+            * //TODO
+            *
+            * @param pool
+            * @param skybox
+            */
             function SkyboxRenderable(pool, skybox) {
-                _super.call(this, pool, skybox, skybox, null, null);
+                _super.call(this, pool, skybox, skybox);
 
-                if (!SkyboxRenderable._geometry) {
-                    SkyboxRenderable._geometry = new away.base.SubGeometry();
-                    SkyboxRenderable._geometry.updateVertexData(Array(-1, 1, -1, 1, 1, -1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1));
-                    SkyboxRenderable._geometry.updateIndexData(Array(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2));
+                this._iFillIndexData(this._pGetSubGeometry(), 0);
+
+                this.invalidateVertexData(TriangleSubGeometry.POSITION_DATA);
+            }
+            /**
+            * //TODO
+            *
+            * @returns {away.base.TriangleSubGeometry}
+            * @private
+            */
+            SkyboxRenderable.prototype._pGetSubGeometry = function () {
+                var geometry = SkyboxRenderable._geometry;
+
+                if (!geometry) {
+                    geometry = SkyboxRenderable._geometry = new TriangleSubGeometry(true);
+                    geometry.autoDeriveNormals = false;
+                    geometry.autoDeriveTangents = false;
+                    geometry.updateIndices(Array(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2));
+                    geometry.updatePositions(Array(-1, 1, -1, 1, 1, -1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1));
                 }
 
-                this.subGeometry = SkyboxRenderable._geometry;
-            }
+                this._pVertexDataDirty[TriangleSubGeometry.POSITION_DATA] = true;
+
+                return geometry;
+            };
             SkyboxRenderable.id = "skybox";
             return SkyboxRenderable;
         })(away.pool.RenderableBase);
@@ -4066,48 +1114,6 @@ var away;
 var away;
 (function (away) {
     /**
-    * @module away.partition
-    */
-    (function (partition) {
-        /**
-        * SkyboxNode is a space partitioning leaf node that contains a Skybox object.
-        *
-        * @class away.partition.SkyboxNode
-        */
-        var SkyboxNode = (function (_super) {
-            __extends(SkyboxNode, _super);
-            /**
-            * Creates a new SkyboxNode object.
-            * @param skyBox The Skybox to be contained in the node.
-            */
-            function SkyboxNode(skyBox) {
-                _super.call(this, skyBox);
-
-                this._skyBox = skyBox;
-            }
-            /**
-            *
-            * @param planes
-            * @param numPlanes
-            * @returns {boolean}
-            */
-            SkyboxNode.prototype.isInFrustum = function (planes, numPlanes) {
-                if (!this._skyBox._iIsVisible)
-                    return false;
-
-                //a skybox is always in view unless its visibility is set to false
-                return true;
-            };
-            return SkyboxNode;
-        })(away.partition.EntityNode);
-        partition.SkyboxNode = SkyboxNode;
-    })(away.partition || (away.partition = {}));
-    var partition = away.partition;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
     * @module away.pick
     */
     (function (pick) {
@@ -4119,7 +1125,7 @@ var away;
         var PickingColliderBase = (function () {
             function PickingColliderBase() {
                 this._billboardRenderablePool = away.pool.RenderablePool.getPool(away.pool.BillboardRenderable);
-                this._subMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.SubMeshRenderable);
+                this._subMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.TriangleSubMeshRenderable);
             }
             PickingColliderBase.prototype._pPetCollisionNormal = function (indexData /*uint*/ , vertexData, triangleIndex) {
                 var normal = new away.geom.Vector3D();
@@ -4230,6 +1236,8 @@ var away;
     * @module away.pick
     */
     (function (pick) {
+        var SubGeometry = away.base.TriangleSubGeometry;
+
         /**
         * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
         *
@@ -4255,8 +1263,6 @@ var away;
             * @inheritDoc
             */
             JSPickingCollider.prototype._pTestRenderableCollision = function (renderable, pickingCollisionVO, shortestCollisionDistance) {
-                var subGeometry = renderable.subGeometry;
-
                 var t;
                 var i0, i1, i2;
                 var rx, ry, rz;
@@ -4270,34 +1276,34 @@ var away;
                 var s1x, s1y, s1z;
                 var nl, nDotV, D, disToPlane;
                 var Q1Q2, Q1Q1, Q2Q2, RQ1, RQ2;
-                var indexData = subGeometry.indexData;
-                var vertexData = subGeometry.vertexData;
-                var uvData = subGeometry.UVData;
+                var indexData = renderable.getIndexData().data;
                 var collisionTriangleIndex = -1;
                 var bothSides = renderable.materialOwner.material.bothSides;
 
-                var vertexStride = subGeometry.vertexStride;
-                var vertexOffset = subGeometry.vertexOffset;
-                var uvStride = subGeometry.UVStride;
-                var uvOffset = subGeometry.UVOffset;
+                var positionData = renderable.getVertexData(SubGeometry.POSITION_DATA).data;
+                var positionStride = renderable.getVertexData(SubGeometry.POSITION_DATA).dataPerVertex;
+                var positionOffset = renderable.getVertexOffset(SubGeometry.POSITION_DATA);
+                var uvData = renderable.getVertexData(SubGeometry.UV_DATA).data;
+                var uvStride = renderable.getVertexData(SubGeometry.UV_DATA).dataPerVertex;
+                var uvOffset = renderable.getVertexOffset(SubGeometry.UV_DATA);
                 var numIndices = indexData.length;
 
                 for (var index = 0; index < numIndices; index += 3) {
                     // evaluate triangle indices
-                    i0 = vertexOffset + indexData[index] * vertexStride;
-                    i1 = vertexOffset + indexData[(index + 1)] * vertexStride;
-                    i2 = vertexOffset + indexData[(index + 2)] * vertexStride;
+                    i0 = positionOffset + indexData[index] * positionStride;
+                    i1 = positionOffset + indexData[(index + 1)] * positionStride;
+                    i2 = positionOffset + indexData[(index + 2)] * positionStride;
 
-                    // evaluate triangle vertices
-                    p0x = vertexData[i0];
-                    p0y = vertexData[(i0 + 1)];
-                    p0z = vertexData[(i0 + 2)];
-                    p1x = vertexData[i1];
-                    p1y = vertexData[(i1 + 1)];
-                    p1z = vertexData[(i1 + 2)];
-                    p2x = vertexData[i2];
-                    p2y = vertexData[(i2 + 1)];
-                    p2z = vertexData[(i2 + 2)];
+                    // evaluate triangle positions
+                    p0x = positionData[i0];
+                    p0y = positionData[(i0 + 1)];
+                    p0z = positionData[(i0 + 2)];
+                    p1x = positionData[i1];
+                    p1y = positionData[(i1 + 1)];
+                    p1z = positionData[(i1 + 2)];
+                    p2x = positionData[i2];
+                    p2y = positionData[(i2 + 1)];
+                    p2z = positionData[(i2 + 2)];
 
                     // evaluate sides and triangle normal
                     s0x = p1x - p0x; // s0 = p1 - p0
@@ -4559,8 +1565,8 @@ var away;
                     matrix.append(viewProjection);
                     this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
                     this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
-                    renderable.subGeometry.activateVertexBuffer(0, this._stageGL);
-                    this._context.drawTriangles(renderable.subGeometry.getIndexBuffer(this._stageGL), 0, renderable.subGeometry.numTriangles);
+                    this._stageGL.activateBuffer(0, renderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA), away.base.TriangleSubGeometry.POSITION_FORMAT);
+                    this._context.drawTriangles(this._stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 
                     renderable = renderable.next;
                 }
@@ -4652,8 +1658,10 @@ var away;
                 this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
                 this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
                 this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
-                this._hitRenderable.subGeometry.activateVertexBuffer(0, this._stageGL);
-                this._context.drawTriangles(this._hitRenderable.subGeometry.getIndexBuffer(this._stageGL), 0, this._hitRenderable.subGeometry.numTriangles);
+
+                this._stageGL.activateBuffer(0, this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA), away.base.TriangleSubGeometry.POSITION_FORMAT);
+                this._context.drawTriangles(this._stageGL.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
+
                 this._context.drawToBitmapData(this._bitmapData);
 
                 col = this._bitmapData.getPixel(0, 0);
@@ -4669,9 +1677,6 @@ var away;
             * @param camera The camera used to view the hit object.
             */
             ShaderPicker.prototype.getPreciseDetails = function (camera) {
-                var subGeom = this._hitRenderable.subGeometry;
-                var indices = subGeom.indexData;
-                var vertices = subGeom.vertexData;
                 var len = indices.length;
                 var x1, y1, z1;
                 var x2, y2, z2;
@@ -4681,34 +1686,45 @@ var away;
                 var v0x, v0y, v0z;
                 var v1x, v1y, v1z;
                 var v2x, v2y, v2z;
+                var ni1, ni2, ni3;
+                var n1, n2, n3, nLength;
                 var dot00, dot01, dot02, dot11, dot12;
                 var s, t, invDenom;
-                var uvs = subGeom.UVData;
-                var normals = subGeom.faceNormals;
                 var x = this._localHitPosition.x, y = this._localHitPosition.y, z = this._localHitPosition.z;
                 var u, v;
                 var ui1, ui2, ui3;
                 var s0x, s0y, s0z;
                 var s1x, s1y, s1z;
                 var nl;
-                var stride = subGeom.vertexStride;
-                var vertexOffset = subGeom.vertexOffset;
+                var indices = this._hitRenderable.getIndexData().data;
+
+                var positions = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA).data;
+                var positionStride = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA).dataPerVertex;
+                var positionOffset = this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA);
+
+                var uvs = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.UV_DATA).data;
+                var uvStride = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.UV_DATA).dataPerVertex;
+                var uvOffset = this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.UV_DATA);
+
+                var normals = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.NORMAL_DATA).data;
+                var normalStride = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.NORMAL_DATA).dataPerVertex;
+                var normalOffset = this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.NORMAL_DATA);
 
                 this.updateRay(camera);
 
                 while (i < len) {
-                    t1 = vertexOffset + indices[i] * stride;
-                    t2 = vertexOffset + indices[j] * stride;
-                    t3 = vertexOffset + indices[k] * stride;
-                    x1 = vertices[t1];
-                    y1 = vertices[t1 + 1];
-                    z1 = vertices[t1 + 2];
-                    x2 = vertices[t2];
-                    y2 = vertices[t2 + 1];
-                    z2 = vertices[t2 + 2];
-                    x3 = vertices[t3];
-                    y3 = vertices[t3 + 1];
-                    z3 = vertices[t3 + 2];
+                    t1 = positionOffset + indices[i] * positionStride;
+                    t2 = positionOffset + indices[j] * positionStride;
+                    t3 = positionOffset + indices[k] * positionStride;
+                    x1 = positions[t1];
+                    y1 = positions[t1 + 1];
+                    z1 = positions[t1 + 2];
+                    x2 = positions[t2];
+                    y2 = positions[t2 + 1];
+                    z2 = positions[t2 + 2];
+                    x3 = positions[t3];
+                    y3 = positions[t3 + 1];
+                    z3 = positions[t3 + 2];
 
                     // if within bounds
                     if (!((x < x1 && x < x2 && x < x3) || (y < y1 && y < y2 && y < y3) || (z < z1 && z < z2 && z < z3) || (x > x1 && x > x2 && x > x3) || (y > y1 && y > y2 && y > y3) || (z > z1 && z > z2 && z > z3))) {
@@ -4733,8 +1749,22 @@ var away;
 
                         // if inside the current triangle, fetch details hit information
                         if (s >= 0 && t >= 0 && (s + t) <= 1) {
+                            ni1 = normalOffset + indices[i] * normalStride;
+                            ni2 = normalOffset + indices[j] * normalStride;
+                            ni3 = normalOffset + indices[k] * normalStride;
+
+                            n1 = indices[ni1] + indices[ni2] + indices[ni3];
+                            n2 = indices[ni1 + 1] + indices[ni2 + 1] + indices[ni3 + 1];
+                            n3 = indices[ni1 + 2] + indices[ni2 + 2] + indices[ni3 + 2];
+
+                            nLength = Math.sqrt(n1 * n1 + n2 * n2 + n3 * n3);
+
+                            n1 /= nLength;
+                            n2 /= nLength;
+                            n3 /= nLength;
+
                             // this is def the triangle, now calculate precise coords
-                            this.getPrecisePosition(this._hitRenderable.sourceEntity.inverseSceneTransform, normals[i], normals[i + 1], normals[i + 2], x1, y1, z1);
+                            this.getPrecisePosition(this._hitRenderable.sourceEntity.inverseSceneTransform, n1, n2, n3, x1, y1, z1);
 
                             v2x = this._localHitPosition.x - x1;
                             v2y = this._localHitPosition.y - y1;
@@ -4759,9 +1789,9 @@ var away;
                             s = (dot11 * dot02 - dot01 * dot12) * invDenom;
                             t = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
-                            ui1 = indices[i] << 1;
-                            ui2 = indices[j] << 1;
-                            ui3 = indices[k] << 1;
+                            ui1 = uvOffset + indices[i] * uvStride;
+                            ui2 = uvOffset + indices[j] * uvStride;
+                            ui3 = uvOffset + indices[k] * uvStride;
 
                             u = uvs[ui1];
                             v = uvs[ui1 + 1];
@@ -4769,8 +1799,9 @@ var away;
                             this._hitUV.y = v + t * (uvs[ui2 + 1] - v) + s * (uvs[ui3 + 1] - v);
 
                             this._faceIndex = i;
-                            this._subGeometryIndex = away.utils.GeometryUtils.getMeshSubGeometryIndex(subGeom);
 
+                            //TODO add back subGeometryIndex value
+                            //this._subGeometryIndex = away.utils.GeometryUtils.getMeshSubGeometryIndex(subGeom);
                             return;
                         }
                     }
@@ -4866,7 +1897,9 @@ var away;
             function RendererBase(renderToTexture) {
                 if (typeof renderToTexture === "undefined") { renderToTexture = false; }
                 _super.call(this);
+                this._viewPort = new away.geom.Rectangle();
                 this._pBackBufferInvalid = true;
+                this._pDepthTextureInvalid = true;
                 this._depthPrepass = false;
                 this._backgroundR = 0;
                 this._backgroundG = 0;
@@ -4876,12 +1909,17 @@ var away;
                 this.textureRatioX = 1;
                 this.textureRatioY = 1;
                 this._pRttViewProjectionMatrix = new away.geom.Matrix3D();
+                this._localPos = new away.geom.Point();
+                this._globalPos = new away.geom.Point();
+                this._pScissorRect = new away.geom.Rectangle();
                 this._pNumTriangles = 0;
 
+                this._onViewportUpdatedDelegate = away.utils.Delegate.create(this, this.onViewportUpdated);
+
                 this._billboardRenderablePool = away.pool.RenderablePool.getPool(away.pool.BillboardRenderable);
-                this._segmentSetRenderablePool = away.pool.RenderablePool.getPool(away.pool.SegmentSetRenderable);
                 this._skyboxRenderablePool = away.pool.RenderablePool.getPool(away.pool.SkyboxRenderable);
-                this._subMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.SubMeshRenderable);
+                this._triangleSubMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.TriangleSubMeshRenderable);
+                this._lineSubMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.LineSubMeshRenderable);
 
                 this._renderToTexture = renderToTexture;
 
@@ -4900,6 +1938,122 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
+            Object.defineProperty(RendererBase.prototype, "viewPort", {
+                /**
+                * A viewPort rectangle equivalent of the StageGL size and position.
+                */
+                get: function () {
+                    return this._viewPort;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RendererBase.prototype, "scissorRect", {
+                /**
+                * A scissor rectangle equivalent of the view size and position.
+                */
+                get: function () {
+                    return this._pScissorRect;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RendererBase.prototype, "x", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._localPos.x;
+                },
+                set: function (value) {
+                    if (this.x == value)
+                        return;
+
+                    this._globalPos.x = this._localPos.x = value;
+
+                    this.updateGlobalPos();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "y", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._localPos.y;
+                },
+                set: function (value) {
+                    if (this.y == value)
+                        return;
+
+                    this._globalPos.y = this._localPos.y = value;
+
+                    this.updateGlobalPos();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "width", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    if (this._width == value)
+                        return;
+
+                    this._width = value;
+                    this._pScissorRect.width = value;
+
+                    if (this._pRttBufferManager)
+                        this._pRttBufferManager.viewWidth = value;
+
+                    this._pBackBufferInvalid = true;
+                    this._pDepthTextureInvalid = true;
+
+                    this.notifyScissorUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "height", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    if (this._height == value)
+                        return;
+
+                    this._height = value;
+                    this._pScissorRect.height = value;
+
+                    if (this._pRttBufferManager)
+                        this._pRttBufferManager.viewHeight = value;
+
+                    this._pBackBufferInvalid = true;
+                    this._pDepthTextureInvalid = true;
+
+                    this.notifyScissorUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
 
             RendererBase.prototype._iCreateEntityCollector = function () {
                 return new away.traverse.EntityCollector();
@@ -5001,6 +2155,7 @@ var away;
                 if (this._pStageGL) {
                     this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
                     this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
+                    this._pStageGL.removeEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
                 }
 
                 if (!value) {
@@ -5010,6 +2165,7 @@ var away;
                     this._pStageGL = value;
                     this._pStageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
                     this._pStageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
+                    this._pStageGL.addEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
                     /*
                     if (_backgroundImageRenderer)
@@ -5049,8 +2205,14 @@ var away;
             * Disposes the resources used by the RendererBase.
             */
             RendererBase.prototype.dispose = function () {
+                if (this._pRttBufferManager)
+                    this._pRttBufferManager.dispose();
+
+                this._pRttBufferManager = null;
+
                 this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
                 this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
+                this._pStageGL.removeEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
                 this._pStageGL = null;
                 /*
@@ -5062,6 +2224,8 @@ var away;
             };
 
             RendererBase.prototype.render = function (entityCollector) {
+                this._viewportDirty = false;
+                this._scissorDirty = false;
             };
 
             /**
@@ -5100,16 +2264,16 @@ var away;
                 this._pNumTriangles = 0;
 
                 //grab entity head
-                var entity = entityCollector.entityHead;
+                var item = entityCollector.entityHead;
 
                 //set temp values for entry point and camera forward vector
                 this._pCamera = entityCollector.camera;
                 this._iEntryPoint = this._pCamera.scenePosition;
                 this._pCameraForward = this._pCamera.transform.forwardVector;
 
-                while (entity) {
-                    this.pFindRenderables(entity.entity);
-                    entity = entity.next;
+                while (item) {
+                    item.entity._iCollectRenderables(this);
+                    item = item.next;
                 }
 
                 //sort the resulting renderables
@@ -5240,9 +2404,66 @@ var away;
             }
             */
             /**
+            * @private
+            */
+            RendererBase.prototype.notifyScissorUpdate = function () {
+                if (this._scissorDirty)
+                    return;
+
+                this._scissorDirty = true;
+
+                if (!this._scissorUpdated)
+                    this._scissorUpdated = new away.events.RendererEvent(away.events.RendererEvent.SCISSOR_UPDATED);
+
+                this.dispatchEvent(this._scissorUpdated);
+            };
+
+            /**
+            * @private
+            */
+            RendererBase.prototype.notifyViewportUpdate = function () {
+                if (this._viewportDirty)
+                    return;
+
+                this._viewportDirty = true;
+
+                if (!this._viewPortUpdated)
+                    this._viewPortUpdated = new away.events.RendererEvent(away.events.RendererEvent.VIEWPORT_UPDATED);
+
+                this.dispatchEvent(this._viewPortUpdated);
+            };
+
+            /**
+            *
+            */
+            RendererBase.prototype.onViewportUpdated = function (event) {
+                this._viewPort = this._pStageGL.viewPort;
+
+                //TODO stop firing viewport updated for every stagegl viewport change
+                if (this._shareContext) {
+                    this._pScissorRect.x = this._globalPos.x - this._pStageGL.x;
+                    this._pScissorRect.y = this._globalPos.y - this._pStageGL.y;
+                    this.notifyScissorUpdate();
+                }
+
+                this.notifyViewportUpdate();
+            };
+
+            /**
             *
             */
             RendererBase.prototype.updateGlobalPos = function () {
+                if (this._shareContext) {
+                    this._pScissorRect.x = this._globalPos.x - this._viewPort.x;
+                    this._pScissorRect.y = this._globalPos.y - this._viewPort.y;
+                } else {
+                    this._pScissorRect.x = 0;
+                    this._pScissorRect.y = 0;
+                    this._viewPort.x = this._globalPos.x;
+                    this._viewPort.y = this._globalPos.y;
+                }
+
+                this.notifyScissorUpdate();
             };
 
             /**
@@ -5250,22 +2471,32 @@ var away;
             * @param billboard
             * @protected
             */
-            RendererBase.prototype.pApplyBillboard = function (billboard) {
-                this.pApplyRenderable(this._billboardRenderablePool.getItem(billboard));
+            RendererBase.prototype.applyBillboard = function (billboard) {
+                this._applyRenderable(this._billboardRenderablePool.getItem(billboard));
             };
 
             /**
             *
-            * @param mesh
-            * @protected
+            * @param triangleSubMesh
             */
-            RendererBase.prototype.pApplyMesh = function (mesh) {
-                var subMesh;
-                var renderable;
+            RendererBase.prototype.applyTriangleSubMesh = function (triangleSubMesh) {
+                this._applyRenderable(this._triangleSubMeshRenderablePool.getItem(triangleSubMesh));
+            };
 
-                var len = mesh.subMeshes.length;
-                for (var i = 0; i < len; i++)
-                    this.pApplyRenderable(this._subMeshRenderablePool.getItem(mesh.subMeshes[i]));
+            /**
+            *
+            * @param lineSubMesh
+            */
+            RendererBase.prototype.applyLineSubMesh = function (lineSubMesh) {
+                this._applyRenderable(this._lineSubMeshRenderablePool.getItem(lineSubMesh));
+            };
+
+            /**
+            *
+            * @param skybox
+            */
+            RendererBase.prototype.applySkybox = function (skybox) {
+                this._applyRenderable(this._skyboxRenderablePool.getItem(skybox));
             };
 
             /**
@@ -5273,59 +2504,40 @@ var away;
             * @param renderable
             * @protected
             */
-            RendererBase.prototype.pApplyRenderable = function (renderable) {
+            RendererBase.prototype._applyRenderable = function (renderable) {
                 var material = renderable.materialOwner.material;
                 var entity = renderable.sourceEntity;
                 var position = entity.scenePosition;
 
-                if (material) {
-                    //set ids for faster referencing
-                    renderable.materialId = material._iMaterialId;
-                    renderable.renderOrderId = material._iRenderOrderId;
-                    renderable.cascaded = false;
+                if (!material)
+                    material = away.materials.DefaultMaterialManager.getDefaultMaterial(renderable.materialOwner);
 
-                    // project onto camera's z-axis
-                    position = this._iEntryPoint.subtract(position);
-                    renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
+                //set ids for faster referencing
+                renderable.material = material;
+                renderable.materialId = material._iMaterialId;
+                renderable.renderOrderId = material._iRenderOrderId;
+                renderable.cascaded = false;
 
-                    //store reference to scene transform
-                    renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
+                // project onto camera's z-axis
+                position = this._iEntryPoint.subtract(position);
+                renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
 
-                    if (material.requiresBlending) {
-                        renderable.next = this._pBlendedRenderableHead;
-                        this._pBlendedRenderableHead = renderable;
-                    } else {
-                        renderable.next = this._pOpaqueRenderableHead;
-                        this._pOpaqueRenderableHead = renderable;
-                    }
+                //store reference to scene transform
+                renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
+
+                if (material.requiresBlending) {
+                    renderable.next = this._pBlendedRenderableHead;
+                    this._pBlendedRenderableHead = renderable;
+                } else {
+                    renderable.next = this._pOpaqueRenderableHead;
+                    this._pOpaqueRenderableHead = renderable;
                 }
 
-                this._pNumTriangles += renderable.subGeometry.numTriangles;
-            };
+                this._pNumTriangles += renderable.numTriangles;
 
-            RendererBase.prototype.pApplySkybox = function (skybox) {
-                this.pApplyRenderable(this._skyboxRenderablePool.getItem(skybox));
-            };
-
-            RendererBase.prototype.pApplySegmentSet = function (segmentSet) {
-                this.pApplyRenderable(this._segmentSetRenderablePool.getItem(segmentSet));
-            };
-
-            /**
-            *
-            * @param entity
-            */
-            RendererBase.prototype.pFindRenderables = function (entity) {
-                //TODO abstract conditional in the entity with a callback to IRenderer
-                if (entity.assetType === away.library.AssetType.BILLBOARD) {
-                    this.pApplyBillboard(entity);
-                } else if (entity.assetType === away.library.AssetType.MESH) {
-                    this.pApplyMesh(entity);
-                } else if (entity.assetType === away.library.AssetType.SKYBOX) {
-                    this.pApplySkybox(entity);
-                } else if (entity.assetType === away.library.AssetType.SEGMENT_SET) {
-                    this.pApplySegmentSet(entity);
-                }
+                //handle any overflow for renderables with data that exceeds GPU limitations
+                if (renderable.overflow)
+                    this._applyRenderable(renderable.overflow);
             };
             return RendererBase;
         })(away.events.EventDispatcher);
@@ -5533,13 +2745,6 @@ var away;
                 if (typeof profile === "undefined") { profile = "baseline"; }
                 _super.call(this);
                 this._skyboxProjection = new away.geom.Matrix3D();
-                this._depthTextureInvalid = true;
-                this._viewPort = new away.geom.Rectangle();
-                this._localPos = new away.geom.Point();
-                this._globalPos = new away.geom.Point();
-                this._pScissorRect = new away.geom.Rectangle();
-
-                this._onViewportUpdatedDelegate = away.utils.Delegate.create(this, this.onViewportUpdated);
 
                 this._pDepthRenderer = new away.render.DepthRenderer();
                 this._pDistanceRenderer = new away.render.DepthRenderer(false, true);
@@ -5630,125 +2835,8 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(DefaultRenderer.prototype, "viewPort", {
-                /**
-                * A viewPort rectangle equivalent of the StageGL size and position.
-                */
-                get: function () {
-                    return this._viewPort;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(DefaultRenderer.prototype, "scissorRect", {
-                /**
-                * A scissor rectangle equivalent of the view size and position.
-                */
-                get: function () {
-                    return this._pScissorRect;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(DefaultRenderer.prototype, "x", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._localPos.x;
-                },
-                set: function (value) {
-                    if (this.x == value)
-                        return;
-
-                    this._globalPos.x = this._localPos.x = value;
-
-                    this.updateGlobalPos();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(DefaultRenderer.prototype, "y", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._localPos.y;
-                },
-                set: function (value) {
-                    if (this.y == value)
-                        return;
-
-                    this._globalPos.y = this._localPos.y = value;
-
-                    this.updateGlobalPos();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(DefaultRenderer.prototype, "width", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._width;
-                },
-                set: function (value) {
-                    if (this._width == value)
-                        return;
-
-                    this._width = value;
-                    this._pScissorRect.width = value;
-
-                    if (this._pRttBufferManager)
-                        this._pRttBufferManager.viewWidth = value;
-
-                    this._pBackBufferInvalid = true;
-                    this._depthTextureInvalid = true;
-
-                    this.notifyScissorUpdate();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(DefaultRenderer.prototype, "height", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._height;
-                },
-                set: function (value) {
-                    if (this._height == value)
-                        return;
-
-                    this._height = value;
-                    this._pScissorRect.height = value;
-
-                    if (this._pRttBufferManager)
-                        this._pRttBufferManager.viewHeight = value;
-
-                    this._pBackBufferInvalid = true;
-                    this._depthTextureInvalid = true;
-
-                    this.notifyScissorUpdate();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
             DefaultRenderer.prototype.render = function (entityCollector) {
-                this._viewportDirty = false;
-                this._scissorDirty = false;
+                _super.prototype.render.call(this, entityCollector);
 
                 if (!this._pStageGL.recoverFromDisposal()) {
                     this._pBackBufferInvalid = true;
@@ -5880,7 +2968,7 @@ var away;
             DefaultRenderer.prototype.drawSkybox = function (entityCollector) {
                 var skyBox = entityCollector.skyBox;
 
-                var material = skyBox.materialOwner.material;
+                var material = skyBox.material;
 
                 var camera = entityCollector.camera;
 
@@ -5933,7 +3021,7 @@ var away;
                 var renderable2;
 
                 while (renderable) {
-                    this._activeMaterial = renderable.materialOwner.material;
+                    this._activeMaterial = renderable.material;
 
                     this._activeMaterial.iUpdateMaterial(this._pContext);
 
@@ -5953,13 +3041,13 @@ var away;
                                 this._activeMaterial.iRenderPass(j, renderable2, this._pStageGL, entityCollector, this._pRttViewProjectionMatrix);
 
                                 renderable2 = renderable2.next;
-                            } while(renderable2 && renderable2.materialOwner.material == this._activeMaterial);
+                            } while(renderable2 && renderable2.material == this._activeMaterial);
 
                             this._activeMaterial.iDeactivatePass(j, this._pStageGL);
                         } else {
                             do {
                                 renderable2 = renderable2.next;
-                            } while(renderable2 && renderable2.materialOwner.material == this._activeMaterial);
+                            } while(renderable2 && renderable2.material == this._activeMaterial);
                         }
                     } while(++j < numPasses);
 
@@ -5976,13 +3064,7 @@ var away;
                 this._pDepthRenderer = null;
                 this._pDistanceRenderer = null;
 
-                if (this._pRttBufferManager)
-                    this._pRttBufferManager.dispose();
-
-                this._pRttBufferManager = null;
                 this._pDepthRender = null;
-
-                this._pStageGL.removeEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
                 _super.prototype.dispose.call(this);
             };
@@ -6010,7 +3092,7 @@ var away;
             *
             */
             DefaultRenderer.prototype.pRenderSceneDepthToTexture = function (entityCollector) {
-                if (this._depthTextureInvalid || !this._pDepthRender)
+                if (this._pDepthTextureInvalid || !this._pDepthRender)
                     this.initDepthTexture(this._pStageGL.contextGL);
 
                 this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
@@ -6034,13 +3116,7 @@ var away;
             };
 
             DefaultRenderer.prototype.iSetStageGL = function (value) {
-                if (this._pStageGL)
-                    this._pStageGL.removeEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-
                 _super.prototype.iSetStageGL.call(this, value);
-
-                if (this._pStageGL)
-                    this._pStageGL.addEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
                 this._pDistanceRenderer.iSetStageGL(value);
                 this._pDepthRenderer.iSetStageGL(value);
@@ -6050,75 +3126,12 @@ var away;
             *
             */
             DefaultRenderer.prototype.initDepthTexture = function (context) {
-                this._depthTextureInvalid = false;
+                this._pDepthTextureInvalid = false;
 
                 if (this._pDepthRender)
                     this._pDepthRender.dispose();
 
                 this._pDepthRender = context.createTexture(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight, away.gl.ContextGLTextureFormat.BGRA, true);
-            };
-
-            /**
-            * @private
-            */
-            DefaultRenderer.prototype.notifyScissorUpdate = function () {
-                if (this._scissorDirty)
-                    return;
-
-                this._scissorDirty = true;
-
-                if (!this._scissorUpdated)
-                    this._scissorUpdated = new away.events.RendererEvent(away.events.RendererEvent.SCISSOR_UPDATED);
-
-                this.dispatchEvent(this._scissorUpdated);
-            };
-
-            /**
-            * @private
-            */
-            DefaultRenderer.prototype.notifyViewportUpdate = function () {
-                if (this._viewportDirty)
-                    return;
-
-                this._viewportDirty = true;
-
-                if (!this._viewPortUpdated)
-                    this._viewPortUpdated = new away.events.RendererEvent(away.events.RendererEvent.VIEWPORT_UPDATED);
-
-                this.dispatchEvent(this._viewPortUpdated);
-            };
-
-            /**
-            *
-            */
-            DefaultRenderer.prototype.onViewportUpdated = function (event) {
-                this._viewPort = this._pStageGL.viewPort;
-
-                //TODO stop firing viewport updated for every stagegl viewport change
-                if (this._shareContext) {
-                    this._pScissorRect.x = this._globalPos.x - this._pStageGL.x;
-                    this._pScissorRect.y = this._globalPos.y - this._pStageGL.y;
-                    this.notifyScissorUpdate();
-                }
-
-                this.notifyViewportUpdate();
-            };
-
-            /**
-            *
-            */
-            DefaultRenderer.prototype.updateGlobalPos = function () {
-                if (this._shareContext) {
-                    this._pScissorRect.x = this._globalPos.x - this._viewPort.x;
-                    this._pScissorRect.y = this._globalPos.y - this._viewPort.y;
-                } else {
-                    this._pScissorRect.x = 0;
-                    this._pScissorRect.y = 0;
-                    this._viewPort.x = this._globalPos.x;
-                    this._viewPort.y = this._globalPos.y;
-                }
-
-                this.notifyScissorUpdate();
             };
             DefaultRenderer.RTT_PASSES = 1;
             DefaultRenderer.SCREEN_PASSES = 2;
@@ -6322,45 +3335,31 @@ var away;
         var DefaultMaterialManager = (function () {
             function DefaultMaterialManager() {
             }
-            DefaultMaterialManager.getDefaultMaterial = function (renderable) {
-                if (typeof renderable === "undefined") { renderable = null; }
-                if (!DefaultMaterialManager._defaultTexture) {
-                    DefaultMaterialManager.createDefaultTexture();
-                }
+            DefaultMaterialManager.getDefaultMaterial = function (materialOwner) {
+                if (typeof materialOwner === "undefined") { materialOwner = null; }
+                if (materialOwner != null && materialOwner.assetType == away.library.AssetType.LINE_SUB_MESH) {
+                    if (!DefaultMaterialManager._defaultSegmentMaterial)
+                        DefaultMaterialManager.createDefaultSegmentMaterial();
 
-                if (!DefaultMaterialManager._defaultMaterial) {
-                    DefaultMaterialManager.createDefaultMaterial();
-                }
+                    return DefaultMaterialManager._defaultSegmentMaterial;
+                } else {
+                    if (!DefaultMaterialManager._defaultTextureMaterial)
+                        DefaultMaterialManager.createDefaultTextureMaterial();
 
-                return DefaultMaterialManager._defaultMaterial;
+                    return DefaultMaterialManager._defaultTextureMaterial;
+                }
             };
 
-            DefaultMaterialManager.getDefaultTexture = function (renderable) {
-                if (typeof renderable === "undefined") { renderable = null; }
-                if (!DefaultMaterialManager._defaultTexture) {
+            DefaultMaterialManager.getDefaultTexture = function (materialOwner) {
+                if (typeof materialOwner === "undefined") { materialOwner = null; }
+                if (!DefaultMaterialManager._defaultTexture)
                     DefaultMaterialManager.createDefaultTexture();
-                }
 
                 return DefaultMaterialManager._defaultTexture;
             };
 
             DefaultMaterialManager.createDefaultTexture = function () {
-                DefaultMaterialManager._defaultTextureBitmapData = DefaultMaterialManager.createCheckeredBitmapData(); //new away.base.BitmapData(8, 8, false, 0x000000);
-
-                //create chekerboard
-                /*
-                var i:number, j:number;
-                for (i = 0; i < 8; i++)
-                {
-                for (j = 0; j < 8; j++)
-                {
-                if ((j & 1) ^ (i & 1))
-                {
-                DefaultMaterialManager._defaultTextureBitmapData.setPixel(i, j, 0XFFFFFF);
-                }
-                }
-                }
-                */
+                DefaultMaterialManager._defaultTextureBitmapData = DefaultMaterialManager.createCheckeredBitmapData();
                 DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture(DefaultMaterialManager._defaultTextureBitmapData, false);
                 DefaultMaterialManager._defaultTexture.name = "defaultTexture";
             };
@@ -6381,840 +3380,25 @@ var away;
                 return b;
             };
 
-            DefaultMaterialManager.createDefaultMaterial = function () {
-                DefaultMaterialManager._defaultMaterial = new away.materials.TextureMaterial(DefaultMaterialManager._defaultTexture);
-                DefaultMaterialManager._defaultMaterial.mipmap = false;
-                DefaultMaterialManager._defaultMaterial.smooth = false;
-                DefaultMaterialManager._defaultMaterial.name = "defaultMaterial";
+            DefaultMaterialManager.createDefaultTextureMaterial = function () {
+                if (!DefaultMaterialManager._defaultTexture)
+                    DefaultMaterialManager.createDefaultTexture();
+
+                DefaultMaterialManager._defaultTextureMaterial = new away.materials.TextureMaterial(DefaultMaterialManager._defaultTexture);
+                DefaultMaterialManager._defaultTextureMaterial.mipmap = false;
+                DefaultMaterialManager._defaultTextureMaterial.smooth = false;
+                DefaultMaterialManager._defaultTextureMaterial.name = "defaultTextureMaterial";
+            };
+
+            DefaultMaterialManager.createDefaultSegmentMaterial = function () {
+                DefaultMaterialManager._defaultSegmentMaterial = new away.materials.SegmentMaterial();
+                DefaultMaterialManager._defaultSegmentMaterial.name = "defaultSegmentMaterial";
             };
             return DefaultMaterialManager;
         })();
         materials.DefaultMaterialManager = DefaultMaterialManager;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (entities) {
-        var SegmentSubGeometry = away.base.SegmentSubGeometry;
-
-        var SegmentSet = (function (_super) {
-            __extends(SegmentSet, _super);
-            /**
-            *
-            */
-            function SegmentSet() {
-                _super.call(this);
-
-                this._pIsEntity = true;
-
-                this.material = new away.materials.SegmentMaterial();
-
-                this._pSubGeometry = new SegmentSubGeometry();
-                this._uvTransform = new away.geom.UVTransform(this);
-            }
-            Object.defineProperty(SegmentSet.prototype, "animator", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._animator;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSet.prototype, "assetType", {
-                /**
-                *
-                */
-                get: function () {
-                    return away.library.AssetType.SEGMENT_SET;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSet.prototype, "castsShadows", {
-                /**
-                *
-                */
-                get: function () {
-                    return false;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSet.prototype, "material", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._material;
-                },
-                set: function (value) {
-                    if (value == this._material)
-                        return;
-
-                    if (this._material)
-                        this._material.iRemoveOwner(this);
-
-                    this._material = value;
-
-                    if (this._material)
-                        this._material.iAddOwner(this);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SegmentSet.prototype, "subGeometry", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._pSubGeometry;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SegmentSet.prototype, "uvTransform", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._uvTransform;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * //TODO
-            *
-            * @param segment
-            */
-            SegmentSet.prototype.addSegment = function (segment) {
-                this._pSubGeometry.addSegment(segment);
-
-                this._pBoundsInvalid = true;
-            };
-
-            /**
-            * //TODO
-            *
-            * @param index
-            * @returns {*}
-            */
-            SegmentSet.prototype.getSegment = function (index) {
-                return this._pSubGeometry.getSegment(index);
-            };
-
-            /**
-            * //TODO
-            *
-            * @param index
-            * @param dispose
-            */
-            SegmentSet.prototype.removeSegmentByIndex = function (index, dispose) {
-                if (typeof dispose === "undefined") { dispose = false; }
-                this._pSubGeometry.removeSegmentByIndex(index, dispose);
-
-                this._pBoundsInvalid = true;
-            };
-
-            /**
-            * //TODO
-            */
-            SegmentSet.prototype.removeAllSegments = function () {
-                this._pSubGeometry.removeAllSegments();
-
-                this._pBoundsInvalid = true;
-            };
-
-            /**
-            * //TODO
-            *
-            * @param segment
-            * @param dispose
-            */
-            SegmentSet.prototype.removeSegment = function (segment, dispose) {
-                if (typeof dispose === "undefined") { dispose = false; }
-                this._pSubGeometry.removeSegment(segment, dispose);
-
-                this._pBoundsInvalid = true;
-            };
-
-            /**
-            * //TODO
-            */
-            SegmentSet.prototype.dispose = function () {
-                _super.prototype.dispose.call(this);
-
-                this._pSubGeometry.dispose();
-
-                this._material = null;
-            };
-
-            /**
-            * @protected
-            */
-            SegmentSet.prototype.pCreateEntityPartitionNode = function () {
-                return new away.partition.EntityNode(this);
-            };
-
-            /**
-            * //TOOD
-            *
-            * @returns {away.bounds.BoundingSphere}
-            *
-            * @protected
-            */
-            SegmentSet.prototype.pGetDefaultBoundingVolume = function () {
-                return new away.bounds.BoundingSphere();
-            };
-
-            /**
-            * //TODO
-            *
-            * @protected
-            */
-            SegmentSet.prototype.pUpdateBounds = function () {
-                this._pSubGeometry.updateBounds(this._pBounds);
-
-                _super.prototype.pUpdateBounds.call(this);
-            };
-
-            /**
-            * //TODO
-            *
-            * @internal
-            */
-            SegmentSet.prototype._iSetUVMatrixComponents = function (offsetU, offsetV, scaleU, scaleV, rotationUV) {
-            };
-
-            /**
-            * //TODO
-            *
-            * @internal
-            */
-            SegmentSet.prototype._iIsMouseEnabled = function () {
-                return false;
-            };
-            return SegmentSet;
-        })(away.base.DisplayObject);
-        entities.SegmentSet = SegmentSet;
-    })(away.entities || (away.entities = {}));
-    var entities = away.entities;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (entities) {
-        var Delegate = away.utils.Delegate;
-
-        var SubGeometry = away.base.SubGeometry;
-        var SubMesh = away.base.SubMesh;
-        var Geometry = away.base.Geometry;
-        var GeometryEvent = away.events.GeometryEvent;
-        var DefaultMaterialManager = away.materials.DefaultMaterialManager;
-        var MaterialBase = away.materials.MaterialBase;
-        var EntityNode = away.partition.EntityNode;
-
-        /**
-        * Mesh is an instance of a Geometry, augmenting it with a presence in the scene graph, a material, and an animation
-        * state. It consists out of SubMeshes, which in turn correspond to SubGeometries. SubMeshes allow different parts
-        * of the geometry to be assigned different materials.
-        */
-        var Mesh = (function (_super) {
-            __extends(Mesh, _super);
-            /**
-            * Create a new Mesh object.
-            *
-            * @param geometry                    The geometry used by the mesh that provides it with its shape.
-            * @param material    [optional]        The material with which to render the Mesh.
-            */
-            function Mesh(geometry, material) {
-                if (typeof material === "undefined") { material = null; }
-                _super.call(this);
-                this._castsShadows = true;
-                this._shareAnimationGeometry = true;
-
-                this._pIsEntity = true;
-
-                this._subMeshes = new Array();
-
-                this._onGeometryBoundsInvalidDelegate = Delegate.create(this, this.onGeometryBoundsInvalid);
-                this._onSubGeometryAddedDelegate = Delegate.create(this, this.onSubGeometryAdded);
-                this._onSubGeometryRemovedDelegate = Delegate.create(this, this.onSubGeometryRemoved);
-
-                //this should never happen, but if people insist on trying to create their meshes before they have geometry to fill it, it becomes necessary
-                if (geometry == null)
-                    this.geometry = new Geometry();
-                else
-                    this.geometry = geometry;
-
-                if (material == null)
-                    this.material = DefaultMaterialManager.getDefaultMaterial(this);
-                else
-                    this.material = material;
-
-                this._uvTransform = new away.geom.UVTransform(this);
-            }
-            Object.defineProperty(Mesh.prototype, "animator", {
-                /**
-                * Defines the animator of the mesh. Act on the mesh's geometry.  Default value is <code>null</code>.
-                */
-                get: function () {
-                    return this._animator;
-                },
-                set: function (value) {
-                    if (this._animator)
-                        this._animator.removeOwner(this);
-
-                    this._animator = value;
-
-                    // cause material to be unregistered and registered again to work with the new animation type (if possible)
-                    var oldMaterial = this.material;
-                    this.material = null;
-                    this.material = oldMaterial;
-
-                    var len = this._subMeshes.length;
-                    var subMesh;
-
-                    for (var i = 0; i < len; ++i) {
-                        subMesh = this._subMeshes[i];
-                        oldMaterial = subMesh._iMaterial;
-                        if (oldMaterial) {
-                            subMesh.material = null;
-                            subMesh.material = oldMaterial;
-                        }
-                    }
-
-                    if (this._animator)
-                        this._animator.addOwner(this);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Mesh.prototype, "assetType", {
-                /**
-                *
-                */
-                get: function () {
-                    return away.library.AssetType.MESH;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Mesh.prototype, "castsShadows", {
-                /**
-                * Indicates whether or not the Mesh can cast shadows. Default value is <code>true</code>.
-                */
-                get: function () {
-                    return this._castsShadows;
-                },
-                set: function (value) {
-                    this._castsShadows = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Mesh.prototype, "geometry", {
-                /**
-                * The geometry used by the mesh that provides it with its shape.
-                */
-                get: function () {
-                    return this._geometry;
-                },
-                set: function (value) {
-                    var i;
-
-                    if (this._geometry) {
-                        this._geometry.removeEventListener(GeometryEvent.BOUNDS_INVALID, this._onGeometryBoundsInvalidDelegate);
-                        this._geometry.removeEventListener(GeometryEvent.SUB_GEOMETRY_ADDED, this._onSubGeometryAddedDelegate);
-                        this._geometry.removeEventListener(GeometryEvent.SUB_GEOMETRY_REMOVED, this._onSubGeometryRemovedDelegate);
-
-                        for (i = 0; i < this._subMeshes.length; ++i)
-                            this._subMeshes[i].dispose();
-
-                        this._subMeshes.length = 0;
-                    }
-
-                    this._geometry = value;
-
-                    if (this._geometry) {
-                        this._geometry.addEventListener(GeometryEvent.BOUNDS_INVALID, this._onGeometryBoundsInvalidDelegate);
-                        this._geometry.addEventListener(GeometryEvent.SUB_GEOMETRY_ADDED, this._onSubGeometryAddedDelegate);
-                        this._geometry.addEventListener(GeometryEvent.SUB_GEOMETRY_REMOVED, this._onSubGeometryRemovedDelegate);
-
-                        var subGeoms = this._geometry.subGeometries;
-
-                        for (i = 0; i < subGeoms.length; ++i)
-                            this.addSubMesh(subGeoms[i]);
-                    }
-
-                    if (this._material) {
-                        this._material.iRemoveOwner(this);
-                        this._material.iAddOwner(this);
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Mesh.prototype, "material", {
-                /**
-                * The material with which to render the Mesh.
-                */
-                get: function () {
-                    return this._material;
-                },
-                set: function (value) {
-                    if (value == this._material)
-                        return;
-
-                    if (this._material)
-                        this._material.iRemoveOwner(this);
-
-                    this._material = value;
-
-                    if (this._material)
-                        this._material.iAddOwner(this);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Mesh.prototype, "shareAnimationGeometry", {
-                /**
-                * Indicates whether or not the mesh share the same animation geometry.
-                */
-                get: function () {
-                    return this._shareAnimationGeometry;
-                },
-                set: function (value) {
-                    this._shareAnimationGeometry = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Mesh.prototype, "subMeshes", {
-                /**
-                * The SubMeshes out of which the Mesh consists. Every SubMesh can be assigned a material to override the Mesh's
-                * material.
-                */
-                get: function () {
-                    // Since this getter is invoked every iteration of the render loop, and
-                    // the geometry construct could affect the sub-meshes, the geometry is
-                    // validated here to give it a chance to rebuild.
-                    this._geometry.iValidate();
-
-                    return this._subMeshes;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Mesh.prototype, "uvTransform", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._uvTransform;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            *
-            */
-            Mesh.prototype.bakeTransformations = function () {
-                this.geometry.applyTransformation(this._iMatrix3D);
-                this._iMatrix3D.identity();
-            };
-
-            /**
-            * Clears the animation geometry of this mesh. It will cause animation to generate a new animation geometry. Work only when shareAnimationGeometry is false.
-            */
-            Mesh.prototype.clearAnimationGeometry = function () {
-                var len = this._subMeshes.length;
-                for (var i = 0; i < len; ++i)
-                    this._subMeshes[i].animationSubGeometry = null;
-            };
-
-            /**
-            * @inheritDoc
-            */
-            Mesh.prototype.dispose = function () {
-                _super.prototype.dispose.call(this);
-
-                this.material = null;
-                this.geometry = null;
-            };
-
-            /**
-            * Disposes mesh including the animator and children. This is a merely a convenience method.
-            * @return
-            */
-            Mesh.prototype.disposeWithAnimatorAndChildren = function () {
-                this.disposeWithChildren();
-
-                if (this._animator)
-                    this._animator.dispose();
-            };
-
-            /**
-            * Clones this Mesh instance along with all it's children, while re-using the same
-            * material, geometry and animation set. The returned result will be a copy of this mesh,
-            * containing copies of all of it's children.
-            *
-            * Properties that are re-used (i.e. not cloned) by the new copy include name,
-            * geometry, and material. Properties that are cloned or created anew for the copy
-            * include subMeshes, children of the mesh, and the animator.
-            *
-            * If you want to copy just the mesh, reusing it's geometry and material while not
-            * cloning it's children, the simplest way is to create a new mesh manually:
-            *
-            * <code>
-            * var clone : Mesh = new Mesh(original.geometry, original.material);
-            * </code>
-            */
-            Mesh.prototype.clone = function () {
-                var clone = new Mesh(this._geometry, this._material);
-
-                clone._iMatrix3D = this._iMatrix3D;
-                clone.pivot = this.pivot;
-                clone.partition = this.partition;
-                clone.bounds = this.bounds.clone();
-
-                clone.name = this.name;
-                clone.castsShadows = this.castsShadows;
-                clone.shareAnimationGeometry = this.shareAnimationGeometry;
-                clone.mouseEnabled = this.mouseEnabled;
-                clone.mouseChildren = this.mouseChildren;
-
-                //this is of course no proper cloning
-                //maybe use this instead?: http://blog.another-d-mention.ro/programming/how-to-clone-duplicate-an-object-in-actionscript-3/
-                clone.extra = this.extra;
-
-                var len = this._subMeshes.length;
-                for (var i = 0; i < len; ++i)
-                    clone._subMeshes[i]._iMaterial = this._subMeshes[i]._iMaterial;
-
-                len = this.numChildren;
-                var obj;
-
-                for (i = 0; i < len; ++i) {
-                    obj = this.getChildAt(i).clone();
-                    clone.addChild(obj);
-                }
-
-                if (this._animator)
-                    clone.animator = this._animator.clone();
-
-                return clone;
-            };
-
-            /**
-            * //TODO
-            *
-            * @param subGeometry
-            * @returns {SubMesh}
-            */
-            Mesh.prototype.getSubMeshFromSubGeometry = function (subGeometry) {
-                return this._subMeshes[this._geometry.subGeometries.indexOf(subGeometry)];
-            };
-
-            /**
-            * @protected
-            */
-            Mesh.prototype.pCreateEntityPartitionNode = function () {
-                return new away.partition.EntityNode(this);
-            };
-
-            /**
-            * //TODO
-            *
-            * @protected
-            */
-            Mesh.prototype.pUpdateBounds = function () {
-                var subGeoms = this._geometry.subGeometries;
-                var numSubGeoms = subGeoms.length;
-                var minX, minY, minZ;
-                var maxX, maxY, maxZ;
-
-                if (numSubGeoms > 0) {
-                    var subGeom = subGeoms[0];
-                    var vertices = subGeom.vertexData;
-                    var i = subGeom.vertexOffset;
-                    minX = maxX = vertices[i];
-                    minY = maxY = vertices[i + 1];
-                    minZ = maxZ = vertices[i + 2];
-
-                    var j = 0;
-                    while (j < numSubGeoms) {
-                        subGeom = subGeoms[j++];
-                        vertices = subGeom.vertexData;
-                        var vertexDataLen = vertices.length;
-                        i = subGeom.vertexOffset;
-                        var stride = subGeom.vertexStride;
-
-                        while (i < vertexDataLen) {
-                            var v = vertices[i];
-                            if (v < minX)
-                                minX = v;
-                            else if (v > maxX)
-                                maxX = v;
-
-                            v = vertices[i + 1];
-
-                            if (v < minY)
-                                minY = v;
-                            else if (v > maxY)
-                                maxY = v;
-
-                            v = vertices[i + 2];
-
-                            if (v < minZ)
-                                minZ = v;
-                            else if (v > maxZ)
-                                maxZ = v;
-
-                            i += stride;
-                        }
-                    }
-
-                    this._pBounds.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
-                } else {
-                    this._pBounds.fromExtremes(0, 0, 0, 0, 0, 0);
-                }
-
-                _super.prototype.pUpdateBounds.call(this);
-            };
-
-            /**
-            * //TODO
-            *
-            * @private
-            */
-            Mesh.prototype.onGeometryBoundsInvalid = function (event) {
-                this.pInvalidateBounds();
-            };
-
-            /**
-            * Called when a SubGeometry was added to the Geometry.
-            *
-            * @private
-            */
-            Mesh.prototype.onSubGeometryAdded = function (event) {
-                this.addSubMesh(event.subGeometry);
-            };
-
-            /**
-            * Called when a SubGeometry was removed from the Geometry.
-            *
-            * @private
-            */
-            Mesh.prototype.onSubGeometryRemoved = function (event) {
-                var subMesh;
-                var subGeom = event.subGeometry;
-                var len = this._subMeshes.length;
-                var i;
-
-                for (i = 0; i < len; ++i) {
-                    subMesh = this._subMeshes[i];
-
-                    if (subMesh.subGeometry == subGeom) {
-                        subMesh.dispose();
-
-                        this._subMeshes.splice(i, 1);
-
-                        break;
-                    }
-                }
-
-                --len;
-                for (; i < len; ++i)
-                    this._subMeshes[i]._iIndex = i;
-            };
-
-            /**
-            * Adds a SubMesh wrapping a SubGeometry.
-            *
-            * @param subGeometry
-            */
-            Mesh.prototype.addSubMesh = function (subGeometry) {
-                var subMesh = new SubMesh(subGeometry, this, null);
-                var len = this._subMeshes.length;
-
-                subMesh._iIndex = len;
-
-                this._subMeshes[len] = subMesh;
-
-                this.pInvalidateBounds();
-            };
-
-            /**
-            * @internal
-            */
-            Mesh.prototype._iSetUVMatrixComponents = function (offsetU, offsetV, scaleU, scaleV, rotationUV) {
-                var len = this._subMeshes.length;
-                for (var i = 0; i < len; ++i) {
-                    this._subMeshes[i].uvTransform.offsetU = offsetU;
-                    this._subMeshes[i].uvTransform.offsetV = offsetV;
-                    this._subMeshes[i].uvTransform.scaleU = scaleU;
-                    this._subMeshes[i].uvTransform.scaleV = scaleV;
-                    this._subMeshes[i].uvTransform.rotationUV = rotationUV;
-                }
-            };
-
-            /**
-            * //TODO
-            *
-            * @param shortestCollisionDistance
-            * @param findClosest
-            * @returns {boolean}
-            *
-            * @internal
-            */
-            Mesh.prototype._iTestCollision = function (shortestCollisionDistance, findClosest) {
-                return this._pPickingCollider.testMeshCollision(this, this._pPickingCollisionVO, shortestCollisionDistance, findClosest);
-            };
-            return Mesh;
-        })(away.containers.DisplayObjectContainer);
-        entities.Mesh = Mesh;
-    })(away.entities || (away.entities = {}));
-    var entities = away.entities;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (entities) {
-        /**
-        * A Skybox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
-        * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
-        * the sky box is always as large as possible without being clipped.
-        */
-        var Skybox = (function (_super) {
-            __extends(Skybox, _super);
-            /**
-            * Create a new Skybox object.
-            * @param cubeMap The CubeMap to use for the sky box's texture.
-            */
-            function Skybox(cubeMap) {
-                _super.call(this);
-
-                this._pIsEntity = true;
-
-                //create material
-                this._material = new away.materials.SkyboxMaterial(cubeMap);
-                this._material.iAddOwner(this);
-
-                this._uvTransform = new away.geom.UVTransform(this);
-            }
-            Object.defineProperty(Skybox.prototype, "animator", {
-                get: function () {
-                    return this._animator;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Skybox.prototype, "uvTransform", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._uvTransform;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Skybox.prototype, "material", {
-                /**
-                * The material with which to render the object.
-                */
-                get: function () {
-                    return this._material;
-                },
-                set: function (value) {
-                    throw new away.errors.AbstractMethodError("Unsupported method!");
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Skybox.prototype, "assetType", {
-                get: function () {
-                    return away.library.AssetType.SKYBOX;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * @protected
-            */
-            Skybox.prototype.pInvalidateBounds = function () {
-                // dead end
-            };
-
-            /**
-            * @protected
-            */
-            Skybox.prototype.pCreateEntityPartitionNode = function () {
-                return new away.partition.SkyboxNode(this);
-            };
-
-            /**
-            * @protected
-            */
-            Skybox.prototype.pGetDefaultBoundingVolume = function () {
-                return new away.bounds.NullBounds();
-            };
-
-            /**
-            * @protected
-            */
-            Skybox.prototype.pUpdateBounds = function () {
-                this._pBoundsInvalid = false;
-            };
-
-            Object.defineProperty(Skybox.prototype, "castsShadows", {
-                get: function () {
-                    return false;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * @internal
-            */
-            Skybox.prototype._iSetUVMatrixComponents = function (offsetU, offsetV, scaleU, scaleV, rotationUV) {
-            };
-            return Skybox;
-        })(away.base.DisplayObject);
-        entities.Skybox = Skybox;
-    })(away.entities || (away.entities = {}));
-    var entities = away.entities;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
@@ -7731,6 +3915,10 @@ var away;
                 if (typeof target === "undefined") { target = null; }
                 throw new away.errors.Error("Object projection matrices are not supported for LightProbe objects!");
             };
+
+            LightProbe.prototype._iCollectRenderables = function (renderer) {
+                //nothing to do here
+            };
             return LightProbe;
         })(away.lights.LightBase);
         lights.LightProbe = LightProbe;
@@ -7857,6 +4045,10 @@ var away;
                 target.prepend(m);
 
                 return target;
+            };
+
+            PointLight.prototype._iCollectRenderables = function (renderer) {
+                //nothing to do here
             };
             return PointLight;
         })(away.lights.LightBase);
@@ -8006,6 +4198,10 @@ var away;
                 target.prepend(m);
 
                 return target;
+            };
+
+            DirectionalLight.prototype._iCollectRenderables = function (renderer) {
+                //nothing to do here
             };
             return DirectionalLight;
         })(away.lights.LightBase);
@@ -9075,9 +5271,8 @@ var away;
                     return this._animationSet;
                 },
                 set: function (value) {
-                    if (this._animationSet == value) {
+                    if (this._animationSet == value)
                         return;
-                    }
 
                     this._animationSet = value;
 
@@ -9104,9 +5299,8 @@ var away;
             * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
             */
             MaterialPassBase.prototype.dispose = function () {
-                if (this._pLightPicker) {
+                if (this._pLightPicker)
                     this._pLightPicker.removeEventListener(Event.CHANGE, this._onLightsChangeDelegate);
-                }
 
                 for (var i = 0; i < 8; ++i) {
                     if (this._iPrograms[i]) {
@@ -9472,14 +5666,15 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
+        var StageGL = away.base.StageGL;
+        var SubGeometry = away.base.TriangleSubGeometry;
         var Matrix = away.geom.Matrix;
         var Matrix3D = away.geom.Matrix3D;
         var Matrix3DUtils = away.geom.Matrix3DUtils;
         var Texture2DBase = away.textures.Texture2DBase;
-        var StageGL = away.base.StageGL;
         var Delegate = away.utils.Delegate;
 
-        var IRenderable = away.pool.RenderableBase;
+        var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
         var ShadingMethodEvent = away.events.ShadingMethodEvent;
 
@@ -10044,16 +6239,16 @@ var away;
                 var i;
                 var context = stageGL.contextGL;
                 if (this._uvBufferIndex >= 0)
-                    renderable.subGeometry.activateUVBuffer(this._uvBufferIndex, stageGL);
+                    stageGL.activateBuffer(this._uvBufferIndex, renderable.getVertexData(SubGeometry.UV_DATA), renderable.getVertexOffset(SubGeometry.UV_DATA), SubGeometry.UV_FORMAT);
 
                 if (this._secondaryUVBufferIndex >= 0)
-                    renderable.subGeometry.activateSecondaryUVBuffer(this._secondaryUVBufferIndex, stageGL);
+                    stageGL.activateBuffer(this._secondaryUVBufferIndex, renderable.getVertexData(SubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(SubGeometry.SECONDARY_UV_DATA), SubGeometry.SECONDARY_UV_FORMAT);
 
                 if (this._normalBufferIndex >= 0)
-                    renderable.subGeometry.activateVertexNormalBuffer(this._normalBufferIndex, stageGL);
+                    stageGL.activateBuffer(this._normalBufferIndex, renderable.getVertexData(SubGeometry.NORMAL_DATA), renderable.getVertexOffset(SubGeometry.NORMAL_DATA), SubGeometry.NORMAL_FORMAT);
 
                 if (this._tangentBufferIndex >= 0)
-                    renderable.subGeometry.activateVertexTangentBuffer(this._tangentBufferIndex, stageGL);
+                    stageGL.activateBuffer(this._tangentBufferIndex, renderable.getVertexData(SubGeometry.TANGENT_DATA), renderable.getVertexOffset(SubGeometry.TANGENT_DATA), SubGeometry.TANGENT_FORMAT);
 
                 if (this._animateUVs) {
                     var uvTransform = renderable.materialOwner.uvTransform.matrix;
@@ -10135,8 +6330,8 @@ var away;
                 context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 0, this._pVertexConstantData, this._pNumUsedVertexConstants);
                 context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._pNumUsedFragmentConstants);
 
-                renderable.subGeometry.activateVertexBuffer(0, stageGL);
-                context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
+                stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+                context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
             };
 
             /**
@@ -10637,7 +6832,8 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        //use namespace arcane;
+        var SubGeometry = away.base.TriangleSubGeometry;
+
         /**
         * DepthMapPass is a pass that writes depth values to a depth map as a 32-bit value exploded over the 4 texture channels.
         * This is used to render shadow maps, depth maps, etc.
@@ -10767,7 +6963,7 @@ var away;
             */
             DepthMapPass.prototype.iRender = function (renderable, stageGL, camera, viewProjection) {
                 if (this._alphaThreshold > 0)
-                    renderable.subGeometry.activateUVBuffer(1, stageGL);
+                    stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.UV_DATA), renderable.getVertexOffset(SubGeometry.UV_DATA), SubGeometry.UV_FORMAT);
 
                 var context = stageGL.contextGL;
                 var matrix = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
@@ -10775,8 +6971,9 @@ var away;
                 matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
                 matrix.append(viewProjection);
                 context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
-                renderable.subGeometry.activateVertexBuffer(0, stageGL);
-                context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
+
+                stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+                context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
             };
 
             /**
@@ -10804,18 +7001,8 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
-        //import away3d.arcane;
-        //import away3d.cameras.Camera;
-        //import away3d.core.base.IRenderable;
-        //import away3d.base.StageGL;
-        //import away3d.core.geom.Matrix3DUtils;
-        //import away3d.textures.Texture2DBase;
-        //import flash.displayGL.ContextGL;
-        //import flash.displayGL.ContextGLProgramType;
-        //import flash.displayGL.ContextGLTextureFormat;
-        //import flash.geom.Matrix3D;
-        //import flash.geom.Vector3D;
-        //use namespace arcane;
+        var SubGeometry = away.base.TriangleSubGeometry;
+
         /**
         * DistanceMapPass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
         * This is used to render omnidirectional shadow maps.
@@ -10959,7 +7146,7 @@ var away;
                 context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
 
                 if (this._alphaThreshold > 0)
-                    renderable.subGeometry.activateUVBuffer(1, stageGL);
+                    stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(SubGeometry.SECONDARY_UV_DATA), SubGeometry.SECONDARY_UV_FORMAT);
 
                 var matrix = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
 
@@ -10967,8 +7154,9 @@ var away;
                 matrix.append(viewProjection);
 
                 context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
-                renderable.subGeometry.activateVertexBuffer(0, stageGL);
-                context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
+
+                stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+                context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
             };
 
             /**
@@ -11670,6 +7858,8 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
+        var SubGeometry = away.base.TriangleSubGeometry;
+
         /**
         * The SingleObjectDepthPass provides a material pass that renders a single object to a depth map from the point
         * of view from a light.
@@ -11817,9 +8007,10 @@ var away;
                 context.clear(1.0, 1.0, 1.0);
                 context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
                 context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
-                renderable.subGeometry.activateVertexBuffer(0, stageGL);
-                renderable.subGeometry.activateVertexNormalBuffer(1, stageGL);
-                context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
+
+                stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+                stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.NORMAL_DATA), renderable.getVertexOffset(SubGeometry.NORMAL_DATA), SubGeometry.NORMAL_FORMAT);
+                context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
             };
 
             /**
@@ -11885,18 +8076,14 @@ var away;
                 var context = stageGL.contextGL;
                 this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
                 this._calcMatrix.append(camera.inverseSceneTransform);
+                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
 
-                var subGeometry = renderable.subGeometry;
+                stageGL.activateBuffer(0, renderable.getVertexData(away.base.LineSubGeometry.START_POSITION_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.START_POSITION_DATA), away.base.LineSubGeometry.POSITION_FORMAT);
+                stageGL.activateBuffer(1, renderable.getVertexData(away.base.LineSubGeometry.END_POSITION_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.END_POSITION_DATA), away.base.LineSubGeometry.POSITION_FORMAT);
+                stageGL.activateBuffer(2, renderable.getVertexData(away.base.LineSubGeometry.THICKNESS_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.THICKNESS_DATA), away.base.LineSubGeometry.THICKNESS_FORMAT);
+                stageGL.activateBuffer(3, renderable.getVertexData(away.base.LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.COLOR_DATA), away.base.LineSubGeometry.COLOR_FORMAT);
 
-                var subSetCount = subGeometry.iSubSetCount;
-
-                if (subGeometry.hasData) {
-                    for (var i = 0; i < subSetCount; ++i) {
-                        subGeometry.activateVertexBuffer(i, stageGL);
-                        context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
-                        context.drawTriangles(subGeometry.getIndexBuffer(stageGL), 0, subGeometry.numTriangles);
-                    }
-                }
+                context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
             };
 
             /**
@@ -11944,6 +8131,8 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
+        var SubGeometry = away.base.TriangleSubGeometry;
+
         /**
         * SkyboxPass provides a material pass exclusively used to render sky boxes from a cube texture.
         */
@@ -11977,7 +8166,7 @@ var away;
             * @inheritDoc
             */
             SkyboxPass.prototype.iGetVertexCode = function () {
-                return "mul vt0, va0, vc5		\n" + "add vt0, vt0, vc4		\n" + "m44 op, vt0, vc0		\n" + "mov v0, va0\n";
+                return "mul vt0, va0, vc5\n" + "add vt0, vt0, vc4\n" + "m44 op, vt0, vc0\n" + "mov v0, va0\n";
             };
 
             /**
@@ -12001,7 +8190,7 @@ var away;
                 if (this._cubeTexture.hasMipMaps) {
                     mip = ",miplinear";
                 }
-                return "tex ft0, v0, fs0 <cube," + format + "linear,clamp" + mip + ">	\n" + "mov oc, ft0							\n";
+                return "tex ft0, v0, fs0 <cube," + format + "linear,clamp" + mip + ">\n" + "mov oc, ft0\n";
             };
 
             /**
@@ -12016,8 +8205,9 @@ var away;
                 this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.projection.far / Math.sqrt(3);
                 context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, viewProjection, true);
                 context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
-                renderable.subGeometry.activateVertexBuffer(0, stageGL);
-                context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
+
+                stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+                context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
             };
 
             /**
@@ -18674,7 +14864,7 @@ var away;
             * @param renderable The renderble for which to calculate the light probes' influence.
             */
             LightPickerBase.prototype.updateProbeWeights = function (renderable) {
-                // todo: this will cause the same calculations to occur per SubMesh. See if this can be improved.
+                // todo: this will cause the same calculations to occur per TriangleSubMesh. See if this can be improved.
                 var objectPos = renderable.sourceEntity.scenePosition;
                 var lightPos;
 
@@ -19526,9 +15716,8 @@ var away;
 
                     for (var j = 0; j < 4; ++j) {
                         if (this._usedSingleCount[j][i] == 0) {
-                            if (this._persistent) {
+                            if (this._persistent)
                                 this._usedSingleCount[j][i]++;
-                            }
 
                             return this._registerComponents[j][i];
                         }
@@ -19545,11 +15734,10 @@ var away;
             * @param usageCount The amount of usages to add.
             */
             RegisterPool.prototype.addUsage = function (register, usageCount) {
-                if (register._component > -1) {
+                if (register._component > -1)
                     this._usedSingleCount[register._component][register.index] += usageCount;
-                } else {
+                else
                     this._usedVectorCount[register.index] += usageCount;
-                }
             };
 
             /**
@@ -19558,13 +15746,11 @@ var away;
             */
             RegisterPool.prototype.removeUsage = function (register) {
                 if (register._component > -1) {
-                    if (--this._usedSingleCount[register._component][register.index] < 0) {
+                    if (--this._usedSingleCount[register._component][register.index] < 0)
                         throw new Error("More usages removed than exist!");
-                    }
                 } else {
-                    if (--this._usedVectorCount[register.index] < 0) {
+                    if (--this._usedVectorCount[register.index] < 0)
                         throw new Error("More usages removed than exist!");
-                    }
                 }
             };
 
@@ -19582,10 +15768,9 @@ var away;
             * Indicates whether or not any registers are in use.
             */
             RegisterPool.prototype.hasRegisteredRegs = function () {
-                for (var i = 0; i < this._regCount; ++i) {
+                for (var i = 0; i < this._regCount; ++i)
                     if (this.isRegisterUsed(i))
                         return true;
-                }
 
                 return false;
             };
@@ -19613,9 +15798,8 @@ var away;
             RegisterPool._initPool = function (regName, regCount) {
                 var hash = regName + regCount;
 
-                if (RegisterPool._regPool[hash] != undefined) {
+                if (RegisterPool._regPool[hash] != undefined)
                     return hash;
-                }
 
                 var vectorRegisters = new Array(regCount);
                 RegisterPool._regPool[hash] = vectorRegisters;
@@ -19631,9 +15815,8 @@ var away;
                 for (var i = 0; i < regCount; ++i) {
                     vectorRegisters[i] = new away.materials.ShaderRegisterElement(regName, i);
 
-                    for (var j = 0; j < 4; ++j) {
+                    for (var j = 0; j < 4; ++j)
                         registerComponents[j][i] = new away.materials.ShaderRegisterElement(regName, i, j);
-                    }
                 }
 
                 //console.log ( 'RegisterPool._regCompsPool[hash] : ' , RegisterPool._regCompsPool[hash]  );
@@ -19645,15 +15828,12 @@ var away;
             * Check if the temp register is either used for single or vector use
             */
             RegisterPool.prototype.isRegisterUsed = function (index) {
-                if (this._usedVectorCount[index] > 0) {
+                if (this._usedVectorCount[index] > 0)
                     return true;
-                }
 
-                for (var i = 0; i < 4; ++i) {
-                    if (this._usedSingleCount[i][index] > 0) {
+                for (var i = 0; i < 4; ++i)
+                    if (this._usedSingleCount[i][index] > 0)
                         return true;
-                    }
-                }
 
                 return false;
             };
@@ -19661,9 +15841,8 @@ var away;
             RegisterPool.prototype._initArray = function (a, val) {
                 var l = a.length;
 
-                for (var c = 0; c < l; c++) {
+                for (var c = 0; c < l; c++)
                     a[c] = val;
-                }
 
                 return a;
             };
@@ -21143,6 +17322,9 @@ var away;
         var AssetType = away.library.AssetType;
         var Delegate = away.utils.Delegate;
 
+        var AnimationSetBase = away.animators.AnimationSetBase;
+        var AnimatorBase = away.animators.AnimatorBase;
+
         var Camera = away.entities.Camera;
         var StageGL = away.base.StageGL;
         var DepthMapPass = away.materials.DepthMapPass;
@@ -21613,7 +17795,7 @@ var away;
 
                 if (owner.animator) {
                     if (this._animationSet && animationSet != this._animationSet) {
-                        throw new Error("A Material instance cannot be shared across renderables with different animator libraries");
+                        throw new Error("A Material instance cannot be shared across material owners with different animation sets");
                     } else {
                         if (this._animationSet != animationSet) {
                             this._animationSet = animationSet;
@@ -24005,99 +20187,106 @@ var away;
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (primitives) {
-        //import away3d.arcane;
-        //import away3d.core.base.CompactSubGeometry;
-        //import away3d.core.base.Geometry;
-        //import away3d.core.base.ISubGeometry;
-        //import away3d.errors.AbstractMethodError;
-        //import flash.geom.Matrix3D;
-        //use namespace arcane;
+    (function (prefabs) {
+        //	import BatchObject				= away.base.BatchObject;
+        var DisplayObject = away.base.DisplayObject;
+        var Geometry = away.base.Geometry;
+        var SubGeometryBase = away.base.SubGeometryBase;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+        var LineSubGeometry = away.base.LineSubGeometry;
+        var Mesh = away.entities.Mesh;
+        var AbstractMethodError = away.errors.AbstractMethodError;
+
         /**
-        * PrimitiveBase is an abstract base class for mesh primitives, which are prebuilt simple meshes.
+        * PrimitivePrefabBase is an abstract base class for polytope prefabs, which are simple pre-built geometric shapes
         */
-        var PrimitiveBase = (function (_super) {
-            __extends(PrimitiveBase, _super);
+        var PrimitivePrefabBase = (function (_super) {
+            __extends(PrimitivePrefabBase, _super);
             /**
-            * Creates a new PrimitiveBase object.
+            * Creates a new PrimitivePrefabBase object.
+            *
             * @param material The material with which to render the object
             */
-            function PrimitiveBase() {
+            function PrimitivePrefabBase(material, geometryType) {
+                if (typeof material === "undefined") { material = null; }
+                if (typeof geometryType === "undefined") { geometryType = "triangleSubGeometry"; }
                 _super.call(this);
                 this._geomDirty = true;
                 this._uvDirty = true;
+                this._geometryTypeDirty = true;
 
-                this._subGeometry = new away.base.CompactSubGeometry();
-                this._subGeometry.autoGenerateDummyUVs = false;
-                this.addSubGeometry(this._subGeometry);
+                this._geometry = new Geometry();
+                this._material = material;
+                this._geometryType = geometryType;
             }
-            Object.defineProperty(PrimitiveBase.prototype, "subGeometries", {
+            Object.defineProperty(PrimitivePrefabBase.prototype, "assetType", {
                 /**
-                * @inheritDoc
+                *
                 */
                 get: function () {
-                    if (this._geomDirty)
-                        this.updateGeometry();
-
-                    if (this._uvDirty)
-                        this.updateUVs();
-
-                    return _super.prototype.getSubGeometries.call(this);
+                    return away.library.AssetType.PRIMITIVE_PREFAB;
                 },
                 enumerable: true,
                 configurable: true
             });
 
-            /**
-            * @inheritDoc
-            */
-            PrimitiveBase.prototype.clone = function () {
-                if (this._geomDirty)
-                    this.updateGeometry();
+            Object.defineProperty(PrimitivePrefabBase.prototype, "geometryType", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._geometryType;
+                },
+                set: function (value) {
+                    if (this._geometryType == value)
+                        return;
 
-                if (this._uvDirty)
-                    this.updateUVs();
+                    this._geometryType = value;
 
-                return _super.prototype.clone.call(this);
-            };
+                    this.invalidateGeometryType();
+                },
+                enumerable: true,
+                configurable: true
+            });
 
-            /**
-            * @inheritDoc
-            */
-            PrimitiveBase.prototype.scale = function (scale) {
-                if (this._geomDirty)
-                    this.updateGeometry();
 
-                _super.prototype.scale.call(this, scale);
-            };
+            Object.defineProperty(PrimitivePrefabBase.prototype, "geometry", {
+                get: function () {
+                    this._iValidate();
 
-            /**
-            * @inheritDoc
-            */
-            PrimitiveBase.prototype.scaleUV = function (scaleU, scaleV) {
-                if (typeof scaleU === "undefined") { scaleU = 1; }
-                if (typeof scaleV === "undefined") { scaleV = 1; }
-                if (this._uvDirty)
-                    this.updateUVs();
+                    return this._geometry;
+                },
+                enumerable: true,
+                configurable: true
+            });
 
-                _super.prototype.scaleUV.call(this, scaleU, scaleV);
-            };
+            Object.defineProperty(PrimitivePrefabBase.prototype, "material", {
+                /**
+                * The material with which to render the primitive.
+                */
+                get: function () {
+                    return this._material;
+                },
+                set: function (value) {
+                    if (value == this._material)
+                        return;
 
-            /**
-            * @inheritDoc
-            */
-            PrimitiveBase.prototype.applyTransformation = function (transform) {
-                if (this._geomDirty)
-                    this.updateGeometry();
+                    this._material = value;
 
-                _super.prototype.applyTransformation.call(this, transform);
-            };
+                    var len = this._pObjects.length;
+                    for (var i = 0; i < len; i++)
+                        this._pObjects[i].material = this._material;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
 
             /**
             * Builds the primitive's geometry when invalid. This method should not be called directly. The calling should
             * be triggered by the invalidateGeometry method (and in turn by updateGeometry).
             */
-            PrimitiveBase.prototype.pBuildGeometry = function (target) {
+            PrimitivePrefabBase.prototype._pBuildGeometry = function (target, geometryType) {
                 throw new away.errors.AbstractMethodError();
             };
 
@@ -24105,84 +20294,109 @@ var away;
             * Builds the primitive's uv coordinates when invalid. This method should not be called directly. The calling
             * should be triggered by the invalidateUVs method (and in turn by updateUVs).
             */
-            PrimitiveBase.prototype.pBuildUVs = function (target) {
+            PrimitivePrefabBase.prototype._pBuildUVs = function (target, geometryType) {
                 throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * Invalidates the primitive's geometry type, causing it to be updated when requested.
+            */
+            PrimitivePrefabBase.prototype.invalidateGeometryType = function () {
+                this._geometryTypeDirty = true;
+                this._geomDirty = true;
+                this._uvDirty = true;
             };
 
             /**
             * Invalidates the primitive's geometry, causing it to be updated when requested.
             */
-            PrimitiveBase.prototype.pInvalidateGeometry = function () {
+            PrimitivePrefabBase.prototype._pInvalidateGeometry = function () {
                 this._geomDirty = true;
             };
 
             /**
             * Invalidates the primitive's uv coordinates, causing them to be updated when requested.
             */
-            PrimitiveBase.prototype.pInvalidateUVs = function () {
+            PrimitivePrefabBase.prototype._pInvalidateUVs = function () {
                 this._uvDirty = true;
+            };
+
+            /**
+            * Updates the subgeometry when invalid.
+            */
+            PrimitivePrefabBase.prototype.updateGeometryType = function () {
+                //remove any existing sub geometry
+                if (this._subGeometry)
+                    this._geometry.removeSubGeometry(this._subGeometry);
+
+                if (this._geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = new TriangleSubGeometry(true);
+                    triangleGeometry.autoDeriveNormals = false;
+                    triangleGeometry.autoDeriveTangents = false;
+                    triangleGeometry.autoDeriveUVs = false;
+                    this._geometry.addSubGeometry(triangleGeometry);
+                    this._subGeometry = triangleGeometry;
+                } else if (this._geometryType == "lineSubGeometry") {
+                    this._geometry.addSubGeometry(this._subGeometry = new LineSubGeometry());
+                }
+
+                this._geometryTypeDirty = false;
             };
 
             /**
             * Updates the geometry when invalid.
             */
-            PrimitiveBase.prototype.updateGeometry = function () {
-                this.pBuildGeometry(this._subGeometry);
+            PrimitivePrefabBase.prototype.updateGeometry = function () {
+                this._pBuildGeometry(this._subGeometry, this._geometryType);
+
                 this._geomDirty = false;
             };
 
             /**
             * Updates the uv coordinates when invalid.
             */
-            PrimitiveBase.prototype.updateUVs = function () {
-                this.pBuildUVs(this._subGeometry);
+            PrimitivePrefabBase.prototype.updateUVs = function () {
+                this._pBuildUVs(this._subGeometry, this._geometryType);
+
                 this._uvDirty = false;
             };
 
-            PrimitiveBase.prototype.iValidate = function () {
+            PrimitivePrefabBase.prototype._iValidate = function () {
+                if (this._geometryTypeDirty)
+                    this.updateGeometryType();
+
                 if (this._geomDirty)
                     this.updateGeometry();
 
                 if (this._uvDirty)
                     this.updateUVs();
             };
-            return PrimitiveBase;
-        })(away.base.Geometry);
-        primitives.PrimitiveBase = PrimitiveBase;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
+
+            PrimitivePrefabBase.prototype._pCreateObject = function () {
+                var mesh = new Mesh(this._geometry, this._material);
+                mesh._iSourcePrefab = this;
+
+                return mesh;
+            };
+            return PrimitivePrefabBase;
+        })(away.prefabs.PrefabBase);
+        prefabs.PrimitivePrefabBase = PrimitivePrefabBase;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (primitives) {
-        var LineSegment = (function (_super) {
-            __extends(LineSegment, _super);
-            function LineSegment(v0, v1, color0, color1, thickness) {
-                if (typeof color0 === "undefined") { color0 = 0x333333; }
-                if (typeof color1 === "undefined") { color1 = 0x333333; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                _super.call(this, v0, v1, null, color0, color1, thickness);
-                this.TYPE = "line";
-            }
-            return LineSegment;
-        })(away.base.Segment);
-        primitives.LineSegment = LineSegment;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (primitives) {
-        //import away3d.arcane;
-        //import away3d.core.base.CompactSubGeometry;
-        //use namespace arcane;
+    (function (prefabs) {
+        var SubGeometryBase = away.base.SubGeometryBase;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+        var LineSubGeometry = away.base.LineSubGeometry;
+
         /**
         * A UV Cylinder primitive mesh.
         */
-        var TorusGeometry = (function (_super) {
-            __extends(TorusGeometry, _super);
+        var PrimitiveTorusPrefab = (function (_super) {
+            __extends(PrimitiveTorusPrefab, _super);
             /**
             * Creates a new <code>Torus</code> object.
             * @param radius The radius of the torus.
@@ -24191,16 +20405,13 @@ var away;
             * @param segmentsT Defines the number of vertical segments that make up the torus.
             * @param yUp Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
             */
-            function TorusGeometry(radius, tubeRadius, segmentsR, segmentsT, yUp) {
+            function PrimitiveTorusPrefab(radius, tubeRadius, segmentsR, segmentsT, yUp) {
                 if (typeof radius === "undefined") { radius = 50; }
                 if (typeof tubeRadius === "undefined") { tubeRadius = 50; }
                 if (typeof segmentsR === "undefined") { segmentsR = 16; }
                 if (typeof segmentsT === "undefined") { segmentsT = 8; }
                 if (typeof yUp === "undefined") { yUp = true; }
                 _super.call(this);
-                this._nextVertexIndex = 0;
-                this._currentIndex = 0;
-                this._currentTriangleIndex = 0;
                 this._numVertices = 0;
 
                 this._radius = radius;
@@ -24209,168 +20420,7 @@ var away;
                 this._segmentsT = segmentsT;
                 this._yUp = yUp;
             }
-            TorusGeometry.prototype.addVertex = function (px, py, pz, nx, ny, nz, tx, ty, tz) {
-                var compVertInd = this._vertexOffset + this._nextVertexIndex * this._vertexStride;
-                this._rawVertexData[compVertInd++] = px;
-                this._rawVertexData[compVertInd++] = py;
-                this._rawVertexData[compVertInd++] = pz;
-                this._rawVertexData[compVertInd++] = nx;
-                this._rawVertexData[compVertInd++] = ny;
-                this._rawVertexData[compVertInd++] = nz;
-                this._rawVertexData[compVertInd++] = tx;
-                this._rawVertexData[compVertInd++] = ty;
-                this._rawVertexData[compVertInd] = tz;
-                this._nextVertexIndex++;
-            };
-
-            TorusGeometry.prototype.addTriangleClockWise = function (cwVertexIndex0, cwVertexIndex1, cwVertexIndex2) {
-                this._rawIndices[this._currentIndex++] = cwVertexIndex0;
-                this._rawIndices[this._currentIndex++] = cwVertexIndex1;
-                this._rawIndices[this._currentIndex++] = cwVertexIndex2;
-                this._currentTriangleIndex++;
-            };
-
-            /**
-            * @inheritDoc
-            */
-            TorusGeometry.prototype.pBuildGeometry = function (target) {
-                var i, j;
-                var x, y, z, nx, ny, nz, revolutionAngleR, revolutionAngleT;
-                var numTriangles;
-
-                // reset utility variables
-                this._numVertices = 0;
-                this._nextVertexIndex = 0;
-                this._currentIndex = 0;
-                this._currentTriangleIndex = 0;
-                this._vertexStride = target.vertexStride;
-                this._vertexOffset = target.vertexOffset;
-
-                // evaluate target number of vertices, triangles and indices
-                this._numVertices = (this._segmentsT + 1) * (this._segmentsR + 1); // segmentsT + 1 because of closure, segmentsR + 1 because of closure
-                numTriangles = this._segmentsT * this._segmentsR * 2; // each level has segmentR quads, each of 2 triangles
-
-                // need to initialize raw arrays or can be reused?
-                if (this._numVertices == target.numVertices) {
-                    this._rawVertexData = target.vertexData;
-
-                    if (target.indexData == null) {
-                        this._rawIndices = new Array(numTriangles * 3);
-                    } else {
-                        this._rawIndices = target.indexData;
-                    }
-                } else {
-                    var numVertComponents = this._numVertices * this._vertexStride;
-                    this._rawVertexData = new Array(numVertComponents);
-                    this._rawIndices = new Array(numTriangles * 3);
-                    this.pInvalidateUVs();
-                }
-
-                // evaluate revolution steps
-                var revolutionAngleDeltaR = 2 * Math.PI / this._segmentsR;
-                var revolutionAngleDeltaT = 2 * Math.PI / this._segmentsT;
-
-                var comp1, comp2;
-                var t1, t2, n1, n2;
-                var startIndex;
-
-                // surface
-                var a, b, c, d, length;
-
-                for (j = 0; j <= this._segmentsT; ++j) {
-                    startIndex = this._vertexOffset + this._nextVertexIndex * this._vertexStride;
-
-                    for (i = 0; i <= this._segmentsR; ++i) {
-                        // revolution vertex
-                        revolutionAngleR = i * revolutionAngleDeltaR;
-                        revolutionAngleT = j * revolutionAngleDeltaT;
-
-                        length = Math.cos(revolutionAngleT);
-                        nx = length * Math.cos(revolutionAngleR);
-                        ny = length * Math.sin(revolutionAngleR);
-                        nz = Math.sin(revolutionAngleT);
-
-                        x = this._radius * Math.cos(revolutionAngleR) + this._tubeRadius * nx;
-                        y = this._radius * Math.sin(revolutionAngleR) + this._tubeRadius * ny;
-                        z = (j == this._segmentsT) ? 0 : this._tubeRadius * nz;
-
-                        if (this._yUp) {
-                            n1 = -nz;
-                            n2 = ny;
-                            t1 = 0;
-                            t2 = (length ? nx / length : x / this._radius);
-                            comp1 = -z;
-                            comp2 = y;
-                        } else {
-                            n1 = ny;
-                            n2 = nz;
-                            t1 = (length ? nx / length : x / this._radius);
-                            t2 = 0;
-                            comp1 = y;
-                            comp2 = z;
-                        }
-
-                        if (i == this._segmentsR) {
-                            this.addVertex(x, this._rawVertexData[startIndex + 1], this._rawVertexData[startIndex + 2], nx, n1, n2, -(length ? ny / length : y / this._radius), t1, t2);
-                        } else {
-                            this.addVertex(x, comp1, comp2, nx, n1, n2, -(length ? ny / length : y / this._radius), t1, t2);
-                        }
-
-                        // close triangle
-                        if (i > 0 && j > 0) {
-                            a = this._nextVertexIndex - 1; // current
-                            b = this._nextVertexIndex - 2; // previous
-                            c = b - this._segmentsR - 1; // previous of last level
-                            d = a - this._segmentsR - 1; // current of last level
-                            this.addTriangleClockWise(a, b, c);
-                            this.addTriangleClockWise(a, c, d);
-                        }
-                    }
-                }
-
-                // build real data from raw data
-                target.updateData(this._rawVertexData);
-                target.updateIndexData(this._rawIndices);
-            };
-
-            /**
-            * @inheritDoc
-            */
-            TorusGeometry.prototype.pBuildUVs = function (target) {
-                var i, j;
-                var data;
-                var stride = target.UVStride;
-                var offset = target.UVOffset;
-                var skip = target.UVStride - 2;
-
-                // evaluate num uvs
-                var numUvs = this._numVertices * stride;
-
-                // need to initialize raw array or can be reused?
-                if (target.UVData && numUvs == target.UVData.length) {
-                    data = target.UVData;
-                } else {
-                    data = new Array(numUvs);
-                    this.pInvalidateGeometry(); //invalidateGeometry();
-                }
-
-                // current uv component index
-                var currentUvCompIndex = offset;
-
-                for (j = 0; j <= this._segmentsT; ++j) {
-                    for (i = 0; i <= this._segmentsR; ++i) {
-                        // revolution vertex
-                        data[currentUvCompIndex++] = (i / this._segmentsR) * target.scaleU;
-                        data[currentUvCompIndex++] = (j / this._segmentsT) * target.scaleV;
-                        currentUvCompIndex += skip;
-                    }
-                }
-
-                // build real data from raw data
-                target.updateData(data);
-            };
-
-            Object.defineProperty(TorusGeometry.prototype, "radius", {
+            Object.defineProperty(PrimitiveTorusPrefab.prototype, "radius", {
                 /**
                 * The radius of the torus.
                 */
@@ -24379,14 +20429,14 @@ var away;
                 },
                 set: function (value) {
                     this._radius = value;
-                    this.pInvalidateGeometry();
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(TorusGeometry.prototype, "tubeRadius", {
+            Object.defineProperty(PrimitiveTorusPrefab.prototype, "tubeRadius", {
                 /**
                 * The radius of the inner tube of the torus.
                 */
@@ -24395,14 +20445,14 @@ var away;
                 },
                 set: function (value) {
                     this._tubeRadius = value;
-                    this.pInvalidateGeometry();
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(TorusGeometry.prototype, "segmentsR", {
+            Object.defineProperty(PrimitiveTorusPrefab.prototype, "segmentsR", {
                 /**
                 * Defines the number of horizontal segments that make up the torus. Defaults to 16.
                 */
@@ -24411,15 +20461,15 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsR = value;
-                    this.pInvalidateGeometry();
-                    this.pInvalidateUVs();
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(TorusGeometry.prototype, "segmentsT", {
+            Object.defineProperty(PrimitiveTorusPrefab.prototype, "segmentsT", {
                 /**
                 * Defines the number of vertical segments that make up the torus. Defaults to 8.
                 */
@@ -24428,15 +20478,15 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsT = value;
-                    this.pInvalidateGeometry();
-                    this.pInvalidateUVs();
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(TorusGeometry.prototype, "yUp", {
+            Object.defineProperty(PrimitiveTorusPrefab.prototype, "yUp", {
                 /**
                 * Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
                 */
@@ -24445,30 +20495,201 @@ var away;
                 },
                 set: function (value) {
                     this._yUp = value;
-                    this.pInvalidateGeometry();
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
-            return TorusGeometry;
-        })(away.primitives.PrimitiveBase);
-        primitives.TorusGeometry = TorusGeometry;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveTorusPrefab.prototype._pBuildGeometry = function (target, geometryType) {
+                var indices;
+                var positions;
+                var normals;
+                var tangents;
+
+                var i, j;
+                var x, y, z, nx, ny, nz, revolutionAngleR, revolutionAngleT;
+                var vidx;
+                var fidx;
+                var numIndices = 0;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    // evaluate target number of vertices, triangles and indices
+                    this._numVertices = (this._segmentsT + 1) * (this._segmentsR + 1); // segmentsT + 1 because of closure, segmentsR + 1 because of closure
+                    numIndices = this._segmentsT * this._segmentsR * 6; // each level has segmentR quads, each of 2 triangles
+
+                    // need to initialize raw arrays or can be reused?
+                    if (this._numVertices == triangleGeometry.numVertices) {
+                        indices = triangleGeometry.indices;
+                        positions = triangleGeometry.positions;
+                        normals = triangleGeometry.vertexNormals;
+                        tangents = triangleGeometry.vertexTangents;
+                    } else {
+                        indices = new Array(numIndices);
+                        positions = new Array(this._numVertices * 3);
+                        normals = new Array(this._numVertices * 3);
+                        tangents = new Array(this._numVertices * 3);
+
+                        this._pInvalidateUVs();
+                    }
+
+                    vidx = 0;
+                    fidx = 0;
+
+                    // evaluate revolution steps
+                    var revolutionAngleDeltaR = 2 * Math.PI / this._segmentsR;
+                    var revolutionAngleDeltaT = 2 * Math.PI / this._segmentsT;
+
+                    var comp1, comp2;
+                    var t1, t2, n1, n2;
+                    var startIndex = 0;
+                    var nextVertexIndex = 0;
+
+                    // surface
+                    var a, b, c, d, length;
+
+                    for (j = 0; j <= this._segmentsT; ++j) {
+                        startIndex = nextVertexIndex * 3;
+
+                        for (i = 0; i <= this._segmentsR; ++i) {
+                            // revolution vertex
+                            revolutionAngleR = i * revolutionAngleDeltaR;
+                            revolutionAngleT = j * revolutionAngleDeltaT;
+
+                            length = Math.cos(revolutionAngleT);
+                            nx = length * Math.cos(revolutionAngleR);
+                            ny = length * Math.sin(revolutionAngleR);
+                            nz = Math.sin(revolutionAngleT);
+
+                            x = this._radius * Math.cos(revolutionAngleR) + this._tubeRadius * nx;
+                            y = this._radius * Math.sin(revolutionAngleR) + this._tubeRadius * ny;
+                            z = (j == this._segmentsT) ? 0 : this._tubeRadius * nz;
+
+                            if (this._yUp) {
+                                n1 = -nz;
+                                n2 = ny;
+                                t1 = 0;
+                                t2 = (length ? nx / length : x / this._radius);
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                n1 = ny;
+                                n2 = nz;
+                                t1 = (length ? nx / length : x / this._radius);
+                                t2 = 0;
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i == this._segmentsR) {
+                                positions[vidx] = x;
+                                positions[vidx + 1] = positions[startIndex + 1];
+                                positions[vidx + 2] = positions[startIndex + 2];
+                            } else {
+                                positions[vidx] = x;
+                                positions[vidx + 1] = comp1;
+                                positions[vidx + 2] = comp2;
+                            }
+
+                            normals[vidx] = nx;
+                            normals[vidx + 1] = n1;
+                            normals[vidx + 2] = n2;
+                            tangents[vidx] = -(length ? ny / length : y / this._radius);
+                            tangents[vidx + 1] = t1;
+                            tangents[vidx + 2] = t2;
+
+                            vidx += 3;
+
+                            // close triangle
+                            if (i > 0 && j > 0) {
+                                a = nextVertexIndex; // current
+                                b = nextVertexIndex - 1; // previous
+                                c = b - this._segmentsR - 1; // previous of last level
+                                d = a - this._segmentsR - 1; // current of last level
+
+                                indices[fidx++] = a;
+                                indices[fidx++] = b;
+                                indices[fidx++] = c;
+
+                                indices[fidx++] = a;
+                                indices[fidx++] = c;
+                                indices[fidx++] = d;
+                            }
+
+                            nextVertexIndex++;
+                        }
+                    }
+
+                    // build real data from raw data
+                    triangleGeometry.updateIndices(indices);
+
+                    triangleGeometry.updatePositions(positions);
+                    triangleGeometry.updateVertexNormals(normals);
+                    triangleGeometry.updateVertexTangents(tangents);
+                } else if (geometryType == "lineSubGeometry") {
+                    //TODO
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveTorusPrefab.prototype._pBuildUVs = function (target, geometryType) {
+                var i, j;
+                var uvs;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    // need to initialize raw array or can be reused?
+                    if (triangleGeometry.uvs && this._numVertices == triangleGeometry.numVertices) {
+                        uvs = triangleGeometry.uvs;
+                    } else {
+                        uvs = new Array(this._numVertices * 2);
+                    }
+
+                    // current uv component index
+                    var index = 0;
+
+                    for (j = 0; j <= this._segmentsT; ++j) {
+                        for (i = 0; i <= this._segmentsR; ++i) {
+                            // revolution vertex
+                            uvs[index++] = (i / this._segmentsR) * triangleGeometry.scaleU;
+                            uvs[index++] = (j / this._segmentsT) * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    // build real data from raw data
+                    triangleGeometry.updateUVs(uvs);
+                } else if (geometryType == "lineSubGeometry") {
+                    //nothing to do here
+                }
+            };
+            return PrimitiveTorusPrefab;
+        })(away.prefabs.PrimitivePrefabBase);
+        prefabs.PrimitiveTorusPrefab = PrimitiveTorusPrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
-    (function (primitives) {
-        //import away3d.arcane;
-        //import away3d.core.base.CompactSubGeometry;
-        //use namespace arcane;
+    (function (prefabs) {
+        var SubGeometryBase = away.base.SubGeometryBase;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+        var LineSubGeometry = away.base.LineSubGeometry;
+
         /**
-        * A Cube primitive mesh.
+        * A Cube primitive prefab.
         */
-        var CubeGeometry = (function (_super) {
-            __extends(CubeGeometry, _super);
+        var PrimitiveCubePrefab = (function (_super) {
+            __extends(PrimitiveCubePrefab, _super);
             /**
             * Creates a new Cube object.
             * @param width The size of the cube along its X-axis.
@@ -24479,7 +20700,7 @@ var away;
             * @param segmentsD The number of segments that make up the cube along the Z-axis.
             * @param tile6 The type of uv mapping to use. When true, a texture will be subdivided in a 2x3 grid, each used for a single face. When false, the entire image is mapped on each face.
             */
-            function CubeGeometry(width, height, depth, segmentsW, segmentsH, segmentsD, tile6) {
+            function PrimitiveCubePrefab(width, height, depth, segmentsW, segmentsH, segmentsD, tile6) {
                 if (typeof width === "undefined") { width = 100; }
                 if (typeof height === "undefined") { height = 100; }
                 if (typeof depth === "undefined") { depth = 100; }
@@ -24497,7 +20718,7 @@ var away;
                 this._segmentsD = segmentsD;
                 this._tile6 = tile6;
             }
-            Object.defineProperty(CubeGeometry.prototype, "width", {
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "width", {
                 /**
                 * The size of the cube along its X-axis.
                 */
@@ -24506,14 +20727,15 @@ var away;
                 },
                 set: function (value) {
                     this._width = value;
-                    this.pInvalidateGeometry();
+
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CubeGeometry.prototype, "height", {
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "height", {
                 /**
                 * The size of the cube along its Y-axis.
                 */
@@ -24522,14 +20744,15 @@ var away;
                 },
                 set: function (value) {
                     this._height = value;
-                    this.pInvalidateGeometry();
+
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CubeGeometry.prototype, "depth", {
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "depth", {
                 /**
                 * The size of the cube along its Z-axis.
                 */
@@ -24538,14 +20761,15 @@ var away;
                 },
                 set: function (value) {
                     this._depth = value;
-                    this.pInvalidateGeometry();
+
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CubeGeometry.prototype, "tile6", {
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "tile6", {
                 /**
                 * The type of uv mapping to use. When false, the entire image is mapped on each face.
                 * When true, a texture will be subdivided in a 3x2 grid, each used for a single face.
@@ -24559,14 +20783,15 @@ var away;
                 },
                 set: function (value) {
                     this._tile6 = value;
-                    this.pInvalidateGeometry();
+
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CubeGeometry.prototype, "segmentsW", {
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "segmentsW", {
                 /**
                 * The number of segments that make up the cube along the X-axis. Defaults to 1.
                 */
@@ -24575,15 +20800,16 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsW = value;
-                    this.pInvalidateGeometry();
-                    this.pInvalidateUVs();
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CubeGeometry.prototype, "segmentsH", {
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "segmentsH", {
                 /**
                 * The number of segments that make up the cube along the Y-axis. Defaults to 1.
                 */
@@ -24592,15 +20818,16 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsH = value;
-                    this.pInvalidateGeometry();
-                    this.pInvalidateUVs();
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CubeGeometry.prototype, "segmentsD", {
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "segmentsD", {
                 /**
                 * The number of segments that make up the cube along the Z-axis. Defaults to 1.
                 */
@@ -24609,8 +20836,9 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsD = value;
-                    this.pInvalidateGeometry();
-                    this.pInvalidateUVs();
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
                 },
                 enumerable: true,
                 configurable: true
@@ -24620,9 +20848,11 @@ var away;
             /**
             * @inheritDoc
             */
-            CubeGeometry.prototype.pBuildGeometry = function (target) {
-                var data;
+            PrimitiveCubePrefab.prototype._pBuildGeometry = function (target, geometryType) {
                 var indices;
+                var positions;
+                var normals;
+                var tangents;
 
                 var tl, tr, bl, br;
                 var i, j, inc = 0;
@@ -24632,310 +20862,506 @@ var away;
                 var dw, dh, dd;
 
                 var outer_pos;
-
-                var numVerts = ((this._segmentsW + 1) * (this._segmentsH + 1) + (this._segmentsW + 1) * (this._segmentsD + 1) + (this._segmentsH + 1) * (this._segmentsD + 1)) * 2;
-
-                var stride = target.vertexStride;
-                var skip = stride - 9;
-
-                if (numVerts == target.numVertices) {
-                    data = target.vertexData;
-
-                    indices = (target.indexData) ? target.indexData : new Array((this._segmentsW * this._segmentsH + this._segmentsW * this._segmentsD + this._segmentsH * this._segmentsD) * 12);
-                    //indices = target.indexData || new Vector.<uint>((_segmentsW*_segmentsH + _segmentsW*_segmentsD + _segmentsH*_segmentsD)*12, true);
-                } else {
-                    data = new Array(numVerts * stride);
-                    indices = new Array((this._segmentsW * this._segmentsH + this._segmentsW * this._segmentsD + this._segmentsH * this._segmentsD) * 12);
-                    this.pInvalidateUVs();
-                }
-
-                // Indices
-                vidx = target.vertexOffset;
-                fidx = 0;
+                var numIndices;
+                var numVertices;
 
                 // half cube dimensions
                 hw = this._width / 2;
                 hh = this._height / 2;
                 hd = this._depth / 2;
 
-                // Segment dimensions
-                dw = this._width / this._segmentsW;
-                dh = this._height / this._segmentsH;
-                dd = this._depth / this._segmentsD;
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
 
-                for (i = 0; i <= this._segmentsW; i++) {
-                    outer_pos = -hw + i * dw;
+                    numVertices = ((this._segmentsW + 1) * (this._segmentsH + 1) + (this._segmentsW + 1) * (this._segmentsD + 1) + (this._segmentsH + 1) * (this._segmentsD + 1)) * 2;
 
-                    for (j = 0; j <= this._segmentsH; j++) {
-                        // front
-                        data[vidx++] = outer_pos;
-                        data[vidx++] = -hh + j * dh;
-                        data[vidx++] = -hd;
-                        data[vidx++] = 0;
-                        data[vidx++] = 0;
-                        data[vidx++] = -1;
-                        data[vidx++] = 1;
-                        data[vidx++] = 0;
-                        data[vidx++] = 0;
-                        vidx += skip;
+                    numIndices = ((this._segmentsW * this._segmentsH + this._segmentsW * this._segmentsD + this._segmentsH * this._segmentsD) * 12);
 
-                        // back
-                        data[vidx++] = outer_pos;
-                        data[vidx++] = -hh + j * dh;
-                        data[vidx++] = hd;
-                        data[vidx++] = 0;
-                        data[vidx++] = 0;
-                        data[vidx++] = 1;
-                        data[vidx++] = -1;
-                        data[vidx++] = 0;
-                        data[vidx++] = 0;
-                        vidx += skip;
+                    if (numVertices == triangleGeometry.numVertices && triangleGeometry.indices != null) {
+                        indices = triangleGeometry.indices;
+                        positions = triangleGeometry.positions;
+                        normals = triangleGeometry.vertexNormals;
+                        tangents = triangleGeometry.vertexTangents;
+                    } else {
+                        indices = new Array(numIndices);
+                        positions = new Array(numVertices * 3);
+                        normals = new Array(numVertices * 3);
+                        tangents = new Array(numVertices * 3);
 
-                        if (i && j) {
-                            tl = 2 * ((i - 1) * (this._segmentsH + 1) + (j - 1));
-                            tr = 2 * (i * (this._segmentsH + 1) + (j - 1));
-                            bl = tl + 2;
-                            br = tr + 2;
+                        this._pInvalidateUVs();
+                    }
 
-                            indices[fidx++] = tl;
-                            indices[fidx++] = bl;
-                            indices[fidx++] = br;
-                            indices[fidx++] = tl;
-                            indices[fidx++] = br;
-                            indices[fidx++] = tr;
-                            indices[fidx++] = tr + 1;
-                            indices[fidx++] = br + 1;
-                            indices[fidx++] = bl + 1;
-                            indices[fidx++] = tr + 1;
-                            indices[fidx++] = bl + 1;
-                            indices[fidx++] = tl + 1;
+                    vidx = 0;
+                    fidx = 0;
+
+                    // Segment dimensions
+                    dw = this._width / this._segmentsW;
+                    dh = this._height / this._segmentsH;
+                    dd = this._depth / this._segmentsD;
+
+                    for (i = 0; i <= this._segmentsW; i++) {
+                        outer_pos = -hw + i * dw;
+
+                        for (j = 0; j <= this._segmentsH; j++) {
+                            // front
+                            positions[vidx] = outer_pos;
+                            positions[vidx + 1] = -hh + j * dh;
+                            positions[vidx + 2] = -hd;
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = 0;
+                            normals[vidx + 2] = -1;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            // back
+                            positions[vidx] = outer_pos;
+                            positions[vidx + 1] = -hh + j * dh;
+                            positions[vidx + 2] = hd;
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = 0;
+                            normals[vidx + 2] = 1;
+                            tangents[vidx] = -1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            if (i && j) {
+                                tl = 2 * ((i - 1) * (this._segmentsH + 1) + (j - 1));
+                                tr = 2 * (i * (this._segmentsH + 1) + (j - 1));
+                                bl = tl + 2;
+                                br = tr + 2;
+
+                                indices[fidx++] = tl;
+                                indices[fidx++] = bl;
+                                indices[fidx++] = br;
+                                indices[fidx++] = tl;
+                                indices[fidx++] = br;
+                                indices[fidx++] = tr;
+                                indices[fidx++] = tr + 1;
+                                indices[fidx++] = br + 1;
+                                indices[fidx++] = bl + 1;
+                                indices[fidx++] = tr + 1;
+                                indices[fidx++] = bl + 1;
+                                indices[fidx++] = tl + 1;
+                            }
                         }
                     }
-                }
 
-                inc += 2 * (this._segmentsW + 1) * (this._segmentsH + 1);
+                    inc += 2 * (this._segmentsW + 1) * (this._segmentsH + 1);
 
-                for (i = 0; i <= this._segmentsW; i++) {
-                    outer_pos = -hw + i * dw;
+                    for (i = 0; i <= this._segmentsW; i++) {
+                        outer_pos = -hw + i * dw;
 
-                    for (j = 0; j <= this._segmentsD; j++) {
-                        // top
-                        data[vidx++] = outer_pos;
-                        data[vidx++] = hh;
-                        data[vidx++] = -hd + j * dd;
-                        data[vidx++] = 0;
-                        data[vidx++] = 1;
-                        data[vidx++] = 0;
-                        data[vidx++] = 1;
-                        data[vidx++] = 0;
-                        data[vidx++] = 0;
-                        vidx += skip;
+                        for (j = 0; j <= this._segmentsD; j++) {
+                            // top
+                            positions[vidx] = outer_pos;
+                            positions[vidx + 1] = hh;
+                            positions[vidx + 2] = -hd + j * dd;
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = 1;
+                            normals[vidx + 2] = 0;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
 
-                        // bottom
-                        data[vidx++] = outer_pos;
-                        data[vidx++] = -hh;
-                        data[vidx++] = -hd + j * dd;
-                        data[vidx++] = 0;
-                        data[vidx++] = -1;
-                        data[vidx++] = 0;
-                        data[vidx++] = 1;
-                        data[vidx++] = 0;
-                        data[vidx++] = 0;
-                        vidx += skip;
+                            // bottom
+                            positions[vidx] = outer_pos;
+                            positions[vidx + 1] = -hh;
+                            positions[vidx + 2] = -hd + j * dd;
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = -1;
+                            normals[vidx + 2] = 0;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
 
-                        if (i && j) {
-                            tl = inc + 2 * ((i - 1) * (this._segmentsD + 1) + (j - 1));
-                            tr = inc + 2 * (i * (this._segmentsD + 1) + (j - 1));
-                            bl = tl + 2;
-                            br = tr + 2;
+                            if (i && j) {
+                                tl = inc + 2 * ((i - 1) * (this._segmentsD + 1) + (j - 1));
+                                tr = inc + 2 * (i * (this._segmentsD + 1) + (j - 1));
+                                bl = tl + 2;
+                                br = tr + 2;
 
-                            indices[fidx++] = tl;
-                            indices[fidx++] = bl;
-                            indices[fidx++] = br;
-                            indices[fidx++] = tl;
-                            indices[fidx++] = br;
-                            indices[fidx++] = tr;
-                            indices[fidx++] = tr + 1;
-                            indices[fidx++] = br + 1;
-                            indices[fidx++] = bl + 1;
-                            indices[fidx++] = tr + 1;
-                            indices[fidx++] = bl + 1;
-                            indices[fidx++] = tl + 1;
+                                indices[fidx++] = tl;
+                                indices[fidx++] = bl;
+                                indices[fidx++] = br;
+                                indices[fidx++] = tl;
+                                indices[fidx++] = br;
+                                indices[fidx++] = tr;
+                                indices[fidx++] = tr + 1;
+                                indices[fidx++] = br + 1;
+                                indices[fidx++] = bl + 1;
+                                indices[fidx++] = tr + 1;
+                                indices[fidx++] = bl + 1;
+                                indices[fidx++] = tl + 1;
+                            }
                         }
                     }
-                }
 
-                inc += 2 * (this._segmentsW + 1) * (this._segmentsD + 1);
+                    inc += 2 * (this._segmentsW + 1) * (this._segmentsD + 1);
 
-                for (i = 0; i <= this._segmentsD; i++) {
-                    outer_pos = hd - i * dd;
+                    for (i = 0; i <= this._segmentsD; i++) {
+                        outer_pos = hd - i * dd;
 
-                    for (j = 0; j <= this._segmentsH; j++) {
-                        // left
-                        data[vidx++] = -hw;
-                        data[vidx++] = -hh + j * dh;
-                        data[vidx++] = outer_pos;
-                        data[vidx++] = -1;
-                        data[vidx++] = 0;
-                        data[vidx++] = 0;
-                        data[vidx++] = 0;
-                        data[vidx++] = 0;
-                        data[vidx++] = -1;
-                        vidx += skip;
+                        for (j = 0; j <= this._segmentsH; j++) {
+                            // left
+                            positions[vidx] = -hw;
+                            positions[vidx + 1] = -hh + j * dh;
+                            positions[vidx + 2] = outer_pos;
+                            normals[vidx] = -1;
+                            normals[vidx + 1] = 0;
+                            normals[vidx + 2] = 0;
+                            tangents[vidx] = 0;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = -1;
+                            vidx += 3;
 
-                        // right
-                        data[vidx++] = hw;
-                        data[vidx++] = -hh + j * dh;
-                        data[vidx++] = outer_pos;
-                        data[vidx++] = 1;
-                        data[vidx++] = 0;
-                        data[vidx++] = 0;
-                        data[vidx++] = 0;
-                        data[vidx++] = 0;
-                        data[vidx++] = 1;
-                        vidx += skip;
+                            // right
+                            positions[vidx] = hw;
+                            positions[vidx + 1] = -hh + j * dh;
+                            positions[vidx + 2] = outer_pos;
+                            normals[vidx] = 1;
+                            normals[vidx + 1] = 0;
+                            normals[vidx + 2] = 0;
+                            tangents[vidx] = 0;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 1;
+                            vidx += 3;
 
-                        if (i && j) {
-                            tl = inc + 2 * ((i - 1) * (this._segmentsH + 1) + (j - 1));
-                            tr = inc + 2 * (i * (this._segmentsH + 1) + (j - 1));
-                            bl = tl + 2;
-                            br = tr + 2;
+                            if (i && j) {
+                                tl = inc + 2 * ((i - 1) * (this._segmentsH + 1) + (j - 1));
+                                tr = inc + 2 * (i * (this._segmentsH + 1) + (j - 1));
+                                bl = tl + 2;
+                                br = tr + 2;
 
-                            indices[fidx++] = tl;
-                            indices[fidx++] = bl;
-                            indices[fidx++] = br;
-                            indices[fidx++] = tl;
-                            indices[fidx++] = br;
-                            indices[fidx++] = tr;
-                            indices[fidx++] = tr + 1;
-                            indices[fidx++] = br + 1;
-                            indices[fidx++] = bl + 1;
-                            indices[fidx++] = tr + 1;
-                            indices[fidx++] = bl + 1;
-                            indices[fidx++] = tl + 1;
+                                indices[fidx++] = tl;
+                                indices[fidx++] = bl;
+                                indices[fidx++] = br;
+                                indices[fidx++] = tl;
+                                indices[fidx++] = br;
+                                indices[fidx++] = tr;
+                                indices[fidx++] = tr + 1;
+                                indices[fidx++] = br + 1;
+                                indices[fidx++] = bl + 1;
+                                indices[fidx++] = tr + 1;
+                                indices[fidx++] = bl + 1;
+                                indices[fidx++] = tl + 1;
+                            }
                         }
                     }
-                }
 
-                target.updateData(data);
-                target.updateIndexData(indices);
+                    triangleGeometry.updateIndices(indices);
+
+                    triangleGeometry.updatePositions(positions);
+                    triangleGeometry.updateVertexNormals(normals);
+                    triangleGeometry.updateVertexTangents(tangents);
+                } else if (geometryType == "lineSubGeometry") {
+                    var lineGeometry = target;
+
+                    var numSegments = this._segmentsH * 4 + this._segmentsW * 4 + this._segmentsD * 4;
+                    var startPositions;
+                    var endPositions;
+                    var thickness;
+
+                    if (lineGeometry.indices != null && numSegments == lineGeometry.numSegments) {
+                        startPositions = lineGeometry.startPositions;
+                        endPositions = lineGeometry.endPositions;
+                        thickness = lineGeometry.thickness;
+                    } else {
+                        startPositions = new Array(numSegments * 3);
+                        endPositions = new Array(numSegments * 3);
+                        thickness = new Array(numSegments);
+                    }
+
+                    vidx = 0;
+
+                    fidx = 0;
+
+                    for (i = 0; i < this._segmentsH; ++i) {
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = i * this._height / this._segmentsH - hh;
+                        startPositions[vidx + 2] = -hd;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = i * this._height / this._segmentsH - hh;
+                        endPositions[vidx + 2] = -hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = hh - i * this._height / this._segmentsH;
+                        startPositions[vidx + 2] = hd;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = hh - i * this._height / this._segmentsH;
+                        endPositions[vidx + 2] = hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    for (i = 0; i < this._segmentsW; ++i) {
+                        startPositions[vidx] = i * this._width / this._segmentsW - hw;
+                        startPositions[vidx + 1] = -hh;
+                        startPositions[vidx + 2] = -hd;
+
+                        endPositions[vidx] = i * this._width / this._segmentsW - hw;
+                        endPositions[vidx + 1] = hh;
+                        endPositions[vidx + 2] = -hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+
+                        startPositions[vidx] = hw - i * this._width / this._segmentsW;
+                        startPositions[vidx + 1] = -hh;
+                        startPositions[vidx + 2] = hd;
+
+                        endPositions[vidx] = hw - i * this._width / this._segmentsW;
+                        endPositions[vidx + 1] = hh;
+                        endPositions[vidx + 2] = hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    for (i = 0; i < this._segmentsH; ++i) {
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = i * this._height / this._segmentsH - hh;
+                        startPositions[vidx + 2] = -hd;
+
+                        endPositions[vidx] = -hw;
+                        endPositions[vidx + 1] = i * this._height / this._segmentsH - hh;
+                        endPositions[vidx + 2] = hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+
+                        startPositions[vidx] = hw;
+                        startPositions[vidx + 1] = hh - i * this._height / this._segmentsH;
+                        startPositions[vidx + 2] = -hd;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = hh - i * this._height / this._segmentsH;
+                        endPositions[vidx + 2] = hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    for (i = 0; i < this._segmentsD; ++i) {
+                        startPositions[vidx] = hw;
+                        startPositions[vidx + 1] = -hh;
+                        startPositions[vidx + 2] = i * this._depth / this._segmentsD - hd;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = hh;
+                        endPositions[vidx + 2] = i * this._depth / this._segmentsD - hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = -hh;
+                        startPositions[vidx + 2] = hd - i * this._depth / this._segmentsD;
+
+                        endPositions[vidx] = -hw;
+                        endPositions[vidx + 1] = hh;
+                        endPositions[vidx + 2] = hd - i * this._depth / this._segmentsD;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    for (i = 0; i < this._segmentsD; ++i) {
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = -hh;
+                        startPositions[vidx + 2] = hd - i * this._depth / this._segmentsD;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = -hh;
+                        endPositions[vidx + 2] = hd - i * this._depth / this._segmentsD;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = hh;
+                        startPositions[vidx + 2] = i * this._depth / this._segmentsD - hd;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = hh;
+                        endPositions[vidx + 2] = i * this._depth / this._segmentsD - hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    for (i = 0; i < this._segmentsW; ++i) {
+                        startPositions[vidx] = hw - i * this._width / this._segmentsW;
+                        startPositions[vidx + 1] = -hh;
+                        startPositions[vidx + 2] = -hd;
+
+                        endPositions[vidx] = hw - i * this._width / this._segmentsW;
+                        endPositions[vidx + 1] = -hh;
+                        endPositions[vidx + 2] = hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+
+                        startPositions[vidx] = i * this._width / this._segmentsW - hw;
+                        startPositions[vidx + 1] = hh;
+                        startPositions[vidx + 2] = -hd;
+
+                        endPositions[vidx] = i * this._width / this._segmentsW - hw;
+                        endPositions[vidx + 1] = hh;
+                        endPositions[vidx + 2] = hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    // build real data from raw data
+                    lineGeometry.updatePositions(startPositions, endPositions);
+                    lineGeometry.updateThickness(thickness);
+                }
             };
 
             /**
             * @inheritDoc
             */
-            CubeGeometry.prototype.pBuildUVs = function (target) {
-                var i, j, uidx;
-                var data;
+            PrimitiveCubePrefab.prototype._pBuildUVs = function (target, geometryType) {
+                var i, j, index;
+                var uvs;
 
                 var u_tile_dim, v_tile_dim;
                 var u_tile_step, v_tile_step;
                 var tl0u, tl0v;
                 var tl1u, tl1v;
                 var du, dv;
-                var stride = target.UVStride;
-                var numUvs = ((this._segmentsW + 1) * (this._segmentsH + 1) + (this._segmentsW + 1) * (this._segmentsD + 1) + (this._segmentsH + 1) * (this._segmentsD + 1)) * 2 * stride;
-                var skip = stride - 2;
+                var numVertices;
 
-                if (target.UVData && numUvs == target.UVData.length)
-                    data = target.UVData;
-                else {
-                    data = new Array(numUvs);
-                    this.pInvalidateGeometry();
-                }
+                if (geometryType == "triangleSubGeometry") {
+                    numVertices = ((this._segmentsW + 1) * (this._segmentsH + 1) + (this._segmentsW + 1) * (this._segmentsD + 1) + (this._segmentsH + 1) * (this._segmentsD + 1)) * 2;
 
-                if (this._tile6) {
-                    u_tile_dim = u_tile_step = 1 / 3;
-                    v_tile_dim = v_tile_step = 1 / 2;
-                } else {
-                    u_tile_dim = v_tile_dim = 1;
-                    u_tile_step = v_tile_step = 0;
-                }
+                    var triangleGeometry = target;
 
-                // Create planes two and two, the same way that they were
-                // constructed in the buildGeometry() function. First calculate
-                // the top-left UV coordinate for both planes, and then loop
-                // over the points, calculating the UVs from these numbers.
-                // When tile6 is true, the layout is as follows:
-                //       .-----.-----.-----. (1,1)
-                //       | Bot |  T  | Bak |
-                //       |-----+-----+-----|
-                //       |  L  |  F  |  R  |
-                // (0,0)'-----'-----'-----'
-                uidx = target.UVOffset;
-
-                // FRONT / BACK
-                tl0u = 1 * u_tile_step;
-                tl0v = 1 * v_tile_step;
-                tl1u = 2 * u_tile_step;
-                tl1v = 0 * v_tile_step;
-                du = u_tile_dim / this._segmentsW;
-                dv = v_tile_dim / this._segmentsH;
-                for (i = 0; i <= this._segmentsW; i++) {
-                    for (j = 0; j <= this._segmentsH; j++) {
-                        data[uidx++] = (tl0u + i * du) * target.scaleU;
-                        data[uidx++] = (tl0v + (v_tile_dim - j * dv)) * target.scaleV;
-                        uidx += skip;
-                        data[uidx++] = (tl1u + (u_tile_dim - i * du)) * target.scaleU;
-                        data[uidx++] = (tl1v + (v_tile_dim - j * dv)) * target.scaleV;
-                        uidx += skip;
+                    if (numVertices == triangleGeometry.numVertices && triangleGeometry.uvs != null) {
+                        uvs = triangleGeometry.uvs;
+                    } else {
+                        uvs = new Array(numVertices * 2);
                     }
-                }
 
-                // TOP / BOTTOM
-                tl0u = 1 * u_tile_step;
-                tl0v = 0 * v_tile_step;
-                tl1u = 0 * u_tile_step;
-                tl1v = 0 * v_tile_step;
-                du = u_tile_dim / this._segmentsW;
-                dv = v_tile_dim / this._segmentsD;
-                for (i = 0; i <= this._segmentsW; i++) {
-                    for (j = 0; j <= this._segmentsD; j++) {
-                        data[uidx++] = (tl0u + i * du) * target.scaleU;
-                        data[uidx++] = (tl0v + (v_tile_dim - j * dv)) * target.scaleV;
-                        uidx += skip;
-                        data[uidx++] = (tl1u + i * du) * target.scaleU;
-                        data[uidx++] = (tl1v + j * dv) * target.scaleV;
-                        uidx += skip;
+                    if (this._tile6) {
+                        u_tile_dim = u_tile_step = 1 / 3;
+                        v_tile_dim = v_tile_step = 1 / 2;
+                    } else {
+                        u_tile_dim = v_tile_dim = 1;
+                        u_tile_step = v_tile_step = 0;
                     }
-                }
 
-                // LEFT / RIGHT
-                tl0u = 0 * u_tile_step;
-                tl0v = 1 * v_tile_step;
-                tl1u = 2 * u_tile_step;
-                tl1v = 1 * v_tile_step;
-                du = u_tile_dim / this._segmentsD;
-                dv = v_tile_dim / this._segmentsH;
-                for (i = 0; i <= this._segmentsD; i++) {
-                    for (j = 0; j <= this._segmentsH; j++) {
-                        data[uidx++] = (tl0u + i * du) * target.scaleU;
-                        ;
-                        data[uidx++] = (tl0v + (v_tile_dim - j * dv)) * target.scaleV;
-                        uidx += skip;
-                        data[uidx++] = (tl1u + (u_tile_dim - i * du)) * target.scaleU;
-                        data[uidx++] = (tl1v + (v_tile_dim - j * dv)) * target.scaleV;
-                        uidx += skip;
+                    // Create planes two and two, the same way that they were
+                    // constructed in the buildGeometry() function. First calculate
+                    // the top-left UV coordinate for both planes, and then loop
+                    // over the points, calculating the UVs from these numbers.
+                    // When tile6 is true, the layout is as follows:
+                    //       .-----.-----.-----. (1,1)
+                    //       | Bot |  T  | Bak |
+                    //       |-----+-----+-----|
+                    //       |  L  |  F  |  R  |
+                    // (0,0)'-----'-----'-----'
+                    index = 0;
+
+                    // FRONT / BACK
+                    tl0u = 1 * u_tile_step;
+                    tl0v = 1 * v_tile_step;
+                    tl1u = 2 * u_tile_step;
+                    tl1v = 0 * v_tile_step;
+                    du = u_tile_dim / this._segmentsW;
+                    dv = v_tile_dim / this._segmentsH;
+                    for (i = 0; i <= this._segmentsW; i++) {
+                        for (j = 0; j <= this._segmentsH; j++) {
+                            uvs[index++] = (tl0u + i * du) * triangleGeometry.scaleU;
+                            uvs[index++] = (tl0v + (v_tile_dim - j * dv)) * triangleGeometry.scaleV;
+
+                            uvs[index++] = (tl1u + (u_tile_dim - i * du)) * triangleGeometry.scaleU;
+                            uvs[index++] = (tl1v + (v_tile_dim - j * dv)) * triangleGeometry.scaleV;
+                        }
                     }
-                }
 
-                target.updateData(data);
+                    // TOP / BOTTOM
+                    tl0u = 1 * u_tile_step;
+                    tl0v = 0 * v_tile_step;
+                    tl1u = 0 * u_tile_step;
+                    tl1v = 0 * v_tile_step;
+                    du = u_tile_dim / this._segmentsW;
+                    dv = v_tile_dim / this._segmentsD;
+                    for (i = 0; i <= this._segmentsW; i++) {
+                        for (j = 0; j <= this._segmentsD; j++) {
+                            uvs[index++] = (tl0u + i * du) * triangleGeometry.scaleU;
+                            uvs[index++] = (tl0v + (v_tile_dim - j * dv)) * triangleGeometry.scaleV;
+
+                            uvs[index++] = (tl1u + i * du) * triangleGeometry.scaleU;
+                            uvs[index++] = (tl1v + j * dv) * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    // LEFT / RIGHT
+                    tl0u = 0 * u_tile_step;
+                    tl0v = 1 * v_tile_step;
+                    tl1u = 2 * u_tile_step;
+                    tl1v = 1 * v_tile_step;
+                    du = u_tile_dim / this._segmentsD;
+                    dv = v_tile_dim / this._segmentsH;
+                    for (i = 0; i <= this._segmentsD; i++) {
+                        for (j = 0; j <= this._segmentsH; j++) {
+                            uvs[index++] = (tl0u + i * du) * triangleGeometry.scaleU;
+                            uvs[index++] = (tl0v + (v_tile_dim - j * dv)) * triangleGeometry.scaleV;
+
+                            uvs[index++] = (tl1u + (u_tile_dim - i * du)) * triangleGeometry.scaleU;
+                            uvs[index++] = (tl1v + (v_tile_dim - j * dv)) * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    triangleGeometry.updateUVs(uvs);
+                } else if (geometryType == "lineSubGeometry") {
+                    //nothing to do here
+                }
             };
-            return CubeGeometry;
-        })(away.primitives.PrimitiveBase);
-        primitives.CubeGeometry = CubeGeometry;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
+            return PrimitiveCubePrefab;
+        })(away.prefabs.PrimitivePrefabBase);
+        prefabs.PrimitiveCubePrefab = PrimitiveCubePrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (primitives) {
+    (function (prefabs) {
+        var SubGeometryBase = away.base.SubGeometryBase;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+        var LineSubGeometry = away.base.LineSubGeometry;
+
         /**
         * A Plane primitive mesh.
         */
-        var PlaneGeometry = (function (_super) {
-            __extends(PlaneGeometry, _super);
+        var PrimitivePlanePrefab = (function (_super) {
+            __extends(PrimitivePlanePrefab, _super);
             /**
             * Creates a new Plane object.
             * @param width The width of the plane.
@@ -24945,7 +21371,7 @@ var away;
             * @param yUp Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false).
             * @param doubleSided Defines whether the plane will be visible from both sides, with correct vertex normals.
             */
-            function PlaneGeometry(width, height, segmentsW, segmentsH, yUp, doubleSided) {
+            function PrimitivePlanePrefab(width, height, segmentsW, segmentsH, yUp, doubleSided) {
                 if (typeof width === "undefined") { width = 100; }
                 if (typeof height === "undefined") { height = 100; }
                 if (typeof segmentsW === "undefined") { segmentsW = 1; }
@@ -24961,7 +21387,7 @@ var away;
                 this._height = height;
                 this._doubleSided = doubleSided;
             }
-            Object.defineProperty(PlaneGeometry.prototype, "segmentsW", {
+            Object.defineProperty(PrimitivePlanePrefab.prototype, "segmentsW", {
                 /**
                 * The number of segments that make up the plane along the X-axis. Defaults to 1.
                 */
@@ -24971,15 +21397,15 @@ var away;
                 set: function (value) {
                     this._segmentsW = value;
 
-                    this.pInvalidateGeometry();
-                    this.pInvalidateUVs();
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(PlaneGeometry.prototype, "segmentsH", {
+            Object.defineProperty(PrimitivePlanePrefab.prototype, "segmentsH", {
                 /**
                 * The number of segments that make up the plane along the Y or Z-axis, depending on whether yUp is true or
                 * false, respectively. Defaults to 1.
@@ -24990,15 +21416,15 @@ var away;
                 set: function (value) {
                     this._segmentsH = value;
 
-                    this.pInvalidateGeometry();
-                    this.pInvalidateUVs();
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(PlaneGeometry.prototype, "yUp", {
+            Object.defineProperty(PrimitivePlanePrefab.prototype, "yUp", {
                 /**
                 *  Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false). Defaults to true.
                 */
@@ -25007,14 +21433,15 @@ var away;
                 },
                 set: function (value) {
                     this._yUp = value;
-                    this.pInvalidateGeometry();
+
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(PlaneGeometry.prototype, "doubleSided", {
+            Object.defineProperty(PrimitivePlanePrefab.prototype, "doubleSided", {
                 /**
                 * Defines whether the plane will be visible from both sides, with correct vertex normals (as opposed to bothSides on Material). Defaults to false.
                 */
@@ -25023,14 +21450,15 @@ var away;
                 },
                 set: function (value) {
                     this._doubleSided = value;
-                    this.pInvalidateGeometry();
+
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(PlaneGeometry.prototype, "width", {
+            Object.defineProperty(PrimitivePlanePrefab.prototype, "width", {
                 /**
                 * The width of the plane.
                 */
@@ -25039,14 +21467,15 @@ var away;
                 },
                 set: function (value) {
                     this._width = value;
-                    this.pInvalidateGeometry();
+
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(PlaneGeometry.prototype, "height", {
+            Object.defineProperty(PrimitivePlanePrefab.prototype, "height", {
                 /**
                 * The height of the plane.
                 */
@@ -25055,7 +21484,8 @@ var away;
                 },
                 set: function (value) {
                     this._height = value;
-                    this.pInvalidateGeometry(); //invalidateGeometry();
+
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -25065,174 +21495,249 @@ var away;
             /**
             * @inheritDoc
             */
-            PlaneGeometry.prototype.pBuildGeometry = function (target) {
-                var data;
+            PrimitivePlanePrefab.prototype._pBuildGeometry = function (target, geometryType) {
                 var indices;
                 var x, y;
                 var numIndices;
                 var base;
                 var tw = this._segmentsW + 1;
-                var numVertices = (this._segmentsH + 1) * tw;
-                var stride = target.vertexStride;
-                var skip = stride - 9;
+                var numVertices;
 
-                if (this._doubleSided)
-                    numVertices *= 2;
+                var vidx, fidx;
 
-                numIndices = this._segmentsH * this._segmentsW * 6;
+                var xi;
+                var yi;
 
-                if (this._doubleSided)
-                    numIndices <<= 1;
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
 
-                if (numVertices == target.numVertices) {
-                    data = target.vertexData;
+                    var numVertices = (this._segmentsH + 1) * tw;
+                    var positions;
+                    var normals;
+                    var tangents;
 
-                    if (indices == null) {
-                        indices = new Array(numIndices);
+                    if (this._doubleSided)
+                        numVertices *= 2;
+
+                    numIndices = this._segmentsH * this._segmentsW * 6;
+
+                    if (this._doubleSided)
+                        numIndices *= 2;
+
+                    if (triangleGeometry.indices != null && numIndices == triangleGeometry.indices.length) {
+                        indices = triangleGeometry.indices;
                     } else {
-                        indices = target.indexData;
+                        indices = new Array(numIndices);
+
+                        this._pInvalidateUVs();
                     }
-                } else {
-                    data = new Array(numVertices * stride); //new Vector.<Number>(numVertices*stride, true);
-                    indices = new Array(numIndices); //new Vector.<uint>(numIndices, true);
 
-                    this.pInvalidateUVs(); //invalidateUVs();
-                }
+                    if (numVertices == triangleGeometry.numVertices) {
+                        positions = triangleGeometry.positions;
+                        normals = triangleGeometry.vertexNormals;
+                        tangents = triangleGeometry.vertexTangents;
+                    } else {
+                        positions = new Array(numVertices * 3);
+                        normals = new Array(numVertices * 3);
+                        tangents = new Array(numVertices * 3);
 
-                numIndices = 0;
+                        this._pInvalidateUVs();
+                    }
 
-                var index = target.vertexOffset;
+                    fidx = 0;
 
-                for (var yi = 0; yi <= this._segmentsH; ++yi) {
-                    for (var xi = 0; xi <= this._segmentsW; ++xi) {
-                        x = (xi / this._segmentsW - .5) * this._width;
-                        y = (yi / this._segmentsH - .5) * this._height;
+                    vidx = 0;
 
-                        data[index++] = x;
-                        if (this._yUp) {
-                            data[index++] = 0;
-                            data[index++] = y;
-                        } else {
-                            data[index++] = y;
-                            data[index++] = 0;
-                        }
+                    for (yi = 0; yi <= this._segmentsH; ++yi) {
+                        for (xi = 0; xi <= this._segmentsW; ++xi) {
+                            x = (xi / this._segmentsW - .5) * this._width;
+                            y = (yi / this._segmentsH - .5) * this._height;
 
-                        data[index++] = 0;
-
-                        if (this._yUp) {
-                            data[index++] = 1;
-                            data[index++] = 0;
-                        } else {
-                            data[index++] = 0;
-                            data[index++] = -1;
-                        }
-
-                        data[index++] = 1;
-                        data[index++] = 0;
-                        data[index++] = 0;
-
-                        index += skip;
-
-                        // add vertex with same position, but with inverted normal & tangent
-                        if (this._doubleSided) {
-                            for (var i = 0; i < 3; ++i) {
-                                data[index] = data[index - stride];
-                                ++index;
+                            positions[vidx] = x;
+                            if (this._yUp) {
+                                positions[vidx + 1] = 0;
+                                positions[vidx + 2] = y;
+                            } else {
+                                positions[vidx + 1] = y;
+                                positions[vidx + 2] = 0;
                             }
 
-                            for (i = 0; i < 3; ++i) {
-                                data[index] = -data[index - stride];
-                                ++index;
+                            normals[vidx] = 0;
+
+                            if (this._yUp) {
+                                normals[vidx + 1] = 1;
+                                normals[vidx + 2] = 0;
+                            } else {
+                                normals[vidx + 1] = 0;
+                                normals[vidx + 2] = -1;
                             }
 
-                            for (i = 0; i < 3; ++i) {
-                                data[index] = -data[index - stride];
-                                ++index;
-                            }
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
 
-                            index += skip;
-                        }
+                            vidx += 3;
 
-                        if (xi != this._segmentsW && yi != this._segmentsH) {
-                            base = xi + yi * tw;
-                            var mult = this._doubleSided ? 2 : 1;
-
-                            indices[numIndices++] = base * mult;
-                            indices[numIndices++] = (base + tw) * mult;
-                            indices[numIndices++] = (base + tw + 1) * mult;
-                            indices[numIndices++] = base * mult;
-                            indices[numIndices++] = (base + tw + 1) * mult;
-                            indices[numIndices++] = (base + 1) * mult;
-
+                            // add vertex with same position, but with inverted normal & tangent
                             if (this._doubleSided) {
-                                indices[numIndices++] = (base + tw + 1) * mult + 1;
-                                indices[numIndices++] = (base + tw) * mult + 1;
-                                indices[numIndices++] = base * mult + 1;
-                                indices[numIndices++] = (base + 1) * mult + 1;
-                                indices[numIndices++] = (base + tw + 1) * mult + 1;
-                                indices[numIndices++] = base * mult + 1;
+                                for (var i = vidx; i < vidx + 3; ++i) {
+                                    positions[i] = positions[i - 3];
+                                    normals[i] = -normals[i - 3];
+                                    tangents[i] = -tangents[i - 3];
+                                }
+
+                                vidx += 3;
+                            }
+
+                            if (xi != this._segmentsW && yi != this._segmentsH) {
+                                base = xi + yi * tw;
+                                var mult = this._doubleSided ? 2 : 1;
+
+                                indices[fidx++] = base * mult;
+                                indices[fidx++] = (base + tw) * mult;
+                                indices[fidx++] = (base + tw + 1) * mult;
+                                indices[fidx++] = base * mult;
+                                indices[fidx++] = (base + tw + 1) * mult;
+                                indices[fidx++] = (base + 1) * mult;
+
+                                if (this._doubleSided) {
+                                    indices[fidx++] = (base + tw + 1) * mult + 1;
+                                    indices[fidx++] = (base + tw) * mult + 1;
+                                    indices[fidx++] = base * mult + 1;
+                                    indices[fidx++] = (base + 1) * mult + 1;
+                                    indices[fidx++] = (base + tw + 1) * mult + 1;
+                                    indices[fidx++] = base * mult + 1;
+                                }
                             }
                         }
                     }
-                }
 
-                target.updateData(data);
-                target.updateIndexData(indices);
+                    triangleGeometry.updateIndices(indices);
+
+                    triangleGeometry.updatePositions(positions);
+                    triangleGeometry.updateVertexNormals(normals);
+                    triangleGeometry.updateVertexTangents(tangents);
+                } else if (geometryType == "lineSubGeometry") {
+                    var lineGeometry = target;
+
+                    var numSegments = (this._segmentsH + 1) + tw;
+                    var startPositions;
+                    var endPositions;
+                    var thickness;
+
+                    var hw = this._width / 2;
+                    var hh = this._height / 2;
+
+                    if (lineGeometry.indices != null && numSegments == lineGeometry.numSegments) {
+                        startPositions = lineGeometry.startPositions;
+                        endPositions = lineGeometry.endPositions;
+                        thickness = lineGeometry.thickness;
+                    } else {
+                        startPositions = new Array(numSegments * 3);
+                        endPositions = new Array(numSegments * 3);
+                        thickness = new Array(numSegments);
+                    }
+
+                    fidx = 0;
+
+                    vidx = 0;
+
+                    for (yi = 0; yi <= this._segmentsH; ++yi) {
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = 0;
+                        startPositions[vidx + 2] = yi * this._height - hh;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = 0;
+                        endPositions[vidx + 2] = yi * this._height - hh;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    for (xi = 0; xi <= this._segmentsW; ++xi) {
+                        startPositions[vidx] = xi * this._width - hw;
+                        startPositions[vidx + 1] = 0;
+                        startPositions[vidx + 2] = -hh;
+
+                        endPositions[vidx] = xi * this._width - hw;
+                        endPositions[vidx + 1] = 0;
+                        endPositions[vidx + 2] = hh;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    // build real data from raw data
+                    lineGeometry.updatePositions(startPositions, endPositions);
+                    lineGeometry.updateThickness(thickness);
+                }
             };
 
             /**
             * @inheritDoc
             */
-            PlaneGeometry.prototype.pBuildUVs = function (target) {
-                var data;
-                var stride = target.UVStride;
-                var numUvs = (this._segmentsH + 1) * (this._segmentsW + 1) * stride;
-                var skip = stride - 2;
+            PrimitivePlanePrefab.prototype._pBuildUVs = function (target, geometryType) {
+                var uvs;
+                var numVertices;
 
-                if (this._doubleSided) {
-                    numUvs *= 2;
-                }
+                if (geometryType == "triangleSubGeometry") {
+                    numVertices = (this._segmentsH + 1) * (this._segmentsW + 1);
 
-                if (target.UVData && numUvs == target.UVData.length) {
-                    data = target.UVData;
-                } else {
-                    data = new Array(numUvs); //Vector.<Number>(numUvs, true);
-                    this.pInvalidateGeometry();
-                }
+                    if (this._doubleSided)
+                        numVertices *= 2;
 
-                var index = target.UVOffset;
+                    var triangleGeometry = target;
 
-                for (var yi = 0; yi <= this._segmentsH; ++yi) {
-                    for (var xi = 0; xi <= this._segmentsW; ++xi) {
-                        data[index++] = (xi / this._segmentsW) * target.scaleU;
-                        data[index++] = (1 - yi / this._segmentsH) * target.scaleV;
-                        index += skip;
+                    if (triangleGeometry.uvs && numVertices == triangleGeometry.numVertices) {
+                        uvs = triangleGeometry.uvs;
+                    } else {
+                        uvs = new Array(numVertices * 2);
+                        this._pInvalidateGeometry();
+                    }
 
-                        if (this._doubleSided) {
-                            data[index++] = (xi / this._segmentsW) * target.scaleU;
-                            data[index++] = (1 - yi / this._segmentsH) * target.scaleV;
-                            index += skip;
+                    var index = 0;
+
+                    for (var yi = 0; yi <= this._segmentsH; ++yi) {
+                        for (var xi = 0; xi <= this._segmentsW; ++xi) {
+                            uvs[index] = (xi / this._segmentsW) * triangleGeometry.scaleU;
+                            uvs[index + 1] = (1 - yi / this._segmentsH) * triangleGeometry.scaleV;
+                            index += 2;
+
+                            if (this._doubleSided) {
+                                uvs[index] = (xi / this._segmentsW) * triangleGeometry.scaleU;
+                                uvs[index + 1] = (1 - yi / this._segmentsH) * triangleGeometry.scaleV;
+                                index += 2;
+                            }
                         }
                     }
-                }
 
-                target.updateData(data);
+                    triangleGeometry.updateUVs(uvs);
+                } else if (geometryType == "lineSubGeometry") {
+                    //nothing to do here
+                }
             };
-            return PlaneGeometry;
-        })(away.primitives.PrimitiveBase);
-        primitives.PlaneGeometry = PlaneGeometry;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
+            return PrimitivePlanePrefab;
+        })(away.prefabs.PrimitivePrefabBase);
+        prefabs.PrimitivePlanePrefab = PrimitivePlanePrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (primitives) {
+    (function (prefabs) {
+        var SubGeometryBase = away.base.SubGeometryBase;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+        var LineSubGeometry = away.base.LineSubGeometry;
+
         /**
         * A Capsule primitive mesh.
         */
-        var CapsuleGeometry = (function (_super) {
-            __extends(CapsuleGeometry, _super);
+        var PrimitiveCapsulePrefab = (function (_super) {
+            __extends(PrimitiveCapsulePrefab, _super);
             /**
             * Creates a new Capsule object.
             * @param radius The radius of the capsule.
@@ -25241,13 +21746,14 @@ var away;
             * @param segmentsH Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven value.
             * @param yUp Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
             */
-            function CapsuleGeometry(radius, height, segmentsW, segmentsH, yUp) {
+            function PrimitiveCapsulePrefab(radius, height, segmentsW, segmentsH, yUp) {
                 if (typeof radius === "undefined") { radius = 50; }
                 if (typeof height === "undefined") { height = 100; }
                 if (typeof segmentsW === "undefined") { segmentsW = 16; }
                 if (typeof segmentsH === "undefined") { segmentsH = 15; }
                 if (typeof yUp === "undefined") { yUp = true; }
                 _super.call(this);
+                this._numVertices = 0;
 
                 this._radius = radius;
                 this._height = height;
@@ -25255,159 +21761,7 @@ var away;
                 this._segmentsH = (segmentsH % 2 == 0) ? segmentsH + 1 : segmentsH;
                 this._yUp = yUp;
             }
-            /**
-            * @inheritDoc
-            */
-            CapsuleGeometry.prototype.pBuildGeometry = function (target) {
-                var data;
-                var indices;
-                var i;
-                var j;
-                var triIndex = 0;
-                var numVerts = (this._segmentsH + 1) * (this._segmentsW + 1);
-                var stride = target.vertexStride;
-                var skip = stride - 9;
-                var index = 0;
-                var startIndex;
-                var comp1, comp2, t1, t2;
-
-                if (numVerts == target.numVertices) {
-                    data = target.vertexData;
-
-                    if (target.indexData) {
-                        indices = target.indexData;
-                    } else {
-                        indices = new Array((this._segmentsH - 1) * this._segmentsW * 6);
-                    }
-                } else {
-                    data = new Array(numVerts * stride);
-                    indices = new Array((this._segmentsH - 1) * this._segmentsW * 6);
-                    this.pInvalidateUVs();
-                }
-
-                for (j = 0; j <= this._segmentsH; ++j) {
-                    var horangle = Math.PI * j / this._segmentsH;
-                    var z = -this._radius * Math.cos(horangle);
-                    var ringradius = this._radius * Math.sin(horangle);
-
-                    startIndex = index;
-
-                    for (i = 0; i <= this._segmentsW; ++i) {
-                        var verangle = 2 * Math.PI * i / this._segmentsW;
-                        var x = ringradius * Math.cos(verangle);
-                        var offset = j > this._segmentsH / 2 ? this._height / 2 : -this._height / 2;
-                        var y = ringradius * Math.sin(verangle);
-                        var normLen = 1 / Math.sqrt(x * x + y * y + z * z);
-                        var tanLen = Math.sqrt(y * y + x * x);
-
-                        if (this._yUp) {
-                            t1 = 0;
-                            t2 = tanLen > .007 ? x / tanLen : 0;
-                            comp1 = -z;
-                            comp2 = y;
-                        } else {
-                            t1 = tanLen > .007 ? x / tanLen : 0;
-                            t2 = 0;
-                            comp1 = y;
-                            comp2 = z;
-                        }
-
-                        if (i == this._segmentsW) {
-                            data[index++] = data[startIndex];
-                            data[index++] = data[startIndex + 1];
-                            data[index++] = data[startIndex + 2];
-                            data[index++] = (data[startIndex + 3] + (x * normLen)) * .5;
-                            data[index++] = (data[startIndex + 4] + (comp1 * normLen)) * .5;
-                            data[index++] = (data[startIndex + 5] + (comp2 * normLen)) * .5;
-                            data[index++] = (data[startIndex + 6] + (tanLen > .007 ? -y / tanLen : 1)) * .5;
-                            data[index++] = (data[startIndex + 7] + t1) * .5;
-                            data[index++] = (data[startIndex + 8] + t2) * .5;
-                        } else {
-                            // vertex
-                            data[index++] = x;
-                            data[index++] = (this._yUp) ? comp1 - offset : comp1;
-                            data[index++] = (this._yUp) ? comp2 : comp2 + offset;
-
-                            // normal
-                            data[index++] = x * normLen;
-                            data[index++] = comp1 * normLen;
-                            data[index++] = comp2 * normLen;
-
-                            // tangent
-                            data[index++] = tanLen > .007 ? -y / tanLen : 1;
-                            data[index++] = t1;
-                            data[index++] = t2;
-                        }
-
-                        if (i > 0 && j > 0) {
-                            var a = (this._segmentsW + 1) * j + i;
-                            var b = (this._segmentsW + 1) * j + i - 1;
-                            var c = (this._segmentsW + 1) * (j - 1) + i - 1;
-                            var d = (this._segmentsW + 1) * (j - 1) + i;
-
-                            if (j == this._segmentsH) {
-                                data[index - 9] = data[startIndex];
-                                data[index - 8] = data[startIndex + 1];
-                                data[index - 7] = data[startIndex + 2];
-
-                                indices[triIndex++] = a;
-                                indices[triIndex++] = c;
-                                indices[triIndex++] = d;
-                            } else if (j == 1) {
-                                indices[triIndex++] = a;
-                                indices[triIndex++] = b;
-                                indices[triIndex++] = c;
-                            } else {
-                                indices[triIndex++] = a;
-                                indices[triIndex++] = b;
-                                indices[triIndex++] = c;
-                                indices[triIndex++] = a;
-                                indices[triIndex++] = c;
-                                indices[triIndex++] = d;
-                            }
-                        }
-
-                        index += skip;
-                    }
-                }
-
-                target.updateData(data);
-                target.updateIndexData(indices);
-            };
-
-            /**
-            * @inheritDoc
-            */
-            CapsuleGeometry.prototype.pBuildUVs = function (target) {
-                var i;
-                var j;
-                var index;
-                var data;
-                var stride = target.UVStride;
-                var UVlen = (this._segmentsH + 1) * (this._segmentsW + 1) * stride;
-                var skip = stride - 2;
-
-                if (target.UVData && UVlen == target.UVData.length) {
-                    data = target.UVData;
-                } else {
-                    data = new Array(UVlen);
-                    this.pInvalidateGeometry();
-                }
-
-                index = target.UVOffset;
-
-                for (j = 0; j <= this._segmentsH; ++j) {
-                    for (i = 0; i <= this._segmentsW; ++i) {
-                        data[index++] = (i / this._segmentsW) * target.scaleU;
-                        data[index++] = (j / this._segmentsH) * target.scaleV;
-                        index += skip;
-                    }
-                }
-
-                target.updateData(data);
-            };
-
-            Object.defineProperty(CapsuleGeometry.prototype, "radius", {
+            Object.defineProperty(PrimitiveCapsulePrefab.prototype, "radius", {
                 /**
                 * The radius of the capsule.
                 */
@@ -25416,14 +21770,15 @@ var away;
                 },
                 set: function (value) {
                     this._radius = value;
-                    this.pInvalidateGeometry();
+
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CapsuleGeometry.prototype, "height", {
+            Object.defineProperty(PrimitiveCapsulePrefab.prototype, "height", {
                 /**
                 * The height of the capsule.
                 */
@@ -25432,14 +21787,14 @@ var away;
                 },
                 set: function (value) {
                     this._height = value;
-                    this.pInvalidateGeometry();
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CapsuleGeometry.prototype, "segmentsW", {
+            Object.defineProperty(PrimitiveCapsulePrefab.prototype, "segmentsW", {
                 /**
                 * Defines the number of horizontal segments that make up the capsule. Defaults to 16.
                 */
@@ -25448,15 +21803,16 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsW = value;
-                    this.pInvalidateGeometry();
-                    this.pInvalidateUVs();
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CapsuleGeometry.prototype, "segmentsH", {
+            Object.defineProperty(PrimitiveCapsulePrefab.prototype, "segmentsH", {
                 /**
                 * Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven.
                 */
@@ -25465,15 +21821,16 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsH = (value % 2 == 0) ? value + 1 : value;
-                    this.pInvalidateGeometry();
-                    this.pInvalidateUVs();
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CapsuleGeometry.prototype, "yUp", {
+            Object.defineProperty(PrimitiveCapsulePrefab.prototype, "yUp", {
                 /**
                 * Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
                 */
@@ -25482,27 +21839,203 @@ var away;
                 },
                 set: function (value) {
                     this._yUp = value;
-                    this.pInvalidateGeometry();
+
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
-            return CapsuleGeometry;
-        })(away.primitives.PrimitiveBase);
-        primitives.CapsuleGeometry = CapsuleGeometry;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveCapsulePrefab.prototype._pBuildGeometry = function (target, geometryType) {
+                var indices;
+                var positions;
+                var normals;
+                var tangents;
+
+                var i;
+                var j;
+                var triIndex = 0;
+                var index = 0;
+                var startIndex;
+                var comp1, comp2, t1, t2;
+                var numIndices = 0;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    // evaluate target number of vertices, triangles and indices
+                    this._numVertices = (this._segmentsH + 1) * (this._segmentsW + 1); // segmentsH + 1 because of closure, segmentsW + 1 because of closure
+                    numIndices = (this._segmentsH - 1) * this._segmentsW * 6; // each level has segmentH quads, each of 2 triangles
+
+                    // need to initialize raw arrays or can be reused?
+                    if (this._numVertices == triangleGeometry.numVertices) {
+                        indices = triangleGeometry.indices;
+                        positions = triangleGeometry.positions;
+                        normals = triangleGeometry.vertexNormals;
+                        tangents = triangleGeometry.vertexTangents;
+                    } else {
+                        indices = new Array(numIndices);
+                        positions = new Array(this._numVertices * 3);
+                        normals = new Array(this._numVertices * 3);
+                        tangents = new Array(this._numVertices * 3);
+
+                        this._pInvalidateUVs();
+                    }
+
+                    for (j = 0; j <= this._segmentsH; ++j) {
+                        var horangle = Math.PI * j / this._segmentsH;
+                        var z = -this._radius * Math.cos(horangle);
+                        var ringradius = this._radius * Math.sin(horangle);
+
+                        startIndex = index;
+
+                        for (i = 0; i <= this._segmentsW; ++i) {
+                            var verangle = 2 * Math.PI * i / this._segmentsW;
+                            var x = ringradius * Math.cos(verangle);
+                            var offset = j > this._segmentsH / 2 ? this._height / 2 : -this._height / 2;
+                            var y = ringradius * Math.sin(verangle);
+                            var normLen = 1 / Math.sqrt(x * x + y * y + z * z);
+                            var tanLen = Math.sqrt(y * y + x * x);
+
+                            if (this._yUp) {
+                                t1 = 0;
+                                t2 = tanLen > .007 ? x / tanLen : 0;
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                t1 = tanLen > .007 ? x / tanLen : 0;
+                                t2 = 0;
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i == this._segmentsW) {
+                                positions[index] = positions[startIndex];
+                                positions[index + 1] = positions[startIndex + 1];
+                                positions[index + 2] = positions[startIndex + 2];
+                                normals[index] = (normals[startIndex] + (x * normLen)) * .5;
+                                normals[index + 1] = (normals[startIndex + 1] + (comp1 * normLen)) * .5;
+                                normals[index + 2] = (normals[startIndex + 2] + (comp2 * normLen)) * .5;
+                                tangents[index] = (tangents[startIndex] + (tanLen > .007 ? -y / tanLen : 1)) * .5;
+                                tangents[index + 1] = (tangents[startIndex + 1] + t1) * .5;
+                                tangents[index + 2] = (tangents[startIndex + 2] + t2) * .5;
+                            } else {
+                                // vertex
+                                positions[index] = x;
+                                positions[index + 1] = (this._yUp) ? comp1 - offset : comp1;
+                                positions[index + 2] = (this._yUp) ? comp2 : comp2 + offset;
+
+                                // normal
+                                normals[index] = x * normLen;
+                                normals[index + 1] = comp1 * normLen;
+                                normals[index + 2] = comp2 * normLen;
+
+                                // tangent
+                                tangents[index] = tanLen > .007 ? -y / tanLen : 1;
+                                tangents[index + 1] = t1;
+                                tangents[index + 2] = t2;
+                            }
+
+                            if (i > 0 && j > 0) {
+                                var a = (this._segmentsW + 1) * j + i;
+                                var b = (this._segmentsW + 1) * j + i - 1;
+                                var c = (this._segmentsW + 1) * (j - 1) + i - 1;
+                                var d = (this._segmentsW + 1) * (j - 1) + i;
+
+                                if (j == this._segmentsH) {
+                                    positions[index] = positions[startIndex];
+                                    positions[index + 1] = positions[startIndex + 1];
+                                    positions[index + 2] = positions[startIndex + 2];
+
+                                    indices[triIndex++] = a;
+                                    indices[triIndex++] = c;
+                                    indices[triIndex++] = d;
+                                } else if (j == 1) {
+                                    indices[triIndex++] = a;
+                                    indices[triIndex++] = b;
+                                    indices[triIndex++] = c;
+                                } else {
+                                    indices[triIndex++] = a;
+                                    indices[triIndex++] = b;
+                                    indices[triIndex++] = c;
+                                    indices[triIndex++] = a;
+                                    indices[triIndex++] = c;
+                                    indices[triIndex++] = d;
+                                }
+                            }
+
+                            index += 3;
+                        }
+                    }
+
+                    // build real data from raw data
+                    triangleGeometry.updateIndices(indices);
+
+                    triangleGeometry.updatePositions(positions);
+                    triangleGeometry.updateVertexNormals(normals);
+                    triangleGeometry.updateVertexTangents(tangents);
+                } else if (geometryType == "lineSubGeometry") {
+                    //TODO
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveCapsulePrefab.prototype._pBuildUVs = function (target, geometryType) {
+                var i, j;
+                var uvs;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    // need to initialize raw array or can be reused?
+                    if (triangleGeometry.uvs && this._numVertices == triangleGeometry.numVertices) {
+                        uvs = triangleGeometry.uvs;
+                    } else {
+                        uvs = new Array(this._numVertices * 2);
+                    }
+
+                    // current uv component index
+                    var index = 0;
+
+                    for (j = 0; j <= this._segmentsH; ++j) {
+                        for (i = 0; i <= this._segmentsW; ++i) {
+                            // revolution vertex
+                            uvs[index++] = (i / this._segmentsW) * triangleGeometry.scaleU;
+                            uvs[index++] = (j / this._segmentsH) * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    // build real data from raw data
+                    triangleGeometry.updateUVs(uvs);
+                } else if (geometryType == "lineSubGeometry") {
+                    //nothing to do here
+                }
+            };
+            return PrimitiveCapsulePrefab;
+        })(away.prefabs.PrimitivePrefabBase);
+        prefabs.PrimitiveCapsulePrefab = PrimitiveCapsulePrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (primitives) {
+    (function (prefabs) {
+        var SubGeometryBase = away.base.SubGeometryBase;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+        var LineSubGeometry = away.base.LineSubGeometry;
+
         /**
         * A Cylinder primitive mesh.
         */
-        var CylinderGeometry = (function (_super) {
-            __extends(CylinderGeometry, _super);
+        var PrimitiveCylinderPrefab = (function (_super) {
+            __extends(PrimitiveCylinderPrefab, _super);
             /**
             * Creates a new Cylinder object.
             * @param topRadius The radius of the top end of the cylinder.
@@ -25514,7 +22047,7 @@ var away;
             * @param bottomClosed Defines whether the bottom end of the cylinder is closed (true) or open.
             * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
             */
-            function CylinderGeometry(topRadius, bottomRadius, height, segmentsW, segmentsH, topClosed, bottomClosed, surfaceClosed, yUp) {
+            function PrimitiveCylinderPrefab(topRadius, bottomRadius, height, segmentsW, segmentsH, topClosed, bottomClosed, surfaceClosed, yUp) {
                 if (typeof topRadius === "undefined") { topRadius = 50; }
                 if (typeof bottomRadius === "undefined") { bottomRadius = 50; }
                 if (typeof height === "undefined") { height = 100; }
@@ -25525,7 +22058,6 @@ var away;
                 if (typeof surfaceClosed === "undefined") { surfaceClosed = true; }
                 if (typeof yUp === "undefined") { yUp = true; }
                 _super.call(this);
-                this._currentIndex = 0;
                 this._numVertices = 0;
 
                 this._topRadius = topRadius;
@@ -25538,328 +22070,7 @@ var away;
                 this._surfaceClosed = surfaceClosed;
                 this._yUp = yUp;
             }
-            CylinderGeometry.prototype.addVertex = function (px, py, pz, nx, ny, nz, tx, ty, tz) {
-                var compVertInd = this._vertexOffset + this._nextVertexIndex * this._stride;
-                this._rawData[compVertInd++] = px;
-                this._rawData[compVertInd++] = py;
-                this._rawData[compVertInd++] = pz;
-                this._rawData[compVertInd++] = nx;
-                this._rawData[compVertInd++] = ny;
-                this._rawData[compVertInd++] = nz;
-                this._rawData[compVertInd++] = tx;
-                this._rawData[compVertInd++] = ty;
-                this._rawData[compVertInd++] = tz;
-                this._nextVertexIndex++;
-            };
-
-            CylinderGeometry.prototype.addTriangleClockWise = function (cwVertexIndex0, cwVertexIndex1, cwVertexIndex2) {
-                this._rawIndices[this._currentIndex++] = cwVertexIndex0;
-                this._rawIndices[this._currentIndex++] = cwVertexIndex1;
-                this._rawIndices[this._currentIndex++] = cwVertexIndex2;
-                this._currentTriangleIndex++;
-            };
-
-            /**
-            * @inheritDoc
-            */
-            CylinderGeometry.prototype.pBuildGeometry = function (target) {
-                var i;
-                var j;
-                var x;
-                var y;
-                var z;
-                var radius;
-                var revolutionAngle;
-
-                var dr;
-                var latNormElev;
-                var latNormBase;
-                var numTriangles = 0;
-
-                var comp1;
-                var comp2;
-                var startIndex = 0;
-
-                var t1;
-                var t2;
-
-                this._stride = target.vertexStride;
-                this._vertexOffset = target.vertexOffset;
-
-                // reset utility variables
-                this._numVertices = 0;
-                this._nextVertexIndex = 0;
-                this._currentIndex = 0;
-                this._currentTriangleIndex = 0;
-
-                // evaluate target number of vertices, triangles and indices
-                if (this._surfaceClosed) {
-                    this._numVertices += (this._pSegmentsH + 1) * (this._pSegmentsW + 1); // segmentsH + 1 because of closure, segmentsW + 1 because of UV unwrapping
-                    numTriangles += this._pSegmentsH * this._pSegmentsW * 2; // each level has segmentW quads, each of 2 triangles
-                }
-                if (this._topClosed) {
-                    this._numVertices += 2 * (this._pSegmentsW + 1); // segmentsW + 1 because of unwrapping
-                    numTriangles += this._pSegmentsW; // one triangle for each segment
-                }
-                if (this._bottomClosed) {
-                    this._numVertices += 2 * (this._pSegmentsW + 1);
-                    numTriangles += this._pSegmentsW;
-                }
-
-                // need to initialize raw arrays or can be reused?
-                if (this._numVertices == target.numVertices) {
-                    this._rawData = target.vertexData;
-
-                    if (target.indexData) {
-                        this._rawIndices = target.indexData;
-                    } else {
-                        this._rawIndices = new Array(numTriangles * 3);
-                    }
-                } else {
-                    var numVertComponents = this._numVertices * this._stride;
-                    this._rawData = new Array(numVertComponents);
-                    this._rawIndices = new Array(numTriangles * 3);
-                }
-
-                // evaluate revolution steps
-                var revolutionAngleDelta = 2 * Math.PI / this._pSegmentsW;
-
-                // top
-                if (this._topClosed && this._topRadius > 0) {
-                    z = -0.5 * this._height;
-
-                    for (i = 0; i <= this._pSegmentsW; ++i) {
-                        // central vertex
-                        if (this._yUp) {
-                            t1 = 1;
-                            t2 = 0;
-                            comp1 = -z;
-                            comp2 = 0;
-                        } else {
-                            t1 = 0;
-                            t2 = -1;
-                            comp1 = 0;
-                            comp2 = z;
-                        }
-
-                        this.addVertex(0, comp1, comp2, 0, t1, t2, 1, 0, 0);
-
-                        // revolution vertex
-                        revolutionAngle = i * revolutionAngleDelta;
-                        x = this._topRadius * Math.cos(revolutionAngle);
-                        y = this._topRadius * Math.sin(revolutionAngle);
-
-                        if (this._yUp) {
-                            comp1 = -z;
-                            comp2 = y;
-                        } else {
-                            comp1 = y;
-                            comp2 = z;
-                        }
-
-                        if (i == this._pSegmentsW)
-                            this.addVertex(this._rawData[startIndex + this._stride], this._rawData[startIndex + this._stride + 1], this._rawData[startIndex + this._stride + 2], 0, t1, t2, 1, 0, 0);
-                        else
-                            this.addVertex(x, comp1, comp2, 0, t1, t2, 1, 0, 0);
-
-                        if (i > 0)
-                            this.addTriangleClockWise(this._nextVertexIndex - 1, this._nextVertexIndex - 3, this._nextVertexIndex - 2);
-                    }
-                }
-
-                // bottom
-                if (this._bottomClosed && this._pBottomRadius > 0) {
-                    z = 0.5 * this._height;
-
-                    startIndex = this._vertexOffset + this._nextVertexIndex * this._stride;
-
-                    for (i = 0; i <= this._pSegmentsW; ++i) {
-                        if (this._yUp) {
-                            t1 = -1;
-                            t2 = 0;
-                            comp1 = -z;
-                            comp2 = 0;
-                        } else {
-                            t1 = 0;
-                            t2 = 1;
-                            comp1 = 0;
-                            comp2 = z;
-                        }
-
-                        this.addVertex(0, comp1, comp2, 0, t1, t2, 1, 0, 0);
-
-                        // revolution vertex
-                        revolutionAngle = i * revolutionAngleDelta;
-                        x = this._pBottomRadius * Math.cos(revolutionAngle);
-                        y = this._pBottomRadius * Math.sin(revolutionAngle);
-
-                        if (this._yUp) {
-                            comp1 = -z;
-                            comp2 = y;
-                        } else {
-                            comp1 = y;
-                            comp2 = z;
-                        }
-
-                        if (i == this._pSegmentsW)
-                            this.addVertex(x, this._rawData[startIndex + 1], this._rawData[startIndex + 2], 0, t1, t2, 1, 0, 0);
-                        else
-                            this.addVertex(x, comp1, comp2, 0, t1, t2, 1, 0, 0);
-
-                        if (i > 0)
-                            this.addTriangleClockWise(this._nextVertexIndex - 2, this._nextVertexIndex - 3, this._nextVertexIndex - 1);
-                    }
-                }
-
-                // The normals on the lateral surface all have the same incline, i.e.
-                // the "elevation" component (Y or Z depending on yUp) is constant.
-                // Same principle goes for the "base" of these vectors, which will be
-                // calculated such that a vector [base,elev] will be a unit vector.
-                dr = (this._pBottomRadius - this._topRadius);
-                latNormElev = dr / this._height;
-                latNormBase = (latNormElev == 0) ? 1 : this._height / dr;
-
-                // lateral surface
-                if (this._surfaceClosed) {
-                    var a;
-                    var b;
-                    var c;
-                    var d;
-                    var na0, na1, naComp1, naComp2;
-
-                    for (j = 0; j <= this._pSegmentsH; ++j) {
-                        radius = this._topRadius - ((j / this._pSegmentsH) * (this._topRadius - this._pBottomRadius));
-                        z = -(this._height / 2) + (j / this._pSegmentsH * this._height);
-
-                        startIndex = this._vertexOffset + this._nextVertexIndex * this._stride;
-
-                        for (i = 0; i <= this._pSegmentsW; ++i) {
-                            // revolution vertex
-                            revolutionAngle = i * revolutionAngleDelta;
-                            x = radius * Math.cos(revolutionAngle);
-                            y = radius * Math.sin(revolutionAngle);
-                            na0 = latNormBase * Math.cos(revolutionAngle);
-                            na1 = latNormBase * Math.sin(revolutionAngle);
-
-                            if (this._yUp) {
-                                t1 = 0;
-                                t2 = -na0;
-                                comp1 = -z;
-                                comp2 = y;
-                                naComp1 = latNormElev;
-                                naComp2 = na1;
-                            } else {
-                                t1 = -na0;
-                                t2 = 0;
-                                comp1 = y;
-                                comp2 = z;
-                                naComp1 = na1;
-                                naComp2 = latNormElev;
-                            }
-
-                            if (i == this._pSegmentsW) {
-                                this.addVertex(this._rawData[startIndex], this._rawData[startIndex + 1], this._rawData[startIndex + 2], na0, latNormElev, na1, na1, t1, t2);
-                            } else {
-                                this.addVertex(x, comp1, comp2, na0, naComp1, naComp2, -na1, t1, t2);
-                            }
-
-                            // close triangle
-                            if (i > 0 && j > 0) {
-                                a = this._nextVertexIndex - 1; // current
-                                b = this._nextVertexIndex - 2; // previous
-                                c = b - this._pSegmentsW - 1; // previous of last level
-                                d = a - this._pSegmentsW - 1; // current of last level
-                                this.addTriangleClockWise(a, b, c);
-                                this.addTriangleClockWise(a, c, d);
-                            }
-                        }
-                    }
-                }
-
-                // build real data from raw data
-                target.updateData(this._rawData);
-                target.updateIndexData(this._rawIndices);
-            };
-
-            /**
-            * @inheritDoc
-            */
-            CylinderGeometry.prototype.pBuildUVs = function (target) {
-                var i;
-                var j;
-                var x;
-                var y;
-                var revolutionAngle;
-                var stride = target.UVStride;
-                var skip = stride - 2;
-                var UVData;
-
-                // evaluate num uvs
-                var numUvs = this._numVertices * stride;
-
-                // need to initialize raw array or can be reused?
-                if (target.UVData && numUvs == target.UVData.length) {
-                    UVData = target.UVData;
-                } else {
-                    UVData = new Array(numUvs);
-                    this.pInvalidateGeometry();
-                }
-
-                // evaluate revolution steps
-                var revolutionAngleDelta = 2 * Math.PI / this._pSegmentsW;
-
-                // current uv component index
-                var currentUvCompIndex = target.UVOffset;
-
-                // top
-                if (this._topClosed) {
-                    for (i = 0; i <= this._pSegmentsW; ++i) {
-                        revolutionAngle = i * revolutionAngleDelta;
-                        x = 0.5 + 0.5 * -Math.cos(revolutionAngle);
-                        y = 0.5 + 0.5 * Math.sin(revolutionAngle);
-
-                        UVData[currentUvCompIndex++] = 0.5 * target.scaleU; // central vertex
-                        UVData[currentUvCompIndex++] = 0.5 * target.scaleV;
-                        currentUvCompIndex += skip;
-                        UVData[currentUvCompIndex++] = x * target.scaleU; // revolution vertex
-                        UVData[currentUvCompIndex++] = y * target.scaleV;
-                        currentUvCompIndex += skip;
-                    }
-                }
-
-                // bottom
-                if (this._bottomClosed) {
-                    for (i = 0; i <= this._pSegmentsW; ++i) {
-                        revolutionAngle = i * revolutionAngleDelta;
-                        x = 0.5 + 0.5 * Math.cos(revolutionAngle);
-                        y = 0.5 + 0.5 * Math.sin(revolutionAngle);
-
-                        UVData[currentUvCompIndex++] = 0.5 * target.scaleU; // central vertex
-                        UVData[currentUvCompIndex++] = 0.5 * target.scaleV;
-                        currentUvCompIndex += skip;
-                        UVData[currentUvCompIndex++] = x * target.scaleU; // revolution vertex
-                        UVData[currentUvCompIndex++] = y * target.scaleV;
-                        currentUvCompIndex += skip;
-                    }
-                }
-
-                // lateral surface
-                if (this._surfaceClosed) {
-                    for (j = 0; j <= this._pSegmentsH; ++j) {
-                        for (i = 0; i <= this._pSegmentsW; ++i) {
-                            // revolution vertex
-                            UVData[currentUvCompIndex++] = (i / this._pSegmentsW) * target.scaleU;
-                            UVData[currentUvCompIndex++] = (j / this._pSegmentsH) * target.scaleV;
-                            currentUvCompIndex += skip;
-                        }
-                    }
-                }
-
-                // build real data from raw data
-                target.updateData(UVData);
-            };
-
-            Object.defineProperty(CylinderGeometry.prototype, "topRadius", {
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "topRadius", {
                 /**
                 * The radius of the top end of the cylinder.
                 */
@@ -25868,14 +22079,14 @@ var away;
                 },
                 set: function (value) {
                     this._topRadius = value;
-                    this.pInvalidateGeometry();
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CylinderGeometry.prototype, "bottomRadius", {
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "bottomRadius", {
                 /**
                 * The radius of the bottom end of the cylinder.
                 */
@@ -25884,14 +22095,14 @@ var away;
                 },
                 set: function (value) {
                     this._pBottomRadius = value;
-                    this.pInvalidateGeometry();
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CylinderGeometry.prototype, "height", {
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "height", {
                 /**
                 * The radius of the top end of the cylinder.
                 */
@@ -25900,14 +22111,14 @@ var away;
                 },
                 set: function (value) {
                     this._height = value;
-                    this.pInvalidateGeometry();
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CylinderGeometry.prototype, "segmentsW", {
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "segmentsW", {
                 /**
                 * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
                 */
@@ -25922,13 +22133,13 @@ var away;
             });
 
 
-            CylinderGeometry.prototype.setSegmentsW = function (value) {
+            PrimitiveCylinderPrefab.prototype.setSegmentsW = function (value) {
                 this._pSegmentsW = value;
-                this.pInvalidateGeometry();
-                this.pInvalidateUVs();
+                this._pInvalidateGeometry();
+                this._pInvalidateUVs();
             };
 
-            Object.defineProperty(CylinderGeometry.prototype, "segmentsH", {
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "segmentsH", {
                 /**
                 * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
                 */
@@ -25943,13 +22154,13 @@ var away;
             });
 
 
-            CylinderGeometry.prototype.setSegmentsH = function (value) {
+            PrimitiveCylinderPrefab.prototype.setSegmentsH = function (value) {
                 this._pSegmentsH = value;
-                this.pInvalidateGeometry();
-                this.pInvalidateUVs();
+                this._pInvalidateGeometry();
+                this._pInvalidateUVs();
             };
 
-            Object.defineProperty(CylinderGeometry.prototype, "topClosed", {
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "topClosed", {
                 /**
                 * Defines whether the top end of the cylinder is closed (true) or open.
                 */
@@ -25958,14 +22169,14 @@ var away;
                 },
                 set: function (value) {
                     this._topClosed = value;
-                    this.pInvalidateGeometry();
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CylinderGeometry.prototype, "bottomClosed", {
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "bottomClosed", {
                 /**
                 * Defines whether the bottom end of the cylinder is closed (true) or open.
                 */
@@ -25974,14 +22185,14 @@ var away;
                 },
                 set: function (value) {
                     this._bottomClosed = value;
-                    this.pInvalidateGeometry();
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(CylinderGeometry.prototype, "yUp", {
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "yUp", {
                 /**
                 * Defines whether the cylinder poles should lay on the Y-axis (true) or on the Z-axis (false).
                 */
@@ -25990,27 +22201,496 @@ var away;
                 },
                 set: function (value) {
                     this._yUp = value;
-                    this.pInvalidateGeometry();
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
-            return CylinderGeometry;
-        })(away.primitives.PrimitiveBase);
-        primitives.CylinderGeometry = CylinderGeometry;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveCylinderPrefab.prototype._pBuildGeometry = function (target, geometryType) {
+                var indices;
+                var positions;
+                var normals;
+                var tangents;
+
+                var i;
+                var j;
+                var x;
+                var y;
+                var z;
+                var vidx;
+                var fidx;
+
+                var radius;
+                var revolutionAngle;
+
+                var dr;
+                var latNormElev;
+                var latNormBase;
+                var numIndices = 0;
+
+                var comp1;
+                var comp2;
+                var startIndex = 0;
+                var nextVertexIndex = 0;
+
+                var t1;
+                var t2;
+
+                // reset utility variables
+                this._numVertices = 0;
+
+                // evaluate revolution steps
+                var revolutionAngleDelta = 2 * Math.PI / this._pSegmentsW;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    // evaluate target number of vertices, triangles and indices
+                    if (this._surfaceClosed) {
+                        this._numVertices += (this._pSegmentsH + 1) * (this._pSegmentsW + 1); // segmentsH + 1 because of closure, segmentsW + 1 because of UV unwrapping
+                        numIndices += this._pSegmentsH * this._pSegmentsW * 6; // each level has segmentW quads, each of 2 triangles
+                    }
+                    if (this._topClosed) {
+                        this._numVertices += 2 * (this._pSegmentsW + 1); // segmentsW + 1 because of unwrapping
+                        numIndices += this._pSegmentsW * 3; // one triangle for each segment
+                    }
+                    if (this._bottomClosed) {
+                        this._numVertices += 2 * (this._pSegmentsW + 1);
+                        numIndices += this._pSegmentsW * 3;
+                    }
+
+                    // need to initialize raw arrays or can be reused?
+                    if (this._numVertices == triangleGeometry.numVertices) {
+                        indices = triangleGeometry.indices;
+                        positions = triangleGeometry.positions;
+                        normals = triangleGeometry.vertexNormals;
+                        tangents = triangleGeometry.vertexTangents;
+                    } else {
+                        indices = new Array(numIndices);
+                        positions = new Array(this._numVertices * 3);
+                        normals = new Array(this._numVertices * 3);
+                        tangents = new Array(this._numVertices * 3);
+
+                        this._pInvalidateUVs();
+                    }
+
+                    vidx = 0;
+                    fidx = 0;
+
+                    // top
+                    if (this._topClosed && this._topRadius > 0) {
+                        z = -0.5 * this._height;
+
+                        for (i = 0; i <= this._pSegmentsW; ++i) {
+                            // central vertex
+                            if (this._yUp) {
+                                t1 = 1;
+                                t2 = 0;
+                                comp1 = -z;
+                                comp2 = 0;
+                            } else {
+                                t1 = 0;
+                                t2 = -1;
+                                comp1 = 0;
+                                comp2 = z;
+                            }
+
+                            positions[vidx] = 0;
+                            positions[vidx + 1] = comp1;
+                            positions[vidx + 2] = comp2;
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = t1;
+                            normals[vidx + 2] = t2;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            // revolution vertex
+                            revolutionAngle = i * revolutionAngleDelta;
+                            x = this._topRadius * Math.cos(revolutionAngle);
+                            y = this._topRadius * Math.sin(revolutionAngle);
+
+                            if (this._yUp) {
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i == this._pSegmentsW) {
+                                positions[vidx] = positions[startIndex + 3];
+                                positions[vidx + 1] = positions[startIndex + 4];
+                                positions[vidx + 2] = positions[startIndex + 5];
+                            } else {
+                                positions[vidx] = x;
+                                positions[vidx + 1] = comp1;
+                                positions[vidx + 2] = comp2;
+                            }
+
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = t1;
+                            normals[vidx + 2] = t2;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            if (i > 0) {
+                                // add triangle
+                                indices[fidx++] = nextVertexIndex;
+                                indices[fidx++] = nextVertexIndex + 1;
+                                indices[fidx++] = nextVertexIndex + 2;
+
+                                nextVertexIndex += 2;
+                            }
+                        }
+
+                        nextVertexIndex += 2;
+                    }
+
+                    // bottom
+                    if (this._bottomClosed && this._pBottomRadius > 0) {
+                        z = 0.5 * this._height;
+
+                        startIndex = nextVertexIndex * 3;
+
+                        for (i = 0; i <= this._pSegmentsW; ++i) {
+                            if (this._yUp) {
+                                t1 = -1;
+                                t2 = 0;
+                                comp1 = -z;
+                                comp2 = 0;
+                            } else {
+                                t1 = 0;
+                                t2 = 1;
+                                comp1 = 0;
+                                comp2 = z;
+                            }
+
+                            positions[vidx] = 0;
+                            positions[vidx + 1] = comp1;
+                            positions[vidx + 2] = comp2;
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = t1;
+                            normals[vidx + 2] = t2;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            // revolution vertex
+                            revolutionAngle = i * revolutionAngleDelta;
+                            x = this._pBottomRadius * Math.cos(revolutionAngle);
+                            y = this._pBottomRadius * Math.sin(revolutionAngle);
+
+                            if (this._yUp) {
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i == this._pSegmentsW) {
+                                positions[vidx] = positions[startIndex + 3];
+                                positions[vidx + 1] = positions[startIndex + 4];
+                                positions[vidx + 2] = positions[startIndex + 5];
+                            } else {
+                                positions[vidx] = x;
+                                positions[vidx + 1] = comp1;
+                                positions[vidx + 2] = comp2;
+                            }
+
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = t1;
+                            normals[vidx + 2] = t2;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            if (i > 0) {
+                                // add triangle
+                                indices[fidx++] = nextVertexIndex;
+                                indices[fidx++] = nextVertexIndex + 2;
+                                indices[fidx++] = nextVertexIndex + 1;
+
+                                nextVertexIndex += 2;
+                            }
+                        }
+
+                        nextVertexIndex += 2;
+                    }
+
+                    // The normals on the lateral surface all have the same incline, i.e.
+                    // the "elevation" component (Y or Z depending on yUp) is constant.
+                    // Same principle goes for the "base" of these vectors, which will be
+                    // calculated such that a vector [base,elev] will be a unit vector.
+                    dr = (this._pBottomRadius - this._topRadius);
+                    latNormElev = dr / this._height;
+                    latNormBase = (latNormElev == 0) ? 1 : this._height / dr;
+
+                    // lateral surface
+                    if (this._surfaceClosed) {
+                        var a;
+                        var b;
+                        var c;
+                        var d;
+                        var na0, na1, naComp1, naComp2;
+
+                        for (j = 0; j <= this._pSegmentsH; ++j) {
+                            radius = this._topRadius - ((j / this._pSegmentsH) * (this._topRadius - this._pBottomRadius));
+                            z = -(this._height / 2) + (j / this._pSegmentsH * this._height);
+
+                            startIndex = nextVertexIndex * 3;
+
+                            for (i = 0; i <= this._pSegmentsW; ++i) {
+                                // revolution vertex
+                                revolutionAngle = i * revolutionAngleDelta;
+                                x = radius * Math.cos(revolutionAngle);
+                                y = radius * Math.sin(revolutionAngle);
+                                na0 = latNormBase * Math.cos(revolutionAngle);
+                                na1 = latNormBase * Math.sin(revolutionAngle);
+
+                                if (this._yUp) {
+                                    t1 = 0;
+                                    t2 = -na0;
+                                    comp1 = -z;
+                                    comp2 = y;
+                                    naComp1 = latNormElev;
+                                    naComp2 = na1;
+                                } else {
+                                    t1 = -na0;
+                                    t2 = 0;
+                                    comp1 = y;
+                                    comp2 = z;
+                                    naComp1 = na1;
+                                    naComp2 = latNormElev;
+                                }
+
+                                if (i == this._pSegmentsW) {
+                                    positions[vidx] = positions[startIndex];
+                                    positions[vidx + 1] = positions[startIndex + 1];
+                                    positions[vidx + 2] = positions[startIndex + 2];
+                                    normals[vidx] = na0;
+                                    normals[vidx + 1] = latNormElev;
+                                    normals[vidx + 2] = na1;
+                                    tangents[vidx] = na1;
+                                    tangents[vidx + 1] = t1;
+                                    tangents[vidx + 2] = t2;
+                                } else {
+                                    positions[vidx] = x;
+                                    positions[vidx + 1] = comp1;
+                                    positions[vidx + 2] = comp2;
+                                    normals[vidx] = na0;
+                                    normals[vidx + 1] = naComp1;
+                                    normals[vidx + 2] = naComp2;
+                                    tangents[vidx] = -na1;
+                                    tangents[vidx + 1] = t1;
+                                    tangents[vidx + 2] = t2;
+                                }
+                                vidx += 3;
+
+                                // close triangle
+                                if (i > 0 && j > 0) {
+                                    a = nextVertexIndex; // current
+                                    b = nextVertexIndex - 1; // previous
+                                    c = b - this._pSegmentsW - 1; // previous of last level
+                                    d = a - this._pSegmentsW - 1; // current of last level
+
+                                    indices[fidx++] = a;
+                                    indices[fidx++] = b;
+                                    indices[fidx++] = c;
+
+                                    indices[fidx++] = a;
+                                    indices[fidx++] = c;
+                                    indices[fidx++] = d;
+                                }
+
+                                nextVertexIndex++;
+                            }
+                        }
+                    }
+
+                    // build real data from raw data
+                    triangleGeometry.updateIndices(indices);
+
+                    triangleGeometry.updatePositions(positions);
+                    triangleGeometry.updateVertexNormals(normals);
+                    triangleGeometry.updateVertexTangents(tangents);
+                } else if (geometryType == "lineSubGeometry") {
+                    var lineGeometry = target;
+
+                    var numSegments = (this._pSegmentsH + 1) * (this._pSegmentsW) + this._pSegmentsW;
+                    var startPositions;
+                    var endPositions;
+                    var thickness;
+
+                    if (lineGeometry.indices != null && numSegments == lineGeometry.numSegments) {
+                        startPositions = lineGeometry.startPositions;
+                        endPositions = lineGeometry.endPositions;
+                        thickness = lineGeometry.thickness;
+                    } else {
+                        startPositions = new Array(numSegments * 3);
+                        endPositions = new Array(numSegments * 3);
+                        thickness = new Array(numSegments);
+                    }
+
+                    vidx = 0;
+
+                    fidx = 0;
+
+                    for (j = 0; j <= this._pSegmentsH; ++j) {
+                        radius = this._topRadius - ((j / this._pSegmentsH) * (this._topRadius - this._pBottomRadius));
+                        z = this._height * (j / this._pSegmentsH - 0.5);
+
+                        for (i = 0; i <= this._pSegmentsW; ++i) {
+                            // revolution vertex
+                            revolutionAngle = i * revolutionAngleDelta;
+                            x = radius * Math.cos(revolutionAngle);
+                            y = radius * Math.sin(revolutionAngle);
+
+                            if (this._yUp) {
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i > 0) {
+                                endPositions[vidx] = x;
+                                endPositions[vidx + 1] = comp1;
+                                endPositions[vidx + 2] = comp2;
+
+                                thickness[fidx++] = 1;
+
+                                vidx += 3;
+
+                                //vertical lines
+                                startPositions[vidx] = endPositions[vidx - this._pSegmentsW * 6];
+                                startPositions[vidx + 1] = endPositions[vidx + 1 - this._pSegmentsW * 6];
+                                startPositions[vidx + 2] = endPositions[vidx + 2 - this._pSegmentsW * 6];
+
+                                endPositions[vidx] = x;
+                                endPositions[vidx + 1] = comp1;
+                                endPositions[vidx + 2] = comp2;
+
+                                thickness[fidx++] = 1;
+
+                                vidx += 3;
+                            }
+
+                            if (i < this._pSegmentsW) {
+                                startPositions[vidx] = x;
+                                startPositions[vidx + 1] = comp1;
+                                startPositions[vidx + 2] = comp2;
+                            }
+                        }
+                    }
+
+                    // build real data from raw data
+                    lineGeometry.updatePositions(startPositions, endPositions);
+                    lineGeometry.updateThickness(thickness);
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveCylinderPrefab.prototype._pBuildUVs = function (target, geometryType) {
+                var i;
+                var j;
+                var x;
+                var y;
+                var revolutionAngle;
+                var uvs;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    // need to initialize raw array or can be reused?
+                    if (triangleGeometry.uvs && this._numVertices == triangleGeometry.numVertices) {
+                        uvs = triangleGeometry.uvs;
+                    } else {
+                        uvs = new Array(this._numVertices * 2);
+                    }
+
+                    // evaluate revolution steps
+                    var revolutionAngleDelta = 2 * Math.PI / this._pSegmentsW;
+
+                    // current uv component index
+                    var index = 0;
+
+                    // top
+                    if (this._topClosed) {
+                        for (i = 0; i <= this._pSegmentsW; ++i) {
+                            revolutionAngle = i * revolutionAngleDelta;
+                            x = 0.5 + 0.5 * -Math.cos(revolutionAngle);
+                            y = 0.5 + 0.5 * Math.sin(revolutionAngle);
+
+                            uvs[index++] = 0.5 * triangleGeometry.scaleU; // central vertex
+                            uvs[index++] = 0.5 * triangleGeometry.scaleV;
+
+                            uvs[index++] = x * triangleGeometry.scaleU; // revolution vertex
+                            uvs[index++] = y * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    // bottom
+                    if (this._bottomClosed) {
+                        for (i = 0; i <= this._pSegmentsW; ++i) {
+                            revolutionAngle = i * revolutionAngleDelta;
+                            x = 0.5 + 0.5 * Math.cos(revolutionAngle);
+                            y = 0.5 + 0.5 * Math.sin(revolutionAngle);
+
+                            uvs[index++] = 0.5 * triangleGeometry.scaleU; // central vertex
+                            uvs[index++] = 0.5 * triangleGeometry.scaleV;
+
+                            uvs[index++] = x * triangleGeometry.scaleU; // revolution vertex
+                            uvs[index++] = y * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    // lateral surface
+                    if (this._surfaceClosed) {
+                        for (j = 0; j <= this._pSegmentsH; ++j) {
+                            for (i = 0; i <= this._pSegmentsW; ++i) {
+                                // revolution vertex
+                                uvs[index++] = (i / this._pSegmentsW) * triangleGeometry.scaleU;
+                                uvs[index++] = (j / this._pSegmentsH) * triangleGeometry.scaleV;
+                            }
+                        }
+                    }
+
+                    // build real data from raw data
+                    triangleGeometry.updateUVs(uvs);
+                } else if (geometryType == "lineSubGeometry") {
+                    //nothing to do here
+                }
+            };
+            return PrimitiveCylinderPrefab;
+        })(away.prefabs.PrimitivePrefabBase);
+        prefabs.PrimitiveCylinderPrefab = PrimitiveCylinderPrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (primitives) {
+    (function (prefabs) {
         /**
         * A UV Cone primitive mesh.
         */
-        var ConeGeometry = (function (_super) {
-            __extends(ConeGeometry, _super);
+        var PrimitiveConePrefab = (function (_super) {
+            __extends(PrimitiveConePrefab, _super);
             /**
             * Creates a new Cone object.
             * @param radius The radius of the bottom end of the cone
@@ -26019,7 +22699,7 @@ var away;
             * @param segmentsH Defines the number of vertical segments that make up the cone. Defaults to 1.
             * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
             */
-            function ConeGeometry(radius, height, segmentsW, segmentsH, closed, yUp) {
+            function PrimitiveConePrefab(radius, height, segmentsW, segmentsH, closed, yUp) {
                 if (typeof radius === "undefined") { radius = 50; }
                 if (typeof height === "undefined") { height = 100; }
                 if (typeof segmentsW === "undefined") { segmentsW = 16; }
@@ -26028,7 +22708,7 @@ var away;
                 if (typeof yUp === "undefined") { yUp = true; }
                 _super.call(this, 0, radius, height, segmentsW, segmentsH, false, closed, true, yUp);
             }
-            Object.defineProperty(ConeGeometry.prototype, "radius", {
+            Object.defineProperty(PrimitiveConePrefab.prototype, "radius", {
                 /**
                 * The radius of the bottom end of the cone.
                 */
@@ -26037,40 +22717,41 @@ var away;
                 },
                 set: function (value) {
                     this._pBottomRadius = value;
-                    this.pInvalidateGeometry();
+
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
-            return ConeGeometry;
-        })(away.primitives.CylinderGeometry);
-        primitives.ConeGeometry = ConeGeometry;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
+            return PrimitiveConePrefab;
+        })(away.prefabs.PrimitiveCylinderPrefab);
+        prefabs.PrimitiveConePrefab = PrimitiveConePrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (primitives) {
+    (function (prefabs) {
         /**
         * A UV RegularPolygon primitive mesh.
         */
-        var RegularPolygonGeometry = (function (_super) {
-            __extends(RegularPolygonGeometry, _super);
+        var PrimitivePolygonPrefab = (function (_super) {
+            __extends(PrimitivePolygonPrefab, _super);
             /**
             * Creates a new RegularPolygon disc object.
             * @param radius The radius of the regular polygon
             * @param sides Defines the number of sides of the regular polygon.
             * @param yUp Defines whether the regular polygon should lay on the Y-axis (true) or on the Z-axis (false).
             */
-            function RegularPolygonGeometry(radius, sides, yUp) {
+            function PrimitivePolygonPrefab(radius, sides, yUp) {
                 if (typeof radius === "undefined") { radius = 100; }
                 if (typeof sides === "undefined") { sides = 16; }
                 if (typeof yUp === "undefined") { yUp = true; }
                 _super.call(this, radius, 0, 0, sides, 1, true, false, false, yUp);
             }
-            Object.defineProperty(RegularPolygonGeometry.prototype, "radius", {
+            Object.defineProperty(PrimitivePolygonPrefab.prototype, "radius", {
                 /**
                 * The radius of the regular polygon.
                 */
@@ -26079,14 +22760,14 @@ var away;
                 },
                 set: function (value) {
                     this._pBottomRadius = value;
-                    this.pInvalidateGeometry();
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(RegularPolygonGeometry.prototype, "sides", {
+            Object.defineProperty(PrimitivePolygonPrefab.prototype, "sides", {
                 /**
                 * The number of sides of the regular polygon.
                 */
@@ -26101,7 +22782,7 @@ var away;
             });
 
 
-            Object.defineProperty(RegularPolygonGeometry.prototype, "subdivisions", {
+            Object.defineProperty(PrimitivePolygonPrefab.prototype, "subdivisions", {
                 /**
                 * The number of subdivisions from the edge to the center of the regular polygon.
                 */
@@ -26115,31 +22796,34 @@ var away;
                 configurable: true
             });
 
-            return RegularPolygonGeometry;
-        })(away.primitives.CylinderGeometry);
-        primitives.RegularPolygonGeometry = RegularPolygonGeometry;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
+            return PrimitivePolygonPrefab;
+        })(away.prefabs.PrimitiveCylinderPrefab);
+        prefabs.PrimitivePolygonPrefab = PrimitivePolygonPrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
 })(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../_definitions.ts"/>
-    (function (primitives) {
-        //import away3d.arcane;
-        //import away3d.core.base.CompactSubGeometry;
+    (function (prefabs) {
+        var SubGeometryBase = away.base.SubGeometryBase;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+        var LineSubGeometry = away.base.LineSubGeometry;
+
         /**
         * A UV Sphere primitive mesh.
         */
-        var SphereGeometry = (function (_super) {
-            __extends(SphereGeometry, _super);
+        var PrimitiveSpherePrefab = (function (_super) {
+            __extends(PrimitiveSpherePrefab, _super);
             /**
             * Creates a new Sphere object.
+            *
             * @param radius The radius of the sphere.
             * @param segmentsW Defines the number of horizontal segments that make up the sphere.
             * @param segmentsH Defines the number of vertical segments that make up the sphere.
             * @param yUp Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
             */
-            function SphereGeometry(radius, segmentsW, segmentsH, yUp) {
+            function PrimitiveSpherePrefab(radius, segmentsW, segmentsH, yUp) {
                 if (typeof radius === "undefined") { radius = 50; }
                 if (typeof segmentsW === "undefined") { segmentsW = 16; }
                 if (typeof segmentsH === "undefined") { segmentsH = 12; }
@@ -26151,154 +22835,7 @@ var away;
                 this._segmentsH = segmentsH;
                 this._yUp = yUp;
             }
-            /**
-            * @inheritDoc
-            */
-            SphereGeometry.prototype.pBuildGeometry = function (target) {
-                var vertices;
-                var indices;
-                var i;
-                var j;
-                var triIndex = 0;
-                var numVerts = (this._segmentsH + 1) * (this._segmentsW + 1);
-                var stride = target.vertexStride;
-                var skip = stride - 9;
-
-                if (numVerts == target.numVertices) {
-                    vertices = target.vertexData;
-
-                    if (target.indexData) {
-                        indices = target.indexData;
-                    } else {
-                        indices = new Array((this._segmentsH - 1) * this._segmentsW * 6);
-                    }
-                } else {
-                    vertices = new Array(numVerts * stride);
-                    indices = new Array((this._segmentsH - 1) * this._segmentsW * 6);
-                    this.pInvalidateGeometry();
-                }
-
-                var startIndex;
-                var index = target.vertexOffset;
-                var comp1;
-                var comp2;
-                var t1;
-                var t2;
-
-                for (j = 0; j <= this._segmentsH; ++j) {
-                    startIndex = index;
-
-                    var horangle = Math.PI * j / this._segmentsH;
-                    var z = -this._radius * Math.cos(horangle);
-                    var ringradius = this._radius * Math.sin(horangle);
-
-                    for (i = 0; i <= this._segmentsW; ++i) {
-                        var verangle = 2 * Math.PI * i / this._segmentsW;
-                        var x = ringradius * Math.cos(verangle);
-                        var y = ringradius * Math.sin(verangle);
-                        var normLen = 1 / Math.sqrt(x * x + y * y + z * z);
-                        var tanLen = Math.sqrt(y * y + x * x);
-
-                        if (this._yUp) {
-                            t1 = 0;
-                            t2 = tanLen > .007 ? x / tanLen : 0;
-                            comp1 = -z;
-                            comp2 = y;
-                        } else {
-                            t1 = tanLen > .007 ? x / tanLen : 0;
-                            t2 = 0;
-                            comp1 = y;
-                            comp2 = z;
-                        }
-
-                        if (i == this._segmentsW) {
-                            vertices[index++] = vertices[startIndex];
-                            vertices[index++] = vertices[startIndex + 1];
-                            vertices[index++] = vertices[startIndex + 2];
-                            vertices[index++] = vertices[startIndex + 3] + (x * normLen) * .5;
-                            vertices[index++] = vertices[startIndex + 4] + (comp1 * normLen) * .5;
-                            vertices[index++] = vertices[startIndex + 5] + (comp2 * normLen) * .5;
-                            vertices[index++] = tanLen > .007 ? -y / tanLen : 1;
-                            vertices[index++] = t1;
-                            vertices[index++] = t2;
-                        } else {
-                            vertices[index++] = x;
-                            vertices[index++] = comp1;
-                            vertices[index++] = comp2;
-                            vertices[index++] = x * normLen;
-                            vertices[index++] = comp1 * normLen;
-                            vertices[index++] = comp2 * normLen;
-                            vertices[index++] = tanLen > .007 ? -y / tanLen : 1;
-                            vertices[index++] = t1;
-                            vertices[index++] = t2;
-                        }
-
-                        if (i > 0 && j > 0) {
-                            var a = (this._segmentsW + 1) * j + i;
-                            var b = (this._segmentsW + 1) * j + i - 1;
-                            var c = (this._segmentsW + 1) * (j - 1) + i - 1;
-                            var d = (this._segmentsW + 1) * (j - 1) + i;
-
-                            if (j == this._segmentsH) {
-                                vertices[index - 9] = vertices[startIndex];
-                                vertices[index - 8] = vertices[startIndex + 1];
-                                vertices[index - 7] = vertices[startIndex + 2];
-
-                                indices[triIndex++] = a;
-                                indices[triIndex++] = c;
-                                indices[triIndex++] = d;
-                            } else if (j == 1) {
-                                indices[triIndex++] = a;
-                                indices[triIndex++] = b;
-                                indices[triIndex++] = c;
-                            } else {
-                                indices[triIndex++] = a;
-                                indices[triIndex++] = b;
-                                indices[triIndex++] = c;
-                                indices[triIndex++] = a;
-                                indices[triIndex++] = c;
-                                indices[triIndex++] = d;
-                            }
-                        }
-
-                        index += skip;
-                    }
-                }
-
-                target.updateData(vertices);
-                target.updateIndexData(indices);
-            };
-
-            /**
-            * @inheritDoc
-            */
-            SphereGeometry.prototype.pBuildUVs = function (target) {
-                var i, j;
-                var stride = target.UVStride;
-                var numUvs = (this._segmentsH + 1) * (this._segmentsW + 1) * stride;
-                var data;
-                var skip = stride - 2;
-
-                if (target.UVData && numUvs == target.UVData.length)
-                    data = target.UVData;
-                else {
-                    data = new Array(numUvs);
-                    this.pInvalidateGeometry();
-                }
-
-                var index = target.UVOffset;
-                for (j = 0; j <= this._segmentsH; ++j) {
-                    for (i = 0; i <= this._segmentsW; ++i) {
-                        data[index++] = (i / this._segmentsW) * target.scaleU;
-                        data[index++] = (j / this._segmentsH) * target.scaleV;
-                        index += skip;
-                    }
-                }
-
-                target.updateData(data);
-            };
-
-            Object.defineProperty(SphereGeometry.prototype, "radius", {
+            Object.defineProperty(PrimitiveSpherePrefab.prototype, "radius", {
                 /**
                 * The radius of the sphere.
                 */
@@ -26307,14 +22844,15 @@ var away;
                 },
                 set: function (value) {
                     this._radius = value;
-                    this.pInvalidateGeometry();
+
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(SphereGeometry.prototype, "segmentsW", {
+            Object.defineProperty(PrimitiveSpherePrefab.prototype, "segmentsW", {
                 /**
                 * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
                 */
@@ -26323,15 +22861,16 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsW = value;
-                    this.pInvalidateGeometry();
-                    this.pInvalidateUVs();
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(SphereGeometry.prototype, "segmentsH", {
+            Object.defineProperty(PrimitiveSpherePrefab.prototype, "segmentsH", {
                 /**
                 * Defines the number of vertical segments that make up the sphere. Defaults to 12.
                 */
@@ -26340,15 +22879,16 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsH = value;
-                    this.pInvalidateGeometry();
-                    this.pInvalidateUVs();
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(SphereGeometry.prototype, "yUp", {
+            Object.defineProperty(PrimitiveSpherePrefab.prototype, "yUp", {
                 /**
                 * Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
                 */
@@ -26357,201 +22897,8 @@ var away;
                 },
                 set: function (value) {
                     this._yUp = value;
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
 
-            return SphereGeometry;
-        })(away.primitives.PrimitiveBase);
-        primitives.SphereGeometry = SphereGeometry;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (primitives) {
-        var WireframePrimitiveBase = (function (_super) {
-            __extends(WireframePrimitiveBase, _super);
-            function WireframePrimitiveBase(color, thickness) {
-                if (typeof color === "undefined") { color = 0xffffff; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                _super.call(this);
-                this._geomDirty = true;
-                if (thickness <= 0) {
-                    thickness = 1;
-                }
-                this._color = color;
-                this._thickness = thickness;
-            }
-            Object.defineProperty(WireframePrimitiveBase.prototype, "color", {
-                get: function () {
-                    return this._color;
-                },
-                set: function (value) {
-                    this._color = value;
-
-                    this._pSubGeometry._iSetColor(value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframePrimitiveBase.prototype, "thickness", {
-                get: function () {
-                    return this._thickness;
-                },
-                set: function (value) {
-                    this._thickness = value;
-
-                    this._pSubGeometry._iSetThickness(value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            //@override
-            WireframePrimitiveBase.prototype.removeAllSegments = function () {
-                _super.prototype.removeAllSegments.call(this);
-            };
-
-            WireframePrimitiveBase.prototype.pBuildGeometry = function () {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            WireframePrimitiveBase.prototype.pInvalidateGeometry = function () {
-                this.pInvalidateBounds();
-
-                this._geomDirty = true;
-            };
-
-            WireframePrimitiveBase.prototype.updateGeometry = function () {
-                this.pBuildGeometry();
-
-                this._geomDirty = false;
-            };
-
-            WireframePrimitiveBase.prototype.pUpdateBounds = function () {
-                if (this._geomDirty)
-                    this.updateGeometry();
-
-                _super.prototype.pUpdateBounds.call(this);
-            };
-
-            WireframePrimitiveBase.prototype.pUpdateOrAddSegment = function (index, v0, v1) {
-                var segment;
-                var s;
-                var e;
-
-                if ((segment = this.getSegment(index)) != null) {
-                    s = segment.start;
-                    e = segment.end;
-                    s.x = v0.x;
-                    s.y = v0.y;
-                    s.z = v0.z;
-                    e.x = v1.x;
-                    e.y = v1.y;
-                    e.z = v1.z;
-                    segment.updateSegment(s, e, null, this._color, this._color, this._thickness);
-                } else {
-                    this.addSegment(new away.primitives.LineSegment(v0.clone(), v1.clone(), this._color, this._color, this._thickness));
-                }
-            };
-            return WireframePrimitiveBase;
-        })(away.entities.SegmentSet);
-        primitives.WireframePrimitiveBase = WireframePrimitiveBase;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
-})(away || (away = {}));
-///<reference path="../_definitions.ts" />
-var away;
-(function (away) {
-    (function (primitives) {
-        //TODO - convert to geometry primitive
-        /**
-        * A WireframeSphere primitive mesh
-        */
-        var WireframeSphere = (function (_super) {
-            __extends(WireframeSphere, _super);
-            /**
-            * Creates a new WireframeSphere object.
-            *
-            * @param radius The radius of the sphere. Defaults to 50.
-            * @param segmentsW Defines the number of horizontal segments that make up the sphere. Defaults to 16.
-            * @param segmentsH Defines the number of vertical segments that make up the sphere. Defaults to 12.
-            * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
-            * @param thickness The thickness of the wireframe lines. Defaults to 1.
-            */
-            function WireframeSphere(radius, segmentsW, segmentsH, color, thickness) {
-                if (typeof radius === "undefined") { radius = 50; }
-                if (typeof segmentsW === "undefined") { segmentsW = 16; }
-                if (typeof segmentsH === "undefined") { segmentsH = 12; }
-                if (typeof color === "undefined") { color = 0xFFFFFF; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                _super.call(this, color, thickness);
-
-                this._radius = radius;
-                this._segmentsW = segmentsW;
-                this._segmentsH = segmentsH;
-            }
-            Object.defineProperty(WireframeSphere.prototype, "radius", {
-                /**
-                * The radius of the sphere. Defaults to 50.
-                */
-                get: function () {
-                    return this._radius;
-                },
-                set: function (value) {
-                    if (this._radius == value)
-                        return;
-
-                    this._radius = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeSphere.prototype, "segmentsH", {
-                /**
-                * Defines the number of vertical segments that make up the sphere. Defaults to 12.
-                */
-                get: function () {
-                    return this._segmentsH;
-                },
-                set: function (value) {
-                    if (this._segmentsH == value)
-                        return;
-
-                    this._segmentsH = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeSphere.prototype, "segmentsW", {
-                /**
-                * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
-                */
-                get: function () {
-                    return this._segmentsW;
-                },
-                set: function (value) {
-                    if (this._segmentsW == value)
-                        return;
-
-                    this._segmentsW = value;
-
-                    this.pInvalidateGeometry();
+                    this._pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -26561,1386 +22908,248 @@ var away;
             /**
             * @inheritDoc
             */
-            WireframeSphere.prototype.pBuildGeometry = function () {
-                var vertices = new Array();
-                var v0 = new away.geom.Vector3D();
-                var v1 = new away.geom.Vector3D();
-                var i, j;
-                var numVerts = 0;
-                var index = 0;
-
-                for (j = 0; j <= this._segmentsH; ++j) {
-                    var horangle = Math.PI * j / this._segmentsH;
-                    var z = -this._radius * Math.cos(horangle);
-                    var ringradius = this._radius * Math.sin(horangle);
-
-                    for (i = 0; i <= this._segmentsW; ++i) {
-                        var verangle = 2 * Math.PI * i / this._segmentsW;
-                        var x = ringradius * Math.cos(verangle);
-                        var y = ringradius * Math.sin(verangle);
-                        vertices[numVerts++] = x;
-                        vertices[numVerts++] = -z;
-                        vertices[numVerts++] = y;
-                    }
-                }
-
-                for (j = 1; j <= this._segmentsH; ++j) {
-                    for (i = 1; i <= this._segmentsW; ++i) {
-                        var a = ((this._segmentsW + 1) * j + i) * 3;
-                        var b = ((this._segmentsW + 1) * j + i - 1) * 3;
-                        var c = ((this._segmentsW + 1) * (j - 1) + i - 1) * 3;
-                        var d = ((this._segmentsW + 1) * (j - 1) + i) * 3;
-
-                        if (j == this._segmentsH) {
-                            v0.x = vertices[c];
-                            v0.y = vertices[c + 1];
-                            v0.z = vertices[c + 2];
-                            v1.x = vertices[d];
-                            v1.y = vertices[d + 1];
-                            v1.z = vertices[d + 2];
-                            this.pUpdateOrAddSegment(index++, v0, v1);
-                            v0.x = vertices[a];
-                            v0.y = vertices[a + 1];
-                            v0.z = vertices[a + 2];
-                            this.pUpdateOrAddSegment(index++, v0, v1);
-                        } else if (j == 1) {
-                            v1.x = vertices[b];
-                            v1.y = vertices[b + 1];
-                            v1.z = vertices[b + 2];
-                            v0.x = vertices[c];
-                            v0.y = vertices[c + 1];
-                            v0.z = vertices[c + 2];
-                            this.pUpdateOrAddSegment(index++, v0, v1);
-                        } else {
-                            v1.x = vertices[b];
-                            v1.y = vertices[b + 1];
-                            v1.z = vertices[b + 2];
-                            v0.x = vertices[c];
-                            v0.y = vertices[c + 1];
-                            v0.z = vertices[c + 2];
-                            this.pUpdateOrAddSegment(index++, v0, v1);
-                            v1.x = vertices[d];
-                            v1.y = vertices[d + 1];
-                            v1.z = vertices[d + 2];
-                            this.pUpdateOrAddSegment(index++, v0, v1);
-                        }
-                    }
-                }
-            };
-            return WireframeSphere;
-        })(away.primitives.WireframePrimitiveBase);
-        primitives.WireframeSphere = WireframeSphere;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (primitives) {
-        //TODO - convert to geometry primitive
-        /**
-        * Generates a wireframeCone primitive.
-        */
-        var WireframeCone = (function (_super) {
-            __extends(WireframeCone, _super);
-            /**
-            * Creates a new WireframeCone instance
-            *
-            * @param topRadius Top radius of the cone. Defaults to 50.
-            * @param radius Bottom radius of the cone. Defaults to 50.
-            * @param coneHeight The height of the cone. Defaults to 100.
-            * @param segmentsW Number of radial segments. Defaults to 16.
-            * @param segmentsH Number of vertical segments. Defaults to 1.
-            * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
-            * @param thickness The thickness of the wireframe lines. Defaults to 1.
-            */
-            function WireframeCone(radius, coneHeight, segmentsW, segmentsH, color, thickness) {
-                if (typeof radius === "undefined") { radius = 50; }
-                if (typeof coneHeight === "undefined") { coneHeight = 100; }
-                if (typeof segmentsW === "undefined") { segmentsW = 16; }
-                if (typeof segmentsH === "undefined") { segmentsH = 1; }
-                if (typeof color === "undefined") { color = 0xFFFFFF; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                _super.call(this, color, thickness);
-                this._radius = radius;
-                this._segmentsW = segmentsW;
-                this._segmentsH = segmentsH;
-
-                this._coneHeight = coneHeight;
-            }
-            Object.defineProperty(WireframeCone.prototype, "radius", {
-                /**
-                * Bottom radius of the cone. Defaults to 50.
-                */
-                get: function () {
-                    return this._radius;
-                },
-                set: function (value) {
-                    if (this._radius == value)
-                        return;
-
-                    this._radius = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeCone.prototype, "coneHeight", {
-                /**
-                * The size of the cone along its Y-axis. Defaults to 100.
-                */
-                get: function () {
-                    return this._coneHeight;
-                },
-                set: function (value) {
-                    if (this._coneHeight == value)
-                        return;
-
-                    this._coneHeight == value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeCone.prototype, "segmentsH", {
-                /**
-                * Defines the number of vertical segments that make up the cone. Defaults to 1.
-                */
-                get: function () {
-                    return this._segmentsH;
-                },
-                set: function (value) {
-                    if (this._segmentsH == value)
-                        return;
-
-                    this._segmentsH = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeCone.prototype, "segmentsW", {
-                /**
-                * Defines the number of horizontal segments that make up the cone. Defaults to 16.
-                */
-                get: function () {
-                    return this._segmentsW;
-                },
-                set: function (value) {
-                    if (this._segmentsW == value)
-                        return;
-
-                    this._segmentsW = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            WireframeCone.prototype.pBuildGeometry = function () {
-                var i, j;
-                var radius;
-                var revolutionAngle;
-                var revolutionAngleDelta = WireframeCone.TWO_PI / this._segmentsW;
-                var nextVertexIndex = 0;
-                var x, y, z;
-
-                var lastLayer = new Array(this._segmentsH + 1);
-
-                for (j = 0; j <= this._segmentsH; ++j) {
-                    lastLayer[j] = new Array(this._segmentsW + 1);
-
-                    radius = ((j / this._segmentsH) * this._radius);
-                    z = this._coneHeight * (j / this._segmentsH - 0.5);
-
-                    var previousV = null;
-
-                    for (i = 0; i <= this._segmentsW; ++i) {
-                        // revolution vertex
-                        revolutionAngle = i * revolutionAngleDelta;
-                        x = radius * Math.cos(revolutionAngle);
-                        y = radius * Math.sin(revolutionAngle);
-                        var vertex;
-                        if (previousV) {
-                            vertex = new away.geom.Vector3D(x, -z, y);
-                            this.pUpdateOrAddSegment(nextVertexIndex++, vertex, previousV);
-                            previousV = vertex;
-                        } else
-                            previousV = new away.geom.Vector3D(x, -z, y);
-
-                        if (j > 0) {
-                            this.pUpdateOrAddSegment(nextVertexIndex++, vertex, lastLayer[j - 1][i]);
-                        }
-                        lastLayer[j][i] = previousV;
-                    }
-                }
-            };
-            WireframeCone.TWO_PI = 2 * Math.PI;
-            return WireframeCone;
-        })(away.primitives.WireframePrimitiveBase);
-        primitives.WireframeCone = WireframeCone;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (primitives) {
-        //TODO - convert to geometry primitive
-        /**
-        * A WirefameCube primitive mesh.
-        */
-        var WireframeCube = (function (_super) {
-            __extends(WireframeCube, _super);
-            /**
-            * Creates a new WireframeCube object.
-            *
-            * @param cubeWidth The size of the cube along its X-axis. Defaults to 100.
-            * @param cubeHeight The size of the cube along its Y-axis. Defaults to 100.
-            * @param cubeDepth The size of the cube along its Z-axis. Defaults to 100.
-            * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
-            * @param thickness The thickness of the wireframe lines. Defaults to 1.
-            */
-            function WireframeCube(cubeWidth, cubeHeight, cubeDepth, color, thickness) {
-                if (typeof cubeWidth === "undefined") { cubeWidth = 100; }
-                if (typeof cubeHeight === "undefined") { cubeHeight = 100; }
-                if (typeof cubeDepth === "undefined") { cubeDepth = 100; }
-                if (typeof color === "undefined") { color = 0xFFFFFF; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                _super.call(this, color, thickness);
-
-                this._cubeWidth = cubeWidth;
-                this._cubeHeight = cubeHeight;
-                this._cubeDepth = cubeDepth;
-            }
-            Object.defineProperty(WireframeCube.prototype, "cubeDepth", {
-                /**
-                * The size of the cube along its Z-axis. Defaults to 100.
-                */
-                get: function () {
-                    return this._cubeDepth;
-                },
-                set: function (value) {
-                    if (this._cubeDepth == value)
-                        return;
-
-                    this._cubeDepth == value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeCube.prototype, "cubeHeight", {
-                /**
-                * The size of the cube along its Y-axis. Defaults to 100.
-                */
-                get: function () {
-                    return this._cubeHeight;
-                },
-                set: function (value) {
-                    if (this._cubeHeight == value)
-                        return;
-
-                    this._cubeHeight == value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeCube.prototype, "cubeWidth", {
-                /**
-                * The size of the cube along its X-axis. Defaults to 100.
-                */
-                get: function () {
-                    return this._cubeWidth;
-                },
-                set: function (value) {
-                    if (this._cubeWidth == value)
-                        return;
-
-                    this._cubeWidth == value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            /**
-            * @inheritDoc
-            */
-            WireframeCube.prototype.pBuildGeometry = function () {
-                var v0 = new away.geom.Vector3D();
-                var v1 = new away.geom.Vector3D();
-                var hw = this._cubeWidth / 2;
-                var hh = this._cubeHeight / 2;
-                var hd = this._cubeDepth / 2;
-
-                v0.x = -hw;
-                v0.y = hh;
-                v0.z = -hd;
-                v1.x = -hw;
-                v1.y = -hh;
-                v1.z = -hd;
-
-                this.pUpdateOrAddSegment(0, v0, v1);
-                v0.z = hd;
-                v1.z = hd;
-                this.pUpdateOrAddSegment(1, v0, v1);
-                v0.x = hw;
-                v1.x = hw;
-                this.pUpdateOrAddSegment(2, v0, v1);
-                v0.z = -hd;
-                v1.z = -hd;
-                this.pUpdateOrAddSegment(3, v0, v1);
-
-                v0.x = -hw;
-                v0.y = -hh;
-                v0.z = -hd;
-                v1.x = hw;
-                v1.y = -hh;
-                v1.z = -hd;
-                this.pUpdateOrAddSegment(4, v0, v1);
-                v0.y = hh;
-                v1.y = hh;
-                this.pUpdateOrAddSegment(5, v0, v1);
-                v0.z = hd;
-                v1.z = hd;
-                this.pUpdateOrAddSegment(6, v0, v1);
-                v0.y = -hh;
-                v1.y = -hh;
-                this.pUpdateOrAddSegment(7, v0, v1);
-
-                v0.x = -hw;
-                v0.y = -hh;
-                v0.z = -hd;
-                v1.x = -hw;
-                v1.y = -hh;
-                v1.z = hd;
-                this.pUpdateOrAddSegment(8, v0, v1);
-                v0.y = hh;
-                v1.y = hh;
-                this.pUpdateOrAddSegment(9, v0, v1);
-                v0.x = hw;
-                v1.x = hw;
-                this.pUpdateOrAddSegment(10, v0, v1);
-                v0.y = -hh;
-                v1.y = -hh;
-                this.pUpdateOrAddSegment(11, v0, v1);
-            };
-            return WireframeCube;
-        })(away.primitives.WireframePrimitiveBase);
-        primitives.WireframeCube = WireframeCube;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (primitives) {
-        //TODO - convert to geometry primitive
-        /**
-        * Generates a wireframd cylinder primitive.
-        */
-        var WireframeCylinder = (function (_super) {
-            __extends(WireframeCylinder, _super);
-            /**
-            * Creates a new WireframeCylinder instance
-            *
-            * @param topRadius Top radius of the cylinder. Defaults to 50.
-            * @param bottomRadius Bottom radius of the cylinder. Defaults to 50.
-            * @param cylinderHeight The height of the cylinder. Defaults to 100.
-            * @param segmentsW Number of radial segments. Defaults to 16.
-            * @param segmentsH Number of vertical segments. Defaults to 1.
-            * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
-            * @param thickness The thickness of the wireframe lines. Defaults to 1.
-            */
-            function WireframeCylinder(topRadius, bottomRadius, cylinderHeight, segmentsW, segmentsH, color, thickness) {
-                if (typeof topRadius === "undefined") { topRadius = 50; }
-                if (typeof bottomRadius === "undefined") { bottomRadius = 50; }
-                if (typeof cylinderHeight === "undefined") { cylinderHeight = 100; }
-                if (typeof segmentsW === "undefined") { segmentsW = 16; }
-                if (typeof segmentsH === "undefined") { segmentsH = 1; }
-                if (typeof color === "undefined") { color = 0xFFFFFF; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                _super.call(this, color, thickness);
-                this._topRadius = topRadius;
-                this._bottomRadius = bottomRadius;
-                this._segmentsW = segmentsW;
-                this._segmentsH = segmentsH;
-
-                this._cylinderHeight = cylinderHeight;
-            }
-            Object.defineProperty(WireframeCylinder.prototype, "bottomRadius", {
-                /**
-                * Bottom radius of the cylinder. Defaults to 50.
-                */
-                get: function () {
-                    return this._bottomRadius;
-                },
-                set: function (value) {
-                    if (this._bottomRadius == value)
-                        return;
-
-                    this._bottomRadius = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeCylinder.prototype, "cylinderHeight", {
-                /**
-                * The size of the cylinder along its Y-axis. Defaults to 100.
-                */
-                get: function () {
-                    return this._cylinderHeight;
-                },
-                set: function (value) {
-                    if (this._cylinderHeight == value)
-                        return;
-
-                    this._cylinderHeight == value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeCylinder.prototype, "segmentsH", {
-                /**
-                * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
-                */
-                get: function () {
-                    return this._segmentsH;
-                },
-                set: function (value) {
-                    if (this._segmentsH == value)
-                        return;
-
-                    this._segmentsH = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeCylinder.prototype, "segmentsW", {
-                /**
-                * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
-                */
-                get: function () {
-                    return this._segmentsW;
-                },
-                set: function (value) {
-                    if (this._segmentsW == value)
-                        return;
-
-                    this._segmentsW = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeCylinder.prototype, "topRadius", {
-                /**
-                * Top radius of the cylinder. Defaults to 50.
-                */
-                get: function () {
-                    return this._topRadius;
-                },
-                set: function (value) {
-                    if (this._topRadius == value)
-                        return;
-
-                    this._topRadius = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            WireframeCylinder.prototype.pBuildGeometry = function () {
-                var i, j;
-                var radius = this._topRadius;
-                var revolutionAngle;
-                var revolutionAngleDelta = WireframeCylinder.TWO_PI / this._segmentsW;
-                var nextVertexIndex = 0;
-                var x, y, z;
-
-                var lastLayer = new Array(this._segmentsH + 1);
-
-                for (j = 0; j <= this._segmentsH; ++j) {
-                    lastLayer[j] = new Array(this._segmentsW + 1);
-
-                    radius = this._topRadius - ((j / this._segmentsH) * (this._topRadius - this._bottomRadius));
-                    z = this._cylinderHeight * (j / this._segmentsH - 0.5);
-
-                    var previousV = null;
-
-                    for (i = 0; i <= this._segmentsW; ++i) {
-                        // revolution vertex
-                        revolutionAngle = i * revolutionAngleDelta;
-                        x = radius * Math.cos(revolutionAngle);
-                        y = radius * Math.sin(revolutionAngle);
-                        var vertex;
-                        if (previousV) {
-                            vertex = new away.geom.Vector3D(x, -z, y);
-                            this.pUpdateOrAddSegment(nextVertexIndex++, vertex, previousV);
-                            previousV = vertex;
-                        } else
-                            previousV = new away.geom.Vector3D(x, -z, y);
-
-                        if (j > 0) {
-                            this.pUpdateOrAddSegment(nextVertexIndex++, vertex, lastLayer[j - 1][i]);
-                        }
-                        lastLayer[j][i] = previousV;
-                    }
-                }
-            };
-            WireframeCylinder.TWO_PI = 2 * Math.PI;
-            return WireframeCylinder;
-        })(away.primitives.WireframePrimitiveBase);
-        primitives.WireframeCylinder = WireframeCylinder;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../_definitions.ts"/>
-    (function (primitives) {
-        //TODO - convert to geometry primitive
-        /**
-        * A WireframePlane primitive mesh.
-        */
-        var WireframePlane = (function (_super) {
-            __extends(WireframePlane, _super);
-            /**
-            * Creates a new WireframePlane object.
-            *
-            * @param planeWidth The size of the plane along its X-axis. Defaults to 100.
-            * @param planeHeight The size of the plane along its Y-axis. Defaults to 100.
-            * @param segmentsW The number of segments that make up the plane along the X-axis. Defaults to 10.
-            * @param segmentsH The number of segments that make up the plane along the Y-axis. Defaults to 10.
-            * @param color The colour of the wireframe lines. Defaults to 0xFFFFFF.
-            * @param thickness The thickness of the wireframe lines. Defaults to 1.
-            * @param orientation The orientaion in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
-            */
-            function WireframePlane(planeWidth, planeHeight, segmentsW, segmentsH, color, thickness, orientation) {
-                if (typeof planeWidth === "undefined") { planeWidth = 100; }
-                if (typeof planeHeight === "undefined") { planeHeight = 100; }
-                if (typeof segmentsW === "undefined") { segmentsW = 10; }
-                if (typeof segmentsH === "undefined") { segmentsH = 10; }
-                if (typeof color === "undefined") { color = 0xFFFFFF; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                if (typeof orientation === "undefined") { orientation = "xz"; }
-                _super.call(this, color, thickness);
-
-                this._segmentsW = segmentsW;
-                this._segmentsH = segmentsH;
-                this._orientation = orientation;
-
-                this._planeWidth = planeWidth;
-                this._planeHeight = planeHeight;
-            }
-            Object.defineProperty(WireframePlane.prototype, "planeHeight", {
-                /**
-                * The size of the plane along its Y-axis. Defaults to 100.
-                */
-                get: function () {
-                    return this._planeHeight;
-                },
-                set: function (value) {
-                    if (this._planeHeight == value)
-                        return;
-
-                    this._planeHeight == value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframePlane.prototype, "planeWidth", {
-                /**
-                * The size of the plane along its X-axis. Defaults to 100.
-                */
-                get: function () {
-                    return this._planeWidth;
-                },
-                set: function (value) {
-                    if (this._planeWidth == value)
-                        return;
-
-                    this._planeWidth == value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframePlane.prototype, "orientation", {
-                /**
-                * The orientaion in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
-                */
-                get: function () {
-                    return this._orientation;
-                },
-                set: function (value) {
-                    if (this._orientation == value)
-                        return;
-
-                    this._orientation = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframePlane.prototype, "segmentsH", {
-                /**
-                * The number of segments that make up the plane along the Y-axis. Defaults to 10.
-                */
-                get: function () {
-                    return this._segmentsH;
-                },
-                set: function (value) {
-                    if (this._segmentsH == value)
-                        return;
-
-                    this._segmentsH = value;
-
-                    this.removeAllSegments();
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframePlane.prototype, "segmentsW", {
-                /**
-                * The number of segments that make up the plane along the X-axis. Defaults to 10.
-                */
-                get: function () {
-                    return this._segmentsW;
-                },
-                set: function (value) {
-                    if (this._segmentsW == value)
-                        return;
-
-                    this._segmentsW = value;
-
-                    this.removeAllSegments();
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            /**
-            * @inheritDoc
-            */
-            WireframePlane.prototype.pBuildGeometry = function () {
-                var v0 = new away.geom.Vector3D();
-                var v1 = new away.geom.Vector3D();
-                var hw = this._planeWidth / 2;
-                var hh = this._planeHeight / 2;
-                var index = 0;
-                var ws, hs;
-
-                if (this._orientation == WireframePlane.ORIENTATION_XY) {
-                    v0.y = hh;
-                    v0.z = 0;
-                    v1.y = -hh;
-                    v1.z = 0;
-
-                    for (ws = 0; ws <= this._segmentsW; ++ws) {
-                        v0.x = v1.x = this._planeWidth * ws / this._segmentsW - hw;
-                        this.pUpdateOrAddSegment(index++, v0, v1);
+            PrimitiveSpherePrefab.prototype._pBuildGeometry = function (target, geometryType) {
+                var indices;
+                var positions;
+                var normals;
+                var tangents;
+
+                var i;
+                var j;
+                var vidx, fidx;
+
+                var comp1;
+                var comp2;
+                var numVertices;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    numVertices = (this._segmentsH + 1) * (this._segmentsW + 1);
+
+                    if (numVertices == triangleGeometry.numVertices && triangleGeometry.indices != null) {
+                        indices = triangleGeometry.indices;
+                        positions = triangleGeometry.positions;
+                        normals = triangleGeometry.vertexNormals;
+                        tangents = triangleGeometry.vertexTangents;
+                    } else {
+                        indices = new Array((this._segmentsH - 1) * this._segmentsW * 6);
+                        positions = new Array(numVertices * 3);
+                        normals = new Array(numVertices * 3);
+                        tangents = new Array(numVertices * 3);
+
+                        this._pInvalidateUVs();
                     }
 
-                    v0.x = -hw;
-                    v1.x = hw;
-
-                    for (hs = 0; hs <= this._segmentsH; ++hs) {
-                        v0.y = v1.y = this._planeHeight * hs / this._segmentsH - hh;
-                        this.pUpdateOrAddSegment(index++, v0, v1);
-                    }
-                } else if (this._orientation == WireframePlane.ORIENTATION_XZ) {
-                    v0.z = hh;
-                    v0.y = 0;
-                    v1.z = -hh;
-                    v1.y = 0;
-
-                    for (ws = 0; ws <= this._segmentsW; ++ws) {
-                        v0.x = v1.x = this._planeWidth * ws / this._segmentsW - hw;
-                        this.pUpdateOrAddSegment(index++, v0, v1);
-                    }
-
-                    v0.x = -hw;
-                    v1.x = hw;
-
-                    for (hs = 0; hs <= this._segmentsH; ++hs) {
-                        v0.z = v1.z = this._planeHeight * hs / this._segmentsH - hh;
-                        this.pUpdateOrAddSegment(index++, v0, v1);
-                    }
-                } else if (this._orientation == WireframePlane.ORIENTATION_YZ) {
-                    v0.y = hh;
-                    v0.x = 0;
-                    v1.y = -hh;
-                    v1.x = 0;
-
-                    for (ws = 0; ws <= this._segmentsW; ++ws) {
-                        v0.z = v1.z = this._planeWidth * ws / this._segmentsW - hw;
-                        this.pUpdateOrAddSegment(index++, v0, v1);
-                    }
-
-                    v0.z = hw;
-                    v1.z = -hw;
-
-                    for (hs = 0; hs <= this._segmentsH; ++hs) {
-                        v0.y = v1.y = this._planeHeight * hs / this._segmentsH - hh;
-                        this.pUpdateOrAddSegment(index++, v0, v1);
-                    }
-                }
-            };
-            WireframePlane.ORIENTATION_YZ = "yz";
-            WireframePlane.ORIENTATION_XY = "xy";
-            WireframePlane.ORIENTATION_XZ = "xz";
-            return WireframePlane;
-        })(away.primitives.WireframePrimitiveBase);
-        primitives.WireframePlane = WireframePlane;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (primitives) {
-        //TODO - convert to geometry primitive
-        /**
-        * A WireframeRegularPolygon primitive mesh.
-        */
-        var WireframeRegularPolygon = (function (_super) {
-            __extends(WireframeRegularPolygon, _super);
-            /**
-            * Creates a new WireframeRegularPolygon object.
-            *
-            * @param radius The radius of the polygon. Defaults to 50.
-            * @param sides The number of sides on the polygon. Defaults to 16.
-            * @param color The colour of the wireframe lines.  Defaults to <code>0xFFFFFF</code>.
-            * @param thickness The thickness of the wireframe lines.  Defaults to 1.
-            * @param orientation The orientaion in which the plane lies. Defaults to <code>ORIENTATION_YZ</code>.
-            */
-            function WireframeRegularPolygon(radius, sides, color, thickness, orientation) {
-                if (typeof radius === "undefined") { radius = 50; }
-                if (typeof sides === "undefined") { sides = 16; }
-                if (typeof color === "undefined") { color = 0xFFFFFF; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                if (typeof orientation === "undefined") { orientation = "xz"; }
-                _super.call(this, color, thickness);
-
-                this._radius = radius;
-                this._sides = sides;
-                this._orientation = orientation;
-            }
-            Object.defineProperty(WireframeRegularPolygon.prototype, "orientation", {
-                /**
-                * The orientaion in which the polygon lies. Defaults to <code>ORIENTATION_XZ</code>.
-                */
-                get: function () {
-                    return this._orientation;
-                },
-                set: function (value) {
-                    if (this._orientation == value)
-                        return;
-
-                    this._orientation = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeRegularPolygon.prototype, "radius", {
-                /**
-                * The radius of the regular polygon. Defaults to 100.
-                */
-                get: function () {
-                    return this._radius;
-                },
-                set: function (value) {
-                    if (this._radius == value)
-                        return;
-
-                    this._radius = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeRegularPolygon.prototype, "sides", {
-                /**
-                * The number of sides to the regular polygon. Defaults to 16.
-                */
-                get: function () {
-                    return this._sides;
-                },
-                set: function (value) {
-                    if (this._sides == value)
-                        return;
-
-                    this._sides = value;
-
-                    this.removeAllSegments();
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            /**
-            * @inheritDoc
-            */
-            WireframeRegularPolygon.prototype.pBuildGeometry = function () {
-                var v0 = new away.geom.Vector3D();
-                var v1 = new away.geom.Vector3D();
-                var index = 0;
-                var s;
-
-                if (this._orientation == WireframeRegularPolygon.ORIENTATION_XY) {
-                    v0.z = 0;
-                    v1.z = 0;
-
-                    for (s = 0; s < this._sides; ++s) {
-                        v0.x = this._radius * Math.cos(2 * Math.PI * s / this._sides);
-                        v0.y = this._radius * Math.sin(2 * Math.PI * s / this._sides);
-                        v1.x = this._radius * Math.cos(2 * Math.PI * (s + 1) / this._sides);
-                        v1.y = this._radius * Math.sin(2 * Math.PI * (s + 1) / this._sides);
-                        this.pUpdateOrAddSegment(index++, v0, v1);
-                    }
-                } else if (this._orientation == WireframeRegularPolygon.ORIENTATION_XZ) {
-                    v0.y = 0;
-                    v1.y = 0;
-
-                    for (s = 0; s < this._sides; ++s) {
-                        v0.x = this._radius * Math.cos(2 * Math.PI * s / this._sides);
-                        v0.z = this._radius * Math.sin(2 * Math.PI * s / this._sides);
-                        v1.x = this._radius * Math.cos(2 * Math.PI * (s + 1) / this._sides);
-                        v1.z = this._radius * Math.sin(2 * Math.PI * (s + 1) / this._sides);
-                        this.pUpdateOrAddSegment(index++, v0, v1);
-                    }
-                } else if (this._orientation == WireframeRegularPolygon.ORIENTATION_YZ) {
-                    v0.x = 0;
-                    v1.x = 0;
-
-                    for (s = 0; s < this._sides; ++s) {
-                        v0.z = this._radius * Math.cos(2 * Math.PI * s / this._sides);
-                        v0.y = this._radius * Math.sin(2 * Math.PI * s / this._sides);
-                        v1.z = this._radius * Math.cos(2 * Math.PI * (s + 1) / this._sides);
-                        v1.y = this._radius * Math.sin(2 * Math.PI * (s + 1) / this._sides);
-                        this.pUpdateOrAddSegment(index++, v0, v1);
-                    }
-                }
-            };
-            WireframeRegularPolygon.ORIENTATION_YZ = "yz";
-            WireframeRegularPolygon.ORIENTATION_XY = "xy";
-            WireframeRegularPolygon.ORIENTATION_XZ = "xz";
-            return WireframeRegularPolygon;
-        })(away.primitives.WireframePrimitiveBase);
-        primitives.WireframeRegularPolygon = WireframeRegularPolygon;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../_definitions.ts" />
-    (function (primitives) {
-        //TODO - convert to geometry primitive
-        /**
-        * A WireframeTetrahedron primitive mesh
-        */
-        var WireframeTetrahedron = (function (_super) {
-            __extends(WireframeTetrahedron, _super);
-            /**
-            * Creates a new WireframeTetrahedron object.
-            *
-            * @param tetrahedronWidth The size of the tetrahedron along its X-axis. Defaults to 100.
-            * @param tetrahedronHeight The size of the tetranhedron along its Y-axis. Defaults to 100.
-            * @param tetrahedronDepth The size of the tetranhedron along its Z-axis. Defaults to 100.
-            * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
-            * @param thickness The thickness of the wireframe lines. Defaults to <code>ORIENTATION_XZ</code>.
-            */
-            function WireframeTetrahedron(tetrahedronWidth, tetrahedronHeight, tetrahedronDepth, color, thickness, orientation) {
-                if (typeof tetrahedronWidth === "undefined") { tetrahedronWidth = 100; }
-                if (typeof tetrahedronHeight === "undefined") { tetrahedronHeight = 100; }
-                if (typeof tetrahedronDepth === "undefined") { tetrahedronDepth = 100; }
-                if (typeof color === "undefined") { color = 0xffffff; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                if (typeof orientation === "undefined") { orientation = "xz"; }
-                _super.call(this, color, thickness);
-
-                this._orientation = orientation;
-
-                this._tetrahedronHeight = tetrahedronHeight;
-                this._tetrahedronWidth = tetrahedronWidth;
-                this._tetrahedronDepth = tetrahedronDepth;
-            }
-            Object.defineProperty(WireframeTetrahedron.prototype, "orientation", {
-                /**
-                * The orientation in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
-                */
-                get: function () {
-                    return this._orientation;
-                },
-                set: function (value) {
-                    if (this._orientation == value)
-                        return;
-
-                    this._orientation = value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeTetrahedron.prototype, "tetrahedronDepth", {
-                /**
-                * The size of the tetrahedron along its Z-axis. Defaults to 100.
-                */
-                get: function () {
-                    return this._tetrahedronDepth;
-                },
-                set: function (value) {
-                    if (this._tetrahedronDepth == value)
-                        return;
-
-                    this._tetrahedronDepth == value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeTetrahedron.prototype, "tetrahedronHeight", {
-                /**
-                * The size of the tetrahedron along its Y-axis. Defaults to 100.
-                */
-                get: function () {
-                    return this._tetrahedronHeight;
-                },
-                set: function (value) {
-                    if (this._tetrahedronHeight == value)
-                        return;
-
-                    this._tetrahedronHeight == value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeTetrahedron.prototype, "tetrahedronWidth", {
-                /**
-                * The size of the tetrahedron along its X-axis. Defaults to 100.
-                */
-                get: function () {
-                    return this._tetrahedronWidth;
-                },
-                set: function (value) {
-                    if (this._tetrahedronWidth == value)
-                        return;
-
-                    this._tetrahedronWidth == value;
-
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            /**
-            * @inheritDoc
-            */
-            WireframeTetrahedron.prototype.pBuildGeometry = function () {
-                var bv0;
-                var bv1;
-                var bv2;
-                var bv3;
-                var top;
-
-                var hw = this._tetrahedronWidth / 2;
-                var hd = this._tetrahedronDepth / 2;
-
-                switch (this._orientation) {
-                    case WireframeTetrahedron.ORIENTATION_XY:
-                        bv0 = new away.geom.Vector3D(-hw, hd, 0);
-                        bv1 = new away.geom.Vector3D(hw, hd, 0);
-                        bv2 = new away.geom.Vector3D(hw, -hd, 0);
-                        bv3 = new away.geom.Vector3D(-hw, -hd, 0);
-                        top = new away.geom.Vector3D(0, 0, this._tetrahedronHeight);
-                        break;
-                    case WireframeTetrahedron.ORIENTATION_XZ:
-                        bv0 = new away.geom.Vector3D(-hw, 0, hd);
-                        bv1 = new away.geom.Vector3D(hw, 0, hd);
-                        bv2 = new away.geom.Vector3D(hw, 0, -hd);
-                        bv3 = new away.geom.Vector3D(-hw, 0, -hd);
-                        top = new away.geom.Vector3D(0, this._tetrahedronHeight, 0);
-                        break;
-                    case WireframeTetrahedron.ORIENTATION_YZ:
-                        bv0 = new away.geom.Vector3D(0, -hw, hd);
-                        bv1 = new away.geom.Vector3D(0, hw, hd);
-                        bv2 = new away.geom.Vector3D(0, hw, -hd);
-                        bv3 = new away.geom.Vector3D(0, -hw, -hd);
-                        top = new away.geom.Vector3D(this._tetrahedronHeight, 0, 0);
-                        break;
-                }
-
-                //bottom
-                this.pUpdateOrAddSegment(0, bv0, bv1);
-                this.pUpdateOrAddSegment(1, bv1, bv2);
-                this.pUpdateOrAddSegment(2, bv2, bv3);
-                this.pUpdateOrAddSegment(3, bv3, bv0);
-
-                //bottom to top
-                this.pUpdateOrAddSegment(4, bv0, top);
-                this.pUpdateOrAddSegment(5, bv1, top);
-                this.pUpdateOrAddSegment(6, bv2, top);
-                this.pUpdateOrAddSegment(7, bv3, top);
-            };
-            WireframeTetrahedron.ORIENTATION_YZ = "yz";
-            WireframeTetrahedron.ORIENTATION_XY = "xy";
-            WireframeTetrahedron.ORIENTATION_XZ = "xz";
-            return WireframeTetrahedron;
-        })(away.primitives.WireframePrimitiveBase);
-        primitives.WireframeTetrahedron = WireframeTetrahedron;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (utils) {
-        var GeometryUtils = (function () {
-            function GeometryUtils() {
-            }
-            /**
-            * Build a list of sub-geometries from raw data vectors, splitting them up in
-            * such a way that they won't exceed buffer length limits.
-            */
-            GeometryUtils.fromVectors = function (verts, indices /*uint*/ , uvs, normals, tangents, weights, jointIndices, triangleOffset) {
-                if (typeof triangleOffset === "undefined") { triangleOffset = 0; }
-                var LIMIT_VERTS = 3 * 0xffff;
-                var LIMIT_INDICES = 15 * 0xffff;
-
-                var subs = new Array();
-
-                if (uvs && !uvs.length)
-                    uvs = null;
-
-                if (normals && !normals.length)
-                    normals = null;
-
-                if (tangents && !tangents.length)
-                    tangents = null;
-
-                if (weights && !weights.length)
-                    weights = null;
-
-                if (jointIndices && !jointIndices.length)
-                    jointIndices = null;
-
-                if ((indices.length >= LIMIT_INDICES) || (verts.length >= LIMIT_VERTS)) {
-                    var i;
-                    var len;
-                    var outIndex;
-                    var j;
-                    var splitVerts = new Array();
-                    var splitIndices = new Array();
-                    var splitUvs = (uvs != null) ? new Array() : null;
-                    var splitNormals = (normals != null) ? new Array() : null;
-                    var splitTangents = (tangents != null) ? new Array() : null;
-                    var splitWeights = (weights != null) ? new Array() : null;
-                    var splitJointIndices = (jointIndices != null) ? new Array() : null;
-
-                    var mappings = new Array(verts.length / 3);
-
-                    i = mappings.length;
-
-                    while (i-- > 0) {
-                        mappings[i] = -1;
-                    }
-
-                    var originalIndex;
-                    var splitIndex;
-                    var o0;
-                    var o1;
-                    var o2;
-                    var s0;
-                    var s1;
-                    var s2;
-                    var su;
-                    var ou;
-                    var sv;
-                    var ov;
-
-                    // Loop over all triangles
-                    outIndex = 0;
-                    len = indices.length;
-
-                    for (i = 0; i < len; i += 3) {
-                        splitIndex = splitVerts.length + 6;
-
-                        if (((outIndex + 2) >= LIMIT_INDICES) || (splitIndex >= LIMIT_VERTS)) {
-                            subs.push(GeometryUtils.constructSubGeometry(splitVerts, splitIndices, splitUvs, splitNormals, splitTangents, splitWeights, splitJointIndices, triangleOffset));
-                            splitVerts = new Array();
-                            splitIndices = new Array();
-                            splitUvs = (uvs != null) ? new Array() : null;
-                            splitNormals = (normals != null) ? new Array() : null;
-                            splitTangents = (tangents != null) ? new Array() : null;
-                            splitWeights = (weights != null) ? new Array() : null;
-                            splitJointIndices = (jointIndices != null) ? new Array() : null;
-                            splitIndex = 0;
-                            j = mappings.length;
-
-                            while (j-- > 0) {
-                                mappings[j] = -1;
-                            }
-
-                            outIndex = 0;
-                        }
-
-                        for (j = 0; j < 3; j++) {
-                            originalIndex = indices[i + j];
-
-                            if (mappings[originalIndex] >= 0) {
-                                splitIndex = mappings[originalIndex];
+                    vidx = 0;
+                    fidx = 0;
+
+                    var startIndex;
+                    var t1;
+                    var t2;
+
+                    for (j = 0; j <= this._segmentsH; ++j) {
+                        startIndex = vidx;
+
+                        var horangle = Math.PI * j / this._segmentsH;
+                        var z = -this._radius * Math.cos(horangle);
+                        var ringradius = this._radius * Math.sin(horangle);
+
+                        for (i = 0; i <= this._segmentsW; ++i) {
+                            var verangle = 2 * Math.PI * i / this._segmentsW;
+                            var x = ringradius * Math.cos(verangle);
+                            var y = ringradius * Math.sin(verangle);
+                            var normLen = 1 / Math.sqrt(x * x + y * y + z * z);
+                            var tanLen = Math.sqrt(y * y + x * x);
+
+                            if (this._yUp) {
+                                t1 = 0;
+                                t2 = tanLen > .007 ? x / tanLen : 0;
+                                comp1 = -z;
+                                comp2 = y;
                             } else {
-                                o0 = originalIndex * 3 + 0;
-                                o1 = originalIndex * 3 + 1;
-                                o2 = originalIndex * 3 + 2;
-
-                                // This vertex does not yet exist in the split list and
-                                // needs to be copied from the long list.
-                                splitIndex = splitVerts.length / 3;
-
-                                s0 = splitIndex * 3 + 0;
-                                s1 = splitIndex * 3 + 1;
-                                s2 = splitIndex * 3 + 2;
-
-                                splitVerts[s0] = verts[o0];
-                                splitVerts[s1] = verts[o1];
-                                splitVerts[s2] = verts[o2];
-
-                                if (uvs) {
-                                    su = splitIndex * 2 + 0;
-                                    sv = splitIndex * 2 + 1;
-                                    ou = originalIndex * 2 + 0;
-                                    ov = originalIndex * 2 + 1;
-
-                                    splitUvs[su] = uvs[ou];
-                                    splitUvs[sv] = uvs[ov];
-                                }
-
-                                if (normals) {
-                                    splitNormals[s0] = normals[o0];
-                                    splitNormals[s1] = normals[o1];
-                                    splitNormals[s2] = normals[o2];
-                                }
-
-                                if (tangents) {
-                                    splitTangents[s0] = tangents[o0];
-                                    splitTangents[s1] = tangents[o1];
-                                    splitTangents[s2] = tangents[o2];
-                                }
-
-                                if (weights) {
-                                    splitWeights[s0] = weights[o0];
-                                    splitWeights[s1] = weights[o1];
-                                    splitWeights[s2] = weights[o2];
-                                }
-
-                                if (jointIndices) {
-                                    splitJointIndices[s0] = jointIndices[o0];
-                                    splitJointIndices[s1] = jointIndices[o1];
-                                    splitJointIndices[s2] = jointIndices[o2];
-                                }
-
-                                mappings[originalIndex] = splitIndex;
+                                t1 = tanLen > .007 ? x / tanLen : 0;
+                                t2 = 0;
+                                comp1 = y;
+                                comp2 = z;
                             }
 
-                            // Store new index, which may have come from the mapping look-up,
-                            // or from copying a new set of vertex data from the original vector
-                            splitIndices[outIndex + j] = splitIndex;
+                            if (i == this._segmentsW) {
+                                positions[vidx] = positions[startIndex];
+                                positions[vidx + 1] = positions[startIndex + 1];
+                                positions[vidx + 2] = positions[startIndex + 2];
+                                normals[vidx] = normals[startIndex] + (x * normLen) * .5;
+                                normals[vidx + 1] = normals[startIndex + 1] + (comp1 * normLen) * .5;
+                                normals[vidx + 2] = normals[startIndex + 2] + (comp2 * normLen) * .5;
+                                tangents[vidx] = tanLen > .007 ? -y / tanLen : 1;
+                                tangents[vidx + 1] = t1;
+                                tangents[vidx + 2] = t2;
+                            } else {
+                                positions[vidx] = x;
+                                positions[vidx + 1] = comp1;
+                                positions[vidx + 2] = comp2;
+                                normals[vidx] = x * normLen;
+                                normals[vidx + 1] = comp1 * normLen;
+                                normals[vidx + 2] = comp2 * normLen;
+                                tangents[vidx] = tanLen > .007 ? -y / tanLen : 1;
+                                tangents[vidx + 1] = t1;
+                                tangents[vidx + 2] = t2;
+                            }
+
+                            if (i > 0 && j > 0) {
+                                var a = (this._segmentsW + 1) * j + i;
+                                var b = (this._segmentsW + 1) * j + i - 1;
+                                var c = (this._segmentsW + 1) * (j - 1) + i - 1;
+                                var d = (this._segmentsW + 1) * (j - 1) + i;
+
+                                if (j == this._segmentsH) {
+                                    positions[vidx] = positions[startIndex];
+                                    positions[vidx + 1] = positions[startIndex + 1];
+                                    positions[vidx + 2] = positions[startIndex + 2];
+
+                                    indices[fidx++] = a;
+                                    indices[fidx++] = c;
+                                    indices[fidx++] = d;
+                                } else if (j == 1) {
+                                    indices[fidx++] = a;
+                                    indices[fidx++] = b;
+                                    indices[fidx++] = c;
+                                } else {
+                                    indices[fidx++] = a;
+                                    indices[fidx++] = b;
+                                    indices[fidx++] = c;
+                                    indices[fidx++] = a;
+                                    indices[fidx++] = c;
+                                    indices[fidx++] = d;
+                                }
+                            }
+
+                            vidx += 3;
                         }
-
-                        outIndex += 3;
                     }
 
-                    if (splitVerts.length > 0) {
-                        // More was added in the last iteration of the loop.
-                        subs.push(GeometryUtils.constructSubGeometry(splitVerts, splitIndices, splitUvs, splitNormals, splitTangents, splitWeights, splitJointIndices, triangleOffset));
+                    triangleGeometry.updateIndices(indices);
+
+                    triangleGeometry.updatePositions(positions);
+                    triangleGeometry.updateVertexNormals(normals);
+                    triangleGeometry.updateVertexTangents(tangents);
+                } else if (geometryType == "lineSubGeometry") {
+                    var lineGeometry = target;
+
+                    var numSegments = (this._segmentsH - 1) * this._segmentsW * 2;
+                    var startPositions;
+                    var endPositions;
+                    var thickness;
+
+                    if (lineGeometry.indices != null && numSegments == lineGeometry.numSegments) {
+                        startPositions = lineGeometry.startPositions;
+                        endPositions = lineGeometry.endPositions;
+                        thickness = lineGeometry.thickness;
+                    } else {
+                        startPositions = new Array(numSegments * 3);
+                        endPositions = new Array(numSegments * 3);
+                        thickness = new Array(numSegments);
                     }
-                } else {
-                    subs.push(GeometryUtils.constructSubGeometry(verts, indices, uvs, normals, tangents, weights, jointIndices, triangleOffset));
+
+                    vidx = 0;
+
+                    fidx = 0;
+
+                    for (j = 0; j <= this._segmentsH; ++j) {
+                        var horangle = Math.PI * j / this._segmentsH;
+                        var z = -this._radius * Math.cos(horangle);
+                        var ringradius = this._radius * Math.sin(horangle);
+
+                        for (i = 0; i <= this._segmentsW; ++i) {
+                            var verangle = 2 * Math.PI * i / this._segmentsW;
+                            var x = ringradius * Math.cos(verangle);
+                            var y = ringradius * Math.sin(verangle);
+
+                            if (this._yUp) {
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i > 0 && j > 0) {
+                                //horizonal lines
+                                if (j < this._segmentsH) {
+                                    endPositions[vidx] = x;
+                                    endPositions[vidx + 1] = comp1;
+                                    endPositions[vidx + 2] = comp2;
+
+                                    thickness[fidx++] = 1;
+
+                                    vidx += 3;
+                                }
+
+                                //vertical lines
+                                startPositions[vidx] = endPositions[vidx - this._segmentsW * 6];
+                                startPositions[vidx + 1] = endPositions[vidx + 1 - this._segmentsW * 6];
+                                startPositions[vidx + 2] = endPositions[vidx + 2 - this._segmentsW * 6];
+
+                                endPositions[vidx] = x;
+                                endPositions[vidx + 1] = comp1;
+                                endPositions[vidx + 2] = comp2;
+
+                                thickness[fidx++] = 1;
+
+                                vidx += 3;
+                            }
+
+                            if (i < this._segmentsW && j > 0 && j < this._segmentsH) {
+                                startPositions[vidx] = x;
+                                startPositions[vidx + 1] = comp1;
+                                startPositions[vidx + 2] = comp2;
+                            }
+                        }
+                    }
+
+                    // build real data from raw data
+                    lineGeometry.updatePositions(startPositions, endPositions);
+                    lineGeometry.updateThickness(thickness);
                 }
-
-                return subs;
             };
 
             /**
-            * Build a sub-geometry from data vectors.
+            * @inheritDoc
             */
-            GeometryUtils.constructSubGeometry = function (verts, indices /*uint*/ , uvs, normals, tangents, weights, jointIndices, triangleOffset) {
-                var sub;
+            PrimitiveSpherePrefab.prototype._pBuildUVs = function (target, geometryType) {
+                var i, j;
+                var numVertices = (this._segmentsH + 1) * (this._segmentsW + 1);
+                var uvs;
 
-                if (weights && jointIndices) {
-                    // If there were weights and joint indices defined, this
-                    // is a skinned mesh and needs to be built from skinned
-                    // sub-geometries.
-                    sub = new away.base.SkinnedSubGeometry(weights.length / (verts.length / 3));
+                if (geometryType == "triangleSubGeometry") {
+                    numVertices = (this._segmentsH + 1) * (this._segmentsW + 1);
 
-                    var ssg = sub;
+                    var triangleGeometry = target;
 
-                    ssg.iUpdateJointWeightsData(weights);
-                    ssg.iUpdateJointIndexData(jointIndices);
-                } else {
-                    sub = new away.base.CompactSubGeometry();
-                }
-
-                sub.updateIndexData(indices);
-                sub.fromVectors(verts, uvs, normals, tangents);
-
-                return sub;
-            };
-
-            /*
-            * Combines a set of separate raw buffers into an interleaved one, compatible
-            * with CompactSubGeometry. SubGeometry uses separate buffers, whereas CompactSubGeometry
-            * uses a single, combined buffer.
-            * */
-            GeometryUtils.interleaveBuffers = function (numVertices, vertices, normals, tangents, uvs, suvs) {
-                if (typeof vertices === "undefined") { vertices = null; }
-                if (typeof normals === "undefined") { normals = null; }
-                if (typeof tangents === "undefined") { tangents = null; }
-                if (typeof uvs === "undefined") { uvs = null; }
-                if (typeof suvs === "undefined") { suvs = null; }
-                var i, compIndex, uvCompIndex, interleavedCompIndex;
-                var interleavedBuffer;
-
-                interleavedBuffer = new Array();
-
-                for (i = 0; i < numVertices; ++i) {
-                    uvCompIndex = i * 2;
-                    compIndex = i * 3;
-                    interleavedCompIndex = i * 13;
-
-                    interleavedBuffer[interleavedCompIndex] = vertices ? vertices[compIndex] : 0;
-                    interleavedBuffer[interleavedCompIndex + 1] = vertices ? vertices[compIndex + 1] : 0;
-                    interleavedBuffer[interleavedCompIndex + 2] = vertices ? vertices[compIndex + 2] : 0;
-                    interleavedBuffer[interleavedCompIndex + 3] = normals ? normals[compIndex] : 0;
-                    interleavedBuffer[interleavedCompIndex + 4] = normals ? normals[compIndex + 1] : 0;
-                    interleavedBuffer[interleavedCompIndex + 5] = normals ? normals[compIndex + 2] : 0;
-                    interleavedBuffer[interleavedCompIndex + 6] = tangents ? tangents[compIndex] : 0;
-                    interleavedBuffer[interleavedCompIndex + 7] = tangents ? tangents[compIndex + 1] : 0;
-                    interleavedBuffer[interleavedCompIndex + 8] = tangents ? tangents[compIndex + 2] : 0;
-                    interleavedBuffer[interleavedCompIndex + 9] = uvs ? uvs[uvCompIndex] : 0;
-                    interleavedBuffer[interleavedCompIndex + 10] = uvs ? uvs[uvCompIndex + 1] : 0;
-                    interleavedBuffer[interleavedCompIndex + 11] = suvs ? suvs[uvCompIndex] : 0;
-                    interleavedBuffer[interleavedCompIndex + 12] = suvs ? suvs[uvCompIndex + 1] : 0;
-                }
-
-                return interleavedBuffer;
-            };
-
-            /*
-            * returns the subGeometry index in its parent mesh subgeometries vector
-            */
-            GeometryUtils.getMeshSubGeometryIndex = function (subGeometry) {
-                var index;
-                var subGeometries = subGeometry.parentGeometry.subGeometries;
-
-                for (var i = 0; i < subGeometries.length; ++i) {
-                    if (subGeometries[i] == subGeometry) {
-                        index = i;
-                        break;
+                    if (numVertices == triangleGeometry.numVertices && triangleGeometry.uvs != null) {
+                        uvs = triangleGeometry.uvs;
+                    } else {
+                        uvs = new Array(numVertices * 2);
                     }
-                }
 
-                return index;
-            };
-
-            /*
-            * returns the subMesh index in its parent mesh subMeshes vector
-            */
-            GeometryUtils.getMeshSubMeshIndex = function (subMesh) {
-                var index;
-                var subMeshes = subMesh.sourceEntity.subMeshes;
-
-                for (var i = 0; i < subMeshes.length; ++i) {
-                    if (subMeshes[i] == subMesh) {
-                        index = i;
-                        break;
+                    var index = 0;
+                    for (j = 0; j <= this._segmentsH; ++j) {
+                        for (i = 0; i <= this._segmentsW; ++i) {
+                            uvs[index++] = (i / this._segmentsW) * triangleGeometry.scaleU;
+                            uvs[index++] = (j / this._segmentsH) * triangleGeometry.scaleV;
+                        }
                     }
-                }
 
-                return index;
+                    triangleGeometry.updateUVs(uvs);
+                } else if (geometryType == "lineSubGeometry") {
+                    //nothing to do here
+                }
             };
-            return GeometryUtils;
-        })();
-        utils.GeometryUtils = GeometryUtils;
-    })(away.utils || (away.utils = {}));
-    var utils = away.utils;
+            return PrimitiveSpherePrefab;
+        })(away.prefabs.PrimitivePrefabBase);
+        prefabs.PrimitiveSpherePrefab = PrimitiveSpherePrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
@@ -28405,7 +23614,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var CompactSubGeometry = away.base.CompactSubGeometry;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
 
         var ParticleData = (function () {
             function ParticleData() {
@@ -28716,51 +23925,6 @@ var away;
             return SkeletonPose;
         })(away.library.NamedAssetBase);
         animators.SkeletonPose = SkeletonPose;
-    })(away.animators || (away.animators = {}));
-    var animators = away.animators;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (animators) {
-        /**
-        * Provides an abstract base class for nodes in an animation blend tree.
-        */
-        var AnimationNodeBase = (function (_super) {
-            __extends(AnimationNodeBase, _super);
-            /**
-            * Creates a new <code>AnimationNodeBase</code> object.
-            */
-            function AnimationNodeBase() {
-                _super.call(this);
-            }
-            Object.defineProperty(AnimationNodeBase.prototype, "stateClass", {
-                get: function () {
-                    return this._pStateClass;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * @inheritDoc
-            */
-            AnimationNodeBase.prototype.dispose = function () {
-            };
-
-            Object.defineProperty(AnimationNodeBase.prototype, "assetType", {
-                /**
-                * @inheritDoc
-                */
-                get: function () {
-                    return away.library.AssetType.ANIMATION_NODE;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return AnimationNodeBase;
-        })(away.library.NamedAssetBase);
-        animators.AnimationNodeBase = AnimationNodeBase;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
@@ -34737,6 +29901,10 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
+        var StageGL = away.base.StageGL;
+        var AbstractMethodError = away.errors.AbstractMethodError;
+        var MaterialPassBase = away.materials.MaterialPassBase;
+
         /**
         * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
         *
@@ -34776,7 +29944,7 @@ var away;
             Object.defineProperty(AnimationSetBase.prototype, "usesCPU", {
                 /**
                 * Indicates whether the properties of the animation data contained within the set combined with
-                * the vertex registers aslready in use on shading materials allows the animation data to utilise
+                * the vertex registers already in use on shading materials allows the animation data to utilise
                 * GPU calls.
                 */
                 get: function () {
@@ -34798,6 +29966,48 @@ var away;
 
             AnimationSetBase.prototype.cancelGPUCompatibility = function () {
                 this._usesCPU = true;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AnimationSetBase.prototype.getAGALVertexCode = function (pass, sourceRegisters, targetRegisters, profile) {
+                throw new AbstractMethodError();
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AnimationSetBase.prototype.activate = function (stageGL, pass) {
+                throw new AbstractMethodError();
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AnimationSetBase.prototype.deactivate = function (stageGL, pass) {
+                throw new AbstractMethodError();
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AnimationSetBase.prototype.getAGALFragmentCode = function (pass, shadedTarget, profile) {
+                throw new AbstractMethodError();
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AnimationSetBase.prototype.getAGALUVCode = function (pass, UVSource, UVTarget) {
+                throw new AbstractMethodError();
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AnimationSetBase.prototype.doneAGALCode = function (pass) {
+                throw new AbstractMethodError();
             };
 
             Object.defineProperty(AnimationSetBase.prototype, "assetType", {
@@ -34883,6 +30093,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
         var StageGL = away.base.StageGL;
         var Camera = away.entities.Camera;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -35244,6 +30455,11 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
+            AnimatorBase.prototype.getRenderableSubGeometry = function (renderable, sourceSubGeometry) {
+                //nothing to do here
+                return sourceSubGeometry;
+            };
             return AnimatorBase;
         })(away.library.NamedAssetBase);
         animators.AnimatorBase = AnimatorBase;
@@ -35251,12 +30467,12 @@ var away;
     var animators = away.animators;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
-///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
     (function (animators) {
+        var SubGeometryBase = away.base.SubGeometryBase;
         var ParticleGeometry = away.base.ParticleGeometry;
-        var SubMesh = away.base.SubMesh;
+
         var ContextGL = away.gl.ContextGL;
         var Mesh = away.entities.Mesh;
         var StageGL = away.base.StageGL;
@@ -35460,6 +30676,18 @@ var away;
                 _super.prototype.dispose.call(this);
             };
 
+            ParticleAnimationSet.prototype.getAnimationSubGeometry = function (subMesh) {
+                var mesh = subMesh.parentMesh;
+                var animationSubGeometry = (mesh.shareAnimationGeometry) ? this._animationSubGeometries[subMesh.subGeometry.id] : this._animationSubGeometries[subMesh.id];
+
+                if (animationSubGeometry)
+                    return animationSubGeometry;
+
+                this._iGenerateAnimationSubGeometries(mesh);
+
+                return (mesh.shareAnimationGeometry) ? this._animationSubGeometries[subMesh.subGeometry.id] : this._animationSubGeometries[subMesh.id];
+            };
+
             /** @private */
             ParticleAnimationSet.prototype._iGenerateAnimationSubGeometries = function (mesh) {
                 if (this.initParticleFunc == null)
@@ -35483,15 +30711,16 @@ var away;
                     if (mesh.shareAnimationGeometry) {
                         animationSubGeometry = this._animationSubGeometries[subGeometry.id];
 
-                        if (animationSubGeometry) {
-                            subMesh.animationSubGeometry = animationSubGeometry;
+                        if (animationSubGeometry)
                             continue;
-                        }
                     }
 
-                    animationSubGeometry = subMesh.animationSubGeometry = new away.animators.AnimationSubGeometry();
+                    animationSubGeometry = new away.animators.AnimationSubGeometry();
+
                     if (mesh.shareAnimationGeometry)
                         this._animationSubGeometries[subGeometry.id] = animationSubGeometry;
+                    else
+                        this._animationSubGeometries[subMesh.id] = animationSubGeometry;
 
                     newAnimationSubGeometry = true;
 
@@ -35540,7 +30769,7 @@ var away;
                         for (k = 0; k < mesh.subMeshes.length; k++) {
                             subMesh = mesh.subMeshes[k];
                             if (subMesh.subGeometry == particle.subGeometry) {
-                                animationSubGeometry = subMesh.animationSubGeometry;
+                                animationSubGeometry = (mesh.shareAnimationGeometry) ? this._animationSubGeometries[subMesh.subGeometry.id] : this._animationSubGeometries[subMesh.id];
                                 break;
                             }
                         }
@@ -35590,7 +30819,8 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var SubMesh = away.base.SubMesh;
+        var SubGeometryBase = away.base.SubGeometryBase;
+
         var StageGL = away.base.StageGL;
         var Camera = away.entities.Camera;
         var Vector3D = away.geom.Vector3D;
@@ -35634,8 +30864,9 @@ var away;
                         this._animatorParticleStates.push(state);
                         node._iDataOffset = this._totalLenOfOneVertex;
                         this._totalLenOfOneVertex += node.dataLength;
-                    } else
+                    } else {
                         this._animationParticleStates.push(state);
+                    }
                     if (state.needUpdateTime)
                         this._timeParticleStates.push(state);
                 }
@@ -35661,19 +30892,13 @@ var away;
                     throw (new Error("Must be subMesh"));
 
                 //process animation sub geometries
-                if (!subMesh.animationSubGeometry)
-                    this._particleAnimationSet._iGenerateAnimationSubGeometries(renderable.sourceEntity);
-
-                var animationSubGeometry = subMesh.animationSubGeometry;
+                var animationSubGeometry = this._particleAnimationSet.getAnimationSubGeometry(subMesh);
 
                 for (i = 0; i < this._animationParticleStates.length; i++)
                     this._animationParticleStates[i].setRenderState(stageGL, renderable, animationSubGeometry, animationRegisterCache, camera);
 
                 //process animator subgeometries
-                if (!subMesh.animatorSubGeometry && this._animatorParticleStates.length)
-                    this.generateAnimatorSubGeometry(subMesh);
-
-                var animatorSubGeometry = subMesh.animatorSubGeometry;
+                var animatorSubGeometry = this.getAnimatorSubGeometry(subMesh);
 
                 for (i = 0; i < this._animatorParticleStates.length; i++)
                     this._animatorParticleStates[i].setRenderState(stageGL, renderable, animatorSubGeometry, animationRegisterCache, camera);
@@ -35725,15 +30950,18 @@ var away;
                     this._animatorSubGeometries[key].dispose();
             };
 
-            ParticleAnimator.prototype.generateAnimatorSubGeometry = function (subMesh) {
+            ParticleAnimator.prototype.getAnimatorSubGeometry = function (subMesh) {
+                if (!this._animatorParticleStates.length)
+                    return;
+
                 var subGeometry = subMesh.subGeometry;
-                var animatorSubGeometry = subMesh.animatorSubGeometry = this._animatorSubGeometries[subGeometry.id] = new away.animators.AnimationSubGeometry();
+                var animatorSubGeometry = this._animatorSubGeometries[subGeometry.id] = new away.animators.AnimationSubGeometry();
 
                 //create the vertexData vector that will be used for local state data
                 animatorSubGeometry.createVertexData(subGeometry.numVertices, this._totalLenOfOneVertex);
 
                 //pass the particles data to the animator subGeometry
-                animatorSubGeometry.animationParticles = subMesh.animationSubGeometry.animationParticles;
+                animatorSubGeometry.animationParticles = this._particleAnimationSet.getAnimationSubGeometry(subMesh).animationParticles;
             };
             return ParticleAnimator;
         })(away.animators.AnimatorBase);
@@ -35745,16 +30973,17 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var SkinnedSubGeometry = away.base.SkinnedSubGeometry;
-        var SubMesh = away.base.SubMesh;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+        var SubMesh = away.base.TriangleSubMesh;
         var StageGL = away.base.StageGL;
         var Camera = away.entities.Camera;
         var AnimationStateEvent = away.events.AnimationStateEvent;
+        var SubGeometryEvent = away.events.SubGeometryEvent;
         var ContextGLProgramType = away.gl.ContextGLProgramType;
         var Quaternion = away.geom.Quaternion;
         var Vector3D = away.geom.Vector3D;
         var RenderableBase = away.pool.RenderableBase;
-        var SubMeshRenderable = away.pool.SubMeshRenderable;
+        var TriangleSubMeshRenderable = away.pool.TriangleSubMeshRenderable;
         var MaterialPassBase = away.materials.MaterialPassBase;
 
         /**
@@ -35773,9 +31002,11 @@ var away;
             */
             function SkeletonAnimator(animationSet, skeleton, forceCPU) {
                 if (typeof forceCPU === "undefined") { forceCPU = false; }
+                var _this = this;
                 _super.call(this, animationSet);
                 this._globalPose = new away.animators.SkeletonPose();
-                this._subGeomAnimationStates = new Object();
+                this._morphedSubGeometry = new Object();
+                this._morphedSubGeometryDirty = new Object();
 
                 this._skeleton = skeleton;
                 this._forceCPU = forceCPU;
@@ -35800,7 +31031,15 @@ var away;
                     this._globalMatrices[j++] = 0;
                 }
 
-                this._onTransitionCompleteDelegate = away.utils.Delegate.create(this, this.onTransitionComplete);
+                this._onTransitionCompleteDelegate = function (event) {
+                    return _this.onTransitionComplete(event);
+                };
+                this._onIndicesUpdateDelegate = function (event) {
+                    return _this.onIndicesUpdate(event);
+                };
+                this._onVerticesUpdateDelegate = function (event) {
+                    return _this.onVerticesUpdate(event);
+                };
             }
             Object.defineProperty(SkeletonAnimator.prototype, "globalMatrices", {
                 /**
@@ -35934,36 +31173,26 @@ var away;
                 if (this._globalPropertiesDirty)
                     this.updateGlobalProperties();
 
-                var skinnedGeom = renderable.subMesh.subGeometry;
+                var subGeometry = renderable.subMesh.subGeometry;
 
-                // using condensed data
-                var numCondensedJoints = skinnedGeom.numCondensedJoints;
+                subGeometry.useCondensedIndices = this._useCondensedIndices;
+
                 if (this._useCondensedIndices) {
-                    if (skinnedGeom.numCondensedJoints == 0) {
-                        skinnedGeom.iCondenseIndexData();
-                        numCondensedJoints = skinnedGeom.numCondensedJoints;
-                    }
-                    this.updateCondensedMatrices(skinnedGeom.condensedIndexLookUp, numCondensedJoints);
-                    stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, numCondensedJoints * 3);
+                    // using a condensed data set
+                    this.updateCondensedMatrices(subGeometry.condensedIndexLookUp, subGeometry.numCondensedJoints);
+                    stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, subGeometry.numCondensedJoints * 3);
                 } else {
                     if (this._pAnimationSet.usesCPU) {
-                        var subGeomAnimState = this._subGeomAnimationStates[skinnedGeom.id];
+                        if (this._morphedSubGeometryDirty[subGeometry.id])
+                            this.morphSubGeometry(renderable, subGeometry);
 
-                        if (subGeomAnimState == null)
-                            subGeomAnimState = this._subGeomAnimationStates[skinnedGeom.id] = new SubGeomAnimationState(skinnedGeom);
-
-                        if (subGeomAnimState.dirty) {
-                            this.morphGeometry(subGeomAnimState, skinnedGeom);
-                            subGeomAnimState.dirty = false;
-                        }
-                        skinnedGeom.updateAnimatedData(subGeomAnimState.animatedVertexData);
                         return;
                     }
                     stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints * 3);
                 }
 
-                skinnedGeom.activateJointIndexBuffer(vertexStreamOffset, stageGL);
-                skinnedGeom.activateJointWeightsBuffer(vertexStreamOffset + 1, stageGL);
+                stageGL.activateBuffer(vertexStreamOffset, renderable.getVertexData(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.JOINT_INDEX_FORMAT);
+                stageGL.activateBuffer(vertexStreamOffset + 1, renderable.getVertexData(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.JOINT_WEIGHT_FORMAT);
             };
 
             /**
@@ -35983,8 +31212,10 @@ var away;
                 //invalidate pose matrices
                 this._globalPropertiesDirty = true;
 
-                for (var key in this._subGeomAnimationStates)
-                    this._subGeomAnimationStates[key].dirty = true;
+                //trigger geometry invalidation if using CPU animation
+                if (this._pAnimationSet.usesCPU)
+                    for (var key in this._morphedSubGeometryDirty)
+                        this._morphedSubGeometryDirty[key] = true;
             };
 
             SkeletonAnimator.prototype.updateCondensedMatrices = function (condensedIndexLookUp /*uint*/ , numJoints /*uint*/ ) {
@@ -35995,7 +31226,7 @@ var away;
                 this._condensedMatrices = new Array();
 
                 do {
-                    srcIndex = condensedIndexLookUp[i * 3] * 4;
+                    srcIndex = condensedIndexLookUp[i] * 4;
                     len = srcIndex + 12;
 
                     while (srcIndex < len)
@@ -36094,23 +31325,60 @@ var away;
                 }
             };
 
+            SkeletonAnimator.prototype.getRenderableSubGeometry = function (renderable, sourceSubGeometry) {
+                this._morphedSubGeometryDirty[sourceSubGeometry.id] = true;
+
+                //early out for GPU animations
+                if (!this._pAnimationSet.usesCPU)
+                    return sourceSubGeometry;
+
+                var targetSubGeometry;
+
+                if (!(targetSubGeometry = this._morphedSubGeometry[sourceSubGeometry.id])) {
+                    //not yet stored
+                    targetSubGeometry = this._morphedSubGeometry[sourceSubGeometry.id] = sourceSubGeometry.clone();
+
+                    //turn off auto calculations on the morphed geometry
+                    targetSubGeometry.autoDeriveNormals = false;
+                    targetSubGeometry.autoDeriveTangents = false;
+                    targetSubGeometry.autoDeriveUVs = false;
+
+                    //add event listeners for any changes in UV values on the source geometry
+                    sourceSubGeometry.addEventListener(away.events.SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdateDelegate);
+                    sourceSubGeometry.addEventListener(away.events.SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdateDelegate);
+                }
+
+                return targetSubGeometry;
+            };
+
             /**
             * If the animation can't be performed on GPU, transform vertices manually
             * @param subGeom The subgeometry containing the weights and joint index data per vertex.
             * @param pass The material pass for which we need to transform the vertices
             */
-            SkeletonAnimator.prototype.morphGeometry = function (state, subGeom) {
-                var vertexData = subGeom.vertexData;
-                var targetData = state.animatedVertexData;
-                var jointIndices = subGeom.iJointIndexData;
-                var jointWeights = subGeom.iJointWeightsData;
+            SkeletonAnimator.prototype.morphSubGeometry = function (renderable, sourceSubGeometry) {
+                this._morphedSubGeometryDirty[sourceSubGeometry.id] = false;
+
+                var sourcePositions = sourceSubGeometry.positions;
+                var sourceNormals = sourceSubGeometry.vertexNormals;
+                var sourceTangents = sourceSubGeometry.vertexTangents;
+
+                var jointIndices = sourceSubGeometry.jointIndices;
+                var jointWeights = sourceSubGeometry.jointWeights;
+
+                var targetSubGeometry = this._morphedSubGeometry[sourceSubGeometry.id];
+
+                var targetPositions = targetSubGeometry.positions;
+                var targetNormals = targetSubGeometry.vertexNormals;
+                var targetTangents = targetSubGeometry.vertexTangents;
+
                 var index = 0;
                 var j = 0;
                 var k;
                 var vx, vy, vz;
                 var nx, ny, nz;
                 var tx, ty, tz;
-                var len = vertexData.length;
+                var len = sourcePositions.length;
                 var weight;
                 var vertX, vertY, vertZ;
                 var normX, normY, normZ;
@@ -36120,15 +31388,15 @@ var away;
                 var m31, m32, m33, m34;
 
                 while (index < len) {
-                    vertX = vertexData[index];
-                    vertY = vertexData[index + 1];
-                    vertZ = vertexData[index + 2];
-                    normX = vertexData[index + 3];
-                    normY = vertexData[index + 4];
-                    normZ = vertexData[index + 5];
-                    tangX = vertexData[index + 6];
-                    tangY = vertexData[index + 7];
-                    tangZ = vertexData[index + 8];
+                    vertX = sourcePositions[index];
+                    vertY = sourcePositions[index + 1];
+                    vertZ = sourcePositions[index + 2];
+                    normX = sourceNormals[index];
+                    normY = sourceNormals[index + 1];
+                    normZ = sourceNormals[index + 2];
+                    tangX = sourceTangents[index];
+                    tangY = sourceTangents[index + 1];
+                    tangZ = sourceTangents[index + 2];
                     vx = 0;
                     vy = 0;
                     vz = 0;
@@ -36172,18 +31440,22 @@ var away;
                         }
                     }
 
-                    targetData[index] = vx;
-                    targetData[index + 1] = vy;
-                    targetData[index + 2] = vz;
-                    targetData[index + 3] = nx;
-                    targetData[index + 4] = ny;
-                    targetData[index + 5] = nz;
-                    targetData[index + 6] = tx;
-                    targetData[index + 7] = ty;
-                    targetData[index + 8] = tz;
+                    targetPositions[index] = vx;
+                    targetPositions[index + 1] = vy;
+                    targetPositions[index + 2] = vz;
+                    targetNormals[index] = nx;
+                    targetNormals[index + 1] = ny;
+                    targetNormals[index + 2] = nz;
+                    targetTangents[index] = tx;
+                    targetTangents[index + 1] = ty;
+                    targetTangents[index + 2] = tz;
 
-                    index = index + 13;
+                    index += 3;
                 }
+
+                targetSubGeometry.updatePositions(targetPositions);
+                targetSubGeometry.updateVertexNormals(targetNormals);
+                targetSubGeometry.updateVertexTangents(targetTangents);
             };
 
             /**
@@ -36294,22 +31566,30 @@ var away;
                     }
                 }
             };
+
+            SkeletonAnimator.prototype.onIndicesUpdate = function (event) {
+                var subGeometry = event.target;
+
+                this._morphedSubGeometry[subGeometry.id].updateIndices(subGeometry.indices);
+            };
+
+            SkeletonAnimator.prototype.onVerticesUpdate = function (event) {
+                var subGeometry = event.target;
+                var morphGeometry = this._morphedSubGeometry[subGeometry.id];
+
+                switch (event.dataType) {
+                    case TriangleSubGeometry.UV_DATA:
+                        morphGeometry.updateUVs(subGeometry.uvs);
+                    case TriangleSubGeometry.SECONDARY_UV_DATA:
+                        morphGeometry.updateUVs(subGeometry.secondaryUVs);
+                }
+            };
             return SkeletonAnimator;
         })(away.animators.AnimatorBase);
         animators.SkeletonAnimator = SkeletonAnimator;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
-
-var CompactSubGeometry = away.base.CompactSubGeometry;
-
-var SubGeomAnimationState = (function () {
-    function SubGeomAnimationState(subGeom) {
-        this.dirty = true;
-        this.animatedVertexData = subGeom.vertexData.concat();
-    }
-    return SubGeomAnimationState;
-})();
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
@@ -36627,11 +31907,12 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var SubMesh = away.base.SubMesh;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+        var SubMesh = away.base.TriangleSubMesh;
         var Geometry = away.base.Geometry;
         var StageGL = away.base.StageGL;
         var RenderableBase = away.pool.RenderableBase;
-        var SubMeshRenderable = away.pool.SubMeshRenderable;
+        var SubMeshRenderable = away.pool.TriangleSubMeshRenderable;
 
         /**
         * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
@@ -36705,6 +31986,8 @@ var away;
                 this._poses[0] = this._activeVertexState.currentGeometry;
                 this._poses[1] = this._activeVertexState.nextGeometry;
                 this._weights[0] = 1 - (this._weights[1] = this._activeVertexState.blendWeight);
+                //TODO fire a check when the current active geometry changes
+                //send geometry invalidation to renderables
             };
 
             /**
@@ -36726,23 +32009,18 @@ var away;
 
                 stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
-                if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE) {
+                if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE)
                     i = 1;
-                    subGeom = this._poses[0].subGeometries[subMesh._iIndex];
-
-                    // set the base sub-geometry so the material can simply pick up on this data
-                    if (subGeom)
-                        renderable.subGeometry = subGeom; //TODO more elegant way to swap subgeometry that doesn't involve changing it on the SubMesh
-                } else
+                else
                     i = 0;
 
                 for (; i < len; ++i) {
-                    subGeom = this._poses[i].subGeometries[subMesh._iIndex] || renderable.subGeometry;
-
-                    subGeom.activateVertexBuffer(vertexStreamOffset++, stageGL);
+                    //TODO this needs fixing
+                    //subGeom = this._poses[i].subGeometries[subMesh._iIndex] || renderable.subGeometry;
+                    stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
                     if (this._vertexAnimationSet.useNormals)
-                        subGeom.activateVertexNormalBuffer(vertexStreamOffset++, stageGL);
+                        stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
                 }
             };
 
@@ -36752,10 +32030,10 @@ var away;
                 if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE) {
                     var len = this._numPoses;
                     for (var i = 1; i < len; ++i) {
-                        renderable.subGeometry.activateVertexBuffer(vertexStreamOffset++, stageGL);
+                        stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
                         if (this._vertexAnimationSet.useNormals)
-                            renderable.subGeometry.activateVertexNormalBuffer(vertexStreamOffset++, stageGL);
+                            stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
                     }
                 }
                 // todo: set temp data for additive?
@@ -36767,6 +32045,14 @@ var away;
             */
             VertexAnimator.prototype.testGPUCompatibility = function (pass) {
             };
+
+            VertexAnimator.prototype.getRenderableSubGeometry = function (renderable, sourceSubGeometry) {
+                if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE && this._poses.length)
+                    return this._poses[0].subGeometries[renderable.subMesh._iIndex] || sourceSubGeometry;
+
+                //nothing to do here
+                return sourceSubGeometry;
+            };
             return VertexAnimator;
         })(away.animators.AnimatorBase);
         animators.VertexAnimator = VertexAnimator;
@@ -36777,6 +32063,7 @@ var away;
 var away;
 (function (away) {
     (function (parsers) {
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
         var Mesh = away.entities.Mesh;
         var DefaultMaterialManager = away.materials.DefaultMaterialManager;
         var BasicSpecularMethod = away.materials.SpecularBasicMethod;
@@ -37103,7 +32390,7 @@ var away;
                 var face;
                 var numFaces = faces.length;
                 var numVerts;
-                var subs;
+                var sub;
 
                 var vertices = new Array();
                 var uvs = new Array();
@@ -37125,10 +32412,14 @@ var away;
                     }
                 }
                 if (vertices.length > 0) {
-                    subs = away.utils.GeometryUtils.fromVectors(vertices, indices, uvs, normals, null, null, null);
-                    for (i = 0; i < subs.length; i++) {
-                        geometry.addSubGeometry(subs[i]);
-                    }
+                    sub = new TriangleSubGeometry(true);
+                    sub.autoDeriveNormals = normals.length ? false : true;
+                    sub.updateIndices(indices);
+                    sub.updatePositions(vertices);
+                    sub.updateVertexNormals(normals);
+                    sub.updateUVs(uvs);
+
+                    geometry.addSubGeometry(sub);
                 }
             };
 
@@ -37848,14 +33139,16 @@ var away;
         var VertexAnimationSet = away.animators.VertexAnimationSet;
         var VertexAnimator = away.animators.VertexAnimator;
         var VertexClipNode = away.animators.VertexClipNode;
-        var CompactSubGeometry = away.base.CompactSubGeometry;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
         var Geometry = away.base.Geometry;
         var BlendMode = away.base.BlendMode;
         var Mesh = away.entities.Mesh;
         var Matrix3D = away.geom.Matrix3D;
         var AssetType = away.library.AssetType;
+        var TextureMaterial = away.materials.TextureMaterial;
         var ShadowDitheredMethod = away.materials.ShadowDitheredMethod;
         var ShadowFilteredMethod = away.materials.ShadowFilteredMethod;
+        var SkyboxMaterial = away.materials.SkyboxMaterial;
         var SpecularFresnelMethod = away.materials.SpecularFresnelMethod;
         var ShadowHardMethod = away.materials.ShadowHardMethod;
         var SpecularPhongMethod = away.materials.SpecularPhongMethod;
@@ -38373,7 +33666,7 @@ var away;
                 while (subs_parsed < num_subs) {
                     var i;
                     var sm_len, sm_end;
-                    var sub_geoms;
+                    var sub_geom;
                     var w_indices;
                     var weights;
 
@@ -38445,7 +33738,20 @@ var away;
 
                     this.parseUserAttributes(); // Ignore sub-mesh attributes for now
 
-                    sub_geoms = away.utils.GeometryUtils.fromVectors(verts, indices, uvs, normals, null, weights, w_indices);
+                    sub_geom = new TriangleSubGeometry(true);
+                    if (weights)
+                        sub_geom.jointsPerVertex = weights.length / (verts.length / 3);
+                    if (normals)
+                        sub_geom.autoDeriveNormals = false;
+                    if (uvs)
+                        sub_geom.autoDeriveUVs = false;
+                    sub_geom.updateIndices(indices);
+                    sub_geom.updatePositions(verts);
+                    sub_geom.updateVertexNormals(normals);
+                    sub_geom.updateUVs(uvs);
+                    sub_geom.updateVertexTangents(null);
+                    sub_geom.updateJointWeights(weights);
+                    sub_geom.updateJointIndices(w_indices);
 
                     var scaleU = subProps.get(1, 1);
                     var scaleV = subProps.get(2, 1);
@@ -38457,13 +33763,13 @@ var away;
                         scaleV = geoScaleV / scaleV;
                     }
 
-                    for (i = 0; i < sub_geoms.length; i++) {
-                        if (setSubUVs)
-                            sub_geoms[i].scaleUV(scaleU, scaleV);
-                        geom.addSubGeometry(sub_geoms[i]);
-                        // TODO: Somehow map in-sub to out-sub indices to enable look-up
-                        // when creating meshes (and their material assignments.)
-                    }
+                    if (setSubUVs)
+                        sub_geom.scaleUV(scaleU, scaleV);
+
+                    geom.addSubGeometry(sub_geom);
+
+                    // TODO: Somehow map in-sub to out-sub indices to enable look-up
+                    // when creating meshes (and their material assignments.)
                     subs_parsed++;
                 }
                 if ((geoScaleU != 1) || (geoScaleV != 1))
@@ -38473,14 +33779,14 @@ var away;
                 this._blocks[blockID].data = geom;
 
                 if (this._debug) {
-                    console.log("Parsed a TriangleGeometry: Name = " + name + "| SubGeometries = " + sub_geoms.length);
+                    console.log("Parsed a TriangleGeometry: Name = " + name + "| Id = " + sub_geom.id);
                 }
             };
 
             //Block ID = 11
             AWDParser.prototype.parsePrimitves = function (blockID) {
                 var name;
-                var geom;
+                var prefab;
                 var primType;
                 var subs_parsed;
                 var props;
@@ -38491,65 +33797,65 @@ var away;
                 primType = this._newBlockBytes.readUnsignedByte();
                 props = this.parseProperties({ 101: this._geoNrType, 102: this._geoNrType, 103: this._geoNrType, 110: this._geoNrType, 111: this._geoNrType, 301: AWDParser.UINT16, 302: AWDParser.UINT16, 303: AWDParser.UINT16, 701: AWDParser.BOOL, 702: AWDParser.BOOL, 703: AWDParser.BOOL, 704: AWDParser.BOOL });
 
-                var primitveTypes = ["Unsupported Type-ID", "PlaneGeometry", "CubeGeometry", "SphereGeometry", "CylinderGeometry", "ConeGeometry", "CapsuleGeometry", "TorusGeometry"];
+                var primitiveTypes = ["Unsupported Type-ID", "PrimitivePlanePrefab", "PrimitiveCubePrefab", "PrimitiveSpherePrefab", "PrimitiveCylinderPrefab", "PrimitivesConePrefab", "PrimitivesCapsulePrefab", "PrimitivesTorusPrefab"];
 
                 switch (primType) {
                     case 1:
-                        geom = new away.primitives.PlaneGeometry(props.get(101, 100), props.get(102, 100), props.get(301, 1), props.get(302, 1), props.get(701, true), props.get(702, false));
+                        prefab = new away.prefabs.PrimitivePlanePrefab(props.get(101, 100), props.get(102, 100), props.get(301, 1), props.get(302, 1), props.get(701, true), props.get(702, false));
                         break;
 
                     case 2:
-                        geom = new away.primitives.CubeGeometry(props.get(101, 100), props.get(102, 100), props.get(103, 100), props.get(301, 1), props.get(302, 1), props.get(303, 1), props.get(701, true));
+                        prefab = new away.prefabs.PrimitiveCubePrefab(props.get(101, 100), props.get(102, 100), props.get(103, 100), props.get(301, 1), props.get(302, 1), props.get(303, 1), props.get(701, true));
                         break;
 
                     case 3:
-                        geom = new away.primitives.SphereGeometry(props.get(101, 50), props.get(301, 16), props.get(302, 12), props.get(701, true));
+                        prefab = new away.prefabs.PrimitiveSpherePrefab(props.get(101, 50), props.get(301, 16), props.get(302, 12), props.get(701, true));
                         break;
 
                     case 4:
-                        geom = new away.primitives.CylinderGeometry(props.get(101, 50), props.get(102, 50), props.get(103, 100), props.get(301, 16), props.get(302, 1), true, true, true); // bool701, bool702, bool703, bool704);
+                        prefab = new away.prefabs.PrimitiveCylinderPrefab(props.get(101, 50), props.get(102, 50), props.get(103, 100), props.get(301, 16), props.get(302, 1), true, true, true); // bool701, bool702, bool703, bool704);
                         if (!props.get(701, true))
-                            geom.topClosed = false;
+                            prefab.topClosed = false;
                         if (!props.get(702, true))
-                            geom.bottomClosed = false;
+                            prefab.bottomClosed = false;
                         if (!props.get(703, true))
-                            geom.yUp = false;
+                            prefab.yUp = false;
 
                         break;
 
                     case 5:
-                        geom = new away.primitives.ConeGeometry(props.get(101, 50), props.get(102, 100), props.get(301, 16), props.get(302, 1), props.get(701, true), props.get(702, true));
+                        prefab = new away.prefabs.PrimitiveConePrefab(props.get(101, 50), props.get(102, 100), props.get(301, 16), props.get(302, 1), props.get(701, true), props.get(702, true));
                         break;
 
                     case 6:
-                        geom = new away.primitives.CapsuleGeometry(props.get(101, 50), props.get(102, 100), props.get(301, 16), props.get(302, 15), props.get(701, true));
+                        prefab = new away.prefabs.PrimitiveCapsulePrefab(props.get(101, 50), props.get(102, 100), props.get(301, 16), props.get(302, 15), props.get(701, true));
                         break;
 
                     case 7:
-                        geom = new away.primitives.TorusGeometry(props.get(101, 50), props.get(102, 50), props.get(301, 16), props.get(302, 8), props.get(701, true));
+                        prefab = new away.prefabs.PrimitiveTorusPrefab(props.get(101, 50), props.get(102, 50), props.get(301, 16), props.get(302, 8), props.get(701, true));
                         break;
 
                     default:
-                        geom = new away.base.Geometry();
-                        console.log("ERROR: UNSUPPORTED PRIMITIVE_TYPE");
+                        prefab = new away.prefabs.PrefabBase();
+                        console.log("ERROR: UNSUPPORTED PREFAB_TYPE");
                         break;
                 }
 
                 if ((props.get(110, 1) != 1) || (props.get(111, 1) != 1)) {
-                    geom.subGeometries;
-                    geom.scaleUV(props.get(110, 1), props.get(111, 1));
+                    //geom.subGeometries;
+                    //geom.scaleUV(props.get(110, 1), props.get(111, 1)); //TODO add back scaling to prefabs
                 }
 
                 this.parseUserAttributes();
-                geom.name = name;
-                this._pFinalizeAsset(geom, name);
-                this._blocks[blockID].data = geom;
+                prefab.name = name;
+                this._pFinalizeAsset(prefab, name);
+                this._blocks[blockID].data = prefab;
 
                 if (this._debug) {
                     if ((primType < 0) || (primType > 7)) {
                         primType = 0;
                     }
-                    console.log("Parsed a Primivite: Name = " + name + "| type = " + primitveTypes[primType]);
+                    console.log("Parsed a Primivite: Name = " + name + "| type = " + primitiveTypes[primType]);
                 }
             };
 
@@ -38569,7 +33875,7 @@ var away;
                 ctr = new away.containers.DisplayObjectContainer();
                 ctr.transform.matrix3D = mtx;
 
-                var returnedArray = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET]);
+                var returnedArray = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH]);
 
                 if (returnedArray[0]) {
                     var obj = returnedArray[1].addChild(ctr);
@@ -38648,7 +33954,7 @@ var away;
                 var mesh = new Mesh(geom, null);
                 mesh.transform.matrix3D = mtx;
 
-                var returnedArrayParent = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET]);
+                var returnedArrayParent = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH]);
 
                 if (returnedArrayParent[0]) {
                     var objC = returnedArrayParent[1];
@@ -38696,7 +34002,7 @@ var away;
                 var returnedArrayCubeTex = this.getAssetByID(cubeTexAddr, [AssetType.TEXTURE], "CubeTexture");
                 if ((!returnedArrayCubeTex[0]) && (cubeTexAddr != 0))
                     this._blocks[blockID].addError("Could not find the Cubetexture (ID = " + cubeTexAddr + " ) for this Skybox");
-                var asset = new away.entities.Skybox(returnedArrayCubeTex[1]);
+                var asset = new away.entities.Skybox(new SkyboxMaterial(returnedArrayCubeTex[1]));
 
                 this.parseProperties(null);
                 asset.extra = this.parseUserAttributes();
@@ -38772,7 +34078,7 @@ var away;
                 }
 
                 if (par_id != 0) {
-                    var returnedArrayParent = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET]);
+                    var returnedArrayParent = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH]);
 
                     if (returnedArrayParent[0]) {
                         returnedArrayParent[1].addChild(light);
@@ -38827,7 +34133,7 @@ var away;
                 var camera = new away.entities.Camera(projection);
                 camera.transform.matrix3D = mtx;
 
-                var returnedArrayParent = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET]);
+                var returnedArrayParent = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH]);
 
                 if (returnedArrayParent[0]) {
                     var objC = returnedArrayParent[1];
@@ -38946,7 +34252,7 @@ var away;
                     }
 
                     if (this.materialMode < 2) {
-                        mat = new away.materials.TextureMaterial(returnedArray[1]);
+                        mat = new TextureMaterial(returnedArray[1]);
 
                         var txMaterial = mat;
 
@@ -39044,7 +34350,7 @@ var away;
                                 debugString += " | AmbientTexture-Name = " + ambientTexture.name;
                             }
                         } else {
-                            mat = new away.materials.TextureMaterial(texture);
+                            mat = new TextureMaterial(texture);
                             debugString += "Parsed a TextureMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + texture.name;
 
                             if (ambientTexture) {
@@ -39361,7 +34667,7 @@ var away;
                 var parentObject;
                 var targetObject;
 
-                var returnedArray = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET]);
+                var returnedArray = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH]);
 
                 if (returnedArray[0]) {
                     parentObject = returnedArray[1];
@@ -39638,7 +34944,7 @@ var away;
                         str_end = this._newBlockBytes.position + str_len;
                         while (streamsParsed < num_Streams) {
                             if (streamtypes[streamsParsed] == 1) {
-                                indices = returnedArray[1].subGeometries[subMeshParsed].indexData;
+                                indices = returnedArray[1].subGeometries[subMeshParsed].indices;
                                 verts = new Array();
                                 idx = 0;
                                 while (this._newBlockBytes.position < str_end) {
@@ -39649,13 +34955,14 @@ var away;
                                     verts[idx++] = y;
                                     verts[idx++] = z;
                                 }
-                                subGeom = new CompactSubGeometry();
-                                subGeom.fromVectors(verts, uvs[subMeshParsed], null, null);
-                                subGeom.updateIndexData(indices);
-                                subGeom.vertexNormalData;
-                                subGeom.vertexTangentData;
-                                subGeom.autoDeriveVertexNormals = false;
-                                subGeom.autoDeriveVertexTangents = false;
+                                subGeom = new TriangleSubGeometry(true);
+                                subGeom.updateIndices(indices);
+                                subGeom.updatePositions(verts);
+                                subGeom.updateUVs(uvs[subMeshParsed]);
+                                subGeom.updateVertexNormals(null);
+                                subGeom.updateVertexTangents(null);
+                                subGeom.autoDeriveNormals = false;
+                                subGeom.autoDeriveTangents = false;
                                 subMeshParsed++;
                                 geometry.addSubGeometry(subGeom);
                             } else
@@ -40082,13 +35389,15 @@ var away;
                 var numPoints;
                 var i;
                 var newUvs;
+                var sub_geom;
                 this._blocks[meshID].uvsForVertexAnimation = new Array();
                 while (geoCnt < geometry.subGeometries.length) {
                     newUvs = new Array();
-                    numPoints = geometry.subGeometries[geoCnt].numVertices;
-                    ud = geometry.subGeometries[geoCnt].UVData;
-                    uStride = geometry.subGeometries[geoCnt].UVStride;
-                    uOffs = geometry.subGeometries[geoCnt].UVOffset;
+                    sub_geom = geometry.subGeometries[geoCnt];
+                    numPoints = sub_geom.numVertices;
+                    ud = sub_geom.uvs;
+                    uStride = sub_geom.getStride(TriangleSubGeometry.UV_DATA);
+                    uOffs = sub_geom.getOffset(TriangleSubGeometry.UV_DATA);
                     for (i = 0; i < numPoints; i++) {
                         newUvs.push(ud[uOffs + i * uStride + 0]);
                         newUvs.push(ud[uOffs + i * uStride + 1]);
@@ -40165,11 +35474,9 @@ var away;
                         if (extraTypeInfo == "SingleTexture")
                             return this.getDefaultTexture();
                         break;
-
                     case (assetType == AssetType.MATERIAL):
                         return this.getDefaultMaterial();
                         break;
-
                     default:
                         break;
                 }
@@ -40180,13 +35487,13 @@ var away;
             AWDParser.prototype.getDefaultMaterial = function () {
                 if (!this._defaultBitmapMaterial)
                     this._defaultBitmapMaterial = away.materials.DefaultMaterialManager.getDefaultMaterial();
+
                 return this._defaultBitmapMaterial;
             };
 
             AWDParser.prototype.getDefaultTexture = function () {
-                if (!this._defaultTexture) {
+                if (!this._defaultTexture)
                     this._defaultTexture = away.materials.DefaultMaterialManager.getDefaultTexture();
-                }
 
                 return this._defaultTexture;
             };
@@ -40196,7 +35503,7 @@ var away;
                     var defaultBitmap = away.materials.DefaultMaterialManager.createCheckeredBitmapData();
 
                     this._defaultCubeTexture = new away.textures.BitmapCubeTexture(defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap);
-                    this._defaultCubeTexture.name = "defaultTexture";
+                    this._defaultCubeTexture.name = "defaultCubeTexture";
                 }
 
                 return this._defaultCubeTexture;
@@ -40355,6 +35662,7 @@ var AWDProperties = (function () {
 var away;
 (function (away) {
     (function (parsers) {
+        var SubGeometry = away.base.TriangleSubGeometry;
         var ColorMaterial = away.materials.ColorMaterial;
         var ColorMultiPassMaterial = away.materials.ColorMultiPassMaterial;
         var DefaultMaterialManager = away.materials.DefaultMaterialManager;
@@ -40366,7 +35674,6 @@ var away;
         var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
         var Texture2DBase = away.textures.Texture2DBase;
         var ByteArray = away.utils.ByteArray;
-        var GeometryUtils = away.utils.GeometryUtils;
 
         /**
         * Max3DSParser provides a parser for the 3ds data type.
@@ -40808,7 +36115,7 @@ var away;
                 if (typeof pivot === "undefined") { pivot = null; }
                 if (obj.type == away.library.AssetType.MESH) {
                     var i;
-                    var subs;
+                    var sub;
                     var geom;
                     var mat;
                     var mesh;
@@ -40860,9 +36167,12 @@ var away;
 
                     // Construct sub-geometries (potentially splitting buffers)
                     // and add them to geometry.
-                    subs = GeometryUtils.fromVectors(obj.verts, obj.indices, obj.uvs, null, null, null, null);
-                    for (i = 0; i < subs.length; i++)
-                        geom.subGeometries.push(subs[i]);
+                    sub = new SubGeometry(true);
+                    sub.updateIndices(obj.indices);
+                    sub.updatePositions(obj.verts);
+                    sub.updateUVs(obj.uvs);
+
+                    geom.addSubGeometry(sub);
 
                     if (obj.materials.length > 0) {
                         var mname;
@@ -41163,7 +36473,7 @@ var away;
 (function (away) {
     (function (parsers) {
         var Geometry = away.base.Geometry;
-        var CompactSubGeometry = away.base.CompactSubGeometry;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
         var VertexAnimationSet = away.animators.VertexAnimationSet;
         var VertexClipNode = away.animators.VertexClipNode;
         var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
@@ -41299,7 +36609,9 @@ var away;
                         return away.parsers.ParserBase.PARSING_DONE;
                     } else if (!this.geoCreated) {
                         this.geoCreated = true;
-                        this.createDefaultSubGeometry();
+
+                        //create default subgeometry
+                        this._geometry.addSubGeometry(this._firstSubGeom.clone());
 
                         // Force name to be chosen by this._pFinalizeAsset()
                         this._mesh.name = "";
@@ -41505,13 +36817,6 @@ var away;
                 this._byteData.position = this._offsetFrames;
 
                 for (i = 0; i < this._numFrames; i++) {
-                    subGeom = new CompactSubGeometry();
-
-                    if (this._firstSubGeom == null)
-                        this._firstSubGeom = subGeom;
-
-                    geometry = new Geometry();
-                    geometry.addSubGeometry(subGeom);
                     tvertices = new Array();
                     fvertices = new Array(vertLen * 3);
 
@@ -41535,12 +36840,21 @@ var away;
                         fvertices[k++] = tvertices[this._vertIndices[j] * 3 + 1];
                     }
 
-                    subGeom.fromVectors(fvertices, this._finalUV, null, null);
-                    subGeom.updateIndexData(this._indices);
-                    subGeom.vertexNormalData;
-                    subGeom.vertexTangentData;
-                    subGeom.autoDeriveVertexNormals = false;
-                    subGeom.autoDeriveVertexTangents = false;
+                    subGeom = new TriangleSubGeometry(true);
+
+                    if (this._firstSubGeom == null)
+                        this._firstSubGeom = subGeom;
+
+                    geometry = new Geometry();
+                    geometry.addSubGeometry(subGeom);
+
+                    subGeom.updateIndices(this._indices);
+                    subGeom.updatePositions(fvertices);
+                    subGeom.updateUVs(this._finalUV);
+                    subGeom.vertexNormals;
+                    subGeom.vertexTangents;
+                    subGeom.autoDeriveNormals = false;
+                    subGeom.autoDeriveTangents = false;
 
                     var clip = this._clipNodes[name];
 
@@ -41589,13 +36903,6 @@ var away;
                         k++;
                 }
                 return name;
-            };
-
-            MD2Parser.prototype.createDefaultSubGeometry = function () {
-                var sub = new CompactSubGeometry();
-                sub.updateData(this._firstSubGeom.vertexData);
-                sub.updateIndexData(this._indices);
-                this._geometry.addSubGeometry(sub);
             };
             MD2Parser.FPS = 6;
             return MD2Parser;
@@ -42206,7 +37513,7 @@ var away;
         var Skeleton = away.animators.Skeleton;
         var SkeletonJoint = away.animators.SkeletonJoint;
         var Geometry = away.base.Geometry;
-        var SkinnedSubGeometry = away.base.SkinnedSubGeometry;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
         var Matrix3D = away.geom.Matrix3D;
         var Quaternion = away.geom.Quaternion;
         var Vector3D = away.geom.Vector3D;
@@ -42488,7 +37795,7 @@ var away;
             * @param vertexData The mesh's vertices.
             * @param weights The joint weights per vertex.
             * @param indices The indices for the faces.
-            * @return A SkinnedSubGeometry instance containing all geometrical data for the current mesh.
+            * @return A SubGeometry instance containing all geometrical data for the current mesh.
             */
             MD5MeshParser.prototype.translateGeom = function (vertexData, weights, indices /*uint*/ ) {
                 var len = vertexData.length;
@@ -42497,7 +37804,7 @@ var away;
                 var weight;
                 var bindPose;
                 var pos;
-                var subGeom = new SkinnedSubGeometry(this._maxJointCount);
+                var subGeom = new TriangleSubGeometry(true);
                 var uvs = new Array(len * 2);
                 var vertices = new Array(len * 3);
                 var jointIndices = new Array(len * this._maxJointCount);
@@ -42539,18 +37846,20 @@ var away;
                     uvs[v1] = vertex.t;
                 }
 
-                subGeom.updateIndexData(indices);
-                subGeom.fromVectors(vertices, uvs, null, null);
+                subGeom.jointsPerVertex = this._maxJointCount;
+                subGeom.updateIndices(indices);
+                subGeom.updatePositions(vertices);
+                subGeom.updateUVs(uvs);
+                subGeom.updateJointIndices(jointIndices);
+                subGeom.updateJointWeights(jointWeights);
 
                 // cause explicit updates
-                subGeom.vertexNormalData;
-                subGeom.vertexTangentData;
+                subGeom.vertexNormals;
+                subGeom.vertexTangents;
 
                 // turn auto updates off because they may be animated and set explicitly
-                subGeom.autoDeriveVertexTangents = false;
-                subGeom.autoDeriveVertexNormals = false;
-                subGeom.iUpdateJointIndexData(jointIndices);
-                subGeom.iUpdateJointWeightsData(jointWeights);
+                subGeom.autoDeriveTangents = false;
+                subGeom.autoDeriveNormals = false;
 
                 return subGeom;
             };
@@ -42860,10 +38169,9 @@ var away;
     (function (commands) {
         var DisplayObjectContainer = away.containers.DisplayObjectContainer;
         var Geometry = away.base.Geometry;
-
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
         var Matrix3DUtils = away.geom.Matrix3DUtils;
         var Mesh = away.entities.Mesh;
-        var GeometryUtils = away.utils.GeometryUtils;
 
         /**
         *  Class Merge merges two or more static meshes into one.<code>Merge</code>
@@ -43015,19 +38323,21 @@ var away;
                 for (i = 0; i < this._geomVOs.length; i++) {
                     var s;
                     var data;
-                    var subs;
+                    var sub = new TriangleSubGeometry(true);
+                    sub.autoDeriveNormals = false;
+                    sub.autoDeriveTangents = false;
 
                     data = this._geomVOs[i];
-                    subs = GeometryUtils.fromVectors(data.vertices, data.indices, data.uvs, data.normals, null, null, null);
+                    sub.updateIndices(data.indices);
+                    sub.updatePositions(data.vertices);
+                    sub.updateVertexNormals(data.normals);
+                    sub.updateVertexTangents(data.tangents);
+                    sub.updateUVs(data.uvs);
 
-                    for (s = 0; s < subs.length; s++) {
-                        destGeom.addSubGeometry(subs[s]);
+                    destGeom.addSubGeometry(sub);
 
-                        if (this._keepMaterial && useSubMaterials)
-                            destMesh.subMeshes[subIdx].material = data.material;
-
-                        subIdx++;
-                    }
+                    if (this._keepMaterial && useSubMaterials)
+                        destMesh.subMeshes[subIdx].material = data.material;
                 }
 
                 if (this._keepMaterial && !useSubMaterials && this._geomVOs.length)
@@ -43057,26 +38367,20 @@ var away;
                     for (subIdx = 0; subIdx < subGeometries.length; subIdx++) {
                         var i;
                         var len;
-                        var iIdx, vIdx, nIdx, uIdx;
+                        var iIdx, vIdx, nIdx, tIdx, uIdx;
                         var indexOffset;
                         var subGeom;
                         var vo;
                         var vertices;
                         var normals;
-                        var vStride, nStride, uStride;
-                        var vOffs, nOffs, uOffs;
-                        var vd, nd, ud;
+                        var tangents;
+                        var pd, nd, td, ud;
 
                         subGeom = subGeometries[subIdx];
-                        vd = subGeom.vertexData;
-                        vStride = subGeom.vertexStride;
-                        vOffs = subGeom.vertexOffset;
-                        nd = subGeom.vertexNormalData;
-                        nStride = subGeom.vertexNormalStride;
-                        nOffs = subGeom.vertexNormalOffset;
-                        ud = subGeom.UVData;
-                        uStride = subGeom.UVStride;
-                        uOffs = subGeom.UVOffset;
+                        pd = subGeom.positions;
+                        nd = subGeom.vertexNormals;
+                        td = subGeom.vertexTangents;
+                        ud = subGeom.uvs;
 
                         // Get (or create) a VO for this material
                         vo = this.getSubGeomData(mesh.subMeshes[subIdx].material || mesh.material);
@@ -43086,29 +38390,35 @@ var away;
                         // transformation will be performed, i.e. for object space merging.
                         vertices = (this._objectSpace) ? vo.vertices : new Array();
                         normals = (this._objectSpace) ? vo.normals : new Array();
+                        tangents = (this._objectSpace) ? vo.tangents : new Array();
 
                         // Copy over vertex attributes
                         vIdx = vertices.length;
                         nIdx = normals.length;
+                        tIdx = tangents.length;
                         uIdx = vo.uvs.length;
                         len = subGeom.numVertices;
                         for (i = 0; i < len; i++) {
+                            calc = i * 3;
+
                             // Position
-                            calc = vOffs + i * vStride;
-                            vertices[vIdx++] = vd[calc];
-                            vertices[vIdx++] = vd[calc + 1];
-                            vertices[vIdx++] = vd[calc + 2];
+                            vertices[vIdx++] = pd[calc];
+                            vertices[vIdx++] = pd[calc + 1];
+                            vertices[vIdx++] = pd[calc + 2];
 
                             // Normal
-                            calc = nOffs + i * nStride;
                             normals[nIdx++] = nd[calc];
                             normals[nIdx++] = nd[calc + 1];
                             normals[nIdx++] = nd[calc + 2];
 
+                            // Tangent
+                            tangents[tIdx++] = td[calc];
+                            tangents[tIdx++] = td[calc + 1];
+                            tangents[tIdx++] = td[calc + 2];
+
                             // UV
-                            calc = uOffs + i * uStride;
-                            vo.uvs[uIdx++] = ud[calc];
-                            vo.uvs[uIdx++] = ud[calc + 1];
+                            vo.uvs[uIdx++] = ud[i * 2];
+                            vo.uvs[uIdx++] = ud[i * 2 + 1];
                         }
 
                         // Copy over triangle indices
@@ -43117,22 +38427,25 @@ var away;
                         len = subGeom.numTriangles;
                         for (i = 0; i < len; i++) {
                             calc = i * 3;
-                            vo.indices[iIdx++] = subGeom.indexData[calc] + indexOffset;
-                            vo.indices[iIdx++] = subGeom.indexData[calc + 1] + indexOffset;
-                            vo.indices[iIdx++] = subGeom.indexData[calc + 2] + indexOffset;
+                            vo.indices[iIdx++] = subGeom.indices[calc] + indexOffset;
+                            vo.indices[iIdx++] = subGeom.indices[calc + 1] + indexOffset;
+                            vo.indices[iIdx++] = subGeom.indices[calc + 2] + indexOffset;
                         }
 
                         if (!this._objectSpace) {
                             mesh.sceneTransform.transformVectors(vertices, vertices);
                             Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, normals, normals);
+                            Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, tangents, tangents);
 
                             // Copy vertex data from temporary (transformed) vectors
                             vIdx = vo.vertices.length;
                             nIdx = vo.normals.length;
+                            tIdx = vo.tangents.length;
                             len = vertices.length;
                             for (i = 0; i < len; i++) {
                                 vo.vertices[vIdx++] = vertices[i];
                                 vo.normals[nIdx++] = normals[i];
+                                vo.tangents[tIdx++] = tangents[i];
                             }
                         }
                     }
@@ -43167,6 +38480,7 @@ var away;
                     data = new GeometryVO();
                     data.vertices = new Array();
                     data.normals = new Array();
+                    data.tangents = new Array();
                     data.uvs = new Array();
                     data.indices = new Array();
                     data.material = material;
@@ -43260,9 +38574,8 @@ var away;
     (function (tools) {
         var ParticleData = away.animators.ParticleData;
         var ParticleGeometry = away.base.ParticleGeometry;
-        var CompactSubGeometry = away.base.CompactSubGeometry;
         var Geometry = away.base.Geometry;
-
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
         var Matrix = away.geom.Matrix;
         var Matrix3D = away.geom.Matrix3D;
         var Point = away.geom.Point;
@@ -43276,8 +38589,11 @@ var away;
             }
             ParticleGeometryHelper.generateGeometry = function (geometries, transforms) {
                 if (typeof transforms === "undefined") { transforms = null; }
-                var verticesVector = new Array();
                 var indicesVector = new Array();
+                var positionsVector = new Array();
+                var normalsVector = new Array();
+                var tangentsVector = new Array();
+                var uvsVector = new Array();
                 var vertexCounters = new Array();
                 var particles = new Array();
                 var subGeometries = new Array();
@@ -43286,8 +38602,11 @@ var away;
                 var sourceSubGeometries;
                 var sourceSubGeometry;
                 var numSubGeometries;
-                var vertices;
                 var indices;
+                var positions;
+                var normals;
+                var tangents;
+                var uvs;
                 var vertexCounter;
                 var subGeometry;
                 var i;
@@ -43306,9 +38625,12 @@ var away;
                         //create a different particle subgeometry group for each source subgeometry in a particle.
                         if (sub2SubMap.length <= srcIndex) {
                             sub2SubMap.push(subGeometries.length);
-                            verticesVector.push(new Array());
                             indicesVector.push(new Array());
-                            subGeometries.push(new CompactSubGeometry());
+                            positionsVector.push(new Array());
+                            normalsVector.push(new Array());
+                            tangentsVector.push(new Array());
+                            uvsVector.push(new Array());
+                            subGeometries.push(new TriangleSubGeometry(true));
                             vertexCounters.push(0);
                         }
 
@@ -43318,17 +38640,23 @@ var away;
                         if (sourceSubGeometry.numVertices + vertexCounters[sub2SubMap[srcIndex]] > ParticleGeometryHelper.MAX_VERTEX) {
                             //update submap and add new subgeom vectors
                             sub2SubMap[srcIndex] = subGeometries.length;
-                            verticesVector.push(new Array());
                             indicesVector.push(new Array());
-                            subGeometries.push(new CompactSubGeometry());
+                            positionsVector.push(new Array());
+                            normalsVector.push(new Array());
+                            tangentsVector.push(new Array());
+                            uvsVector.push(new Array());
+                            subGeometries.push(new TriangleSubGeometry(true));
                             vertexCounters.push(0);
                         }
 
                         j = sub2SubMap[srcIndex];
 
                         //select the correct vector
-                        vertices = verticesVector[j];
                         indices = indicesVector[j];
+                        positions = positionsVector[j];
+                        normals = normalsVector[j];
+                        tangents = tangentsVector[j];
+                        uvs = uvsVector[j];
                         vertexCounter = vertexCounters[j];
                         subGeometry = subGeometries[j];
 
@@ -43345,12 +38673,18 @@ var away;
                         var tempLen;
                         var compact = sourceSubGeometry;
                         var product;
-                        var sourceVertices;
+                        var sourcePositions;
+                        var sourceNormals;
+                        var sourceTangents;
+                        var sourceUVs;
 
                         if (compact) {
                             tempLen = compact.numVertices;
                             compact.numTriangles;
-                            sourceVertices = compact.vertexData;
+                            sourcePositions = compact.positions;
+                            sourceNormals = compact.vertexNormals;
+                            sourceTangents = compact.vertexTangents;
+                            sourceUVs = compact.uvs;
 
                             if (transforms) {
                                 var particleGeometryTransform = transforms[i];
@@ -43365,18 +38699,18 @@ var away;
                                     * 6 - 8: tangent X, Y, Z
                                     * 9 - 10: U V
                                     * 11 - 12: Secondary U V*/
-                                    product = k * 13;
-                                    tempVertex.x = sourceVertices[product];
-                                    tempVertex.y = sourceVertices[product + 1];
-                                    tempVertex.z = sourceVertices[product + 2];
-                                    tempNormal.x = sourceVertices[product + 3];
-                                    tempNormal.y = sourceVertices[product + 4];
-                                    tempNormal.z = sourceVertices[product + 5];
-                                    tempTangents.x = sourceVertices[product + 6];
-                                    tempTangents.y = sourceVertices[product + 7];
-                                    tempTangents.z = sourceVertices[product + 8];
-                                    tempUV.x = sourceVertices[product + 9];
-                                    tempUV.y = sourceVertices[product + 10];
+                                    product = k * 3;
+                                    tempVertex.x = sourcePositions[product];
+                                    tempVertex.y = sourcePositions[product + 1];
+                                    tempVertex.z = sourcePositions[product + 2];
+                                    tempNormal.x = sourceNormals[product];
+                                    tempNormal.y = sourceNormals[product + 1];
+                                    tempNormal.z = sourceNormals[product + 2];
+                                    tempTangents.x = sourceTangents[product];
+                                    tempTangents.y = sourceTangents[product + 1];
+                                    tempTangents.z = sourceTangents[product + 2];
+                                    tempUV.x = sourceUVs[k * 2];
+                                    tempUV.y = sourceUVs[k * 2 + 1];
                                     if (vertexTransform) {
                                         tempVertex = vertexTransform.transformVector(tempVertex);
                                         tempNormal = invVertexTransform.deltaTransformVector(tempNormal);
@@ -43386,21 +38720,27 @@ var away;
                                         tempUV = UVTransform.transformPoint(tempUV);
 
                                     //this is faster than that only push one data
-                                    vertices.push(tempVertex.x, tempVertex.y, tempVertex.z, tempNormal.x, tempNormal.y, tempNormal.z, tempTangents.x, tempTangents.y, tempTangents.z, tempUV.x, tempUV.y, sourceVertices[product + 11], sourceVertices[product + 12]);
+                                    sourcePositions.push(tempVertex.x, tempVertex.y, tempVertex.z);
+                                    sourceNormals.push(tempNormal.x, tempNormal.y, tempNormal.z);
+                                    sourceTangents.push(tempTangents.x, tempTangents.y, tempTangents.z);
+                                    sourceUVs.push(tempUV.x, tempUV.y);
                                 }
                             } else {
                                 for (k = 0; k < tempLen; k++) {
-                                    product = k * 13;
+                                    product = k * 3;
 
                                     //this is faster than that only push one data
-                                    vertices.push(sourceVertices[product], sourceVertices[product + 1], sourceVertices[product + 2], sourceVertices[product + 3], sourceVertices[product + 4], sourceVertices[product + 5], sourceVertices[product + 6], sourceVertices[product + 7], sourceVertices[product + 8], sourceVertices[product + 9], sourceVertices[product + 10], sourceVertices[product + 11], sourceVertices[product + 12]);
+                                    positions.push(sourcePositions[product], sourcePositions[product + 1], sourcePositions[product + 2]);
+                                    normals.push(sourceNormals[product], sourceNormals[product + 1], sourceNormals[product + 2]);
+                                    tangents.push(sourceTangents[product], sourceTangents[product + 1], sourceTangents[product + 2]);
+                                    uvs.push(sourceUVs[k * 2], sourceUVs[k * 2 + 1]);
                                 }
                             }
                         } else {
                             //Todo
                         }
 
-                        var sourceIndices = sourceSubGeometry.indexData;
+                        var sourceIndices = sourceSubGeometry.indices;
                         tempLen = sourceSubGeometry.numTriangles;
                         for (k = 0; k < tempLen; k++) {
                             product = k * 3;
@@ -43416,8 +38756,13 @@ var away;
                 numParticles = subGeometries.length;
                 for (i = 0; i < numParticles; i++) {
                     subGeometry = subGeometries[i];
-                    subGeometry.updateData(verticesVector[i]);
-                    subGeometry.updateIndexData(indicesVector[i]);
+                    subGeometry.autoDeriveNormals = false;
+                    subGeometry.autoDeriveTangents = false;
+                    subGeometry.updateIndices(indicesVector[i]);
+                    subGeometry.updatePositions(positionsVector[i]);
+                    subGeometry.updateVertexNormals(normalsVector[i]);
+                    subGeometry.updateVertexTangents(tangentsVector[i]);
+                    subGeometry.updateUVs(uvsVector[i]);
                     particleGeometry.addSubGeometry(subGeometry);
                 }
 

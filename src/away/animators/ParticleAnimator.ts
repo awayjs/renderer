@@ -2,8 +2,8 @@
 
 module away.animators
 {
-	import ISubGeometry						= away.base.ISubGeometry;
-	import SubMesh							= away.base.SubMesh;
+	import SubGeometryBase					= away.base.SubGeometryBase;
+	import ISubMesh							= away.base.ISubMesh;
 	import StageGL							= away.base.StageGL;
 	import Camera							= away.entities.Camera;
 	import Vector3D							= away.geom.Vector3D;
@@ -21,7 +21,7 @@ module away.animators
 	 *
 	 * @see away.base.ParticleGeometry
 	 */
-	export class ParticleAnimator extends AnimatorBase implements AnimatorBase
+	export class ParticleAnimator extends AnimatorBase
 	{
 		
 		private _particleAnimationSet:ParticleAnimationSet;
@@ -51,8 +51,9 @@ module away.animators
 					this._animatorParticleStates.push(state);
 					node._iDataOffset = this._totalLenOfOneVertex;
 					this._totalLenOfOneVertex += node.dataLength;
-				} else
+				} else {
 					this._animationParticleStates.push(state);
+				}
 				if (state.needUpdateTime)
 					this._timeParticleStates.push(state);
 			}
@@ -73,7 +74,7 @@ module away.animators
 		{
 			var animationRegisterCache:AnimationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
 			
-			var subMesh:SubMesh = (<away.pool.SubMeshRenderable> renderable).subMesh;
+			var subMesh:ISubMesh = (<away.pool.TriangleSubMeshRenderable> renderable).subMesh;
 			var state:ParticleStateBase;
 			var i:number;
 
@@ -81,19 +82,13 @@ module away.animators
 				throw(new Error("Must be subMesh"));
 			
 			//process animation sub geometries
-			if (!subMesh.animationSubGeometry)
-				this._particleAnimationSet._iGenerateAnimationSubGeometries(<away.entities.Mesh> renderable.sourceEntity);
-			
-			var animationSubGeometry:AnimationSubGeometry = subMesh.animationSubGeometry;
+			var animationSubGeometry:AnimationSubGeometry = this._particleAnimationSet.getAnimationSubGeometry(subMesh);
 			
 			for (i = 0; i < this._animationParticleStates.length; i++)
 				this._animationParticleStates[i].setRenderState(stageGL, renderable, animationSubGeometry, animationRegisterCache, camera);
 
 			//process animator subgeometries
-			if (!subMesh.animatorSubGeometry && this._animatorParticleStates.length)
-				this.generateAnimatorSubGeometry(subMesh);
-			
-			var animatorSubGeometry:AnimationSubGeometry = subMesh.animatorSubGeometry;
+			var animatorSubGeometry:AnimationSubGeometry = this.getAnimatorSubGeometry(subMesh);
 			
 			for (i = 0; i < this._animatorParticleStates.length; i++)
 				this._animatorParticleStates[i].setRenderState(stageGL, renderable, animatorSubGeometry, animationRegisterCache, camera);
@@ -150,17 +145,19 @@ module away.animators
 				(<AnimationSubGeometry> this._animatorSubGeometries[key]).dispose();
 		}
 		
-		private generateAnimatorSubGeometry(subMesh:SubMesh)
+		private getAnimatorSubGeometry(subMesh:ISubMesh):AnimationSubGeometry
 		{
-			var subGeometry:ISubGeometry = subMesh.subGeometry;
-			var animatorSubGeometry:AnimationSubGeometry = subMesh.animatorSubGeometry = this._animatorSubGeometries[subGeometry.id] = new AnimationSubGeometry();
+			if (!this._animatorParticleStates.length)
+				return;
+
+			var subGeometry:SubGeometryBase = subMesh.subGeometry;
+			var animatorSubGeometry:AnimationSubGeometry = this._animatorSubGeometries[subGeometry.id] = new AnimationSubGeometry();
 			
 			//create the vertexData vector that will be used for local state data
 			animatorSubGeometry.createVertexData(subGeometry.numVertices, this._totalLenOfOneVertex);
 			
 			//pass the particles data to the animator subGeometry
-			animatorSubGeometry.animationParticles = subMesh.animationSubGeometry.animationParticles;
+			animatorSubGeometry.animationParticles = this._particleAnimationSet.getAnimationSubGeometry(subMesh).animationParticles;
 		}
 	}
-
 }

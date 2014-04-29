@@ -15,7 +15,7 @@ module tests.materials
         private urlLoader   : away.net.URLLoader;
         private imgTx       : away.textures.ImageTexture;
         private matTx       : away.materials.TextureMaterial;
-        private specM       : away.materials.BasicSpecularMethod;
+        private specM       : away.materials.SpecularBasicMethod;
 		private _image:HTMLImageElement;
 
         constructor()
@@ -60,7 +60,7 @@ module tests.materials
             this.matTx                  = new away.materials.TextureMaterial( this.imgTx  );
             this.matTx.colorTransform   = new away.geom.ColorTransform( 1 , 1 , 1 , 1 );
 
-            this.specM                  = new away.materials.BasicSpecularMethod();
+            this.specM                  = new away.materials.SpecularBasicMethod();
             this.specM.texture          = this.imgTx;
             this.specM.gloss            = 3;
             this.specM.specularColor    = 0xff0000;

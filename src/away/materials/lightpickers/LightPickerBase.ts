@@ -161,7 +161,7 @@ module away.materials
 		 */
 		private updateProbeWeights(renderable:away.pool.RenderableBase)
 		{
-			// todo: this will cause the same calculations to occur per SubMesh. See if this can be improved.
+			// todo: this will cause the same calculations to occur per TriangleSubMesh. See if this can be improved.
 			var objectPos:away.geom.Vector3D = renderable.sourceEntity.scenePosition;
 			var lightPos:away.geom.Vector3D;
 

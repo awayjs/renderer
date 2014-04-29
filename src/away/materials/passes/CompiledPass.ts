@@ -2,14 +2,15 @@
 
 module away.materials
 {
+	import StageGL									= away.base.StageGL;
+	import SubGeometry								= away.base.TriangleSubGeometry;
 	import Matrix									= away.geom.Matrix;
 	import Matrix3D									= away.geom.Matrix3D;
 	import Matrix3DUtils							= away.geom.Matrix3DUtils;
 	import Texture2DBase							= away.textures.Texture2DBase;
-	import StageGL									= away.base.StageGL;
 	import Delegate									= away.utils.Delegate;
 
-	import IRenderable								= away.pool.RenderableBase;
+	import RenderableBase							= away.pool.RenderableBase;
 	import Camera									= away.entities.Camera;
 	import ShadingMethodEvent						= away.events.ShadingMethodEvent;
 
@@ -614,21 +615,23 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:IRenderable, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
+		public iRender(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
 		{
 			var i:number;
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			if (this._uvBufferIndex >= 0)
-				renderable.subGeometry.activateUVBuffer(this._uvBufferIndex, stageGL);
+				stageGL.activateBuffer(this._uvBufferIndex, renderable.getVertexData(SubGeometry.UV_DATA), renderable.getVertexOffset(SubGeometry.UV_DATA), SubGeometry.UV_FORMAT);
 
 			if (this._secondaryUVBufferIndex >= 0)
-				renderable.subGeometry.activateSecondaryUVBuffer(this._secondaryUVBufferIndex, stageGL);
+				stageGL.activateBuffer(this._secondaryUVBufferIndex, renderable.getVertexData(SubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(SubGeometry.SECONDARY_UV_DATA), SubGeometry.SECONDARY_UV_FORMAT);
 
 			if (this._normalBufferIndex >= 0)
-				renderable.subGeometry.activateVertexNormalBuffer(this._normalBufferIndex, stageGL);
+				stageGL.activateBuffer(this._normalBufferIndex, renderable.getVertexData(SubGeometry.NORMAL_DATA), renderable.getVertexOffset(SubGeometry.NORMAL_DATA), SubGeometry.NORMAL_FORMAT);
+
 
 			if (this._tangentBufferIndex >= 0)
-				renderable.subGeometry.activateVertexTangentBuffer(this._tangentBufferIndex, stageGL);
+				stageGL.activateBuffer(this._tangentBufferIndex, renderable.getVertexData(SubGeometry.TANGENT_DATA), renderable.getVertexOffset(SubGeometry.TANGENT_DATA), SubGeometry.TANGENT_FORMAT);
+
 
 
 			if (this._animateUVs) {
@@ -716,8 +719,8 @@ module away.materials
 			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 0, this._pVertexConstantData, this._pNumUsedVertexConstants);
 			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._pNumUsedFragmentConstants);
 
-			renderable.subGeometry.activateVertexBuffer(0, stageGL);
-			context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
+			stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 		}
 
 		/**

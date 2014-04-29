@@ -21,7 +21,7 @@ module away.pick
 		constructor()
 		{
 			this._billboardRenderablePool = away.pool.RenderablePool.getPool(away.pool.BillboardRenderable);
-			this._subMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.SubMeshRenderable);
+			this._subMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.TriangleSubMeshRenderable);
 		}
 
 		public _pPetCollisionNormal(indexData:Array<number> /*uint*/, vertexData:Array<number>, triangleIndex:number):away.geom.Vector3D // PROTECTED
@@ -108,7 +108,7 @@ module away.pick
 			this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
 			pickingCollisionVO.materialOwner = null;
 
-			var subMesh:away.base.SubMesh;
+			var subMesh:away.base.ISubMesh;
 
 			var len:number = mesh.subMeshes.length;
 			for (var i:number = 0; i < len; ++i) {

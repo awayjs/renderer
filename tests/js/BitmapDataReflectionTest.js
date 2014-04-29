@@ -3,23 +3,39 @@
 var tests;
 (function (tests) {
     (function (display) {
+        var BitmapData = away.base.BitmapData;
+        var View = away.containers.View;
+        var HoverController = away.controllers.HoverController;
+        var Mesh = away.entities.Mesh;
+        var LoaderEvent = away.events.LoaderEvent;
+        var AssetLibrary = away.library.AssetLibrary;
+        var AssetType = away.library.AssetType;
+
+        var TextureMaterial = away.materials.TextureMaterial;
+        var AssetLoader = away.net.AssetLoader;
+        var AssetLoaderToken = away.net.AssetLoaderToken;
+        var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
+        var DefaultRenderer = away.render.DefaultRenderer;
+        var BitmapTexture = away.textures.BitmapTexture;
+        var ImageTexture = away.textures.ImageTexture;
+        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+
         var BitmapDataReflectionTest = (function () {
             function BitmapDataReflectionTest() {
                 var _this = this;
-                this.view = new away.containers.View(new away.render.DefaultRenderer());
-                this.raf = new away.utils.RequestAnimationFrame(this.render, this);
+                this.view = new View(new DefaultRenderer());
+                this.raf = new RequestAnimationFrame(this.render, this);
 
-                away.library.AssetLibrary.enableParser(away.parsers.BitmapParser);
+                var token = AssetLibrary.load(new away.net.URLRequest('assets/dots.png'));
+                token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                    return _this.onResourceComplete(event);
+                });
 
-                var token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/dots.png'));
-                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
-
-                window.onresize = function () {
-                    return _this.resize();
+                window.onresize = function (event) {
+                    return _this.onResize(event);
                 };
             }
             BitmapDataReflectionTest.prototype.onResourceComplete = function (e) {
-                //var loader : AssetLoader = e.target as AssetLoader;
                 var loader = e.target;
                 var l = loader.baseDependency.assets.length;
 
@@ -27,10 +43,10 @@ var tests;
                     var asset = loader.baseDependency.assets[c];
 
                     switch (asset.assetType) {
-                        case away.library.AssetType.TEXTURE:
-                            var geom = new away.primitives.PlaneGeometry(500, 500, 1, 1, false);
+                        case AssetType.TEXTURE:
+                            var prefab = new PrimitivePlanePrefab(500, 500, 1, 1, false);
                             var tx = asset;
-                            var bitmap = new away.base.BitmapData(1024, 1024, true, 0x00000000);
+                            var bitmap = new BitmapData(1024, 1024, true, 0x00000000);
 
                             bitmap.context.translate(0, 1024);
                             bitmap.context.scale(1, -1);
@@ -45,7 +61,7 @@ var tests;
                             bitmap.context.globalCompositeOperation = "destination-out";
                             bitmap.context.fill();
 
-                            var bitmapClone = new away.base.BitmapData(1024, 1024, true, 0x00000000);
+                            var bitmapClone = new BitmapData(1024, 1024, true, 0x00000000);
                             bitmapClone.copyPixels(bitmap, bitmapClone.rect, bitmapClone.rect);
 
                             /*
@@ -53,20 +69,23 @@ var tests;
                             */
                             document.body.appendChild(bitmap.canvas);
 
-                            var bmpTX = new away.textures.BitmapTexture(bitmapClone, false);
+                            var bmpTX = new BitmapTexture(bitmapClone, false);
 
-                            var material = new away.materials.TextureMaterial(bmpTX);
+                            var material = new TextureMaterial(bmpTX);
                             material.bothSides = true;
                             material.alphaBlending = true;
 
-                            var material2 = new away.materials.TextureMaterial(tx);
+                            var material2 = new TextureMaterial(tx);
                             material2.bothSides = true;
                             material2.alphaBlending = true;
 
-                            this.fullmesh = new away.entities.Mesh(geom, material2);
-                            this.fullmesh.rotationY = 90;
-                            this.reflectionMesh = new away.entities.Mesh(geom, material);
+                            this.reflectionMesh = prefab.getNewObject();
+                            this.reflectionMesh.material = material;
                             this.view.scene.addChild(this.reflectionMesh);
+
+                            this.fullmesh = prefab.getNewObject();
+                            this.fullmesh.material = material2;
+                            this.fullmesh.rotationY = 90;
                             this.view.scene.addChild(this.fullmesh);
 
                             break;
@@ -74,10 +93,11 @@ var tests;
                 }
 
                 this.raf.start();
-                this.resize();
+                this.onResize();
             };
 
-            BitmapDataReflectionTest.prototype.resize = function () {
+            BitmapDataReflectionTest.prototype.onResize = function (event) {
+                if (typeof event === "undefined") { event = null; }
                 this.view.x = window.innerWidth / 2;
                 this.view.width = window.innerWidth / 2;
                 this.view.height = window.innerHeight;

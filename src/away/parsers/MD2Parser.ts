@@ -3,7 +3,7 @@
 module away.parsers
 {
 	import Geometry							= away.base.Geometry;
-	import CompactSubGeometry				= away.base.CompactSubGeometry;
+	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
 	import VertexAnimationSet				= away.animators.VertexAnimationSet;
 	import VertexClipNode					= away.animators.VertexClipNode;
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
@@ -50,7 +50,7 @@ module away.parsers
 
 		// the current subgeom being built
 		private _animationSet:VertexAnimationSet = new VertexAnimationSet();
-		private _firstSubGeom:CompactSubGeometry;
+		private _firstSubGeom:TriangleSubGeometry;
 		private _uvs:Array<number>;
 		private _finalUV:Array<number>;
 
@@ -190,7 +190,8 @@ module away.parsers
 					return away.parsers.ParserBase.PARSING_DONE;
 				} else if (!this.geoCreated) {
 					this.geoCreated = true;
-					this.createDefaultSubGeometry();
+					//create default subgeometry
+					this._geometry.addSubGeometry(this._firstSubGeom.clone());
 					// Force name to be chosen by this._pFinalizeAsset()
 					this._mesh.name = "";
 					if (this.materialFinal) {
@@ -386,7 +387,7 @@ module away.parsers
 			var sx:number, sy:number, sz:number;
 			var tx:number, ty:number, tz:number;
 			var geometry:Geometry;
-			var subGeom:CompactSubGeometry;
+			var subGeom:TriangleSubGeometry;
 			var vertLen:number /*uint*/ = this._vertIndices.length;
 			var fvertices:Array<number>;
 			var tvertices:Array<number>;
@@ -398,13 +399,7 @@ module away.parsers
 			this._byteData.position = this._offsetFrames;
 
 			for (i = 0; i < this._numFrames; i++) {
-				subGeom = new CompactSubGeometry();
 
-				if (this._firstSubGeom == null)
-					this._firstSubGeom = subGeom;
-
-				geometry = new Geometry();
-				geometry.addSubGeometry(subGeom);
 				tvertices = new Array<number>();
 				fvertices = new Array<number>(vertLen*3);
 
@@ -430,12 +425,21 @@ module away.parsers
 					fvertices[k++] = tvertices[this._vertIndices[j]*3 + 1];
 				}
 
-				subGeom.fromVectors(fvertices, this._finalUV, null, null);
-				subGeom.updateIndexData(this._indices);
-				subGeom.vertexNormalData;
-				subGeom.vertexTangentData;
-				subGeom.autoDeriveVertexNormals = false;
-				subGeom.autoDeriveVertexTangents = false;
+				subGeom = new TriangleSubGeometry(true);
+
+				if (this._firstSubGeom == null)
+					this._firstSubGeom = subGeom;
+
+				geometry = new Geometry();
+				geometry.addSubGeometry(subGeom);
+
+				subGeom.updateIndices(this._indices);
+				subGeom.updatePositions(fvertices);
+				subGeom.updateUVs(this._finalUV);
+				subGeom.vertexNormals;
+				subGeom.vertexTangents;
+				subGeom.autoDeriveNormals = false;
+				subGeom.autoDeriveTangents = false;
 
 				var clip:VertexClipNode = this._clipNodes[name];
 
@@ -485,14 +489,6 @@ module away.parsers
 					k++;
 			}
 			return name;
-		}
-
-		private createDefaultSubGeometry():void
-		{
-			var sub:CompactSubGeometry = new CompactSubGeometry();
-			sub.updateData(this._firstSubGeom.vertexData);
-			sub.updateIndexData(this._indices);
-			this._geometry.addSubGeometry(sub);
 		}
 	}
 }

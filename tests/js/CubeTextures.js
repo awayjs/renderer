@@ -3,98 +3,80 @@
 var tests;
 (function (tests) {
     (function (textures) {
+        var View = away.containers.View;
+        var Mesh = away.entities.Mesh;
+        var Skybox = away.entities.Skybox;
+        var LoaderEvent = away.events.LoaderEvent;
+        var Vector3D = away.geom.Vector3D;
+        var AssetLibrary = away.library.AssetLibrary;
+        var DirectionalLight = away.lights.DirectionalLight;
+        var SkyboxMaterial = away.materials.SkyboxMaterial;
+        var StaticLightPicker = away.materials.StaticLightPicker;
+        var AssetLoader = away.net.AssetLoader;
+        var AssetLoaderToken = away.net.AssetLoaderToken;
+        var URLLoader = away.net.URLLoader;
+        var URLRequest = away.net.URLRequest;
+        var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
+        var DefaultRenderer = away.render.DefaultRenderer;
+        var ImageCubeTexture = away.textures.ImageCubeTexture;
+        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+
         var CubeTextures = (function () {
             function CubeTextures() {
                 var _this = this;
-                this._appTime = 0;
                 away.Debug.LOG_PI_ERRORS = false;
                 away.Debug.THROW_ERRORS = false;
 
-                this.initView();
-                this.initLights();
-                this.initAnimation();
-                this.initParsers();
-                this.loadAssets();
-
-                window.onresize = function () {
-                    return _this.resize();
-                };
-                document.onmousedown = function (event) {
-                    return _this.render(0);
-                };
-            }
-            CubeTextures.prototype.loadAssets = function () {
-                this.loadAsset('assets/CubeTextureTest.cube');
-            };
-
-            CubeTextures.prototype.loadAsset = function (path) {
-                var token = away.library.AssetLibrary.load(new away.net.URLRequest(path));
-                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
-            };
-
-            CubeTextures.prototype.initParsers = function () {
-                away.library.AssetLibrary.enableParser(away.parsers.CubeTextureParser);
-            };
-
-            CubeTextures.prototype.initAnimation = function () {
-                //this._timer = new away.utils.RequestAnimationFrame( this.render, this );
-            };
-
-            CubeTextures.prototype.initView = function () {
-                this._view = new away.containers.View(new away.render.DefaultRenderer());
+                this._view = new View(new DefaultRenderer());
                 this._view.camera.z = -500;
                 this._view.camera.y = 250;
                 this._view.camera.rotationX = 20;
                 this._view.camera.projection.near = 0.5;
                 this._view.camera.projection.far = 14000;
                 this._view.backgroundColor = 0x2c2c32;
-                this.resize();
-            };
 
-            CubeTextures.prototype.initLights = function () {
-                var light = new away.lights.DirectionalLight();
-                light.color = 0x974523;
-                light.direction = new away.geom.Vector3D(-300, -300, -5000);
-                light.ambient = 1;
-                light.ambientColor = 0x7196ac;
-                light.diffuse = 1.2;
-                light.specular = 1.1;
-                this._view.scene.addChild(light);
+                var token = AssetLibrary.load(new URLRequest('assets/CubeTextureTest.cube'));
+                token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                    return _this.onResourceComplete(event);
+                });
 
-                this._lightPicker = new away.materials.StaticLightPicker([light]);
-            };
+                window.onresize = function (event) {
+                    return _this.onResize(event);
+                };
 
-            CubeTextures.prototype.onResourceComplete = function (e) {
-                var loader = e.target;
+                this.onResize();
 
-                switch (e.url) {
+                this._timer = new away.utils.RequestAnimationFrame(this.render, this);
+                this._timer.start();
+            }
+            CubeTextures.prototype.onResourceComplete = function (event) {
+                var loader = event.target;
+
+                switch (event.url) {
                     case 'assets/CubeTextureTest.cube':
                         this._skyboxCubeTexture = loader.baseDependency.assets[0];
+                        this._skyboxMaterial = new SkyboxMaterial(this._skyboxCubeTexture);
 
-                        this._torus = new away.primitives.TorusGeometry();
+                        this._torus = new PrimitiveTorusPrefab();
+                        this._torus.material = this._skyboxMaterial;
 
-                        this._cubeMaterial = new away.materials.SkyboxMaterial(this._skyboxCubeTexture);
-                        this._torusMesh = new away.entities.Mesh(this._torus, this._cubeMaterial);
-
+                        this._torusMesh = this._torus.getNewObject();
                         this._view.scene.addChild(this._torusMesh);
 
-                        this._skybox = new away.entities.Skybox(this._skyboxCubeTexture);
+                        this._skybox = new Skybox(this._skyboxMaterial);
                         this._view.scene.addChild(this._skybox);
 
                         break;
                 }
-
-                this._timer = new away.utils.RequestAnimationFrame(this.render, this);
-                this._timer.start();
             };
 
             CubeTextures.prototype.render = function (dt) {
-                this._appTime += dt;
                 this._view.camera.rotationY += 0.01 * dt;
                 this._view.render();
             };
 
-            CubeTextures.prototype.resize = function () {
+            CubeTextures.prototype.onResize = function (event) {
+                if (typeof event === "undefined") { event = null; }
                 this._view.y = 0;
                 this._view.x = 0;
                 this._view.width = window.innerWidth;

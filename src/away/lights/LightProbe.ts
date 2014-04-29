@@ -62,5 +62,10 @@ module away.lights
 		{
 			throw new away.errors.Error("Object projection matrices are not supported for LightProbe objects!");
 		}
+
+		public _iCollectRenderables(renderer:away.render.IRenderer)
+		{
+			//nothing to do here
+		}
 	}
 }

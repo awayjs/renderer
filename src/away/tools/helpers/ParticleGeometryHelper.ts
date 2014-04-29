@@ -4,9 +4,8 @@ module away.tools
 {
 	import ParticleData					= away.animators.ParticleData;
 	import ParticleGeometry				= away.base.ParticleGeometry;
-	import CompactSubGeometry			= away.base.CompactSubGeometry;
 	import Geometry						= away.base.Geometry;
-	import ISubGeometry					= away.base.ISubGeometry;
+	import TriangleSubGeometry			= away.base.TriangleSubGeometry;
 	import Matrix						= away.geom.Matrix;
 	import Matrix3D						= away.geom.Matrix3D;
 	import Point						= away.geom.Point;
@@ -21,20 +20,26 @@ module away.tools
 		
 		public static generateGeometry(geometries:Array<Geometry>, transforms:Array<ParticleGeometryTransform> = null):ParticleGeometry
 		{
-			var verticesVector:Array<Array<number>> = new Array<Array<number>>();
 			var indicesVector:Array<Array<number>> /*uint*/ = new Array<Array<number>>() /*uint*/;
+			var positionsVector:Array<Array<number>> = new Array<Array<number>>();
+			var normalsVector:Array<Array<number>> = new Array<Array<number>>();
+			var tangentsVector:Array<Array<number>> = new Array<Array<number>>();
+			var uvsVector:Array<Array<number>> = new Array<Array<number>>();
 			var vertexCounters:Array<number> /*uint*/ = new Array<number>() /*uint*/;
 			var particles:Array<ParticleData> = new Array<ParticleData>();
-			var subGeometries:Array<CompactSubGeometry> = new Array<CompactSubGeometry>();
+			var subGeometries:Array<TriangleSubGeometry> = new Array<TriangleSubGeometry>();
 			var numParticles:number /*uint*/ = geometries.length;
 			
-			var sourceSubGeometries:Array<ISubGeometry>;
-			var sourceSubGeometry:ISubGeometry;
+			var sourceSubGeometries:Array<TriangleSubGeometry>;
+			var sourceSubGeometry:TriangleSubGeometry;
 			var numSubGeometries:number /*uint*/;
-			var vertices:Array<number>;
 			var indices:Array<number> /*uint*/;
+			var positions:Array<number>;
+			var normals:Array<number>;
+			var tangents:Array<number>;
+			var uvs:Array<number>;
 			var vertexCounter:number /*uint*/;
-			var subGeometry:CompactSubGeometry;
+			var subGeometry:TriangleSubGeometry;
 			var i:number /*int*/;
 			var j:number /*int*/;
 			var sub2SubMap:Array<number> /*int*/ = new Array<number>() /*int*/;
@@ -45,15 +50,18 @@ module away.tools
 			var tempUV:Point = new Point;
 			
 			for (i = 0; i < numParticles; i++) {
-				sourceSubGeometries = geometries[i].subGeometries;
+				sourceSubGeometries = <Array<TriangleSubGeometry>> geometries[i].subGeometries;
 				numSubGeometries = sourceSubGeometries.length;
 				for (var srcIndex:number /*int*/ = 0; srcIndex < numSubGeometries; srcIndex++) {
 					//create a different particle subgeometry group for each source subgeometry in a particle.
 					if (sub2SubMap.length <= srcIndex) {
 						sub2SubMap.push(subGeometries.length);
-						verticesVector.push(new Array<number>());
 						indicesVector.push(new Array<number>() /*uint*/);
-						subGeometries.push(new CompactSubGeometry());
+						positionsVector.push(new Array<number>());
+						normalsVector.push(new Array<number>());
+						tangentsVector.push(new Array<number>());
+						uvsVector.push(new Array<number>());
+						subGeometries.push(new TriangleSubGeometry(true));
 						vertexCounters.push(0);
 					}
 					
@@ -63,17 +71,23 @@ module away.tools
 					if (sourceSubGeometry.numVertices + vertexCounters[sub2SubMap[srcIndex]] > ParticleGeometryHelper.MAX_VERTEX) {
 						//update submap and add new subgeom vectors
 						sub2SubMap[srcIndex] = subGeometries.length;
-						verticesVector.push(new Array<number>());
 						indicesVector.push(new Array<number>() /*uint*/);
-						subGeometries.push(new CompactSubGeometry());
+						positionsVector.push(new Array<number>());
+						normalsVector.push(new Array<number>());
+						tangentsVector.push(new Array<number>());
+						uvsVector.push(new Array<number>());
+						subGeometries.push(new TriangleSubGeometry(true));
 						vertexCounters.push(0);
 					}
 					
 					j = sub2SubMap[srcIndex];
 					
 					//select the correct vector
-					vertices = verticesVector[j];
 					indices = indicesVector[j];
+					positions = positionsVector[j];
+					normals = normalsVector[j];
+					tangents = tangentsVector[j];
+					uvs = uvsVector[j];
 					vertexCounter = vertexCounters[j];
 					subGeometry = subGeometries[j];
 					
@@ -88,14 +102,20 @@ module away.tools
 					
 					var k:number /*int*/;
 					var tempLen:number /*int*/;
-					var compact:CompactSubGeometry = <CompactSubGeometry> sourceSubGeometry;
+					var compact:TriangleSubGeometry = sourceSubGeometry;
 					var product:number /*uint*/;
-					var sourceVertices:Array<number>;
+					var sourcePositions:Array<number>;
+					var sourceNormals:Array<number>;
+					var sourceTangents:Array<number>;
+					var sourceUVs:Array<number>;
 					
 					if (compact) {
 						tempLen = compact.numVertices;
 						compact.numTriangles;
-						sourceVertices = compact.vertexData;
+						sourcePositions = compact.positions;
+						sourceNormals = compact.vertexNormals;
+						sourceTangents = compact.vertexTangents;
+						sourceUVs = compact.uvs;
 						
 						if (transforms) {
 							var particleGeometryTransform:ParticleGeometryTransform = transforms[i];
@@ -110,18 +130,18 @@ module away.tools
 								 * 6 - 8: tangent X, Y, Z
 								 * 9 - 10: U V
 								 * 11 - 12: Secondary U V*/
-								product = k*13;
-								tempVertex.x = sourceVertices[product];
-								tempVertex.y = sourceVertices[product + 1];
-								tempVertex.z = sourceVertices[product + 2];
-								tempNormal.x = sourceVertices[product + 3];
-								tempNormal.y = sourceVertices[product + 4];
-								tempNormal.z = sourceVertices[product + 5];
-								tempTangents.x = sourceVertices[product + 6];
-								tempTangents.y = sourceVertices[product + 7];
-								tempTangents.z = sourceVertices[product + 8];
-								tempUV.x = sourceVertices[product + 9];
-								tempUV.y = sourceVertices[product + 10];
+								product = k*3;
+								tempVertex.x = sourcePositions[product];
+								tempVertex.y = sourcePositions[product + 1];
+								tempVertex.z = sourcePositions[product + 2];
+								tempNormal.x = sourceNormals[product];
+								tempNormal.y = sourceNormals[product + 1];
+								tempNormal.z = sourceNormals[product + 2];
+								tempTangents.x = sourceTangents[product];
+								tempTangents.y = sourceTangents[product + 1];
+								tempTangents.z = sourceTangents[product + 2];
+								tempUV.x = sourceUVs[k*2];
+								tempUV.y = sourceUVs[k*2 + 1];
 								if (vertexTransform) {
 									tempVertex = vertexTransform.transformVector(tempVertex);
 									tempNormal = invVertexTransform.deltaTransformVector(tempNormal);
@@ -130,26 +150,26 @@ module away.tools
 								if (UVTransform)
 									tempUV = UVTransform.transformPoint(tempUV);
 								//this is faster than that only push one data
-								vertices.push(tempVertex.x, tempVertex.y, tempVertex.z, tempNormal.x,
-									tempNormal.y, tempNormal.z, tempTangents.x, tempTangents.y,
-									tempTangents.z, tempUV.x, tempUV.y, sourceVertices[product + 11],
-									sourceVertices[product + 12]);
+								sourcePositions.push(tempVertex.x, tempVertex.y, tempVertex.z);
+								sourceNormals.push(tempNormal.x, tempNormal.y, tempNormal.z);
+								sourceTangents.push(tempTangents.x, tempTangents.y, tempTangents.z);
+								sourceUVs.push(tempUV.x, tempUV.y);
 							}
 						} else {
 							for (k = 0; k < tempLen; k++) {
-								product = k*13;
+								product = k*3;
 								//this is faster than that only push one data
-								vertices.push(sourceVertices[product], sourceVertices[product + 1], sourceVertices[product + 2], sourceVertices[product + 3],
-									sourceVertices[product + 4], sourceVertices[product + 5], sourceVertices[product + 6], sourceVertices[product + 7],
-									sourceVertices[product + 8], sourceVertices[product + 9], sourceVertices[product + 10], sourceVertices[product + 11],
-									sourceVertices[product + 12]);
+								positions.push(sourcePositions[product], sourcePositions[product + 1], sourcePositions[product + 2]);
+								normals.push(sourceNormals[product], sourceNormals[product + 1], sourceNormals[product + 2]);
+								tangents.push(sourceTangents[product], sourceTangents[product + 1], sourceTangents[product + 2]);
+								uvs.push(sourceUVs[k*2], sourceUVs[k*2 + 1]);
 							}
 						}
 					} else {
 						//Todo
 					}
 					
-					var sourceIndices:Array<number> /*uint*/ = sourceSubGeometry.indexData;
+					var sourceIndices:Array<number> /*uint*/ = sourceSubGeometry.indices;
 					tempLen = sourceSubGeometry.numTriangles;
 					for (k = 0; k < tempLen; k++) {
 						product = k*3;
@@ -165,8 +185,13 @@ module away.tools
 			numParticles = subGeometries.length;
 			for (i = 0; i < numParticles; i++) {
 				subGeometry = subGeometries[i];
-				subGeometry.updateData(verticesVector[i]);
-				subGeometry.updateIndexData(indicesVector[i]);
+				subGeometry.autoDeriveNormals = false;
+				subGeometry.autoDeriveTangents = false;
+				subGeometry.updateIndices(indicesVector[i]);
+				subGeometry.updatePositions(positionsVector[i]);
+				subGeometry.updateVertexNormals(normalsVector[i]);
+				subGeometry.updateVertexTangents(tangentsVector[i]);
+				subGeometry.updateUVs(uvsVector[i]);
 				particleGeometry.addSubGeometry(subGeometry);
 			}
 			

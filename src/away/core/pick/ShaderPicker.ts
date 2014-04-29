@@ -219,8 +219,8 @@ module away.pick
 				matrix.append(viewProjection);
 				this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
 				this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
-				renderable.subGeometry.activateVertexBuffer(0, this._stageGL);
-				this._context.drawTriangles(renderable.subGeometry.getIndexBuffer(this._stageGL), 0, renderable.subGeometry.numTriangles);
+				this._stageGL.activateBuffer(0, renderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA), away.base.TriangleSubGeometry.POSITION_FORMAT);
+				this._context.drawTriangles(this._stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 
 				renderable = renderable.next;
 			}
@@ -322,8 +322,10 @@ module away.pick
 			this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
 			this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
 			this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
-			this._hitRenderable.subGeometry.activateVertexBuffer(0, this._stageGL);
-			this._context.drawTriangles(this._hitRenderable.subGeometry.getIndexBuffer(this._stageGL), 0, this._hitRenderable.subGeometry.numTriangles);
+
+			this._stageGL.activateBuffer(0, this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA), away.base.TriangleSubGeometry.POSITION_FORMAT);
+			this._context.drawTriangles(this._stageGL.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
+
 			this._context.drawToBitmapData(this._bitmapData);
 
 			col = this._bitmapData.getPixel(0, 0);
@@ -340,9 +342,6 @@ module away.pick
 		 */
 		private getPreciseDetails(camera:away.entities.Camera)
 		{
-			var subGeom:away.base.ISubGeometry = this._hitRenderable.subGeometry;
-			var indices:Array<number> = subGeom.indexData;
-			var vertices:Array<number> = subGeom.vertexData;
 			var len:number = indices.length;
 			var x1:number, y1:number, z1:number;
 			var x2:number, y2:number, z2:number;
@@ -352,34 +351,45 @@ module away.pick
 			var v0x:number, v0y:number, v0z:number;
 			var v1x:number, v1y:number, v1z:number;
 			var v2x:number, v2y:number, v2z:number;
+			var ni1:number, ni2:number, ni3:number;
+			var n1:number, n2:number, n3:number, nLength:number;
 			var dot00:number, dot01:number, dot02:number, dot11:number, dot12:number;
 			var s:number, t:number, invDenom:number;
-			var uvs:Array<number> = subGeom.UVData;
-			var normals:Array<number> = subGeom.faceNormals;
 			var x:number = this._localHitPosition.x, y:number = this._localHitPosition.y, z:number = this._localHitPosition.z;
 			var u:number, v:number;
 			var ui1:number, ui2:number, ui3:number;
 			var s0x:number, s0y:number, s0z:number;
 			var s1x:number, s1y:number, s1z:number;
 			var nl:number;
-			var stride:number = subGeom.vertexStride;
-			var vertexOffset:number = subGeom.vertexOffset;
+			var indices:Array<number> = this._hitRenderable.getIndexData().data;
+
+			var positions:Array<number> = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA).data;
+			var positionStride:number = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA).dataPerVertex;
+			var positionOffset:number = this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA);
+
+			var uvs:Array<number> = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.UV_DATA).data;
+			var uvStride:number = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.UV_DATA).dataPerVertex;
+			var uvOffset:number = this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.UV_DATA);
+
+			var normals:Array<number> = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.NORMAL_DATA).data;
+			var normalStride:number = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.NORMAL_DATA).dataPerVertex;
+			var normalOffset:number = this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.NORMAL_DATA);
 
 			this.updateRay(camera);
 
 			while (i < len) {
-				t1 = vertexOffset + indices[i]*stride;
-				t2 = vertexOffset + indices[j]*stride;
-				t3 = vertexOffset + indices[k]*stride;
-				x1 = vertices[t1];
-				y1 = vertices[t1 + 1];
-				z1 = vertices[t1 + 2];
-				x2 = vertices[t2];
-				y2 = vertices[t2 + 1];
-				z2 = vertices[t2 + 2];
-				x3 = vertices[t3];
-				y3 = vertices[t3 + 1];
-				z3 = vertices[t3 + 2];
+				t1 = positionOffset + indices[i]*positionStride;
+				t2 = positionOffset + indices[j]*positionStride;
+				t3 = positionOffset + indices[k]*positionStride;
+				x1 = positions[t1];
+				y1 = positions[t1 + 1];
+				z1 = positions[t1 + 2];
+				x2 = positions[t2];
+				y2 = positions[t2 + 1];
+				z2 = positions[t2 + 2];
+				x3 = positions[t3];
+				y3 = positions[t3 + 1];
+				z3 = positions[t3 + 2];
 
 				// if within bounds
 				if (!(    (x < x1 && x < x2 && x < x3) || (y < y1 && y < y2 && y < y3) || (z < z1 && z < z2 && z < z3) || (x > x1 && x > x2 && x > x3) || (y > y1 && y > y2 && y > y3) || (z > z1 && z > z2 && z > z3))) {
@@ -406,8 +416,22 @@ module away.pick
 					// if inside the current triangle, fetch details hit information
 					if (s >= 0 && t >= 0 && (s + t) <= 1) {
 
+						ni1 = normalOffset + indices[i]*normalStride;
+						ni2 = normalOffset + indices[j]*normalStride;
+						ni3 = normalOffset + indices[k]*normalStride;
+
+						n1 = indices[ni1] + indices[ni2] + indices[ni3];
+						n2 = indices[ni1 + 1] + indices[ni2 + 1] + indices[ni3 + 1];
+						n3 = indices[ni1 + 2] + indices[ni2 + 2] + indices[ni3 + 2];
+
+						nLength = Math.sqrt(n1*n1 + n2*n2 + n3*n3);
+
+						n1 /= nLength;
+						n2 /= nLength;
+						n3 /= nLength;
+
 						// this is def the triangle, now calculate precise coords
-						this.getPrecisePosition(this._hitRenderable.sourceEntity.inverseSceneTransform, normals[i], normals[i + 1], normals[i + 2], x1, y1, z1);
+						this.getPrecisePosition(this._hitRenderable.sourceEntity.inverseSceneTransform, n1, n2, n3, x1, y1, z1);
 
 						v2x = this._localHitPosition.x - x1;
 						v2y = this._localHitPosition.y - y1;
@@ -432,9 +456,9 @@ module away.pick
 						s = (dot11*dot02 - dot01*dot12)*invDenom;
 						t = (dot00*dot12 - dot01*dot02)*invDenom;
 
-						ui1 = indices[i] << 1;
-						ui2 = indices[j] << 1;
-						ui3 = indices[k] << 1;
+						ui1 = uvOffset + indices[i]*uvStride
+						ui2 = uvOffset + indices[j]*uvStride
+						ui3 = uvOffset + indices[k]*uvStride
 
 						u = uvs[ui1];
 						v = uvs[ui1 + 1];
@@ -442,7 +466,8 @@ module away.pick
 						this._hitUV.y = v + t*(uvs[ui2 + 1] - v) + s*(uvs[ui3 + 1] - v);
 
 						this._faceIndex = i;
-						this._subGeometryIndex = away.utils.GeometryUtils.getMeshSubGeometryIndex(subGeom);
+						//TODO add back subGeometryIndex value
+						//this._subGeometryIndex = away.utils.GeometryUtils.getMeshSubGeometryIndex(subGeom);
 
 						return;
 					}

@@ -10,7 +10,7 @@ module tests.materials
     {
 
         private view        : away.containers.View;
-        private torus       : away.primitives.TorusGeometry;
+        private torus       : away.prefabs.PrimitiveTorusPrefab;
 
         private mesh        : away.entities.Mesh;
         private light       : away.lights.PointLight;
@@ -50,7 +50,7 @@ module tests.materials
             this.view                   = new away.containers.View( new away.render.DefaultRenderer())
             this.view.camera.z          = -1000;
             this.view.backgroundColor   = 0x000000;
-            this.torus                  = new away.primitives.TorusGeometry( 50 , 10, 32 , 32 , false );
+            this.torus                  = new away.prefabs.PrimitiveTorusPrefab( 50 , 10, 32 , 32 , false );
 
             var l       : number        = 20;
             var radius  : number        = 500;
@@ -58,13 +58,14 @@ module tests.materials
             var ts      : away.textures.ImageTexture     = new away.textures.ImageTexture( this._image , false );
             var mat     : away.materials.TextureMultiPassMaterial   = new away.materials.TextureMultiPassMaterial( ts , true , true , false );
 
+			this.torus.material = mat;
 
             for (var c : number = 0; c < l ; c++)
             {
 
                 var t   : number=Math.PI * 2 * c / l;
 
-                var m : away.entities.Mesh = new away.entities.Mesh( this.torus , mat );
+                var m : away.entities.Mesh = <away.entities.Mesh> this.torus.getNewObject();
                 m.x = Math.cos(t)*radius;
                 m.y = 0;
                 m.z = Math.sin(t)*radius;

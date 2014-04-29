@@ -3,6 +3,15 @@
 var tests;
 (function (tests) {
     (function (base) {
+        var View = away.containers.View;
+        var Mesh = away.entities.Mesh;
+        var PointLight = away.lights.PointLight;
+        var ColorMaterial = away.materials.ColorMaterial;
+        var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
+        var PerspectiveProjection = away.projections.PerspectiveProjection;
+        var DefaultRenderer = away.render.DefaultRenderer;
+        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+
         var Object3DTestV2 = (function () {
             function Object3DTestV2() {
                 var _this = this;
@@ -14,8 +23,8 @@ var tests;
                 away.Debug.LOG_PI_ERRORS = false;
 
                 this.meshes = new Array();
-                this.light = new away.lights.PointLight();
-                this.view = new away.containers.View(new away.render.DefaultRenderer());
+                this.light = new PointLight();
+                this.view = new View(new DefaultRenderer());
 
                 var perspectiveProjection = this.view.camera.projection;
                 perspectiveProjection.fieldOfView = 75;
@@ -23,25 +32,25 @@ var tests;
                 this.view.camera.z = 0;
                 this.view.backgroundColor = 0x000000;
                 this.view.backgroundAlpha = 0;
-                this.torus = new away.primitives.TorusGeometry(150, 50, 32, 32, false);
+                this.torus = new PrimitiveTorusPrefab(150, 50, 32, 32, false);
 
                 var l = 10;
 
                 for (var c = 0; c < l; c++) {
                     var t = Math.PI * 2 * c / l;
 
-                    var m = new away.entities.Mesh(this.torus);
-                    m.x = Math.cos(t) * this.radius;
-                    m.y = 0;
-                    m.z = Math.sin(t) * this.radius;
+                    var mesh = this.torus.getNewObject();
+                    mesh.x = Math.cos(t) * this.radius;
+                    mesh.y = 0;
+                    mesh.z = Math.sin(t) * this.radius;
 
-                    this.view.scene.addChild(m);
-                    this.meshes.push(m);
+                    this.view.scene.addChild(mesh);
+                    this.meshes.push(mesh);
                 }
 
                 this.view.scene.addChild(this.light);
 
-                this.raf = new away.utils.RequestAnimationFrame(this.tick, this);
+                this.raf = new RequestAnimationFrame(this.tick, this);
                 this.raf.start();
                 this.resize(null);
 
@@ -71,18 +80,19 @@ var tests;
                 }
 
                 //this.view.camera.y = Math.sin( this.tPos ) * 1500;
-                if (this.follow) {
+                if (this.follow)
                     this.view.camera.lookAt(this.meshes[0].transform.position);
-                }
 
                 this.view.camera.y = Math.sin(this.tPos) * 1500;
                 this.view.render();
             };
 
             Object3DTestV2.prototype.resize = function (e) {
-                this.view.y = (window.innerHeight - this.view.height) / 2;
-                this.view.x = (window.innerWidth - this.view.width) / 2;
-                this.view.render();
+                this.view.y = 0;
+                this.view.x = 0;
+
+                this.view.width = window.innerWidth;
+                this.view.height = window.innerHeight;
             };
 
             Object3DTestV2.prototype.followObject = function (e) {

@@ -29,7 +29,7 @@ module away.materials
 		public _iUniqueId:number;//Arcane
 
 		public _pMaterial:MaterialBase;
-		private _animationSet:away.animators.IAnimationSet;
+		private _animationSet:away.animators.AnimationSetBase;
 
 		public _iPrograms:Program[] = new Array<Program>(8) //Vector.<Program> = new Vector.<Program>(8);
 		public _iProgramids:Array<number> = new Array<number>(-1, -1, -1, -1, -1, -1, -1, -1);//Vector.<int> = Vector.<int>([-1, -1, -1, -1, -1, -1, -1, -1]);
@@ -235,19 +235,15 @@ module away.materials
 		/**
 		 * Returns the animation data set adding animations to the material.
 		 */
-		public get animationSet():away.animators.IAnimationSet
+		public get animationSet():away.animators.AnimationSetBase
 		{
 			return this._animationSet;
 		}
 
-		public set animationSet(value:away.animators.IAnimationSet)
+		public set animationSet(value:away.animators.AnimationSetBase)
 		{
-			if (this._animationSet == value) {
-
+			if (this._animationSet == value)
 				return;
-
-			}
-
 
 			this._animationSet = value;
 
@@ -268,11 +264,8 @@ module away.materials
 		 */
 		public dispose()
 		{
-			if (this._pLightPicker) {
-
+			if (this._pLightPicker)
 				this._pLightPicker.removeEventListener(Event.CHANGE, this._onLightsChangeDelegate);
-
-			}
 
 
 			for (var i:number = 0; i < 8; ++i) {

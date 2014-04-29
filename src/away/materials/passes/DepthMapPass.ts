@@ -2,8 +2,7 @@
 
 module away.materials
 {
-
-	//use namespace arcane;
+	import SubGeometry								= away.base.TriangleSubGeometry;
 
 	/**
 	 * DepthMapPass is a pass that writes depth values to a depth map as a 32-bit value exploded over the 4 texture channels.
@@ -144,7 +143,8 @@ module away.materials
 		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
 			if (this._alphaThreshold > 0)
-				renderable.subGeometry.activateUVBuffer(1, stageGL);
+				stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.UV_DATA), renderable.getVertexOffset(SubGeometry.UV_DATA), SubGeometry.UV_FORMAT);
+
 
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			var matrix:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
@@ -152,8 +152,9 @@ module away.materials
 			matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
 			matrix.append(viewProjection);
 			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
-			renderable.subGeometry.activateVertexBuffer(0, stageGL);
-			context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
+
+			stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA),  renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 
 		}
 

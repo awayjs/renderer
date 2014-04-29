@@ -333,7 +333,9 @@ module away.materials
 
 				// TODO: AGAL <> GLSL
 
-				this._pVertexCode += "dp4 " + varying + ".x, " + uvAttributeReg + ", " + uvTransform1 + "\n" + "dp4 " + varying + ".y, " + uvAttributeReg + ", " + uvTransform2 + "\n" + "mov " + varying + ".zw, " + uvAttributeReg + ".zw \n";
+				this._pVertexCode += "dp4 " + varying + ".x, " + uvAttributeReg + ", " + uvTransform1 + "\n" +
+									"dp4 " + varying + ".y, " + uvAttributeReg + ", " + uvTransform2 + "\n" +
+									"mov " + varying + ".zw, " + uvAttributeReg + ".zw \n";
 
 			} else {
 

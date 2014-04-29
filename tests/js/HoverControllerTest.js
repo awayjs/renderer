@@ -3,37 +3,47 @@
 var tests;
 (function (tests) {
     (function (controllers) {
+        var View = away.containers.View;
+        var HoverController = away.controllers.HoverController;
+        var Mesh = away.entities.Mesh;
+        var PrimitiveCubePrefab = away.prefabs.PrimitiveCubePrefab;
+        var DefaultRenderer = away.render.DefaultRenderer;
+        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+
         var HoverControllerTest = (function () {
             function HoverControllerTest() {
                 var _this = this;
                 this._move = false;
-                this._view = new away.containers.View(new away.render.DefaultRenderer());
+                this._view = new View(new DefaultRenderer());
 
-                this._wireframeCube = new away.primitives.WireframeCube(400, 400, 400);
-                this._view.scene.addChild(this._wireframeCube);
+                this._cube = new PrimitiveCubePrefab(400, 400, 400);
+                this._cube.geometryType = "lineSubGeometry";
+                this._mesh = this._cube.getNewObject();
+                this._view.scene.addChild(this._mesh);
 
-                this._hoverControl = new away.controllers.HoverController(this._view.camera, this._wireframeCube, 150, 10);
+                this._hoverControl = new away.controllers.HoverController(this._view.camera, this._mesh, 150, 10);
 
-                window.onresize = function () {
-                    return _this.resize();
+                window.onresize = function (event) {
+                    return _this.onResize(event);
                 };
 
-                document.onmousedown = function (e) {
-                    return _this.onMouseDownHandler(e);
+                document.onmousedown = function (event) {
+                    return _this.onMouseDown(event);
                 };
-                document.onmouseup = function (e) {
-                    return _this.onMouseUpHandler(e);
+                document.onmouseup = function (event) {
+                    return _this.onMouseUp(event);
                 };
-                document.onmousemove = function (e) {
-                    return _this.onMouseMove(e);
+                document.onmousemove = function (event) {
+                    return _this.onMouseMove(event);
                 };
 
-                this.resize();
+                this.onResize();
 
-                this._timer = new away.utils.RequestAnimationFrame(this.render, this);
+                this._timer = new RequestAnimationFrame(this.render, this);
                 this._timer.start();
             }
-            HoverControllerTest.prototype.resize = function () {
+            HoverControllerTest.prototype.onResize = function (event) {
+                if (typeof event === "undefined") { event = null; }
                 this._view.y = 0;
                 this._view.x = 0;
                 this._view.width = window.innerWidth;
@@ -44,22 +54,22 @@ var tests;
                 this._view.render();
             };
 
-            HoverControllerTest.prototype.onMouseUpHandler = function (e) {
+            HoverControllerTest.prototype.onMouseUp = function (event) {
                 this._move = false;
             };
 
-            HoverControllerTest.prototype.onMouseMove = function (e) {
+            HoverControllerTest.prototype.onMouseMove = function (event) {
                 if (this._move) {
-                    this._hoverControl.panAngle = 0.3 * (e.clientX - this._lastMouseX) + this._lastPanAngle;
-                    this._hoverControl.tiltAngle = 0.3 * (e.clientY - this._lastMouseY) + this._lastTiltAngle;
+                    this._hoverControl.panAngle = 0.3 * (event.clientX - this._lastMouseX) + this._lastPanAngle;
+                    this._hoverControl.tiltAngle = 0.3 * (event.clientY - this._lastMouseY) + this._lastTiltAngle;
                 }
             };
 
-            HoverControllerTest.prototype.onMouseDownHandler = function (e) {
+            HoverControllerTest.prototype.onMouseDown = function (event) {
                 this._lastPanAngle = this._hoverControl.panAngle;
                 this._lastTiltAngle = this._hoverControl.tiltAngle;
-                this._lastMouseX = e.clientX; //e.clientX;
-                this._lastMouseY = e.clientY; //e.clientX;
+                this._lastMouseX = event.clientX;
+                this._lastMouseY = event.clientY;
                 this._move = true;
             };
             return HoverControllerTest;

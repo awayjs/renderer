@@ -2,14 +2,14 @@
 
 module away.animators
 {
-	import CompactSubGeometry = away.base.CompactSubGeometry;
+	import TriangleSubGeometry = away.base.TriangleSubGeometry;
 	
 	export class ParticleData
 	{
 		public particleIndex:number /*uint*/;
 		public numVertices:number /*uint*/;
 		public startVertexIndex:number /*uint*/;
-		public subGeometry:CompactSubGeometry;
+		public subGeometry:TriangleSubGeometry;
 	}
 
 }

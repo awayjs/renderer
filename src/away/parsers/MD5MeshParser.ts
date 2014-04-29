@@ -6,7 +6,7 @@ module away.parsers
 	import Skeleton                     	= away.animators.Skeleton;
 	import SkeletonJoint                	= away.animators.SkeletonJoint;
 	import Geometry                     	= away.base.Geometry;
-	import SkinnedSubGeometry           	= away.base.SkinnedSubGeometry;
+	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
 	import Matrix3D                     	= away.geom.Matrix3D;
 	import Quaternion                   	= away.geom.Quaternion;
 	import Vector3D                     	= away.geom.Vector3D;
@@ -335,9 +335,9 @@ module away.parsers
 		 * @param vertexData The mesh's vertices.
 		 * @param weights The joint weights per vertex.
 		 * @param indices The indices for the faces.
-		 * @return A SkinnedSubGeometry instance containing all geometrical data for the current mesh.
+		 * @return A SubGeometry instance containing all geometrical data for the current mesh.
 		 */
-		private translateGeom(vertexData:Array<VertexData>, weights:Array<JointData>, indices:Array<number> /*uint*/):SkinnedSubGeometry
+		private translateGeom(vertexData:Array<VertexData>, weights:Array<JointData>, indices:Array<number> /*uint*/):TriangleSubGeometry
 		{
 			var len:number /*int*/ = vertexData.length;
 			var v1:number /*int*/, v2:number /*int*/, v3:number /*int*/;
@@ -345,7 +345,7 @@ module away.parsers
 			var weight:JointData;
 			var bindPose:Matrix3D;
 			var pos:Vector3D;
-			var subGeom:SkinnedSubGeometry = new SkinnedSubGeometry(this._maxJointCount);
+			var subGeom:TriangleSubGeometry = new TriangleSubGeometry(true);
 			var uvs:Array<number> = new Array<number>(len*2);
 			var vertices:Array<number> = new Array<number>(len*3);
 			var jointIndices:Array<number> = new Array<number>(len*this._maxJointCount);
@@ -387,16 +387,18 @@ module away.parsers
 				uvs[v1] = vertex.t;
 			}
 
-			subGeom.updateIndexData(indices);
-			subGeom.fromVectors(vertices, uvs, null, null);
+			subGeom.jointsPerVertex = this._maxJointCount;
+			subGeom.updateIndices(indices);
+			subGeom.updatePositions(vertices);
+			subGeom.updateUVs(uvs);
+			subGeom.updateJointIndices(jointIndices);
+			subGeom.updateJointWeights(jointWeights);
 			// cause explicit updates
-			subGeom.vertexNormalData;
-			subGeom.vertexTangentData;
+			subGeom.vertexNormals;
+			subGeom.vertexTangents;
 			// turn auto updates off because they may be animated and set explicitly
-			subGeom.autoDeriveVertexTangents = false;
-			subGeom.autoDeriveVertexNormals = false;
-			subGeom.iUpdateJointIndexData(jointIndices);
-			subGeom.iUpdateJointWeightsData(jointWeights);
+			subGeom.autoDeriveTangents = false;
+			subGeom.autoDeriveNormals = false;
 
 			return subGeom;
 		}

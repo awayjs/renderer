@@ -2,6 +2,7 @@
 
 module away.animators
 {
+	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
 	import StageGL							= away.base.StageGL;
 	import Camera							= away.entities.Camera;
 	import MaterialPassBase					= away.materials.MaterialPassBase;
@@ -33,7 +34,7 @@ module away.animators
 	 *
 	 * @see away.animators.AnimationSetBase
 	 */
-	export class AnimatorBase extends away.library.NamedAssetBase implements away.library.IAsset, away.animators.IAnimator
+	export class AnimatorBase extends away.library.NamedAssetBase implements IAnimator
 	{
 		private _broadcaster:away.utils.RequestAnimationFrame;
 		private _isPlaying:boolean;
@@ -370,6 +371,13 @@ module away.animators
 		public get assetType():string
 		{
 			return away.library.AssetType.ANIMATOR;
+		}
+
+
+		public getRenderableSubGeometry(renderable:away.pool.TriangleSubMeshRenderable, sourceSubGeometry:TriangleSubGeometry):TriangleSubGeometry
+		{
+			//nothing to do here
+			return sourceSubGeometry;
 		}
 	}
 }

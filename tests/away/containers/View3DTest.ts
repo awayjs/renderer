@@ -1,53 +1,62 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
 //<reference path="../../../src/Away3D.ts" />
 
-module tests.containers{
+module tests.containers
+{
+	import View							= away.containers.View;
+	import Mesh							= away.entities.Mesh;
+	import PointLight					= away.lights.PointLight;
+	import ColorMaterial				= away.materials.ColorMaterial;
+	import PrimitiveTorusPrefab			= away.prefabs.PrimitiveTorusPrefab;
+	import DefaultRenderer				= away.render.DefaultRenderer;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
     export class View3DTest
     {
 
-        private view        : away.containers.View;
-        private torus       : away.primitives.TorusGeometry;
+        private view:View;
+        private torus:PrimitiveTorusPrefab;
 
-        private light       : away.lights.PointLight;
-        private raf         : away.utils.RequestAnimationFrame;
-        private meshes      : away.entities.Mesh[];
+        private light:PointLight;
+        private raf:RequestAnimationFrame;
+        private meshes:Array<Mesh>;
 
         constructor()
         {
 
-            away.Debug.THROW_ERRORS     = false;
-            away.Debug.LOG_PI_ERRORS    = false;
+            away.Debug.THROW_ERRORS = false;
+            away.Debug.LOG_PI_ERRORS = false;
 
-            this.meshes                 = new Array<away.entities.Mesh>();
-            this.light                  = new away.lights.PointLight();
-            this.view                   = new away.containers.View(new away.render.DefaultRenderer())
-            this.view.camera.z          = 0;
-            this.view.backgroundColor   = 0x776655;
-            this.torus                  = new away.primitives.TorusGeometry(150 , 50 , 32 , 32 , false );
+            this.meshes = new Array<Mesh>();
+            this.light = new PointLight();
+            this.view = new View(new DefaultRenderer())
+            this.view.camera.z = 0;
+            this.view.backgroundColor = 0x776655;
+            this.torus = new PrimitiveTorusPrefab(150 , 50 , 32 , 32 , false);
 
-            var l       : number        = 10;
-            var radius  : number        = 1000;
-            var matB    : away.materials.ColorMaterial = new away.materials.ColorMaterial();
+            var l:number        = 10;
+            var radius:number        = 1000;
+            var matB:ColorMaterial = new ColorMaterial();
 
-            for (var c : number = 0; c < l ; c++)
-            {
+			this.torus.material = matB;
 
-                var t   : number=Math.PI * 2 * c / l;
+            for (var c:number = 0; c < l; c++) {
 
-                var m : away.entities.Mesh = new away.entities.Mesh( this.torus , matB);
-                    m.x = Math.cos(t)*radius;
-                    m.y = 0;
-                    m.z = Math.sin(t)*radius;
+                var t:number=Math.PI * 2 * c / l;
 
-                this.view.scene.addChild( m );
-                this.meshes.push( m );
+                var mesh:Mesh = <Mesh> this.torus.getNewObject();
+				mesh.x = Math.cos(t)*radius;
+				mesh.y = 0;
+				mesh.z = Math.sin(t)*radius;
+
+                this.view.scene.addChild(mesh);
+                this.meshes.push(mesh);
 
             }
 
-            this.view.scene.addChild( this.light );
+            this.view.scene.addChild(this.light);
 
-            this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
+            this.raf = new away.utils.RequestAnimationFrame(this.tick , this);
             this.raf.start();
             this.resize( null );
 
@@ -55,20 +64,17 @@ module tests.containers{
 
         }
 
-        private tick( e )
+        private tick(e)
         {
 
-            for ( var c : number = 0 ; c < this.meshes.length ; c ++ )
-            {
+            for (var c:number = 0; c < this.meshes.length; c++)
                 this.meshes[c].rotationY += 2;
-            }
 
             this.view.camera.rotationY += .5;
             this.view.render();
-
         }
 
-        public resize( e )
+        public resize(e)
         {
 			this.view.y = 0;
 			this.view.x = 0;
@@ -76,7 +82,5 @@ module tests.containers{
 			this.view.width = window.innerWidth;
 			this.view.height = window.innerHeight;
         }
-
     }
-
 }

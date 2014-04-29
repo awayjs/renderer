@@ -485,6 +485,57 @@ var away;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        /**
+        * Dispatched to notify changes in a geometry object's state.
+        *
+        * @class away.events.GeometryEvent
+        * @see away3d.core.base.Geometry
+        */
+        var GeometryEvent = (function (_super) {
+            __extends(GeometryEvent, _super);
+            /**
+            * Create a new GeometryEvent
+            * @param type The event type.
+            * @param subGeometry An optional TriangleSubGeometry object that is the subject of this event.
+            */
+            function GeometryEvent(type, subGeometry) {
+                if (typeof subGeometry === "undefined") { subGeometry = null; }
+                _super.call(this, type);
+                this._subGeometry = subGeometry;
+            }
+            Object.defineProperty(GeometryEvent.prototype, "subGeometry", {
+                /**
+                * The TriangleSubGeometry object that is the subject of this event, if appropriate.
+                */
+                get: function () {
+                    return this._subGeometry;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Clones the event.
+            * @return An exact duplicate of the current object.
+            */
+            GeometryEvent.prototype.clone = function () {
+                return new GeometryEvent(this.type, this._subGeometry);
+            };
+            GeometryEvent.SUB_GEOMETRY_ADDED = "SubGeometryAdded";
+
+            GeometryEvent.SUB_GEOMETRY_REMOVED = "SubGeometryRemoved";
+
+            GeometryEvent.BOUNDS_INVALID = "BoundsInvalid";
+            return GeometryEvent;
+        })(away.events.Event);
+        events.GeometryEvent = GeometryEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
@@ -906,6 +957,56 @@ var away;
             return StageGLEvent;
         })(away.events.Event);
         events.StageGLEvent = StageGLEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        /**
+        * Dispatched to notify changes in a sub geometry object's state.
+        *
+        * @class away.events.SubGeometryEvent
+        * @see away3d.core.base.Geometry
+        */
+        var SubGeometryEvent = (function (_super) {
+            __extends(SubGeometryEvent, _super);
+            /**
+            * Create a new GeometryEvent
+            * @param type The event type.
+            * @param dataType An optional data type of the vertex data being updated.
+            */
+            function SubGeometryEvent(type, dataType) {
+                if (typeof dataType === "undefined") { dataType = ""; }
+                _super.call(this, type);
+                this._dataType = dataType;
+            }
+            Object.defineProperty(SubGeometryEvent.prototype, "dataType", {
+                /**
+                * The data type of the vertex data.
+                */
+                get: function () {
+                    return this._dataType;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Clones the event.
+            *
+            * @return An exact duplicate of the current object.
+            */
+            SubGeometryEvent.prototype.clone = function () {
+                return new SubGeometryEvent(this.type, this._dataType);
+            };
+            SubGeometryEvent.INDICES_UPDATED = "indicesUpdated";
+
+            SubGeometryEvent.VERTICES_UPDATED = "verticesUpdated";
+            return SubGeometryEvent;
+        })(away.events.Event);
+        events.SubGeometryEvent = SubGeometryEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
@@ -2465,76 +2566,10 @@ var away;
                 if (name != null)
                     asset.name = name;
 
-                switch (asset.assetType) {
-                    case away.library.AssetType.LIGHT_PICKER:
-                        type_name = 'lightPicker';
-                        break;
-                    case away.library.AssetType.LIGHT:
-                        type_name = 'light';
-                        break;
-                    case away.library.AssetType.ANIMATOR:
-                        type_name = 'animator';
-                        break;
-                    case away.library.AssetType.ANIMATION_SET:
-                        type_name = 'animationSet';
-                        break;
-                    case away.library.AssetType.ANIMATION_STATE:
-                        type_name = 'animationState';
-                        break;
-                    case away.library.AssetType.ANIMATION_NODE:
-                        type_name = 'animationNode';
-                        break;
-                    case away.library.AssetType.STATE_TRANSITION:
-                        type_name = 'stateTransition';
-                        break;
-                    case away.library.AssetType.TEXTURE:
-                        type_name = 'texture';
-                        break;
-                    case away.library.AssetType.TEXTURE_PROJECTOR:
-                        type_name = 'textureProjector';
-                        break;
-                    case away.library.AssetType.CONTAINER:
-                        type_name = 'container';
-                        break;
-                    case away.library.AssetType.GEOMETRY:
-                        type_name = 'geometry';
-                        break;
-                    case away.library.AssetType.MATERIAL:
-                        type_name = 'material';
-                        break;
-                    case away.library.AssetType.MESH:
-                        type_name = 'mesh';
-                        break;
-                    case away.library.AssetType.SKELETON:
-                        type_name = 'skeleton';
-                        break;
-                    case away.library.AssetType.SKELETON_POSE:
-                        type_name = 'skelpose';
-                        break;
-                    case away.library.AssetType.SKYBOX:
-                        type_name = 'skybox';
-                        break;
-                    case away.library.AssetType.CAMERA:
-                        type_name = 'camera';
-                        break;
-                    case away.library.AssetType.SEGMENT_SET:
-                        type_name = 'segmentSet';
-                        break;
-                    case away.library.AssetType.EFFECTS_METHOD:
-                        type_name = 'effectsMethod';
-                        break;
-                    case away.library.AssetType.SHADOW_MAP_METHOD:
-                        type_name = 'effectsMethod';
-                        break;
-                    default:
-                        throw new away.errors.Error('Unhandled asset type ' + asset.assetType + '. Report as bug!');
-                        break;
-                }
-
                 // If the asset has no name, give it
                 // a per-type default name.
                 if (!asset.name)
-                    asset.name = type_name;
+                    asset.name = asset.assetType;
 
                 this.dispatchEvent(new away.events.AssetEvent(away.events.AssetEvent.ASSET_COMPLETE, asset));
             };
@@ -3502,9 +3537,8 @@ var away;
                     prev = this._name;
                     this._name = val;
 
-                    if (this._name == null) {
+                    if (this._name == null)
                         this._name = 'null';
-                    }
 
                     this.updateFullPath();
 
@@ -3546,9 +3580,8 @@ var away;
                 this._name = name ? name : 'null';
                 this._namespace = ns ? ns : NamedAssetBase.DEFAULT_NAMESPACE;
 
-                if (overrideOriginal) {
+                if (overrideOriginal)
                     this._originalName = this._name;
-                }
 
                 this.updateFullPath();
             };
@@ -3580,11 +3613,14 @@ var away;
             AssetType.CONTAINER = 'container';
             AssetType.EFFECTS_METHOD = 'effectsMethod';
             AssetType.GEOMETRY = 'geometry';
+            AssetType.LINE_SEGMENT = 'lineSegment';
             AssetType.LIGHT = 'light';
             AssetType.LIGHT_PICKER = 'lightPicker';
             AssetType.MATERIAL = 'material';
             AssetType.MESH = 'mesh';
-            AssetType.SEGMENT_SET = 'segmentSet';
+            AssetType.TRIANGLE_SUB_MESH = 'triangleSubMesh';
+            AssetType.LINE_SUB_MESH = 'lineSubMesh';
+            AssetType.PRIMITIVE_PREFAB = 'primitivePrefab';
             AssetType.SHADOW_MAP_METHOD = 'shadowMapMethod';
             AssetType.SKELETON = 'skeleton';
             AssetType.SKELETON_POSE = 'skeletonPose';
@@ -4728,6 +4764,1587 @@ var AssetLibrarySingletonEnforcer = (function () {
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
+    (function (gl) {
+        var ContextGLClearMask = (function () {
+            function ContextGLClearMask() {
+            }
+            ContextGLClearMask.COLOR = 8 << 11;
+            ContextGLClearMask.DEPTH = 8 << 5;
+            ContextGLClearMask.STENCIL = 8 << 7;
+            ContextGLClearMask.ALL = ContextGLClearMask.COLOR | ContextGLClearMask.DEPTH | ContextGLClearMask.STENCIL;
+            return ContextGLClearMask;
+        })();
+        gl.ContextGLClearMask = ContextGLClearMask;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (gl) {
+        var VertexBuffer = (function () {
+            function VertexBuffer(gl, numVertices, data32PerVertex) {
+                this._gl = gl;
+                this._buffer = this._gl.createBuffer();
+                this._numVertices = numVertices;
+                this._data32PerVertex = data32PerVertex;
+            }
+            VertexBuffer.prototype.uploadFromArray = function (vertices, startVertex, numVertices) {
+                this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._buffer);
+
+                //console.log( "** WARNING upload not fully implemented, startVertex & numVertices not considered." );
+                // TODO add offsets , startVertex, numVertices * this._data32PerVertex
+                this._gl.bufferData(this._gl.ARRAY_BUFFER, new Float32Array(vertices), this._gl.STATIC_DRAW);
+            };
+
+            Object.defineProperty(VertexBuffer.prototype, "numVertices", {
+                get: function () {
+                    return this._numVertices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VertexBuffer.prototype, "data32PerVertex", {
+                get: function () {
+                    return this._data32PerVertex;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VertexBuffer.prototype, "glBuffer", {
+                get: function () {
+                    return this._buffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            VertexBuffer.prototype.dispose = function () {
+                this._gl.deleteBuffer(this._buffer);
+            };
+            return VertexBuffer;
+        })();
+        gl.VertexBuffer = VertexBuffer;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (gl) {
+        /**
+        *
+        */
+        var VertexData = (function () {
+            function VertexData() {
+                this._dataDirty = true;
+                this.invalid = new Array(8);
+                this.buffers = new Array(8);
+                this.stageGLs = new Array(8);
+            }
+            VertexData.prototype.updateData = function (vertices, dataPerVertex, originalIndices, indexMappings) {
+                if (typeof originalIndices === "undefined") { originalIndices = null; }
+                if (typeof indexMappings === "undefined") { indexMappings = null; }
+                if (this._dataDirty) {
+                    this._dataDirty = false;
+
+                    if (indexMappings == null) {
+                        this.setData(vertices, dataPerVertex);
+                    } else {
+                        var splitVerts = new Array(originalIndices.length * dataPerVertex);
+                        var originalIndex;
+                        var splitIndex;
+                        var i = 0;
+                        var j = 0;
+                        while (i < originalIndices.length) {
+                            originalIndex = originalIndices[i];
+
+                            splitIndex = indexMappings[originalIndex] * dataPerVertex;
+                            originalIndex *= dataPerVertex;
+
+                            for (j = 0; j < dataPerVertex; j++)
+                                splitVerts[splitIndex + j] = vertices[originalIndex + j];
+
+                            i++;
+                        }
+
+                        this.setData(splitVerts, dataPerVertex);
+                    }
+                }
+            };
+
+            VertexData.prototype.invalidateData = function () {
+                this._dataDirty = true;
+            };
+
+            VertexData.prototype.dispose = function () {
+                for (var i = 0; i < 8; ++i) {
+                    if (this.stageGLs[i]) {
+                        this.stageGLs[i].disposeVertexData(this);
+                        this.stageGLs[i] = null;
+                    }
+                }
+            };
+
+            /**
+            * @private
+            */
+            VertexData.prototype.disposeBuffers = function () {
+                for (var i = 0; i < 8; ++i) {
+                    if (this.buffers[i]) {
+                        this.buffers[i].dispose();
+                        this.buffers[i] = null;
+                    }
+                }
+            };
+
+            /**
+            * @private
+            */
+            VertexData.prototype.invalidateBuffers = function () {
+                for (var i = 0; i < 8; ++i)
+                    this.invalid[i] = true;
+            };
+
+            /**
+            *
+            * @param data
+            * @param dataPerVertex
+            * @private
+            */
+            VertexData.prototype.setData = function (data, dataPerVertex) {
+                if (this.data && this.data.length != data.length)
+                    this.disposeBuffers();
+                else
+                    this.invalidateBuffers();
+
+                this.data = data;
+                this.dataPerVertex = dataPerVertex;
+            };
+            return VertexData;
+        })();
+        gl.VertexData = VertexData;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (gl) {
+        /**
+        *
+        */
+        var VertexDataPool = (function () {
+            function VertexDataPool() {
+            }
+            VertexDataPool.getItem = function (id, level, dataType) {
+                var subGeometryDictionary = (VertexDataPool._pool[id] || (VertexDataPool._pool[id] = new Object()));
+                var subGeometryData = (subGeometryDictionary[dataType] || (subGeometryDictionary[dataType] = new Array()));
+
+                return subGeometryData[level] || (subGeometryData[level] = new away.gl.VertexData());
+            };
+
+            VertexDataPool.disposeItem = function (id, level, dataType) {
+                var subGeometryDictionary = VertexDataPool._pool[id];
+                var subGeometryData = subGeometryDictionary[dataType];
+
+                subGeometryData[level].dispose();
+                subGeometryData[level] = null;
+            };
+
+            VertexDataPool.prototype.disposeData = function (id) {
+                var subGeometryDictionary = VertexDataPool._pool[id];
+
+                for (var key in subGeometryDictionary) {
+                    var subGeometryData = subGeometryDictionary[key];
+
+                    var len = subGeometryData.length;
+                    for (var i = 0; i < len; i++) {
+                        subGeometryData[i].dispose();
+                        subGeometryData[i] = null;
+                    }
+                }
+
+                VertexDataPool._pool[id] = null;
+            };
+            VertexDataPool._pool = new Object();
+            return VertexDataPool;
+        })();
+        gl.VertexDataPool = VertexDataPool;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (gl) {
+        var IndexBuffer = (function () {
+            function IndexBuffer(gl, numIndices) {
+                this._gl = gl;
+                this._buffer = this._gl.createBuffer();
+                this._numIndices = numIndices;
+            }
+            IndexBuffer.prototype.uploadFromArray = function (data, startOffset, count) {
+                this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._buffer);
+
+                // TODO add index offsets
+                this._gl.bufferData(this._gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), this._gl.STATIC_DRAW);
+            };
+
+            IndexBuffer.prototype.dispose = function () {
+                this._gl.deleteBuffer(this._buffer);
+            };
+
+            Object.defineProperty(IndexBuffer.prototype, "numIndices", {
+                get: function () {
+                    return this._numIndices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IndexBuffer.prototype, "glBuffer", {
+                get: function () {
+                    return this._buffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return IndexBuffer;
+        })();
+        gl.IndexBuffer = IndexBuffer;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (gl) {
+        /**
+        *
+        */
+        var IndexData = (function () {
+            function IndexData() {
+                this._dataDirty = true;
+                this.invalid = new Array(8);
+                this.stageGLs = new Array(8);
+                this.buffers = new Array(8);
+            }
+            IndexData.prototype.updateData = function (offset, indices, numVertices) {
+                if (this._dataDirty) {
+                    this._dataDirty = false;
+
+                    if (indices.length < IndexData.LIMIT_INDICES && numVertices < IndexData.LIMIT_VERTS) {
+                        //shortcut for those buffers that fit into the maximum buffer sizes
+                        this.indexMappings = null;
+                        this.originalIndices = null;
+                        this.setData(indices);
+                        this.offset = indices.length;
+                    } else {
+                        var i;
+                        var len;
+                        var outIndex;
+                        var j;
+                        var k;
+                        var splitIndices = new Array();
+
+                        this.indexMappings = new Array(indices.length);
+                        this.originalIndices = new Array();
+
+                        i = this.indexMappings.length;
+
+                        while (i--)
+                            this.indexMappings[i] = -1;
+
+                        var originalIndex;
+                        var splitIndex;
+
+                        // Loop over all triangles
+                        outIndex = 0;
+                        len = indices.length;
+                        i = offset;
+                        k = 0;
+                        while (i < len && outIndex + 3 < IndexData.LIMIT_INDICES && k + 3 < IndexData.LIMIT_VERTS) {
+                            for (j = 0; j < 3; j++) {
+                                originalIndex = indices[i + j];
+
+                                if (this.indexMappings[originalIndex] >= 0) {
+                                    splitIndex = this.indexMappings[originalIndex];
+                                } else {
+                                    // This vertex does not yet exist in the split list and
+                                    // needs to be copied from the long list.
+                                    splitIndex = k++;
+                                    this.indexMappings[originalIndex] = splitIndex;
+                                    this.originalIndices.push(originalIndex);
+                                }
+
+                                // Store new index, which may have come from the mapping look-up,
+                                // or from copying a new set of vertex data from the original vector
+                                splitIndices[outIndex + j] = splitIndex;
+                            }
+
+                            outIndex += 3;
+                            i += 3;
+                        }
+
+                        this.setData(splitIndices);
+                        this.offset = i;
+                    }
+                }
+            };
+
+            IndexData.prototype.invalidateData = function () {
+                this._dataDirty = true;
+            };
+
+            IndexData.prototype.dispose = function () {
+                for (var i = 0; i < 8; ++i) {
+                    if (this.stageGLs[i]) {
+                        this.stageGLs[i].disposeIndexData(this);
+                        this.stageGLs[i] = null;
+                    }
+                }
+            };
+
+            /**
+            * @private
+            */
+            IndexData.prototype.disposeBuffers = function () {
+                for (var i = 0; i < 8; ++i) {
+                    if (this.buffers[i]) {
+                        this.buffers[i].dispose();
+                        this.buffers[i] = null;
+                    }
+                }
+            };
+
+            /**
+            * @private
+            */
+            IndexData.prototype.invalidateBuffers = function () {
+                for (var i = 0; i < 8; ++i)
+                    this.invalid[i] = true;
+            };
+
+            /**
+            *
+            * @param data
+            * @private
+            */
+            IndexData.prototype.setData = function (data) {
+                if (this.data && this.data.length != data.length)
+                    this.disposeBuffers();
+                else
+                    this.invalidateBuffers();
+
+                this.data = data;
+            };
+            IndexData.LIMIT_VERTS = 0xffff;
+
+            IndexData.LIMIT_INDICES = 0xffffff;
+            return IndexData;
+        })();
+        gl.IndexData = IndexData;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (gl) {
+        /**
+        *
+        */
+        var IndexDataPool = (function () {
+            function IndexDataPool() {
+            }
+            IndexDataPool.getItem = function (id, level) {
+                var subGeometryData = (IndexDataPool._pool[id] || (IndexDataPool._pool[id] = new Array()));
+
+                return subGeometryData[level] || (subGeometryData[level] = new away.gl.IndexData());
+            };
+
+            IndexDataPool.disposeItem = function (id, level) {
+                var subGeometryData = this._pool[id];
+
+                subGeometryData[level].dispose();
+                subGeometryData[level] = null;
+            };
+
+            IndexDataPool.prototype.disposeData = function (id) {
+                var subGeometryData = IndexDataPool._pool[id];
+
+                var len = subGeometryData.length;
+                for (var i = 0; i < len; i++) {
+                    subGeometryData[i].dispose();
+                    subGeometryData[i] = null;
+                }
+
+                IndexDataPool._pool[id] = null;
+            };
+            IndexDataPool._pool = new Object();
+            return IndexDataPool;
+        })();
+        gl.IndexDataPool = IndexDataPool;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (gl) {
+        var Program = (function () {
+            function Program(gl) {
+                this._gl = gl;
+                this._program = this._gl.createProgram();
+            }
+            Program.prototype.upload = function (vertexProgram, fragmentProgram) {
+                this._vertexShader = this._gl.createShader(this._gl.VERTEX_SHADER);
+                this._fragmentShader = this._gl.createShader(this._gl.FRAGMENT_SHADER);
+
+                this._gl.shaderSource(this._vertexShader, vertexProgram);
+                this._gl.compileShader(this._vertexShader);
+
+                if (!this._gl.getShaderParameter(this._vertexShader, this._gl.COMPILE_STATUS)) {
+                    alert(this._gl.getShaderInfoLog(this._vertexShader));
+                    return null;
+                }
+
+                this._gl.shaderSource(this._fragmentShader, fragmentProgram);
+                this._gl.compileShader(this._fragmentShader);
+
+                if (!this._gl.getShaderParameter(this._fragmentShader, this._gl.COMPILE_STATUS)) {
+                    alert(this._gl.getShaderInfoLog(this._fragmentShader));
+                    return null;
+                }
+
+                this._gl.attachShader(this._program, this._vertexShader);
+                this._gl.attachShader(this._program, this._fragmentShader);
+                this._gl.linkProgram(this._program);
+
+                if (!this._gl.getProgramParameter(this._program, this._gl.LINK_STATUS)) {
+                    alert("Could not link the program."); //TODO throw errors
+                }
+            };
+
+            Program.prototype.dispose = function () {
+                this._gl.deleteProgram(this._program);
+            };
+
+            Program.prototype.focusProgram = function () {
+                this._gl.useProgram(this._program);
+            };
+
+            Object.defineProperty(Program.prototype, "glProgram", {
+                get: function () {
+                    return this._program;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return Program;
+        })();
+        gl.Program = Program;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (gl) {
+        var SamplerState = (function () {
+            function SamplerState() {
+                this.wrap = 0;
+                this.filter = 0;
+                this.mipfilter = 0;
+            }
+            return SamplerState;
+        })();
+        gl.SamplerState = SamplerState;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (gl) {
+        var ContextGLTextureFormat = (function () {
+            function ContextGLTextureFormat() {
+            }
+            ContextGLTextureFormat.BGRA = "bgra";
+            ContextGLTextureFormat.BGRA_PACKED = "bgraPacked4444";
+            ContextGLTextureFormat.BGR_PACKED = "bgrPacked565";
+            ContextGLTextureFormat.COMPRESSED = "compressed";
+            ContextGLTextureFormat.COMPRESSED_ALPHA = "compressedAlpha";
+            return ContextGLTextureFormat;
+        })();
+        gl.ContextGLTextureFormat = ContextGLTextureFormat;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (gl) {
+        var TextureBase = (function () {
+            function TextureBase(gl) {
+                this.textureType = "";
+                this._gl = gl;
+            }
+            TextureBase.prototype.dispose = function () {
+                throw "Abstract method must be overridden.";
+            };
+            return TextureBase;
+        })();
+        gl.TextureBase = TextureBase;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (gl) {
+        var Texture = (function (_super) {
+            __extends(Texture, _super);
+            function Texture(gl, width, height) {
+                _super.call(this, gl);
+                this.textureType = "texture2d";
+                this._width = width;
+                this._height = height;
+
+                this._glTexture = this._gl.createTexture();
+            }
+            Texture.prototype.dispose = function () {
+                this._gl.deleteTexture(this._glTexture);
+            };
+
+            Object.defineProperty(Texture.prototype, "width", {
+                get: function () {
+                    return this._width;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Texture.prototype, "height", {
+                get: function () {
+                    return this._height;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Texture.prototype, "frameBuffer", {
+                get: function () {
+                    return this._frameBuffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Texture.prototype.uploadFromHTMLImageElement = function (image, miplevel) {
+                if (typeof miplevel === "undefined") { miplevel = 0; }
+                this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
+
+                //this._gl.pixelStorei( this._gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._gl.ZERO );
+                this._gl.texImage2D(this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+                this._gl.bindTexture(this._gl.TEXTURE_2D, null);
+            };
+
+            Texture.prototype.uploadFromBitmapData = function (data, miplevel) {
+                if (typeof miplevel === "undefined") { miplevel = 0; }
+                this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
+
+                //this._gl.pixelStorei( this._gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._gl.ZERO );
+                this._gl.texImage2D(this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
+                this._gl.bindTexture(this._gl.TEXTURE_2D, null);
+            };
+
+            Texture.prototype.uploadCompressedTextureFromByteArray = function (data, byteArrayOffset /*uint*/ , async) {
+                if (typeof async === "undefined") { async = false; }
+                var ext = this._gl.getExtension("WEBKIT_WEBGL_compressed_texture_s3tc");
+                //this._gl.compressedTexImage2D(this._gl.TEXTURE_2D, 0, this)
+            };
+
+            Object.defineProperty(Texture.prototype, "glTexture", {
+                get: function () {
+                    return this._glTexture;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Texture.prototype.generateFromRenderBuffer = function (data) {
+                this._frameBuffer = this._gl.createFramebuffer();
+                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
+                this._frameBuffer.width = this._width;
+                this._frameBuffer.height = this._height;
+
+                this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
+
+                //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, this._gl.LINEAR);
+                //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, this._gl.LINEAR_MIPMAP_NEAREST);
+                //this._gl.generateMipmap(this._gl.TEXTURE_2D);
+                //this._gl.texImage2D( this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData );
+                this._gl.texImage2D(this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._width, this._height, 0, this._gl.RGBA, this._gl.UNSIGNED_BYTE, null);
+
+                var renderBuffer = this._gl.createRenderbuffer();
+                this._gl.bindRenderbuffer(this._gl.RENDERBUFFER, renderBuffer);
+                this._gl.renderbufferStorage(this._gl.RENDERBUFFER, this._gl.DEPTH_COMPONENT16, this._width, this._height);
+
+                this._gl.framebufferTexture2D(this._gl.FRAMEBUFFER, this._gl.COLOR_ATTACHMENT0, this._gl.TEXTURE_2D, this._glTexture, 0);
+                this._gl.framebufferRenderbuffer(this._gl.FRAMEBUFFER, this._gl.DEPTH_ATTACHMENT, this._gl.RENDERBUFFER, renderBuffer);
+
+                this._gl.bindTexture(this._gl.TEXTURE_2D, null);
+                this._gl.bindRenderbuffer(this._gl.RENDERBUFFER, null);
+                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
+            };
+
+            Texture.prototype.generateMipmaps = function () {
+                //this._gl.bindTexture( this._gl.TEXTURE_2D, this._glTexture );
+                //this._gl.generateMipmap(this._gl.TEXTURE_2D);
+                //this._gl.bindTexture( this._gl.TEXTURE_2D, null );
+            };
+            return Texture;
+        })(away.gl.TextureBase);
+        gl.Texture = Texture;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (gl) {
+        var CubeTexture = (function (_super) {
+            __extends(CubeTexture, _super);
+            function CubeTexture(gl, size) {
+                _super.call(this, gl);
+                this.textureType = "textureCube";
+                this._size = size;
+                this._texture = this._gl.createTexture();
+            }
+            CubeTexture.prototype.dispose = function () {
+                this._gl.deleteTexture(this._texture);
+            };
+
+            CubeTexture.prototype.uploadFromHTMLImageElement = function (image, side, miplevel) {
+                if (typeof miplevel === "undefined") { miplevel = 0; }
+                this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
+
+                switch (side) {
+                    case 0:
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+
+                        break;
+                    case 1:
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+                        break;
+                    case 2:
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+                        break;
+                    case 3:
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+                        break;
+                    case 4:
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+                        break;
+                    case 5:
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+                        break;
+                    default:
+                        throw "unknown side type";
+                }
+
+                this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
+            };
+
+            CubeTexture.prototype.uploadFromBitmapData = function (data, side, miplevel) {
+                if (typeof miplevel === "undefined") { miplevel = 0; }
+                switch (side) {
+                    case 0:
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
+                        break;
+                    case 1:
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
+                        break;
+                    case 2:
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
+                        break;
+                    case 3:
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
+                        break;
+                    case 4:
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
+                        break;
+                    case 5:
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
+                        break;
+                    default:
+                        throw "unknown side type";
+                }
+            };
+
+            CubeTexture.prototype.uploadCompressedTextureFromByteArray = function (data, byteArrayOffset /*uint*/ , async) {
+                if (typeof async === "undefined") { async = false; }
+            };
+
+            Object.defineProperty(CubeTexture.prototype, "size", {
+                get: function () {
+                    return this._size;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CubeTexture.prototype, "glTexture", {
+                get: function () {
+                    return this._texture;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return CubeTexture;
+        })(away.gl.TextureBase);
+        gl.CubeTexture = CubeTexture;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (gl) {
+        var ContextGLTriangleFace = (function () {
+            function ContextGLTriangleFace() {
+            }
+            ContextGLTriangleFace.BACK = "back";
+            ContextGLTriangleFace.FRONT = "front";
+            ContextGLTriangleFace.FRONT_AND_BACK = "frontAndBack";
+            ContextGLTriangleFace.NONE = "none";
+            return ContextGLTriangleFace;
+        })();
+        gl.ContextGLTriangleFace = ContextGLTriangleFace;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (gl) {
+        var ContextGLVertexBufferFormat = (function () {
+            function ContextGLVertexBufferFormat() {
+            }
+            ContextGLVertexBufferFormat.BYTES_4 = "bytes4";
+            ContextGLVertexBufferFormat.FLOAT_1 = "float1";
+            ContextGLVertexBufferFormat.FLOAT_2 = "float2";
+            ContextGLVertexBufferFormat.FLOAT_3 = "float3";
+            ContextGLVertexBufferFormat.FLOAT_4 = "float4";
+            return ContextGLVertexBufferFormat;
+        })();
+        gl.ContextGLVertexBufferFormat = ContextGLVertexBufferFormat;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (gl) {
+        var ContextGLProgramType = (function () {
+            function ContextGLProgramType() {
+            }
+            ContextGLProgramType.FRAGMENT = "fragment";
+            ContextGLProgramType.VERTEX = "vertex";
+            return ContextGLProgramType;
+        })();
+        gl.ContextGLProgramType = ContextGLProgramType;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (gl) {
+        var ContextGLBlendFactor = (function () {
+            function ContextGLBlendFactor() {
+            }
+            ContextGLBlendFactor.DESTINATION_ALPHA = "destinationAlpha";
+            ContextGLBlendFactor.DESTINATION_COLOR = "destinationColor";
+            ContextGLBlendFactor.ONE = "one";
+            ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA = "oneMinusDestinationAlpha";
+            ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR = "oneMinusDestinationColor";
+            ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA = "oneMinusSourceAlpha";
+            ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR = "oneMinusSourceColor";
+            ContextGLBlendFactor.SOURCE_ALPHA = "sourceAlpha";
+            ContextGLBlendFactor.SOURCE_COLOR = "sourceColor";
+            ContextGLBlendFactor.ZERO = "zero";
+            return ContextGLBlendFactor;
+        })();
+        gl.ContextGLBlendFactor = ContextGLBlendFactor;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (gl) {
+        var ContextGLCompareMode = (function () {
+            function ContextGLCompareMode() {
+            }
+            ContextGLCompareMode.ALWAYS = "always";
+            ContextGLCompareMode.EQUAL = "equal";
+            ContextGLCompareMode.GREATER = "greater";
+            ContextGLCompareMode.GREATER_EQUAL = "greaterEqual";
+            ContextGLCompareMode.LESS = "less";
+            ContextGLCompareMode.LESS_EQUAL = "lessEqual";
+            ContextGLCompareMode.NEVER = "never";
+            ContextGLCompareMode.NOT_EQUAL = "notEqual";
+            return ContextGLCompareMode;
+        })();
+        gl.ContextGLCompareMode = ContextGLCompareMode;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (gl) {
+        var ContextGLMipFilter = (function () {
+            function ContextGLMipFilter() {
+            }
+            ContextGLMipFilter.MIPLINEAR = "miplinear";
+            ContextGLMipFilter.MIPNEAREST = "mipnearest";
+            ContextGLMipFilter.MIPNONE = "mipnone";
+            return ContextGLMipFilter;
+        })();
+        gl.ContextGLMipFilter = ContextGLMipFilter;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (gl) {
+        var ContextGLProfile = (function () {
+            function ContextGLProfile() {
+            }
+            ContextGLProfile.BASELINE = "baseline";
+            ContextGLProfile.BASELINE_CONSTRAINED = "baselineConstrained";
+            ContextGLProfile.BASELINE_EXTENDED = "baselineExtended";
+            return ContextGLProfile;
+        })();
+        gl.ContextGLProfile = ContextGLProfile;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (gl) {
+        var ContextGLStencilAction = (function () {
+            function ContextGLStencilAction() {
+            }
+            ContextGLStencilAction.DECREMENT_SATURATE = "decrementSaturate";
+            ContextGLStencilAction.DECREMENT_WRAP = "decrementWrap";
+            ContextGLStencilAction.INCREMENT_SATURATE = "incrementSaturate";
+            ContextGLStencilAction.INCREMENT_WRAP = "incrementWrap";
+            ContextGLStencilAction.INVERT = "invert";
+            ContextGLStencilAction.KEEP = "keep";
+            ContextGLStencilAction.SET = "set";
+            ContextGLStencilAction.ZERO = "zero";
+            return ContextGLStencilAction;
+        })();
+        gl.ContextGLStencilAction = ContextGLStencilAction;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (gl) {
+        var ContextGLTextureFilter = (function () {
+            function ContextGLTextureFilter() {
+            }
+            ContextGLTextureFilter.LINEAR = "linear";
+            ContextGLTextureFilter.NEAREST = "nearest";
+            return ContextGLTextureFilter;
+        })();
+        gl.ContextGLTextureFilter = ContextGLTextureFilter;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (gl) {
+        var ContextGLWrapMode = (function () {
+            function ContextGLWrapMode() {
+            }
+            ContextGLWrapMode.CLAMP = "clamp";
+            ContextGLWrapMode.REPEAT = "repeat";
+            return ContextGLWrapMode;
+        })();
+        gl.ContextGLWrapMode = ContextGLWrapMode;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (gl) {
+        var ContextGL = (function () {
+            function ContextGL(canvas) {
+                this._currentWrap = 0;
+                this._currentFilter = 0;
+                this._currentMipFilter = 0;
+                this._indexBufferList = [];
+                this._vertexBufferList = [];
+                this._textureList = [];
+                this._programList = [];
+                this._samplerStates = [];
+                try  {
+                    this._gl = canvas.getContext("experimental-webgl", { premultipliedAlpha: false, alpha: false });
+                    if (!this._gl) {
+                        this._gl = canvas.getContext("webgl", { premultipliedAlpha: false, alpha: false });
+                    }
+                } catch (e) {
+                    //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
+                }
+
+                if (this._gl) {
+                    //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_SUCCESS ) );
+                } else {
+                    //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
+                    alert("WebGL is not available.");
+                }
+
+                for (var i = 0; i < ContextGL.MAX_SAMPLERS; ++i) {
+                    this._samplerStates[i] = new away.gl.SamplerState();
+                    this._samplerStates[i].wrap = this._gl.REPEAT;
+                    this._samplerStates[i].filter = this._gl.LINEAR;
+                    this._samplerStates[i].mipfilter = 0;
+                }
+            }
+            ContextGL.prototype.gl = function () {
+                return this._gl;
+            };
+
+            ContextGL.prototype.clear = function (red, green, blue, alpha, depth, stencil, mask) {
+                if (typeof red === "undefined") { red = 0; }
+                if (typeof green === "undefined") { green = 0; }
+                if (typeof blue === "undefined") { blue = 0; }
+                if (typeof alpha === "undefined") { alpha = 1; }
+                if (typeof depth === "undefined") { depth = 1; }
+                if (typeof stencil === "undefined") { stencil = 0; }
+                if (typeof mask === "undefined") { mask = away.gl.ContextGLClearMask.ALL; }
+                if (!this._drawing) {
+                    this.updateBlendStatus();
+                    this._drawing = true;
+                }
+                this._gl.clearColor(red, green, blue, alpha);
+                this._gl.clearDepth(depth);
+                this._gl.clearStencil(stencil);
+                this._gl.clear(mask);
+            };
+
+            ContextGL.prototype.configureBackBuffer = function (width, height, antiAlias, enableDepthAndStencil) {
+                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = true; }
+                if (enableDepthAndStencil) {
+                    this._gl.enable(this._gl.STENCIL_TEST);
+                    this._gl.enable(this._gl.DEPTH_TEST);
+                }
+
+                this._gl.viewport['width'] = width;
+                this._gl.viewport['height'] = height;
+
+                this._gl.viewport(0, 0, width, height);
+            };
+
+            ContextGL.prototype.createCubeTexture = function (size, format, optimizeForRenderToTexture, streamingLevels) {
+                if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
+                var texture = new away.gl.CubeTexture(this._gl, size);
+                this._textureList.push(texture);
+                return texture;
+            };
+
+            ContextGL.prototype.createIndexBuffer = function (numIndices) {
+                var indexBuffer = new away.gl.IndexBuffer(this._gl, numIndices);
+                this._indexBufferList.push(indexBuffer);
+                return indexBuffer;
+            };
+
+            ContextGL.prototype.createProgram = function () {
+                var program = new away.gl.Program(this._gl);
+                this._programList.push(program);
+                return program;
+            };
+
+            ContextGL.prototype.createTexture = function (width, height, format, optimizeForRenderToTexture, streamingLevels) {
+                if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
+                //TODO streaming
+                var texture = new away.gl.Texture(this._gl, width, height);
+                this._textureList.push(texture);
+                return texture;
+            };
+
+            ContextGL.prototype.createVertexBuffer = function (numVertices, data32PerVertex) {
+                var vertexBuffer = new away.gl.VertexBuffer(this._gl, numVertices, data32PerVertex);
+                this._vertexBufferList.push(vertexBuffer);
+                return vertexBuffer;
+            };
+
+            ContextGL.prototype.dispose = function () {
+                var i;
+                for (i = 0; i < this._indexBufferList.length; ++i)
+                    this._indexBufferList[i].dispose();
+
+                this._indexBufferList = null;
+
+                for (i = 0; i < this._vertexBufferList.length; ++i)
+                    this._vertexBufferList[i].dispose();
+
+                this._vertexBufferList = null;
+
+                for (i = 0; i < this._textureList.length; ++i)
+                    this._textureList[i].dispose();
+
+                this._textureList = null;
+
+                for (i = 0; i < this._programList.length; ++i)
+                    this._programList[i].dispose();
+
+                for (i = 0; i < this._samplerStates.length; ++i)
+                    this._samplerStates[i] = null;
+
+                this._programList = null;
+            };
+
+            ContextGL.prototype.drawToBitmapData = function (destination) {
+                var arrayBuffer = new ArrayBuffer(destination.width * destination.height * 4);
+
+                this._gl.readPixels(0, 0, destination.width, destination.height, this._gl.RGBA, this._gl.UNSIGNED_BYTE, new Uint8Array(arrayBuffer));
+
+                var byteArray = new away.utils.ByteArray();
+                byteArray.setArrayBuffer(arrayBuffer);
+
+                destination.setPixels(new away.geom.Rectangle(0, 0, destination.width, destination.height), byteArray);
+            };
+
+            ContextGL.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
+                if (typeof firstIndex === "undefined") { firstIndex = 0; }
+                if (typeof numTriangles === "undefined") { numTriangles = -1; }
+                if (!this._drawing)
+                    throw "Need to clear before drawing if the buffer has not been cleared since the last present() call.";
+
+                this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, indexBuffer.glBuffer);
+                this._gl.drawElements(this._gl.TRIANGLES, (numTriangles == -1) ? indexBuffer.numIndices : numTriangles * 3, this._gl.UNSIGNED_SHORT, firstIndex);
+            };
+
+            ContextGL.prototype.present = function () {
+                this._drawing = false;
+                //this._gl.useProgram( null );
+            };
+
+            ContextGL.prototype.setBlendFactors = function (sourceFactor, destinationFactor) {
+                //TODO optimise with table lookup
+                this._blendEnabled = true;
+
+                switch (sourceFactor) {
+                    case away.gl.ContextGLBlendFactor.ONE:
+                        this._blendSourceFactor = this._gl.ONE;
+                        break;
+                    case away.gl.ContextGLBlendFactor.DESTINATION_ALPHA:
+                        this._blendSourceFactor = this._gl.DST_ALPHA;
+                        break;
+                    case away.gl.ContextGLBlendFactor.DESTINATION_COLOR:
+                        this._blendSourceFactor = this._gl.DST_COLOR;
+                        break;
+                    case away.gl.ContextGLBlendFactor.ONE:
+                        this._blendSourceFactor = this._gl.ONE;
+                        break;
+                    case away.gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
+                        this._blendSourceFactor = this._gl.ONE_MINUS_DST_ALPHA;
+                        break;
+                    case away.gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR:
+                        this._blendSourceFactor = this._gl.ONE_MINUS_DST_COLOR;
+                        break;
+                    case away.gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA:
+                        this._blendSourceFactor = this._gl.ONE_MINUS_SRC_ALPHA;
+                        break;
+                    case away.gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR:
+                        this._blendSourceFactor = this._gl.ONE_MINUS_SRC_COLOR;
+                        break;
+                    case away.gl.ContextGLBlendFactor.SOURCE_ALPHA:
+                        this._blendSourceFactor = this._gl.SRC_ALPHA;
+                        break;
+                    case away.gl.ContextGLBlendFactor.SOURCE_COLOR:
+                        this._blendSourceFactor = this._gl.SRC_COLOR;
+                        break;
+                    case away.gl.ContextGLBlendFactor.ZERO:
+                        this._blendSourceFactor = this._gl.ZERO;
+                        break;
+                    default:
+                        throw "Unknown blend source factor";
+                        break;
+                }
+
+                switch (destinationFactor) {
+                    case away.gl.ContextGLBlendFactor.ONE:
+                        this._blendDestinationFactor = this._gl.ONE;
+                        break;
+                    case away.gl.ContextGLBlendFactor.DESTINATION_ALPHA:
+                        this._blendDestinationFactor = this._gl.DST_ALPHA;
+                        break;
+                    case away.gl.ContextGLBlendFactor.DESTINATION_COLOR:
+                        this._blendDestinationFactor = this._gl.DST_COLOR;
+                        break;
+                    case away.gl.ContextGLBlendFactor.ONE:
+                        this._blendDestinationFactor = this._gl.ONE;
+                        break;
+                    case away.gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
+                        this._blendDestinationFactor = this._gl.ONE_MINUS_DST_ALPHA;
+                        break;
+                    case away.gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR:
+                        this._blendDestinationFactor = this._gl.ONE_MINUS_DST_COLOR;
+                        break;
+                    case away.gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA:
+                        this._blendDestinationFactor = this._gl.ONE_MINUS_SRC_ALPHA;
+                        break;
+                    case away.gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR:
+                        this._blendDestinationFactor = this._gl.ONE_MINUS_SRC_COLOR;
+                        break;
+                    case away.gl.ContextGLBlendFactor.SOURCE_ALPHA:
+                        this._blendDestinationFactor = this._gl.SRC_ALPHA;
+                        break;
+                    case away.gl.ContextGLBlendFactor.SOURCE_COLOR:
+                        this._blendDestinationFactor = this._gl.SRC_COLOR;
+                        break;
+                    case away.gl.ContextGLBlendFactor.ZERO:
+                        this._blendDestinationFactor = this._gl.ZERO;
+                        break;
+                    default:
+                        throw "Unknown blend destination factor";
+                        break;
+                }
+
+                this.updateBlendStatus();
+            };
+
+            ContextGL.prototype.setColorMask = function (red, green, blue, alpha) {
+                this._gl.colorMask(red, green, blue, alpha);
+            };
+
+            ContextGL.prototype.setCulling = function (triangleFaceToCull, coordinateSystem) {
+                if (typeof coordinateSystem === "undefined") { coordinateSystem = "leftHanded"; }
+                if (triangleFaceToCull == away.gl.ContextGLTriangleFace.NONE) {
+                    this._gl.disable(this._gl.CULL_FACE);
+                } else {
+                    this._gl.enable(this._gl.CULL_FACE);
+                    switch (triangleFaceToCull) {
+                        case away.gl.ContextGLTriangleFace.BACK:
+                            this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.FRONT : this._gl.BACK);
+                            break;
+                        case away.gl.ContextGLTriangleFace.FRONT:
+                            this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.BACK : this._gl.FRONT);
+                            break;
+                        case away.gl.ContextGLTriangleFace.FRONT_AND_BACK:
+                            this._gl.cullFace(this._gl.FRONT_AND_BACK);
+                            break;
+                        default:
+                            throw "Unknown ContextGLTriangleFace type.";
+                    }
+                }
+            };
+
+            // TODO ContextGLCompareMode
+            ContextGL.prototype.setDepthTest = function (depthMask, passCompareMode) {
+                switch (passCompareMode) {
+                    case away.gl.ContextGLCompareMode.ALWAYS:
+                        this._gl.depthFunc(this._gl.ALWAYS);
+                        break;
+                    case away.gl.ContextGLCompareMode.EQUAL:
+                        this._gl.depthFunc(this._gl.EQUAL);
+                        break;
+                    case away.gl.ContextGLCompareMode.GREATER:
+                        this._gl.depthFunc(this._gl.GREATER);
+                        break;
+                    case away.gl.ContextGLCompareMode.GREATER_EQUAL:
+                        this._gl.depthFunc(this._gl.GEQUAL);
+                        break;
+                    case away.gl.ContextGLCompareMode.LESS:
+                        this._gl.depthFunc(this._gl.LESS);
+                        break;
+                    case away.gl.ContextGLCompareMode.LESS_EQUAL:
+                        this._gl.depthFunc(this._gl.LEQUAL);
+                        break;
+                    case away.gl.ContextGLCompareMode.NEVER:
+                        this._gl.depthFunc(this._gl.NEVER);
+                        break;
+                    case away.gl.ContextGLCompareMode.NOT_EQUAL:
+                        this._gl.depthFunc(this._gl.NOTEQUAL);
+                        break;
+                    default:
+                        throw "Unknown ContextGLCompareMode type.";
+                        break;
+                }
+                this._gl.depthMask(depthMask);
+            };
+
+            ContextGL.prototype.setProgram = function (program) {
+                //TODO decide on construction/reference resposibilities
+                this._currentProgram = program;
+                program.focusProgram();
+            };
+
+            ContextGL.prototype.getUniformLocationNameFromAgalRegisterIndex = function (programType, firstRegister) {
+                switch (programType) {
+                    case away.gl.ContextGLProgramType.VERTEX:
+                        return "vc";
+                        break;
+                    case away.gl.ContextGLProgramType.FRAGMENT:
+                        return "fc";
+                        break;
+                    default:
+                        throw "Program Type " + programType + " not supported";
+                }
+            };
+
+            /*
+            public setProgramConstantsFromByteArray
+            */
+            ContextGL.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
+                if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
+                var locationName = this.getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister);
+                this.setGLSLProgramConstantsFromMatrix(locationName, matrix, transposedMatrix);
+            };
+
+            ContextGL.prototype.setProgramConstantsFromArray = function (programType, firstRegister, data, numRegisters) {
+                if (typeof numRegisters === "undefined") { numRegisters = -1; }
+                for (var i = 0; i < numRegisters; ++i) {
+                    var currentIndex = i * 4;
+                    var locationName = this.getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister + i) + (i + firstRegister);
+
+                    this.setGLSLProgramConstantsFromArray(locationName, data, currentIndex);
+                }
+            };
+
+            /*
+            public setGLSLProgramConstantsFromByteArray
+            
+            */
+            ContextGL.prototype.setGLSLProgramConstantsFromMatrix = function (locationName, matrix, transposedMatrix) {
+                if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
+                var location = this._gl.getUniformLocation(this._currentProgram.glProgram, locationName);
+                this._gl.uniformMatrix4fv(location, !transposedMatrix, new Float32Array(matrix.rawData));
+            };
+
+            ContextGL.prototype.setGLSLProgramConstantsFromArray = function (locationName, data, startIndex) {
+                if (typeof startIndex === "undefined") { startIndex = 0; }
+                var location = this._gl.getUniformLocation(this._currentProgram.glProgram, locationName);
+                this._gl.uniform4f(location, data[startIndex], data[startIndex + 1], data[startIndex + 2], data[startIndex + 3]);
+            };
+
+            ContextGL.prototype.setScissorRectangle = function (rectangle) {
+                if (!rectangle) {
+                    this._gl.disable(this._gl.SCISSOR_TEST);
+                    return;
+                }
+
+                this._gl.enable(this._gl.SCISSOR_TEST);
+                this._gl.scissor(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+            };
+
+            ContextGL.prototype.setTextureAt = function (sampler, texture) {
+                var locationName = "fs" + sampler;
+                this.setGLSLTextureAt(locationName, texture, sampler);
+            };
+
+            ContextGL.prototype.setGLSLTextureAt = function (locationName, texture, textureIndex) {
+                if (!texture) {
+                    this._gl.activeTexture(this._gl.TEXTURE0 + (textureIndex));
+                    this._gl.bindTexture(this._gl.TEXTURE_2D, null);
+                    this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
+                    return;
+                }
+
+                switch (textureIndex) {
+                    case 0:
+                        this._gl.activeTexture(this._gl.TEXTURE0);
+                        break;
+                    case 1:
+                        this._gl.activeTexture(this._gl.TEXTURE1);
+                        break;
+                    case 2:
+                        this._gl.activeTexture(this._gl.TEXTURE2);
+                        break;
+                    case 3:
+                        this._gl.activeTexture(this._gl.TEXTURE3);
+                        break;
+                    case 4:
+                        this._gl.activeTexture(this._gl.TEXTURE4);
+                        break;
+                    case 5:
+                        this._gl.activeTexture(this._gl.TEXTURE5);
+                        break;
+                    case 6:
+                        this._gl.activeTexture(this._gl.TEXTURE6);
+                        break;
+                    case 7:
+                        this._gl.activeTexture(this._gl.TEXTURE7);
+                        break;
+                    default:
+                        throw "Texture " + textureIndex + " is out of bounds.";
+                }
+
+                var location = this._gl.getUniformLocation(this._currentProgram.glProgram, locationName);
+
+                if (texture.textureType == "texture2d") {
+                    this._gl.bindTexture(this._gl.TEXTURE_2D, texture.glTexture);
+                    this._gl.uniform1i(location, textureIndex);
+                    var samplerState = this._samplerStates[textureIndex];
+
+                    if (samplerState.wrap != this._currentWrap) {
+                        //this._currentWrap = samplerState.wrap;
+                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, samplerState.wrap);
+                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, samplerState.wrap);
+                    }
+
+                    if (samplerState.filter != this._currentFilter) {
+                        //this._currentFilter = samplerState.filter;
+                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter);
+                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
+                    }
+
+                    if (samplerState.mipfilter != this._currentMipFilter) {
+                        //this._currentMipFilter = samplerState.mipfilter;
+                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.mipfilter);
+                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.mipfilter);
+                    }
+                    //this._gl.bindTexture( this._gl.TEXTURE_2D, null );
+                } else if (texture.textureType == "textureCube") {
+                    this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, texture.glTexture);
+                    this._gl.uniform1i(location, textureIndex);
+                    var samplerState = this._samplerStates[textureIndex];
+
+                    if (samplerState.wrap != this._currentWrap) {
+                        //this._currentWrap = samplerState.wrap;
+                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_S, samplerState.wrap);
+                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_T, samplerState.wrap);
+                    }
+
+                    if (samplerState.filter != this._currentFilter) {
+                        //this._currentFilter = samplerState.filter;
+                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MIN_FILTER, samplerState.filter);
+                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
+                    }
+
+                    if (samplerState.mipfilter != this._currentMipFilter) {
+                        //this._currentMipFilter = samplerState.mipfilter;
+                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.mipfilter);
+                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.mipfilter);
+                    }
+                    //this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
+                }
+            };
+
+            ContextGL.prototype.setSamplerStateAt = function (sampler, wrap, filter, mipfilter) {
+                var glWrap = 0;
+                var glFilter = 0;
+                var glMipFilter = 0;
+
+                switch (wrap) {
+                    case away.gl.ContextGLWrapMode.REPEAT:
+                        glWrap = this._gl.REPEAT;
+                        break;
+                    case away.gl.ContextGLWrapMode.CLAMP:
+                        glWrap = this._gl.CLAMP_TO_EDGE;
+                        break;
+                    default:
+                        throw "Wrap is not supported: " + wrap;
+                }
+
+                switch (filter) {
+                    case away.gl.ContextGLTextureFilter.LINEAR:
+                        glFilter = this._gl.LINEAR;
+                        break;
+                    case away.gl.ContextGLTextureFilter.NEAREST:
+                        glFilter = this._gl.NEAREST;
+                        break;
+                    default:
+                        throw "Filter is not supported " + filter;
+                }
+
+                switch (mipfilter) {
+                    case away.gl.ContextGLMipFilter.MIPNEAREST:
+                        glMipFilter = this._gl.NEAREST_MIPMAP_NEAREST;
+                        break;
+                    case away.gl.ContextGLMipFilter.MIPLINEAR:
+                        glMipFilter = this._gl.LINEAR_MIPMAP_LINEAR;
+                        break;
+                    case away.gl.ContextGLMipFilter.MIPNONE:
+                        glMipFilter = this._gl.NONE;
+                        break;
+                    default:
+                        throw "MipFilter is not supported " + mipfilter;
+                }
+
+                if (0 <= sampler && sampler < ContextGL.MAX_SAMPLERS) {
+                    this._samplerStates[sampler].wrap = glWrap;
+                    this._samplerStates[sampler].filter = glFilter;
+                    this._samplerStates[sampler].mipfilter = glMipFilter;
+                } else {
+                    throw "Sampler is out of bounds.";
+                }
+            };
+
+            ContextGL.prototype.setVertexBufferAt = function (index, buffer, bufferOffset, format) {
+                if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
+                if (typeof format === "undefined") { format = null; }
+                var locationName = "va" + index;
+                this.setGLSLVertexBufferAt(locationName, buffer, bufferOffset, format);
+            };
+
+            ContextGL.prototype.setGLSLVertexBufferAt = function (locationName, buffer, bufferOffset, format) {
+                if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
+                if (typeof format === "undefined") { format = null; }
+                //if ( buffer == null )return;
+                var location = this._currentProgram ? this._gl.getAttribLocation(this._currentProgram.glProgram, locationName) : -1;
+                if (!buffer) {
+                    if (location > -1)
+                        this._gl.disableVertexAttribArray(location);
+
+                    return;
+                }
+
+                this._gl.bindBuffer(this._gl.ARRAY_BUFFER, buffer.glBuffer);
+
+                var dimension;
+                var type = this._gl.FLOAT;
+                var numBytes = 4;
+
+                switch (format) {
+                    case away.gl.ContextGLVertexBufferFormat.BYTES_4:
+                        dimension = 4;
+                        break;
+                    case away.gl.ContextGLVertexBufferFormat.FLOAT_1:
+                        dimension = 1;
+                        break;
+                    case away.gl.ContextGLVertexBufferFormat.FLOAT_2:
+                        dimension = 2;
+                        break;
+                    case away.gl.ContextGLVertexBufferFormat.FLOAT_3:
+                        dimension = 3;
+                        break;
+                    case away.gl.ContextGLVertexBufferFormat.FLOAT_4:
+                        dimension = 4;
+                        break;
+                    default:
+                        throw "Buffer format " + format + " is not supported.";
+                }
+
+                this._gl.enableVertexAttribArray(location);
+                this._gl.vertexAttribPointer(location, dimension, type, false, buffer.data32PerVertex * numBytes, bufferOffset * numBytes);
+            };
+
+            ContextGL.prototype.setRenderToTexture = function (target, enableDepthAndStencil, antiAlias, surfaceSelector) {
+                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = false; }
+                if (typeof antiAlias === "undefined") { antiAlias = 0; }
+                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
+                var frameBuffer = target.frameBuffer;
+                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, frameBuffer);
+
+                if (enableDepthAndStencil) {
+                    this._gl.enable(this._gl.STENCIL_TEST);
+                    this._gl.enable(this._gl.DEPTH_TEST);
+                }
+
+                this._gl.viewport['width'] = frameBuffer.width;
+                this._gl.viewport['height'] = frameBuffer.height;
+
+                this._gl.viewport(0, 0, frameBuffer.width, frameBuffer.height);
+            };
+
+            ContextGL.prototype.setRenderToBackBuffer = function () {
+                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
+            };
+
+            ContextGL.prototype.updateBlendStatus = function () {
+                if (this._blendEnabled) {
+                    this._gl.enable(this._gl.BLEND);
+                    this._gl.blendEquation(this._gl.FUNC_ADD);
+                    this._gl.blendFunc(this._blendSourceFactor, this._blendDestinationFactor);
+                } else {
+                    this._gl.disable(this._gl.BLEND);
+                }
+            };
+            ContextGL.MAX_SAMPLERS = 8;
+
+            ContextGL.modulo = 0;
+            return ContextGL;
+        })();
+        gl.ContextGL = ContextGL;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (gl) {
+        var AGLSLContextGL = (function (_super) {
+            __extends(AGLSLContextGL, _super);
+            function AGLSLContextGL(canvas) {
+                _super.call(this, canvas);
+            }
+            //@override
+            AGLSLContextGL.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
+                if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
+                //TODO remove special case for WebGL matrix calls?
+                var d = matrix.rawData;
+                if (transposedMatrix) {
+                    this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[4], d[8], d[12]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[1], d[5], d[9], d[13]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[2], d[6], d[10], d[14]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[3], d[7], d[11], d[15]], 1);
+                } else {
+                    this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[1], d[2], d[3]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[4], d[5], d[6], d[7]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[8], d[9], d[10], d[11]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[12], d[13], d[14], d[15]], 1);
+                }
+            };
+            return AGLSLContextGL;
+        })(away.gl.ContextGL);
+        gl.AGLSLContextGL = AGLSLContextGL;
+    })(away.gl || (away.gl = {}));
+    var gl = away.gl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
     /**
     * A class that provides constant values for visual blend mode effects. These
     * constants are used in the following:
@@ -5602,16 +7219,17 @@ var away;
                     return this._pBounds;
                 },
                 set: function (value) {
-                    if (this._showBounds)
-                        this.removeBounds();
+                    if (this._pBounds == value)
+                        return;
 
                     this._pBounds = value;
+
                     this._worldBounds = value.clone();
 
                     this.pInvalidateBounds();
 
-                    if (this._showBounds)
-                        this.addBounds();
+                    if (this._boundsVisible)
+                        this._partitionNode._iUpdateEntityBounds();
                 },
                 enumerable: true,
                 configurable: true
@@ -6271,22 +7889,20 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(DisplayObject.prototype, "showBounds", {
+            Object.defineProperty(DisplayObject.prototype, "boundsVisible", {
                 /**
                 *
                 */
                 get: function () {
-                    return this._showBounds;
+                    return this._boundsVisible;
                 },
                 set: function (value) {
-                    if (value == this._showBounds)
+                    if (value == this._boundsVisible)
                         return;
 
-                    this._showBounds = value;
-                    //			if (this._showBounds)
-                    //				this.addChild(this._pBounds.boundingEntity);
-                    //			else
-                    //				this.removeBounds();
+                    this._boundsVisible = value;
+
+                    this._partitionNode.boundsVisible = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -6398,6 +8014,12 @@ var away;
                 *
                 */
                 get: function () {
+                    // Since this getter is invoked every iteration of the render loop, and
+                    // the prefab construct could affect the bounds of the entity, the prefab is
+                    // validated here to give it a chance to rebuild.
+                    if (this._iSourcePrefab)
+                        this._iSourcePrefab._iValidate();
+
                     if (this._worldBoundsInvalid) {
                         this._worldBoundsInvalid = false;
                         this._worldBounds.transformFrom(this.bounds, this.sceneTransform);
@@ -7347,16 +8969,6 @@ var away;
             /**
             * @private
             */
-            DisplayObject.prototype.addBounds = function () {
-                if (!this._boundsIsShown) {
-                    this._boundsIsShown = true;
-                    //				this.addChild(this._pBounds.boundingEntity);//TODO turn this into a Node-based bounding Entity
-                }
-            };
-
-            /**
-            * @private
-            */
             DisplayObject.prototype.notifyPositionChanged = function () {
                 if (!this._positionChanged)
                     this._positionChanged = new away.events.DisplayObjectEvent(away.events.DisplayObjectEvent.POSITION_CHANGED, this);
@@ -7487,21 +9099,160 @@ var away;
                 if (this._listenToScaleChanged)
                     this.notifyScaleChanged();
             };
-
-            /**
-            * @private
-            */
-            DisplayObject.prototype.removeBounds = function () {
-                if (this._boundsIsShown) {
-                    this._boundsIsShown = false;
-
-                    //				this.removeChild(this._pBounds.boundingEntity);
-                    this._pBounds.disposeRenderable();
-                }
-            };
             return DisplayObject;
         })(away.library.NamedAssetBase);
         base.DisplayObject = DisplayObject;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (base) {
+        /**
+        *
+        * Geometry is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
+        * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
+        * A Geometry object is assigned to a Mesh, a scene graph occurence of the geometry, which in turn assigns
+        * the SubGeometries to its respective TriangleSubMesh objects.
+        *
+        *
+        *
+        * @see away.core.base.SubGeometry
+        * @see away.entities.Mesh
+        *
+        * @class away.base.Geometry
+        */
+        var Geometry = (function (_super) {
+            __extends(Geometry, _super);
+            /**
+            * Creates a new Geometry object.
+            */
+            function Geometry() {
+                _super.call(this);
+
+                this._subGeometries = new Array();
+            }
+            Object.defineProperty(Geometry.prototype, "assetType", {
+                get: function () {
+                    return away.library.AssetType.GEOMETRY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Geometry.prototype, "subGeometries", {
+                /**
+                * A collection of TriangleSubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.
+                */
+                get: function () {
+                    return this._subGeometries;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Geometry.prototype.getSubGeometries = function () {
+                return this._subGeometries;
+            };
+
+            Geometry.prototype.applyTransformation = function (transform) {
+                var len = this._subGeometries.length;
+                for (var i = 0; i < len; ++i)
+                    this._subGeometries[i].applyTransformation(transform);
+            };
+
+            /**
+            * Adds a new TriangleSubGeometry object to the list.
+            * @param subGeometry The TriangleSubGeometry object to be added.
+            */
+            Geometry.prototype.addSubGeometry = function (subGeometry) {
+                this._subGeometries.push(subGeometry);
+
+                subGeometry.parentGeometry = this;
+
+                if (this.hasEventListener(away.events.GeometryEvent.SUB_GEOMETRY_ADDED))
+                    this.dispatchEvent(new away.events.GeometryEvent(away.events.GeometryEvent.SUB_GEOMETRY_ADDED, subGeometry));
+
+                this.iInvalidateBounds(subGeometry);
+            };
+
+            /**
+            * Removes a new TriangleSubGeometry object from the list.
+            * @param subGeometry The TriangleSubGeometry object to be removed.
+            */
+            Geometry.prototype.removeSubGeometry = function (subGeometry) {
+                this._subGeometries.splice(this._subGeometries.indexOf(subGeometry), 1);
+
+                subGeometry.parentGeometry = null;
+
+                if (this.hasEventListener(away.events.GeometryEvent.SUB_GEOMETRY_REMOVED))
+                    this.dispatchEvent(new away.events.GeometryEvent(away.events.GeometryEvent.SUB_GEOMETRY_REMOVED, subGeometry));
+
+                this.iInvalidateBounds(subGeometry);
+            };
+
+            /**
+            * Clones the geometry.
+            * @return An exact duplicate of the current Geometry object.
+            */
+            Geometry.prototype.clone = function () {
+                var clone = new Geometry();
+                var len = this._subGeometries.length;
+
+                for (var i = 0; i < len; ++i)
+                    clone.addSubGeometry(this._subGeometries[i].clone());
+
+                return clone;
+            };
+
+            /**
+            * Scales the geometry.
+            * @param scale The amount by which to scale.
+            */
+            Geometry.prototype.scale = function (scale) {
+                var numSubGeoms = this._subGeometries.length;
+                for (var i = 0; i < numSubGeoms; ++i)
+                    this._subGeometries[i].scale(scale);
+            };
+
+            /**
+            * Clears all resources used by the Geometry object, including SubGeometries.
+            */
+            Geometry.prototype.dispose = function () {
+                var numSubGeoms = this._subGeometries.length;
+
+                for (var i = 0; i < numSubGeoms; ++i) {
+                    var subGeom = this._subGeometries[0];
+                    this.removeSubGeometry(subGeom);
+                    subGeom.dispose();
+                }
+            };
+
+            /**
+            * Scales the uv coordinates (tiling)
+            * @param scaleU The amount by which to scale on the u axis. Default is 1;
+            * @param scaleV The amount by which to scale on the v axis. Default is 1;
+            */
+            Geometry.prototype.scaleUV = function (scaleU, scaleV) {
+                if (typeof scaleU === "undefined") { scaleU = 1; }
+                if (typeof scaleV === "undefined") { scaleV = 1; }
+                var numSubGeoms = this._subGeometries.length;
+
+                for (var i = 0; i < numSubGeoms; ++i)
+                    this._subGeometries[i].scaleUV(scaleU, scaleV);
+            };
+
+            Geometry.prototype.iInvalidateBounds = function (subGeom) {
+                if (this.hasEventListener(away.events.GeometryEvent.BOUNDS_INVALID))
+                    this.dispatchEvent(new away.events.GeometryEvent(away.events.GeometryEvent.BOUNDS_INVALID, subGeom));
+            };
+            return Geometry;
+        })(away.library.NamedAssetBase);
+        base.Geometry = Geometry;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
@@ -8428,6 +10179,361 @@ var away;
     var base = away.base;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (base) {
+        /**
+        * @class away.base.TriangleSubGeometry
+        */
+        var SubGeometryBase = (function (_super) {
+            __extends(SubGeometryBase, _super);
+            /**
+            *
+            */
+            function SubGeometryBase(concatenatedArrays) {
+                _super.call(this);
+                this._pStrideOffsetDirty = true;
+                this._pConcatenateArrays = true;
+                this._pStride = new Object();
+                this._pOffset = new Object();
+
+                this._pConcatenateArrays = concatenatedArrays;
+            }
+            SubGeometryBase.prototype._pUpdateStrideOffset = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            Object.defineProperty(SubGeometryBase.prototype, "subMeshClass", {
+                get: function () {
+                    return this._pSubMeshClass;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometryBase.prototype, "concatenateArrays", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pConcatenateArrays;
+                },
+                set: function (value) {
+                    if (this._pConcatenateArrays == value)
+                        return;
+
+                    this._pConcatenateArrays = value;
+
+                    this._pStrideOffsetDirty = true;
+
+                    if (value)
+                        this._pNotifyVerticesUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(SubGeometryBase.prototype, "indices", {
+                /**
+                * The raw index data that define the faces.
+                */
+                get: function () {
+                    return this._pIndices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometryBase.prototype, "vertices", {
+                /**
+                *
+                */
+                get: function () {
+                    this.updateVertices();
+
+                    return this._pVertices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometryBase.prototype, "numTriangles", {
+                /**
+                * The total amount of triangles in the TriangleSubGeometry.
+                */
+                get: function () {
+                    return this._numTriangles;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometryBase.prototype, "numVertices", {
+                get: function () {
+                    return this._pNumVertices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            *
+            */
+            SubGeometryBase.prototype.getStride = function (dataType) {
+                if (this._pStrideOffsetDirty)
+                    this._pUpdateStrideOffset();
+
+                return this._pStride[dataType];
+            };
+
+            /**
+            *
+            */
+            SubGeometryBase.prototype.getOffset = function (dataType) {
+                if (this._pStrideOffsetDirty)
+                    this._pUpdateStrideOffset();
+
+                return this._pOffset[dataType];
+            };
+
+            SubGeometryBase.prototype.updateVertices = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            *
+            */
+            SubGeometryBase.prototype.dispose = function () {
+                this._pIndices = null;
+                this._pVertices = null;
+            };
+
+            /**
+            * Updates the face indices of the TriangleSubGeometry.
+            *
+            * @param indices The face indices to upload.
+            */
+            SubGeometryBase.prototype.updateIndices = function (indices) {
+                this._pIndices = indices;
+                this._numIndices = indices.length;
+
+                this._numTriangles = this._numIndices / 3;
+
+                this.notifyIndicesUpdate();
+            };
+
+            /**
+            * @protected
+            */
+            SubGeometryBase.prototype.pInvalidateBounds = function () {
+                if (this.parentGeometry)
+                    this.parentGeometry.iInvalidateBounds(this);
+            };
+
+            /**
+            * Clones the current object
+            * @return An exact duplicate of the current object.
+            */
+            SubGeometryBase.prototype.clone = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            SubGeometryBase.prototype.applyTransformation = function (transform) {
+            };
+
+            /**
+            * Scales the geometry.
+            * @param scale The amount by which to scale.
+            */
+            SubGeometryBase.prototype.scale = function (scale) {
+            };
+
+            SubGeometryBase.prototype.scaleUV = function (scaleU, scaleV) {
+                if (typeof scaleU === "undefined") { scaleU = 1; }
+                if (typeof scaleV === "undefined") { scaleV = 1; }
+            };
+
+            SubGeometryBase.prototype.getBoundingPositions = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            SubGeometryBase.prototype.notifyIndicesUpdate = function () {
+                if (!this._indicesUpdated)
+                    this._indicesUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.INDICES_UPDATED);
+
+                this.dispatchEvent(this._indicesUpdated);
+            };
+
+            SubGeometryBase.prototype._pNotifyVerticesUpdate = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+            return SubGeometryBase;
+        })(away.library.NamedAssetBase);
+        base.SubGeometryBase = SubGeometryBase;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (base) {
+        /**
+        * SubMeshBase wraps a TriangleSubGeometry as a scene graph instantiation. A SubMeshBase is owned by a Mesh object.
+        *
+        *
+        * @see away.base.TriangleSubGeometry
+        * @see away.entities.Mesh
+        *
+        * @class away.base.SubMeshBase
+        */
+        var SubMeshBase = (function (_super) {
+            __extends(SubMeshBase, _super);
+            /**
+            * Creates a new SubMeshBase object
+            */
+            function SubMeshBase() {
+                _super.call(this);
+                this._iIndex = 0;
+                this._renderables = new Array();
+            }
+            Object.defineProperty(SubMeshBase.prototype, "animator", {
+                //TODO test shader picking
+                //		public get shaderPickingDetails():boolean
+                //		{
+                //
+                //			return this.sourceEntity.shaderPickingDetails;
+                //		}
+                /**
+                * The animator object that provides the state for the TriangleSubMesh's animation.
+                */
+                get: function () {
+                    return this._pParentMesh.animator;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubMeshBase.prototype, "material", {
+                /**
+                * The material used to render the current TriangleSubMesh. If set to null, its parent Mesh's material will be used instead.
+                */
+                get: function () {
+                    return this._material || this._pParentMesh.material;
+                },
+                set: function (value) {
+                    if (this.material)
+                        this.material.iRemoveOwner(this);
+
+                    this._material = value;
+
+                    if (this.material)
+                        this.material.iAddOwner(this);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(SubMeshBase.prototype, "sceneTransform", {
+                /**
+                * The scene transform object that transforms from model to world space.
+                */
+                get: function () {
+                    return this._pParentMesh.sceneTransform;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubMeshBase.prototype, "parentMesh", {
+                /**
+                * The entity that that initially provided the IRenderable to the render pipeline (ie: the owning Mesh object).
+                */
+                get: function () {
+                    return this._pParentMesh;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubMeshBase.prototype, "uvTransform", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._uvTransform || this._pParentMesh.uvTransform;
+                },
+                set: function (value) {
+                    this._uvTransform = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            *
+            */
+            SubMeshBase.prototype.dispose = function () {
+                this.material = null;
+
+                var len = this._renderables.length;
+                for (var i = 0; i < len; i++)
+                    this._renderables[i].dispose();
+            };
+
+            /**
+            *
+            * @param camera
+            * @returns {away.geom.Matrix3D}
+            */
+            SubMeshBase.prototype.getRenderSceneTransform = function (camera) {
+                return this._pParentMesh.getRenderSceneTransform(camera);
+            };
+
+            SubMeshBase.prototype._iAddRenderable = function (renderable) {
+                this._renderables.push(renderable);
+
+                return renderable;
+            };
+
+            SubMeshBase.prototype._iRemoveRenderable = function (renderable) {
+                var index = this._renderables.indexOf(renderable);
+
+                this._renderables.splice(index, 1);
+
+                return renderable;
+            };
+
+            SubMeshBase.prototype._iInvalidateRenderableGeometry = function () {
+                var len = this._renderables.length;
+                for (var i = 0; i < len; i++)
+                    this._renderables[i].invalidateGeometry();
+            };
+
+            SubMeshBase.prototype._iCollectRenderable = function (renderer) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            SubMeshBase.prototype._iGetExplicitMaterial = function () {
+                return this._material;
+            };
+            return SubMeshBase;
+        })(away.library.NamedAssetBase);
+        base.SubMeshBase = SubMeshBase;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
     /**
@@ -8474,6 +10580,505 @@ var away;
             return LineScaleMode;
         })();
         base.LineScaleMode = LineScaleMode;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (base) {
+        /**
+        * @class away.base.TriangleSubGeometry
+        */
+        var LineSubGeometry = (function (_super) {
+            __extends(LineSubGeometry, _super);
+            /**
+            *
+            */
+            function LineSubGeometry() {
+                _super.call(this, true);
+                this._positionsDirty = true;
+                this._boundingPositionDirty = true;
+                this._thicknessDirty = true;
+                this._colorsDirty = true;
+
+                this._pSubMeshClass = away.base.LineSubMesh;
+            }
+            LineSubGeometry.prototype._pUpdateStrideOffset = function () {
+                this._pOffset[LineSubGeometry.VERTEX_DATA] = 0;
+
+                var stride = 0;
+                this._pOffset[LineSubGeometry.START_POSITION_DATA] = stride;
+                stride += 3;
+
+                this._pOffset[LineSubGeometry.END_POSITION_DATA] = stride;
+                stride += 3;
+
+                this._pOffset[LineSubGeometry.THICKNESS_DATA] = stride;
+                stride += 1;
+
+                this._pOffset[LineSubGeometry.COLOR_DATA] = stride;
+                stride += 4;
+
+                this._pStride[LineSubGeometry.VERTEX_DATA] = stride;
+                this._pStride[LineSubGeometry.START_POSITION_DATA] = stride;
+                this._pStride[LineSubGeometry.END_POSITION_DATA] = stride;
+                this._pStride[LineSubGeometry.THICKNESS_DATA] = stride;
+                this._pStride[LineSubGeometry.COLOR_DATA] = stride;
+
+                var len = this._pNumVertices * stride;
+
+                if (this._pVertices == null)
+                    this._pVertices = new Array(len);
+                else if (this._pVertices.length != len)
+                    this._pVertices.length = len;
+
+                this._pStrideOffsetDirty = false;
+            };
+
+            Object.defineProperty(LineSubGeometry.prototype, "vertices", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._positionsDirty)
+                        this.updatePositions(this._startPositions, this._endPositions);
+
+                    if (this._thicknessDirty)
+                        this.updateThickness(this._thickness);
+
+                    if (this._colorsDirty)
+                        this.updateColors(this._startColors, this._endColors);
+
+                    return this._pVertices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LineSubGeometry.prototype, "startPositions", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._positionsDirty)
+                        this.updatePositions(this._startPositions, this._endPositions);
+
+                    return this._startPositions;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LineSubGeometry.prototype, "endPositions", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._positionsDirty)
+                        this.updatePositions(this._startPositions, this._endPositions);
+
+                    return this._endPositions;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LineSubGeometry.prototype, "thickness", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._thicknessDirty)
+                        this.updateThickness(this._thickness);
+
+                    return this._thickness;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LineSubGeometry.prototype, "startColors", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._colorsDirty)
+                        this.updateColors(this._startColors, this._endColors);
+
+                    return this._startColors;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LineSubGeometry.prototype, "endColors", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._colorsDirty)
+                        this.updateColors(this._startColors, this._endColors);
+
+                    return this._endColors;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LineSubGeometry.prototype, "numSegments", {
+                /**
+                * The total amount of segments in the TriangleSubGeometry.
+                */
+                get: function () {
+                    return this._numSegments;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            LineSubGeometry.prototype.getBoundingPositions = function () {
+                if (this._boundingPositionDirty)
+                    this._boundingPositions = this.startPositions.concat(this.endPositions);
+
+                return this._boundingPositions;
+            };
+
+            /**
+            *
+            */
+            LineSubGeometry.prototype.updatePositions = function (startValues, endValues) {
+                var i;
+                var j;
+                var values;
+                var index;
+                var stride;
+                var positions;
+                var indices;
+
+                this._startPositions = startValues;
+
+                if (this._startPositions == null)
+                    this._startPositions = new Array();
+
+                this._endPositions = endValues;
+
+                if (this._endPositions == null)
+                    this._endPositions = new Array();
+
+                this._boundingPositionDirty = true;
+
+                this._numSegments = this._startPositions.length / 3;
+
+                this._pNumVertices = this._numSegments * 4;
+
+                var lenV = this._pNumVertices * this.getStride(LineSubGeometry.VERTEX_DATA);
+
+                if (this._pVertices == null)
+                    this._pVertices = new Array(lenV);
+                else if (this._pVertices.length != lenV)
+                    this._pVertices.length = lenV;
+
+                i = 0;
+                j = 0;
+                index = this.getOffset(LineSubGeometry.START_POSITION_DATA);
+                stride = this.getStride(LineSubGeometry.START_POSITION_DATA);
+                positions = this._pVertices;
+                indices = new Array();
+
+                while (i < startValues.length) {
+                    values = (index / stride & 1) ? endValues : startValues;
+                    positions[index] = values[i];
+                    positions[index + 1] = values[i + 1];
+                    positions[index + 2] = values[i + 2];
+
+                    values = (index / stride & 1) ? startValues : endValues;
+                    positions[index + 3] = values[i];
+                    positions[index + 4] = values[i + 1];
+                    positions[index + 5] = values[i + 2];
+
+                    if (++j == 4) {
+                        var o = index / stride - 3;
+                        indices.push(o, o + 1, o + 2, o + 3, o + 2, o + 1);
+                        j = 0;
+                        i += 3;
+                    }
+
+                    index += stride;
+                }
+
+                this.updateIndices(indices);
+
+                this.pInvalidateBounds();
+
+                this.notifyPositionsUpdate();
+
+                this._positionsDirty = false;
+            };
+
+            /**
+            * Updates the thickness.
+            */
+            LineSubGeometry.prototype.updateThickness = function (values) {
+                var i;
+                var j;
+                var index;
+                var offset;
+                var stride;
+                var thickness;
+
+                this._thickness = values;
+
+                if (values != null) {
+                    i = 0;
+                    j = 0;
+                    offset = this.getOffset(LineSubGeometry.THICKNESS_DATA);
+                    stride = this.getStride(LineSubGeometry.THICKNESS_DATA);
+                    thickness = this._pVertices;
+
+                    index = offset;
+                    while (i < values.length) {
+                        thickness[index] = (Math.floor(0.5 * (index - offset) / stride + 0.5) & 1) ? -values[i] : values[i];
+
+                        if (++j == 4) {
+                            j = 0;
+                            i++;
+                        }
+                        index += stride;
+                    }
+                }
+
+                this.notifyThicknessUpdate();
+
+                this._thicknessDirty = false;
+            };
+
+            /**
+            *
+            */
+            LineSubGeometry.prototype.updateColors = function (startValues, endValues) {
+                var i;
+                var j;
+                var values;
+                var index;
+                var offset;
+                var stride;
+                var colors;
+
+                this._startColors = startValues;
+
+                this._endColors = endValues;
+
+                //default to white
+                if (this._startColors == null) {
+                    this._startColors = new Array(this._numSegments * 4);
+
+                    i = 0;
+                    while (i < this._startColors.length)
+                        this._startColors[i++] = 1;
+                }
+
+                if (this._endColors == null) {
+                    this._endColors = new Array(this._numSegments * 4);
+
+                    i = 0;
+                    while (i < this._endColors.length)
+                        this._endColors[i++] = 1;
+                }
+
+                i = 0;
+                j = 0;
+                offset = this.getOffset(LineSubGeometry.COLOR_DATA);
+                stride = this.getStride(LineSubGeometry.COLOR_DATA);
+                colors = this._pVertices;
+
+                index = offset;
+
+                while (i < this._startColors.length) {
+                    values = ((index - offset) / stride & 1) ? this._endColors : this._startColors;
+                    colors[index] = values[i];
+                    colors[index + 1] = values[i + 1];
+                    colors[index + 2] = values[i + 2];
+                    colors[index + 3] = values[i + 3];
+
+                    if (++j == 4) {
+                        j = 0;
+                        i += 4;
+                    }
+
+                    index += stride;
+                }
+
+                this.notifyColorsUpdate();
+
+                this._colorsDirty = false;
+            };
+
+            /**
+            *
+            */
+            LineSubGeometry.prototype.dispose = function () {
+                _super.prototype.dispose.call(this);
+
+                this._startPositions = null;
+                this._endPositions = null;
+                this._thickness = null;
+                this._startColors = null;
+                this._endColors = null;
+            };
+
+            /**
+            * @protected
+            */
+            LineSubGeometry.prototype.pInvalidateBounds = function () {
+                if (this.parentGeometry)
+                    this.parentGeometry.iInvalidateBounds(this);
+            };
+
+            /**
+            * Clones the current object
+            * @return An exact duplicate of the current object.
+            */
+            LineSubGeometry.prototype.clone = function () {
+                var clone = new LineSubGeometry();
+                clone.updateIndices(this._pIndices.concat());
+                clone.updatePositions(this._startPositions.concat(), this._endPositions.concat());
+                clone.updateThickness(this._thickness.concat());
+                clone.updatePositions(this._startPositions.concat(), this._endPositions.concat());
+
+                return clone;
+            };
+
+            LineSubGeometry.prototype._pNotifyVerticesUpdate = function () {
+                this._pStrideOffsetDirty = true;
+
+                this.notifyPositionsUpdate();
+                this.notifyThicknessUpdate();
+                this.notifyColorsUpdate();
+            };
+
+            LineSubGeometry.prototype.notifyPositionsUpdate = function () {
+                if (this._positionsDirty)
+                    return;
+
+                this._positionsDirty = true;
+
+                if (!this._positionsUpdated)
+                    this._positionsUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.VERTICES_UPDATED, away.base.TriangleSubGeometry.POSITION_DATA);
+
+                this.dispatchEvent(this._positionsUpdated);
+            };
+
+            LineSubGeometry.prototype.notifyThicknessUpdate = function () {
+                if (this._thicknessDirty)
+                    return;
+
+                this._thicknessDirty = true;
+
+                if (!this._thicknessUpdated)
+                    this._thicknessUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.VERTICES_UPDATED, LineSubGeometry.THICKNESS_DATA);
+
+                this.dispatchEvent(this._thicknessUpdated);
+            };
+
+            LineSubGeometry.prototype.notifyColorsUpdate = function () {
+                if (this._colorsDirty)
+                    return;
+
+                this._colorsDirty = true;
+
+                if (!this._colorUpdated)
+                    this._colorUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.VERTICES_UPDATED, LineSubGeometry.COLOR_DATA);
+
+                this.dispatchEvent(this._colorUpdated);
+            };
+            LineSubGeometry.VERTEX_DATA = "vertices";
+            LineSubGeometry.START_POSITION_DATA = "startPositions";
+            LineSubGeometry.END_POSITION_DATA = "endPositions";
+            LineSubGeometry.THICKNESS_DATA = "thickness";
+            LineSubGeometry.COLOR_DATA = "colors";
+
+            LineSubGeometry.POSITION_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_3;
+            LineSubGeometry.COLOR_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_4;
+            LineSubGeometry.THICKNESS_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_1;
+            return LineSubGeometry;
+        })(away.base.SubGeometryBase);
+        base.LineSubGeometry = LineSubGeometry;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (base) {
+        /**
+        * LineSubMesh wraps a LineSubGeometry as a scene graph instantiation. A LineSubMesh is owned by a Mesh object.
+        *
+        *
+        * @see away.base.LineSubGeometry
+        * @see away.entities.Mesh
+        *
+        * @class away.base.LineSubMesh
+        */
+        var LineSubMesh = (function (_super) {
+            __extends(LineSubMesh, _super);
+            /**
+            * Creates a new LineSubMesh object
+            * @param subGeometry The LineSubGeometry object which provides the geometry data for this LineSubMesh.
+            * @param parentMesh The Mesh object to which this LineSubMesh belongs.
+            * @param material An optional material used to render this LineSubMesh.
+            */
+            function LineSubMesh(subGeometry, parentMesh, material) {
+                if (typeof material === "undefined") { material = null; }
+                _super.call(this);
+
+                this._pParentMesh = parentMesh;
+                this._subGeometry = subGeometry;
+                this.material = material;
+            }
+            Object.defineProperty(LineSubMesh.prototype, "assetType", {
+                /**
+                *
+                */
+                get: function () {
+                    return away.library.AssetType.LINE_SUB_MESH;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LineSubMesh.prototype, "subGeometry", {
+                /**
+                * The LineSubGeometry object which provides the geometry data for this LineSubMesh.
+                */
+                get: function () {
+                    return this._subGeometry;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            *
+            */
+            LineSubMesh.prototype.dispose = function () {
+                this.material = null;
+
+                _super.prototype.dispose.call(this);
+            };
+
+            LineSubMesh.prototype._iCollectRenderable = function (renderer) {
+                renderer.applyLineSubMesh(this);
+            };
+            return LineSubMesh;
+        })(away.base.SubMeshBase);
+        base.LineSubMesh = LineSubMesh;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
@@ -9289,6 +11894,64 @@ var away;
             });
 
 
+            /**
+            * Assigns an attribute stream
+            *
+            * @param index The attribute stream index for the vertex shader
+            * @param buffer
+            * @param offset
+            * @param stride
+            * @param format
+            */
+            StageGL.prototype.activateBuffer = function (index, buffer, offset, format) {
+                if (!buffer.stageGLs[this._iStageGLIndex])
+                    buffer.stageGLs[this._iStageGLIndex] = this;
+
+                if (!buffer.buffers[this._iStageGLIndex]) {
+                    buffer.buffers[this._iStageGLIndex] = this._contextGL.createVertexBuffer(buffer.data.length / buffer.dataPerVertex, buffer.dataPerVertex);
+                    buffer.invalid[this._iStageGLIndex] = true;
+                }
+
+                if (buffer.invalid[this._iStageGLIndex]) {
+                    buffer.buffers[this._iStageGLIndex].uploadFromArray(buffer.data, 0, buffer.data.length / buffer.dataPerVertex);
+                    buffer.invalid[this._iStageGLIndex] = false;
+                }
+
+                this._contextGL.setVertexBufferAt(index, buffer.buffers[this._iStageGLIndex], offset, format);
+            };
+
+            StageGL.prototype.disposeVertexData = function (buffer) {
+                buffer.buffers[this._iStageGLIndex].dispose();
+                buffer.buffers[this._iStageGLIndex] = null;
+            };
+
+            /**
+            * Retrieves the VertexBuffer object that contains triangle indices.
+            * @param context The ContextGL for which we request the buffer
+            * @return The VertexBuffer object that contains triangle indices.
+            */
+            StageGL.prototype.getIndexBuffer = function (buffer) {
+                if (!buffer.stageGLs[this._iStageGLIndex])
+                    buffer.stageGLs[this._iStageGLIndex] = this;
+
+                if (!buffer.buffers[this._iStageGLIndex]) {
+                    buffer.buffers[this._iStageGLIndex] = this._contextGL.createIndexBuffer(buffer.data.length / 3);
+                    buffer.invalid[this._iStageGLIndex] = true;
+                }
+
+                if (buffer.invalid[this._iStageGLIndex]) {
+                    buffer.buffers[this._iStageGLIndex].uploadFromArray(buffer.data, 0, buffer.data.length / 3);
+                    buffer.invalid[this._iStageGLIndex] = false;
+                }
+
+                return buffer.buffers[this._iStageGLIndex];
+            };
+
+            StageGL.prototype.disposeIndexData = function (buffer) {
+                buffer.buffers[this._iStageGLIndex].dispose();
+                buffer.buffers[this._iStageGLIndex] = null;
+            };
+
             /*
             * Access to fire mouseevents across multiple layered view3D instances
             */
@@ -9413,6 +12076,1525 @@ var away;
             return TriangleCulling;
         })();
         base.TriangleCulling = TriangleCulling;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (base) {
+        /**
+        * @class away.base.TriangleSubGeometry
+        */
+        var TriangleSubGeometry = (function (_super) {
+            __extends(TriangleSubGeometry, _super);
+            /**
+            *
+            */
+            function TriangleSubGeometry(concatenatedArrays) {
+                _super.call(this, concatenatedArrays);
+                this._positionsDirty = true;
+                this._faceNormalsDirty = true;
+                this._faceTangentsDirty = true;
+                this._vertexNormalsDirty = true;
+                this._vertexTangentsDirty = true;
+                this._uvsDirty = true;
+                this._secondaryUVsDirty = true;
+                this._jointIndicesDirty = true;
+                this._jointWeightsDirty = true;
+                this._concatenateArrays = true;
+                this._autoDeriveNormals = true;
+                this._autoDeriveTangents = true;
+                this._autoDeriveUVs = false;
+                this._useFaceWeights = false;
+                this._scaleU = 1;
+                this._scaleV = 1;
+
+                this._pSubMeshClass = away.base.TriangleSubMesh;
+            }
+            Object.defineProperty(TriangleSubGeometry.prototype, "scaleU", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._scaleU;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "scaleV", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._scaleV;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "useCondensedIndices", {
+                /**
+                * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
+                * by condensing the number of joint index values required per mesh. Only applicable to
+                * skeleton animations that utilise more than one mesh object. Defaults to false.
+                */
+                get: function () {
+                    return this._useCondensedIndices;
+                },
+                set: function (value) {
+                    if (this._useCondensedIndices == value)
+                        return;
+
+                    this._useCondensedIndices = value;
+
+                    this.notifyJointIndicesUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            TriangleSubGeometry.prototype._pUpdateStrideOffset = function () {
+                if (this._concatenateArrays) {
+                    this._pOffset[TriangleSubGeometry.VERTEX_DATA] = 0;
+
+                    //always have positions
+                    this._pOffset[TriangleSubGeometry.POSITION_DATA] = 0;
+                    var stride = 3;
+
+                    if (this._vertexNormals != null) {
+                        this._pOffset[TriangleSubGeometry.NORMAL_DATA] = stride;
+                        stride += 3;
+                    }
+
+                    if (this._vertexTangents != null) {
+                        this._pOffset[TriangleSubGeometry.TANGENT_DATA] = stride;
+                        stride += 3;
+                    }
+
+                    if (this._uvs != null) {
+                        this._pOffset[TriangleSubGeometry.UV_DATA] = stride;
+                        stride += 2;
+                    }
+
+                    if (this._secondaryUVs != null) {
+                        this._pOffset[TriangleSubGeometry.SECONDARY_UV_DATA] = stride;
+                        stride += 2;
+                    }
+
+                    if (this._jointIndices != null) {
+                        this._pOffset[TriangleSubGeometry.JOINT_INDEX_DATA] = stride;
+                        stride += this._jointsPerVertex;
+                    }
+
+                    if (this._jointWeights != null) {
+                        this._pOffset[TriangleSubGeometry.JOINT_WEIGHT_DATA] = stride;
+                        stride += this._jointsPerVertex;
+                    }
+
+                    this._pStride[TriangleSubGeometry.VERTEX_DATA] = stride;
+                    this._pStride[TriangleSubGeometry.POSITION_DATA] = stride;
+                    this._pStride[TriangleSubGeometry.NORMAL_DATA] = stride;
+                    this._pStride[TriangleSubGeometry.TANGENT_DATA] = stride;
+                    this._pStride[TriangleSubGeometry.UV_DATA] = stride;
+                    this._pStride[TriangleSubGeometry.SECONDARY_UV_DATA] = stride;
+                    this._pStride[TriangleSubGeometry.JOINT_INDEX_DATA] = stride;
+                    this._pStride[TriangleSubGeometry.JOINT_WEIGHT_DATA] = stride;
+
+                    var len = this._pNumVertices * stride;
+
+                    if (this._pVertices == null)
+                        this._pVertices = new Array(len);
+                    else if (this._pVertices.length != len)
+                        this._pVertices.length = len;
+                } else {
+                    this._pOffset[TriangleSubGeometry.POSITION_DATA] = 0;
+                    this._pOffset[TriangleSubGeometry.NORMAL_DATA] = 0;
+                    this._pOffset[TriangleSubGeometry.TANGENT_DATA] = 0;
+                    this._pOffset[TriangleSubGeometry.UV_DATA] = 0;
+                    this._pOffset[TriangleSubGeometry.SECONDARY_UV_DATA] = 0;
+                    this._pOffset[TriangleSubGeometry.JOINT_INDEX_DATA] = 0;
+                    this._pOffset[TriangleSubGeometry.JOINT_WEIGHT_DATA] = 0;
+
+                    this._pStride[TriangleSubGeometry.POSITION_DATA] = 3;
+                    this._pStride[TriangleSubGeometry.NORMAL_DATA] = 3;
+                    this._pStride[TriangleSubGeometry.TANGENT_DATA] = 3;
+                    this._pStride[TriangleSubGeometry.UV_DATA] = 2;
+                    this._pStride[TriangleSubGeometry.SECONDARY_UV_DATA] = 2;
+                    this._pStride[TriangleSubGeometry.JOINT_INDEX_DATA] = this._jointsPerVertex;
+                    this._pStride[TriangleSubGeometry.JOINT_WEIGHT_DATA] = this._jointsPerVertex;
+                }
+
+                this._pStrideOffsetDirty = false;
+            };
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "jointsPerVertex", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._jointsPerVertex;
+                },
+                set: function (value) {
+                    if (this._jointsPerVertex == value)
+                        return;
+
+                    this._jointsPerVertex = value;
+
+                    this._pStrideOffsetDirty = true;
+
+                    if (this._pConcatenateArrays)
+                        this._pNotifyVerticesUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "autoDeriveUVs", {
+                /**
+                * Defines whether a UV buffer should be automatically generated to contain dummy UV coordinates.
+                * Set to true if a geometry lacks UV data but uses a material that requires it, or leave as false
+                * in cases where UV data is explicitly defined or the material does not require UV data.
+                */
+                get: function () {
+                    return this._autoDeriveUVs;
+                },
+                set: function (value) {
+                    if (this._autoDeriveUVs == value)
+                        return;
+
+                    this._autoDeriveUVs = value;
+
+                    if (value)
+                        this.notifyUVsUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "autoDeriveNormals", {
+                /**
+                * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
+                * explicitly.
+                */
+                get: function () {
+                    return this._autoDeriveNormals;
+                },
+                set: function (value) {
+                    if (this._autoDeriveNormals == value)
+                        return;
+
+                    this._autoDeriveNormals = value;
+
+                    if (value)
+                        this.notifyNormalsUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "autoDeriveTangents", {
+                /**
+                * True if the vertex tangents should be derived from the geometry, false if the vertex normals are set
+                * explicitly.
+                */
+                get: function () {
+                    return this._autoDeriveTangents;
+                },
+                set: function (value) {
+                    if (this._autoDeriveTangents == value)
+                        return;
+
+                    this._autoDeriveTangents = value;
+
+                    if (value)
+                        this.notifyTangentsUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "vertices", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._positionsDirty)
+                        this.updatePositions(this._positions);
+
+                    if (this._vertexNormalsDirty)
+                        this.updateVertexNormals(this._vertexNormals);
+
+                    if (this._vertexTangentsDirty)
+                        this.updateVertexTangents(this._vertexTangents);
+
+                    if (this._uvsDirty)
+                        this.updateUVs(this._uvs);
+
+                    if (this._secondaryUVsDirty)
+                        this.updateSecondaryUVs(this._secondaryUVs);
+
+                    if (this._jointIndicesDirty)
+                        this.updateJointIndices(this._jointIndices);
+
+                    if (this._jointWeightsDirty)
+                        this.updateJointWeights(this._jointWeights);
+
+                    return this._pVertices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "positions", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._positionsDirty)
+                        this.updatePositions(this._positions);
+
+                    return this._positions;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "vertexNormals", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._vertexNormalsDirty)
+                        this.updateVertexNormals(this._vertexNormals);
+
+                    return this._vertexNormals;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "vertexTangents", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._vertexTangentsDirty)
+                        this.updateVertexTangents(this._vertexTangents);
+
+                    return this._vertexTangents;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "faceNormals", {
+                /**
+                * The raw data of the face normals, in the same order as the faces are listed in the index list.
+                */
+                get: function () {
+                    if (this._faceNormalsDirty)
+                        this.updateFaceNormals();
+
+                    return this._faceNormals;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "faceTangents", {
+                /**
+                * The raw data of the face tangets, in the same order as the faces are listed in the index list.
+                */
+                get: function () {
+                    if (this._faceTangentsDirty)
+                        this.updateFaceTangents();
+
+                    return this._faceTangents;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "uvs", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._uvsDirty)
+                        this.updateUVs(this._uvs);
+
+                    return this._uvs;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "secondaryUVs", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._secondaryUVsDirty)
+                        this.updateSecondaryUVs(this._secondaryUVs);
+
+                    return this._secondaryUVs;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "jointIndices", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._jointIndicesDirty)
+                        this.updateJointIndices(this._jointIndices);
+
+                    if (this._useCondensedIndices)
+                        return this._condensedJointIndices;
+
+                    return this._jointIndices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "jointWeights", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._jointWeightsDirty)
+                        this.updateJointWeights(this._jointWeights);
+
+                    return this._jointWeights;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "useFaceWeights", {
+                /**
+                * Indicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.
+                */
+                get: function () {
+                    return this._useFaceWeights;
+                },
+                set: function (value) {
+                    if (this._useFaceWeights == value)
+                        return;
+
+                    this._useFaceWeights = value;
+
+                    if (this._autoDeriveNormals)
+                        this.notifyNormalsUpdate();
+
+                    if (this._autoDeriveTangents)
+                        this.notifyTangentsUpdate();
+
+                    this._faceNormalsDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "numCondensedJoints", {
+                get: function () {
+                    if (this._jointIndicesDirty)
+                        this.updateJointIndices(this._jointIndices);
+
+                    return this._numCondensedJoints;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubGeometry.prototype, "condensedIndexLookUp", {
+                get: function () {
+                    if (this._jointIndicesDirty)
+                        this.updateJointIndices(this._jointIndices);
+
+                    return this._condensedIndexLookUp;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            TriangleSubGeometry.prototype.getBoundingPositions = function () {
+                if (this._positionsDirty)
+                    this.updatePositions(this._positions);
+
+                return this._positions;
+            };
+
+            /**
+            *
+            */
+            TriangleSubGeometry.prototype.updatePositions = function (values) {
+                var i;
+                var index;
+                var stride;
+                var positions;
+
+                this._positions = values;
+
+                if (this._positions == null)
+                    this._positions = new Array();
+
+                this._pNumVertices = this._positions.length / 3;
+
+                if (this._concatenateArrays) {
+                    var len = this._pNumVertices * this.getStride(TriangleSubGeometry.VERTEX_DATA);
+
+                    if (this._pVertices == null)
+                        this._pVertices = new Array(len);
+                    else if (this._pVertices.length != len)
+                        this._pVertices.length = len;
+
+                    i = 0;
+                    index = this.getOffset(TriangleSubGeometry.POSITION_DATA);
+                    stride = this.getStride(TriangleSubGeometry.POSITION_DATA);
+                    positions = this._pVertices;
+
+                    while (i < values.length) {
+                        positions[index] = values[i++];
+                        positions[index + 1] = values[i++];
+                        positions[index + 2] = values[i++];
+                        index += stride;
+                    }
+                }
+
+                if (this._autoDeriveNormals)
+                    this.notifyNormalsUpdate();
+
+                if (this._autoDeriveTangents)
+                    this.notifyTangentsUpdate();
+
+                if (this._autoDeriveUVs)
+                    this.notifyUVsUpdate();
+
+                this.pInvalidateBounds();
+
+                this.notifyPositionsUpdate();
+
+                this._positionsDirty = false;
+            };
+
+            /**
+            * Updates the vertex normals based on the geometry.
+            */
+            TriangleSubGeometry.prototype.updateVertexNormals = function (values) {
+                var i;
+                var index;
+                var offset;
+                var stride;
+                var normals;
+
+                if (!this._autoDeriveNormals) {
+                    if ((this._vertexNormals == null || values == null) && (this._vertexNormals != null || values != null)) {
+                        if (this._concatenateArrays)
+                            this._pNotifyVerticesUpdate();
+                        else
+                            this._pStrideOffsetDirty = true;
+                    }
+
+                    this._vertexNormals = values;
+
+                    if (values != null && this._concatenateArrays) {
+                        i = 0;
+                        index = this.getOffset(TriangleSubGeometry.NORMAL_DATA);
+                        stride = this.getStride(TriangleSubGeometry.NORMAL_DATA);
+                        normals = this._pVertices;
+
+                        while (i < values.length) {
+                            normals[index] = values[i++];
+                            normals[index + 1] = values[i++];
+                            normals[index + 2] = values[i++];
+                            index += stride;
+                        }
+                    }
+                } else {
+                    if (this._vertexNormals == null) {
+                        this._vertexNormals = new Array(this._positions.length);
+
+                        if (this._concatenateArrays)
+                            this._pNotifyVerticesUpdate();
+                        else
+                            this._pStrideOffsetDirty = true;
+                    }
+
+                    if (this._faceNormalsDirty)
+                        this.updateFaceNormals();
+
+                    offset = this.getOffset(TriangleSubGeometry.NORMAL_DATA);
+                    stride = this.getStride(TriangleSubGeometry.NORMAL_DATA);
+
+                    //autoderived normals
+                    normals = this._concatenateArrays ? this._pVertices : this._vertexNormals;
+
+                    var f1 = 0;
+                    var f2 = 1;
+                    var f3 = 2;
+
+                    index = offset;
+
+                    //clear normal values
+                    var lenV = normals.length;
+                    while (index < lenV) {
+                        normals[index] = 0;
+                        normals[index + 1] = 0;
+                        normals[index + 2] = 0;
+                        index += stride;
+                    }
+
+                    var k = 0;
+                    var lenI = this._pIndices.length;
+                    var weight;
+
+                    i = 0;
+
+                    while (i < lenI) {
+                        weight = this._useFaceWeights ? this._faceWeights[k++] : 1;
+                        index = offset + this._pIndices[i++] * stride;
+                        normals[index] += this._faceNormals[f1] * weight;
+                        normals[index + 1] += this._faceNormals[f2] * weight;
+                        normals[index + 2] += this._faceNormals[f3] * weight;
+                        index = offset + this._pIndices[i++] * stride;
+                        normals[index] += this._faceNormals[f1] * weight;
+                        normals[index + 1] += this._faceNormals[f2] * weight;
+                        normals[index + 2] += this._faceNormals[f3] * weight;
+                        index = offset + this._pIndices[i++] * stride;
+                        normals[index] += this._faceNormals[f1] * weight;
+                        normals[index + 1] += this._faceNormals[f2] * weight;
+                        normals[index + 2] += this._faceNormals[f3] * weight;
+                        f1 += 3;
+                        f2 += 3;
+                        f3 += 3;
+                    }
+
+                    i = 0;
+                    index = offset;
+
+                    while (index < lenV) {
+                        var vx = normals[index];
+                        var vy = normals[index + 1];
+                        var vz = normals[index + 2];
+                        var d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
+
+                        if (this._concatenateArrays) {
+                            this._vertexNormals[i++] = normals[index] = vx * d;
+                            this._vertexNormals[i++] = normals[index + 1] = vy * d;
+                            this._vertexNormals[i++] = normals[index + 2] = vz * d;
+                        } else {
+                            normals[index] = vx * d;
+                            normals[index + 1] = vy * d;
+                            normals[index + 2] = vz * d;
+                        }
+
+                        index += stride;
+                    }
+                }
+
+                this.notifyNormalsUpdate();
+
+                this._vertexNormalsDirty = false;
+            };
+
+            /**
+            * Updates the vertex tangents based on the geometry.
+            */
+            TriangleSubGeometry.prototype.updateVertexTangents = function (values) {
+                var i;
+                var index;
+                var offset;
+                var stride;
+                var tangents;
+
+                if (!this._autoDeriveTangents) {
+                    if ((this._vertexTangents == null || values == null) && (this._vertexTangents != null || values != null)) {
+                        if (this._concatenateArrays)
+                            this._pNotifyVerticesUpdate();
+                        else
+                            this._pStrideOffsetDirty = true;
+                    }
+
+                    this._vertexTangents = values;
+
+                    if (values != null && this._concatenateArrays) {
+                        i = 0;
+                        index = this.getOffset(TriangleSubGeometry.TANGENT_DATA);
+                        stride = this.getStride(TriangleSubGeometry.TANGENT_DATA);
+                        tangents = this._pVertices;
+
+                        while (i < values.length) {
+                            tangents[index] = values[i++];
+                            tangents[index + 1] = values[i++];
+                            tangents[index + 2] = values[i++];
+                            index += stride;
+                        }
+                    }
+                } else {
+                    if (this._vertexTangents == null) {
+                        this._vertexTangents = new Array(this._positions.length);
+
+                        if (this._concatenateArrays)
+                            this._pNotifyVerticesUpdate();
+                        else
+                            this._pStrideOffsetDirty = true;
+                    }
+
+                    if (this._faceTangentsDirty)
+                        this.updateFaceTangents();
+
+                    offset = this.getOffset(TriangleSubGeometry.TANGENT_DATA);
+                    stride = this.getStride(TriangleSubGeometry.TANGENT_DATA);
+
+                    //autoderived tangents
+                    tangents = this._concatenateArrays ? this._pVertices : this._vertexTangents;
+
+                    index = offset;
+
+                    //clear tangent values
+                    var lenV = tangents.length;
+                    while (index < lenV) {
+                        tangents[index] = 0;
+                        tangents[index + 1] = 0;
+                        tangents[index + 2] = 0;
+
+                        index += stride;
+                    }
+
+                    var k = 0;
+                    var weight;
+                    var f1 = 0;
+                    var f2 = 1;
+                    var f3 = 2;
+
+                    i = 0;
+
+                    //collect face tangents
+                    var lenI = this._pIndices.length;
+                    while (i < lenI) {
+                        weight = this._useFaceWeights ? this._faceWeights[k++] : 1;
+                        index = offset + this._pIndices[i++] * stride;
+                        tangents[index++] += this._faceTangents[f1] * weight;
+                        tangents[index++] += this._faceTangents[f2] * weight;
+                        tangents[index] += this._faceTangents[f3] * weight;
+                        index = offset + this._pIndices[i++] * stride;
+                        tangents[index++] += this._faceTangents[f1] * weight;
+                        tangents[index++] += this._faceTangents[f2] * weight;
+                        tangents[index] += this._faceTangents[f3] * weight;
+                        index = offset + this._pIndices[i++] * stride;
+                        tangents[index++] += this._faceTangents[f1] * weight;
+                        tangents[index++] += this._faceTangents[f2] * weight;
+                        tangents[index] += this._faceTangents[f3] * weight;
+                        f1 += 3;
+                        f2 += 3;
+                        f3 += 3;
+                    }
+
+                    i = 0;
+                    index = offset;
+
+                    while (index < lenV) {
+                        var vx = tangents[index];
+                        var vy = tangents[index + 1];
+                        var vz = tangents[index + 2];
+                        var d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
+
+                        if (this._concatenateArrays) {
+                            this._vertexTangents[i++] = tangents[index] = vx * d;
+                            this._vertexTangents[i++] = tangents[index + 1] = vy * d;
+                            this._vertexTangents[i++] = tangents[index + 2] = vz * d;
+                        } else {
+                            tangents[index] = vx * d;
+                            tangents[index + 1] = vy * d;
+                            tangents[index + 2] = vz * d;
+                        }
+
+                        index += stride;
+                    }
+                }
+
+                this.notifyTangentsUpdate();
+
+                this._vertexTangentsDirty = false;
+            };
+
+            /**
+            * Updates the uvs based on the geometry.
+            */
+            TriangleSubGeometry.prototype.updateUVs = function (values) {
+                var i;
+                var index;
+                var offset;
+                var stride;
+                var uvs;
+
+                if (!this._autoDeriveUVs) {
+                    if ((this._uvs == null || values == null) && (this._uvs != null || values != null)) {
+                        if (this._concatenateArrays)
+                            this._pNotifyVerticesUpdate();
+                        else
+                            this._pStrideOffsetDirty = true;
+                    }
+
+                    this._uvs = values;
+
+                    if (values != null && this._concatenateArrays) {
+                        i = 0;
+                        index = this.getOffset(TriangleSubGeometry.UV_DATA);
+                        stride = this.getStride(TriangleSubGeometry.UV_DATA);
+                        uvs = this._pVertices;
+
+                        while (i < values.length) {
+                            uvs[index] = values[i++];
+                            uvs[index + 1] = values[i++];
+                            index += stride;
+                        }
+                    }
+                } else {
+                    if (this._uvs == null) {
+                        this._uvs = new Array(this._positions.length * 2 / 3);
+
+                        if (this._concatenateArrays)
+                            this._pNotifyVerticesUpdate();
+                        else
+                            this._pStrideOffsetDirty = true;
+                    }
+
+                    offset = this.getOffset(TriangleSubGeometry.UV_DATA);
+                    stride = this.getStride(TriangleSubGeometry.UV_DATA);
+
+                    //autoderived uvs
+                    uvs = this._concatenateArrays ? this._pVertices : this._uvs;
+
+                    i = 0;
+                    index = offset;
+                    var uvIdx = 0;
+
+                    //clear uv values
+                    var lenV = uvs.length;
+                    while (index < lenV) {
+                        if (this._concatenateArrays) {
+                            this._uvs[i++] = uvs[index] = uvIdx * .5;
+                            this._uvs[i++] = uvs[index + 1] = 1.0 - (uvIdx & 1);
+                        } else {
+                            uvs[index] = uvIdx * .5;
+                            uvs[index + 1] = 1.0 - (uvIdx & 1);
+                        }
+
+                        if (++uvIdx == 3)
+                            uvIdx = 0;
+
+                        index += stride;
+                    }
+                }
+
+                if (this._autoDeriveTangents)
+                    this.notifyTangentsUpdate();
+
+                this.notifyUVsUpdate();
+
+                this._uvsDirty = false;
+            };
+
+            /**
+            * Updates the secondary uvs based on the geometry.
+            */
+            TriangleSubGeometry.prototype.updateSecondaryUVs = function (values) {
+                var i;
+                var index;
+                var offset;
+                var stride;
+                var uvs;
+
+                if (this._concatenateArrays && (this._secondaryUVs == null || values == null) && (this._secondaryUVs != null || values != null))
+                    this._pNotifyVerticesUpdate();
+
+                this._secondaryUVs = values;
+
+                if (values != null && this._concatenateArrays) {
+                    offset = this.getOffset(TriangleSubGeometry.SECONDARY_UV_DATA);
+                    stride = this.getStride(TriangleSubGeometry.SECONDARY_UV_DATA);
+
+                    i = 0;
+                    index = offset;
+                    uvs = this._pVertices;
+
+                    while (i < values.length) {
+                        uvs[index] = values[i++];
+                        uvs[index + 1] = values[i++];
+                        index += stride;
+                    }
+                }
+
+                this.notifySecondaryUVsUpdate();
+
+                this._secondaryUVsDirty = false;
+            };
+
+            /**
+            * Updates the joint indices
+            */
+            TriangleSubGeometry.prototype.updateJointIndices = function (values) {
+                var i;
+                var j;
+                var index;
+                var offset;
+                var stride;
+                var jointIndices;
+
+                if (this._concatenateArrays && (this._jointIndices == null || values == null) && (this._jointIndices != null || values != null))
+                    this._pNotifyVerticesUpdate();
+
+                this._jointIndices = values;
+
+                if (values != null) {
+                    offset = this.getOffset(TriangleSubGeometry.JOINT_INDEX_DATA);
+                    stride = this.getStride(TriangleSubGeometry.JOINT_INDEX_DATA);
+                    if (this._useCondensedIndices) {
+                        i = 0;
+                        j = 0;
+                        index = offset;
+                        jointIndices = this._concatenateArrays ? this._pVertices : this._condensedJointIndices;
+                        var oldIndex;
+                        var newIndex = 0;
+                        var dic = new Object();
+
+                        if (!this._concatenateArrays)
+                            this._condensedJointIndices = new Array(values.length);
+
+                        this._condensedIndexLookUp = new Array();
+
+                        while (i < values.length) {
+                            for (j = 0; j < this._jointsPerVertex; j++) {
+                                oldIndex = values[i++];
+
+                                // if we encounter a new index, assign it a new condensed index
+                                if (dic[oldIndex] == undefined) {
+                                    dic[oldIndex] = newIndex * 3; //3 required for the three vectors that store the matrix
+                                    this._condensedIndexLookUp[newIndex++] = oldIndex;
+                                }
+                                jointIndices[index + j] = dic[oldIndex];
+                            }
+                            index += stride;
+                        }
+                        this._numCondensedJoints = newIndex;
+                    } else if (this._concatenateArrays) {
+                        i = 0;
+                        index = offset;
+                        jointIndices = this._pVertices;
+
+                        while (i < values.length) {
+                            j = 0;
+                            while (j < this._jointsPerVertex)
+                                jointIndices[index + j++] = values[i++];
+                            index += stride;
+                        }
+                    }
+                }
+
+                this.notifyJointIndicesUpdate();
+
+                this._jointIndicesDirty = false;
+            };
+
+            /**
+            * Updates the joint weights.
+            */
+            TriangleSubGeometry.prototype.updateJointWeights = function (values) {
+                var i;
+                var j;
+                var index;
+                var offset;
+                var stride;
+                var jointWeights;
+
+                if (this._concatenateArrays && (this._jointWeights == null || values == null) && (this._jointWeights != null || values != null))
+                    this._pNotifyVerticesUpdate();
+
+                this._jointWeights = values;
+
+                if (values != null && this._concatenateArrays) {
+                    offset = this.getOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA);
+                    stride = this.getStride(TriangleSubGeometry.JOINT_WEIGHT_DATA);
+
+                    i = 0;
+                    index = offset;
+                    jointWeights = this._pVertices;
+
+                    while (i < values.length) {
+                        j = 0;
+                        while (j < this._jointsPerVertex)
+                            jointWeights[index + j++] = values[i++];
+                        index += stride;
+                    }
+                }
+
+                this.notifyJointWeightsUpdate();
+
+                this._jointWeightsDirty = false;
+            };
+
+            /**
+            *
+            */
+            TriangleSubGeometry.prototype.dispose = function () {
+                _super.prototype.dispose.call(this);
+
+                this._positions = null;
+                this._vertexNormals = null;
+                this._vertexTangents = null;
+                this._uvs = null;
+                this._secondaryUVs = null;
+                this._jointIndices = null;
+                this._jointWeights = null;
+
+                this._faceNormals = null;
+                this._faceWeights = null;
+                this._faceTangents = null;
+            };
+
+            /**
+            * Updates the face indices of the TriangleSubGeometry.
+            *
+            * @param indices The face indices to upload.
+            */
+            TriangleSubGeometry.prototype.updateIndices = function (indices) {
+                _super.prototype.updateIndices.call(this, indices);
+
+                this._faceNormalsDirty = true;
+
+                if (this._autoDeriveNormals)
+                    this._vertexNormalsDirty = true;
+
+                if (this._autoDeriveTangents)
+                    this._vertexTangentsDirty = true;
+
+                if (this._autoDeriveUVs)
+                    this._uvsDirty = true;
+            };
+
+            /**
+            * Clones the current object
+            * @return An exact duplicate of the current object.
+            */
+            TriangleSubGeometry.prototype.clone = function () {
+                var clone = new TriangleSubGeometry(this._concatenateArrays);
+                clone.updateIndices(this._pIndices.concat());
+                clone.updatePositions(this._positions.concat());
+
+                if (this._vertexNormals && !this._autoDeriveNormals)
+                    clone.updateVertexNormals(this._vertexNormals.concat());
+                else
+                    clone.updateVertexNormals(null);
+
+                if (this._uvs && !this._autoDeriveUVs)
+                    clone.updateUVs(this._uvs.concat());
+                else
+                    clone.updateUVs(null);
+
+                if (this._vertexTangents && !this._autoDeriveTangents)
+                    clone.updateVertexTangents(this._vertexTangents.concat());
+                else
+                    clone.updateVertexTangents(null);
+
+                if (this._secondaryUVs)
+                    clone.updateSecondaryUVs(this._secondaryUVs.concat());
+
+                if (this._jointIndices) {
+                    clone.jointsPerVertex = this._jointsPerVertex;
+                    clone.updateJointIndices(this._jointIndices.concat());
+                }
+
+                if (this._jointWeights)
+                    clone.updateJointWeights(this._jointWeights.concat());
+
+                return clone;
+            };
+
+            TriangleSubGeometry.prototype.scaleUV = function (scaleU, scaleV) {
+                if (typeof scaleU === "undefined") { scaleU = 1; }
+                if (typeof scaleV === "undefined") { scaleV = 1; }
+                var index;
+                var offset;
+                var stride;
+                var uvs;
+
+                uvs = this._uvs;
+
+                var ratioU = scaleU / this._scaleU;
+                var ratioV = scaleV / this._scaleV;
+
+                this._scaleU = scaleU;
+                this._scaleV = scaleV;
+
+                var len = uvs.length;
+
+                offset = 0;
+                stride = 2;
+
+                index = offset;
+
+                while (index < len) {
+                    uvs[index] *= ratioU;
+                    uvs[index + 1] *= ratioV;
+                    index += stride;
+                }
+
+                this.notifyUVsUpdate();
+            };
+
+            /**
+            * Scales the geometry.
+            * @param scale The amount by which to scale.
+            */
+            TriangleSubGeometry.prototype.scale = function (scale) {
+                var i;
+                var index;
+                var offset;
+                var stride;
+                var positions;
+
+                positions = this._positions;
+
+                var len = positions.length;
+
+                offset = 0;
+                stride = 3;
+
+                i = 0;
+                index = offset;
+                while (i < len) {
+                    positions[index] *= scale;
+                    positions[index + 1] *= scale;
+                    positions[index + 2] *= scale;
+
+                    i += 3;
+                    index += stride;
+                }
+
+                this.notifyPositionsUpdate();
+            };
+
+            TriangleSubGeometry.prototype.applyTransformation = function (transform) {
+                var positions;
+                var normals;
+                var tangents;
+
+                if (this._concatenateArrays) {
+                    positions = this._pVertices;
+                    normals = this._pVertices;
+                    tangents = this._pVertices;
+                } else {
+                    positions = this._positions;
+                    normals = this._vertexNormals;
+                    tangents = this._vertexTangents;
+                }
+
+                var len = this._positions.length / 3;
+                var i;
+                var i1;
+                var i2;
+                var vector = new away.geom.Vector3D();
+
+                var bakeNormals = this._vertexNormals != null;
+                var bakeTangents = this._vertexTangents != null;
+                var invTranspose;
+
+                if (bakeNormals || bakeTangents) {
+                    invTranspose = transform.clone();
+                    invTranspose.invert();
+                    invTranspose.transpose();
+                }
+
+                var vi0 = this.getOffset(TriangleSubGeometry.POSITION_DATA);
+                var ni0 = this.getOffset(TriangleSubGeometry.NORMAL_DATA);
+                var ti0 = this.getOffset(TriangleSubGeometry.TANGENT_DATA);
+
+                var vStride = this.getStride(TriangleSubGeometry.POSITION_DATA);
+                var nStride = this.getStride(TriangleSubGeometry.NORMAL_DATA);
+                var tStride = this.getStride(TriangleSubGeometry.TANGENT_DATA);
+
+                for (i = 0; i < len; ++i) {
+                    i1 = vi0 + 1;
+                    i2 = vi0 + 2;
+
+                    // bake position
+                    vector.x = positions[vi0];
+                    vector.y = positions[i1];
+                    vector.z = positions[i2];
+                    vector = transform.transformVector(vector);
+                    positions[vi0] = vector.x;
+                    positions[i1] = vector.y;
+                    positions[i2] = vector.z;
+                    vi0 += vStride;
+
+                    // bake normal
+                    if (bakeNormals) {
+                        i1 = ni0 + 1;
+                        i2 = ni0 + 2;
+                        vector.x = normals[ni0];
+                        vector.y = normals[i1];
+                        vector.z = normals[i2];
+                        vector = invTranspose.deltaTransformVector(vector);
+                        vector.normalize();
+                        normals[ni0] = vector.x;
+                        normals[i1] = vector.y;
+                        normals[i2] = vector.z;
+                        ni0 += nStride;
+                    }
+
+                    // bake tangent
+                    if (bakeTangents) {
+                        i1 = ti0 + 1;
+                        i2 = ti0 + 2;
+                        vector.x = tangents[ti0];
+                        vector.y = tangents[i1];
+                        vector.z = tangents[i2];
+                        vector = invTranspose.deltaTransformVector(vector);
+                        vector.normalize();
+                        tangents[ti0] = vector.x;
+                        tangents[i1] = vector.y;
+                        tangents[i2] = vector.z;
+                        ti0 += tStride;
+                    }
+                }
+
+                this.notifyPositionsUpdate();
+                this.notifyNormalsUpdate();
+                this.notifyTangentsUpdate();
+            };
+
+            /**
+            * Updates the tangents for each face.
+            */
+            TriangleSubGeometry.prototype.updateFaceTangents = function () {
+                var i = 0;
+                var index1;
+                var index2;
+                var index3;
+                var vi;
+                var v0;
+                var dv1;
+                var dv2;
+                var denom;
+                var x0, y0, z0;
+                var dx1, dy1, dz1;
+                var dx2, dy2, dz2;
+                var cx, cy, cz;
+
+                var positions = this._positions;
+                var uvs = this._uvs;
+
+                var len = this._pIndices.length;
+
+                if (this._faceTangents == null)
+                    this._faceTangents = new Array(len);
+
+                while (i < len) {
+                    index1 = this._pIndices[i];
+                    index2 = this._pIndices[i + 1];
+                    index3 = this._pIndices[i + 2];
+
+                    v0 = uvs[index1 * 2 + 1];
+                    dv1 = uvs[index2 * 2 + 1] - v0;
+                    dv2 = uvs[index3 * 2 + 1] - v0;
+
+                    vi = index1 * 3;
+                    x0 = positions[vi];
+                    y0 = positions[vi + 1];
+                    z0 = positions[vi + 2];
+                    vi = index2 * 3;
+                    dx1 = positions[vi] - x0;
+                    dy1 = positions[vi + 1] - y0;
+                    dz1 = positions[vi + 2] - z0;
+                    vi = index3 * 3;
+                    dx2 = positions[vi] - x0;
+                    dy2 = positions[vi + 1] - y0;
+                    dz2 = positions[vi + 2] - z0;
+
+                    cx = dv2 * dx1 - dv1 * dx2;
+                    cy = dv2 * dy1 - dv1 * dy2;
+                    cz = dv2 * dz1 - dv1 * dz2;
+                    denom = 1 / Math.sqrt(cx * cx + cy * cy + cz * cz);
+
+                    this._faceTangents[i++] = denom * cx;
+                    this._faceTangents[i++] = denom * cy;
+                    this._faceTangents[i++] = denom * cz;
+                }
+
+                this._faceTangentsDirty = false;
+            };
+
+            /**
+            * Updates the normals for each face.
+            */
+            TriangleSubGeometry.prototype.updateFaceNormals = function () {
+                var i = 0;
+                var j = 0;
+                var k = 0;
+                var index;
+                var offset;
+                var stride;
+
+                var x1, x2, x3;
+                var y1, y2, y3;
+                var z1, z2, z3;
+                var dx1, dy1, dz1;
+                var dx2, dy2, dz2;
+                var cx, cy, cz;
+                var d;
+
+                var positions = this._positions;
+
+                var len = this._pIndices.length;
+
+                if (this._faceNormals == null)
+                    this._faceNormals = new Array(len);
+
+                if (this._useFaceWeights && this._faceWeights == null)
+                    this._faceWeights = new Array(len / 3);
+
+                while (i < len) {
+                    index = this._pIndices[i++] * 3;
+                    x1 = positions[index];
+                    y1 = positions[index + 1];
+                    z1 = positions[index + 2];
+                    index = this._pIndices[i++] * 3;
+                    x2 = positions[index];
+                    y2 = positions[index + 1];
+                    z2 = positions[index + 2];
+                    index = this._pIndices[i++] * 3;
+                    x3 = positions[index];
+                    y3 = positions[index + 1];
+                    z3 = positions[index + 2];
+                    dx1 = x3 - x1;
+                    dy1 = y3 - y1;
+                    dz1 = z3 - z1;
+                    dx2 = x2 - x1;
+                    dy2 = y2 - y1;
+                    dz2 = z2 - z1;
+                    cx = dz1 * dy2 - dy1 * dz2;
+                    cy = dx1 * dz2 - dz1 * dx2;
+                    cz = dy1 * dx2 - dx1 * dy2;
+                    d = Math.sqrt(cx * cx + cy * cy + cz * cz);
+
+                    // length of cross product = 2*triangle area
+                    if (this._useFaceWeights) {
+                        var w = d * 10000;
+
+                        if (w < 1)
+                            w = 1;
+
+                        this._faceWeights[k++] = w;
+                    }
+
+                    d = 1 / d;
+
+                    this._faceNormals[j++] = cx * d;
+                    this._faceNormals[j++] = cy * d;
+                    this._faceNormals[j++] = cz * d;
+                }
+
+                this._faceNormalsDirty = false;
+            };
+
+            TriangleSubGeometry.prototype._pNotifyVerticesUpdate = function () {
+                this._pStrideOffsetDirty = true;
+
+                this.notifyPositionsUpdate();
+                this.notifyNormalsUpdate();
+                this.notifyTangentsUpdate();
+                this.notifyUVsUpdate();
+                this.notifySecondaryUVsUpdate();
+                this.notifyJointIndicesUpdate();
+                this.notifyJointWeightsUpdate();
+            };
+
+            TriangleSubGeometry.prototype.notifyPositionsUpdate = function () {
+                if (this._positionsDirty)
+                    return;
+
+                this._positionsDirty = true;
+
+                if (!this._positionsUpdated)
+                    this._positionsUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.POSITION_DATA);
+
+                this.dispatchEvent(this._positionsUpdated);
+            };
+
+            TriangleSubGeometry.prototype.notifyNormalsUpdate = function () {
+                if (this._vertexNormalsDirty)
+                    return;
+
+                this._vertexNormalsDirty = true;
+
+                if (!this._normalsUpdated)
+                    this._normalsUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.NORMAL_DATA);
+
+                this.dispatchEvent(this._normalsUpdated);
+            };
+
+            TriangleSubGeometry.prototype.notifyTangentsUpdate = function () {
+                if (this._vertexTangentsDirty)
+                    return;
+
+                this._vertexTangentsDirty = true;
+
+                if (!this._tangentsUpdated)
+                    this._tangentsUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.TANGENT_DATA);
+
+                this.dispatchEvent(this._tangentsUpdated);
+            };
+
+            TriangleSubGeometry.prototype.notifyUVsUpdate = function () {
+                if (this._uvsDirty)
+                    return;
+
+                this._uvsDirty = true;
+
+                if (!this._uvsUpdated)
+                    this._uvsUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.UV_DATA);
+
+                this.dispatchEvent(this._uvsUpdated);
+            };
+
+            TriangleSubGeometry.prototype.notifySecondaryUVsUpdate = function () {
+                if (this._secondaryUVsDirty)
+                    return;
+
+                this._secondaryUVsDirty = true;
+
+                if (!this._secondaryUVsUpdated)
+                    this._secondaryUVsUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.SECONDARY_UV_DATA);
+
+                this.dispatchEvent(this._secondaryUVsUpdated);
+            };
+
+            TriangleSubGeometry.prototype.notifyJointIndicesUpdate = function () {
+                if (this._jointIndicesDirty)
+                    return;
+
+                this._jointIndicesDirty = true;
+
+                if (!this._jointIndicesUpdated)
+                    this._jointIndicesUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.JOINT_INDEX_DATA);
+
+                this.dispatchEvent(this._jointIndicesUpdated);
+            };
+
+            TriangleSubGeometry.prototype.notifyJointWeightsUpdate = function () {
+                if (this._jointWeightsDirty)
+                    return;
+
+                this._jointWeightsDirty = true;
+
+                if (!this._jointWeightsUpdated)
+                    this._jointWeightsUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.JOINT_WEIGHT_DATA);
+
+                this.dispatchEvent(this._jointWeightsUpdated);
+            };
+            TriangleSubGeometry.VERTEX_DATA = "vertices";
+            TriangleSubGeometry.POSITION_DATA = "positions";
+            TriangleSubGeometry.NORMAL_DATA = "vertexNormals";
+            TriangleSubGeometry.TANGENT_DATA = "vertexTangents";
+            TriangleSubGeometry.UV_DATA = "uvs";
+            TriangleSubGeometry.SECONDARY_UV_DATA = "secondaryUVs";
+            TriangleSubGeometry.JOINT_INDEX_DATA = "jointIndices";
+            TriangleSubGeometry.JOINT_WEIGHT_DATA = "jointWeights";
+
+            TriangleSubGeometry.POSITION_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_3;
+            TriangleSubGeometry.NORMAL_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_3;
+            TriangleSubGeometry.TANGENT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_3;
+            TriangleSubGeometry.UV_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_2;
+            TriangleSubGeometry.SECONDARY_UV_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_2;
+            return TriangleSubGeometry;
+        })(away.base.SubGeometryBase);
+        base.TriangleSubGeometry = TriangleSubGeometry;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (base) {
+        /**
+        * TriangleSubMesh wraps a TriangleSubGeometry as a scene graph instantiation. A TriangleSubMesh is owned by a Mesh object.
+        *
+        *
+        * @see away.base.TriangleSubGeometry
+        * @see away.entities.Mesh
+        *
+        * @class away.base.TriangleSubMesh
+        */
+        var TriangleSubMesh = (function (_super) {
+            __extends(TriangleSubMesh, _super);
+            /**
+            * Creates a new TriangleSubMesh object
+            * @param subGeometry The TriangleSubGeometry object which provides the geometry data for this TriangleSubMesh.
+            * @param parentMesh The Mesh object to which this TriangleSubMesh belongs.
+            * @param material An optional material used to render this TriangleSubMesh.
+            */
+            function TriangleSubMesh(subGeometry, parentMesh, material) {
+                if (typeof material === "undefined") { material = null; }
+                _super.call(this);
+
+                this._pParentMesh = parentMesh;
+                this._subGeometry = subGeometry;
+                this.material = material;
+            }
+            Object.defineProperty(TriangleSubMesh.prototype, "assetType", {
+                /**
+                *
+                */
+                get: function () {
+                    return away.library.AssetType.TRIANGLE_SUB_MESH;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TriangleSubMesh.prototype, "subGeometry", {
+                /**
+                * The TriangleSubGeometry object which provides the geometry data for this TriangleSubMesh.
+                */
+                get: function () {
+                    return this._subGeometry;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            *
+            */
+            TriangleSubMesh.prototype.dispose = function () {
+                _super.prototype.dispose.call(this);
+            };
+
+            TriangleSubMesh.prototype._iCollectRenderable = function (renderer) {
+                renderer.applyTriangleSubMesh(this);
+            };
+            return TriangleSubMesh;
+        })(away.base.SubMeshBase);
+        base.TriangleSubMesh = TriangleSubMesh;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
@@ -9593,8 +13775,19 @@ var away;
             /**
             *
             */
-            CSSRenderableBase.prototype._iUpdate = function () {
-                //nothing to do here
+            CSSRenderableBase.prototype.invalidateGeometry = function () {
+            };
+
+            /**
+            *
+            */
+            CSSRenderableBase.prototype.invalidateIndexData = function () {
+            };
+
+            /**
+            *
+            */
+            CSSRenderableBase.prototype.invalidateVertexData = function (dataType) {
             };
             return CSSRenderableBase;
         })();
@@ -9639,6 +13832,46 @@ var away;
             return CSSBillboardRenderable;
         })(away.pool.CSSRenderableBase);
         pool.CSSBillboardRenderable = CSSBillboardRenderable;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.data
+    */
+    (function (pool) {
+        /**
+        * @class away.pool.RenderableListItem
+        */
+        var CSSLineSegmentRenderable = (function (_super) {
+            __extends(CSSLineSegmentRenderable, _super);
+            function CSSLineSegmentRenderable(pool, lineSegment) {
+                _super.call(this, pool, lineSegment, lineSegment);
+
+                var div = document.createElement("div");
+                div.onmousedown = function (event) {
+                    return false;
+                };
+
+                this.htmlElement = div;
+
+                var style = div.style;
+
+                style.position = "absolute";
+                style.transformOrigin = style["-webkit-transform-origin"] = style["-moz-transform-origin"] = style["-o-transform-origin"] = style["-ms-transform-origin"] = "0% 0%";
+
+                var img = document.createElement("div");
+
+                div.appendChild(img);
+
+                img.className = "material" + lineSegment.material.id;
+            }
+            CSSLineSegmentRenderable.id = "lineSegment";
+            return CSSLineSegmentRenderable;
+        })(away.pool.CSSRenderableBase);
+        pool.CSSLineSegmentRenderable = CSSLineSegmentRenderable;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -9905,29 +14138,38 @@ var away;
                 this._iNumEntities = 0;
                 this._pChildNodes = new Array();
             }
-            Object.defineProperty(NodeBase.prototype, "showDebugBounds", {
+            Object.defineProperty(NodeBase.prototype, "boundsVisible", {
                 /**
                 *
                 */
                 get: function () {
-                    return this._pDebugPrimitive != null;
+                    return this._explicitBoundsVisible;
                 },
                 set: function (value) {
-                    if (this._pDebugPrimitive && value == true)
+                    if (this._explicitBoundsVisible == value)
                         return;
 
-                    if (!this._pDebugPrimitive && value == false)
+                    this._explicitBoundsVisible = value;
+
+                    this._iUpdateImplicitBoundsVisible(this._iParent ? this._iParent.boundsChildrenVisible : false);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(NodeBase.prototype, "boundsChildrenVisible", {
+                get: function () {
+                    return this._boundsChildrenVisible;
+                },
+                set: function (value) {
+                    if (this._boundsChildrenVisible == value)
                         return;
 
-                    if (value) {
-                        this._pDebugPrimitive = this.pCreateDebugBounds();
-                    } else {
-                        this._pDebugPrimitive.dispose();
-                        this._pDebugPrimitive = null;
-                    }
+                    this._boundsChildrenVisible = value;
 
                     for (var i = 0; i < this._pNumChildNodes; ++i)
-                        this._pChildNodes[i].showDebugBounds = value;
+                        this._pChildNodes[i]._iUpdateImplicitBoundsVisible(this._boundsChildrenVisible);
                 },
                 enumerable: true,
                 configurable: true
@@ -10000,7 +14242,7 @@ var away;
             * @param traverser
             */
             NodeBase.prototype.acceptTraverser = function (traverser) {
-                if (this._pNumEntities == 0 && !this._pDebugPrimitive)
+                if (this._pNumEntities == 0 && !this._implicitBoundsVisible)
                     return;
 
                 if (traverser.enterNode(this)) {
@@ -10009,8 +14251,8 @@ var away;
                     while (i < this._pNumChildNodes)
                         this._pChildNodes[i++].acceptTraverser(traverser);
 
-                    if (this._pDebugPrimitive)
-                        this._pDebugPrimitive.partitionNode.acceptTraverser(traverser);
+                    if (this._implicitBoundsVisible)
+                        this._pBoundsPrimitive.partitionNode.acceptTraverser(traverser);
                 }
             };
 
@@ -10018,7 +14260,7 @@ var away;
             *
             * @protected
             */
-            NodeBase.prototype.pCreateDebugBounds = function () {
+            NodeBase.prototype._pCreateBoundsPrimitive = function () {
                 return null;
             };
 
@@ -10031,7 +14273,8 @@ var away;
                 node._iParent = this;
                 this._iNumEntities += node._pNumEntities;
                 this._pChildNodes[this._pNumChildNodes++] = node;
-                node.showDebugBounds = this._pDebugPrimitive != null;
+
+                node._iUpdateImplicitBoundsVisible(this.boundsChildrenVisible);
 
                 var numEntities = node._pNumEntities;
                 node = this;
@@ -10051,12 +14294,52 @@ var away;
                 this._pChildNodes[index] = this._pChildNodes[--this._pNumChildNodes];
                 this._pChildNodes.pop();
 
+                node._iUpdateImplicitBoundsVisible(false);
+
                 var numEntities = node._pNumEntities;
                 node = this;
 
                 do {
                     node._pNumEntities -= numEntities;
                 } while((node = node._iParent) != null);
+            };
+
+            NodeBase.prototype._iUpdateImplicitBoundsVisible = function (value) {
+                if (this._implicitBoundsVisible == this._explicitBoundsVisible || value)
+                    return;
+
+                this._implicitBoundsVisible = this._explicitBoundsVisible || value;
+
+                this._iUpdateEntityBounds();
+
+                for (var i = 0; i < this._pNumChildNodes; ++i)
+                    this._pChildNodes[i]._iUpdateImplicitBoundsVisible(this._boundsChildrenVisible);
+            };
+
+            /**
+            * @internal
+            */
+            NodeBase.prototype._iIsBoundsVisible = function () {
+                return this._implicitBoundsVisible;
+            };
+
+            //		public _pUpdateNumEntities(value:number)
+            //		{
+            //			var diff:number = value - this._pNumEntities;
+            //			var node:NodeBase = this;
+            //
+            //			do {
+            //				node._pNumEntities += diff;
+            //			} while ((node = node._iParent) != null);
+            //		}
+            NodeBase.prototype._iUpdateEntityBounds = function () {
+                if (this._pBoundsPrimitive) {
+                    this._pBoundsPrimitive.dispose();
+                    this._pBoundsPrimitive = null;
+                }
+
+                if (this._implicitBoundsVisible)
+                    this._pBoundsPrimitive = this._pCreateBoundsPrimitive();
             };
             return NodeBase;
         })();
@@ -10253,6 +14536,14 @@ var away;
 
                 return this._entity.isIntersectingRay(rayPosition, rayDirection);
             };
+
+            /**
+            *
+            * @protected
+            */
+            EntityNode.prototype._pCreateBoundsPrimitive = function () {
+                return this._entity.bounds.boundingEntity;
+            };
             return EntityNode;
         })(away.partition.NodeBase);
         partition.EntityNode = EntityNode;
@@ -10283,6 +14574,48 @@ var away;
             return CameraNode;
         })(away.partition.EntityNode);
         partition.CameraNode = CameraNode;
+    })(away.partition || (away.partition = {}));
+    var partition = away.partition;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.partition
+    */
+    (function (partition) {
+        /**
+        * SkyboxNode is a space partitioning leaf node that contains a Skybox object.
+        *
+        * @class away.partition.SkyboxNode
+        */
+        var SkyboxNode = (function (_super) {
+            __extends(SkyboxNode, _super);
+            /**
+            * Creates a new SkyboxNode object.
+            * @param skyBox The Skybox to be contained in the node.
+            */
+            function SkyboxNode(skyBox) {
+                _super.call(this, skyBox);
+
+                this._skyBox = skyBox;
+            }
+            /**
+            *
+            * @param planes
+            * @param numPlanes
+            * @returns {boolean}
+            */
+            SkyboxNode.prototype.isInFrustum = function (planes, numPlanes) {
+                if (!this._skyBox._iIsVisible)
+                    return false;
+
+                //a skybox is always in view unless its visibility is set to false
+                return true;
+            };
+            return SkyboxNode;
+        })(away.partition.EntityNode);
+        partition.SkyboxNode = SkyboxNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
 })(away || (away = {}));
@@ -10539,9 +14872,134 @@ var away;
                 this._shareContext = false;
                 this._pBackBufferInvalid = true;
                 this._depthTextureInvalid = true;
+                this._viewPort = new away.geom.Rectangle();
+                this._scissorRect = new away.geom.Rectangle();
+                this._localPos = new away.geom.Point();
+                this._globalPos = new away.geom.Point();
 
                 this._billboardRenderablePool = away.pool.RenderablePool.getPool(away.pool.CSSBillboardRenderable);
+                this._lineSegmentRenderablePool = away.pool.RenderablePool.getPool(away.pool.CSSLineSegmentRenderable);
+
+                this._viewPort = new away.geom.Rectangle();
+
+                if (this._width == 0)
+                    this.width = window.innerWidth;
+
+                if (this._height == 0)
+                    this.height = window.innerHeight;
             }
+            Object.defineProperty(CSSRendererBase.prototype, "viewPort", {
+                /**
+                * A viewPort rectangle equivalent of the StageGL size and position.
+                */
+                get: function () {
+                    return this._viewPort;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CSSRendererBase.prototype, "scissorRect", {
+                /**
+                * A scissor rectangle equivalent of the view size and position.
+                */
+                get: function () {
+                    return this._scissorRect;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CSSRendererBase.prototype, "x", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._localPos.x;
+                },
+                set: function (value) {
+                    if (this.x == value)
+                        return;
+
+                    this.updateGlobalPos();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSRendererBase.prototype, "y", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._localPos.y;
+                },
+                set: function (value) {
+                    if (this.y == value)
+                        return;
+
+                    this._globalPos.y = this._localPos.y = value;
+
+                    this.updateGlobalPos();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSRendererBase.prototype, "width", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    if (this._width == value)
+                        return;
+
+                    this._width = value;
+                    this._scissorRect.width = value;
+                    this._viewPort.width = value;
+
+                    this._pBackBufferInvalid = true;
+                    this._depthTextureInvalid = true;
+
+                    this.notifyViewportUpdate();
+                    this.notifyScissorUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSRendererBase.prototype, "height", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    if (this._height == value)
+                        return;
+
+                    this._height = value;
+                    this._scissorRect.height = value;
+                    this._viewPort.height = value;
+
+                    this._pBackBufferInvalid = true;
+                    this._depthTextureInvalid = true;
+
+                    this.notifyViewportUpdate();
+                    this.notifyScissorUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             Object.defineProperty(CSSRendererBase.prototype, "_iBackgroundR", {
                 /**
                 * The background color's red component, used when clearing.
@@ -10638,6 +15096,8 @@ var away;
             };
 
             CSSRendererBase.prototype.render = function (entityCollector) {
+                this._viewportDirty = false;
+                this._scissorDirty = false;
             };
 
             /**
@@ -10658,16 +15118,16 @@ var away;
                 this._renderableHead = null;
 
                 //grab entity head
-                var entity = entityCollector.entityHead;
+                var item = entityCollector.entityHead;
 
                 //set temp values for entry point and camera forward vector
                 this._pCamera = entityCollector.camera;
                 this._iEntryPoint = this._pCamera.scenePosition;
                 this._pCameraForward = this._pCamera.transform.forwardVector;
 
-                while (entity) {
-                    this.pFindRenderables(entity.entity);
-                    entity = entity.next;
+                while (item) {
+                    item.entity._iCollectRenderables(this);
+                    item = item.next;
                 }
             };
 
@@ -10711,17 +15171,32 @@ var away;
 
             /**
             *
+            * @param billboard
             */
-            CSSRendererBase.prototype.updateGlobalPos = function () {
+            CSSRendererBase.prototype.applyBillboard = function (billboard) {
+                this._applyRenderable(this._billboardRenderablePool.getItem(billboard));
             };
 
             /**
             *
-            * @param billboard
-            * @protected
+            * @param lineSubMesh
             */
-            CSSRendererBase.prototype.applyBillboard = function (billboard) {
-                this.applyRenderable(this._billboardRenderablePool.getItem(billboard));
+            CSSRendererBase.prototype.applyLineSubMesh = function (lineSubMesh) {
+                //this._applyRenderable(<away.pool.CSSRenderableBase> this._billboardRenderablePool.getItem(lineSegment));
+            };
+
+            /**
+            *
+            * @param skybox
+            */
+            CSSRendererBase.prototype.applySkybox = function (skybox) {
+            };
+
+            /**
+            *
+            * @param triangleSubMesh
+            */
+            CSSRendererBase.prototype.applyTriangleSubMesh = function (triangleSubMesh) {
             };
 
             /**
@@ -10729,7 +15204,7 @@ var away;
             * @param renderable
             * @private
             */
-            CSSRendererBase.prototype.applyRenderable = function (renderable) {
+            CSSRendererBase.prototype._applyRenderable = function (renderable) {
                 var material = renderable.materialOwner.material;
                 var entity = renderable.sourceEntity;
                 var position = entity.scenePosition;
@@ -10754,14 +15229,48 @@ var away;
             };
 
             /**
-            *
-            * @param entity
+            * @private
             */
-            CSSRendererBase.prototype.pFindRenderables = function (entity) {
-                //TODO abstract conditional in the entity with a callback to IRenderer
-                if (entity.assetType === away.library.AssetType.BILLBOARD) {
-                    this.applyBillboard(entity);
-                }
+            CSSRendererBase.prototype.notifyScissorUpdate = function () {
+                if (this._scissorDirty)
+                    return;
+
+                this._scissorDirty = true;
+
+                if (!this._scissorUpdated)
+                    this._scissorUpdated = new away.events.RendererEvent(away.events.RendererEvent.SCISSOR_UPDATED);
+
+                this.dispatchEvent(this._scissorUpdated);
+            };
+
+            /**
+            * @private
+            */
+            CSSRendererBase.prototype.notifyViewportUpdate = function () {
+                if (this._viewportDirty)
+                    return;
+
+                this._viewportDirty = true;
+
+                if (!this._viewPortUpdated)
+                    this._viewPortUpdated = new away.events.RendererEvent(away.events.RendererEvent.VIEWPORT_UPDATED);
+
+                this.dispatchEvent(this._viewPortUpdated);
+            };
+
+            /**
+            *
+            */
+            CSSRendererBase.prototype.updateGlobalPos = function () {
+                this._viewPort.x = this._globalPos.x;
+                this._viewPort.y = this._globalPos.y;
+
+                this.notifyViewportUpdate();
+                this.notifyScissorUpdate();
+            };
+
+            CSSRendererBase.prototype._iCreateEntityCollector = function () {
+                throw new away.errors.AbstractMethodError();
             };
             return CSSRendererBase;
         })(away.events.EventDispatcher);
@@ -10792,10 +15301,6 @@ var away;
                 this._contextMatrix = new away.geom.Matrix3D();
                 this._skyboxProjection = new away.geom.Matrix3D();
                 this._transform = new away.geom.Matrix3D();
-                this._viewPort = new away.geom.Rectangle();
-                this._scissorRect = new away.geom.Rectangle();
-                this._localPos = new away.geom.Point();
-                this._globalPos = new away.geom.Point();
 
                 //create container for the renderer
                 this._container = document.createElement("div");
@@ -10814,134 +15319,13 @@ var away;
 
                 //add context to container
                 this._container.appendChild(this._context);
-
-                this._viewPort = new away.geom.Rectangle();
-
-                if (this._width == 0)
-                    this.width = window.innerWidth;
-
-                if (this._height == 0)
-                    this.height = window.innerHeight;
             }
-            Object.defineProperty(CSSDefaultRenderer.prototype, "viewPort", {
-                /**
-                * A viewPort rectangle equivalent of the StageGL size and position.
-                */
-                get: function () {
-                    return this._viewPort;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CSSDefaultRenderer.prototype, "scissorRect", {
-                /**
-                * A scissor rectangle equivalent of the view size and position.
-                */
-                get: function () {
-                    return this._scissorRect;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CSSDefaultRenderer.prototype, "x", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._localPos.x;
-                },
-                set: function (value) {
-                    if (this.x == value)
-                        return;
-
-                    this.updateGlobalPos();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(CSSDefaultRenderer.prototype, "y", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._localPos.y;
-                },
-                set: function (value) {
-                    if (this.y == value)
-                        return;
-
-                    this._globalPos.y = this._localPos.y = value;
-
-                    this.updateGlobalPos();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(CSSDefaultRenderer.prototype, "width", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._width;
-                },
-                set: function (value) {
-                    if (this._width == value)
-                        return;
-
-                    this._width = value;
-                    this._scissorRect.width = value;
-                    this._viewPort.width = value;
-
-                    this._pBackBufferInvalid = true;
-                    this._depthTextureInvalid = true;
-
-                    this.notifyViewportUpdate();
-                    this.notifyScissorUpdate();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(CSSDefaultRenderer.prototype, "height", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._height;
-                },
-                set: function (value) {
-                    if (this._height == value)
-                        return;
-
-                    this._height = value;
-                    this._scissorRect.height = value;
-                    this._viewPort.height = value;
-
-                    this._pBackBufferInvalid = true;
-                    this._depthTextureInvalid = true;
-
-                    this.notifyViewportUpdate();
-                    this.notifyScissorUpdate();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
             /**
             *
             * @param entityCollector
             */
             CSSDefaultRenderer.prototype.render = function (entityCollector) {
-                this._viewportDirty = false;
-                this._scissorDirty = false;
+                _super.prototype.render.call(this, entityCollector);
 
                 if (this._pBackBufferInvalid)
                     this.pUpdateBackBuffer();
@@ -11083,47 +15467,6 @@ var away;
             CSSDefaultRenderer.prototype.dispose = function () {
                 _super.prototype.dispose.call(this);
                 //TODO
-            };
-
-            /**
-            * @private
-            */
-            CSSDefaultRenderer.prototype.notifyScissorUpdate = function () {
-                if (this._scissorDirty)
-                    return;
-
-                this._scissorDirty = true;
-
-                if (!this._scissorUpdated)
-                    this._scissorUpdated = new away.events.RendererEvent(away.events.RendererEvent.SCISSOR_UPDATED);
-
-                this.dispatchEvent(this._scissorUpdated);
-            };
-
-            /**
-            * @private
-            */
-            CSSDefaultRenderer.prototype.notifyViewportUpdate = function () {
-                if (this._viewportDirty)
-                    return;
-
-                this._viewportDirty = true;
-
-                if (!this._viewPortUpdated)
-                    this._viewPortUpdated = new away.events.RendererEvent(away.events.RendererEvent.VIEWPORT_UPDATED);
-
-                this.dispatchEvent(this._viewPortUpdated);
-            };
-
-            /**
-            *
-            */
-            CSSDefaultRenderer.prototype.updateGlobalPos = function () {
-                this._viewPort.x = this._globalPos.x;
-                this._viewPort.y = this._globalPos.y;
-
-                this.notifyViewportUpdate();
-                this.notifyScissorUpdate();
             };
 
             CSSDefaultRenderer.prototype._iCreateEntityCollector = function () {
@@ -11304,1255 +15647,6 @@ var away;
         sort.RenderableMergeSort = RenderableMergeSort;
     })(away.sort || (away.sort = {}));
     var sort = away.sort;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var ContextGLClearMask = (function () {
-            function ContextGLClearMask() {
-            }
-            ContextGLClearMask.COLOR = 8 << 11;
-            ContextGLClearMask.DEPTH = 8 << 5;
-            ContextGLClearMask.STENCIL = 8 << 7;
-            ContextGLClearMask.ALL = ContextGLClearMask.COLOR | ContextGLClearMask.DEPTH | ContextGLClearMask.STENCIL;
-            return ContextGLClearMask;
-        })();
-        gl.ContextGLClearMask = ContextGLClearMask;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var VertexBuffer = (function () {
-            function VertexBuffer(gl, numVertices, data32PerVertex) {
-                this._gl = gl;
-                this._buffer = this._gl.createBuffer();
-                this._numVertices = numVertices;
-                this._data32PerVertex = data32PerVertex;
-            }
-            VertexBuffer.prototype.uploadFromArray = function (vertices, startVertex, numVertices) {
-                this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._buffer);
-
-                //console.log( "** WARNING upload not fully implemented, startVertex & numVertices not considered." );
-                // TODO add offsets , startVertex, numVertices * this._data32PerVertex
-                this._gl.bufferData(this._gl.ARRAY_BUFFER, new Float32Array(vertices), this._gl.STATIC_DRAW);
-            };
-
-            Object.defineProperty(VertexBuffer.prototype, "numVertices", {
-                get: function () {
-                    return this._numVertices;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(VertexBuffer.prototype, "data32PerVertex", {
-                get: function () {
-                    return this._data32PerVertex;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(VertexBuffer.prototype, "glBuffer", {
-                get: function () {
-                    return this._buffer;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            VertexBuffer.prototype.dispose = function () {
-                this._gl.deleteBuffer(this._buffer);
-            };
-            return VertexBuffer;
-        })();
-        gl.VertexBuffer = VertexBuffer;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var IndexBuffer = (function () {
-            function IndexBuffer(gl, numIndices) {
-                this._gl = gl;
-                this._buffer = this._gl.createBuffer();
-                this._numIndices = numIndices;
-            }
-            IndexBuffer.prototype.uploadFromArray = function (data, startOffset, count) {
-                this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._buffer);
-
-                // TODO add index offsets
-                this._gl.bufferData(this._gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), this._gl.STATIC_DRAW);
-            };
-
-            IndexBuffer.prototype.dispose = function () {
-                this._gl.deleteBuffer(this._buffer);
-            };
-
-            Object.defineProperty(IndexBuffer.prototype, "numIndices", {
-                get: function () {
-                    return this._numIndices;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(IndexBuffer.prototype, "glBuffer", {
-                get: function () {
-                    return this._buffer;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return IndexBuffer;
-        })();
-        gl.IndexBuffer = IndexBuffer;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var Program = (function () {
-            function Program(gl) {
-                this._gl = gl;
-                this._program = this._gl.createProgram();
-            }
-            Program.prototype.upload = function (vertexProgram, fragmentProgram) {
-                this._vertexShader = this._gl.createShader(this._gl.VERTEX_SHADER);
-                this._fragmentShader = this._gl.createShader(this._gl.FRAGMENT_SHADER);
-
-                this._gl.shaderSource(this._vertexShader, vertexProgram);
-                this._gl.compileShader(this._vertexShader);
-
-                if (!this._gl.getShaderParameter(this._vertexShader, this._gl.COMPILE_STATUS)) {
-                    alert(this._gl.getShaderInfoLog(this._vertexShader));
-                    return null;
-                }
-
-                this._gl.shaderSource(this._fragmentShader, fragmentProgram);
-                this._gl.compileShader(this._fragmentShader);
-
-                if (!this._gl.getShaderParameter(this._fragmentShader, this._gl.COMPILE_STATUS)) {
-                    alert(this._gl.getShaderInfoLog(this._fragmentShader));
-                    return null;
-                }
-
-                this._gl.attachShader(this._program, this._vertexShader);
-                this._gl.attachShader(this._program, this._fragmentShader);
-                this._gl.linkProgram(this._program);
-
-                if (!this._gl.getProgramParameter(this._program, this._gl.LINK_STATUS)) {
-                    alert("Could not link the program."); //TODO throw errors
-                }
-            };
-
-            Program.prototype.dispose = function () {
-                this._gl.deleteProgram(this._program);
-            };
-
-            Program.prototype.focusProgram = function () {
-                this._gl.useProgram(this._program);
-            };
-
-            Object.defineProperty(Program.prototype, "glProgram", {
-                get: function () {
-                    return this._program;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return Program;
-        })();
-        gl.Program = Program;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var SamplerState = (function () {
-            function SamplerState() {
-                this.wrap = 0;
-                this.filter = 0;
-                this.mipfilter = 0;
-            }
-            return SamplerState;
-        })();
-        gl.SamplerState = SamplerState;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
-        var ContextGLTextureFormat = (function () {
-            function ContextGLTextureFormat() {
-            }
-            ContextGLTextureFormat.BGRA = "bgra";
-            ContextGLTextureFormat.BGRA_PACKED = "bgraPacked4444";
-            ContextGLTextureFormat.BGR_PACKED = "bgrPacked565";
-            ContextGLTextureFormat.COMPRESSED = "compressed";
-            ContextGLTextureFormat.COMPRESSED_ALPHA = "compressedAlpha";
-            return ContextGLTextureFormat;
-        })();
-        gl.ContextGLTextureFormat = ContextGLTextureFormat;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var TextureBase = (function () {
-            function TextureBase(gl) {
-                this.textureType = "";
-                this._gl = gl;
-            }
-            TextureBase.prototype.dispose = function () {
-                throw "Abstract method must be overridden.";
-            };
-            return TextureBase;
-        })();
-        gl.TextureBase = TextureBase;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var Texture = (function (_super) {
-            __extends(Texture, _super);
-            function Texture(gl, width, height) {
-                _super.call(this, gl);
-                this.textureType = "texture2d";
-                this._width = width;
-                this._height = height;
-
-                this._glTexture = this._gl.createTexture();
-            }
-            Texture.prototype.dispose = function () {
-                this._gl.deleteTexture(this._glTexture);
-            };
-
-            Object.defineProperty(Texture.prototype, "width", {
-                get: function () {
-                    return this._width;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Texture.prototype, "height", {
-                get: function () {
-                    return this._height;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Texture.prototype, "frameBuffer", {
-                get: function () {
-                    return this._frameBuffer;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Texture.prototype.uploadFromHTMLImageElement = function (image, miplevel) {
-                if (typeof miplevel === "undefined") { miplevel = 0; }
-                this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
-
-                //this._gl.pixelStorei( this._gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._gl.ZERO );
-                this._gl.texImage2D(this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                this._gl.bindTexture(this._gl.TEXTURE_2D, null);
-            };
-
-            Texture.prototype.uploadFromBitmapData = function (data, miplevel) {
-                if (typeof miplevel === "undefined") { miplevel = 0; }
-                this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
-
-                //this._gl.pixelStorei( this._gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._gl.ZERO );
-                this._gl.texImage2D(this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                this._gl.bindTexture(this._gl.TEXTURE_2D, null);
-            };
-
-            Texture.prototype.uploadCompressedTextureFromByteArray = function (data, byteArrayOffset /*uint*/ , async) {
-                if (typeof async === "undefined") { async = false; }
-                var ext = this._gl.getExtension("WEBKIT_WEBGL_compressed_texture_s3tc");
-                //this._gl.compressedTexImage2D(this._gl.TEXTURE_2D, 0, this)
-            };
-
-            Object.defineProperty(Texture.prototype, "glTexture", {
-                get: function () {
-                    return this._glTexture;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Texture.prototype.generateFromRenderBuffer = function (data) {
-                this._frameBuffer = this._gl.createFramebuffer();
-                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
-                this._frameBuffer.width = this._width;
-                this._frameBuffer.height = this._height;
-
-                this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
-
-                //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, this._gl.LINEAR);
-                //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, this._gl.LINEAR_MIPMAP_NEAREST);
-                //this._gl.generateMipmap(this._gl.TEXTURE_2D);
-                //this._gl.texImage2D( this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData );
-                this._gl.texImage2D(this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._width, this._height, 0, this._gl.RGBA, this._gl.UNSIGNED_BYTE, null);
-
-                var renderBuffer = this._gl.createRenderbuffer();
-                this._gl.bindRenderbuffer(this._gl.RENDERBUFFER, renderBuffer);
-                this._gl.renderbufferStorage(this._gl.RENDERBUFFER, this._gl.DEPTH_COMPONENT16, this._width, this._height);
-
-                this._gl.framebufferTexture2D(this._gl.FRAMEBUFFER, this._gl.COLOR_ATTACHMENT0, this._gl.TEXTURE_2D, this._glTexture, 0);
-                this._gl.framebufferRenderbuffer(this._gl.FRAMEBUFFER, this._gl.DEPTH_ATTACHMENT, this._gl.RENDERBUFFER, renderBuffer);
-
-                this._gl.bindTexture(this._gl.TEXTURE_2D, null);
-                this._gl.bindRenderbuffer(this._gl.RENDERBUFFER, null);
-                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
-            };
-
-            Texture.prototype.generateMipmaps = function () {
-                //this._gl.bindTexture( this._gl.TEXTURE_2D, this._glTexture );
-                //this._gl.generateMipmap(this._gl.TEXTURE_2D);
-                //this._gl.bindTexture( this._gl.TEXTURE_2D, null );
-            };
-            return Texture;
-        })(away.gl.TextureBase);
-        gl.Texture = Texture;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var CubeTexture = (function (_super) {
-            __extends(CubeTexture, _super);
-            function CubeTexture(gl, size) {
-                _super.call(this, gl);
-                this.textureType = "textureCube";
-                this._size = size;
-                this._texture = this._gl.createTexture();
-            }
-            CubeTexture.prototype.dispose = function () {
-                this._gl.deleteTexture(this._texture);
-            };
-
-            CubeTexture.prototype.uploadFromHTMLImageElement = function (image, side, miplevel) {
-                if (typeof miplevel === "undefined") { miplevel = 0; }
-                this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-
-                switch (side) {
-                    case 0:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-
-                        break;
-                    case 1:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                        break;
-                    case 2:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                        break;
-                    case 3:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                        break;
-                    case 4:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                        break;
-                    case 5:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                        break;
-                    default:
-                        throw "unknown side type";
-                }
-
-                this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-            };
-
-            CubeTexture.prototype.uploadFromBitmapData = function (data, side, miplevel) {
-                if (typeof miplevel === "undefined") { miplevel = 0; }
-                switch (side) {
-                    case 0:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                        break;
-                    case 1:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                        break;
-                    case 2:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                        break;
-                    case 3:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                        break;
-                    case 4:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                        break;
-                    case 5:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                        break;
-                    default:
-                        throw "unknown side type";
-                }
-            };
-
-            CubeTexture.prototype.uploadCompressedTextureFromByteArray = function (data, byteArrayOffset /*uint*/ , async) {
-                if (typeof async === "undefined") { async = false; }
-            };
-
-            Object.defineProperty(CubeTexture.prototype, "size", {
-                get: function () {
-                    return this._size;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CubeTexture.prototype, "glTexture", {
-                get: function () {
-                    return this._texture;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return CubeTexture;
-        })(away.gl.TextureBase);
-        gl.CubeTexture = CubeTexture;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
-        var ContextGLTriangleFace = (function () {
-            function ContextGLTriangleFace() {
-            }
-            ContextGLTriangleFace.BACK = "back";
-            ContextGLTriangleFace.FRONT = "front";
-            ContextGLTriangleFace.FRONT_AND_BACK = "frontAndBack";
-            ContextGLTriangleFace.NONE = "none";
-            return ContextGLTriangleFace;
-        })();
-        gl.ContextGLTriangleFace = ContextGLTriangleFace;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var ContextGLVertexBufferFormat = (function () {
-            function ContextGLVertexBufferFormat() {
-            }
-            ContextGLVertexBufferFormat.BYTES_4 = "bytes4";
-            ContextGLVertexBufferFormat.FLOAT_1 = "float1";
-            ContextGLVertexBufferFormat.FLOAT_2 = "float2";
-            ContextGLVertexBufferFormat.FLOAT_3 = "float3";
-            ContextGLVertexBufferFormat.FLOAT_4 = "float4";
-            return ContextGLVertexBufferFormat;
-        })();
-        gl.ContextGLVertexBufferFormat = ContextGLVertexBufferFormat;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var ContextGLProgramType = (function () {
-            function ContextGLProgramType() {
-            }
-            ContextGLProgramType.FRAGMENT = "fragment";
-            ContextGLProgramType.VERTEX = "vertex";
-            return ContextGLProgramType;
-        })();
-        gl.ContextGLProgramType = ContextGLProgramType;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
-        var ContextGLBlendFactor = (function () {
-            function ContextGLBlendFactor() {
-            }
-            ContextGLBlendFactor.DESTINATION_ALPHA = "destinationAlpha";
-            ContextGLBlendFactor.DESTINATION_COLOR = "destinationColor";
-            ContextGLBlendFactor.ONE = "one";
-            ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA = "oneMinusDestinationAlpha";
-            ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR = "oneMinusDestinationColor";
-            ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA = "oneMinusSourceAlpha";
-            ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR = "oneMinusSourceColor";
-            ContextGLBlendFactor.SOURCE_ALPHA = "sourceAlpha";
-            ContextGLBlendFactor.SOURCE_COLOR = "sourceColor";
-            ContextGLBlendFactor.ZERO = "zero";
-            return ContextGLBlendFactor;
-        })();
-        gl.ContextGLBlendFactor = ContextGLBlendFactor;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
-        var ContextGLCompareMode = (function () {
-            function ContextGLCompareMode() {
-            }
-            ContextGLCompareMode.ALWAYS = "always";
-            ContextGLCompareMode.EQUAL = "equal";
-            ContextGLCompareMode.GREATER = "greater";
-            ContextGLCompareMode.GREATER_EQUAL = "greaterEqual";
-            ContextGLCompareMode.LESS = "less";
-            ContextGLCompareMode.LESS_EQUAL = "lessEqual";
-            ContextGLCompareMode.NEVER = "never";
-            ContextGLCompareMode.NOT_EQUAL = "notEqual";
-            return ContextGLCompareMode;
-        })();
-        gl.ContextGLCompareMode = ContextGLCompareMode;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
-        var ContextGLMipFilter = (function () {
-            function ContextGLMipFilter() {
-            }
-            ContextGLMipFilter.MIPLINEAR = "miplinear";
-            ContextGLMipFilter.MIPNEAREST = "mipnearest";
-            ContextGLMipFilter.MIPNONE = "mipnone";
-            return ContextGLMipFilter;
-        })();
-        gl.ContextGLMipFilter = ContextGLMipFilter;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
-        var ContextGLProfile = (function () {
-            function ContextGLProfile() {
-            }
-            ContextGLProfile.BASELINE = "baseline";
-            ContextGLProfile.BASELINE_CONSTRAINED = "baselineConstrained";
-            ContextGLProfile.BASELINE_EXTENDED = "baselineExtended";
-            return ContextGLProfile;
-        })();
-        gl.ContextGLProfile = ContextGLProfile;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
-        var ContextGLStencilAction = (function () {
-            function ContextGLStencilAction() {
-            }
-            ContextGLStencilAction.DECREMENT_SATURATE = "decrementSaturate";
-            ContextGLStencilAction.DECREMENT_WRAP = "decrementWrap";
-            ContextGLStencilAction.INCREMENT_SATURATE = "incrementSaturate";
-            ContextGLStencilAction.INCREMENT_WRAP = "incrementWrap";
-            ContextGLStencilAction.INVERT = "invert";
-            ContextGLStencilAction.KEEP = "keep";
-            ContextGLStencilAction.SET = "set";
-            ContextGLStencilAction.ZERO = "zero";
-            return ContextGLStencilAction;
-        })();
-        gl.ContextGLStencilAction = ContextGLStencilAction;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
-        var ContextGLTextureFilter = (function () {
-            function ContextGLTextureFilter() {
-            }
-            ContextGLTextureFilter.LINEAR = "linear";
-            ContextGLTextureFilter.NEAREST = "nearest";
-            return ContextGLTextureFilter;
-        })();
-        gl.ContextGLTextureFilter = ContextGLTextureFilter;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var ContextGLWrapMode = (function () {
-            function ContextGLWrapMode() {
-            }
-            ContextGLWrapMode.CLAMP = "clamp";
-            ContextGLWrapMode.REPEAT = "repeat";
-            return ContextGLWrapMode;
-        })();
-        gl.ContextGLWrapMode = ContextGLWrapMode;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var ContextGL = (function () {
-            function ContextGL(canvas) {
-                this._currentWrap = 0;
-                this._currentFilter = 0;
-                this._currentMipFilter = 0;
-                this._indexBufferList = [];
-                this._vertexBufferList = [];
-                this._textureList = [];
-                this._programList = [];
-                this._samplerStates = [];
-                try  {
-                    this._gl = canvas.getContext("experimental-webgl", { premultipliedAlpha: false, alpha: false });
-                    if (!this._gl) {
-                        this._gl = canvas.getContext("webgl", { premultipliedAlpha: false, alpha: false });
-                    }
-                } catch (e) {
-                    //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
-                }
-
-                if (this._gl) {
-                    //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_SUCCESS ) );
-                } else {
-                    //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
-                    alert("WebGL is not available.");
-                }
-
-                for (var i = 0; i < ContextGL.MAX_SAMPLERS; ++i) {
-                    this._samplerStates[i] = new away.gl.SamplerState();
-                    this._samplerStates[i].wrap = this._gl.REPEAT;
-                    this._samplerStates[i].filter = this._gl.LINEAR;
-                    this._samplerStates[i].mipfilter = 0;
-                }
-            }
-            ContextGL.prototype.gl = function () {
-                return this._gl;
-            };
-
-            ContextGL.prototype.clear = function (red, green, blue, alpha, depth, stencil, mask) {
-                if (typeof red === "undefined") { red = 0; }
-                if (typeof green === "undefined") { green = 0; }
-                if (typeof blue === "undefined") { blue = 0; }
-                if (typeof alpha === "undefined") { alpha = 1; }
-                if (typeof depth === "undefined") { depth = 1; }
-                if (typeof stencil === "undefined") { stencil = 0; }
-                if (typeof mask === "undefined") { mask = away.gl.ContextGLClearMask.ALL; }
-                if (!this._drawing) {
-                    this.updateBlendStatus();
-                    this._drawing = true;
-                }
-                this._gl.clearColor(red, green, blue, alpha);
-                this._gl.clearDepth(depth);
-                this._gl.clearStencil(stencil);
-                this._gl.clear(mask);
-            };
-
-            ContextGL.prototype.configureBackBuffer = function (width, height, antiAlias, enableDepthAndStencil) {
-                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = true; }
-                if (enableDepthAndStencil) {
-                    this._gl.enable(this._gl.STENCIL_TEST);
-                    this._gl.enable(this._gl.DEPTH_TEST);
-                }
-
-                this._gl.viewport['width'] = width;
-                this._gl.viewport['height'] = height;
-
-                this._gl.viewport(0, 0, width, height);
-            };
-
-            ContextGL.prototype.createCubeTexture = function (size, format, optimizeForRenderToTexture, streamingLevels) {
-                if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
-                var texture = new away.gl.CubeTexture(this._gl, size);
-                this._textureList.push(texture);
-                return texture;
-            };
-
-            ContextGL.prototype.createIndexBuffer = function (numIndices) {
-                var indexBuffer = new away.gl.IndexBuffer(this._gl, numIndices);
-                this._indexBufferList.push(indexBuffer);
-                return indexBuffer;
-            };
-
-            ContextGL.prototype.createProgram = function () {
-                var program = new away.gl.Program(this._gl);
-                this._programList.push(program);
-                return program;
-            };
-
-            ContextGL.prototype.createTexture = function (width, height, format, optimizeForRenderToTexture, streamingLevels) {
-                if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
-                //TODO streaming
-                var texture = new away.gl.Texture(this._gl, width, height);
-                this._textureList.push(texture);
-                return texture;
-            };
-
-            ContextGL.prototype.createVertexBuffer = function (numVertices, data32PerVertex) {
-                var vertexBuffer = new away.gl.VertexBuffer(this._gl, numVertices, data32PerVertex);
-                this._vertexBufferList.push(vertexBuffer);
-                return vertexBuffer;
-            };
-
-            ContextGL.prototype.dispose = function () {
-                var i;
-                for (i = 0; i < this._indexBufferList.length; ++i)
-                    this._indexBufferList[i].dispose();
-
-                this._indexBufferList = null;
-
-                for (i = 0; i < this._vertexBufferList.length; ++i)
-                    this._vertexBufferList[i].dispose();
-
-                this._vertexBufferList = null;
-
-                for (i = 0; i < this._textureList.length; ++i)
-                    this._textureList[i].dispose();
-
-                this._textureList = null;
-
-                for (i = 0; i < this._programList.length; ++i)
-                    this._programList[i].dispose();
-
-                for (i = 0; i < this._samplerStates.length; ++i)
-                    this._samplerStates[i] = null;
-
-                this._programList = null;
-            };
-
-            ContextGL.prototype.drawToBitmapData = function (destination) {
-                var arrayBuffer = new ArrayBuffer(destination.width * destination.height * 4);
-
-                this._gl.readPixels(0, 0, destination.width, destination.height, this._gl.RGBA, this._gl.UNSIGNED_BYTE, new Uint8Array(arrayBuffer));
-
-                var byteArray = new away.utils.ByteArray();
-                byteArray.setArrayBuffer(arrayBuffer);
-
-                destination.setPixels(new away.geom.Rectangle(0, 0, destination.width, destination.height), byteArray);
-            };
-
-            ContextGL.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
-                if (typeof firstIndex === "undefined") { firstIndex = 0; }
-                if (typeof numTriangles === "undefined") { numTriangles = -1; }
-                if (!this._drawing)
-                    throw "Need to clear before drawing if the buffer has not been cleared since the last present() call.";
-
-                this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, indexBuffer.glBuffer);
-                this._gl.drawElements(this._gl.TRIANGLES, (numTriangles == -1) ? indexBuffer.numIndices : numTriangles * 3, this._gl.UNSIGNED_SHORT, firstIndex);
-            };
-
-            ContextGL.prototype.present = function () {
-                this._drawing = false;
-                //this._gl.useProgram( null );
-            };
-
-            ContextGL.prototype.setBlendFactors = function (sourceFactor, destinationFactor) {
-                this._blendEnabled = true;
-
-                switch (sourceFactor) {
-                    case away.gl.ContextGLBlendFactor.ONE:
-                        this._blendSourceFactor = this._gl.ONE;
-                        break;
-                    case away.gl.ContextGLBlendFactor.DESTINATION_ALPHA:
-                        this._blendSourceFactor = this._gl.DST_ALPHA;
-                        break;
-                    case away.gl.ContextGLBlendFactor.DESTINATION_COLOR:
-                        this._blendSourceFactor = this._gl.DST_COLOR;
-                        break;
-                    case away.gl.ContextGLBlendFactor.ONE:
-                        this._blendSourceFactor = this._gl.ONE;
-                        break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
-                        this._blendSourceFactor = this._gl.ONE_MINUS_DST_ALPHA;
-                        break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR:
-                        this._blendSourceFactor = this._gl.ONE_MINUS_DST_COLOR;
-                        break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA:
-                        this._blendSourceFactor = this._gl.ONE_MINUS_SRC_ALPHA;
-                        break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR:
-                        this._blendSourceFactor = this._gl.ONE_MINUS_SRC_COLOR;
-                        break;
-                    case away.gl.ContextGLBlendFactor.SOURCE_ALPHA:
-                        this._blendSourceFactor = this._gl.SRC_ALPHA;
-                        break;
-                    case away.gl.ContextGLBlendFactor.SOURCE_COLOR:
-                        this._blendSourceFactor = this._gl.SRC_COLOR;
-                        break;
-                    case away.gl.ContextGLBlendFactor.ZERO:
-                        this._blendSourceFactor = this._gl.ZERO;
-                        break;
-                    default:
-                        throw "Unknown blend source factor";
-                        break;
-                }
-
-                switch (destinationFactor) {
-                    case away.gl.ContextGLBlendFactor.ONE:
-                        this._blendDestinationFactor = this._gl.ONE;
-                        break;
-                    case away.gl.ContextGLBlendFactor.DESTINATION_ALPHA:
-                        this._blendDestinationFactor = this._gl.DST_ALPHA;
-                        break;
-                    case away.gl.ContextGLBlendFactor.DESTINATION_COLOR:
-                        this._blendDestinationFactor = this._gl.DST_COLOR;
-                        break;
-                    case away.gl.ContextGLBlendFactor.ONE:
-                        this._blendDestinationFactor = this._gl.ONE;
-                        break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
-                        this._blendDestinationFactor = this._gl.ONE_MINUS_DST_ALPHA;
-                        break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR:
-                        this._blendDestinationFactor = this._gl.ONE_MINUS_DST_COLOR;
-                        break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA:
-                        this._blendDestinationFactor = this._gl.ONE_MINUS_SRC_ALPHA;
-                        break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR:
-                        this._blendDestinationFactor = this._gl.ONE_MINUS_SRC_COLOR;
-                        break;
-                    case away.gl.ContextGLBlendFactor.SOURCE_ALPHA:
-                        this._blendDestinationFactor = this._gl.SRC_ALPHA;
-                        break;
-                    case away.gl.ContextGLBlendFactor.SOURCE_COLOR:
-                        this._blendDestinationFactor = this._gl.SRC_COLOR;
-                        break;
-                    case away.gl.ContextGLBlendFactor.ZERO:
-                        this._blendDestinationFactor = this._gl.ZERO;
-                        break;
-                    default:
-                        throw "Unknown blend destination factor";
-                        break;
-                }
-
-                this.updateBlendStatus();
-            };
-
-            ContextGL.prototype.setColorMask = function (red, green, blue, alpha) {
-                this._gl.colorMask(red, green, blue, alpha);
-            };
-
-            ContextGL.prototype.setCulling = function (triangleFaceToCull, coordinateSystem) {
-                if (typeof coordinateSystem === "undefined") { coordinateSystem = "leftHanded"; }
-                if (triangleFaceToCull == away.gl.ContextGLTriangleFace.NONE) {
-                    this._gl.disable(this._gl.CULL_FACE);
-                } else {
-                    this._gl.enable(this._gl.CULL_FACE);
-                    switch (triangleFaceToCull) {
-                        case away.gl.ContextGLTriangleFace.BACK:
-                            this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.FRONT : this._gl.BACK);
-                            break;
-                        case away.gl.ContextGLTriangleFace.FRONT:
-                            this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.BACK : this._gl.FRONT);
-                            break;
-                        case away.gl.ContextGLTriangleFace.FRONT_AND_BACK:
-                            this._gl.cullFace(this._gl.FRONT_AND_BACK);
-                            break;
-                        default:
-                            throw "Unknown ContextGLTriangleFace type.";
-                    }
-                }
-            };
-
-            // TODO ContextGLCompareMode
-            ContextGL.prototype.setDepthTest = function (depthMask, passCompareMode) {
-                switch (passCompareMode) {
-                    case away.gl.ContextGLCompareMode.ALWAYS:
-                        this._gl.depthFunc(this._gl.ALWAYS);
-                        break;
-                    case away.gl.ContextGLCompareMode.EQUAL:
-                        this._gl.depthFunc(this._gl.EQUAL);
-                        break;
-                    case away.gl.ContextGLCompareMode.GREATER:
-                        this._gl.depthFunc(this._gl.GREATER);
-                        break;
-                    case away.gl.ContextGLCompareMode.GREATER_EQUAL:
-                        this._gl.depthFunc(this._gl.GEQUAL);
-                        break;
-                    case away.gl.ContextGLCompareMode.LESS:
-                        this._gl.depthFunc(this._gl.LESS);
-                        break;
-                    case away.gl.ContextGLCompareMode.LESS_EQUAL:
-                        this._gl.depthFunc(this._gl.LEQUAL);
-                        break;
-                    case away.gl.ContextGLCompareMode.NEVER:
-                        this._gl.depthFunc(this._gl.NEVER);
-                        break;
-                    case away.gl.ContextGLCompareMode.NOT_EQUAL:
-                        this._gl.depthFunc(this._gl.NOTEQUAL);
-                        break;
-                    default:
-                        throw "Unknown ContextGLCompareMode type.";
-                        break;
-                }
-                this._gl.depthMask(depthMask);
-            };
-
-            ContextGL.prototype.setProgram = function (program) {
-                //TODO decide on construction/reference resposibilities
-                this._currentProgram = program;
-                program.focusProgram();
-            };
-
-            ContextGL.prototype.getUniformLocationNameFromAgalRegisterIndex = function (programType, firstRegister) {
-                switch (programType) {
-                    case away.gl.ContextGLProgramType.VERTEX:
-                        return "vc";
-                        break;
-                    case away.gl.ContextGLProgramType.FRAGMENT:
-                        return "fc";
-                        break;
-                    default:
-                        throw "Program Type " + programType + " not supported";
-                }
-            };
-
-            /*
-            public setProgramConstantsFromByteArray
-            */
-            ContextGL.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
-                if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
-                var locationName = this.getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister);
-                this.setGLSLProgramConstantsFromMatrix(locationName, matrix, transposedMatrix);
-            };
-
-            ContextGL.prototype.setProgramConstantsFromArray = function (programType, firstRegister, data, numRegisters) {
-                if (typeof numRegisters === "undefined") { numRegisters = -1; }
-                for (var i = 0; i < numRegisters; ++i) {
-                    var currentIndex = i * 4;
-                    var locationName = this.getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister + i) + (i + firstRegister);
-
-                    this.setGLSLProgramConstantsFromArray(locationName, data, currentIndex);
-                }
-            };
-
-            /*
-            public setGLSLProgramConstantsFromByteArray
-            
-            */
-            ContextGL.prototype.setGLSLProgramConstantsFromMatrix = function (locationName, matrix, transposedMatrix) {
-                if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
-                var location = this._gl.getUniformLocation(this._currentProgram.glProgram, locationName);
-                this._gl.uniformMatrix4fv(location, !transposedMatrix, new Float32Array(matrix.rawData));
-            };
-
-            ContextGL.prototype.setGLSLProgramConstantsFromArray = function (locationName, data, startIndex) {
-                if (typeof startIndex === "undefined") { startIndex = 0; }
-                var location = this._gl.getUniformLocation(this._currentProgram.glProgram, locationName);
-                this._gl.uniform4f(location, data[startIndex], data[startIndex + 1], data[startIndex + 2], data[startIndex + 3]);
-            };
-
-            ContextGL.prototype.setScissorRectangle = function (rectangle) {
-                if (!rectangle) {
-                    this._gl.disable(this._gl.SCISSOR_TEST);
-                    return;
-                }
-
-                this._gl.enable(this._gl.SCISSOR_TEST);
-                this._gl.scissor(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-            };
-
-            ContextGL.prototype.setTextureAt = function (sampler, texture) {
-                var locationName = "fs" + sampler;
-                this.setGLSLTextureAt(locationName, texture, sampler);
-            };
-
-            ContextGL.prototype.setGLSLTextureAt = function (locationName, texture, textureIndex) {
-                if (!texture) {
-                    this._gl.activeTexture(this._gl.TEXTURE0 + (textureIndex));
-                    this._gl.bindTexture(this._gl.TEXTURE_2D, null);
-                    this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                    return;
-                }
-
-                switch (textureIndex) {
-                    case 0:
-                        this._gl.activeTexture(this._gl.TEXTURE0);
-                        break;
-                    case 1:
-                        this._gl.activeTexture(this._gl.TEXTURE1);
-                        break;
-                    case 2:
-                        this._gl.activeTexture(this._gl.TEXTURE2);
-                        break;
-                    case 3:
-                        this._gl.activeTexture(this._gl.TEXTURE3);
-                        break;
-                    case 4:
-                        this._gl.activeTexture(this._gl.TEXTURE4);
-                        break;
-                    case 5:
-                        this._gl.activeTexture(this._gl.TEXTURE5);
-                        break;
-                    case 6:
-                        this._gl.activeTexture(this._gl.TEXTURE6);
-                        break;
-                    case 7:
-                        this._gl.activeTexture(this._gl.TEXTURE7);
-                        break;
-                    default:
-                        throw "Texture " + textureIndex + " is out of bounds.";
-                }
-
-                var location = this._gl.getUniformLocation(this._currentProgram.glProgram, locationName);
-
-                if (texture.textureType == "texture2d") {
-                    this._gl.bindTexture(this._gl.TEXTURE_2D, texture.glTexture);
-                    this._gl.uniform1i(location, textureIndex);
-                    var samplerState = this._samplerStates[textureIndex];
-
-                    if (samplerState.wrap != this._currentWrap) {
-                        //this._currentWrap = samplerState.wrap;
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, samplerState.wrap);
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, samplerState.wrap);
-                    }
-
-                    if (samplerState.filter != this._currentFilter) {
-                        //this._currentFilter = samplerState.filter;
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter);
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
-                    }
-
-                    if (samplerState.mipfilter != this._currentMipFilter) {
-                        //this._currentMipFilter = samplerState.mipfilter;
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.mipfilter);
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.mipfilter);
-                    }
-                    //this._gl.bindTexture( this._gl.TEXTURE_2D, null );
-                } else if (texture.textureType == "textureCube") {
-                    this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, texture.glTexture);
-                    this._gl.uniform1i(location, textureIndex);
-                    var samplerState = this._samplerStates[textureIndex];
-
-                    if (samplerState.wrap != this._currentWrap) {
-                        //this._currentWrap = samplerState.wrap;
-                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_S, samplerState.wrap);
-                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_T, samplerState.wrap);
-                    }
-
-                    if (samplerState.filter != this._currentFilter) {
-                        //this._currentFilter = samplerState.filter;
-                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MIN_FILTER, samplerState.filter);
-                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
-                    }
-
-                    if (samplerState.mipfilter != this._currentMipFilter) {
-                        //this._currentMipFilter = samplerState.mipfilter;
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.mipfilter);
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.mipfilter);
-                    }
-                    //this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
-                }
-            };
-
-            ContextGL.prototype.setSamplerStateAt = function (sampler, wrap, filter, mipfilter) {
-                var glWrap = 0;
-                var glFilter = 0;
-                var glMipFilter = 0;
-
-                switch (wrap) {
-                    case away.gl.ContextGLWrapMode.REPEAT:
-                        glWrap = this._gl.REPEAT;
-                        break;
-                    case away.gl.ContextGLWrapMode.CLAMP:
-                        glWrap = this._gl.CLAMP_TO_EDGE;
-                        break;
-                    default:
-                        throw "Wrap is not supported: " + wrap;
-                }
-
-                switch (filter) {
-                    case away.gl.ContextGLTextureFilter.LINEAR:
-                        glFilter = this._gl.LINEAR;
-                        break;
-                    case away.gl.ContextGLTextureFilter.NEAREST:
-                        glFilter = this._gl.NEAREST;
-                        break;
-                    default:
-                        throw "Filter is not supported " + filter;
-                }
-
-                switch (mipfilter) {
-                    case away.gl.ContextGLMipFilter.MIPNEAREST:
-                        glMipFilter = this._gl.NEAREST_MIPMAP_NEAREST;
-                        break;
-                    case away.gl.ContextGLMipFilter.MIPLINEAR:
-                        glMipFilter = this._gl.LINEAR_MIPMAP_LINEAR;
-                        break;
-                    case away.gl.ContextGLMipFilter.MIPNONE:
-                        glMipFilter = this._gl.NONE;
-                        break;
-                    default:
-                        throw "MipFilter is not supported " + mipfilter;
-                }
-
-                if (0 <= sampler && sampler < ContextGL.MAX_SAMPLERS) {
-                    this._samplerStates[sampler].wrap = glWrap;
-                    this._samplerStates[sampler].filter = glFilter;
-                    this._samplerStates[sampler].mipfilter = glMipFilter;
-                } else {
-                    throw "Sampler is out of bounds.";
-                }
-            };
-
-            ContextGL.prototype.setVertexBufferAt = function (index, buffer, bufferOffset, format) {
-                if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
-                if (typeof format === "undefined") { format = null; }
-                var locationName = "va" + index;
-                this.setGLSLVertexBufferAt(locationName, buffer, bufferOffset, format);
-            };
-
-            ContextGL.prototype.setGLSLVertexBufferAt = function (locationName, buffer, bufferOffset, format) {
-                if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
-                if (typeof format === "undefined") { format = null; }
-                //if ( buffer == null )return;
-                var location = this._currentProgram ? this._gl.getAttribLocation(this._currentProgram.glProgram, locationName) : -1;
-                if (!buffer) {
-                    if (location > -1) {
-                        this._gl.disableVertexAttribArray(location);
-                    }
-                    return;
-                }
-
-                this._gl.bindBuffer(this._gl.ARRAY_BUFFER, buffer.glBuffer);
-
-                var dimension;
-                var type = this._gl.FLOAT;
-                var numBytes = 4;
-
-                switch (format) {
-                    case away.gl.ContextGLVertexBufferFormat.BYTES_4:
-                        dimension = 4;
-                        break;
-                    case away.gl.ContextGLVertexBufferFormat.FLOAT_1:
-                        dimension = 1;
-                        break;
-                    case away.gl.ContextGLVertexBufferFormat.FLOAT_2:
-                        dimension = 2;
-                        break;
-                    case away.gl.ContextGLVertexBufferFormat.FLOAT_3:
-                        dimension = 3;
-                        break;
-                    case away.gl.ContextGLVertexBufferFormat.FLOAT_4:
-                        dimension = 4;
-                        break;
-                    default:
-                        throw "Buffer format " + format + " is not supported.";
-                }
-
-                this._gl.enableVertexAttribArray(location);
-                this._gl.vertexAttribPointer(location, dimension, type, false, buffer.data32PerVertex * numBytes, bufferOffset * numBytes);
-            };
-
-            ContextGL.prototype.setRenderToTexture = function (target, enableDepthAndStencil, antiAlias, surfaceSelector) {
-                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = false; }
-                if (typeof antiAlias === "undefined") { antiAlias = 0; }
-                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
-                var frameBuffer = target.frameBuffer;
-                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, frameBuffer);
-
-                if (enableDepthAndStencil) {
-                    this._gl.enable(this._gl.STENCIL_TEST);
-                    this._gl.enable(this._gl.DEPTH_TEST);
-                }
-
-                this._gl.viewport['width'] = frameBuffer.width;
-                this._gl.viewport['height'] = frameBuffer.height;
-
-                this._gl.viewport(0, 0, frameBuffer.width, frameBuffer.height);
-            };
-
-            ContextGL.prototype.setRenderToBackBuffer = function () {
-                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
-            };
-
-            ContextGL.prototype.updateBlendStatus = function () {
-                if (this._blendEnabled) {
-                    this._gl.enable(this._gl.BLEND);
-                    this._gl.blendEquation(this._gl.FUNC_ADD);
-                    this._gl.blendFunc(this._blendSourceFactor, this._blendDestinationFactor);
-                } else {
-                    this._gl.disable(this._gl.BLEND);
-                }
-            };
-            ContextGL.MAX_SAMPLERS = 8;
-
-            ContextGL.modulo = 0;
-            return ContextGL;
-        })();
-        gl.ContextGL = ContextGL;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var AGLSLContextGL = (function (_super) {
-            __extends(AGLSLContextGL, _super);
-            function AGLSLContextGL(canvas) {
-                _super.call(this, canvas);
-            }
-            //@override
-            AGLSLContextGL.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
-                if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
-                //TODO remove special case for WebGL matrix calls?
-                var d = matrix.rawData;
-                if (transposedMatrix) {
-                    this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[4], d[8], d[12]], 1);
-                    this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[1], d[5], d[9], d[13]], 1);
-                    this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[2], d[6], d[10], d[14]], 1);
-                    this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[3], d[7], d[11], d[15]], 1);
-                } else {
-                    this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[1], d[2], d[3]], 1);
-                    this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[4], d[5], d[6], d[7]], 1);
-                    this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[8], d[9], d[10], d[11]], 1);
-                    this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[12], d[13], d[14], d[15]], 1);
-                }
-            };
-            return AGLSLContextGL;
-        })(away.gl.ContextGL);
-        gl.AGLSLContextGL = AGLSLContextGL;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
@@ -15648,14 +18742,13 @@ var away;
 (function (away) {
     (function (geom) {
         var UVTransform = (function () {
-            function UVTransform(materialOwner) {
+            function UVTransform() {
                 this._uvMatrix = new away.geom.Matrix();
-                this._rotationUV = 0;
+                this._rotation = 0;
                 this._scaleU = 1;
                 this._scaleV = 1;
                 this._offsetU = 0;
                 this._offsetV = 0;
-                this._materialOwner = materialOwner;
             }
             Object.defineProperty(UVTransform.prototype, "offsetU", {
                 /**
@@ -15695,18 +18788,18 @@ var away;
             });
 
 
-            Object.defineProperty(UVTransform.prototype, "rotationUV", {
+            Object.defineProperty(UVTransform.prototype, "rotation", {
                 /**
                 *
                 */
                 get: function () {
-                    return this._rotationUV;
+                    return this._rotation;
                 },
                 set: function (value) {
-                    if (value == this._rotationUV)
+                    if (value == this._rotation)
                         return;
 
-                    this._rotationUV = value;
+                    this._rotation = value;
 
                     this._uvMatrixDirty = true;
                 },
@@ -15775,17 +18868,15 @@ var away;
             UVTransform.prototype.updateUVMatrix = function () {
                 this._uvMatrix.identity();
 
-                if (this._rotationUV != 0)
-                    this._uvMatrix.rotate(this._rotationUV);
+                if (this._rotation != 0)
+                    this._uvMatrix.rotate(this._rotation);
 
                 if (this._scaleU != 1 || this._scaleV != 1)
                     this._uvMatrix.scale(this._scaleU, this._scaleV);
 
                 this._uvMatrix.translate(this._offsetU, this._offsetV);
-                this._uvMatrixDirty = false;
 
-                //TODO stop being lazy and provide proper matrix decomposition on the other side
-                this._materialOwner._iSetUVMatrixComponents(this._offsetU, this._offsetV, this._scaleU, this._scaleV, this._rotationUV);
+                this._uvMatrixDirty = false;
             };
             return UVTransform;
         })();
@@ -20026,8 +23117,6 @@ var away;
 
                 this._billboardWidth = material.width;
                 this._billboardHeight = material.height;
-
-                this._uvTransform = new UVTransform(this);
             }
             Object.defineProperty(Billboard.prototype, "animator", {
                 /**
@@ -20101,17 +23190,6 @@ var away;
             });
 
 
-            Object.defineProperty(Billboard.prototype, "sourceEntity", {
-                /**
-                *
-                */
-                get: function () {
-                    return this;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
             Object.defineProperty(Billboard.prototype, "uvTransform", {
                 /**
                 *
@@ -20119,9 +23197,13 @@ var away;
                 get: function () {
                     return this._uvTransform;
                 },
+                set: function (value) {
+                    this._uvTransform = value;
+                },
                 enumerable: true,
                 configurable: true
             });
+
 
             /**
             * @protected
@@ -20137,12 +23219,6 @@ var away;
                 this._pBounds.fromExtremes(0, 0, 0, this._billboardWidth, this._billboardHeight, 0);
 
                 _super.prototype.pUpdateBounds.call(this);
-            };
-
-            /**
-            * @internal
-            */
-            Billboard.prototype._iSetUVMatrixComponents = function (offsetU, offsetV, scaleU, scaleV, rotationUV) {
             };
 
             /**
@@ -20165,9 +23241,25 @@ var away;
                 this._billboardWidth = this._material.width;
                 this._billboardHeight = this._material.height;
 
+                this._pBoundsInvalid = true;
+
                 var len = this._pRenderables.length;
                 for (var i = 0; i < len; i++)
-                    this._pRenderables[i]._iUpdate();
+                    this._pRenderables[i].invalidateVertexData("vertices"); //TODO
+            };
+
+            Billboard.prototype._iCollectRenderables = function (renderer) {
+                // Since this getter is invoked every iteration of the render loop, and
+                // the prefab construct could affect the sub-meshes, the prefab is
+                // validated here to give it a chance to rebuild.
+                if (this._iSourcePrefab)
+                    this._iSourcePrefab._iValidate();
+
+                this._iCollectRenderable(renderer);
+            };
+
+            Billboard.prototype._iCollectRenderable = function (renderer) {
+                renderer.applyBillboard(this);
             };
             return Billboard;
         })(away.base.DisplayObject);
@@ -20431,9 +23523,684 @@ var away;
             Camera.prototype.unproject = function (nX, nY, sZ) {
                 return this.sceneTransform.transformVector(this._projection.unproject(nX, nY, sZ));
             };
+
+            Camera.prototype._iCollectRenderables = function (renderer) {
+                // Since this getter is invoked every iteration of the render loop, and
+                // the prefab construct could affect the sub-meshes, the prefab is
+                // validated here to give it a chance to rebuild.
+                if (this._iSourcePrefab)
+                    this._iSourcePrefab._iValidate();
+
+                this._iCollectRenderable(renderer);
+            };
+
+            Camera.prototype._iCollectRenderable = function (renderer) {
+                //nothing to do here
+            };
             return Camera;
         })(away.containers.DisplayObjectContainer);
         entities.Camera = Camera;
+    })(away.entities || (away.entities = {}));
+    var entities = away.entities;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (entities) {
+        var MaterialEvent = away.events.MaterialEvent;
+        var Matrix3D = away.geom.Matrix3D;
+        var UVTransform = away.geom.UVTransform;
+        var Vector3D = away.geom.Vector3D;
+
+        /**
+        * A Line Segment primitive.
+        */
+        var LineSegment = (function (_super) {
+            __extends(LineSegment, _super);
+            /**
+            * Create a line segment
+            *
+            * @param startPosition Start position of the line segment
+            * @param endPosition Ending position of the line segment
+            * @param thickness Thickness of the line
+            */
+            function LineSegment(material, startPosition, endPosition, thickness) {
+                if (typeof thickness === "undefined") { thickness = 1; }
+                var _this = this;
+                _super.call(this);
+
+                this._pIsEntity = true;
+
+                this.onSizeChangedDelegate = function (event) {
+                    return _this.onSizeChanged(event);
+                };
+
+                this.material = material;
+
+                this._startPosition = startPosition;
+                this._endPosition = endPosition;
+                this._halfThickness = thickness * 0.5;
+            }
+            Object.defineProperty(LineSegment.prototype, "animator", {
+                /**
+                * Defines the animator of the line segment. Act on the line segment's geometry. Defaults to null
+                */
+                get: function () {
+                    return this._animator;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LineSegment.prototype, "assetType", {
+                /**
+                *
+                */
+                get: function () {
+                    return away.library.AssetType.LINE_SEGMENT;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LineSegment.prototype, "startPostion", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._startPosition;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LineSegment.prototype, "startPosition", {
+                set: function (value) {
+                    if (this._startPosition == value)
+                        return;
+
+                    this._startPosition = value;
+
+                    this.notifyRenderableUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LineSegment.prototype, "endPosition", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._endPosition;
+                },
+                set: function (value) {
+                    if (this._endPosition == value)
+                        return;
+
+                    this._endPosition = value;
+
+                    this.notifyRenderableUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LineSegment.prototype, "material", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._material;
+                },
+                set: function (value) {
+                    if (value == this._material)
+                        return;
+
+                    if (this._material) {
+                        this._material.iRemoveOwner(this);
+                        this._material.removeEventListener(MaterialEvent.SIZE_CHANGED, this.onSizeChangedDelegate);
+                    }
+
+                    this._material = value;
+
+                    if (this._material) {
+                        this._material.iAddOwner(this);
+                        this._material.addEventListener(MaterialEvent.SIZE_CHANGED, this.onSizeChangedDelegate);
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LineSegment.prototype, "thickness", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._halfThickness * 2;
+                },
+                set: function (value) {
+                    if (this._halfThickness == value)
+                        return;
+
+                    this._halfThickness = value * 0.5;
+
+                    this.notifyRenderableUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LineSegment.prototype, "uvTransform", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._uvTransform;
+                },
+                set: function (value) {
+                    this._uvTransform = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            LineSegment.prototype.dispose = function () {
+                this._startPosition = null;
+                this._endPosition = null;
+            };
+
+            /**
+            * @protected
+            */
+            LineSegment.prototype.pCreateEntityPartitionNode = function () {
+                return new away.partition.EntityNode(this);
+            };
+
+            /**
+            * @protected
+            */
+            LineSegment.prototype.pUpdateBounds = function () {
+                this._pBounds.fromExtremes(this._startPosition.x, this._startPosition.y, this._startPosition.z, this._endPosition.x, this._endPosition.y, this._endPosition.z);
+
+                _super.prototype.pUpdateBounds.call(this);
+            };
+
+            /**
+            * @private
+            */
+            LineSegment.prototype.onSizeChanged = function (event) {
+                this.notifyRenderableUpdate();
+            };
+
+            /**
+            * @private
+            */
+            LineSegment.prototype.notifyRenderableUpdate = function () {
+                var len = this._pRenderables.length;
+                for (var i = 0; i < len; i++)
+                    this._pRenderables[i].invalidateVertexData("vertices"); //TODO
+            };
+
+            LineSegment.prototype._iCollectRenderables = function (renderer) {
+                // Since this getter is invoked every iteration of the render loop, and
+                // the prefab construct could affect the sub-meshes, the prefab is
+                // validated here to give it a chance to rebuild.
+                if (this._iSourcePrefab)
+                    this._iSourcePrefab._iValidate();
+
+                this._iCollectRenderable(renderer);
+            };
+
+            LineSegment.prototype._iCollectRenderable = function (renderer) {
+                //TODO
+            };
+            return LineSegment;
+        })(away.base.DisplayObject);
+        entities.LineSegment = LineSegment;
+    })(away.entities || (away.entities = {}));
+    var entities = away.entities;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (entities) {
+        var Delegate = away.utils.Delegate;
+
+        var SubGeometryBase = away.base.SubGeometryBase;
+        var SubGeometry = away.base.TriangleSubGeometry;
+
+        var Geometry = away.base.Geometry;
+        var GeometryEvent = away.events.GeometryEvent;
+        var UVTransform = away.geom.UVTransform;
+
+        var EntityNode = away.partition.EntityNode;
+
+        /**
+        * Mesh is an instance of a Geometry, augmenting it with a presence in the scene graph, a material, and an animation
+        * state. It consists out of SubMeshes, which in turn correspond to SubGeometries. SubMeshes allow different parts
+        * of the geometry to be assigned different materials.
+        */
+        var Mesh = (function (_super) {
+            __extends(Mesh, _super);
+            /**
+            * Create a new Mesh object.
+            *
+            * @param geometry                    The geometry used by the mesh that provides it with its shape.
+            * @param material    [optional]        The material with which to render the Mesh.
+            */
+            function Mesh(geometry, material) {
+                if (typeof material === "undefined") { material = null; }
+                _super.call(this);
+                this._castsShadows = true;
+                this._shareAnimationGeometry = true;
+
+                this._pIsEntity = true;
+
+                this._subMeshes = new Array();
+
+                this._onGeometryBoundsInvalidDelegate = Delegate.create(this, this.onGeometryBoundsInvalid);
+                this._onSubGeometryAddedDelegate = Delegate.create(this, this.onSubGeometryAdded);
+                this._onSubGeometryRemovedDelegate = Delegate.create(this, this.onSubGeometryRemoved);
+
+                //this should never happen, but if people insist on trying to create their meshes before they have geometry to fill it, it becomes necessary
+                this.geometry = geometry || new Geometry();
+
+                this.material = material;
+            }
+            Object.defineProperty(Mesh.prototype, "animator", {
+                /**
+                * Defines the animator of the mesh. Act on the mesh's geometry.  Default value is <code>null</code>.
+                */
+                get: function () {
+                    return this._animator;
+                },
+                set: function (value) {
+                    if (this._animator)
+                        this._animator.removeOwner(this);
+
+                    this._animator = value;
+
+                    var len = this._subMeshes.length;
+                    var subMesh;
+
+                    for (var i = 0; i < len; ++i) {
+                        subMesh = this._subMeshes[i];
+
+                        // cause material to be unregistered and registered again to work with the new animation type (if possible)
+                        if (subMesh.material) {
+                            subMesh.material.iRemoveOwner(subMesh);
+                            subMesh.material.iAddOwner(subMesh);
+                        }
+
+                        //invalidate any existing renderables in case they need to pull new geometry
+                        subMesh._iInvalidateRenderableGeometry();
+                    }
+
+                    if (this._animator)
+                        this._animator.addOwner(this);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Mesh.prototype, "assetType", {
+                /**
+                *
+                */
+                get: function () {
+                    return away.library.AssetType.MESH;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Mesh.prototype, "castsShadows", {
+                /**
+                * Indicates whether or not the Mesh can cast shadows. Default value is <code>true</code>.
+                */
+                get: function () {
+                    return this._castsShadows;
+                },
+                set: function (value) {
+                    this._castsShadows = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Mesh.prototype, "geometry", {
+                /**
+                * The geometry used by the mesh that provides it with its shape.
+                */
+                get: function () {
+                    if (this._iSourcePrefab)
+                        this._iSourcePrefab._iValidate();
+
+                    return this._geometry;
+                },
+                set: function (value) {
+                    var i;
+
+                    if (this._geometry) {
+                        this._geometry.removeEventListener(GeometryEvent.BOUNDS_INVALID, this._onGeometryBoundsInvalidDelegate);
+                        this._geometry.removeEventListener(GeometryEvent.SUB_GEOMETRY_ADDED, this._onSubGeometryAddedDelegate);
+                        this._geometry.removeEventListener(GeometryEvent.SUB_GEOMETRY_REMOVED, this._onSubGeometryRemovedDelegate);
+
+                        for (i = 0; i < this._subMeshes.length; ++i)
+                            this._subMeshes[i].dispose();
+
+                        this._subMeshes.length = 0;
+                    }
+
+                    this._geometry = value;
+
+                    if (this._geometry) {
+                        this._geometry.addEventListener(GeometryEvent.BOUNDS_INVALID, this._onGeometryBoundsInvalidDelegate);
+                        this._geometry.addEventListener(GeometryEvent.SUB_GEOMETRY_ADDED, this._onSubGeometryAddedDelegate);
+                        this._geometry.addEventListener(GeometryEvent.SUB_GEOMETRY_REMOVED, this._onSubGeometryRemovedDelegate);
+
+                        var subGeoms = this._geometry.subGeometries;
+
+                        for (i = 0; i < subGeoms.length; ++i)
+                            this.addSubMesh(subGeoms[i]);
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Mesh.prototype, "material", {
+                /**
+                * The material with which to render the Mesh.
+                */
+                get: function () {
+                    return this._material;
+                },
+                set: function (value) {
+                    if (value == this._material)
+                        return;
+
+                    var i;
+                    var len = this._subMeshes.length;
+                    var subMesh;
+
+                    for (i = 0; i < len; i++)
+                        if (this._material && (subMesh = this._subMeshes[i]).material == this._material)
+                            this._material.iRemoveOwner(subMesh);
+
+                    this._material = value;
+
+                    for (i = 0; i < len; i++)
+                        if (this._material && (subMesh = this._subMeshes[i]).material == this._material)
+                            this._material.iAddOwner(subMesh);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Mesh.prototype, "shareAnimationGeometry", {
+                /**
+                * Indicates whether or not the mesh share the same animation geometry.
+                */
+                get: function () {
+                    return this._shareAnimationGeometry;
+                },
+                set: function (value) {
+                    this._shareAnimationGeometry = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Mesh.prototype, "subMeshes", {
+                /**
+                * The SubMeshes out of which the Mesh consists. Every SubMesh can be assigned a material to override the Mesh's
+                * material.
+                */
+                get: function () {
+                    // Since this getter is invoked every iteration of the render loop, and
+                    // the prefab construct could affect the sub-meshes, the prefab is
+                    // validated here to give it a chance to rebuild.
+                    if (this._iSourcePrefab)
+                        this._iSourcePrefab._iValidate();
+
+                    return this._subMeshes;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Mesh.prototype, "uvTransform", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._uvTransform;
+                },
+                set: function (value) {
+                    this._uvTransform = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            *
+            */
+            Mesh.prototype.bakeTransformations = function () {
+                this.geometry.applyTransformation(this._iMatrix3D);
+                this._iMatrix3D.identity();
+            };
+
+            /**
+            * @inheritDoc
+            */
+            Mesh.prototype.dispose = function () {
+                _super.prototype.dispose.call(this);
+
+                this.material = null;
+                this.geometry = null;
+            };
+
+            /**
+            * Disposes mesh including the animator and children. This is a merely a convenience method.
+            * @return
+            */
+            Mesh.prototype.disposeWithAnimatorAndChildren = function () {
+                this.disposeWithChildren();
+
+                if (this._animator)
+                    this._animator.dispose();
+            };
+
+            /**
+            * Clones this Mesh instance along with all it's children, while re-using the same
+            * material, geometry and animation set. The returned result will be a copy of this mesh,
+            * containing copies of all of it's children.
+            *
+            * Properties that are re-used (i.e. not cloned) by the new copy include name,
+            * geometry, and material. Properties that are cloned or created anew for the copy
+            * include subMeshes, children of the mesh, and the animator.
+            *
+            * If you want to copy just the mesh, reusing it's geometry and material while not
+            * cloning it's children, the simplest way is to create a new mesh manually:
+            *
+            * <code>
+            * var clone : Mesh = new Mesh(original.geometry, original.material);
+            * </code>
+            */
+            Mesh.prototype.clone = function () {
+                var clone = new Mesh(this._geometry, this._material);
+
+                clone._iMatrix3D = this._iMatrix3D;
+                clone.pivot = this.pivot;
+                clone.partition = this.partition;
+                clone.bounds = this.bounds.clone();
+
+                clone.name = this.name;
+                clone.castsShadows = this.castsShadows;
+                clone.shareAnimationGeometry = this.shareAnimationGeometry;
+                clone.mouseEnabled = this.mouseEnabled;
+                clone.mouseChildren = this.mouseChildren;
+
+                //this is of course no proper cloning
+                //maybe use this instead?: http://blog.another-d-mention.ro/programming/how-to-clone-duplicate-an-object-in-actionscript-3/
+                clone.extra = this.extra;
+
+                var len = this._subMeshes.length;
+                for (var i = 0; i < len; ++i)
+                    clone._subMeshes[i].material = this._subMeshes[i]._iGetExplicitMaterial();
+
+                len = this.numChildren;
+                var obj;
+
+                for (i = 0; i < len; ++i) {
+                    obj = this.getChildAt(i).clone();
+                    clone.addChild(obj);
+                }
+
+                if (this._animator)
+                    clone.animator = this._animator.clone();
+
+                return clone;
+            };
+
+            /**
+            * //TODO
+            *
+            * @param subGeometry
+            * @returns {SubMeshBase}
+            */
+            Mesh.prototype.getSubMeshFromSubGeometry = function (subGeometry) {
+                return this._subMeshes[this._geometry.subGeometries.indexOf(subGeometry)];
+            };
+
+            /**
+            * @protected
+            */
+            Mesh.prototype.pCreateEntityPartitionNode = function () {
+                return new away.partition.EntityNode(this);
+            };
+
+            /**
+            * //TODO
+            *
+            * @protected
+            */
+            Mesh.prototype.pUpdateBounds = function () {
+                this._pBounds.fromGeometry(this._geometry);
+
+                _super.prototype.pUpdateBounds.call(this);
+            };
+
+            /**
+            * //TODO
+            *
+            * @private
+            */
+            Mesh.prototype.onGeometryBoundsInvalid = function (event) {
+                this.pInvalidateBounds();
+            };
+
+            /**
+            * Called when a SubGeometry was added to the Geometry.
+            *
+            * @private
+            */
+            Mesh.prototype.onSubGeometryAdded = function (event) {
+                this.addSubMesh(event.subGeometry);
+            };
+
+            /**
+            * Called when a SubGeometry was removed from the Geometry.
+            *
+            * @private
+            */
+            Mesh.prototype.onSubGeometryRemoved = function (event) {
+                var subMesh;
+                var subGeom = event.subGeometry;
+                var len = this._subMeshes.length;
+                var i;
+
+                for (i = 0; i < len; ++i) {
+                    subMesh = this._subMeshes[i];
+
+                    if (subMesh.subGeometry == subGeom) {
+                        subMesh.dispose();
+
+                        this._subMeshes.splice(i, 1);
+
+                        break;
+                    }
+                }
+
+                --len;
+                for (; i < len; ++i)
+                    this._subMeshes[i]._iIndex = i;
+            };
+
+            /**
+            * Adds a SubMeshBase wrapping a SubGeometry.
+            *
+            * @param subGeometry
+            */
+            Mesh.prototype.addSubMesh = function (subGeometry) {
+                var SubMeshClass = subGeometry.subMeshClass;
+
+                var subMesh = new SubMeshClass(subGeometry, this, null);
+                var len = this._subMeshes.length;
+
+                subMesh._iIndex = len;
+
+                this._subMeshes[len] = subMesh;
+
+                this.pInvalidateBounds();
+            };
+
+            /**
+            * //TODO
+            *
+            * @param shortestCollisionDistance
+            * @param findClosest
+            * @returns {boolean}
+            *
+            * @internal
+            */
+            Mesh.prototype._iTestCollision = function (shortestCollisionDistance, findClosest) {
+                return this._pPickingCollider.testMeshCollision(this, this._pPickingCollisionVO, shortestCollisionDistance, findClosest);
+            };
+
+            /**
+            *
+            * @param renderer
+            *
+            * @internal
+            */
+            Mesh.prototype._iCollectRenderables = function (renderer) {
+                // Since this getter is invoked every iteration of the render loop, and
+                // the prefab construct could affect the sub-meshes, the prefab is
+                // validated here to give it a chance to rebuild.
+                if (this._iSourcePrefab)
+                    this._iSourcePrefab._iValidate();
+
+                var len = this._subMeshes.length;
+                for (var i = 0; i < len; i++)
+                    this._subMeshes[i]._iCollectRenderable(renderer);
+            };
+            return Mesh;
+        })(away.containers.DisplayObjectContainer);
+        entities.Mesh = Mesh;
     })(away.entities || (away.entities = {}));
     var entities = away.entities;
 })(away || (away = {}));
@@ -20477,6 +24244,141 @@ var away;
             return Shape;
         })(away.base.DisplayObject);
         entities.Shape = Shape;
+    })(away.entities || (away.entities = {}));
+    var entities = away.entities;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (entities) {
+        var UVTransform = away.geom.UVTransform;
+
+        /**
+        * A Skybox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
+        * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
+        * the sky box is always as large as possible without being clipped.
+        */
+        var Skybox = (function (_super) {
+            __extends(Skybox, _super);
+            /**
+            * Create a new Skybox object.
+            *
+            * @param material	The material with which to render the Skybox.
+            */
+            function Skybox(material) {
+                _super.call(this);
+
+                this._pIsEntity = true;
+
+                this.material = material;
+            }
+            Object.defineProperty(Skybox.prototype, "animator", {
+                get: function () {
+                    return this._animator;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Skybox.prototype, "uvTransform", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._uvTransform;
+                },
+                set: function (value) {
+                    this._uvTransform = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Skybox.prototype, "material", {
+                /**
+                * The material with which to render the Skybox.
+                */
+                get: function () {
+                    return this._material;
+                },
+                set: function (value) {
+                    if (value == this._material)
+                        return;
+
+                    if (this._material)
+                        this._material.iRemoveOwner(this);
+
+                    this._material = value;
+
+                    if (this._material)
+                        this._material.iAddOwner(this);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Skybox.prototype, "assetType", {
+                get: function () {
+                    return away.library.AssetType.SKYBOX;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @protected
+            */
+            Skybox.prototype.pInvalidateBounds = function () {
+                // dead end
+            };
+
+            /**
+            * @protected
+            */
+            Skybox.prototype.pCreateEntityPartitionNode = function () {
+                return new away.partition.SkyboxNode(this);
+            };
+
+            /**
+            * @protected
+            */
+            Skybox.prototype.pGetDefaultBoundingVolume = function () {
+                return new away.bounds.NullBounds();
+            };
+
+            /**
+            * @protected
+            */
+            Skybox.prototype.pUpdateBounds = function () {
+                this._pBoundsInvalid = false;
+            };
+
+            Object.defineProperty(Skybox.prototype, "castsShadows", {
+                get: function () {
+                    return false;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Skybox.prototype._iCollectRenderables = function (renderer) {
+                // Since this getter is invoked every iteration of the render loop, and
+                // the prefab construct could affect the sub-meshes, the prefab is
+                // validated here to give it a chance to rebuild.
+                if (this._iSourcePrefab)
+                    this._iSourcePrefab._iValidate();
+
+                this._iCollectRenderable(renderer);
+            };
+
+            Skybox.prototype._iCollectRenderable = function (renderer) {
+                renderer.applySkybox(this);
+            };
+            return Skybox;
+        })(away.base.DisplayObject);
+        entities.Skybox = Skybox;
     })(away.entities || (away.entities = {}));
     var entities = away.entities;
 })(away || (away = {}));
@@ -23985,8 +27887,8 @@ var away;
 
             View.prototype.project = function (point3d) {
                 var v = this._pCamera.project(point3d);
-                v.x = (v.x * this._pRenderer.viewPort.width + this._width * this._pCamera.projection.originX) / 2.0;
-                v.y = (v.y * this._pRenderer.viewPort.height + this._height * this._pCamera.projection.originY) / 2.0;
+                v.x = v.x * this._pRenderer.viewPort.width / 2 + this._width * this._pCamera.projection.originX;
+                v.y = v.y * this._pRenderer.viewPort.height / 2 + this._height * this._pCamera.projection.originY;
 
                 return v;
             };
@@ -24034,11 +27936,19 @@ var away;
 var away;
 (function (away) {
     (function (bounds) {
+        var Geometry = away.base.Geometry;
+        var SubGeometryBase = away.base.SubGeometryBase;
+
+        var Box = away.geom.Box;
+        var Matrix3D = away.geom.Matrix3D;
+        var Plane3D = away.geom.Plane3D;
+        var Vector3D = away.geom.Vector3D;
+
         var BoundingVolumeBase = (function () {
             function BoundingVolumeBase() {
                 this._pAabbPoints = new Array();
                 this._pAabbPointsDirty = true;
-                this._aabb = new away.geom.Box();
+                this._aabb = new Box();
             }
             Object.defineProperty(BoundingVolumeBase.prototype, "aabb", {
                 get: function () {
@@ -24124,6 +28034,62 @@ var away;
                 }
 
                 this.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
+            };
+
+            /**
+            * Updates the bounds to fit a Geometry object.
+            *
+            * @param geometry The Geometry object to be bounded.
+            */
+            BoundingVolumeBase.prototype.fromGeometry = function (geometry) {
+                var i, j, p;
+                var subGeoms = geometry.subGeometries;
+                var subGeom;
+                var boundingPositions;
+                var numSubGeoms = subGeoms.length;
+                var minX, minY, minZ;
+                var maxX, maxY, maxZ;
+
+                if (numSubGeoms > 0) {
+                    i = 0;
+                    subGeom = subGeoms[0];
+                    boundingPositions = subGeom.getBoundingPositions();
+                    minX = maxX = boundingPositions[i];
+                    minY = maxY = boundingPositions[i + 1];
+                    minZ = maxZ = boundingPositions[i + 2];
+
+                    j = numSubGeoms;
+                    while (j--) {
+                        subGeom = subGeoms[j];
+                        boundingPositions = subGeom.getBoundingPositions();
+                        i = boundingPositions.length;
+                        while (i--) {
+                            p = boundingPositions[i];
+                            if (p < minX)
+                                minX = p;
+                            else if (p > maxX)
+                                maxX = p;
+
+                            p = boundingPositions[i + 1];
+
+                            if (p < minY)
+                                minY = p;
+                            else if (p > maxY)
+                                maxY = p;
+
+                            p = boundingPositions[i + 2];
+
+                            if (p < minZ)
+                                minZ = p;
+                            else if (p > maxZ)
+                                maxZ = p;
+                        }
+                    }
+
+                    this.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
+                } else {
+                    this.fromExtremes(0, 0, 0, 0, 0, 0);
+                }
             };
 
             BoundingVolumeBase.prototype.fromSphere = function (center, radius) {
@@ -24987,6 +28953,9 @@ var away;
 var away;
 (function (away) {
     (function (controllers) {
+        var MathConsts = away.geom.MathConsts;
+        var Vector3D = away.geom.Vector3D;
+
         /**
         * Extended camera used to hover round a specified target object.
         *
@@ -25023,6 +28992,7 @@ var away;
                 this._steps = 8;
                 this._yFactor = 2;
                 this._wrapPanAngle = false;
+                this._upAxis = new Vector3D();
 
                 this.distance = distance;
                 this.panAngle = panAngle;
@@ -25308,11 +29278,20 @@ var away;
                 }
 
                 var pos = (this.lookAtObject) ? this.lookAtObject.transform.position : (this.lookAtPosition) ? this.lookAtPosition : this._pOrigin;
-                this.targetObject.x = pos.x + this.distance * Math.sin(this._iCurrentPanAngle * away.geom.MathConsts.DEGREES_TO_RADIANS) * Math.cos(this._iCurrentTiltAngle * away.geom.MathConsts.DEGREES_TO_RADIANS);
-                this.targetObject.y = pos.y + this.distance * Math.sin(this._iCurrentTiltAngle * away.geom.MathConsts.DEGREES_TO_RADIANS) * this.yFactor;
-                this.targetObject.z = pos.z + this.distance * Math.cos(this._iCurrentPanAngle * away.geom.MathConsts.DEGREES_TO_RADIANS) * Math.cos(this._iCurrentTiltAngle * away.geom.MathConsts.DEGREES_TO_RADIANS);
+                this.targetObject.x = pos.x + this.distance * Math.sin(this._iCurrentPanAngle * MathConsts.DEGREES_TO_RADIANS) * Math.cos(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
+                this.targetObject.y = pos.y + this.distance * Math.sin(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS) * this.yFactor;
+                this.targetObject.z = pos.z + this.distance * Math.cos(this._iCurrentPanAngle * MathConsts.DEGREES_TO_RADIANS) * Math.cos(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
 
-                _super.prototype.update.call(this);
+                this._upAxis.x = -Math.sin(this._iCurrentPanAngle * MathConsts.DEGREES_TO_RADIANS) * Math.sin(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
+                this._upAxis.y = Math.cos(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
+                this._upAxis.z = -Math.cos(this._iCurrentPanAngle * MathConsts.DEGREES_TO_RADIANS) * Math.sin(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
+
+                if (this._pTargetObject) {
+                    if (this._pLookAtPosition)
+                        this._pTargetObject.lookAt(this._pLookAtPosition, this._upAxis);
+                    else if (this._pLookAtObject)
+                        this._pTargetObject.lookAt(this._pLookAtObject.scene ? this._pLookAtObject.scenePosition : this._pLookAtObject.transform.position, this._upAxis);
+                }
             };
             return HoverController;
         })(away.controllers.LookAtController);
@@ -25985,6 +29964,106 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (prefabs) {
+        var DisplayObject = away.base.DisplayObject;
+
+        //	import BatchObject				= away.base.BatchObject;
+        var AbstractMethodError = away.errors.AbstractMethodError;
+
+        /**
+        * PrefabBase is an abstract base class for prefabs, which are prebuilt display objects that allow easy cloning and updating
+        */
+        var PrefabBase = (function (_super) {
+            __extends(PrefabBase, _super);
+            //		public _pBatchObjects:Array<BatchObject> = new Array<BatchObject>();
+            /**
+            * Creates a new PrefabBase object.
+            */
+            function PrefabBase() {
+                _super.call(this);
+                this._pObjects = new Array();
+            }
+            /**
+            * Returns a display object generated from this prefab
+            */
+            PrefabBase.prototype.getNewObject = function () {
+                var object = this._pCreateObject();
+
+                this._pObjects.push(object);
+
+                return object;
+            };
+
+            //		public getNewBatchObject():BatchObject
+            //		{
+            //			var object:BatchObject = this._pCreateBatchObject();
+            //
+            //			this._pBatchObjects.push(object);
+            //
+            //			return object;
+            //		}
+            PrefabBase.prototype._pCreateObject = function () {
+                throw new AbstractMethodError();
+            };
+
+            PrefabBase.prototype._iValidate = function () {
+                // To be overridden when necessary
+            };
+            return PrefabBase;
+        })(away.library.NamedAssetBase);
+        prefabs.PrefabBase = PrefabBase;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (animators) {
+        /**
+        * Provides an abstract base class for nodes in an animation blend tree.
+        */
+        var AnimationNodeBase = (function (_super) {
+            __extends(AnimationNodeBase, _super);
+            /**
+            * Creates a new <code>AnimationNodeBase</code> object.
+            */
+            function AnimationNodeBase() {
+                _super.call(this);
+            }
+            Object.defineProperty(AnimationNodeBase.prototype, "stateClass", {
+                get: function () {
+                    return this._pStateClass;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @inheritDoc
+            */
+            AnimationNodeBase.prototype.dispose = function () {
+            };
+
+            Object.defineProperty(AnimationNodeBase.prototype, "assetType", {
+                /**
+                * @inheritDoc
+                */
+                get: function () {
+                    return away.library.AssetType.ANIMATION_NODE;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return AnimationNodeBase;
+        })(away.library.NamedAssetBase);
+        animators.AnimationNodeBase = AnimationNodeBase;
+    })(away.animators || (away.animators = {}));
+    var animators = away.animators;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 ///<reference path="../_definitions.ts"/>
 ///<reference path="../_definitions.ts"/>
 var away;

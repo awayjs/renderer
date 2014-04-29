@@ -26,26 +26,11 @@ module away.render
 		public _pFilter3DRenderer:Filter3DRenderer;
 
 		public _pDepthRender:away.gl.Texture;
-		public _pRttBufferManager:away.managers.RTTBufferManager;
-		public _depthTextureInvalid:boolean = true;
 
-		private _viewPort:away.geom.Rectangle = new away.geom.Rectangle();
-		private _viewportDirty:boolean;
-		private _scissorDirty:boolean;
 
 		private _forceSoftware:boolean;
 		private _profile:string;
 		private _antiAlias:number;
-
-		private _localPos:away.geom.Point = new away.geom.Point();
-		private _globalPos:away.geom.Point = new away.geom.Point();
-		public _pScissorRect:away.geom.Rectangle = new away.geom.Rectangle();
-
-		private _scissorUpdated:away.events.RendererEvent;
-		private _viewPortUpdated:away.events.RendererEvent;
-
-		private _onViewportUpdatedDelegate;
-
 
 		public get antiAlias():number
 		{
@@ -110,108 +95,6 @@ module away.render
 		}
 
 		/**
-		 * A viewPort rectangle equivalent of the StageGL size and position.
-		 */
-		public get viewPort():away.geom.Rectangle
-		{
-			return this._viewPort;
-		}
-
-		/**
-		 * A scissor rectangle equivalent of the view size and position.
-		 */
-		public get scissorRect():away.geom.Rectangle
-		{
-			return this._pScissorRect;
-		}
-
-		/**
-		 *
-		 */
-		public get x():number
-		{
-			return this._localPos.x;
-		}
-
-		public set x(value:number)
-		{
-			if (this.x == value)
-				return;
-
-			this._globalPos.x = this._localPos.x = value;
-
-			this.updateGlobalPos();
-		}
-
-		/**
-		 *
-		 */
-		public get y():number
-		{
-			return this._localPos.y;
-		}
-
-		public set y(value:number)
-		{
-			if (this.y == value)
-				return;
-
-			this._globalPos.y = this._localPos.y = value;
-
-			this.updateGlobalPos();
-		}
-
-		/**
-		 *
-		 */
-		public get width():number
-		{
-			return this._width;
-		}
-
-		public set width(value:number)
-		{
-			if (this._width == value)
-				return;
-
-			this._width = value;
-			this._pScissorRect.width = value;
-
-			if (this._pRttBufferManager)
-				this._pRttBufferManager.viewWidth = value;
-
-			this._pBackBufferInvalid = true;
-			this._depthTextureInvalid = true;
-
-			this.notifyScissorUpdate();
-		}
-
-		/**
-		 *
-		 */
-		public get height():number
-		{
-			return this._height;
-		}
-
-		public set height(value:number)
-		{
-			if (this._height == value)
-				return;
-
-			this._height = value;
-			this._pScissorRect.height = value;
-
-			if (this._pRttBufferManager)
-				this._pRttBufferManager.viewHeight = value;
-
-			this._pBackBufferInvalid = true;
-			this._depthTextureInvalid = true;
-
-			this.notifyScissorUpdate();
-		}
-
-		/**
 		 * Creates a new DefaultRenderer object.
 		 *
 		 * @param antiAlias The amount of anti-aliasing to use.
@@ -220,8 +103,6 @@ module away.render
 		constructor(forceSoftware:boolean = false, profile:string = "baseline")
 		{
 			super();
-
-			this._onViewportUpdatedDelegate = away.utils.Delegate.create(this, this.onViewportUpdated);
 
 			this._pDepthRenderer = new DepthRenderer();
 			this._pDistanceRenderer = new DepthRenderer(false, true);
@@ -247,8 +128,7 @@ module away.render
 
 		public render(entityCollector:away.traverse.ICollector)
 		{
-			this._viewportDirty = false;
-			this._scissorDirty = false;
+			super.render(entityCollector);
 
 			if (!this._pStageGL.recoverFromDisposal()) {//if contextGL has Disposed by the OS,don't render at this frame
 				this._pBackBufferInvalid = true;
@@ -384,7 +264,7 @@ module away.render
 		{
 			var skyBox:away.pool.RenderableBase = entityCollector.skyBox;
 
-			var material:away.materials.MaterialBase = <away.materials.MaterialBase> skyBox.materialOwner.material;
+			var material:away.materials.MaterialBase = skyBox.material;
 
 			var camera:away.entities.Camera = entityCollector.camera;
 
@@ -439,7 +319,7 @@ module away.render
 			var renderable2:away.pool.RenderableBase;
 
 			while (renderable) {
-				this._activeMaterial = <away.materials.MaterialBase> renderable.materialOwner.material;
+				this._activeMaterial = renderable.material;
 
 				this._activeMaterial.iUpdateMaterial(this._pContext);
 
@@ -460,7 +340,7 @@ module away.render
 
 							renderable2 = renderable2.next;
 
-						} while (renderable2 && renderable2.materialOwner.material == this._activeMaterial);
+						} while (renderable2 && renderable2.material == this._activeMaterial);
 
 						this._activeMaterial.iDeactivatePass(j, this._pStageGL);
 
@@ -468,7 +348,7 @@ module away.render
 						do {
 							renderable2 = renderable2.next;
 
-						} while (renderable2 && renderable2.materialOwner.material == this._activeMaterial);
+						} while (renderable2 && renderable2.material == this._activeMaterial);
 					}
 				} while (++j < numPasses);
 
@@ -486,13 +366,7 @@ module away.render
 			this._pDepthRenderer = null;
 			this._pDistanceRenderer = null;
 
-			if (this._pRttBufferManager)
-				this._pRttBufferManager.dispose();
-
-			this._pRttBufferManager = null;
 			this._pDepthRender = null;
-
-			this._pStageGL.removeEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
 			super.dispose();
 		}
@@ -524,7 +398,7 @@ module away.render
 		 */
 		public pRenderSceneDepthToTexture(entityCollector:away.traverse.EntityCollector)
 		{
-			if (this._depthTextureInvalid || !this._pDepthRender)
+			if (this._pDepthTextureInvalid || !this._pDepthRender)
 				this.initDepthTexture(this._pStageGL.contextGL);
 
 			this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
@@ -551,13 +425,7 @@ module away.render
 
 		public iSetStageGL(value:away.base.StageGL)
 		{
-			if (this._pStageGL)
-				this._pStageGL.removeEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-
 			super.iSetStageGL(value);
-
-			if (this._pStageGL)
-				this._pStageGL.addEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
 			this._pDistanceRenderer.iSetStageGL(value);
 			this._pDepthRenderer.iSetStageGL(value);
@@ -568,81 +436,12 @@ module away.render
 		 */
 		private initDepthTexture(context:away.gl.ContextGL):void
 		{
-			this._depthTextureInvalid = false;
+			this._pDepthTextureInvalid = false;
 
 			if (this._pDepthRender)
 				this._pDepthRender.dispose();
 
 			this._pDepthRender = context.createTexture(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight, away.gl.ContextGLTextureFormat.BGRA, true);
-		}
-
-
-		/**
-		 * @private
-		 */
-		private notifyScissorUpdate()
-		{
-			if (this._scissorDirty)
-				return;
-
-			this._scissorDirty = true;
-
-			if (!this._scissorUpdated)
-				this._scissorUpdated = new away.events.RendererEvent(away.events.RendererEvent.SCISSOR_UPDATED);
-
-			this.dispatchEvent(this._scissorUpdated);
-		}
-
-
-		/**
-		 * @private
-		 */
-		private notifyViewportUpdate()
-		{
-			if (this._viewportDirty)
-				return;
-
-			this._viewportDirty = true;
-
-			if (!this._viewPortUpdated)
-				this._viewPortUpdated = new away.events.RendererEvent(away.events.RendererEvent.VIEWPORT_UPDATED);
-
-			this.dispatchEvent(this._viewPortUpdated);
-		}
-
-		/**
-		 *
-		 */
-		public onViewportUpdated(event:away.events.StageGLEvent)
-		{
-			this._viewPort = this._pStageGL.viewPort;
-			//TODO stop firing viewport updated for every stagegl viewport change
-
-			if (this._shareContext) {
-				this._pScissorRect.x = this._globalPos.x - this._pStageGL.x;
-				this._pScissorRect.y = this._globalPos.y - this._pStageGL.y;
-				this.notifyScissorUpdate();
-			}
-
-			this.notifyViewportUpdate();
-		}
-
-		/**
-		 *
-		 */
-		public updateGlobalPos()
-		{
-			if (this._shareContext) {
-				this._pScissorRect.x = this._globalPos.x - this._viewPort.x;
-				this._pScissorRect.y = this._globalPos.y - this._viewPort.y;
-			} else {
-				this._pScissorRect.x = 0;
-				this._pScissorRect.y = 0;
-				this._viewPort.x = this._globalPos.x;
-				this._viewPort.y = this._globalPos.y;
-			}
-
-			this.notifyScissorUpdate();
 		}
 	}
 }

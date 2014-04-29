@@ -2,6 +2,7 @@
 
 module away.parsers
 {
+	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
 	import Mesh								= away.entities.Mesh;
 	import DefaultMaterialManager			= away.materials.DefaultMaterialManager;
 	import BasicSpecularMethod				= away.materials.SpecularBasicMethod;
@@ -372,7 +373,7 @@ module away.parsers
 			var face:FaceData;
 			var numFaces:number = faces.length;
 			var numVerts:number;
-			var subs:Array<away.base.ISubGeometry>;
+			var sub:away.base.TriangleSubGeometry;
 
 			var vertices:Array<number> = new Array<number>();
 			var uvs:Array<number> = new Array<number>();
@@ -396,10 +397,14 @@ module away.parsers
 				}
 			}
 			if (vertices.length > 0) {
-				subs = away.utils.GeometryUtils.fromVectors(vertices, indices, uvs, normals, null, null, null);
-				for (i = 0; i < subs.length; i++) {
-					geometry.addSubGeometry(subs[i]);
-				}
+				sub = new TriangleSubGeometry(true);
+				sub.autoDeriveNormals = normals.length? false : true;
+				sub.updateIndices(indices);
+				sub.updatePositions(vertices);
+				sub.updateVertexNormals(normals);
+				sub.updateUVs(uvs);
+
+				geometry.addSubGeometry(sub);
 			}
 		}
 

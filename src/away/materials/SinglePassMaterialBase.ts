@@ -176,7 +176,6 @@ module away.materials
 		/**
 		 * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
 		 */
-
 		public get ambientMethod():AmbientBasicMethod
 		{
 			return this._pScreenPass.ambientMethod;
@@ -203,7 +202,6 @@ module away.materials
 		/**
 		 * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
 		 */
-
 		public get diffuseMethod():DiffuseBasicMethod
 		{
 			return this._pScreenPass.diffuseMethod;
@@ -217,7 +215,6 @@ module away.materials
 		/**
 		 * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
 		 */
-
 		public get normalMethod():NormalBasicMethod
 		{
 			return this._pScreenPass.normalMethod;
@@ -231,7 +228,6 @@ module away.materials
 		/**
 		 * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
 		 */
-
 		public get specularMethod():SpecularBasicMethod
 		{
 			return this._pScreenPass.specularMethod;
@@ -255,7 +251,6 @@ module away.materials
 		/**
 		 * The number of "effect" methods added to the material.
 		 */
-
 		public get numMethods():number
 		{
 			return this._pScreenPass.numMethods;
@@ -331,7 +326,6 @@ module away.materials
 		 * and the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set
 		 * specular and gloss maps from grayscale images, but correctly authored images are preferred.
 		 */
-
 		public get specularMap():away.textures.Texture2DBase
 		{
 			return this._pScreenPass.specularMethod.texture;
@@ -353,7 +347,6 @@ module away.materials
 		/**
 		 * The glossiness of the material (sharpness of the specular highlight).
 		 */
-
 		public get gloss():number
 		{
 			return this._pScreenPass.specularMethod? this._pScreenPass.specularMethod.gloss : 0;

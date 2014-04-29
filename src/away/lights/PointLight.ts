@@ -124,5 +124,10 @@ module away.lights
 
 			return target;
 		}
+
+		public _iCollectRenderables(renderer:away.render.IRenderer)
+		{
+			//nothing to do here
+		}
 	}
 }

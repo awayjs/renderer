@@ -100,652 +100,6 @@ declare module away.events {
         constructor(type: string);
     }
 }
-declare module away.events {
-    /**
-    * Dispatched to notify changes in a geometry object's state.
-    *
-    * @class away.events.GeometryEvent
-    * @see away3d.core.base.Geometry
-    */
-    class GeometryEvent extends events.Event {
-        /**
-        * Dispatched when a SubGeometry was added from the dispatching Geometry.
-        */
-        static SUB_GEOMETRY_ADDED: string;
-        /**
-        * Dispatched when a SubGeometry was removed from the dispatching Geometry.
-        */
-        static SUB_GEOMETRY_REMOVED: string;
-        static BOUNDS_INVALID: string;
-        private _subGeometry;
-        /**
-        * Create a new GeometryEvent
-        * @param type The event type.
-        * @param subGeometry An optional SubGeometry object that is the subject of this event.
-        */
-        constructor(type: string, subGeometry?: away.base.ISubGeometry);
-        /**
-        * The SubGeometry object that is the subject of this event, if appropriate.
-        */
-        public subGeometry : away.base.ISubGeometry;
-        /**
-        * Clones the event.
-        * @return An exact duplicate of the current object.
-        */
-        public clone(): events.Event;
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.base {
-    /**
-    * SubMesh wraps a SubGeometry as a scene graph instantiation. A SubMesh is owned by a Mesh object.
-    *
-    *
-    * @see away.base.SubGeometry
-    * @see away.entities.Mesh
-    *
-    * @class away.base.SubMesh
-    */
-    class SubMesh extends away.library.NamedAssetBase implements base.IMaterialOwner {
-        public _iMaterial: away.materials.MaterialBase;
-        private _parentMesh;
-        private _subGeometry;
-        private _uvTransform;
-        public _iIndex: number;
-        public animationSubGeometry: away.animators.AnimationSubGeometry;
-        public animatorSubGeometry: away.animators.AnimationSubGeometry;
-        private _renderables;
-        /**
-        * The animator object that provides the state for the SubMesh's animation.
-        */
-        public animator : away.animators.IAnimator;
-        /**
-        * The material used to render the current SubMesh. If set to null, its parent Mesh's material will be used instead.
-        */
-        public material : away.materials.MaterialBase;
-        /**
-        * The scene transform object that transforms from model to world space.
-        */
-        public sceneTransform : away.geom.Matrix3D;
-        /**
-        * The entity that that initially provided the IRenderable to the render pipeline (ie: the owning Mesh object).
-        */
-        public sourceEntity : away.entities.IEntity;
-        /**
-        * The SubGeometry object which provides the geometry data for this SubMesh.
-        */
-        public subGeometry : base.ISubGeometry;
-        /**
-        *
-        */
-        public uvTransform : away.geom.UVTransform;
-        /**
-        * Creates a new SubMesh object
-        * @param subGeometry The SubGeometry object which provides the geometry data for this SubMesh.
-        * @param parentMesh The Mesh object to which this SubMesh belongs.
-        * @param material An optional material used to render this SubMesh.
-        */
-        constructor(subGeometry: base.ISubGeometry, parentMesh: away.entities.Mesh, material?: away.materials.MaterialBase);
-        /**
-        *
-        */
-        public dispose(): void;
-        /**
-        *
-        * @param camera
-        * @returns {away.geom.Matrix3D}
-        */
-        public getRenderSceneTransform(camera: away.entities.Camera): away.geom.Matrix3D;
-        public _iAddRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
-        public _iRemoveRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
-        /**
-        * @internal
-        */
-        public _iSetUVMatrixComponents(offsetU: number, offsetV: number, scaleU: number, scaleV: number, rotationUV: number): void;
-    }
-}
-declare module away.base {
-    class Segment {
-        public _pSegmentsBase: base.SegmentSubGeometry;
-        public _pThickness: number;
-        public _pStart: away.geom.Vector3D;
-        public _pEnd: away.geom.Vector3D;
-        public _pStartR: number;
-        public _pStartG: number;
-        public _pStartB: number;
-        public _pEndR: number;
-        public _pEndG: number;
-        public _pEndB: number;
-        private _index;
-        private _subSetIndex;
-        private _startColor;
-        private _endColor;
-        constructor(start: away.geom.Vector3D, end: away.geom.Vector3D, anchor: away.geom.Vector3D, colorStart?: number, colorEnd?: number, thickness?: number);
-        public updateSegment(start: away.geom.Vector3D, end: away.geom.Vector3D, anchor: away.geom.Vector3D, colorStart?: number, colorEnd?: number, thickness?: number): void;
-        public start : away.geom.Vector3D;
-        public end : away.geom.Vector3D;
-        public thickness : number;
-        public startColor : number;
-        public endColor : number;
-        public dispose(): void;
-        public iIndex : number;
-        public iSubSetIndex : number;
-        public iSegmentsBase : base.SegmentSubGeometry;
-        private update();
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.base {
-    /**
-    * @class away.base.SubGeometryBase
-    */
-    class SubGeometryBase extends away.library.NamedAssetBase {
-        public _parentGeometry: base.Geometry;
-        public _vertexData: number[];
-        public _faceNormalsDirty: boolean;
-        public _faceTangentsDirty: boolean;
-        public _faceTangents: number[];
-        public _indices: number[];
-        public _indexBuffer: away.gl.IndexBuffer[];
-        public _numIndices: number;
-        public _indexBufferContext: away.gl.ContextGL[];
-        public _indicesInvalid: boolean[];
-        public _numTriangles: number;
-        public _autoDeriveVertexNormals: boolean;
-        public _autoDeriveVertexTangents: boolean;
-        public _autoGenerateUVs: boolean;
-        public _useFaceWeights: boolean;
-        public _vertexNormalsDirty: boolean;
-        public _vertexTangentsDirty: boolean;
-        public _faceNormals: number[];
-        public _faceWeights: number[];
-        public _scaleU: number;
-        public _scaleV: number;
-        public _uvsDirty: boolean;
-        constructor();
-        /**
-        * Defines whether a UV buffer should be automatically generated to contain dummy UV coordinates.
-        * Set to true if a geometry lacks UV data but uses a material that requires it, or leave as false
-        * in cases where UV data is explicitly defined or the material does not require UV data.
-        */
-        public autoGenerateDummyUVs : boolean;
-        /**
-        * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
-        * explicitly.
-        */
-        public autoDeriveVertexNormals : boolean;
-        /**
-        * Indicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.
-        */
-        public useFaceWeights : boolean;
-        /**
-        * The total amount of triangles in the SubGeometry.
-        */
-        public numTriangles : number;
-        /**
-        * Retrieves the VertexBuffer object that contains triangle indices.
-        * @param context The ContextGL for which we request the buffer
-        * @return The VertexBuffer object that contains triangle indices.
-        */
-        public getIndexBuffer(stageGL: base.StageGL): away.gl.IndexBuffer;
-        /**
-        * Updates the tangents for each face.
-        */
-        public pUpdateFaceTangents(): void;
-        /**
-        * Updates the normals for each face.
-        */
-        private updateFaceNormals();
-        /**
-        * Updates the vertex normals based on the geometry.
-        */
-        public pUpdateVertexNormals(target: number[]): number[];
-        /**
-        * Updates the vertex tangents based on the geometry.
-        */
-        public pUpdateVertexTangents(target: number[]): number[];
-        public dispose(): void;
-        /**
-        * The raw index data that define the faces.
-        *
-        * @private
-        */
-        public indexData : number[];
-        /**
-        * Updates the face indices of the SubGeometry.
-        * @param indices The face indices to upload.
-        */
-        public updateIndexData(indices: number[]): void;
-        /**
-        * Disposes all buffers in a given vector.
-        * @param buffers The vector of buffers to dispose.
-        */
-        public pDisposeIndexBuffers(buffers: away.gl.IndexBuffer[]): void;
-        /**
-        * Disposes all buffers in a given vector.
-        * @param buffers The vector of buffers to dispose.
-        */
-        public pDisposeVertexBuffers(buffers: away.gl.VertexBuffer[]): void;
-        /**
-        * True if the vertex tangents should be derived from the geometry, false if the vertex normals are set
-        * explicitly.
-        */
-        public autoDeriveVertexTangents : boolean;
-        /**
-        * The raw data of the face normals, in the same order as the faces are listed in the index list.
-        *
-        * @private
-        */
-        public faceNormals : number[];
-        /**
-        * Invalidates all buffers in a vector, causing them the update when they are first requested.
-        * @param buffers The vector of buffers to invalidate.
-        */
-        public pInvalidateBuffers(invalid: boolean[]): void;
-        public UVStride : number;
-        public vertexData : number[];
-        public vertexPositionData : number[];
-        public vertexNormalData : number[];
-        public vertexTangentData : number[];
-        public UVData : number[];
-        public vertexStride : number;
-        public vertexNormalStride : number;
-        public vertexTangentStride : number;
-        public vertexOffset : number;
-        public vertexNormalOffset : number;
-        public vertexTangentOffset : number;
-        public UVOffset : number;
-        public pInvalidateBounds(): void;
-        /**
-        * The Geometry object that 'owns' this SubGeometry object.
-        *
-        * @private
-        */
-        public parentGeometry : base.Geometry;
-        /**
-        * Scales the uv coordinates
-        * @param scaleU The amount by which to scale on the u axis. Default is 1;
-        * @param scaleV The amount by which to scale on the v axis. Default is 1;
-        */
-        public scaleU : number;
-        public scaleV : number;
-        public scaleUV(scaleU?: number, scaleV?: number): void;
-        /**
-        * Scales the geometry.
-        * @param scale The amount by which to scale.
-        */
-        public scale(scale: number): void;
-        public applyTransformation(transform: away.geom.Matrix3D): void;
-        public pUpdateDummyUVs(target: number[]): number[];
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.base {
-    /**
-    * @interface away.base.ISubGeometry
-    */
-    interface ISubGeometry {
-        /**
-        * The total amount of vertices in the SubGeometry.
-        */
-        numVertices: number;
-        /**
-        * The amount of triangles that comprise the IRenderable geometry.
-        */
-        numTriangles: number;
-        /**
-        * The distance between two consecutive vertex, normal or tangent elements
-        * This always applies to vertices, normals and tangents.
-        */
-        vertexStride: number;
-        /**
-        * The distance between two consecutive normal elements
-        * This always applies to vertices, normals and tangents.
-        */
-        vertexNormalStride: number;
-        /**
-        * The distance between two consecutive tangent elements
-        * This always applies to vertices, normals and tangents.
-        */
-        vertexTangentStride: number;
-        /**
-        * The distance between two consecutive UV elements
-        */
-        UVStride: number;
-        /**
-        * The distance between two secondary UV elements
-        */
-        secondaryUVStride: number;
-        /**
-        * Unique identifier for a subgeometry
-        */
-        id: string;
-        /**
-        * Assigns the attribute stream for vertex positions.
-        * @param index The attribute stream index for the vertex shader
-        * @param stageGL The StageGL to assign the stream to
-        */
-        activateVertexBuffer(index: number, stageGL: base.StageGL): any;
-        /**
-        * Assigns the attribute stream for UV coordinates
-        * @param index The attribute stream index for the vertex shader
-        * @param stageGL The StageGL to assign the stream to
-        */
-        activateUVBuffer(index: number, stageGL: base.StageGL): any;
-        /**
-        * Assigns the attribute stream for a secondary set of UV coordinates
-        * @param index The attribute stream index for the vertex shader
-        * @param stageGL The StageGL to assign the stream to
-        */
-        activateSecondaryUVBuffer(index: number, stageGL: base.StageGL): any;
-        /**
-        * Assigns the attribute stream for vertex normals
-        * @param index The attribute stream index for the vertex shader
-        * @param stageGL The StageGL to assign the stream to
-        */
-        activateVertexNormalBuffer(index: number, stageGL: base.StageGL): any;
-        /**
-        * Assigns the attribute stream for vertex tangents
-        * @param index The attribute stream index for the vertex shader
-        * @param stageGL The StageGL to assign the stream to
-        */
-        activateVertexTangentBuffer(index: number, stageGL: base.StageGL): any;
-        /**
-        * Retrieves the IndexBuffer object that contains triangle indices.
-        * @param context The ContextGL for which we request the buffer
-        * @return The VertexBuffer object that contains triangle indices.
-        */
-        getIndexBuffer(stageGL: base.StageGL): away.gl.IndexBuffer;
-        /**
-        * Retrieves the object's vertices as a Number array.
-        */
-        vertexData: number[];
-        /**
-        * Retrieves the object's normals as a Number array.
-        */
-        vertexNormalData: number[];
-        /**
-        * Retrieves the object's tangents as a Number array.
-        */
-        vertexTangentData: number[];
-        /**
-        * The offset into vertexData where the vertices are placed
-        */
-        vertexOffset: number;
-        /**
-        * The offset into vertexNormalData where the normals are placed
-        */
-        vertexNormalOffset: number;
-        /**
-        * The offset into vertexTangentData where the tangents are placed
-        */
-        vertexTangentOffset: number;
-        /**
-        * The offset into UVData vector where the UVs are placed
-        */
-        UVOffset: number;
-        /**
-        * The offset into SecondaryUVData vector where the UVs are placed
-        */
-        secondaryUVOffset: number;
-        /**
-        * Retrieves the object's indices as a uint array.
-        */
-        indexData: number[];
-        /**
-        * Retrieves the object's uvs as a Number array.
-        */
-        UVData: number[];
-        applyTransformation(transform: away.geom.Matrix3D): any;
-        scale(scale: number): any;
-        dispose(): any;
-        clone(): ISubGeometry;
-        scaleU: number;
-        scaleV: number;
-        scaleUV(scaleU: number, scaleV: number): any;
-        parentGeometry: base.Geometry;
-        faceNormals: number[];
-        cloneWithSeperateBuffers(): base.SubGeometry;
-        autoDeriveVertexNormals: boolean;
-        autoDeriveVertexTangents: boolean;
-        fromVectors(vertices: number[], uvs: number[], normals: number[], tangents: number[]): any;
-        vertexPositionData: number[];
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.base {
-    /**
-    * @class away.base.CompactSubGeometry
-    */
-    class CompactSubGeometry extends base.SubGeometryBase implements base.ISubGeometry {
-        public _pVertexDataInvalid: boolean[];
-        private _vertexBuffer;
-        private _bufferContext;
-        public _pNumVertices: number;
-        private _contextIndex;
-        public _pActiveBuffer: away.gl.VertexBuffer;
-        private _activeContext;
-        public _pActiveDataInvalid: boolean;
-        private _isolatedVertexPositionData;
-        private _isolatedVertexPositionDataDirty;
-        constructor();
-        public numVertices : number;
-        /**
-        * Updates the vertex data. All vertex properties are contained in a single Vector, and the order is as follows:
-        * 0 - 2: vertex position X, Y, Z
-        * 3 - 5: normal X, Y, Z
-        * 6 - 8: tangent X, Y, Z
-        * 9 - 10: U V
-        * 11 - 12: Secondary U V
-        */
-        public updateData(data: number[]): void;
-        public activateVertexBuffer(index: number, stageGL: base.StageGL): void;
-        public activateUVBuffer(index: number, stageGL: base.StageGL): void;
-        public activateSecondaryUVBuffer(index: number, stageGL: base.StageGL): void;
-        public pUploadData(contextIndex: number): void;
-        public activateVertexNormalBuffer(index: number, stageGL: base.StageGL): void;
-        public activateVertexTangentBuffer(index: number, stageGL: base.StageGL): void;
-        public pCreateBuffer(contextIndex: number, context: away.gl.ContextGL): void;
-        public pUpdateActiveBuffer(contextIndex: number): void;
-        public vertexData : number[];
-        public pUpdateVertexNormals(target: number[]): number[];
-        public pUpdateVertexTangents(target: number[]): number[];
-        public vertexNormalData : number[];
-        public vertexTangentData : number[];
-        public UVData : number[];
-        public applyTransformation(transform: away.geom.Matrix3D): void;
-        public scale(scale: number): void;
-        public clone(): base.ISubGeometry;
-        public scaleUV(scaleU?: number, scaleV?: number): void;
-        public vertexStride : number;
-        public vertexNormalStride : number;
-        public vertexTangentStride : number;
-        public UVStride : number;
-        public secondaryUVStride : number;
-        public vertexOffset : number;
-        public vertexNormalOffset : number;
-        public vertexTangentOffset : number;
-        public UVOffset : number;
-        public secondaryUVOffset : number;
-        public dispose(): void;
-        public pDisposeVertexBuffers(buffers: away.gl.VertexBuffer[]): void;
-        public pInvalidateBuffers(invalid: boolean[]): void;
-        public cloneWithSeperateBuffers(): base.SubGeometry;
-        public vertexPositionData : number[];
-        public strippedUVData : number[];
-        /**
-        * Isolate and returns a Vector.Number of a specific buffer type
-        *
-        * - stripBuffer(0, 3), return only the vertices
-        * - stripBuffer(3, 3): return only the normals
-        * - stripBuffer(6, 3): return only the tangents
-        * - stripBuffer(9, 2): return only the uv's
-        * - stripBuffer(11, 2): return only the secondary uv's
-        */
-        public stripBuffer(offset: number, numEntries: number): number[];
-        public fromVectors(verts: number[], uvs: number[], normals: number[], tangents: number[]): void;
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.base {
-    /**
-    * SkinnedSubGeometry provides a SubGeometry extension that contains data needed to skin vertices. In particular,
-    * it provides joint indices and weights.
-    * Important! Joint indices need to be pre-multiplied by 3, since they index the matrix array (and each matrix has 3 float4 elements)
-    *
-    * @class away.base.SkinnedSubGeometry
-    *
-    */
-    class SkinnedSubGeometry extends base.CompactSubGeometry {
-        private _bufferFormat;
-        private _jointWeightsData;
-        private _jointIndexData;
-        private _animatedData;
-        private _jointWeightsBuffer;
-        private _jointIndexBuffer;
-        private _jointWeightsInvalid;
-        private _jointIndicesInvalid;
-        private _jointWeightContext;
-        private _jointIndexContext;
-        private _jointsPerVertex;
-        private _condensedJointIndexData;
-        private _condensedIndexLookUp;
-        private _numCondensedJoints;
-        /**
-        * Creates a new SkinnedSubGeometry object.
-        * @param jointsPerVertex The amount of joints that can be assigned per vertex.
-        */
-        constructor(jointsPerVertex: number);
-        /**
-        * If indices have been condensed, this will contain the original index for each condensed index.
-        */
-        public condensedIndexLookUp : number[];
-        /**
-        * The amount of joints used when joint indices have been condensed.
-        */
-        public numCondensedJoints : number;
-        /**
-        * The animated vertex positions when set explicitly if the skinning transformations couldn't be performed on GPU.
-        */
-        public animatedData : number[];
-        public updateAnimatedData(value: number[]): void;
-        /**
-        * Assigns the attribute stream for joint weights
-        * @param index The attribute stream index for the vertex shader
-        * @param stageGL The StageGL to assign the stream to
-        */
-        public activateJointWeightsBuffer(index: number, stageGL: base.StageGL): void;
-        /**
-        * Assigns the attribute stream for joint indices
-        * @param index The attribute stream index for the vertex shader
-        * @param stageGL The StageGL to assign the stream to
-        */
-        public activateJointIndexBuffer(index: number, stageGL: base.StageGL): void;
-        public pUploadData(contextIndex: number): void;
-        /**
-        * Clones the current object.
-        * @return An exact duplicate of the current object.
-        */
-        public clone(): base.ISubGeometry;
-        /**
-        * Cleans up any resources used by this object.
-        */
-        public dispose(): void;
-        /**
-        */
-        public iCondenseIndexData(): void;
-        /**
-        * The raw joint weights data.
-        */
-        public iJointWeightsData : number[];
-        public iUpdateJointWeightsData(value: number[]): void;
-        /**
-        * The raw joint index data.
-        */
-        public iJointIndexData : number[];
-        public iUpdateJointIndexData(value: number[]): void;
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.base {
-    /**
-    *
-    * Geometry is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
-    * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
-    * A Geometry object is assigned to a Mesh, a scene graph occurence of the geometry, which in turn assigns
-    * the SubGeometries to its respective SubMesh objects.
-    *
-    *
-    *
-    * @see away.core.base.SubGeometry
-    * @see away.entities.Mesh
-    *
-    * @class away.base.Geometry
-    */
-    class Geometry extends away.library.NamedAssetBase implements away.library.IAsset {
-        private _subGeometries;
-        public assetType : string;
-        /**
-        * A collection of SubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.
-        */
-        public subGeometries : base.ISubGeometry[];
-        public getSubGeometries(): base.ISubGeometry[];
-        /**
-        * Creates a new Geometry object.
-        */
-        constructor();
-        public applyTransformation(transform: away.geom.Matrix3D): void;
-        /**
-        * Adds a new SubGeometry object to the list.
-        * @param subGeometry The SubGeometry object to be added.
-        */
-        public addSubGeometry(subGeometry: base.ISubGeometry): void;
-        /**
-        * Removes a new SubGeometry object from the list.
-        * @param subGeometry The SubGeometry object to be removed.
-        */
-        public removeSubGeometry(subGeometry: base.ISubGeometry): void;
-        /**
-        * Clones the geometry.
-        * @return An exact duplicate of the current Geometry object.
-        */
-        public clone(): Geometry;
-        /**
-        * Scales the geometry.
-        * @param scale The amount by which to scale.
-        */
-        public scale(scale: number): void;
-        /**
-        * Clears all resources used by the Geometry object, including SubGeometries.
-        */
-        public dispose(): void;
-        /**
-        * Scales the uv coordinates (tiling)
-        * @param scaleU The amount by which to scale on the u axis. Default is 1;
-        * @param scaleV The amount by which to scale on the v axis. Default is 1;
-        */
-        public scaleUV(scaleU?: number, scaleV?: number): void;
-        /**
-        * Updates the SubGeometries so all vertex data is represented in different buffers.
-        * Use this for compatibility with Pixel Bender and PBPickingCollider
-        */
-        public convertToSeparateBuffers(): void;
-        public iValidate(): void;
-        public iInvalidateBounds(subGeom: base.ISubGeometry): void;
-    }
-}
 /**
 * @module away.base
 */
@@ -759,326 +113,6 @@ declare module away.base {
     }
 }
 /**
-* @module away.base
-*/
-declare module away.base {
-    /**
-    * The SubGeometry class is a collections of geometric data that describes a triangle mesh. It is owned by a
-    * Geometry instance, and wrapped by a SubMesh in the scene graph.
-    * Several SubGeometries are grouped so they can be rendered with different materials, but still represent a single
-    * object.
-    *
-    * @see away.base.Geometry
-    * @see away.base.SubMesh
-    *
-    * @class away.base.SubGeometry
-    */
-    class SubGeometry extends base.SubGeometryBase implements base.ISubGeometry {
-        private _uvs;
-        private _secondaryUvs;
-        private _vertexNormals;
-        private _vertexTangents;
-        private _verticesInvalid;
-        private _uvsInvalid;
-        private _secondaryUvsInvalid;
-        private _normalsInvalid;
-        private _tangentsInvalid;
-        private _vertexBuffer;
-        private _uvBuffer;
-        private _secondaryUvBuffer;
-        private _vertexNormalBuffer;
-        private _vertexTangentBuffer;
-        private _vertexBufferContext;
-        private _uvBufferContext;
-        private _secondaryUvBufferContext;
-        private _vertexNormalBufferContext;
-        private _vertexTangentBufferContext;
-        private _numVertices;
-        /**
-        * Creates a new SubGeometry object.
-        */
-        constructor();
-        /**
-        * The total amount of vertices in the SubGeometry.
-        */
-        public numVertices : number;
-        /**
-        * @inheritDoc
-        */
-        public activateVertexBuffer(index: number, stageGL: base.StageGL): void;
-        /**
-        * @inheritDoc
-        */
-        public activateUVBuffer(index: number, stageGL: base.StageGL): void;
-        /**
-        * @inheritDoc
-        */
-        public activateSecondaryUVBuffer(index: number, stageGL: base.StageGL): void;
-        /**
-        * Retrieves the VertexBuffer object that contains vertex normals.
-        * @param context The ContextGL for which we request the buffer
-        * @return The VertexBuffer object that contains vertex normals.
-        */
-        public activateVertexNormalBuffer(index: number, stageGL: base.StageGL): void;
-        /**
-        * Retrieves the VertexBuffer object that contains vertex tangents.
-        * @param context The ContextGL for which we request the buffer
-        * @return The VertexBuffer object that contains vertex tangents.
-        */
-        public activateVertexTangentBuffer(index: number, stageGL: base.StageGL): void;
-        public applyTransformation(transform: away.geom.Matrix3D): void;
-        /**
-        * Clones the current object
-        * @return An exact duplicate of the current object.
-        */
-        public clone(): base.ISubGeometry;
-        /**
-        * @inheritDoc
-        */
-        public scale(scale: number): void;
-        /**
-        * @inheritDoc
-        */
-        public scaleUV(scaleU?: number, scaleV?: number): void;
-        /**
-        * Clears all resources used by the SubGeometry object.
-        */
-        public dispose(): void;
-        public pDisposeAllVertexBuffers(): void;
-        /**
-        * The raw vertex position data.
-        */
-        public vertexData : number[];
-        public vertexPositionData : number[];
-        /**
-        * Updates the vertex data of the SubGeometry.
-        * @param vertices The new vertex data to upload.
-        */
-        public updateVertexData(vertices: number[]): void;
-        /**
-        * The raw texture coordinate data.
-        */
-        public UVData : number[];
-        public secondaryUVData : number[];
-        /**
-        * Updates the uv coordinates of the SubGeometry.
-        * @param uvs The uv coordinates to upload.
-        */
-        public updateUVData(uvs: number[]): void;
-        public updateSecondaryUVData(uvs: number[]): void;
-        /**
-        * The raw vertex normal data.
-        */
-        public vertexNormalData : number[];
-        /**
-        * Updates the vertex normals of the SubGeometry. When updating the vertex normals like this,
-        * autoDeriveVertexNormals will be set to false and vertex normals will no longer be calculated automatically.
-        * @param vertexNormals The vertex normals to upload.
-        */
-        public updateVertexNormalData(vertexNormals: number[]): void;
-        /**
-        * The raw vertex tangent data.
-        *
-        * @private
-        */
-        public vertexTangentData : number[];
-        /**
-        * Updates the vertex tangents of the SubGeometry. When updating the vertex tangents like this,
-        * autoDeriveVertexTangents will be set to false and vertex tangents will no longer be calculated automatically.
-        * @param vertexTangents The vertex tangents to upload.
-        */
-        public updateVertexTangentData(vertexTangents: number[]): void;
-        public fromVectors(vertices: number[], uvs: number[], normals: number[], tangents: number[]): void;
-        public pUpdateVertexNormals(target: number[]): number[];
-        public pUpdateVertexTangents(target: number[]): number[];
-        public pUpdateDummyUVs(target: number[]): number[];
-        public pDisposeForStageGL(stageGL: base.StageGL): void;
-        public vertexStride : number;
-        public vertexTangentStride : number;
-        public vertexNormalStride : number;
-        public UVStride : number;
-        public secondaryUVStride : number;
-        public vertexOffset : number;
-        public vertexNormalOffset : number;
-        public vertexTangentOffset : number;
-        public UVOffset : number;
-        public secondaryUVOffset : number;
-        public cloneWithSeperateBuffers(): SubGeometry;
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.base {
-    /**
-    * The SubGeometry class is a collections of geometric data that describes a triangle mesh. It is owned by a
-    * Geometry instance, and wrapped by a SubMesh in the scene graph.
-    * Several SubGeometries are grouped so they can be rendered with different materials, but still represent a single
-    * object.
-    *
-    * @see away.base.Geometry
-    * @see away.base.SubMesh
-    *
-    * @class away.base.SubGeometry
-    */
-    class SegmentSubGeometry extends base.SubGeometryBase implements base.ISubGeometry {
-        private _activeSubSet;
-        private _verticesInvalid;
-        private _vertexBuffer;
-        private _vertexBufferContext;
-        private _numVertices;
-        private LIMIT;
-        private _subSets;
-        private _subSetCount;
-        public _pSegments: Object;
-        private _indexSegments;
-        private _hasData;
-        public hasData : boolean;
-        public numTriangles : number;
-        /**
-        *
-        */
-        public segmentCount : number;
-        /**
-        *
-        */
-        public iSubSetCount : number;
-        /**
-        * Creates a new SubGeometry object.
-        */
-        constructor();
-        /**
-        * The total amount of vertices in the SubGeometry.
-        */
-        public numVertices : number;
-        /**
-        * @inheritDoc
-        */
-        public activateVertexBuffer(index: number, stageGL: base.StageGL): void;
-        /**
-        * @inheritDoc
-        */
-        public activateUVBuffer(index: number, stageGL: base.StageGL): void;
-        /**
-        * @inheritDoc
-        */
-        public activateSecondaryUVBuffer(index: number, stageGL: base.StageGL): void;
-        /**
-        * Retrieves the VertexBuffer object that contains vertex normals.
-        * @param context The ContextGL for which we request the buffer
-        * @return The VertexBuffer object that contains vertex normals.
-        */
-        public activateVertexNormalBuffer(index: number, stageGL: base.StageGL): void;
-        /**
-        * Retrieves the VertexBuffer object that contains vertex tangents.
-        * @param context The ContextGL for which we request the buffer
-        * @return The VertexBuffer object that contains vertex tangents.
-        */
-        public activateVertexTangentBuffer(index: number, stageGL: base.StageGL): void;
-        public getIndexBuffer(stageGL: base.StageGL): away.gl.IndexBuffer;
-        public applyTransformation(transform: away.geom.Matrix3D): void;
-        /**
-        * Clones the current object
-        * @return An exact duplicate of the current object.
-        */
-        public clone(): base.ISubGeometry;
-        /**
-        * @inheritDoc
-        */
-        public scale(scale: number): void;
-        /**
-        * Clears all resources used by the SubGeometry object.
-        */
-        public dispose(): void;
-        public pDisposeAllVertexBuffers(): void;
-        /**
-        * The raw vertex position data.
-        */
-        public vertexData : number[];
-        public vertexPositionData : number[];
-        /**
-        * Updates the vertex data of the SubGeometry.
-        * @param vertices The new vertex data to upload.
-        */
-        public updateVertexData(vertices: number[]): void;
-        public fromVectors(vertices: number[], uvs: number[], normals: number[], tangents: number[]): void;
-        public pDisposeForStageGL(stageGL: base.StageGL): void;
-        public vertexStride : number;
-        public vertexTangentStride : number;
-        public vertexNormalStride : number;
-        public UVStride : number;
-        public secondaryUVStride : number;
-        public vertexOffset : number;
-        public vertexNormalOffset : number;
-        public vertexTangentOffset : number;
-        public UVOffset : number;
-        public secondaryUVOffset : number;
-        public cloneWithSeperateBuffers(): base.SubGeometry;
-        /**
-        * //TODO
-        *
-        * @param segment
-        */
-        public addSegment(segment: base.Segment): void;
-        /**
-        * //TODO
-        *
-        * @param index
-        * @returns {*}
-        */
-        public getSegment(index: number): base.Segment;
-        /**
-        * //TODO
-        *
-        * @param index
-        * @param dispose
-        */
-        public removeSegmentByIndex(index: number, dispose?: boolean): void;
-        /**
-        * //TODO
-        */
-        public removeAllSegments(): void;
-        /**
-        * //TODO
-        *
-        * @param segment
-        * @param dispose
-        */
-        public removeSegment(segment: base.Segment, dispose?: boolean): void;
-        /**
-        * //TODO
-        *
-        * @protected
-        */
-        public updateBounds(bounds: away.bounds.BoundingVolumeBase): void;
-        public _iSetColor(color: number): void;
-        public _iSetThickness(thickness: number): void;
-        /**
-        * //TODO
-        *
-        * @param segment
-        *
-        * @internal
-        */
-        public iUpdateSegment(segment: base.Segment): void;
-        /**
-        * //TODO
-        * @returns {SubSet}
-        *
-        * @private
-        */
-        private addSubSet();
-        /**
-        * //TODO
-        * @param subSetIndex
-        * @param index
-        *
-        * @private
-        */
-        private reOrderIndices(subSetIndex, index);
-    }
-}
-/**
 * @module away.pool
 */
 declare module away.pool {
@@ -1086,10 +120,34 @@ declare module away.pool {
     * @class away.pool.RenderableListItem
     */
     class RenderableBase implements pool.IRenderable {
+        private _onIndicesUpdatedDelegate;
+        private _onVerticesUpdatedDelegate;
+        private _subGeometry;
+        private _geometryDirty;
+        private _indexData;
+        private _indexDataDirty;
+        private _vertexData;
+        public _pVertexDataDirty: Object;
+        private _vertexOffset;
+        private _level;
+        private _indexOffset;
+        private _overflow;
+        private _numTriangles;
+        private _concatenateArrays;
+        public JOINT_INDEX_FORMAT: string;
+        public JOINT_WEIGHT_FORMAT: string;
         /**
         *
         */
-        private _pool;
+        public _pool: pool.RenderablePool;
+        /**
+        *
+        */
+        public overflow : RenderableBase;
+        /**
+        *
+        */
+        public numTriangles : number;
         /**
         *
         */
@@ -1125,11 +183,19 @@ declare module away.pool {
         /**
         *
         */
-        public subGeometry: away.base.ISubGeometry;
+        public material: away.materials.MaterialBase;
         /**
         *
         */
-        public animationSubGeometry: away.animators.AnimationSubGeometry;
+        public getIndexData(): away.gl.IndexData;
+        /**
+        *
+        */
+        public getVertexData(dataType: string): away.gl.VertexData;
+        /**
+        *
+        */
+        public getVertexOffset(dataType: string): number;
         /**
         *
         * @param sourceEntity
@@ -1137,12 +203,88 @@ declare module away.pool {
         * @param subGeometry
         * @param animationSubGeometry
         */
-        constructor(pool: pool.RenderablePool, sourceEntity: away.entities.IEntity, materialOwner: away.base.IMaterialOwner, subGeometry: away.base.ISubGeometry, animationSubGeometry: away.animators.AnimationSubGeometry);
+        constructor(pool: pool.RenderablePool, sourceEntity: away.entities.IEntity, materialOwner: away.base.IMaterialOwner, level?: number, indexOffset?: number);
         public dispose(): void;
+        public invalidateGeometry(): void;
         /**
         *
         */
-        public _iUpdate(): void;
+        public invalidateIndexData(): void;
+        /**
+        * //TODO
+        *
+        * @param dataType
+        */
+        public invalidateVertexData(dataType: string): void;
+        public _pGetSubGeometry(): away.base.SubGeometryBase;
+        /**
+        * //TODO
+        *
+        * @param subGeometry
+        * @param offset
+        * @internal
+        */
+        public _iFillIndexData(subGeometry: away.base.SubGeometryBase, indexOffset: number): void;
+        /**
+        * //TODO
+        *
+        * @param subGeometry
+        * @param dataType
+        * @internal
+        */
+        public _iFillVertexData(subGeometry: away.base.SubGeometryBase, dataType: string): void;
+        public _pGetOverflowRenderable(pool: pool.RenderablePool, materialOwner: away.base.IMaterialOwner, level: number, indexOffset: number): RenderableBase;
+        /**
+        * //TODO
+        *
+        * @param subGeometry
+        * @param offset
+        * @private
+        */
+        private _constructIndices(subGeometry, offset);
+        /**
+        * //TODO
+        *
+        * @param subGeometry
+        * @param dataType
+        * @param originalIndices
+        * @param indexMappings
+        * @private
+        */
+        private _constructVertices(subGeometry, dataType, originalIndices?, indexMappings?);
+        /**
+        * //TODO
+        *
+        * @private
+        */
+        private _updateGeometry();
+        /**
+        * //TODO
+        *
+        * @private
+        */
+        private _updateIndexData();
+        /**
+        * //TODO
+        *
+        * @param dataType
+        * @private
+        */
+        private _updateVertexData(dataType);
+        /**
+        * //TODO
+        *
+        * @param event
+        * @private
+        */
+        private _onIndicesUpdated(event);
+        /**
+        * //TODO
+        *
+        * @param event
+        * @private
+        */
+        private _onVerticesUpdated(event);
     }
 }
 /**
@@ -1154,14 +296,27 @@ declare module away.pool {
     */
     class BillboardRenderable extends pool.RenderableBase {
         private static _materialGeometry;
-        static id: string;
-        private _billboard;
-        constructor(pool: pool.RenderablePool, billboard: away.entities.Billboard);
         /**
         *
         */
-        public _iUpdate(): void;
-        private getGeometry(material);
+        static id: string;
+        /**
+        *
+        */
+        private _billboard;
+        /**
+        * //TODO
+        *
+        * @param pool
+        * @param billboard
+        */
+        constructor(pool: pool.RenderablePool, billboard: away.entities.Billboard);
+        /**
+        * //TODO
+        *
+        * @returns {away.base.TriangleSubGeometry}
+        */
+        public _pGetSubGeometry(): away.base.SubGeometryBase;
     }
 }
 /**
@@ -1169,11 +324,44 @@ declare module away.pool {
 */
 declare module away.pool {
     /**
-    * @class away.pool.RenderableListItem
+    * @class away.pool.LineSubMeshRenderable
     */
-    class SegmentSetRenderable extends pool.RenderableBase {
+    class LineSubMeshRenderable extends pool.RenderableBase {
+        /**
+        *
+        */
         static id: string;
-        constructor(pool: pool.RenderablePool, segmentSet: away.entities.SegmentSet);
+        /**
+        *
+        */
+        public subMesh: away.base.LineSubMesh;
+        /**
+        * //TODO
+        *
+        * @param pool
+        * @param subMesh
+        * @param level
+        * @param dataOffset
+        */
+        constructor(pool: pool.RenderablePool, subMesh: away.base.LineSubMesh, level?: number, indexOffset?: number);
+        /**
+        * //TODO
+        *
+        * @returns {base.LineSubGeometry}
+        * @protected
+        */
+        public _pGetSubGeometry(): away.base.LineSubGeometry;
+        /**
+        * //TODO
+        *
+        * @param pool
+        * @param materialOwner
+        * @param level
+        * @param indexOffset
+        * @returns {away.pool.LineSubMeshRenderable}
+        * @private
+        */
+        public _pGetOverflowRenderable(pool: pool.RenderablePool, materialOwner: away.base.IMaterialOwner, level: number, indexOffset: number): pool.RenderableBase;
     }
 }
 /**
@@ -1181,12 +369,43 @@ declare module away.pool {
 */
 declare module away.pool {
     /**
-    * @class away.pool.SubMeshRenderable
+    * @class away.pool.TriangleSubMeshRenderable
     */
-    class SubMeshRenderable extends pool.RenderableBase {
+    class TriangleSubMeshRenderable extends pool.RenderableBase {
+        /**
+        *
+        */
         static id: string;
-        public subMesh: away.base.SubMesh;
-        constructor(pool: pool.RenderablePool, subMesh: away.base.SubMesh);
+        /**
+        *
+        */
+        public subMesh: away.base.TriangleSubMesh;
+        /**
+        * //TODO
+        *
+        * @param pool
+        * @param subMesh
+        * @param level
+        * @param indexOffset
+        */
+        constructor(pool: pool.RenderablePool, subMesh: away.base.TriangleSubMesh, level?: number, indexOffset?: number);
+        /**
+        *
+        * @returns {away.base.SubGeometryBase}
+        * @protected
+        */
+        public _pGetSubGeometry(): away.base.TriangleSubGeometry;
+        /**
+        * //TODO
+        *
+        * @param pool
+        * @param materialOwner
+        * @param level
+        * @param indexOffset
+        * @returns {away.pool.TriangleSubMeshRenderable}
+        * @protected
+        */
+        public _pGetOverflowRenderable(pool: pool.RenderablePool, materialOwner: away.base.IMaterialOwner, level: number, indexOffset: number): pool.RenderableBase;
     }
 }
 /**
@@ -1197,9 +416,28 @@ declare module away.pool {
     * @class away.pool.SkyboxRenderable
     */
     class SkyboxRenderable extends pool.RenderableBase {
+        /**
+        *
+        */
         static id: string;
+        /**
+        *
+        */
         private static _geometry;
+        /**
+        * //TODO
+        *
+        * @param pool
+        * @param skybox
+        */
         constructor(pool: pool.RenderablePool, skybox: away.entities.Skybox);
+        /**
+        * //TODO
+        *
+        * @returns {away.base.TriangleSubGeometry}
+        * @private
+        */
+        public _pGetSubGeometry(): away.base.TriangleSubGeometry;
     }
 }
 /**
@@ -1349,31 +587,6 @@ declare module away.partition {
         * @returns {boolean}
         */
         public isCastingShadow(): boolean;
-    }
-}
-/**
-* @module away.partition
-*/
-declare module away.partition {
-    /**
-    * SkyboxNode is a space partitioning leaf node that contains a Skybox object.
-    *
-    * @class away.partition.SkyboxNode
-    */
-    class SkyboxNode extends partition.EntityNode {
-        private _skyBox;
-        /**
-        * Creates a new SkyboxNode object.
-        * @param skyBox The Skybox to be contained in the node.
-        */
-        constructor(skyBox: away.entities.IEntity);
-        /**
-        *
-        * @param planes
-        * @param numPlanes
-        * @returns {boolean}
-        */
-        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
     }
 }
 /**
@@ -1574,15 +787,20 @@ declare module away.render {
     */
     class RendererBase extends away.events.EventDispatcher {
         private _billboardRenderablePool;
-        private _segmentSetRenderablePool;
         private _skyboxRenderablePool;
-        private _subMeshRenderablePool;
+        private _triangleSubMeshRenderablePool;
+        private _lineSubMeshRenderablePool;
         public _pContext: away.gl.ContextGL;
         public _pStageGL: away.base.StageGL;
         public _pCamera: away.entities.Camera;
         public _iEntryPoint: away.geom.Vector3D;
         public _pCameraForward: away.geom.Vector3D;
+        public _pRttBufferManager: away.managers.RTTBufferManager;
+        private _viewPort;
+        private _viewportDirty;
+        private _scissorDirty;
         public _pBackBufferInvalid: boolean;
+        public _pDepthTextureInvalid: boolean;
         public _depthPrepass: boolean;
         private _backgroundR;
         private _backgroundG;
@@ -1599,7 +817,13 @@ declare module away.render {
         private _snapshotBitmapData;
         private _snapshotRequired;
         public _pRttViewProjectionMatrix: away.geom.Matrix3D;
+        private _localPos;
+        private _globalPos;
+        public _pScissorRect: away.geom.Rectangle;
+        private _scissorUpdated;
+        private _viewPortUpdated;
         private _onContextUpdateDelegate;
+        private _onViewportUpdatedDelegate;
         public _pNumTriangles: number;
         public _pOpaqueRenderableHead: away.pool.RenderableBase;
         public _pBlendedRenderableHead: away.pool.RenderableBase;
@@ -1611,6 +835,30 @@ declare module away.render {
         *
         */
         public renderableSorter: away.sort.IEntitySorter;
+        /**
+        * A viewPort rectangle equivalent of the StageGL size and position.
+        */
+        public viewPort : away.geom.Rectangle;
+        /**
+        * A scissor rectangle equivalent of the view size and position.
+        */
+        public scissorRect : away.geom.Rectangle;
+        /**
+        *
+        */
+        public x : number;
+        /**
+        *
+        */
+        public y : number;
+        /**
+        *
+        */
+        public width : number;
+        /**
+        *
+        */
+        public height : number;
         /**
         * Creates a new RendererBase object.
         */
@@ -1680,6 +928,18 @@ declare module away.render {
         private onContextUpdate(event);
         public _iBackgroundAlpha : number;
         /**
+        * @private
+        */
+        private notifyScissorUpdate();
+        /**
+        * @private
+        */
+        private notifyViewportUpdate();
+        /**
+        *
+        */
+        public onViewportUpdated(event: away.events.StageGLEvent): void;
+        /**
         *
         */
         public updateGlobalPos(): void;
@@ -1688,26 +948,28 @@ declare module away.render {
         * @param billboard
         * @protected
         */
-        public pApplyBillboard(billboard: away.entities.Billboard): void;
+        public applyBillboard(billboard: away.entities.Billboard): void;
         /**
         *
-        * @param mesh
-        * @protected
+        * @param triangleSubMesh
         */
-        public pApplyMesh(mesh: away.entities.Mesh): void;
+        public applyTriangleSubMesh(triangleSubMesh: away.base.TriangleSubMesh): void;
+        /**
+        *
+        * @param lineSubMesh
+        */
+        public applyLineSubMesh(lineSubMesh: away.base.LineSubMesh): void;
+        /**
+        *
+        * @param skybox
+        */
+        public applySkybox(skybox: away.entities.Skybox): void;
         /**
         *
         * @param renderable
         * @protected
         */
-        public pApplyRenderable(renderable: away.pool.RenderableBase): void;
-        public pApplySkybox(skybox: away.entities.Skybox): void;
-        public pApplySegmentSet(segmentSet: away.entities.SegmentSet): void;
-        /**
-        *
-        * @param entity
-        */
-        public pFindRenderables(entity: away.entities.IEntity): void;
+        private _applyRenderable(renderable);
     }
 }
 /**
@@ -1766,20 +1028,9 @@ declare module away.render {
         private _skyboxProjection;
         public _pFilter3DRenderer: render.Filter3DRenderer;
         public _pDepthRender: away.gl.Texture;
-        public _pRttBufferManager: away.managers.RTTBufferManager;
-        public _depthTextureInvalid: boolean;
-        private _viewPort;
-        private _viewportDirty;
-        private _scissorDirty;
         private _forceSoftware;
         private _profile;
         private _antiAlias;
-        private _localPos;
-        private _globalPos;
-        public _pScissorRect: away.geom.Rectangle;
-        private _scissorUpdated;
-        private _viewPortUpdated;
-        private _onViewportUpdatedDelegate;
         public antiAlias : number;
         /**
         *
@@ -1790,30 +1041,6 @@ declare module away.render {
         * @returns {*}
         */
         public filters3d : away.filters.Filter3DBase[];
-        /**
-        * A viewPort rectangle equivalent of the StageGL size and position.
-        */
-        public viewPort : away.geom.Rectangle;
-        /**
-        * A scissor rectangle equivalent of the view size and position.
-        */
-        public scissorRect : away.geom.Rectangle;
-        /**
-        *
-        */
-        public x : number;
-        /**
-        *
-        */
-        public y : number;
-        /**
-        *
-        */
-        public width : number;
-        /**
-        *
-        */
-        public height : number;
         /**
         * Creates a new DefaultRenderer object.
         *
@@ -1858,22 +1085,6 @@ declare module away.render {
         *
         */
         private initDepthTexture(context);
-        /**
-        * @private
-        */
-        private notifyScissorUpdate();
-        /**
-        * @private
-        */
-        private notifyViewportUpdate();
-        /**
-        *
-        */
-        public onViewportUpdated(event: away.events.StageGLEvent): void;
-        /**
-        *
-        */
-        public updateGlobalPos(): void;
     }
 }
 /**
@@ -1907,310 +1118,15 @@ declare module away.render {
 declare module away.materials {
     class DefaultMaterialManager {
         private static _defaultTextureBitmapData;
-        private static _defaultMaterial;
+        private static _defaultTextureMaterial;
+        private static _defaultSegmentMaterial;
         private static _defaultTexture;
-        static getDefaultMaterial(renderable?: away.base.IMaterialOwner): materials.TextureMaterial;
-        static getDefaultTexture(renderable?: away.base.IMaterialOwner): away.textures.BitmapTexture;
+        static getDefaultMaterial(materialOwner?: away.base.IMaterialOwner): materials.MaterialBase;
+        static getDefaultTexture(materialOwner?: away.base.IMaterialOwner): away.textures.BitmapTexture;
         private static createDefaultTexture();
         static createCheckeredBitmapData(): away.base.BitmapData;
-        private static createDefaultMaterial();
-    }
-}
-declare module away.entities {
-    class SegmentSet extends away.base.DisplayObject implements entities.IEntity, away.base.IMaterialOwner {
-        private _uvTransform;
-        private _material;
-        private _animator;
-        public _pSubGeometry: away.base.SegmentSubGeometry;
-        /**
-        *
-        */
-        public animator : away.animators.IAnimator;
-        /**
-        *
-        */
-        public assetType : string;
-        /**
-        *
-        */
-        public castsShadows : boolean;
-        /**
-        *
-        */
-        public material : away.materials.MaterialBase;
-        /**
-        *
-        */
-        public subGeometry : away.base.SegmentSubGeometry;
-        /**
-        *
-        */
-        public uvTransform : away.geom.UVTransform;
-        /**
-        *
-        */
-        constructor();
-        /**
-        * //TODO
-        *
-        * @param segment
-        */
-        public addSegment(segment: away.base.Segment): void;
-        /**
-        * //TODO
-        *
-        * @param index
-        * @returns {*}
-        */
-        public getSegment(index: number): away.base.Segment;
-        /**
-        * //TODO
-        *
-        * @param index
-        * @param dispose
-        */
-        public removeSegmentByIndex(index: number, dispose?: boolean): void;
-        /**
-        * //TODO
-        */
-        public removeAllSegments(): void;
-        /**
-        * //TODO
-        *
-        * @param segment
-        * @param dispose
-        */
-        public removeSegment(segment: away.base.Segment, dispose?: boolean): void;
-        /**
-        * //TODO
-        */
-        public dispose(): void;
-        /**
-        * @protected
-        */
-        public pCreateEntityPartitionNode(): away.partition.EntityNode;
-        /**
-        * //TOOD
-        *
-        * @returns {away.bounds.BoundingSphere}
-        *
-        * @protected
-        */
-        public pGetDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
-        /**
-        * //TODO
-        *
-        * @protected
-        */
-        public pUpdateBounds(): void;
-        /**
-        * //TODO
-        *
-        * @internal
-        */
-        public _iSetUVMatrixComponents(offsetU: number, offsetV: number, scaleU: number, scaleV: number, rotationUV: number): void;
-        /**
-        * //TODO
-        *
-        * @internal
-        */
-        public _iIsMouseEnabled(): boolean;
-    }
-}
-declare module away.entities {
-    /**
-    * Mesh is an instance of a Geometry, augmenting it with a presence in the scene graph, a material, and an animation
-    * state. It consists out of SubMeshes, which in turn correspond to SubGeometries. SubMeshes allow different parts
-    * of the geometry to be assigned different materials.
-    */
-    class Mesh extends away.containers.DisplayObjectContainer implements entities.IEntity, away.base.IMaterialOwner {
-        private _uvTransform;
-        private _subMeshes;
-        private _geometry;
-        private _material;
-        private _animator;
-        private _castsShadows;
-        private _shareAnimationGeometry;
-        private _onGeometryBoundsInvalidDelegate;
-        private _onSubGeometryAddedDelegate;
-        private _onSubGeometryRemovedDelegate;
-        /**
-        * Defines the animator of the mesh. Act on the mesh's geometry.  Default value is <code>null</code>.
-        */
-        public animator : away.animators.IAnimator;
-        /**
-        *
-        */
-        public assetType : string;
-        /**
-        * Indicates whether or not the Mesh can cast shadows. Default value is <code>true</code>.
-        */
-        public castsShadows : boolean;
-        /**
-        * The geometry used by the mesh that provides it with its shape.
-        */
-        public geometry : away.base.Geometry;
-        /**
-        * The material with which to render the Mesh.
-        */
-        public material : away.materials.MaterialBase;
-        /**
-        * Indicates whether or not the mesh share the same animation geometry.
-        */
-        public shareAnimationGeometry : boolean;
-        /**
-        * The SubMeshes out of which the Mesh consists. Every SubMesh can be assigned a material to override the Mesh's
-        * material.
-        */
-        public subMeshes : away.base.SubMesh[];
-        /**
-        *
-        */
-        public uvTransform : away.geom.UVTransform;
-        /**
-        * Create a new Mesh object.
-        *
-        * @param geometry                    The geometry used by the mesh that provides it with its shape.
-        * @param material    [optional]        The material with which to render the Mesh.
-        */
-        constructor(geometry: away.base.Geometry, material?: away.materials.MaterialBase);
-        /**
-        *
-        */
-        public bakeTransformations(): void;
-        /**
-        * Clears the animation geometry of this mesh. It will cause animation to generate a new animation geometry. Work only when shareAnimationGeometry is false.
-        */
-        public clearAnimationGeometry(): void;
-        /**
-        * @inheritDoc
-        */
-        public dispose(): void;
-        /**
-        * Disposes mesh including the animator and children. This is a merely a convenience method.
-        * @return
-        */
-        public disposeWithAnimatorAndChildren(): void;
-        /**
-        * Clones this Mesh instance along with all it's children, while re-using the same
-        * material, geometry and animation set. The returned result will be a copy of this mesh,
-        * containing copies of all of it's children.
-        *
-        * Properties that are re-used (i.e. not cloned) by the new copy include name,
-        * geometry, and material. Properties that are cloned or created anew for the copy
-        * include subMeshes, children of the mesh, and the animator.
-        *
-        * If you want to copy just the mesh, reusing it's geometry and material while not
-        * cloning it's children, the simplest way is to create a new mesh manually:
-        *
-        * <code>
-        * var clone : Mesh = new Mesh(original.geometry, original.material);
-        * </code>
-        */
-        public clone(): away.base.DisplayObject;
-        /**
-        * //TODO
-        *
-        * @param subGeometry
-        * @returns {SubMesh}
-        */
-        public getSubMeshFromSubGeometry(subGeometry: away.base.SubGeometry): away.base.SubMesh;
-        /**
-        * @protected
-        */
-        public pCreateEntityPartitionNode(): away.partition.EntityNode;
-        /**
-        * //TODO
-        *
-        * @protected
-        */
-        public pUpdateBounds(): void;
-        /**
-        * //TODO
-        *
-        * @private
-        */
-        private onGeometryBoundsInvalid(event);
-        /**
-        * Called when a SubGeometry was added to the Geometry.
-        *
-        * @private
-        */
-        private onSubGeometryAdded(event);
-        /**
-        * Called when a SubGeometry was removed from the Geometry.
-        *
-        * @private
-        */
-        private onSubGeometryRemoved(event);
-        /**
-        * Adds a SubMesh wrapping a SubGeometry.
-        *
-        * @param subGeometry
-        */
-        private addSubMesh(subGeometry);
-        /**
-        * @internal
-        */
-        public _iSetUVMatrixComponents(offsetU: number, offsetV: number, scaleU: number, scaleV: number, rotationUV: number): void;
-        /**
-        * //TODO
-        *
-        * @param shortestCollisionDistance
-        * @param findClosest
-        * @returns {boolean}
-        *
-        * @internal
-        */
-        public _iTestCollision(shortestCollisionDistance: number, findClosest: boolean): boolean;
-    }
-}
-declare module away.entities {
-    /**
-    * A Skybox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
-    * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
-    * the sky box is always as large as possible without being clipped.
-    */
-    class Skybox extends away.base.DisplayObject implements entities.IEntity, away.base.IMaterialOwner {
-        private _uvTransform;
-        private _material;
-        private _animator;
-        public animator : away.animators.AnimatorBase;
-        /**
-        *
-        */
-        public uvTransform : away.geom.UVTransform;
-        /**
-        * Create a new Skybox object.
-        * @param cubeMap The CubeMap to use for the sky box's texture.
-        */
-        constructor(cubeMap: away.textures.CubeTextureBase);
-        /**
-        * The material with which to render the object.
-        */
-        public material : away.materials.MaterialBase;
-        public assetType : string;
-        /**
-        * @protected
-        */
-        public pInvalidateBounds(): void;
-        /**
-        * @protected
-        */
-        public pCreateEntityPartitionNode(): away.partition.EntityNode;
-        /**
-        * @protected
-        */
-        public pGetDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
-        /**
-        * @protected
-        */
-        public pUpdateBounds(): void;
-        public castsShadows : boolean;
-        /**
-        * @internal
-        */
-        public _iSetUVMatrixComponents(offsetU: number, offsetV: number, scaleU: number, scaleV: number, rotationUV: number): void;
+        private static createDefaultTextureMaterial();
+        private static createDefaultSegmentMaterial();
     }
 }
 declare module away.filters {
@@ -2316,6 +1232,7 @@ declare module away.lights {
         public pUpdateBounds(): void;
         public pGetDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
         public iGetObjectProjectionMatrix(entity: away.entities.IEntity, camera: away.entities.Camera, target?: away.geom.Matrix3D): away.geom.Matrix3D;
+        public _iCollectRenderables(renderer: away.render.IRenderer): void;
     }
 }
 declare module away.lights {
@@ -2335,6 +1252,7 @@ declare module away.lights {
         public pUpdateBounds(): void;
         public pGetDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
         public iGetObjectProjectionMatrix(entity: away.entities.IEntity, camera: away.entities.Camera, target?: away.geom.Matrix3D): away.geom.Matrix3D;
+        public _iCollectRenderables(renderer: away.render.IRenderer): void;
     }
 }
 declare module away.lights {
@@ -2355,6 +1273,7 @@ declare module away.lights {
         */
         public pCreateEntityPartitionNode(): away.partition.EntityNode;
         public iGetObjectProjectionMatrix(entity: away.entities.IEntity, camera: away.entities.Camera, target?: away.geom.Matrix3D): away.geom.Matrix3D;
+        public _iCollectRenderables(renderer: away.render.IRenderer): void;
     }
 }
 declare module away.lights {
@@ -2573,7 +1492,7 @@ declare module away.materials {
         /**
         * Returns the animation data set adding animations to the material.
         */
-        public animationSet : away.animators.IAnimationSet;
+        public animationSet : away.animators.AnimationSetBase;
         /**
         * Specifies whether this pass renders to texture
         */
@@ -7550,57 +6469,63 @@ declare module away.materials {
         public cubeMap : away.textures.CubeTextureBase;
     }
 }
-declare module away.primitives {
+declare module away.prefabs {
     /**
-    * PrimitiveBase is an abstract base class for mesh primitives, which are prebuilt simple meshes.
+    * PrimitivePrefabBase is an abstract base class for polytope prefabs, which are simple pre-built geometric shapes
     */
-    class PrimitiveBase extends away.base.Geometry {
-        private _geomDirty;
-        private _uvDirty;
+    class PrimitivePrefabBase extends prefabs.PrefabBase {
+        public _geomDirty: boolean;
+        public _uvDirty: boolean;
+        private _material;
+        private _geometry;
         private _subGeometry;
+        private _geometryType;
+        private _geometryTypeDirty;
         /**
-        * Creates a new PrimitiveBase object.
+        *
+        */
+        public assetType : string;
+        /**
+        *
+        */
+        public geometryType : string;
+        public geometry : away.base.Geometry;
+        /**
+        * The material with which to render the primitive.
+        */
+        public material : away.materials.IMaterial;
+        /**
+        * Creates a new PrimitivePrefabBase object.
+        *
         * @param material The material with which to render the object
         */
-        constructor();
-        /**
-        * @inheritDoc
-        */
-        public subGeometries : away.base.ISubGeometry[];
-        /**
-        * @inheritDoc
-        */
-        public clone(): away.base.Geometry;
-        /**
-        * @inheritDoc
-        */
-        public scale(scale: number): void;
-        /**
-        * @inheritDoc
-        */
-        public scaleUV(scaleU?: number, scaleV?: number): void;
-        /**
-        * @inheritDoc
-        */
-        public applyTransformation(transform: away.geom.Matrix3D): void;
+        constructor(material?: away.materials.IMaterial, geometryType?: string);
         /**
         * Builds the primitive's geometry when invalid. This method should not be called directly. The calling should
         * be triggered by the invalidateGeometry method (and in turn by updateGeometry).
         */
-        public pBuildGeometry(target: away.base.CompactSubGeometry): void;
+        public _pBuildGeometry(target: away.base.SubGeometryBase, geometryType: string): void;
         /**
         * Builds the primitive's uv coordinates when invalid. This method should not be called directly. The calling
         * should be triggered by the invalidateUVs method (and in turn by updateUVs).
         */
-        public pBuildUVs(target: away.base.CompactSubGeometry): void;
+        public _pBuildUVs(target: away.base.SubGeometryBase, geometryType: string): void;
+        /**
+        * Invalidates the primitive's geometry type, causing it to be updated when requested.
+        */
+        public invalidateGeometryType(): void;
         /**
         * Invalidates the primitive's geometry, causing it to be updated when requested.
         */
-        public pInvalidateGeometry(): void;
+        public _pInvalidateGeometry(): void;
         /**
         * Invalidates the primitive's uv coordinates, causing them to be updated when requested.
         */
-        public pInvalidateUVs(): void;
+        public _pInvalidateUVs(): void;
+        /**
+        * Updates the subgeometry when invalid.
+        */
+        private updateGeometryType();
         /**
         * Updates the geometry when invalid.
         */
@@ -7609,43 +6534,21 @@ declare module away.primitives {
         * Updates the uv coordinates when invalid.
         */
         private updateUVs();
-        public iValidate(): void;
+        public _iValidate(): void;
+        public _pCreateObject(): away.base.DisplayObject;
     }
 }
-declare module away.primitives {
-    class LineSegment extends away.base.Segment {
-        public TYPE: string;
-        constructor(v0: away.geom.Vector3D, v1: away.geom.Vector3D, color0?: number, color1?: number, thickness?: number);
-    }
-}
-declare module away.primitives {
+declare module away.prefabs {
     /**
     * A UV Cylinder primitive mesh.
     */
-    class TorusGeometry extends primitives.PrimitiveBase {
+    class PrimitiveTorusPrefab extends prefabs.PrimitivePrefabBase implements away.library.IAsset {
         private _radius;
         private _tubeRadius;
         private _segmentsR;
         private _segmentsT;
         private _yUp;
-        private _rawVertexData;
-        private _rawIndices;
-        private _nextVertexIndex;
-        private _currentIndex;
-        private _currentTriangleIndex;
         private _numVertices;
-        private _vertexStride;
-        private _vertexOffset;
-        private addVertex(px, py, pz, nx, ny, nz, tx, ty, tz);
-        private addTriangleClockWise(cwVertexIndex0, cwVertexIndex1, cwVertexIndex2);
-        /**
-        * @inheritDoc
-        */
-        public pBuildGeometry(target: away.base.CompactSubGeometry): void;
-        /**
-        * @inheritDoc
-        */
-        public pBuildUVs(target: away.base.CompactSubGeometry): void;
         /**
         * The radius of the torus.
         */
@@ -7675,13 +6578,21 @@ declare module away.primitives {
         * @param yUp Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
         */
         constructor(radius?: number, tubeRadius?: number, segmentsR?: number, segmentsT?: number, yUp?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public _pBuildGeometry(target: away.base.SubGeometryBase, geometryType: string): void;
+        /**
+        * @inheritDoc
+        */
+        public _pBuildUVs(target: away.base.SubGeometryBase, geometryType: string): void;
     }
 }
-declare module away.primitives {
+declare module away.prefabs {
     /**
-    * A Cube primitive mesh.
+    * A Cube primitive prefab.
     */
-    class CubeGeometry extends primitives.PrimitiveBase {
+    class PrimitiveCubePrefab extends prefabs.PrimitivePrefabBase implements away.library.IAsset {
         private _width;
         private _height;
         private _depth;
@@ -7736,18 +6647,18 @@ declare module away.primitives {
         /**
         * @inheritDoc
         */
-        public pBuildGeometry(target: away.base.CompactSubGeometry): void;
+        public _pBuildGeometry(target: away.base.SubGeometryBase, geometryType: string): void;
         /**
         * @inheritDoc
         */
-        public pBuildUVs(target: away.base.CompactSubGeometry): void;
+        public _pBuildUVs(target: away.base.SubGeometryBase, geometryType: string): void;
     }
 }
-declare module away.primitives {
+declare module away.prefabs {
     /**
     * A Plane primitive mesh.
     */
-    class PlaneGeometry extends primitives.PrimitiveBase {
+    class PrimitivePlanePrefab extends prefabs.PrimitivePrefabBase implements away.library.IAsset {
         private _segmentsW;
         private _segmentsH;
         private _yUp;
@@ -7792,40 +6703,24 @@ declare module away.primitives {
         /**
         * @inheritDoc
         */
-        public pBuildGeometry(target: away.base.CompactSubGeometry): void;
+        public _pBuildGeometry(target: away.base.SubGeometryBase, geometryType: string): void;
         /**
         * @inheritDoc
         */
-        public pBuildUVs(target: away.base.CompactSubGeometry): void;
+        public _pBuildUVs(target: away.base.SubGeometryBase, geometryType: string): void;
     }
 }
-declare module away.primitives {
+declare module away.prefabs {
     /**
     * A Capsule primitive mesh.
     */
-    class CapsuleGeometry extends primitives.PrimitiveBase {
+    class PrimitiveCapsulePrefab extends prefabs.PrimitivePrefabBase implements away.library.IAsset {
         private _radius;
         private _height;
         private _segmentsW;
         private _segmentsH;
         private _yUp;
-        /**
-        * Creates a new Capsule object.
-        * @param radius The radius of the capsule.
-        * @param height The height of the capsule.
-        * @param segmentsW Defines the number of horizontal segments that make up the capsule. Defaults to 16.
-        * @param segmentsH Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven value.
-        * @param yUp Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
-        */
-        constructor(radius?: number, height?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean);
-        /**
-        * @inheritDoc
-        */
-        public pBuildGeometry(target: away.base.CompactSubGeometry): void;
-        /**
-        * @inheritDoc
-        */
-        public pBuildUVs(target: away.base.CompactSubGeometry): void;
+        private _numVertices;
         /**
         * The radius of the capsule.
         */
@@ -7846,13 +6741,30 @@ declare module away.primitives {
         * Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
         */
         public yUp : boolean;
+        /**
+        * Creates a new Capsule object.
+        * @param radius The radius of the capsule.
+        * @param height The height of the capsule.
+        * @param segmentsW Defines the number of horizontal segments that make up the capsule. Defaults to 16.
+        * @param segmentsH Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven value.
+        * @param yUp Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
+        constructor(radius?: number, height?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public _pBuildGeometry(target: away.base.SubGeometryBase, geometryType: string): void;
+        /**
+        * @inheritDoc
+        */
+        public _pBuildUVs(target: away.base.SubGeometryBase, geometryType: string): void;
     }
 }
-declare module away.primitives {
+declare module away.prefabs {
     /**
     * A Cylinder primitive mesh.
     */
-    class CylinderGeometry extends primitives.PrimitiveBase {
+    class PrimitiveCylinderPrefab extends prefabs.PrimitivePrefabBase implements away.library.IAsset {
         public _pBottomRadius: number;
         public _pSegmentsW: number;
         public _pSegmentsH: number;
@@ -7862,24 +6774,7 @@ declare module away.primitives {
         private _bottomClosed;
         private _surfaceClosed;
         private _yUp;
-        private _rawData;
-        private _rawIndices;
-        private _nextVertexIndex;
-        private _currentIndex;
-        private _currentTriangleIndex;
         private _numVertices;
-        private _stride;
-        private _vertexOffset;
-        private addVertex(px, py, pz, nx, ny, nz, tx, ty, tz);
-        private addTriangleClockWise(cwVertexIndex0, cwVertexIndex1, cwVertexIndex2);
-        /**
-        * @inheritDoc
-        */
-        public pBuildGeometry(target: away.base.CompactSubGeometry): void;
-        /**
-        * @inheritDoc
-        */
-        public pBuildUVs(target: away.base.CompactSubGeometry): void;
         /**
         * The radius of the top end of the cylinder.
         */
@@ -7926,13 +6821,21 @@ declare module away.primitives {
         * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
         */
         constructor(topRadius?: number, bottomRadius?: number, height?: number, segmentsW?: number, segmentsH?: number, topClosed?: boolean, bottomClosed?: boolean, surfaceClosed?: boolean, yUp?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public _pBuildGeometry(target: away.base.SubGeometryBase, geometryType: string): void;
+        /**
+        * @inheritDoc
+        */
+        public _pBuildUVs(target: away.base.SubGeometryBase, geometryType: string): void;
     }
 }
-declare module away.primitives {
+declare module away.prefabs {
     /**
     * A UV Cone primitive mesh.
     */
-    class ConeGeometry extends primitives.CylinderGeometry {
+    class PrimitiveConePrefab extends prefabs.PrimitiveCylinderPrefab implements away.library.IAsset {
         /**
         * The radius of the bottom end of the cone.
         */
@@ -7948,11 +6851,11 @@ declare module away.primitives {
         constructor(radius?: number, height?: number, segmentsW?: number, segmentsH?: number, closed?: boolean, yUp?: boolean);
     }
 }
-declare module away.primitives {
+declare module away.prefabs {
     /**
     * A UV RegularPolygon primitive mesh.
     */
-    class RegularPolygonGeometry extends primitives.CylinderGeometry {
+    class PrimitivePolygonPrefab extends prefabs.PrimitiveCylinderPrefab implements away.library.IAsset {
         /**
         * The radius of the regular polygon.
         */
@@ -7974,31 +6877,15 @@ declare module away.primitives {
         constructor(radius?: number, sides?: number, yUp?: boolean);
     }
 }
-declare module away.primitives {
+declare module away.prefabs {
     /**
     * A UV Sphere primitive mesh.
     */
-    class SphereGeometry extends primitives.PrimitiveBase {
+    class PrimitiveSpherePrefab extends prefabs.PrimitivePrefabBase implements away.library.IAsset {
         private _radius;
         private _segmentsW;
         private _segmentsH;
         private _yUp;
-        /**
-        * Creates a new Sphere object.
-        * @param radius The radius of the sphere.
-        * @param segmentsW Defines the number of horizontal segments that make up the sphere.
-        * @param segmentsH Defines the number of vertical segments that make up the sphere.
-        * @param yUp Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
-        */
-        constructor(radius?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean);
-        /**
-        * @inheritDoc
-        */
-        public pBuildGeometry(target: away.base.CompactSubGeometry): void;
-        /**
-        * @inheritDoc
-        */
-        public pBuildUVs(target: away.base.CompactSubGeometry): void;
         /**
         * The radius of the sphere.
         */
@@ -8015,331 +6902,23 @@ declare module away.primitives {
         * Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
         */
         public yUp : boolean;
-    }
-}
-declare module away.primitives {
-    class WireframePrimitiveBase extends away.entities.SegmentSet {
-        private _geomDirty;
-        private _color;
-        private _thickness;
-        constructor(color?: number, thickness?: number);
-        public color : number;
-        public thickness : number;
-        public removeAllSegments(): void;
-        public pBuildGeometry(): void;
-        public pInvalidateGeometry(): void;
-        private updateGeometry();
-        public pUpdateBounds(): void;
-        public pUpdateOrAddSegment(index: number, v0: away.geom.Vector3D, v1: away.geom.Vector3D): void;
-    }
-}
-declare module away.primitives {
-    /**
-    * A WireframeSphere primitive mesh
-    */
-    class WireframeSphere extends primitives.WireframePrimitiveBase {
-        private _segmentsW;
-        private _segmentsH;
-        private _radius;
         /**
-        * The radius of the sphere. Defaults to 50.
-        */
-        public radius : number;
-        /**
-        * Defines the number of vertical segments that make up the sphere. Defaults to 12.
-        */
-        public segmentsH : number;
-        /**
-        * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
-        */
-        public segmentsW : number;
-        /**
-        * Creates a new WireframeSphere object.
+        * Creates a new Sphere object.
         *
-        * @param radius The radius of the sphere. Defaults to 50.
-        * @param segmentsW Defines the number of horizontal segments that make up the sphere. Defaults to 16.
-        * @param segmentsH Defines the number of vertical segments that make up the sphere. Defaults to 12.
-        * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
-        * @param thickness The thickness of the wireframe lines. Defaults to 1.
+        * @param radius The radius of the sphere.
+        * @param segmentsW Defines the number of horizontal segments that make up the sphere.
+        * @param segmentsH Defines the number of vertical segments that make up the sphere.
+        * @param yUp Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
         */
-        constructor(radius?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
+        constructor(radius?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean);
         /**
         * @inheritDoc
         */
-        public pBuildGeometry(): void;
-    }
-}
-declare module away.primitives {
-    /**
-    * Generates a wireframeCone primitive.
-    */
-    class WireframeCone extends primitives.WireframePrimitiveBase {
-        private static TWO_PI;
-        private _radius;
-        private _coneHeight;
-        private _segmentsH;
-        private _segmentsW;
-        /**
-        * Bottom radius of the cone. Defaults to 50.
-        */
-        public radius : number;
-        /**
-        * The size of the cone along its Y-axis. Defaults to 100.
-        */
-        public coneHeight : number;
-        /**
-        * Defines the number of vertical segments that make up the cone. Defaults to 1.
-        */
-        public segmentsH : number;
-        /**
-        * Defines the number of horizontal segments that make up the cone. Defaults to 16.
-        */
-        public segmentsW : number;
-        /**
-        * Creates a new WireframeCone instance
-        *
-        * @param topRadius Top radius of the cone. Defaults to 50.
-        * @param radius Bottom radius of the cone. Defaults to 50.
-        * @param coneHeight The height of the cone. Defaults to 100.
-        * @param segmentsW Number of radial segments. Defaults to 16.
-        * @param segmentsH Number of vertical segments. Defaults to 1.
-        * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
-        * @param thickness The thickness of the wireframe lines. Defaults to 1.
-        */
-        constructor(radius?: number, coneHeight?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
-        public pBuildGeometry(): void;
-    }
-}
-declare module away.primitives {
-    /**
-    * A WirefameCube primitive mesh.
-    */
-    class WireframeCube extends primitives.WireframePrimitiveBase {
-        private _cubeDepth;
-        private _cubeHeight;
-        private _cubeWidth;
-        /**
-        * The size of the cube along its Z-axis. Defaults to 100.
-        */
-        public cubeDepth : number;
-        /**
-        * The size of the cube along its Y-axis. Defaults to 100.
-        */
-        public cubeHeight : number;
-        /**
-        * The size of the cube along its X-axis. Defaults to 100.
-        */
-        public cubeWidth : number;
-        /**
-        * Creates a new WireframeCube object.
-        *
-        * @param cubeWidth The size of the cube along its X-axis. Defaults to 100.
-        * @param cubeHeight The size of the cube along its Y-axis. Defaults to 100.
-        * @param cubeDepth The size of the cube along its Z-axis. Defaults to 100.
-        * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
-        * @param thickness The thickness of the wireframe lines. Defaults to 1.
-        */
-        constructor(cubeWidth?: number, cubeHeight?: number, cubeDepth?: number, color?: number, thickness?: number);
+        public _pBuildGeometry(target: away.base.SubGeometryBase, geometryType: string): void;
         /**
         * @inheritDoc
         */
-        public pBuildGeometry(): void;
-    }
-}
-declare module away.primitives {
-    /**
-    * Generates a wireframd cylinder primitive.
-    */
-    class WireframeCylinder extends primitives.WireframePrimitiveBase {
-        private static TWO_PI;
-        private _bottomRadius;
-        private _cylinderHeight;
-        private _segmentsH;
-        private _segmentsW;
-        private _topRadius;
-        /**
-        * Bottom radius of the cylinder. Defaults to 50.
-        */
-        public bottomRadius : number;
-        /**
-        * The size of the cylinder along its Y-axis. Defaults to 100.
-        */
-        public cylinderHeight : number;
-        /**
-        * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
-        */
-        public segmentsH : number;
-        /**
-        * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
-        */
-        public segmentsW : number;
-        /**
-        * Top radius of the cylinder. Defaults to 50.
-        */
-        public topRadius : number;
-        /**
-        * Creates a new WireframeCylinder instance
-        *
-        * @param topRadius Top radius of the cylinder. Defaults to 50.
-        * @param bottomRadius Bottom radius of the cylinder. Defaults to 50.
-        * @param cylinderHeight The height of the cylinder. Defaults to 100.
-        * @param segmentsW Number of radial segments. Defaults to 16.
-        * @param segmentsH Number of vertical segments. Defaults to 1.
-        * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
-        * @param thickness The thickness of the wireframe lines. Defaults to 1.
-        */
-        constructor(topRadius?: number, bottomRadius?: number, cylinderHeight?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
-        public pBuildGeometry(): void;
-    }
-}
-declare module away.primitives {
-    /**
-    * A WireframePlane primitive mesh.
-    */
-    class WireframePlane extends primitives.WireframePrimitiveBase {
-        static ORIENTATION_YZ: string;
-        static ORIENTATION_XY: string;
-        static ORIENTATION_XZ: string;
-        private _planeHeight;
-        private _planeWidth;
-        private _orientation;
-        private _segmentsW;
-        private _segmentsH;
-        /**
-        * The size of the plane along its Y-axis. Defaults to 100.
-        */
-        public planeHeight : number;
-        /**
-        * The size of the plane along its X-axis. Defaults to 100.
-        */
-        public planeWidth : number;
-        /**
-        * The orientaion in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
-        */
-        public orientation : string;
-        /**
-        * The number of segments that make up the plane along the Y-axis. Defaults to 10.
-        */
-        public segmentsH : number;
-        /**
-        * The number of segments that make up the plane along the X-axis. Defaults to 10.
-        */
-        public segmentsW : number;
-        /**
-        * Creates a new WireframePlane object.
-        *
-        * @param planeWidth The size of the plane along its X-axis. Defaults to 100.
-        * @param planeHeight The size of the plane along its Y-axis. Defaults to 100.
-        * @param segmentsW The number of segments that make up the plane along the X-axis. Defaults to 10.
-        * @param segmentsH The number of segments that make up the plane along the Y-axis. Defaults to 10.
-        * @param color The colour of the wireframe lines. Defaults to 0xFFFFFF.
-        * @param thickness The thickness of the wireframe lines. Defaults to 1.
-        * @param orientation The orientaion in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
-        */
-        constructor(planeWidth?: number, planeHeight?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number, orientation?: string);
-        /**
-        * @inheritDoc
-        */
-        public pBuildGeometry(): void;
-    }
-}
-declare module away.primitives {
-    /**
-    * A WireframeRegularPolygon primitive mesh.
-    */
-    class WireframeRegularPolygon extends primitives.WireframePrimitiveBase {
-        static ORIENTATION_YZ: string;
-        static ORIENTATION_XY: string;
-        static ORIENTATION_XZ: string;
-        private _radius;
-        private _sides;
-        private _orientation;
-        /**
-        * The orientaion in which the polygon lies. Defaults to <code>ORIENTATION_XZ</code>.
-        */
-        public orientation : string;
-        /**
-        * The radius of the regular polygon. Defaults to 100.
-        */
-        public radius : number;
-        /**
-        * The number of sides to the regular polygon. Defaults to 16.
-        */
-        public sides : number;
-        /**
-        * Creates a new WireframeRegularPolygon object.
-        *
-        * @param radius The radius of the polygon. Defaults to 50.
-        * @param sides The number of sides on the polygon. Defaults to 16.
-        * @param color The colour of the wireframe lines.  Defaults to <code>0xFFFFFF</code>.
-        * @param thickness The thickness of the wireframe lines.  Defaults to 1.
-        * @param orientation The orientaion in which the plane lies. Defaults to <code>ORIENTATION_YZ</code>.
-        */
-        constructor(radius?: number, sides?: number, color?: number, thickness?: number, orientation?: string);
-        /**
-        * @inheritDoc
-        */
-        public pBuildGeometry(): void;
-    }
-}
-declare module away.primitives {
-    /**
-    * A WireframeTetrahedron primitive mesh
-    */
-    class WireframeTetrahedron extends primitives.WireframePrimitiveBase {
-        static ORIENTATION_YZ: string;
-        static ORIENTATION_XY: string;
-        static ORIENTATION_XZ: string;
-        private _orientation;
-        private _tetrahedronDepth;
-        private _tetrahedronHeight;
-        private _tetrahedronWidth;
-        /**
-        * The orientation in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
-        */
-        public orientation : string;
-        /**
-        * The size of the tetrahedron along its Z-axis. Defaults to 100.
-        */
-        public tetrahedronDepth : number;
-        /**
-        * The size of the tetrahedron along its Y-axis. Defaults to 100.
-        */
-        public tetrahedronHeight : number;
-        /**
-        * The size of the tetrahedron along its X-axis. Defaults to 100.
-        */
-        public tetrahedronWidth : number;
-        /**
-        * Creates a new WireframeTetrahedron object.
-        *
-        * @param tetrahedronWidth The size of the tetrahedron along its X-axis. Defaults to 100.
-        * @param tetrahedronHeight The size of the tetranhedron along its Y-axis. Defaults to 100.
-        * @param tetrahedronDepth The size of the tetranhedron along its Z-axis. Defaults to 100.
-        * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
-        * @param thickness The thickness of the wireframe lines. Defaults to <code>ORIENTATION_XZ</code>.
-        */
-        constructor(tetrahedronWidth?: number, tetrahedronHeight?: number, tetrahedronDepth?: number, color?: number, thickness?: number, orientation?: string);
-        /**
-        * @inheritDoc
-        */
-        public pBuildGeometry(): void;
-    }
-}
-declare module away.utils {
-    class GeometryUtils {
-        /**
-        * Build a list of sub-geometries from raw data vectors, splitting them up in
-        * such a way that they won't exceed buffer length limits.
-        */
-        static fromVectors(verts: number[], indices: number[], uvs: number[], normals: number[], tangents: number[], weights: number[], jointIndices: number[], triangleOffset?: number): away.base.ISubGeometry[];
-        /**
-        * Build a sub-geometry from data vectors.
-        */
-        static constructSubGeometry(verts: number[], indices: number[], uvs: number[], normals: number[], tangents: number[], weights: number[], jointIndices: number[], triangleOffset: number): away.base.CompactSubGeometry;
-        static interleaveBuffers(numVertices: number, vertices?: number[], normals?: number[], tangents?: number[], uvs?: number[], suvs?: number[]): number[];
-        static getMeshSubGeometryIndex(subGeometry: away.base.ISubGeometry): number;
-        static getMeshSubMeshIndex(subMesh: away.base.SubMesh): number;
+        public _pBuildUVs(target: away.base.SubGeometryBase, geometryType: string): void;
     }
 }
 declare module away.utils {
@@ -8502,7 +7081,7 @@ declare module away.animators {
         public particleIndex: number;
         public numVertices: number;
         public startVertexIndex: number;
-        public subGeometry: away.base.CompactSubGeometry;
+        public subGeometry: away.base.TriangleSubGeometry;
     }
 }
 declare module away.animators {
@@ -8704,27 +7283,6 @@ declare module away.animators {
         * @inheritDoc
         */
         public dispose(): void;
-    }
-}
-declare module away.animators {
-    /**
-    * Provides an abstract base class for nodes in an animation blend tree.
-    */
-    class AnimationNodeBase extends away.library.NamedAssetBase implements away.library.IAsset {
-        public _pStateClass: any;
-        public stateClass : any;
-        /**
-        * Creates a new <code>AnimationNodeBase</code> object.
-        */
-        constructor();
-        /**
-        * @inheritDoc
-        */
-        public dispose(): void;
-        /**
-        * @inheritDoc
-        */
-        public assetType : string;
     }
 }
 declare module away.animators {
@@ -10653,7 +9211,7 @@ declare module away.animators {
         public _pFindTempReg(exclude: string[], excludeAnother?: string): string;
         /**
         * Indicates whether the properties of the animation data contained within the set combined with
-        * the vertex registers aslready in use on shading materials allows the animation data to utilise
+        * the vertex registers already in use on shading materials allows the animation data to utilise
         * GPU calls.
         */
         public usesCPU : boolean;
@@ -10665,6 +9223,30 @@ declare module away.animators {
         */
         public resetGPUCompatibility(): void;
         public cancelGPUCompatibility(): void;
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, sourceRegisters: string[], targetRegisters: string[], profile: string): string;
+        /**
+        * @inheritDoc
+        */
+        public activate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public deactivate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public getAGALFragmentCode(pass: away.materials.MaterialPassBase, shadedTarget: string, profile: string): string;
+        /**
+        * @inheritDoc
+        */
+        public getAGALUVCode(pass: away.materials.MaterialPassBase, UVSource: string, UVTarget: string): string;
+        /**
+        * @inheritDoc
+        */
+        public doneAGALCode(pass: away.materials.MaterialPassBase): void;
         /**
         * @inheritDoc
         */
@@ -10708,7 +9290,7 @@ declare module away.animators {
     *
     * @see away.animators.AnimationSetBase
     */
-    class AnimatorBase extends away.library.NamedAssetBase implements away.library.IAsset, animators.IAnimator {
+    class AnimatorBase extends away.library.NamedAssetBase implements animators.IAnimator {
         private _broadcaster;
         private _isPlaying;
         private _autoUpdate;
@@ -10851,104 +9433,7 @@ declare module away.animators {
         * @inheritDoc
         */
         public assetType : string;
-    }
-}
-declare module away.animators {
-    /**
-    * Provides an interface for data set classes that hold animation data for use in animator classes.
-    *
-    * @see away3d.animators.AnimatorBase
-    */
-    interface IAnimationSet {
-        /**
-        * Check to determine whether a state is registered in the animation set under the given name.
-        *
-        * @param stateName The name of the animation state object to be checked.
-        */
-        hasAnimation(name: string): boolean;
-        /**
-        * Retrieves the animation state object registered in the animation data set under the given name.
-        *
-        * @param stateName The name of the animation state object to be retrieved.
-        */
-        getAnimation(name: string): animators.AnimationNodeBase;
-        /**
-        * Indicates whether the properties of the animation data contained within the set combined with
-        * the vertex registers aslready in use on shading materials allows the animation data to utilise
-        * GPU calls.
-        */
-        usesCPU: boolean;
-        /**
-        * Called by the material to reset the GPU indicator before testing whether register space in the shader
-        * is available for running GPU-based animation code.
-        *
-        * @private
-        */
-        resetGPUCompatibility(): any;
-        /**
-        * Called by the animator to void the GPU indicator when register space in the shader
-        * is no longer available for running GPU-based animation code.
-        *
-        * @private
-        */
-        cancelGPUCompatibility(): any;
-        /**
-        * Generates the AGAL Vertex code for the animation, tailored to the material pass's requirements.
-        *
-        * @param pass The MaterialPassBase object to whose vertex code the animation's code will be prepended.
-        * @sourceRegisters The animatable attribute registers of the material pass.
-        * @targetRegisters The animatable target registers of the material pass.
-        * @return The AGAL Vertex code that animates the vertex data.
-        *
-        * @private
-        */
-        getAGALVertexCode(pass: away.materials.MaterialPassBase, sourceRegisters: string[], targetRegisters: string[], profile: string): string;
-        /**
-        * Generates the AGAL Fragment code for the animation, tailored to the material pass's requirements.
-        *
-        * @param pass The MaterialPassBase object to whose vertex code the animation's code will be prepended.
-        * @return The AGAL Vertex code that animates the vertex data.
-        *
-        * @private
-        */
-        getAGALFragmentCode(pass: away.materials.MaterialPassBase, shadedTarget: string, profile: string): string;
-        /**
-        * Generates the extra AGAL Fragment code for the animation when UVs are required, tailored to the material pass's requirements.
-        *
-        * @param pass The MaterialPassBase object to whose vertex code the animation's code will be prepended.
-        * @param UVSource String representing the UV source register.
-        * @param UVTarget String representing the UV target register.
-        * @return The AGAL UV code that animates the UV data.
-        *
-        * @private
-        */
-        getAGALUVCode(pass: away.materials.MaterialPassBase, UVSource: string, UVTarget: string): string;
-        /**
-        * Resets any constants used in the creation of AGAL for the vertex and fragment shaders.
-        *
-        * @param pass The material pass currently being used to render the geometry.
-        *
-        * @private
-        */
-        doneAGALCode(pass: away.materials.MaterialPassBase): any;
-        /**
-        * Sets the GPU render state required by the animation that is independent of the rendered mesh.
-        *
-        * @param stageGL The proxy currently performing the rendering.
-        * @param pass The material pass currently being used to render the geometry.
-        *
-        * @private
-        */
-        activate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase): any;
-        /**
-        * Clears the GPU render state that has been set by the current animation.
-        *
-        * @param stageGL The proxy currently performing the rendering.
-        * @param pass The material pass currently being used to render the geometry.
-        *
-        * @private
-        */
-        deactivate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase): any;
+        public getRenderableSubGeometry(renderable: away.pool.TriangleSubMeshRenderable, sourceSubGeometry: away.base.TriangleSubGeometry): away.base.TriangleSubGeometry;
     }
 }
 declare module away.animators {
@@ -10980,7 +9465,7 @@ declare module away.animators {
         public hasColorMulNode: boolean;
         public hasColorAddNode: boolean;
         /**
-        * Initialiser function for static particle properties. Needs to reference a with teh following format
+        * Initialiser function for static particle properties. Needs to reference a with the following format
         *
         * <code>
         * initParticleFunc(prop:ParticleProperties)
@@ -11048,6 +9533,7 @@ declare module away.animators {
         */
         public cancelGPUCompatibility(): void;
         public dispose(): void;
+        public getAnimationSubGeometry(subMesh: away.base.ISubMesh): any;
         /** @private */
         public _iGenerateAnimationSubGeometries(mesh: away.entities.Mesh): void;
     }
@@ -11062,7 +9548,7 @@ declare module away.animators {
     *
     * @see away.base.ParticleGeometry
     */
-    class ParticleAnimator extends animators.AnimatorBase implements animators.AnimatorBase {
+    class ParticleAnimator extends animators.AnimatorBase {
         private _particleAnimationSet;
         private _animationParticleStates;
         private _animatorParticleStates;
@@ -11100,7 +9586,7 @@ declare module away.animators {
         */
         public resetTime(offset?: number): void;
         public dispose(): void;
-        private generateAnimatorSubGeometry(subMesh);
+        private getAnimatorSubGeometry(subMesh);
     }
 }
 declare module away.animators {
@@ -11114,7 +9600,8 @@ declare module away.animators {
         private _globalPose;
         private _globalPropertiesDirty;
         private _numJoints;
-        private _subGeomAnimationStates;
+        private _morphedSubGeometry;
+        private _morphedSubGeometryDirty;
         private _condensedMatrices;
         private _skeleton;
         private _forceCPU;
@@ -11122,6 +9609,8 @@ declare module away.animators {
         private _jointsPerVertex;
         private _activeSkeletonState;
         private _onTransitionCompleteDelegate;
+        private _onIndicesUpdateDelegate;
+        private _onVerticesUpdateDelegate;
         /**
         * returns the calculated global matrices of the current skeleton pose.
         *
@@ -11184,12 +9673,13 @@ declare module away.animators {
         public _pUpdateDeltaTime(dt: number): void;
         private updateCondensedMatrices(condensedIndexLookUp, numJoints);
         private updateGlobalProperties();
+        public getRenderableSubGeometry(renderable: away.pool.TriangleSubMeshRenderable, sourceSubGeometry: away.base.TriangleSubGeometry): away.base.TriangleSubGeometry;
         /**
         * If the animation can't be performed on GPU, transform vertices manually
         * @param subGeom The subgeometry containing the weights and joint index data per vertex.
         * @param pass The material pass for which we need to transform the vertices
         */
-        private morphGeometry(state, subGeom);
+        public morphSubGeometry(renderable: away.pool.TriangleSubMeshRenderable, sourceSubGeometry: away.base.TriangleSubGeometry): void;
         /**
         * Converts a local hierarchical skeleton pose to a global pose
         * @param targetPose The SkeletonPose object that will contain the global pose.
@@ -11197,12 +9687,9 @@ declare module away.animators {
         */
         private localToGlobalPose(sourcePose, targetPose, skeleton);
         private onTransitionComplete(event);
+        private onIndicesUpdate(event);
+        private onVerticesUpdate(event);
     }
-}
-declare class SubGeomAnimationState {
-    public animatedVertexData: number[];
-    public dirty: boolean;
-    constructor(subGeom: away.base.CompactSubGeometry);
 }
 declare module away.animators {
     /**
@@ -11360,6 +9847,7 @@ declare module away.animators {
         * Needs to be called if gpu code is potentially required.
         */
         public testGPUCompatibility(pass: away.materials.MaterialPassBase): void;
+        public getRenderableSubGeometry(renderable: away.pool.TriangleSubMeshRenderable, sourceSubGeometry: away.base.TriangleSubGeometry): away.base.TriangleSubGeometry;
     }
 }
 declare module away.parsers {
@@ -11975,7 +10463,6 @@ declare module away.parsers {
         */
         private parseFrames();
         private readFrameName();
-        private createDefaultSubGeometry();
     }
 }
 declare module away.parsers {
@@ -12222,7 +10709,7 @@ declare module away.parsers {
         * @param vertexData The mesh's vertices.
         * @param weights The joint weights per vertex.
         * @param indices The indices for the faces.
-        * @return A SkinnedSubGeometry instance containing all geometrical data for the current mesh.
+        * @return A SubGeometry instance containing all geometrical data for the current mesh.
         */
         private translateGeom(vertexData, weights, indices);
         /**
@@ -12431,8 +10918,9 @@ declare class GeometryVO {
     public uvs: number[];
     public vertices: number[];
     public normals: number[];
+    public tangents: number[];
     public indices: number[];
-    public material: away.materials.MaterialBase;
+    public material: away.materials.IMaterial;
 }
 declare module away.tools {
     /**

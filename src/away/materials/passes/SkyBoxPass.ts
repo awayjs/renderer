@@ -2,6 +2,7 @@
 
 module away.materials
 {
+	import SubGeometry								= away.base.TriangleSubGeometry;
 
 	/**
 	 * SkyboxPass provides a material pass exclusively used to render sky boxes from a cube texture.
@@ -40,7 +41,10 @@ module away.materials
 		 */
 		public iGetVertexCode():string
 		{
-			return "mul vt0, va0, vc5		\n" + "add vt0, vt0, vc4		\n" + "m44 op, vt0, vc0		\n" + "mov v0, va0\n";
+			return "mul vt0, va0, vc5\n" +
+				"add vt0, vt0, vc4\n" +
+				"m44 op, vt0, vc0\n" +
+				"mov v0, va0\n";
 		}
 
 		/**
@@ -65,7 +69,8 @@ module away.materials
 			if (this._cubeTexture.hasMipMaps) {
 				mip = ",miplinear";
 			}
-			return "tex ft0, v0, fs0 <cube," + format + "linear,clamp" + mip + ">	\n" + "mov oc, ft0							\n";
+			return "tex ft0, v0, fs0 <cube," + format + "linear,clamp" + mip + ">\n" +
+				"mov oc, ft0\n";
 		}
 
 		/**
@@ -81,8 +86,9 @@ module away.materials
 			this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.projection.far/Math.sqrt(3);
 			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, viewProjection, true);
 			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
-			renderable.subGeometry.activateVertexBuffer(0, stageGL);
-			context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
+
+			stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 		}
 
 		/**

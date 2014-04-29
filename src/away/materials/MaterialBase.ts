@@ -10,7 +10,8 @@ module away.materials
 	import AssetType					= away.library.AssetType;
 	import Delegate						= away.utils.Delegate;
 
-	import IAnimationSet				= away.animators.IAnimationSet;
+	import AnimationSetBase				= away.animators.AnimationSetBase;
+	import AnimatorBase					= away.animators.AnimatorBase;
 	import IMaterialOwner				= away.base.IMaterialOwner;
 	import Camera						= away.entities.Camera;
 	import StageGL						= away.base.StageGL;
@@ -70,7 +71,7 @@ module away.materials
 		public _iDepthPassId:number;
 
 		private _bothSides:boolean = false; // update
-		private _animationSet:IAnimationSet;
+		private _animationSet:AnimationSetBase;
 
 		/**
 		 * A list of material owners, renderables or custom Entities.
@@ -521,15 +522,15 @@ module away.materials
 		{
 			this._owners.push(owner);
 
-			var animationSet:away.animators.IAnimationSet;
-			var animator:away.animators.AnimatorBase = <away.animators.AnimatorBase> owner.animator;
+			var animationSet:AnimationSetBase;
+			var animator:AnimatorBase = <AnimatorBase> owner.animator;
 
 			if (animator)
-				animationSet = animator.animationSet;
+				animationSet = <AnimationSetBase> animator.animationSet;
 
 			if (owner.animator) {
 				if (this._animationSet && animationSet != this._animationSet) {
-					throw new Error("A Material instance cannot be shared across renderables with different animator libraries");
+					throw new Error("A Material instance cannot be shared across material owners with different animation sets");
 				} else {
 					if (this._animationSet != animationSet) {
 
@@ -609,7 +610,7 @@ module away.materials
 		public iInvalidatePasses(triggerPass:MaterialPassBase)
 		{
 			var owner:away.base.IMaterialOwner;
-			var animator:away.animators.AnimatorBase;
+			var animator:AnimatorBase;
 
 			var l:number;
 			var c:number;
@@ -628,7 +629,7 @@ module away.materials
 
 				for (c = 0; c < l; c++) {
 					owner = this._owners[c];
-					animator = <away.animators.AnimatorBase> owner.animator;
+					animator = <AnimatorBase> owner.animator;
 
 					if (animator) {
 						animator.testGPUCompatibility(this._pDepthPass);
@@ -651,7 +652,7 @@ module away.materials
 
 					for (c = 0; c < l; c++) {
 						owner = this._owners[c];
-						animator = <away.animators.AnimatorBase> owner.animator;
+						animator = <AnimatorBase> owner.animator;
 
 						if (animator)
 							animator.testGPUCompatibility(this._passes[i]);

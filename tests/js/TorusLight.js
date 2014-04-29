@@ -12,7 +12,7 @@ var demos;
                 this._view = new away.containers.View(new away.render.DefaultRenderer());
                 this._view.backgroundColor = 0x014C73;
                 this._view.camera.projection = new away.projections.PerspectiveProjection(60);
-                this._torus = new away.primitives.TorusGeometry(120, 80, 32, 16, false);
+                this._torus = new away.prefabs.PrimitiveTorusPrefab(120, 80, 32, 16, false);
 
                 this.loadResources();
             }
@@ -53,7 +53,9 @@ var demos;
                 var matTx = new away.materials.TextureMaterial(ts, true, true, false);
                 matTx.lightPicker = lightPicker;
 
-                this._mesh = new away.entities.Mesh(this._torus, matTx);
+                this._torus.material = matTx;
+
+                this._mesh = this._torus.getNewObject();
 
                 this._view.scene.addChild(this._mesh);
 

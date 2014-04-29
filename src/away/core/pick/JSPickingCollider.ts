@@ -5,6 +5,7 @@
  */
 module away.pick
 {
+	import SubGeometry					= away.base.TriangleSubGeometry;
 
 	/**
 	 * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
@@ -35,9 +36,6 @@ module away.pick
 		 */
 		public _pTestRenderableCollision(renderable:away.pool.RenderableBase, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
 		{
-
-			var subGeometry:away.base.ISubGeometry = renderable.subGeometry;
-
 			var t:number;
 			var i0:number, i1:number, i2:number;
 			var rx:number, ry:number, rz:number;
@@ -51,34 +49,34 @@ module away.pick
 			var s1x:number, s1y:number, s1z:number;
 			var nl:number, nDotV:number, D:number, disToPlane:number;
 			var Q1Q2:number, Q1Q1:number, Q2Q2:number, RQ1:number, RQ2:number;
-			var indexData:Array<number> = subGeometry.indexData;//uint
-			var vertexData:Array<number> = subGeometry.vertexData;
-			var uvData:Array<number> = subGeometry.UVData;
+			var indexData:Array<number> = renderable.getIndexData().data;
 			var collisionTriangleIndex:number = -1;
 			var bothSides:boolean = (<away.materials.MaterialBase> renderable.materialOwner.material).bothSides;
 
-			var vertexStride:number = subGeometry.vertexStride;
-			var vertexOffset:number = subGeometry.vertexOffset;
-			var uvStride:number = subGeometry.UVStride;
-			var uvOffset:number = subGeometry.UVOffset;
+			var positionData:Array<number> = renderable.getVertexData(SubGeometry.POSITION_DATA).data;
+			var positionStride:number = renderable.getVertexData(SubGeometry.POSITION_DATA).dataPerVertex;
+			var positionOffset:number = renderable.getVertexOffset(SubGeometry.POSITION_DATA);
+			var uvData:Array<number> = renderable.getVertexData(SubGeometry.UV_DATA).data;
+			var uvStride:number = renderable.getVertexData(SubGeometry.UV_DATA).dataPerVertex;
+			var uvOffset:number = renderable.getVertexOffset(SubGeometry.UV_DATA);
 			var numIndices:number = indexData.length;
 
 			for (var index:number = 0; index < numIndices; index += 3) { // sweep all triangles
 				// evaluate triangle indices
-				i0 = vertexOffset + indexData[ index ]*vertexStride;
-				i1 = vertexOffset + indexData[ (index + 1) ]*vertexStride;
-				i2 = vertexOffset + indexData[ (index + 2) ]*vertexStride;
+				i0 = positionOffset + indexData[ index ]*positionStride;
+				i1 = positionOffset + indexData[ (index + 1) ]*positionStride;
+				i2 = positionOffset + indexData[ (index + 2) ]*positionStride;
 
-				// evaluate triangle vertices
-				p0x = vertexData[ i0 ];
-				p0y = vertexData[ (i0 + 1) ];
-				p0z = vertexData[ (i0 + 2) ];
-				p1x = vertexData[ i1 ];
-				p1y = vertexData[ (i1 + 1) ];
-				p1z = vertexData[ (i1 + 2) ];
-				p2x = vertexData[ i2 ];
-				p2y = vertexData[ (i2 + 1) ];
-				p2z = vertexData[ (i2 + 2) ];
+				// evaluate triangle positions
+				p0x = positionData[ i0 ];
+				p0y = positionData[ (i0 + 1) ];
+				p0z = positionData[ (i0 + 2) ];
+				p1x = positionData[ i1 ];
+				p1y = positionData[ (i1 + 1) ];
+				p1z = positionData[ (i1 + 2) ];
+				p2x = positionData[ i2 ];
+				p2y = positionData[ (i2 + 1) ];
+				p2z = positionData[ (i2 + 2) ];
 
 				// evaluate sides and triangle normal
 				s0x = p1x - p0x; // s0 = p1 - p0
@@ -146,7 +144,5 @@ module away.pick
 
 			return false;
 		}
-
-		//*/
 	}
 }

@@ -14,14 +14,16 @@ module away.parsers
 	import VertexAnimationSet				= away.animators.VertexAnimationSet;
 	import VertexAnimator					= away.animators.VertexAnimator;
 	import VertexClipNode					= away.animators.VertexClipNode;
-	import CompactSubGeometry				= away.base.CompactSubGeometry;
+	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
 	import Geometry							= away.base.Geometry;
 	import BlendMode						= away.base.BlendMode;
 	import Mesh								= away.entities.Mesh;
 	import Matrix3D							= away.geom.Matrix3D;
 	import AssetType						= away.library.AssetType;
+	import TextureMaterial					= away.materials.TextureMaterial;
 	import ShadowDitheredMethod				= away.materials.ShadowDitheredMethod;
 	import ShadowFilteredMethod				= away.materials.ShadowFilteredMethod;
+	import SkyboxMaterial					= away.materials.SkyboxMaterial;
 	import SpecularFresnelMethod			= away.materials.SpecularFresnelMethod;
 	import ShadowHardMethod					= away.materials.ShadowHardMethod;
 	import SpecularPhongMethod				= away.materials.SpecularPhongMethod;
@@ -59,7 +61,7 @@ module away.parsers
 		private _body:away.utils.ByteArray;
 		private _defaultTexture:away.textures.BitmapTexture;     // HTML IMAGE TEXTURE >? !
 		private _cubeTextures:Array<any>;
-		private _defaultBitmapMaterial:away.materials.TextureMaterial;
+		private _defaultBitmapMaterial:TextureMaterial;
 		private _defaultCubeTexture:away.textures.BitmapCubeTexture;
 
 		public static COMPRESSIONMODE_LZMA:string = "lzma";
@@ -170,7 +172,7 @@ module away.parsers
 				{
 					asset = <away.textures.Texture2DBase> resourceDependency.assets[0];
 					if (asset) {
-						var mat:away.materials.TextureMaterial;
+						var mat:TextureMaterial;
 						var users:Array<string>;
 
 						block = this._blocks[ resourceDependency.id ];
@@ -658,7 +660,7 @@ module away.parsers
 			while (subs_parsed < num_subs) {
 				var i:number;
 				var sm_len:number, sm_end:number;
-				var sub_geoms:Array<away.base.ISubGeometry>;
+				var sub_geom:TriangleSubGeometry;
 				var w_indices:Array<number>;
 				var weights:Array<number>;
 
@@ -737,7 +739,20 @@ module away.parsers
 
 				this.parseUserAttributes(); // Ignore sub-mesh attributes for now
 
-				sub_geoms = away.utils.GeometryUtils.fromVectors(verts, indices, uvs, normals, null, weights, w_indices);
+				sub_geom = new TriangleSubGeometry(true);
+				if (weights)
+					sub_geom.jointsPerVertex = weights.length/(verts.length/3);
+				if (normals)
+					sub_geom.autoDeriveNormals = false;
+				if (uvs)
+					sub_geom.autoDeriveUVs = false;
+				sub_geom.updateIndices(indices);
+				sub_geom.updatePositions(verts);
+				sub_geom.updateVertexNormals(normals);
+				sub_geom.updateUVs(uvs);
+				sub_geom.updateVertexTangents(null);
+				sub_geom.updateJointWeights(weights);
+				sub_geom.updateJointIndices(w_indices);
 
 				var scaleU:number = subProps.get(1, 1);
 				var scaleV:number = subProps.get(2, 1);
@@ -749,13 +764,14 @@ module away.parsers
 					scaleV = geoScaleV/scaleV;
 				}
 
-				for (i = 0; i < sub_geoms.length; i++) {
-					if (setSubUVs)
-						sub_geoms[i].scaleUV(scaleU, scaleV);
-					geom.addSubGeometry(sub_geoms[i]);
-					// TODO: Somehow map in-sub to out-sub indices to enable look-up
-					// when creating meshes (and their material assignments.)
-				}
+				if (setSubUVs)
+					sub_geom.scaleUV(scaleU, scaleV);
+
+				geom.addSubGeometry(sub_geom);
+
+				// TODO: Somehow map in-sub to out-sub indices to enable look-up
+				// when creating meshes (and their material assignments.)
+
 				subs_parsed++;
 			}
 			if ((geoScaleU != 1) || (geoScaleV != 1))
@@ -765,7 +781,7 @@ module away.parsers
 			this._blocks[blockID].data = geom;
 
 			if (this._debug) {
-				console.log("Parsed a TriangleGeometry: Name = " + name + "| SubGeometries = " + sub_geoms.length);
+				console.log("Parsed a TriangleGeometry: Name = " + name + "| Id = " + sub_geom.id);
 			}
 
 		}
@@ -774,7 +790,7 @@ module away.parsers
 		private parsePrimitves(blockID:number):void
 		{
 			var name:string;
-			var geom:away.base.Geometry;
+			var prefab:away.prefabs.PrefabBase;
 			var primType:number;
 			var subs_parsed:number;
 			var props:AWDProperties;
@@ -785,67 +801,67 @@ module away.parsers
 			primType = this._newBlockBytes.readUnsignedByte();
 			props = this.parseProperties({101:this._geoNrType, 102:this._geoNrType, 103:this._geoNrType, 110:this._geoNrType, 111:this._geoNrType, 301:AWDParser.UINT16, 302:AWDParser.UINT16, 303:AWDParser.UINT16, 701:AWDParser.BOOL, 702:AWDParser.BOOL, 703:AWDParser.BOOL, 704:AWDParser.BOOL});
 
-			var primitveTypes:Array<string> = ["Unsupported Type-ID", "PlaneGeometry", "CubeGeometry", "SphereGeometry", "CylinderGeometry", "ConeGeometry", "CapsuleGeometry", "TorusGeometry"]
+			var primitiveTypes:Array<string> = ["Unsupported Type-ID", "PrimitivePlanePrefab", "PrimitiveCubePrefab", "PrimitiveSpherePrefab", "PrimitiveCylinderPrefab", "PrimitivesConePrefab", "PrimitivesCapsulePrefab", "PrimitivesTorusPrefab"]
 
 			switch (primType) {
 				// to do, not all properties are set on all primitives
 
 				case 1:
-					geom = new away.primitives.PlaneGeometry(props.get(101, 100), props.get(102, 100), props.get(301, 1), props.get(302, 1), props.get(701, true), props.get(702, false));
+					prefab = new away.prefabs.PrimitivePlanePrefab(props.get(101, 100), props.get(102, 100), props.get(301, 1), props.get(302, 1), props.get(701, true), props.get(702, false));
 					break;
 
 				case 2:
-					geom = new away.primitives.CubeGeometry(props.get(101, 100), props.get(102, 100), props.get(103, 100), props.get(301, 1), props.get(302, 1), props.get(303, 1), props.get(701, true));
+					prefab = new away.prefabs.PrimitiveCubePrefab(props.get(101, 100), props.get(102, 100), props.get(103, 100), props.get(301, 1), props.get(302, 1), props.get(303, 1), props.get(701, true));
 					break;
 
 				case 3:
-					geom = new away.primitives.SphereGeometry(props.get(101, 50), props.get(301, 16), props.get(302, 12), props.get(701, true));
+					prefab = new away.prefabs.PrimitiveSpherePrefab(props.get(101, 50), props.get(301, 16), props.get(302, 12), props.get(701, true));
 					break;
 
 				case 4:
-					geom = new away.primitives.CylinderGeometry(props.get(101, 50), props.get(102, 50), props.get(103, 100), props.get(301, 16), props.get(302, 1), true, true, true); // bool701, bool702, bool703, bool704);
+					prefab = new away.prefabs.PrimitiveCylinderPrefab(props.get(101, 50), props.get(102, 50), props.get(103, 100), props.get(301, 16), props.get(302, 1), true, true, true); // bool701, bool702, bool703, bool704);
 					if (!props.get(701, true))
-						(<away.primitives.CylinderGeometry>geom).topClosed = false;
+						(<away.prefabs.PrimitiveCylinderPrefab>prefab).topClosed = false;
 					if (!props.get(702, true))
-						(<away.primitives.CylinderGeometry>geom).bottomClosed = false;
+						(<away.prefabs.PrimitiveCylinderPrefab>prefab).bottomClosed = false;
 					if (!props.get(703, true))
-						(<away.primitives.CylinderGeometry>geom).yUp = false;
+						(<away.prefabs.PrimitiveCylinderPrefab>prefab).yUp = false;
 
 					break;
 
 				case 5:
-					geom = new away.primitives.ConeGeometry(props.get(101, 50), props.get(102, 100), props.get(301, 16), props.get(302, 1), props.get(701, true), props.get(702, true));
+					prefab = new away.prefabs.PrimitiveConePrefab(props.get(101, 50), props.get(102, 100), props.get(301, 16), props.get(302, 1), props.get(701, true), props.get(702, true));
 					break;
 
 				case 6:
-					geom = new away.primitives.CapsuleGeometry(props.get(101, 50), props.get(102, 100), props.get(301, 16), props.get(302, 15), props.get(701, true));
+					prefab = new away.prefabs.PrimitiveCapsulePrefab(props.get(101, 50), props.get(102, 100), props.get(301, 16), props.get(302, 15), props.get(701, true));
 					break;
 
 				case 7:
-					geom = new away.primitives.TorusGeometry(props.get(101, 50), props.get(102, 50), props.get(301, 16), props.get(302, 8), props.get(701, true));
+					prefab = new away.prefabs.PrimitiveTorusPrefab(props.get(101, 50), props.get(102, 50), props.get(301, 16), props.get(302, 8), props.get(701, true));
 					break;
 
 				default:
-					geom = new away.base.Geometry();
-					console.log("ERROR: UNSUPPORTED PRIMITIVE_TYPE");
+					prefab = new away.prefabs.PrefabBase();
+					console.log("ERROR: UNSUPPORTED PREFAB_TYPE");
 					break;
 			}
 
 			if ((props.get(110, 1) != 1) || (props.get(111, 1) != 1)) {
-				geom.subGeometries;
-				geom.scaleUV(props.get(110, 1), props.get(111, 1));
+				//geom.subGeometries;
+				//geom.scaleUV(props.get(110, 1), props.get(111, 1)); //TODO add back scaling to prefabs
 			}
 
 			this.parseUserAttributes();
-			geom.name = name;
-			this._pFinalizeAsset(geom, name);
-			this._blocks[blockID].data = geom;
+			prefab.name = name;
+			this._pFinalizeAsset(prefab, name);
+			this._blocks[blockID].data = prefab;
 
 			if (this._debug) {
 				if ((primType < 0) || (primType > 7)) {
 					primType = 0;
 				}
-				console.log("Parsed a Primivite: Name = " + name + "| type = " + primitveTypes[primType]);
+				console.log("Parsed a Primivite: Name = " + name + "| type = " + primitiveTypes[primType]);
 			}
 		}
 
@@ -866,7 +882,7 @@ module away.parsers
 			ctr = new away.containers.DisplayObjectContainer();
 			ctr.transform.matrix3D = mtx;
 
-			var returnedArray:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET]);
+			var returnedArray:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH]);
 
 			if (returnedArray[0]) {
 				var obj:away.base.DisplayObject = (<away.containers.DisplayObjectContainer> returnedArray[1]).addChild(ctr);
@@ -948,7 +964,7 @@ module away.parsers
 			var mesh:Mesh = new Mesh(geom, null);
 			mesh.transform.matrix3D = mtx;
 
-			var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET])
+			var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH])
 
 			if (returnedArrayParent[0]) {
 				var objC:away.containers.DisplayObjectContainer = <away.containers.DisplayObjectContainer> returnedArrayParent[1];
@@ -1000,7 +1016,7 @@ module away.parsers
 			var returnedArrayCubeTex:Array<any> = this.getAssetByID(cubeTexAddr, [AssetType.TEXTURE], "CubeTexture");
 			if ((!returnedArrayCubeTex[0]) && (cubeTexAddr != 0))
 				this._blocks[blockID].addError("Could not find the Cubetexture (ID = " + cubeTexAddr + " ) for this Skybox");
-			var asset:away.entities.Skybox = new away.entities.Skybox(<away.textures.ImageCubeTexture> returnedArrayCubeTex[1]);
+			var asset:away.entities.Skybox = new away.entities.Skybox(new SkyboxMaterial(<away.textures.ImageCubeTexture> returnedArrayCubeTex[1]));
 
 			this.parseProperties(null)
 			asset.extra = this.parseUserAttributes();
@@ -1084,7 +1100,7 @@ module away.parsers
 
 			if (par_id != 0) {
 
-				var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET])
+				var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH])
 
 				if (returnedArrayParent[0]) {
 					(<away.containers.DisplayObjectContainer> returnedArrayParent[1]).addChild(light);
@@ -1142,7 +1158,7 @@ module away.parsers
 			var camera:away.entities.Camera = new away.entities.Camera(projection);
 			camera.transform.matrix3D = mtx;
 
-			var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET])
+			var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH])
 
 			if (returnedArrayParent[0]) {
 
@@ -1267,9 +1283,9 @@ module away.parsers
 				}
 
 				if (this.materialMode < 2) {
-					mat = <away.materials.MaterialBase> new away.materials.TextureMaterial(<away.textures.Texture2DBase> returnedArray[1]);
+					mat = <away.materials.MaterialBase> new TextureMaterial(<away.textures.Texture2DBase> returnedArray[1]);
 
-					var txMaterial:away.materials.TextureMaterial = <away.materials.TextureMaterial> mat;
+					var txMaterial:TextureMaterial = <TextureMaterial> mat;
 
 					txMaterial.alphaBlending = props.get(11, false);
 					txMaterial.alpha = props.get(10, 1.0);
@@ -1379,16 +1395,16 @@ module away.parsers
 						}
 					} else//	SinglePassMaterial
 					{
-						mat = new away.materials.TextureMaterial(texture);
+						mat = new TextureMaterial(texture);
 						debugString += "Parsed a TextureMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + texture.name;
 
 						if (ambientTexture) {
-							(<away.materials.TextureMaterial> mat).ambientTexture = ambientTexture;
+							(<TextureMaterial> mat).ambientTexture = ambientTexture;
 							debugString += " | AmbientTexture-Name = " + ambientTexture.name;
 						}
 
-						(<away.materials.TextureMaterial> mat).alpha = props.get(10, 1.0);
-						(<away.materials.TextureMaterial> mat).alphaBlending = props.get(11, false);
+						(<TextureMaterial> mat).alpha = props.get(10, 1.0);
+						(<TextureMaterial> mat).alphaBlending = props.get(11, false);
 					}
 
 				}
@@ -1828,7 +1844,7 @@ module away.parsers
 			var parentObject:away.containers.DisplayObjectContainer;
 			var targetObject:away.containers.DisplayObjectContainer;
 
-			var returnedArray:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET]);
+			var returnedArray:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH]);
 
 			if (returnedArray[0]) {
 				parentObject = <away.containers.DisplayObjectContainer> returnedArray[1];
@@ -2082,7 +2098,7 @@ module away.parsers
 			var str_len:number;
 			var str_end:number;
 			var geometry:Geometry;
-			var subGeom:CompactSubGeometry;
+			var subGeom:TriangleSubGeometry;
 			var idx:number /*int*/ = 0;
 			var clip:VertexClipNode = new VertexClipNode();
 			var indices:Array<number> /*uint*/;
@@ -2126,7 +2142,7 @@ module away.parsers
 					str_end = this._newBlockBytes.position + str_len;
 					while (streamsParsed < num_Streams) {
 						if (streamtypes[streamsParsed] == 1) {
-							indices = (<Geometry> returnedArray[1]).subGeometries[subMeshParsed].indexData;
+							indices = (<Geometry> returnedArray[1]).subGeometries[subMeshParsed].indices;
 							verts = new Array<number>();
 							idx = 0;
 							while (this._newBlockBytes.position < str_end) {
@@ -2137,13 +2153,14 @@ module away.parsers
 								verts[idx++] = y;
 								verts[idx++] = z;
 							}
-							subGeom = new CompactSubGeometry();
-							subGeom.fromVectors(verts, uvs[subMeshParsed], null, null);
-							subGeom.updateIndexData(indices);
-							subGeom.vertexNormalData;
-							subGeom.vertexTangentData;
-							subGeom.autoDeriveVertexNormals = false;
-							subGeom.autoDeriveVertexTangents = false;
+							subGeom = new TriangleSubGeometry(true);
+							subGeom.updateIndices(indices);
+							subGeom.updatePositions(verts);
+							subGeom.updateUVs(uvs[subMeshParsed]);
+							subGeom.updateVertexNormals(null);
+							subGeom.updateVertexTangents(null);
+							subGeom.autoDeriveNormals = false;
+							subGeom.autoDeriveTangents = false;
 							subMeshParsed++;
 							geometry.addSubGeometry(subGeom)
 						} else
@@ -2651,13 +2668,15 @@ module away.parsers
 			var numPoints:number /*uint*/;
 			var i:number /*int*/;
 			var newUvs:Array<number>;
+			var sub_geom:TriangleSubGeometry;
 			this._blocks[meshID].uvsForVertexAnimation = new Array<Array<number>>();
 			while (geoCnt < geometry.subGeometries.length) {
 				newUvs = new Array<number>();
-				numPoints = geometry.subGeometries[geoCnt].numVertices;
-				ud = geometry.subGeometries[geoCnt].UVData;
-				uStride = geometry.subGeometries[geoCnt].UVStride;
-				uOffs = geometry.subGeometries[geoCnt].UVOffset;
+				sub_geom = <TriangleSubGeometry> geometry.subGeometries[geoCnt];
+				numPoints = sub_geom.numVertices;
+				ud = sub_geom.uvs;
+				uStride = sub_geom.getStride(TriangleSubGeometry.UV_DATA);
+				uOffs = sub_geom.getOffset(TriangleSubGeometry.UV_DATA);
 				for (i = 0; i < numPoints; i++) {
 					newUvs.push(ud[uOffs + i*uStride + 0]);
 					newUvs.push(ud[uOffs + i*uStride + 1]);
@@ -2733,42 +2752,34 @@ module away.parsers
 		private getDefaultAsset(assetType:string, extraTypeInfo:string):away.library.IAsset
 		{
 			switch (true) {
-
 				case (assetType == AssetType.TEXTURE):
-
 					if (extraTypeInfo == "CubeTexture")
 						return this.getDefaultCubeTexture();
 					if (extraTypeInfo == "SingleTexture")
 						return this.getDefaultTexture();
 					break;
-
 				case (assetType == AssetType.MATERIAL):
-
 					return this.getDefaultMaterial()
 					break;
-
 				default:
-
 					break;
 			}
 
 			return null;
-
 		}
 
 		private getDefaultMaterial():away.library.IAsset
 		{
 			if (!this._defaultBitmapMaterial)
-				this._defaultBitmapMaterial = away.materials.DefaultMaterialManager.getDefaultMaterial();
+				this._defaultBitmapMaterial = <TextureMaterial> away.materials.DefaultMaterialManager.getDefaultMaterial();
+
 			return  <away.library.IAsset>  this._defaultBitmapMaterial;
 		}
 
 		private getDefaultTexture():away.library.IAsset
 		{
-
-			if (!this._defaultTexture) {
+			if (!this._defaultTexture)
 				this._defaultTexture = away.materials.DefaultMaterialManager.getDefaultTexture();
-			}
 
 			return <away.library.IAsset> this._defaultTexture;
 
@@ -2777,11 +2788,10 @@ module away.parsers
 		private getDefaultCubeTexture():away.library.IAsset
 		{
 			if (!this._defaultCubeTexture) {
-
-				var defaultBitmap:away.base.BitmapData = away.materials.DefaultMaterialManager.createCheckeredBitmapData();//this._defaultTexture.bitmapData;
+				var defaultBitmap:away.base.BitmapData = away.materials.DefaultMaterialManager.createCheckeredBitmapData();
 
 				this._defaultCubeTexture = new away.textures.BitmapCubeTexture(defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap);
-				this._defaultCubeTexture.name = "defaultTexture";
+				this._defaultCubeTexture.name = "defaultCubeTexture";
 			}
 
 			return <away.library.IAsset> this._defaultCubeTexture;

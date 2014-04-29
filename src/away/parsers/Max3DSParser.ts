@@ -2,6 +2,7 @@
 
 module away.parsers
 {
+	import SubGeometry						= away.base.TriangleSubGeometry;
 	import ColorMaterial					= away.materials.ColorMaterial;
 	import ColorMultiPassMaterial			= away.materials.ColorMultiPassMaterial;
 	import DefaultMaterialManager			= away.materials.DefaultMaterialManager;
@@ -13,7 +14,6 @@ module away.parsers
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 	import Texture2DBase					= away.textures.Texture2DBase;
 	import ByteArray						= away.utils.ByteArray;
-	import GeometryUtils					= away.utils.GeometryUtils;
 	
 	/**
 	 * Max3DSParser provides a parser for the 3ds data type.
@@ -497,7 +497,7 @@ module away.parsers
 		{
 			if (obj.type == away.library.AssetType.MESH) {
 				var i:number /*uint*/;
-				var subs:away.base.ISubGeometry[];
+				var sub:away.base.TriangleSubGeometry;
 				var geom:away.base.Geometry;
 				var mat:MaterialBase;
 				var mesh:away.entities.Mesh;
@@ -549,9 +549,12 @@ module away.parsers
 
 				// Construct sub-geometries (potentially splitting buffers)
 				// and add them to geometry.
-				subs = GeometryUtils.fromVectors(obj.verts, obj.indices, obj.uvs, null, null, null, null);
-				for (i = 0; i < subs.length; i++)
-					geom.subGeometries.push(subs[i]);
+				sub = new SubGeometry(true);
+				sub.updateIndices(obj.indices);
+				sub.updatePositions(obj.verts);
+				sub.updateUVs(obj.uvs);
+
+				geom.addSubGeometry(sub);
 
 				if (obj.materials.length > 0) {
 					var mname:string;
