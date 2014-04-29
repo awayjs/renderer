@@ -114,7 +114,7 @@ var away;
                 _super.call(this, message);
             }
             return CastError;
-        })(away.errors.Error);
+        })(errors.Error);
         errors.CastError = CastError;
     })(away.errors || (away.errors = {}));
     var errors = away.errors;
@@ -140,7 +140,7 @@ var away;
                 _super.call(this, "PartialImplementationError - this function is in development. Required Dependency: " + dependency, id);
             }
             return PartialImplementationError;
-        })(away.errors.Error);
+        })(errors.Error);
         errors.PartialImplementationError = PartialImplementationError;
     })(away.errors || (away.errors = {}));
     var errors = away.errors;
@@ -184,7 +184,7 @@ var away;
             }
             DocumentError.DOCUMENT_DOES_NOT_EXIST = "documentDoesNotExist";
             return DocumentError;
-        })(away.errors.Error);
+        })(errors.Error);
         errors.DocumentError = DocumentError;
     })(away.errors || (away.errors = {}));
     var errors = away.errors;
@@ -373,7 +373,7 @@ var away;
             DisplayObjectEvent.ROTATION_CHANGED = "rotationChanged";
             DisplayObjectEvent.SCALE_CHANGED = "scaleChanged";
             return DisplayObjectEvent;
-        })(away.events.Event);
+        })(events.Event);
         events.DisplayObjectEvent = DisplayObjectEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
@@ -849,7 +849,7 @@ var away;
 
             MouseEvent.MOUSE_WHEEL = "mouseWheel3d";
             return MouseEvent;
-        })(away.events.Event);
+        })(events.Event);
         events.MouseEvent = MouseEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
@@ -868,7 +868,7 @@ var away;
             }
             MaterialEvent.SIZE_CHANGED = "sizeChanged";
             return MaterialEvent;
-        })(away.events.Event);
+        })(events.Event);
         events.MaterialEvent = MaterialEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
@@ -908,7 +908,7 @@ var away;
             RendererEvent.VIEWPORT_UPDATED = "viewportUpdated";
             RendererEvent.SCISSOR_UPDATED = "scissorUpdated";
             return RendererEvent;
-        })(away.events.Event);
+        })(events.Event);
         events.RendererEvent = RendererEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
@@ -1455,7 +1455,7 @@ var away;
                 }
             };
             return ByteArray;
-        })(away.utils.ByteArrayBase);
+        })(utils.ByteArrayBase);
         utils.ByteArray = ByteArray;
     })(away.utils || (away.utils = {}));
     var utils = away.utils;
@@ -1586,7 +1586,7 @@ var away;
                 return y;
             };
             return ByteArrayBuffer;
-        })(away.utils.ByteArrayBase);
+        })(utils.ByteArrayBase);
         utils.ByteArrayBuffer = ByteArrayBuffer;
     })(away.utils || (away.utils = {}));
     var utils = away.utils;
@@ -1649,7 +1649,7 @@ var away;
                 if (typeof (data) == 'function')
                     data = new data;
 
-                if (data instanceof away.utils.ByteArray)
+                if (data instanceof utils.ByteArray)
                     return data;
 
                 return data;
@@ -2814,7 +2814,7 @@ var away;
                 this._loadingImage = false;
             };
             return BitmapParser;
-        })(away.parsers.ParserBase);
+        })(parsers.ParserBase);
         parsers.BitmapParser = BitmapParser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
@@ -3059,7 +3059,7 @@ var away;
                 return away.parsers.ParserBase.PARSING_DONE;
             };
             return Texture2DParser;
-        })(away.parsers.ParserBase);
+        })(parsers.ParserBase);
         parsers.Texture2DParser = Texture2DParser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
@@ -3983,8 +3983,8 @@ var away;
                 this._assetDictionary = new Object();
                 this._loadingSessions = new Array();
 
-                this.conflictStrategy = away.library.ConflictStrategy.IGNORE.create();
-                this.conflictPrecedence = away.library.ConflictPrecedence.FAVOR_NEW;
+                this.conflictStrategy = library.ConflictStrategy.IGNORE.create();
+                this.conflictPrecedence = library.ConflictPrecedence.FAVOR_NEW;
 
                 this._onAssetRenameDelegate = away.utils.Delegate.create(this, this.onAssetRename);
                 this._onAssetConflictResolvedDelegate = away.utils.Delegate.create(this, this.onAssetConflictResolved);
@@ -4008,10 +4008,10 @@ var away;
                 if (!key)
                     key = 'default';
 
-                if (!away.library.AssetLibrary._iInstances.hasOwnProperty(key))
-                    away.library.AssetLibrary._iInstances[key] = new AssetLibraryBundle(new AssetLibraryBundleSingletonEnforcer());
+                if (!library.AssetLibrary._iInstances.hasOwnProperty(key))
+                    library.AssetLibrary._iInstances[key] = new AssetLibraryBundle(new AssetLibraryBundleSingletonEnforcer());
 
-                return away.library.AssetLibrary._iInstances[key];
+                return library.AssetLibrary._iInstances[key];
             };
 
             /**
@@ -4095,7 +4095,7 @@ var away;
                 if (typeof assetTypeFilter === "undefined") { assetTypeFilter = null; }
                 if (typeof namespaceFilter === "undefined") { namespaceFilter = null; }
                 if (typeof filterFunc === "undefined") { filterFunc = null; }
-                return new away.library.AssetLibraryIterator(this._assets, assetTypeFilter, namespaceFilter, filterFunc);
+                return new library.AssetLibraryIterator(this._assets, assetTypeFilter, namespaceFilter, filterFunc);
             };
 
             /**
@@ -4164,13 +4164,13 @@ var away;
             *
             */
             AssetLibraryBundle.prototype.getAsset = function (name, ns) {
-                if (typeof ns === "undefined") { ns = null; }
                 //var asset : IAsset;
+                if (typeof ns === "undefined") { ns = null; }
                 if (this._assetDictDirty)
                     this.rehashAssetDict();
 
                 if (ns == null)
-                    ns = away.library.NamedAssetBase.DEFAULT_NAMESPACE;
+                    ns = library.NamedAssetBase.DEFAULT_NAMESPACE;
 
                 if (!this._assetDictionary.hasOwnProperty(ns))
                     return null;
@@ -4192,13 +4192,13 @@ var away;
                     return;
 
                 old = this.getAsset(asset.name, asset.assetNamespace);
-                ns = asset.assetNamespace || away.library.NamedAssetBase.DEFAULT_NAMESPACE;
+                ns = asset.assetNamespace || library.NamedAssetBase.DEFAULT_NAMESPACE;
 
                 if (old != null)
                     this._strategy.resolveConflict(asset, old, this._assetDictionary[ns], this._strategyPreference);
 
                 //create unique-id (for now this is used in AwayBuilder only
-                asset.id = away.library.IDUtil.createUID();
+                asset.id = library.IDUtil.createUID();
 
                 // Add it
                 this._assets.push(asset);
@@ -4306,7 +4306,7 @@ var away;
                 this._assets.length = 0;
 
                 if (ns == null)
-                    ns = away.library.NamedAssetBase.DEFAULT_NAMESPACE;
+                    ns = library.NamedAssetBase.DEFAULT_NAMESPACE;
 
                 for (var d = 0; d < old_assets.length; d++) {
                     asset = old_assets[d];
@@ -4781,7 +4781,7 @@ var away;
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (gl) {
+    (function (_gl) {
         var VertexBuffer = (function () {
             function VertexBuffer(gl, numVertices, data32PerVertex) {
                 this._gl = gl;
@@ -4826,7 +4826,7 @@ var away;
             };
             return VertexBuffer;
         })();
-        gl.VertexBuffer = VertexBuffer;
+        _gl.VertexBuffer = VertexBuffer;
     })(away.gl || (away.gl = {}));
     var gl = away.gl;
 })(away || (away = {}));
@@ -4949,7 +4949,7 @@ var away;
                 var subGeometryDictionary = (VertexDataPool._pool[id] || (VertexDataPool._pool[id] = new Object()));
                 var subGeometryData = (subGeometryDictionary[dataType] || (subGeometryDictionary[dataType] = new Array()));
 
-                return subGeometryData[level] || (subGeometryData[level] = new away.gl.VertexData());
+                return subGeometryData[level] || (subGeometryData[level] = new gl.VertexData());
             };
 
             VertexDataPool.disposeItem = function (id, level, dataType) {
@@ -4985,7 +4985,7 @@ var away;
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (gl) {
+    (function (_gl) {
         var IndexBuffer = (function () {
             function IndexBuffer(gl, numIndices) {
                 this._gl = gl;
@@ -5020,7 +5020,7 @@ var away;
             });
             return IndexBuffer;
         })();
-        gl.IndexBuffer = IndexBuffer;
+        _gl.IndexBuffer = IndexBuffer;
     })(away.gl || (away.gl = {}));
     var gl = away.gl;
 })(away || (away = {}));
@@ -5175,7 +5175,7 @@ var away;
             IndexDataPool.getItem = function (id, level) {
                 var subGeometryData = (IndexDataPool._pool[id] || (IndexDataPool._pool[id] = new Array()));
 
-                return subGeometryData[level] || (subGeometryData[level] = new away.gl.IndexData());
+                return subGeometryData[level] || (subGeometryData[level] = new gl.IndexData());
             };
 
             IndexDataPool.disposeItem = function (id, level) {
@@ -5206,7 +5206,7 @@ var away;
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (gl) {
+    (function (_gl) {
         var Program = (function () {
             function Program(gl) {
                 this._gl = gl;
@@ -5258,7 +5258,7 @@ var away;
             });
             return Program;
         })();
-        gl.Program = Program;
+        _gl.Program = Program;
     })(away.gl || (away.gl = {}));
     var gl = away.gl;
 })(away || (away = {}));
@@ -5299,7 +5299,7 @@ var away;
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (gl) {
+    (function (_gl) {
         var TextureBase = (function () {
             function TextureBase(gl) {
                 this.textureType = "";
@@ -5310,14 +5310,14 @@ var away;
             };
             return TextureBase;
         })();
-        gl.TextureBase = TextureBase;
+        _gl.TextureBase = TextureBase;
     })(away.gl || (away.gl = {}));
     var gl = away.gl;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (gl) {
+    (function (_gl) {
         var Texture = (function (_super) {
             __extends(Texture, _super);
             function Texture(gl, width, height) {
@@ -5391,9 +5391,9 @@ var away;
             Texture.prototype.generateFromRenderBuffer = function (data) {
                 this._frameBuffer = this._gl.createFramebuffer();
                 this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
-                this._frameBuffer.width = this._width;
-                this._frameBuffer.height = this._height;
 
+                //this._frameBuffer.width = this._width;
+                //this._frameBuffer.height = this._height;
                 this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
 
                 //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, this._gl.LINEAR);
@@ -5420,15 +5420,15 @@ var away;
                 //this._gl.bindTexture( this._gl.TEXTURE_2D, null );
             };
             return Texture;
-        })(away.gl.TextureBase);
-        gl.Texture = Texture;
+        })(_gl.TextureBase);
+        _gl.Texture = Texture;
     })(away.gl || (away.gl = {}));
     var gl = away.gl;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (gl) {
+    (function (_gl) {
         var CubeTexture = (function (_super) {
             __extends(CubeTexture, _super);
             function CubeTexture(gl, size) {
@@ -5531,7 +5531,7 @@ var away;
             });
             return CubeTexture;
         })(away.gl.TextureBase);
-        gl.CubeTexture = CubeTexture;
+        _gl.CubeTexture = CubeTexture;
     })(away.gl || (away.gl = {}));
     var gl = away.gl;
 })(away || (away = {}));
@@ -5760,7 +5760,7 @@ var away;
                 if (typeof alpha === "undefined") { alpha = 1; }
                 if (typeof depth === "undefined") { depth = 1; }
                 if (typeof stencil === "undefined") { stencil = 0; }
-                if (typeof mask === "undefined") { mask = away.gl.ContextGLClearMask.ALL; }
+                if (typeof mask === "undefined") { mask = gl.ContextGLClearMask.ALL; }
                 if (!this._drawing) {
                     this.updateBlendStatus();
                     this._drawing = true;
@@ -5960,18 +5960,18 @@ var away;
 
             ContextGL.prototype.setCulling = function (triangleFaceToCull, coordinateSystem) {
                 if (typeof coordinateSystem === "undefined") { coordinateSystem = "leftHanded"; }
-                if (triangleFaceToCull == away.gl.ContextGLTriangleFace.NONE) {
+                if (triangleFaceToCull == gl.ContextGLTriangleFace.NONE) {
                     this._gl.disable(this._gl.CULL_FACE);
                 } else {
                     this._gl.enable(this._gl.CULL_FACE);
                     switch (triangleFaceToCull) {
-                        case away.gl.ContextGLTriangleFace.BACK:
+                        case gl.ContextGLTriangleFace.BACK:
                             this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.FRONT : this._gl.BACK);
                             break;
-                        case away.gl.ContextGLTriangleFace.FRONT:
+                        case gl.ContextGLTriangleFace.FRONT:
                             this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.BACK : this._gl.FRONT);
                             break;
-                        case away.gl.ContextGLTriangleFace.FRONT_AND_BACK:
+                        case gl.ContextGLTriangleFace.FRONT_AND_BACK:
                             this._gl.cullFace(this._gl.FRONT_AND_BACK);
                             break;
                         default:
@@ -5983,28 +5983,28 @@ var away;
             // TODO ContextGLCompareMode
             ContextGL.prototype.setDepthTest = function (depthMask, passCompareMode) {
                 switch (passCompareMode) {
-                    case away.gl.ContextGLCompareMode.ALWAYS:
+                    case gl.ContextGLCompareMode.ALWAYS:
                         this._gl.depthFunc(this._gl.ALWAYS);
                         break;
-                    case away.gl.ContextGLCompareMode.EQUAL:
+                    case gl.ContextGLCompareMode.EQUAL:
                         this._gl.depthFunc(this._gl.EQUAL);
                         break;
-                    case away.gl.ContextGLCompareMode.GREATER:
+                    case gl.ContextGLCompareMode.GREATER:
                         this._gl.depthFunc(this._gl.GREATER);
                         break;
-                    case away.gl.ContextGLCompareMode.GREATER_EQUAL:
+                    case gl.ContextGLCompareMode.GREATER_EQUAL:
                         this._gl.depthFunc(this._gl.GEQUAL);
                         break;
-                    case away.gl.ContextGLCompareMode.LESS:
+                    case gl.ContextGLCompareMode.LESS:
                         this._gl.depthFunc(this._gl.LESS);
                         break;
-                    case away.gl.ContextGLCompareMode.LESS_EQUAL:
+                    case gl.ContextGLCompareMode.LESS_EQUAL:
                         this._gl.depthFunc(this._gl.LEQUAL);
                         break;
-                    case away.gl.ContextGLCompareMode.NEVER:
+                    case gl.ContextGLCompareMode.NEVER:
                         this._gl.depthFunc(this._gl.NEVER);
                         break;
-                    case away.gl.ContextGLCompareMode.NOT_EQUAL:
+                    case gl.ContextGLCompareMode.NOT_EQUAL:
                         this._gl.depthFunc(this._gl.NOTEQUAL);
                         break;
                     default:
@@ -6022,10 +6022,10 @@ var away;
 
             ContextGL.prototype.getUniformLocationNameFromAgalRegisterIndex = function (programType, firstRegister) {
                 switch (programType) {
-                    case away.gl.ContextGLProgramType.VERTEX:
+                    case gl.ContextGLProgramType.VERTEX:
                         return "vc";
                         break;
-                    case away.gl.ContextGLProgramType.FRAGMENT:
+                    case gl.ContextGLProgramType.FRAGMENT:
                         return "fc";
                         break;
                     default:
@@ -6177,10 +6177,10 @@ var away;
                 var glMipFilter = 0;
 
                 switch (wrap) {
-                    case away.gl.ContextGLWrapMode.REPEAT:
+                    case gl.ContextGLWrapMode.REPEAT:
                         glWrap = this._gl.REPEAT;
                         break;
-                    case away.gl.ContextGLWrapMode.CLAMP:
+                    case gl.ContextGLWrapMode.CLAMP:
                         glWrap = this._gl.CLAMP_TO_EDGE;
                         break;
                     default:
@@ -6188,10 +6188,10 @@ var away;
                 }
 
                 switch (filter) {
-                    case away.gl.ContextGLTextureFilter.LINEAR:
+                    case gl.ContextGLTextureFilter.LINEAR:
                         glFilter = this._gl.LINEAR;
                         break;
-                    case away.gl.ContextGLTextureFilter.NEAREST:
+                    case gl.ContextGLTextureFilter.NEAREST:
                         glFilter = this._gl.NEAREST;
                         break;
                     default:
@@ -6199,13 +6199,13 @@ var away;
                 }
 
                 switch (mipfilter) {
-                    case away.gl.ContextGLMipFilter.MIPNEAREST:
+                    case gl.ContextGLMipFilter.MIPNEAREST:
                         glMipFilter = this._gl.NEAREST_MIPMAP_NEAREST;
                         break;
-                    case away.gl.ContextGLMipFilter.MIPLINEAR:
+                    case gl.ContextGLMipFilter.MIPLINEAR:
                         glMipFilter = this._gl.LINEAR_MIPMAP_LINEAR;
                         break;
-                    case away.gl.ContextGLMipFilter.MIPNONE:
+                    case gl.ContextGLMipFilter.MIPNONE:
                         glMipFilter = this._gl.NONE;
                         break;
                     default:
@@ -6229,9 +6229,9 @@ var away;
             };
 
             ContextGL.prototype.setGLSLVertexBufferAt = function (locationName, buffer, bufferOffset, format) {
+                //if ( buffer == null )return;
                 if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
                 if (typeof format === "undefined") { format = null; }
-                //if ( buffer == null )return;
                 var location = this._currentProgram ? this._gl.getAttribLocation(this._currentProgram.glProgram, locationName) : -1;
                 if (!buffer) {
                     if (location > -1)
@@ -6247,19 +6247,19 @@ var away;
                 var numBytes = 4;
 
                 switch (format) {
-                    case away.gl.ContextGLVertexBufferFormat.BYTES_4:
+                    case gl.ContextGLVertexBufferFormat.BYTES_4:
                         dimension = 4;
                         break;
-                    case away.gl.ContextGLVertexBufferFormat.FLOAT_1:
+                    case gl.ContextGLVertexBufferFormat.FLOAT_1:
                         dimension = 1;
                         break;
-                    case away.gl.ContextGLVertexBufferFormat.FLOAT_2:
+                    case gl.ContextGLVertexBufferFormat.FLOAT_2:
                         dimension = 2;
                         break;
-                    case away.gl.ContextGLVertexBufferFormat.FLOAT_3:
+                    case gl.ContextGLVertexBufferFormat.FLOAT_3:
                         dimension = 3;
                         break;
-                    case away.gl.ContextGLVertexBufferFormat.FLOAT_4:
+                    case gl.ContextGLVertexBufferFormat.FLOAT_4:
                         dimension = 4;
                         break;
                     default:
@@ -6274,7 +6274,8 @@ var away;
                 if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = false; }
                 if (typeof antiAlias === "undefined") { antiAlias = 0; }
                 if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
-                var frameBuffer = target.frameBuffer;
+                var texture = target;
+                var frameBuffer = texture.frameBuffer;
                 this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, frameBuffer);
 
                 if (enableDepthAndStencil) {
@@ -6282,10 +6283,7 @@ var away;
                     this._gl.enable(this._gl.DEPTH_TEST);
                 }
 
-                this._gl.viewport['width'] = frameBuffer.width;
-                this._gl.viewport['height'] = frameBuffer.height;
-
-                this._gl.viewport(0, 0, frameBuffer.width, frameBuffer.height);
+                this._gl.viewport(0, 0, texture.width, texture.height);
             };
 
             ContextGL.prototype.setRenderToBackBuffer = function () {
@@ -6337,7 +6335,7 @@ var away;
                 }
             };
             return AGLSLContextGL;
-        })(away.gl.ContextGL);
+        })(gl.ContextGL);
         gl.AGLSLContextGL = AGLSLContextGL;
     })(away.gl || (away.gl = {}));
     var gl = away.gl;
@@ -7179,7 +7177,7 @@ var away;
                 /**
                 *
                 */
-                this.alignmentMode = away.base.AlignmentMode.REGISTRATION_POINT;
+                this.alignmentMode = base.AlignmentMode.REGISTRATION_POINT;
                 /**
                 *
                 */
@@ -7187,7 +7185,7 @@ var away;
                 /**
                 *
                 */
-                this.orientationMode = away.base.OrientationMode.DEFAULT;
+                this.orientationMode = base.OrientationMode.DEFAULT;
 
                 // Cached vector of transformation components used when
                 // recomposing the transform matrix in updateTransform()
@@ -7851,7 +7849,7 @@ var away;
                 */
                 get: function () {
                     if (this._scenePositionDirty) {
-                        if (!this._pivotZero && this.alignmentMode == away.base.AlignmentMode.PIVOT_POINT) {
+                        if (!this._pivotZero && this.alignmentMode == base.AlignmentMode.PIVOT_POINT) {
                             var pivotScale = new away.geom.Vector3D(this._pivot.x / this._pScaleX, this._pivot.y / this._pScaleY, this._pivot.z / this._pScaleZ);
                             this._scenePosition = this.sceneTransform.transformVector(pivotScale);
                             //this._scenePosition.decrementBy(new away.geom.Vector3D(this._pivot.x*this._pScaleX, this._pivot.y*this._pScaleY, this._pivot.z*this._pScaleZ));
@@ -8502,7 +8500,7 @@ var away;
             *
             */
             DisplayObject.prototype.getRenderSceneTransform = function (camera) {
-                if (this.orientationMode == away.base.OrientationMode.CAMERA_PLANE) {
+                if (this.orientationMode == base.OrientationMode.CAMERA_PLANE) {
                     var comps = camera.sceneTransform.decompose();
                     var scale = comps[2];
                     comps[0] = this.scenePosition;
@@ -8512,7 +8510,7 @@ var away;
                     this._orientationMatrix.recompose(comps);
 
                     //add in case of pivot
-                    if (!this._pivotZero && this.alignmentMode == away.base.AlignmentMode.PIVOT_POINT)
+                    if (!this._pivotZero && this.alignmentMode == base.AlignmentMode.PIVOT_POINT)
                         this._orientationMatrix.prependTranslation(-this._pivot.x / this._pScaleX, -this._pivot.y / this._pScaleY, -this._pivot.z / this._pScaleZ);
 
                     return this._orientationMatrix;
@@ -8843,7 +8841,7 @@ var away;
 
                 if (!this._pivotZero) {
                     this._matrix3D.prependTranslation(-this._pivot.x / this._pScaleX, -this._pivot.y / this._pScaleY, -this._pivot.z / this._pScaleZ);
-                    if (this.alignmentMode != away.base.AlignmentMode.PIVOT_POINT)
+                    if (this.alignmentMode != base.AlignmentMode.PIVOT_POINT)
                         this._matrix3D.appendTranslation(this._pivot.x, this._pivot.y, this._pivot.z);
                 }
 
@@ -10605,7 +10603,7 @@ var away;
                 this._thicknessDirty = true;
                 this._colorsDirty = true;
 
-                this._pSubMeshClass = away.base.LineSubMesh;
+                this._pSubMeshClass = base.LineSubMesh;
             }
             LineSubGeometry.prototype._pUpdateStrideOffset = function () {
                 this._pOffset[LineSubGeometry.VERTEX_DATA] = 0;
@@ -10967,7 +10965,7 @@ var away;
                 this._positionsDirty = true;
 
                 if (!this._positionsUpdated)
-                    this._positionsUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.VERTICES_UPDATED, away.base.TriangleSubGeometry.POSITION_DATA);
+                    this._positionsUpdated = new away.events.SubGeometryEvent(away.events.SubGeometryEvent.VERTICES_UPDATED, base.TriangleSubGeometry.POSITION_DATA);
 
                 this.dispatchEvent(this._positionsUpdated);
             };
@@ -11005,7 +11003,7 @@ var away;
             LineSubGeometry.COLOR_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_4;
             LineSubGeometry.THICKNESS_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_1;
             return LineSubGeometry;
-        })(away.base.SubGeometryBase);
+        })(base.SubGeometryBase);
         base.LineSubGeometry = LineSubGeometry;
     })(away.base || (away.base = {}));
     var base = away.base;
@@ -11077,7 +11075,7 @@ var away;
                 renderer.applyLineSubMesh(this);
             };
             return LineSubMesh;
-        })(away.base.SubMeshBase);
+        })(base.SubMeshBase);
         base.LineSubMesh = LineSubMesh;
     })(away.base || (away.base = {}));
     var base = away.base;
@@ -11438,13 +11436,13 @@ var away;
             * Requests a ContextGL object to attach to the managed gl canvas.
             */
             StageGL.prototype.requestContext = function (aglslContext, forceSoftware, profile) {
-                if (typeof aglslContext === "undefined") { aglslContext = false; }
-                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
-                if (typeof profile === "undefined") { profile = "baseline"; }
                 // If forcing software, we can be certain that the
                 // returned ContextGL will be running software mode.
                 // If not, we can't be sure and should stick to the
                 // old value (will likely be same if re-requesting.)
+                if (typeof aglslContext === "undefined") { aglslContext = false; }
+                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
+                if (typeof profile === "undefined") { profile = "baseline"; }
                 if (this._usesSoftwareRendering != null)
                     this._usesSoftwareRendering = forceSoftware;
 
@@ -12113,7 +12111,7 @@ var away;
                 this._scaleU = 1;
                 this._scaleV = 1;
 
-                this._pSubMeshClass = away.base.TriangleSubMesh;
+                this._pSubMeshClass = base.TriangleSubMesh;
             }
             Object.defineProperty(TriangleSubGeometry.prototype, "scaleU", {
                 /**
@@ -13523,7 +13521,7 @@ var away;
             TriangleSubGeometry.UV_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_2;
             TriangleSubGeometry.SECONDARY_UV_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_2;
             return TriangleSubGeometry;
-        })(away.base.SubGeometryBase);
+        })(base.SubGeometryBase);
         base.TriangleSubGeometry = TriangleSubGeometry;
     })(away.base || (away.base = {}));
     var base = away.base;
@@ -13593,7 +13591,7 @@ var away;
                 renderer.applyTriangleSubMesh(this);
             };
             return TriangleSubMesh;
-        })(away.base.SubMeshBase);
+        })(base.SubMeshBase);
         base.TriangleSubMesh = TriangleSubMesh;
     })(away.base || (away.base = {}));
     var base = away.base;
@@ -13642,7 +13640,7 @@ var away;
             EntityListItemPool.prototype.getItem = function () {
                 var item;
                 if (this._index == this._poolSize) {
-                    item = new away.pool.EntityListItem();
+                    item = new pool.EntityListItem();
                     this._pool[this._index++] = item;
                     ++this._poolSize;
                 } else {
@@ -13675,7 +13673,7 @@ var away;
     /**
     * @module away.pool
     */
-    (function (pool) {
+    (function (_pool) {
         /**
         * @class away.pool.RenderablePool
         */
@@ -13737,7 +13735,7 @@ var away;
             RenderablePool._pools = new Object();
             return RenderablePool;
         })();
-        pool.RenderablePool = RenderablePool;
+        _pool.RenderablePool = RenderablePool;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -13747,7 +13745,7 @@ var away;
     /**
     * @module away.data
     */
-    (function (pool) {
+    (function (_pool) {
         /**
         * @class away.pool.RenderableListItem
         */
@@ -13791,7 +13789,7 @@ var away;
             };
             return CSSRenderableBase;
         })();
-        pool.CSSRenderableBase = CSSRenderableBase;
+        _pool.CSSRenderableBase = CSSRenderableBase;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -13801,7 +13799,7 @@ var away;
     /**
     * @module away.data
     */
-    (function (pool) {
+    (function (_pool) {
         /**
         * @class away.pool.RenderableListItem
         */
@@ -13830,8 +13828,8 @@ var away;
             }
             CSSBillboardRenderable.id = "billboard";
             return CSSBillboardRenderable;
-        })(away.pool.CSSRenderableBase);
-        pool.CSSBillboardRenderable = CSSBillboardRenderable;
+        })(_pool.CSSRenderableBase);
+        _pool.CSSBillboardRenderable = CSSBillboardRenderable;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -13841,7 +13839,7 @@ var away;
     /**
     * @module away.data
     */
-    (function (pool) {
+    (function (_pool) {
         /**
         * @class away.pool.RenderableListItem
         */
@@ -13870,8 +13868,8 @@ var away;
             }
             CSSLineSegmentRenderable.id = "lineSegment";
             return CSSLineSegmentRenderable;
-        })(away.pool.CSSRenderableBase);
-        pool.CSSLineSegmentRenderable = CSSLineSegmentRenderable;
+        })(_pool.CSSRenderableBase);
+        _pool.CSSLineSegmentRenderable = CSSLineSegmentRenderable;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -14093,7 +14091,7 @@ var away;
                 return node.isIntersectingRay(this._rayPosition, this._rayDirection);
             };
             return RaycastCollector;
-        })(away.traverse.CollectorBase);
+        })(traverse.CollectorBase);
         traverse.RaycastCollector = RaycastCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
@@ -14114,7 +14112,7 @@ var away;
                 _super.call(this);
             }
             return CSSEntityCollector;
-        })(away.traverse.CollectorBase);
+        })(traverse.CollectorBase);
         traverse.CSSEntityCollector = CSSEntityCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
@@ -14379,7 +14377,7 @@ var away;
         var Partition = (function () {
             function Partition(rootNode) {
                 this._updatesMade = false;
-                this._rootNode = rootNode || new away.partition.NullNode();
+                this._rootNode = rootNode || new partition.NullNode();
             }
             Object.defineProperty(Partition.prototype, "rootNode", {
                 get: function () {
@@ -14545,7 +14543,7 @@ var away;
                 return this._entity.bounds.boundingEntity;
             };
             return EntityNode;
-        })(away.partition.NodeBase);
+        })(partition.NodeBase);
         partition.EntityNode = EntityNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -14572,7 +14570,7 @@ var away;
                 // todo: dead end for now, if it has a debug mesh, then sure accept that
             };
             return CameraNode;
-        })(away.partition.EntityNode);
+        })(partition.EntityNode);
         partition.CameraNode = CameraNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -14614,7 +14612,7 @@ var away;
                 return true;
             };
             return SkyboxNode;
-        })(away.partition.EntityNode);
+        })(partition.EntityNode);
         partition.SkyboxNode = SkyboxNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -15473,7 +15471,7 @@ var away;
                 return new away.traverse.CSSEntityCollector();
             };
             return CSSDefaultRenderer;
-        })(away.render.CSSRendererBase);
+        })(render.CSSRendererBase);
         render.CSSDefaultRenderer = CSSDefaultRenderer;
     })(away.render || (away.render = {}));
     var render = away.render;
@@ -15750,7 +15748,7 @@ var away;
                 */
                 get: function () {
                     if (this._bottomRightBack == null)
-                        this._bottomRightBack = new away.geom.Vector3D();
+                        this._bottomRightBack = new geom.Vector3D();
 
                     this._bottomRightBack.x = this.x + this.width;
                     this._bottomRightBack.y = this.y + this.height;
@@ -15832,7 +15830,7 @@ var away;
                 */
                 get: function () {
                     if (this._size == null)
-                        this._size = new away.geom.Vector3D();
+                        this._size = new geom.Vector3D();
 
                     this._size.x = this.width;
                     this._size.y = this.height;
@@ -17196,12 +17194,12 @@ var away;
                 var m = this.clone();
                 var mr = m.rawData;
 
-                var pos = new away.geom.Vector3D(mr[12], mr[13], mr[14]);
+                var pos = new geom.Vector3D(mr[12], mr[13], mr[14]);
                 mr[12] = 0;
                 mr[13] = 0;
                 mr[14] = 0;
 
-                var scale = new away.geom.Vector3D();
+                var scale = new geom.Vector3D();
 
                 scale.x = Math.sqrt(mr[0] * mr[0] + mr[1] * mr[1] + mr[2] * mr[2]);
                 scale.y = Math.sqrt(mr[4] * mr[4] + mr[5] * mr[5] + mr[6] * mr[6]);
@@ -17220,10 +17218,10 @@ var away;
                 mr[9] /= scale.z;
                 mr[10] /= scale.z;
 
-                var rot = new away.geom.Vector3D();
+                var rot = new geom.Vector3D();
 
                 switch (orientationStyle) {
-                    case away.geom.Orientation3D.AXIS_ANGLE:
+                    case geom.Orientation3D.AXIS_ANGLE:
                         rot.w = Math.acos((mr[0] + mr[5] + mr[10] - 1) / 2);
 
                         var len = Math.sqrt((mr[6] - mr[9]) * (mr[6] - mr[9]) + (mr[8] - mr[2]) * (mr[8] - mr[2]) + (mr[1] - mr[4]) * (mr[1] - mr[4]));
@@ -17232,7 +17230,7 @@ var away;
                         rot.z = (mr[1] - mr[4]) / len;
 
                         break;
-                    case away.geom.Orientation3D.QUATERNION:
+                    case geom.Orientation3D.QUATERNION:
                         var tr = mr[0] + mr[5] + mr[10];
 
                         if (tr > 0) {
@@ -17262,7 +17260,7 @@ var away;
                         }
 
                         break;
-                    case away.geom.Orientation3D.EULER_ANGLES:
+                    case geom.Orientation3D.EULER_ANGLES:
                         rot.y = Math.asin(-mr[2]);
 
                         //var cos:number = Math.cos(rot.y);
@@ -17430,7 +17428,7 @@ var away;
             Matrix3D.prototype.prependTranslation = function (x, y, z) {
                 // Initial Tests - OK
                 var m = new Matrix3D();
-                m.position = new away.geom.Vector3D(x, y, z);
+                m.position = new geom.Vector3D(x, y, z);
                 this.prepend(m);
             };
 
@@ -17556,7 +17554,7 @@ var away;
                 * transformation's frame of reference.
                 */
                 get: function () {
-                    return new away.geom.Vector3D(this.rawData[12], this.rawData[13], this.rawData[14]);
+                    return new geom.Vector3D(this.rawData[12], this.rawData[13], this.rawData[14]);
                 },
                 set: function (value) {
                     this.rawData[12] = value.x;
@@ -17985,7 +17983,7 @@ var away;
                 */
                 get: function () {
                     if (this._bottomRight == null)
-                        this._bottomRight = new away.geom.Point();
+                        this._bottomRight = new geom.Point();
 
                     this._bottomRight.x = this.x + this.width;
                     this._bottomRight.y = this.y + this.height;
@@ -18032,7 +18030,7 @@ var away;
                 */
                 get: function () {
                     if (this._size == null)
-                        this._size = new away.geom.Point();
+                        this._size = new geom.Point();
 
                     this._size.x = this.width;
                     this._size.y = this.height;
@@ -18068,7 +18066,7 @@ var away;
                 */
                 get: function () {
                     if (this._topLeft == null)
-                        this._topLeft = new away.geom.Point();
+                        this._topLeft = new geom.Point();
 
                     this._topLeft.x = this.x;
                     this._topLeft.y = this.y;
@@ -18616,7 +18614,7 @@ var away;
                 * Defines the rotation of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
                 */
                 get: function () {
-                    return new away.geom.Vector3D(this._displayObject.rotationX, this._displayObject.rotationY, this._displayObject.rotationZ);
+                    return new geom.Vector3D(this._displayObject.rotationX, this._displayObject.rotationY, this._displayObject.rotationZ);
                 },
                 set: function (value) {
                     this._displayObject.rotationX = value.x;
@@ -18633,7 +18631,7 @@ var away;
                 * Defines the scale of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
                 */
                 get: function () {
-                    return new away.geom.Vector3D(this._displayObject.scaleX, this._displayObject.scaleY, this._displayObject.scaleZ);
+                    return new geom.Vector3D(this._displayObject.scaleX, this._displayObject.scaleY, this._displayObject.scaleZ);
                 },
                 set: function (value) {
                     this._displayObject.scaleX = value.x;
@@ -18675,7 +18673,7 @@ var away;
             *         object space.
             */
             Transform.prototype.getRelativeMatrix3D = function (relativeTo) {
-                return new away.geom.Matrix3D();
+                return new geom.Matrix3D();
             };
 
             /**
@@ -19927,7 +19925,7 @@ var away;
                     m.copyRawDataFrom(raw);
                     return m;
                 } else
-                    return new away.geom.Matrix3D(raw);
+                    return new geom.Matrix3D(raw);
             };
 
             /**
@@ -19940,7 +19938,7 @@ var away;
                 if (typeof v === "undefined") { v = null; }
                 //v ||= new Vector3D(0.0, 0.0, 0.0);
                 if (v === null) {
-                    v = new away.geom.Vector3D(0.0, 0.0, 0.0);
+                    v = new geom.Vector3D(0.0, 0.0, 0.0);
                 }
 
                 m.copyColumnTo(2, v);
@@ -19956,10 +19954,10 @@ var away;
             * @return            The up vector
             */
             Matrix3DUtils.getUp = function (m, v) {
-                if (typeof v === "undefined") { v = null; }
                 //v ||= new Vector3D(0.0, 0.0, 0.0);
+                if (typeof v === "undefined") { v = null; }
                 if (v === null) {
-                    v = new away.geom.Vector3D(0.0, 0.0, 0.0);
+                    v = new geom.Vector3D(0.0, 0.0, 0.0);
                 }
 
                 m.copyColumnTo(1, v);
@@ -19978,7 +19976,7 @@ var away;
                 if (typeof v === "undefined") { v = null; }
                 //v ||= new Vector3D(0.0, 0.0, 0.0);
                 if (v === null) {
-                    v = new away.geom.Vector3D(0.0, 0.0, 0.0);
+                    v = new geom.Vector3D(0.0, 0.0, 0.0);
                 }
 
                 m.copyColumnTo(0, v);
@@ -20043,7 +20041,7 @@ var away;
             Matrix3DUtils.reflection = function (plane, target) {
                 if (typeof target === "undefined") { target = null; }
                 if (target === null)
-                    target = new away.geom.Matrix3D();
+                    target = new geom.Matrix3D();
 
                 var a = plane.a, b = plane.b, c = plane.c, d = plane.d;
                 var rawData = Matrix3DUtils.RAW_DATA_CONTAINER;
@@ -20076,7 +20074,7 @@ var away;
             Matrix3DUtils.transformVector = function (matrix, vector, result) {
                 if (typeof result === "undefined") { result = null; }
                 if (!result)
-                    result = new away.geom.Vector3D();
+                    result = new geom.Vector3D();
 
                 var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
                 matrix.copyRawDataTo(raw);
@@ -20110,7 +20108,7 @@ var away;
             Matrix3DUtils.deltaTransformVector = function (matrix, vector, result) {
                 if (typeof result === "undefined") { result = null; }
                 if (!result)
-                    result = new away.geom.Vector3D();
+                    result = new geom.Vector3D();
 
                 var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
                 matrix.copyRawDataTo(raw);
@@ -20139,7 +20137,7 @@ var away;
             Matrix3DUtils.getTranslation = function (transform, result) {
                 if (typeof result === "undefined") { result = null; }
                 if (!result)
-                    result = new away.geom.Vector3D();
+                    result = new geom.Vector3D();
 
                 transform.copyColumnTo(3, result);
                 return result;
@@ -20173,7 +20171,7 @@ var away;
             };
             Matrix3DUtils.RAW_DATA_CONTAINER = new Array(16);
 
-            Matrix3DUtils.CALCULATION_MATRIX = new away.geom.Matrix3D();
+            Matrix3DUtils.CALCULATION_MATRIX = new geom.Matrix3D();
             return Matrix3DUtils;
         })();
         geom.Matrix3DUtils = Matrix3DUtils;
@@ -20540,7 +20538,7 @@ var away;
                 if (typeof ns === "undefined") { ns = null; }
                 if (typeof parser === "undefined") { parser = null; }
                 if (!this._token) {
-                    this._token = new away.net.AssetLoaderToken(this);
+                    this._token = new net.AssetLoaderToken(this);
 
                     this._uri = req.url = req.url.replace(/\\/g, "/");
                     this._context = context;
@@ -20569,7 +20567,7 @@ var away;
                 if (typeof ns === "undefined") { ns = null; }
                 if (typeof parser === "undefined") { parser = null; }
                 if (!this._token) {
-                    this._token = new away.net.AssetLoaderToken(this);
+                    this._token = new net.AssetLoaderToken(this);
 
                     this._uri = id;
                     this._context = context;
@@ -20626,7 +20624,7 @@ var away;
 
                 this._currentDependency = dependency;
 
-                dependency._iLoader = new away.net.URLLoader();
+                dependency._iLoader = new net.URLLoader();
 
                 this.addEventListeners(dependency._iLoader);
 
@@ -20658,7 +20656,7 @@ var away;
 
                     if (dependency.retrieveAsRawData) {
                         // Always use binary for raw data loading
-                        dependency._iLoader.dataFormat = away.net.URLLoaderDataFormat.BINARY;
+                        dependency._iLoader.dataFormat = net.URLLoaderDataFormat.BINARY;
                     } else {
                         if (!dependency.parser)
                             dependency._iSetParser(this.getParserFromSuffix(dependency.request.url));
@@ -20669,7 +20667,7 @@ var away;
                             // Always use BINARY for unknown file formats. The thorough
                             // file type check will determine format after load, and if
                             // binary, a text load will have broken the file data.
-                            dependency._iLoader.dataFormat = away.net.URLLoaderDataFormat.BINARY;
+                            dependency._iLoader.dataFormat = net.URLLoaderDataFormat.BINARY;
                         }
                     }
 
@@ -20718,10 +20716,7 @@ var away;
                     // If overriding full URLs, get rid of scheme (e.g. "http://")
                     // and replace with the dependencyBaseUrl defined by user.
                     if (this._context && this._context.overrideFullURLs) {
-                        var noscheme_url;
-
-                        noscheme_url = url['replace'](scheme_re);
-
+                        var noscheme_url = url.replace(scheme_re, '');
                         return this.joinUrl(this._context.dependencyBaseUrl, noscheme_url);
                     }
                 }
@@ -23096,8 +23091,6 @@ var away;
     */
     (function (entities) {
         var MaterialEvent = away.events.MaterialEvent;
-        var Matrix3D = away.geom.Matrix3D;
-        var UVTransform = away.geom.UVTransform;
 
         var Billboard = (function (_super) {
             __extends(Billboard, _super);
@@ -23547,9 +23540,6 @@ var away;
 (function (away) {
     (function (entities) {
         var MaterialEvent = away.events.MaterialEvent;
-        var Matrix3D = away.geom.Matrix3D;
-        var UVTransform = away.geom.UVTransform;
-        var Vector3D = away.geom.Vector3D;
 
         /**
         * A Line Segment primitive.
@@ -23771,14 +23761,8 @@ var away;
     (function (entities) {
         var Delegate = away.utils.Delegate;
 
-        var SubGeometryBase = away.base.SubGeometryBase;
-        var SubGeometry = away.base.TriangleSubGeometry;
-
         var Geometry = away.base.Geometry;
         var GeometryEvent = away.events.GeometryEvent;
-        var UVTransform = away.geom.UVTransform;
-
-        var EntityNode = away.partition.EntityNode;
 
         /**
         * Mesh is an instance of a Geometry, augmenting it with a presence in the scene graph, a material, and an animation
@@ -24251,8 +24235,6 @@ var away;
 var away;
 (function (away) {
     (function (entities) {
-        var UVTransform = away.geom.UVTransform;
-
         /**
         * A Skybox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
         * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
@@ -25432,7 +25414,7 @@ var away;
                 raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
                 raw[14] = -2 * this._pFar * this._pNear / (this._pFar - this._pNear);
 
-                if (this._pCoordinateSystem == away.projections.CoordinateSystem.RIGHT_HANDED)
+                if (this._pCoordinateSystem == projections.CoordinateSystem.RIGHT_HANDED)
                     raw[5] = -raw[5];
 
                 this._pMatrix.copyRawDataFrom(raw);
@@ -25453,7 +25435,7 @@ var away;
                 this._pMatrixInvalid = false;
             };
             return PerspectiveProjection;
-        })(away.projections.ProjectionBase);
+        })(projections.ProjectionBase);
         projections.PerspectiveProjection = PerspectiveProjection;
     })(away.projections || (away.projections = {}));
     var projections = away.projections;
@@ -25466,7 +25448,7 @@ var away;
             __extends(FreeMatrixProjection, _super);
             function FreeMatrixProjection() {
                 _super.call(this);
-                this._pMatrix.copyFrom(new away.projections.PerspectiveProjection().matrix);
+                this._pMatrix.copyFrom(new projections.PerspectiveProjection().matrix);
             }
             Object.defineProperty(FreeMatrixProjection.prototype, "near", {
                 //@override
@@ -25511,7 +25493,7 @@ var away;
                 this._pMatrixInvalid = false;
             };
             return FreeMatrixProjection;
-        })(away.projections.ProjectionBase);
+        })(projections.ProjectionBase);
         projections.FreeMatrixProjection = FreeMatrixProjection;
     })(away.projections || (away.projections = {}));
     var projections = away.projections;
@@ -25623,7 +25605,7 @@ var away;
                 this._pMatrixInvalid = false;
             };
             return OrthographicProjection;
-        })(away.projections.ProjectionBase);
+        })(projections.ProjectionBase);
         projections.OrthographicProjection = OrthographicProjection;
     })(away.projections || (away.projections = {}));
     var projections = away.projections;
@@ -25740,7 +25722,7 @@ var away;
                 this._pMatrixInvalid = false;
             };
             return OrthographicOffCenterProjection;
-        })(away.projections.ProjectionBase);
+        })(projections.ProjectionBase);
         projections.OrthographicOffCenterProjection = OrthographicOffCenterProjection;
     })(away.projections || (away.projections = {}));
     var projections = away.projections;
@@ -25861,7 +25843,7 @@ var away;
                 this._pMatrix.copyRowFrom(2, new away.geom.Vector3D(cx * a, cy * a, cz * a, cw * a));
             };
             return ObliqueNearPlaneProjection;
-        })(away.projections.ProjectionBase);
+        })(projections.ProjectionBase);
         projections.ObliqueNearPlaneProjection = ObliqueNearPlaneProjection;
     })(away.projections || (away.projections = {}));
     var projections = away.projections;
@@ -27231,7 +27213,7 @@ var away;
                 this.dispatchEvent(event);
             };
             return Loader;
-        })(away.containers.DisplayObjectContainer);
+        })(containers.DisplayObjectContainer);
         containers.Loader = Loader;
     })(away.containers || (away.containers = {}));
     var containers = away.containers;
@@ -27366,16 +27348,8 @@ var away;
         var CameraEvent = away.events.CameraEvent;
         var SceneEvent = away.events.SceneEvent;
         var RendererEvent = away.events.RendererEvent;
-        var Matrix3D = away.geom.Matrix3D;
-        var Point = away.geom.Point;
-        var Rectangle = away.geom.Rectangle;
-        var Vector3D = away.geom.Vector3D;
-        var ContextGL = away.gl.ContextGL;
-        var ContextGLTextureFormat = away.gl.ContextGLTextureFormat;
-        var Texture = away.gl.Texture;
-        var MouseManager = away.managers.MouseManager;
 
-        var CSSRendererBase = away.render.CSSRendererBase;
+        var MouseManager = away.managers.MouseManager;
 
         var Delegate = away.utils.Delegate;
 
@@ -27935,14 +27909,8 @@ var away;
 ///<reference path="../_definitions.ts" />
 var away;
 (function (away) {
-    (function (bounds) {
-        var Geometry = away.base.Geometry;
-        var SubGeometryBase = away.base.SubGeometryBase;
-
+    (function (_bounds) {
         var Box = away.geom.Box;
-        var Matrix3D = away.geom.Matrix3D;
-        var Plane3D = away.geom.Plane3D;
-        var Vector3D = away.geom.Vector3D;
 
         var BoundingVolumeBase = (function () {
             function BoundingVolumeBase() {
@@ -28181,14 +28149,14 @@ var away;
             };
             return BoundingVolumeBase;
         })();
-        bounds.BoundingVolumeBase = BoundingVolumeBase;
+        _bounds.BoundingVolumeBase = BoundingVolumeBase;
     })(away.bounds || (away.bounds = {}));
     var bounds = away.bounds;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts" />
 var away;
 (function (away) {
-    (function (bounds) {
+    (function (_bounds) {
         var NullBounds = (function (_super) {
             __extends(NullBounds, _super);
             function NullBounds(alwaysIn) {
@@ -28237,15 +28205,15 @@ var away;
                 this._alwaysIn = bounds._alwaysIn;
             };
             return NullBounds;
-        })(away.bounds.BoundingVolumeBase);
-        bounds.NullBounds = NullBounds;
+        })(_bounds.BoundingVolumeBase);
+        _bounds.NullBounds = NullBounds;
     })(away.bounds || (away.bounds = {}));
     var bounds = away.bounds;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts" />
 var away;
 (function (away) {
-    (function (bounds) {
+    (function (_bounds) {
         var BoundingSphere = (function (_super) {
             __extends(BoundingSphere, _super);
             function BoundingSphere() {
@@ -28447,14 +28415,14 @@ var away;
             };
             return BoundingSphere;
         })(away.bounds.BoundingVolumeBase);
-        bounds.BoundingSphere = BoundingSphere;
+        _bounds.BoundingSphere = BoundingSphere;
     })(away.bounds || (away.bounds = {}));
     var bounds = away.bounds;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts" />
 var away;
 (function (away) {
-    (function (bounds) {
+    (function (_bounds) {
         //import away3d.arcane;
         //import away3d.core.geom.*;
         //import away3d.primitives.*;
@@ -28785,7 +28753,7 @@ var away;
             };
             return AxisAlignedBoundingBox;
         })(away.bounds.BoundingVolumeBase);
-        bounds.AxisAlignedBoundingBox = AxisAlignedBoundingBox;
+        _bounds.AxisAlignedBoundingBox = AxisAlignedBoundingBox;
     })(away.bounds || (away.bounds = {}));
     var bounds = away.bounds;
 })(away || (away = {}));
@@ -29668,7 +29636,7 @@ var away;
                 _super.prototype.update.call(this);
             };
             return SpringController;
-        })(away.controllers.LookAtController);
+        })(controllers.LookAtController);
         controllers.SpringController = SpringController;
     })(away.controllers || (away.controllers = {}));
     var controllers = away.controllers;
@@ -29679,10 +29647,8 @@ var away;
 (function (away) {
     (function (materials) {
         var BlendMode = away.base.BlendMode;
-        var MaterialEvent = away.events.MaterialEvent;
-        var Matrix3D = away.geom.Matrix3D;
+
         var AssetType = away.library.AssetType;
-        var Delegate = away.utils.Delegate;
 
         /**
         * MaterialBase forms an abstract base class for any material.
@@ -29968,8 +29934,6 @@ var away;
 var away;
 (function (away) {
     (function (prefabs) {
-        var DisplayObject = away.base.DisplayObject;
-
         //	import BatchObject				= away.base.BatchObject;
         var AbstractMethodError = away.errors.AbstractMethodError;
 
@@ -30278,7 +30242,6 @@ var away;
 (function (away) {
     (function (textures) {
         var ContextGLTextureFormat = away.gl.ContextGLTextureFormat;
-        var ByteArray = away.utils.ByteArray;
 
         var ATFData = (function () {
             /** Create a new instance by parsing the given byte array. */
@@ -30343,19 +30306,14 @@ var away;
 var away;
 (function (away) {
     (function (textures) {
-        var ContextGL = away.gl.ContextGL;
-        var CubeTexture = away.gl.CubeTexture;
-        var TextureBase = away.gl.TextureBase;
-        var ByteArray = away.utils.ByteArray;
-
         var ATFCubeTexture = (function (_super) {
             __extends(ATFCubeTexture, _super);
             function ATFCubeTexture(byteArray) {
                 _super.call(this);
 
-                this.atfData = new away.textures.ATFData(byteArray);
+                this.atfData = new textures.ATFData(byteArray);
 
-                if (this._atfData.type != away.textures.ATFData.TYPE_CUBE)
+                if (this._atfData.type != textures.ATFData.TYPE_CUBE)
                     throw new Error("ATF isn't cubetexture");
 
                 this._pFormat = this._atfData.format;
@@ -30385,7 +30343,7 @@ var away;
                 return context.createCubeTexture(this._atfData.width, this._atfData.format, false);
             };
             return ATFCubeTexture;
-        })(away.textures.CubeTextureBase);
+        })(textures.CubeTextureBase);
         textures.ATFCubeTexture = ATFCubeTexture;
     })(away.textures || (away.textures = {}));
     var textures = away.textures;
@@ -30394,17 +30352,12 @@ var away;
 var away;
 (function (away) {
     (function (textures) {
-        var ContextGL = away.gl.ContextGL;
-        var Texture = away.gl.Texture;
-        var TextureBase = away.gl.TextureBase;
-        var ByteArray = away.utils.ByteArray;
-
         var ATFTexture = (function (_super) {
             __extends(ATFTexture, _super);
             function ATFTexture(byteArray) {
                 _super.call(this);
 
-                this.atfData = new away.textures.ATFData(byteArray);
+                this.atfData = new textures.ATFData(byteArray);
                 this._pFormat = this._atfData.format;
                 this._pHasMipmaps = this._atfData.numTextures > 1;
             }
@@ -30432,7 +30385,7 @@ var away;
                 return context.createTexture(this._pWidth, this._pHeight, this.atfData.format, false);
             };
             return ATFTexture;
-        })(away.textures.Texture2DBase);
+        })(textures.Texture2DBase);
         textures.ATFTexture = ATFTexture;
     })(away.textures || (away.textures = {}));
     var textures = away.textures;
@@ -30861,7 +30814,7 @@ var away;
                 }
             };
             return ImageCubeTexture;
-        })(away.textures.CubeTextureBase);
+        })(textures.CubeTextureBase);
         textures.ImageCubeTexture = ImageCubeTexture;
     })(away.textures || (away.textures = {}));
     var textures = away.textures;
@@ -31012,7 +30965,7 @@ var away;
                 }
             };
             return BitmapCubeTexture;
-        })(away.textures.CubeTextureBase);
+        })(textures.CubeTextureBase);
         textures.BitmapCubeTexture = BitmapCubeTexture;
     })(away.textures || (away.textures = {}));
     var textures = away.textures;
@@ -31117,9 +31070,8 @@ var away;
     (function (textures) {
         var BitmapData = away.base.BitmapData;
         var BitmapDataChannel = away.base.BitmapDataChannel;
-        var TextureBase = away.gl.TextureBase;
+
         var Point = away.geom.Point;
-        var Rectangle = away.geom.Rectangle;
 
         /**
         * A convenience texture that encodes a specular map in the red channel, and the gloss map in the green channel, as expected by BasicSpecularMapMethod
@@ -31214,7 +31166,7 @@ var away;
                 this.bitmapData = null;
             };
             return SpecularBitmapTexture;
-        })(away.textures.BitmapTexture);
+        })(textures.BitmapTexture);
         textures.SpecularBitmapTexture = SpecularBitmapTexture;
     })(away.textures || (away.textures = {}));
     var textures = away.textures;
@@ -31783,7 +31735,7 @@ var aglsl;
                         if (this.cur.name == "comment") {
                             return;
                         }
-                        var op = aglsl.assembler.OpcodeMap.map[tokens[0]];
+                        var op = assembler.OpcodeMap.map[tokens[0]];
                         if (!op) {
                             throw "Bad opcode " + tokens[0] + " " + linenr + ": " + line;
                         }
@@ -31866,9 +31818,9 @@ var aglsl;
 
                 // console.log( 'aglsl.assembler.AGALMiniAssembler' , 'emitDest' , 'reg' , reg , reg[1] , RegMap.map[reg[1]] );
                 // console.log( 'aglsl.assembler.AGALMiniAssembler' , 'emitDest' , 'RegMap.map[reg[1]]' , RegMap.map[reg[1]] , 'bool' , !RegMap.map[reg[1]] ) ;
-                if (!aglsl.assembler.RegMap.map[reg[1]])
+                if (!assembler.RegMap.map[reg[1]])
                     return false;
-                var em = { num: reg[2] ? reg[2] : 0, code: aglsl.assembler.RegMap.map[reg[1]].code, mask: this.stringToMask(reg[3]) };
+                var em = { num: reg[2] ? reg[2] : 0, code: assembler.RegMap.map[reg[1]].code, mask: this.stringToMask(reg[3]) };
                 pr.data.writeUnsignedShort(em.num);
                 pr.data.writeUnsignedByte(em.mask);
                 pr.data.writeUnsignedByte(em.code);
@@ -31946,7 +31898,7 @@ var aglsl;
                 var samplerbits = 0x5;
                 var sampleroptset = 0;
                 for (var i = 0; i < opts.length; i++) {
-                    var o = aglsl.assembler.SamplerMap.map[opts[i].toLowerCase()];
+                    var o = assembler.SamplerMap.map[opts[i].toLowerCase()];
 
                     //console.log( 'AGALMiniAssembler' , 'emitSampler' , 'SampleMap opt:' , o , '<-------- WATCH FOR THIS');
                     if (o) {
@@ -31969,11 +31921,11 @@ var aglsl;
                 var indexed = token.match(/vc\[(v[tcai])(\d+)\.([xyzw])([\+\-]\d+)?\](\.[xyzw]{1,4})?/i);
                 var reg;
                 if (indexed) {
-                    if (!aglsl.assembler.RegMap.map[indexed[1]]) {
+                    if (!assembler.RegMap.map[indexed[1]]) {
                         return false;
                     }
                     var selindex = { x: 0, y: 1, z: 2, w: 3 };
-                    var em = { num: indexed[2] | 0, code: aglsl.assembler.RegMap.map[indexed[1]].code, swizzle: this.stringToSwizzle(indexed[5]), select: selindex[indexed[3]], offset: indexed[4] | 0 };
+                    var em = { num: indexed[2] | 0, code: assembler.RegMap.map[indexed[1]].code, swizzle: this.stringToSwizzle(indexed[5]), select: selindex[indexed[3]], offset: indexed[4] | 0 };
                     pr.data.writeUnsignedShort(em.num);
                     pr.data.writeByte(em.offset);
                     pr.data.writeUnsignedByte(em.swizzle);
@@ -31983,10 +31935,10 @@ var aglsl;
                     pr.data.writeUnsignedByte(1 << 7);
                 } else {
                     reg = token.match(/([fov]?[tpocidavs])(\d*)(\.[xyzw]{1,4})?/i); // g1: regname, g2:regnum, g3:swizzle
-                    if (!aglsl.assembler.RegMap.map[reg[1]]) {
+                    if (!assembler.RegMap.map[reg[1]]) {
                         return false;
                     }
-                    var em = { num: reg[2] | 0, code: aglsl.assembler.RegMap.map[reg[1]].code, swizzle: this.stringToSwizzle(reg[3]) };
+                    var em = { num: reg[2] | 0, code: assembler.RegMap.map[reg[1]].code, swizzle: this.stringToSwizzle(reg[3]) };
                     pr.data.writeUnsignedShort(em.num);
                     pr.data.writeUnsignedByte(0);
                     pr.data.writeUnsignedByte(em.swizzle);
@@ -32420,6 +32372,265 @@ var aglsl;
     })();
     aglsl.AGLSLCompiler = AGLSLCompiler;
 })(aglsl || (aglsl = {}));
+/**********************************************************************************************************************************************************************************************************
+* This file contains a reference to all the classes used in the project.
+********************************************************************************************************************************************************************************************************
+*
+* The TypeScript compiler exports classes in a non deterministic manner, as the extend functionality copies the prototype chain
+* of one object onto another during initialisation and load (to create extensible functionality), the non deterministic nature of the
+* compiler can result in an extend operation referencing a class that is undefined and not yet loaded - which throw an JavaScript error.
+*
+* This file provides the compiler with a strict order in which to export the TypeScript classes to mitigate undefined extend errors
+*
+* @see https://typescript.codeplex.com/workitem/1356 @see https://typescript.codeplex.com/workitem/913
+*
+*********************************************************************************************************************************************************************************************************/
+///<reference path="../../build/ref/js.d.ts"/>
+///<reference path="errors/Error.ts" />
+///<reference path="errors/ArgumentError.ts" />
+///<reference path="errors/CastError.ts" />
+///<reference path="errors/PartialImplementationError.ts" />
+///<reference path="errors/AbstractMethodError.ts" />
+///<reference path="errors/DocumentError.ts" />
+///<reference path="errors/RangeError.ts" />
+///<reference path="events/Event.ts" />
+///<reference path="events/AssetEvent.ts" />
+///<reference path="events/CameraEvent.ts" />
+///<reference path="events/DisplayObjectEvent.ts" />
+///<reference path="events/EventDispatcher.ts" />
+///<reference path="events/GeometryEvent.ts" />
+///<reference path="events/HTTPStatusEvent.ts" />
+///<reference path="events/IEventDispatcher.ts" />
+///<reference path="events/IOErrorEvent.ts" />
+///<reference path="events/ProjectionEvent.ts" />
+///<reference path="events/LoaderEvent.ts" />
+///<reference path="events/ParserEvent.ts" />
+///<reference path="events/MouseEvent.ts"/>
+///<reference path="events/MaterialEvent.ts" />
+///<reference path="events/ProgressEvent.ts" />
+///<reference path="events/RendererEvent.ts" />
+///<reference path="events/SceneEvent.ts"/>
+///<reference path="events/StageGLEvent.ts"/>
+///<reference path="events/SubGeometryEvent.ts"/>
+///<reference path="events/TimerEvent.ts" />
+///<reference path="utils/ByteArrayBase.ts"/>
+///<reference path="utils/ByteArray.ts"/>
+///<reference path="utils/ByteArrayBuffer.ts"/>
+///<reference path="utils/ColorUtils.ts"/>
+///<reference path="utils/Cast.ts"/>
+///<reference path="utils/CSS.ts" />
+///<reference path="utils/Debug.ts"/>
+///<reference path="utils/Delegate.ts"/>
+///<reference path="utils/getTimer.ts" />
+///<reference path="utils/RequestAnimationFrame.ts"/>
+///<reference path="utils/TextureUtils.ts" />
+///<reference path="utils/Timer.ts" />
+///<reference path="parsers/ParserBase.ts" />
+///<reference path="parsers/BitmapParser.ts" />
+///<reference path="parsers/CubeTextureParser.ts" />
+///<reference path="parsers/Texture2DParser.ts" />
+///<reference path="parsers/ParserDataFormat.ts" />
+///<reference path="parsers/ParserUtils.ts" />
+///<reference path="parsers/ResourceDependency.ts" />
+///<reference path="core/library/IAsset.ts" />
+///<reference path="core/library/IDUtil.ts" />
+///<reference path="core/library/NamedAssetBase.ts" />
+///<reference path="core/library/AssetType.ts" />
+///<reference path="core/library/AssetLibraryIterator.ts" />
+///<reference path="core/library/ConflictStrategyBase.ts" />
+///<reference path="core/library/NumSuffixConflictStrategy.ts" />
+///<reference path="core/library/IgnoreConflictStrategy.ts" />
+///<reference path="core/library/ErrorConflictStrategy.ts" />
+///<reference path="core/library/ConflictPrecedence.ts" />
+///<reference path="core/library/ConflictStrategy.ts" />
+///<reference path="core/library/AssetLibraryBundle.ts"/>
+///<reference path="core/library/AssetLibrary.ts" />
+///<reference path="core/gl/ContextGLClearMask.ts"/>
+///<reference path="core/gl/VertexBuffer.ts"/>
+///<reference path="core/gl/VertexData.ts" />
+///<reference path="core/gl/VertexDataPool.ts" />
+///<reference path="core/gl/IndexBuffer.ts"/>
+///<reference path="core/gl/IndexData.ts" />
+///<reference path="core/gl/IndexDataPool.ts" />
+///<reference path="core/gl/Program.ts"/>
+///<reference path="core/gl/SamplerState.ts"/>
+///<reference path="core/gl/ContextGLTextureFormat.ts"/>
+///<reference path="core/gl/TextureBase.ts"/>
+///<reference path="core/gl/Texture.ts" />
+///<reference path="core/gl/CubeTexture.ts" />
+///<reference path="core/gl/ContextGLTriangleFace.ts"/>
+///<reference path="core/gl/ContextGLVertexBufferFormat.ts"/>
+///<reference path="core/gl/ContextGLProgramType.ts"/>
+///<reference path="core/gl/ContextGLBlendFactor.ts"/>
+///<reference path="core/gl/ContextGLCompareMode.ts"/>
+///<reference path="core/gl/ContextGLMipFilter.ts"/>
+///<reference path="core/gl/ContextGLProfile.ts"/>
+///<reference path="core/gl/ContextGLStencilAction.ts"/>
+///<reference path="core/gl/ContextGLTextureFilter.ts"/>
+///<reference path="core/gl/ContextGLWrapMode.ts"/>
+///<reference path="core/gl/ContextGL.ts" />
+///<reference path="core/gl/AGLSLContextGL.ts" />
+///<reference path="core/base/BlendMode.ts"/>
+///<reference path="core/base/AlignmentMode.ts"/>
+///<reference path="core/base/OrientationMode.ts"/>
+///<reference path="core/base/BitmapData.ts"/>
+///<reference path="core/base/BitmapDataChannel.ts"/>
+///<reference path="core/base/CapsStyle"/>
+///<reference path="core/base/DisplayObject.ts" />
+///<reference path="core/base/Geometry.ts" />
+///<reference path="core/base/GradientType.ts" />
+///<reference path="core/base/Graphics.ts" />
+///<reference path="core/base/GraphicsPathWinding.ts" />
+///<reference path="core/base/IBitmapDrawable.ts" />
+///<reference path="core/base/IGraphicsData.ts" />
+///<reference path="core/base/IMaterialOwner.ts" />
+///<reference path="core/base/InterpolationMethod.ts" />
+///<reference path="core/base/ISubMesh.ts" />
+///<reference path="core/base/ISubMeshClass.ts" />
+///<reference path="core/base/SubGeometryBase.ts" />
+///<reference path="core/base/SubMeshBase.ts" />
+///<reference path="core/base/JointStyle.ts" />
+///<reference path="core/base/LineScaleMode.ts" />
+///<reference path="core/base/LineSubGeometry.ts" />
+///<reference path="core/base/LineSubMesh.ts" />
+///<reference path="core/base/LoaderInfo.ts" />
+///<reference path="core/base/PixelSnapping.ts" />
+///<reference path="core/base/SpreadMethod.ts" />
+///<reference path="core/base/StageGL.ts" />
+///<reference path="core/base/TriangleCulling.ts" />
+///<reference path="core/base/TriangleSubGeometry.ts" />
+///<reference path="core/base/TriangleSubMesh.ts" />
+///<reference path="core/pool/EntityListItem.ts"/>
+///<reference path="core/pool/EntityListItemPool.ts"/>
+///<reference path="core/pool/IRenderable.ts"/>
+///<reference path="core/pool/IRenderableClass.ts"/>
+///<reference path="core/pool/RenderablePool.ts"/>
+///<reference path="core/pool/CSSRenderableBase.ts"/>
+///<reference path="core/pool/CSSBillboardRenderable.ts"/>
+///<reference path="core/pool/CSSLineSegmentRenderable.ts"/>
+///<reference path="core/traverse/ICollector.ts" />
+///<reference path="core/traverse/CollectorBase.ts" />
+///<reference path="core/traverse/RaycastCollector.ts" />
+///<reference path="core/traverse/CSSEntityCollector.ts" />
+///<reference path="core/partition/NodeBase.ts" />
+///<reference path="core/partition/NullNode.ts" />
+///<reference path="core/partition/Partition.ts" />
+///<reference path="core/partition/EntityNode.ts" />
+///<reference path="core/partition/CameraNode.ts" />
+///<reference path="core/partition/SkyboxNode.ts" />
+///<reference path="core/pick/IPickingCollider.ts" />
+///<reference path="core/pick/IPicker.ts"/>
+///<reference path="core/pick/PickingCollisionVO.ts"/>
+///<reference path="core/pick/RaycastPicker.ts" />
+///<reference path="core/render/IRenderer.ts"/>
+///<reference path="core/render/CSSRendererBase.ts"/>
+///<reference path="core/render/CSSDefaultRenderer.ts"/>
+///<reference path="core/sort/IEntitySorter.ts"/>
+///<reference path="core/sort/RenderableMergeSort.ts"/>
+///<reference path="core/geom/Box.ts"/>
+///<reference path="core/geom/ColorTransform.ts"/>
+///<reference path="core/geom/Matrix.ts" />
+///<reference path="core/geom/Matrix3D.ts" />
+///<reference path="core/geom/Orientation3D.ts" />
+///<reference path="core/geom/PerspectiveProjection.ts" />
+///<reference path="core/geom/Point.ts" />
+///<reference path="core/geom/Rectangle.ts" />
+///<reference path="core/geom/Transform.ts" />
+///<reference path="core/geom/UVTransform.ts" />
+///<reference path="core/geom/Vector3D.ts" />
+///<reference path="core/geom/MathConsts.ts" />
+///<reference path="core/geom/Quaternion.ts" />
+///<reference path="core/geom/PlaneClassification.ts" />
+///<reference path="core/geom/Plane3D.ts" />
+///<reference path="core/geom/Matrix3DUtils.ts" />
+///<reference path="core/geom/PoissonLookup.ts" />
+///<reference path="core/net/AssetLoaderContext.ts"/>
+///<reference path="core/net/AssetLoader.ts" />
+///<reference path="core/net/AssetLoaderToken.ts" />
+///<reference path="core/net/URLRequest.ts" />
+///<reference path="core/net/URLLoaderDataFormat.ts" />
+///<reference path="core/net/URLRequestMethod.ts" />
+///<reference path="core/net/URLLoader.ts" />
+///<reference path="core/net/URLVariables.ts" />
+///<reference path="core/text/AntiAliasType.ts"/>
+///<reference path="core/text/GridFitType.ts"/>
+///<reference path="core/text/TextFieldAutoSize.ts"/>
+///<reference path="core/text/TextFieldType.ts"/>
+///<reference path="core/text/TextFormat.ts"/>
+///<reference path="core/text/TextFormatAlign.ts"/>
+///<reference path="core/text/TextInteractionMode.ts"/>
+///<reference path="core/text/TextLineMetrics.ts"/>
+///<reference path="core/ui/Keyboard.ts"/>
+///<reference path="containers/DisplayObjectContainer.ts" />
+///<reference path="entities/IEntity.ts" />
+///<reference path="entities/Billboard.ts" />
+///<reference path="entities/Camera.ts" />
+///<reference path="entities/LineSegment.ts" />
+///<reference path="entities/Mesh.ts" />
+///<reference path="entities/Shape.ts" />
+///<reference path="entities/Skybox.ts" />
+///<reference path="entities/TextField.ts" />
+///<reference path="projections/CoordinateSystem.ts" />
+///<reference path="projections/IProjection.ts" />
+///<reference path="projections/ProjectionBase.ts" />
+///<reference path="projections/PerspectiveProjection.ts" />
+///<reference path="projections/FreeMatrixProjection.ts" />
+///<reference path="projections/OrthographicProjection.ts" />
+///<reference path="projections/OrthographicOffCenterProjection.ts" />
+///<reference path="projections/ObliqueNearPlaneProjection.ts" />
+///<reference path="managers/MouseManager.ts"/>
+///<reference path="managers/RTTBufferManager.ts"/>
+///<reference path="managers/StageGLManager.ts"/>
+///<reference path="containers/Loader.ts" />
+///<reference path="containers/Scene.ts" />
+///<reference path="containers/View.ts" />
+///<reference path="bounds/BoundingVolumeBase.ts" />
+///<reference path="bounds/NullBounds.ts" />
+///<reference path="bounds/BoundingSphere.ts" />
+///<reference path="bounds/AxisAlignedBoundingBox.ts" />
+///<reference path="controllers/ControllerBase.ts"/>
+///<reference path="controllers/LookAtController.ts"/>
+///<reference path="controllers/HoverController.ts"/>
+///<reference path="controllers/FirstPersonController.ts"/>
+///<reference path="controllers/FollowController.ts"/>
+///<reference path="controllers/SpringController.ts"/>
+///<reference path="materials/IMaterial.ts"/>
+///<reference path="materials/CSSMaterialBase.ts"/>
+///<reference path="prefabs/PrefabBase.ts"/>
+///<reference path="animators/nodes/AnimationNodeBase.ts"/>
+///<reference path="animators/IAnimationSet.ts"/>
+///<reference path="animators/IAnimator.ts"/>
+///<reference path="textures/TextureProxyBase.ts" />
+///<reference path="textures/Texture2DBase.ts" />
+///<reference path="textures/CubeTextureBase.ts" />
+///<reference path="textures/ATFData.ts" />
+///<reference path="textures/ATFCubeTexture.ts" />
+///<reference path="textures/ATFTexture.ts" />
+///<reference path="textures/ImageTexture.ts" />
+///<reference path="textures/BitmapTexture.ts" />
+///<reference path="textures/RenderTexture.ts" />
+///<reference path="textures/ImageCubeTexture.ts" />
+///<reference path="textures/BitmapCubeTexture.ts" />
+///<reference path="textures/MipmapGenerator.ts" />
+///<reference path="textures/SpecularBitmapTexture.ts" />
+///<reference path="../aglsl/Sampler.ts"/>
+///<reference path="../aglsl/Token.ts"/>
+///<reference path="../aglsl/Header.ts"/>
+///<reference path="../aglsl/OpLUT.ts"/>
+///<reference path="../aglsl/Header.ts"/>
+///<reference path="../aglsl/Description.ts"/>
+///<reference path="../aglsl/Destination.ts"/>
+///<reference path="../aglsl/ContextGL.ts"/>
+///<reference path="../aglsl/Mapping.ts"/>
+///<reference path="../aglsl/assembler/OpCode.ts"/>
+///<reference path="../aglsl/assembler/OpcodeMap.ts"/>
+///<reference path="../aglsl/assembler/Part.ts"/>
+///<reference path="../aglsl/assembler/RegMap.ts"/>
+///<reference path="../aglsl/assembler/SamplerMap.ts"/>
+///<reference path="../aglsl/assembler/AGALMiniAssembler.ts"/>
+///<reference path="../aglsl/AGALTokenizer.ts"/>
+///<reference path="../aglsl/Parser.ts"/>
+///<reference path="../aglsl/AGLSLCompiler.ts"/>
 ///<reference path="away/_definitions.ts"/>
 away.Debug.THROW_ERRORS = false;
 away.Debug.LOG_PI_ERRORS = false;

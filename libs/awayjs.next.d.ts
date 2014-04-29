@@ -1,4 +1,3 @@
-/// <reference path="ref/webgl.d.ts" />
 /// <reference path="ref/js.d.ts" />
 declare module away.errors {
     class Error {
@@ -36,7 +35,7 @@ declare module away.errors {
     * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
     * by a concrete subclass.
     */
-    class ArgumentError extends errors.Error {
+    class ArgumentError extends Error {
         /**
         * Create a new ArgumentError.
         *
@@ -47,7 +46,7 @@ declare module away.errors {
     }
 }
 declare module away.errors {
-    class CastError extends errors.Error {
+    class CastError extends Error {
         constructor(message: string);
     }
 }
@@ -56,7 +55,7 @@ declare module away.errors {
     * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
     * by a concrete subclass.
     */
-    class PartialImplementationError extends errors.Error {
+    class PartialImplementationError extends Error {
         /**
         * Create a new AbstractMethodError.
         * @param message An optional message to override the default error message.
@@ -70,7 +69,7 @@ declare module away.errors {
     * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
     * by a concrete subclass.
     */
-    class AbstractMethodError extends errors.Error {
+    class AbstractMethodError extends Error {
         /**
         * Create a new AbstractMethodError.
         * @param message An optional message to override the default error message.
@@ -80,7 +79,7 @@ declare module away.errors {
     }
 }
 declare module away.errors {
-    class DocumentError extends errors.Error {
+    class DocumentError extends Error {
         static DOCUMENT_DOES_NOT_EXIST: string;
         constructor(message?: string, id?: number);
     }
@@ -90,7 +89,7 @@ declare module away.errors {
     * RangeError is thrown when an index is accessed out of range of the number of
     * available indices on an Array.
     */
-    class RangeError extends errors.Error {
+    class RangeError extends Error {
         /**
         * Create a new RangeError.
         *
@@ -137,7 +136,7 @@ declare module away.events {
     /**
     * @class away.events.AssetEvent
     */
-    class AssetEvent extends events.Event {
+    class AssetEvent extends Event {
         /**
         *
         */
@@ -159,11 +158,11 @@ declare module away.events {
         /**
         *
         */
-        constructor(type: string, asset?: away.library.IAsset, prevName?: string);
+        constructor(type: string, asset?: library.IAsset, prevName?: string);
         /**
         *
         */
-        public asset : away.library.IAsset;
+        public asset : library.IAsset;
         /**
         *
         */
@@ -171,7 +170,7 @@ declare module away.events {
         /**
         *
         */
-        public clone(): events.Event;
+        public clone(): Event;
     }
 }
 /**
@@ -181,26 +180,26 @@ declare module away.events {
     /**
     * @class away.events.CameraEvent
     */
-    class CameraEvent extends events.Event {
+    class CameraEvent extends Event {
         static PROJECTION_CHANGED: string;
         private _camera;
-        constructor(type: string, camera: away.entities.Camera);
-        public camera : away.entities.Camera;
+        constructor(type: string, camera: entities.Camera);
+        public camera : entities.Camera;
     }
 }
 /**
 * @module away.events
 */
 declare module away.events {
-    class DisplayObjectEvent extends events.Event {
+    class DisplayObjectEvent extends Event {
         static VISIBLITY_UPDATED: string;
         static SCENETRANSFORM_CHANGED: string;
         static SCENE_CHANGED: string;
         static POSITION_CHANGED: string;
         static ROTATION_CHANGED: string;
         static SCALE_CHANGED: string;
-        public object: away.base.DisplayObject;
-        constructor(type: string, object: away.base.DisplayObject);
+        public object: base.DisplayObject;
+        constructor(type: string, object: base.DisplayObject);
     }
 }
 /**
@@ -236,7 +235,7 @@ declare module away.events {
         * @method dispatchEvent
         * @param {Event} Event to dispatch
         */
-        public dispatchEvent(event: events.Event): void;
+        public dispatchEvent(event: Event): void;
         /**
         * get Event Listener Index in array. Returns -1 if no listener is added
         * @method getEventListenerIndex
@@ -260,7 +259,7 @@ declare module away.events {
     * @class away.events.GeometryEvent
     * @see away3d.core.base.Geometry
     */
-    class GeometryEvent extends events.Event {
+    class GeometryEvent extends Event {
         /**
         * Dispatched when a TriangleSubGeometry was added to the dispatching Geometry.
         */
@@ -276,23 +275,23 @@ declare module away.events {
         * @param type The event type.
         * @param subGeometry An optional TriangleSubGeometry object that is the subject of this event.
         */
-        constructor(type: string, subGeometry?: away.base.SubGeometryBase);
+        constructor(type: string, subGeometry?: base.SubGeometryBase);
         /**
         * The TriangleSubGeometry object that is the subject of this event, if appropriate.
         */
-        public subGeometry : away.base.SubGeometryBase;
+        public subGeometry : base.SubGeometryBase;
         /**
         * Clones the event.
         * @return An exact duplicate of the current object.
         */
-        public clone(): events.Event;
+        public clone(): Event;
     }
 }
 declare module away.events {
     /**
     * @class away.events.HTTPStatusEvent
     */
-    class HTTPStatusEvent extends events.Event {
+    class HTTPStatusEvent extends Event {
         static HTTP_STATUS: string;
         public status: number;
         constructor(type: string, status?: number);
@@ -328,7 +327,7 @@ declare module away.events {
         * @method dispatchEvent
         * @param {Event} Event to dispatch
         */
-        dispatchEvent(event: events.Event): any;
+        dispatchEvent(event: Event): any;
         /**
         * check if an object has an event listener assigned to it
         * @method hasListener
@@ -343,7 +342,7 @@ declare module away.events {
 * @module away.events
 */
 declare module away.events {
-    class IOErrorEvent extends events.Event {
+    class IOErrorEvent extends Event {
         static IO_ERROR: string;
         constructor(type: string);
     }
@@ -352,18 +351,18 @@ declare module away.events {
 * @module away.events
 */
 declare module away.events {
-    class ProjectionEvent extends events.Event {
+    class ProjectionEvent extends Event {
         static MATRIX_CHANGED: string;
         private _projection;
-        constructor(type: string, projection: away.projections.IProjection);
-        public projection : away.projections.IProjection;
+        constructor(type: string, projection: projections.IProjection);
+        public projection : projections.IProjection;
     }
 }
 /**
 * @module away.events
 */
 declare module away.events {
-    class LoaderEvent extends events.Event {
+    class LoaderEvent extends Event {
         /**
         * Dispatched when a resource and all of its dependencies is retrieved.
         */
@@ -378,11 +377,11 @@ declare module away.events {
         * @param url The url of the loaded resource.
         * @param assets The assets of the loaded resource.
         */
-        constructor(type: string, url?: string, content?: away.base.DisplayObject, assets?: away.library.IAsset[]);
+        constructor(type: string, url?: string, content?: base.DisplayObject, assets?: library.IAsset[]);
         /**
         * The content returned if the resource has been loaded inside a <code>Loader</code> object.
         */
-        public content : away.base.DisplayObject;
+        public content : base.DisplayObject;
         /**
         * The url of the loaded resource.
         */
@@ -390,19 +389,19 @@ declare module away.events {
         /**
         * The error string on loadError.
         */
-        public assets : away.library.IAsset[];
+        public assets : library.IAsset[];
         /**
         * Clones the current event.
         * @return An exact duplicate of the current event.
         */
-        public clone(): events.Event;
+        public clone(): Event;
     }
 }
 /**
 * @module away.events
 */
 declare module away.events {
-    class ParserEvent extends events.Event {
+    class ParserEvent extends Event {
         private _message;
         /**
         * Dispatched when parsing of an asset completed.
@@ -424,7 +423,7 @@ declare module away.events {
         * Additional human-readable message. Usually supplied for ParserEvent.PARSE_ERROR events.
         */
         public message : string;
-        public clone(): events.Event;
+        public clone(): Event;
     }
 }
 /**
@@ -435,7 +434,7 @@ declare module away.events {
     * A MouseEvent is dispatched when a mouse event occurs over a mouseEnabled object in View.
     * TODO: we don't have screenZ data, tho this should be easy to implement
     */
-    class MouseEvent extends events.Event {
+    class MouseEvent extends Event {
         public _iAllowedToPropagate: boolean;
         public _iParentEvent: MouseEvent;
         /**
@@ -481,23 +480,23 @@ declare module away.events {
         /**
         * The view object inside which the event took place.
         */
-        public view: away.containers.View;
+        public view: containers.View;
         /**
         * The 3d object inside which the event took place.
         */
-        public object: away.base.DisplayObject;
+        public object: base.DisplayObject;
         /**
         * The material owner inside which the event took place.
         */
-        public materialOwner: away.base.IMaterialOwner;
+        public materialOwner: base.IMaterialOwner;
         /**
         * The material of the 3d element inside which the event took place.
         */
-        public material: away.materials.IMaterial;
+        public material: materials.IMaterial;
         /**
         * The uv coordinate inside the draw primitive where the event took place.
         */
-        public uv: away.geom.Point;
+        public uv: geom.Point;
         /**
         * The index of the face where the event took place.
         */
@@ -509,11 +508,11 @@ declare module away.events {
         /**
         * The position in object space where the event took place
         */
-        public localPosition: away.geom.Vector3D;
+        public localPosition: geom.Vector3D;
         /**
         * The normal in object space where the event took place
         */
-        public localNormal: away.geom.Vector3D;
+        public localNormal: geom.Vector3D;
         /**
         * Indicates whether the Control key is active (true) or inactive (false).
         */
@@ -550,22 +549,22 @@ declare module away.events {
         /**
         * Creates a copy of the MouseEvent object and sets the value of each property to match that of the original.
         */
-        public clone(): events.Event;
+        public clone(): Event;
         /**
         * The position in scene space where the event took place
         */
-        public scenePosition : away.geom.Vector3D;
+        public scenePosition : geom.Vector3D;
         /**
         * The normal in scene space where the event took place
         */
-        public sceneNormal : away.geom.Vector3D;
+        public sceneNormal : geom.Vector3D;
     }
 }
 /**
 * @module away.events
 */
 declare module away.events {
-    class MaterialEvent extends events.Event {
+    class MaterialEvent extends Event {
         static SIZE_CHANGED: string;
         constructor(type: string);
     }
@@ -574,7 +573,7 @@ declare module away.events {
 * @module away.events
 */
 declare module away.events {
-    class ProgressEvent extends events.Event {
+    class ProgressEvent extends Event {
         static PROGRESS: string;
         public bytesLoaded: number;
         public bytesTotal: number;
@@ -585,7 +584,7 @@ declare module away.events {
 * @module away.events
 */
 declare module away.events {
-    class RendererEvent extends events.Event {
+    class RendererEvent extends Event {
         static VIEWPORT_UPDATED: string;
         static SCISSOR_UPDATED: string;
         constructor(type: string);
@@ -595,7 +594,7 @@ declare module away.events {
 * @module away.events
 */
 declare module away.events {
-    class SceneEvent extends events.Event {
+    class SceneEvent extends Event {
         /**
         *
         */
@@ -611,15 +610,15 @@ declare module away.events {
         /**
         *
         */
-        public displayObject: away.base.DisplayObject;
-        constructor(type: string, displayObject: away.base.DisplayObject);
+        public displayObject: base.DisplayObject;
+        constructor(type: string, displayObject: base.DisplayObject);
     }
 }
 /**
 * @module away.events
 */
 declare module away.events {
-    class StageGLEvent extends events.Event {
+    class StageGLEvent extends Event {
         static CONTEXTGL_CREATED: string;
         static CONTEXTGL_DISPOSED: string;
         static CONTEXTGL_RECREATED: string;
@@ -634,7 +633,7 @@ declare module away.events {
     * @class away.events.SubGeometryEvent
     * @see away3d.core.base.Geometry
     */
-    class SubGeometryEvent extends events.Event {
+    class SubGeometryEvent extends Event {
         /**
         * Dispatched when a TriangleSubGeometry's index data has been updated.
         */
@@ -659,14 +658,14 @@ declare module away.events {
         *
         * @return An exact duplicate of the current object.
         */
-        public clone(): events.Event;
+        public clone(): Event;
     }
 }
 /**
 * @module away.events
 */
 declare module away.events {
-    class TimerEvent extends events.Event {
+    class TimerEvent extends Event {
         static TIMER: string;
         static TIMER_COMPLETE: string;
         constructor(type: string);
@@ -700,7 +699,7 @@ declare module away.utils {
     }
 }
 declare module away.utils {
-    class ByteArray extends utils.ByteArrayBase {
+    class ByteArray extends ByteArrayBase {
         public maxlength: number;
         public arraybytes: any;
         public unalignedarraybytestemp: any;
@@ -727,7 +726,7 @@ declare module away.utils {
     }
 }
 declare module away.utils {
-    class ByteArrayBuffer extends utils.ByteArrayBase {
+    class ByteArrayBuffer extends ByteArrayBase {
         public _bytes: number[];
         constructor();
         public writeByte(b: number): void;
@@ -762,13 +761,13 @@ declare module away.utils {
         private static _notClasses;
         private static _classes;
         static string(data: any): string;
-        static byteArray(data: any): utils.ByteArray;
+        static byteArray(data: any): ByteArray;
         private static isHex(str);
         static tryColor(data: any): number;
         static color(data: any): number;
         static tryClass(name: string): any;
-        static bitmapData(data: any): away.base.BitmapData;
-        static bitmapTexture(data: any): away.textures.BitmapTexture;
+        static bitmapData(data: any): base.BitmapData;
+        static bitmapTexture(data: any): textures.BitmapTexture;
     }
 }
 declare module away.utils {
@@ -855,7 +854,7 @@ declare module away.utils {
 declare module away.utils {
     class TextureUtils {
         private static MAX_SIZE;
-        static isBitmapDataValid(bitmapData: away.base.BitmapData): boolean;
+        static isBitmapDataValid(bitmapData: base.BitmapData): boolean;
         static isHTMLImageElementValid(image: HTMLImageElement): boolean;
         static isDimensionValid(d: number): boolean;
         static isPowerOfTwo(value: number): boolean;
@@ -863,7 +862,7 @@ declare module away.utils {
     }
 }
 declare module away.utils {
-    class Timer extends away.events.EventDispatcher {
+    class Timer extends events.EventDispatcher {
         private _delay;
         private _repeatCount;
         private _currentCount;
@@ -900,14 +899,14 @@ declare module away.parsers {
     *
     * @see away.net.AssetLoader
     */
-    class ParserBase extends away.events.EventDispatcher {
+    class ParserBase extends events.EventDispatcher {
         public _iFileName: string;
         private _dataFormat;
         private _data;
         private _frameLimit;
         private _lastFrameTime;
         private _pOnIntervalDelegate;
-        public _pContent: away.base.DisplayObject;
+        public _pContent: base.DisplayObject;
         static supportsType(extension: string): boolean;
         private _dependencies;
         private _parsingPaused;
@@ -923,7 +922,7 @@ declare module away.parsers {
         * Returned by <code>proceedParsing</code> to indicate more parsing is needed, allowing asynchronous parsing.
         */
         static MORE_TO_PARSE: boolean;
-        public content : away.base.DisplayObject;
+        public content : base.DisplayObject;
         /**
         * Creates a new ParserBase object
         * @param format The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>, and should be provided by the concrete subtype.
@@ -934,7 +933,7 @@ declare module away.parsers {
         /**
         * Validates a bitmapData loaded before assigning to a default BitmapMaterial
         */
-        public isBitmapDataValid(bitmapData: away.base.BitmapData): boolean;
+        public isBitmapDataValid(bitmapData: base.BitmapData): boolean;
         public parsingFailure : boolean;
         public parsingPaused : boolean;
         public parsingComplete : boolean;
@@ -958,7 +957,7 @@ declare module away.parsers {
         /**
         * A list of dependencies that need to be loaded and resolved for the object being parsed.
         */
-        public dependencies : parsers.ResourceDependency[];
+        public dependencies : ResourceDependency[];
         /**
         * Resolve a dependency when it's loaded. For example, a dependency containing an ImageResource would be assigned
         * to a Mesh instance as a BitmapMaterial, a scene graph object would be added to its intended parent. The
@@ -966,21 +965,21 @@ declare module away.parsers {
         *
         * @param resourceDependency The dependency to be resolved.
         */
-        public _iResolveDependency(resourceDependency: parsers.ResourceDependency): void;
+        public _iResolveDependency(resourceDependency: ResourceDependency): void;
         /**
         * Resolve a dependency loading failure. Used by parser to eventually provide a default map
         *
         * @param resourceDependency The dependency to be resolved.
         */
-        public _iResolveDependencyFailure(resourceDependency: parsers.ResourceDependency): void;
+        public _iResolveDependencyFailure(resourceDependency: ResourceDependency): void;
         /**
         * Resolve a dependency name
         *
         * @param resourceDependency The dependency to be resolved.
         */
-        public _iResolveDependencyName(resourceDependency: parsers.ResourceDependency, asset: away.library.IAsset): string;
+        public _iResolveDependencyName(resourceDependency: ResourceDependency, asset: library.IAsset): string;
         public _iResumeParsingAfterDependencies(): void;
-        public _pFinalizeAsset(asset: away.library.IAsset, name?: string): void;
+        public _pFinalizeAsset(asset: library.IAsset, name?: string): void;
         /**
         * Parse the next block of data.
         * @return Whether or not more data needs to be parsed. Can be <code>ParserBase.ParserBase.PARSING_DONE</code> or
@@ -988,7 +987,7 @@ declare module away.parsers {
         */
         public _pProceedParsing(): boolean;
         public _pDieWithError(message?: string): void;
-        public _pAddDependency(id: string, req: away.net.URLRequest, retrieveAsRawData?: boolean, data?: any, suppressErrorEvents?: boolean): parsers.ResourceDependency;
+        public _pAddDependency(id: string, req: net.URLRequest, retrieveAsRawData?: boolean, data?: any, suppressErrorEvents?: boolean): ResourceDependency;
         public _pPauseAndRetrieveDependencies(): void;
         /**
         * Tests whether or not there is still time left for parsing within the maximum allowed time frame per session.
@@ -998,7 +997,7 @@ declare module away.parsers {
         /**
         * Called when the parsing pause interval has passed and parsing can proceed.
         */
-        public _pOnInterval(event?: away.events.TimerEvent): void;
+        public _pOnInterval(event?: events.TimerEvent): void;
         /**
         * Initializes the parsing of data.
         * @param frameLimit The maximum duration of a parsing session.
@@ -1019,7 +1018,7 @@ declare module away.parsers {
         * @returns {string}
         * @private
         */
-        public _pGetByteData(): away.utils.ByteArray;
+        public _pGetByteData(): utils.ByteArray;
     }
 }
 declare module away.parsers {
@@ -1028,7 +1027,7 @@ declare module away.parsers {
     * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
     * exception cases.
     */
-    class BitmapParser extends parsers.ParserBase {
+    class BitmapParser extends ParserBase {
         private _startedParsing;
         private _doneParsing;
         private _loadingImage;
@@ -1064,7 +1063,7 @@ declare module away.parsers {
     * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
     * exception cases.
     */
-    class CubeTextureParser extends parsers.ParserBase {
+    class CubeTextureParser extends ParserBase {
         private static posX;
         private static negX;
         private static posY;
@@ -1093,11 +1092,11 @@ declare module away.parsers {
         /**
         * @inheritDoc
         */
-        public _iResolveDependency(resourceDependency: parsers.ResourceDependency): void;
+        public _iResolveDependency(resourceDependency: ResourceDependency): void;
         /**
         * @inheritDoc
         */
-        public _iResolveDependencyFailure(resourceDependency: parsers.ResourceDependency): void;
+        public _iResolveDependencyFailure(resourceDependency: ResourceDependency): void;
         /**
         * @inheritDoc
         */
@@ -1112,7 +1111,7 @@ declare module away.parsers {
     * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
     * exception cases.
     */
-    class Texture2DParser extends parsers.ParserBase {
+    class Texture2DParser extends ParserBase {
         private _startedParsing;
         private _doneParsing;
         /**
@@ -1177,7 +1176,7 @@ declare module away.parsers {
         * @return HTMLImageElement
         *
         */
-        static byteArrayToImage(data: away.utils.ByteArray): HTMLImageElement;
+        static byteArrayToImage(data: utils.ByteArray): HTMLImageElement;
         /**
         * Converts an Blob to an Image - returns an HTMLImageElement
         *
@@ -1195,7 +1194,7 @@ declare module away.parsers {
         * @return The ByteArray or null
         *
         */
-        static toByteArray(data: any): away.utils.ByteArray;
+        static toByteArray(data: any): utils.ByteArray;
         /**
         * Returns a object as String, if possible.
         *
@@ -1224,9 +1223,9 @@ declare module away.parsers {
         private _retrieveAsRawData;
         private _suppressAssetEvents;
         private _dependencies;
-        public _iLoader: away.net.URLLoader;
+        public _iLoader: net.URLLoader;
         public _iSuccess: boolean;
-        constructor(id: string, request: away.net.URLRequest, data: any, parser: parsers.ParserBase, parentParser: parsers.ParserBase, retrieveAsRawData?: boolean, suppressAssetEvents?: boolean);
+        constructor(id: string, request: net.URLRequest, data: any, parser: ParserBase, parentParser: ParserBase, retrieveAsRawData?: boolean, suppressAssetEvents?: boolean);
         /**
         *
         */
@@ -1234,7 +1233,7 @@ declare module away.parsers {
         /**
         *
         */
-        public request : away.net.URLRequest;
+        public request : net.URLRequest;
         /**
         * The data containing the dependency to be parsed, if the resource was already loaded.
         */
@@ -1242,11 +1241,11 @@ declare module away.parsers {
         /**
         *
         */
-        public parser : parsers.ParserBase;
+        public parser : ParserBase;
         /**
         * The parser which is dependent on this ResourceDependency object.
         */
-        public parentParser : parsers.ParserBase;
+        public parentParser : ParserBase;
         /**
         *
         */
@@ -1258,7 +1257,7 @@ declare module away.parsers {
         /**
         *
         */
-        public assets : away.library.IAsset[];
+        public assets : library.IAsset[];
         /**
         *
         */
@@ -1272,7 +1271,7 @@ declare module away.parsers {
         * @private
         *
         */
-        public _iSetParser(parser: parsers.ParserBase): void;
+        public _iSetParser(parser: ParserBase): void;
         /**
         * Resolve the dependency when it's loaded with the parent parser. For example, a dependency containing an
         * ImageResource would be assigned to a Mesh instance as a BitmapMaterial, a scene graph object would be added
@@ -1286,11 +1285,11 @@ declare module away.parsers {
         /**
         * Resolve the dependencies name
         */
-        public resolveName(asset: away.library.IAsset): string;
+        public resolveName(asset: library.IAsset): string;
     }
 }
 declare module away.library {
-    interface IAsset extends away.events.IEventDispatcher {
+    interface IAsset extends events.IEventDispatcher {
         name: string;
         id: string;
         assetNamespace: string;
@@ -1330,7 +1329,7 @@ declare module away.library {
     }
 }
 declare module away.library {
-    class NamedAssetBase extends away.events.EventDispatcher {
+    class NamedAssetBase extends events.EventDispatcher {
         static ID_COUNT: number;
         private _originalName;
         private _namespace;
@@ -1395,10 +1394,10 @@ declare module away.library {
         private _assets;
         private _filtered;
         private _idx;
-        constructor(assets: library.IAsset[], assetTypeFilter: string, namespaceFilter: string, filterFunc: any);
-        public currentAsset : library.IAsset;
+        constructor(assets: IAsset[], assetTypeFilter: string, namespaceFilter: string, filterFunc: any);
+        public currentAsset : IAsset;
         public numAssets : number;
-        public next(): library.IAsset;
+        public next(): IAsset;
         public reset(): void;
         public setIndex(index: number): void;
         private filter(assetTypeFilter, namespaceFilter, filterFunc);
@@ -1428,7 +1427,7 @@ declare module away.library {
         * Resolve a naming conflict between two assets. Must be implemented by concrete strategy
         * classes.
         */
-        public resolveConflict(changedAsset: library.IAsset, oldAsset: library.IAsset, assetsDictionary: Object, precedence: string): void;
+        public resolveConflict(changedAsset: IAsset, oldAsset: IAsset, assetsDictionary: Object, precedence: string): void;
         /**
         * Create instance of this conflict strategy. Used internally by the AssetLibrary to
         * make sure the same strategy instance is not used in all AssetLibrary instances, which
@@ -1439,30 +1438,30 @@ declare module away.library {
         * Provided as a convenience method for all conflict strategy classes, as a way to finalize
         * the conflict resolution by applying the new names and dispatching the correct events.
         */
-        public _pUpdateNames(ns: string, nonConflictingName: string, oldAsset: library.IAsset, newAsset: library.IAsset, assetsDictionary: Object, precedence: string): void;
+        public _pUpdateNames(ns: string, nonConflictingName: string, oldAsset: IAsset, newAsset: IAsset, assetsDictionary: Object, precedence: string): void;
     }
 }
 declare module away.library {
-    class NumSuffixConflictStrategy extends library.ConflictStrategyBase {
+    class NumSuffixConflictStrategy extends ConflictStrategyBase {
         private _separator;
         private _next_suffix;
         constructor(separator?: string);
-        public resolveConflict(changedAsset: library.IAsset, oldAsset: library.IAsset, assetsDictionary: Object, precedence: string): void;
-        public create(): library.ConflictStrategyBase;
+        public resolveConflict(changedAsset: IAsset, oldAsset: IAsset, assetsDictionary: Object, precedence: string): void;
+        public create(): ConflictStrategyBase;
     }
 }
 declare module away.library {
-    class IgnoreConflictStrategy extends library.ConflictStrategyBase {
+    class IgnoreConflictStrategy extends ConflictStrategyBase {
         constructor();
-        public resolveConflict(changedAsset: library.IAsset, oldAsset: library.IAsset, assetsDictionary: Object, precedence: string): void;
-        public create(): library.ConflictStrategyBase;
+        public resolveConflict(changedAsset: IAsset, oldAsset: IAsset, assetsDictionary: Object, precedence: string): void;
+        public create(): ConflictStrategyBase;
     }
 }
 declare module away.library {
-    class ErrorConflictStrategy extends library.ConflictStrategyBase {
+    class ErrorConflictStrategy extends ConflictStrategyBase {
         constructor();
-        public resolveConflict(changedAsset: library.IAsset, oldAsset: library.IAsset, assetsDictionary: Object, precedence: string): void;
-        public create(): library.ConflictStrategyBase;
+        public resolveConflict(changedAsset: IAsset, oldAsset: IAsset, assetsDictionary: Object, precedence: string): void;
+        public create(): ConflictStrategyBase;
     }
 }
 declare module away.library {
@@ -1505,19 +1504,19 @@ declare module away.library {
         * Specifies that in case of a naming conflict, one of the assets will be renamed and
         * a numeric suffix appended to the base name.
         */
-        static APPEND_NUM_SUFFIX: library.ConflictStrategyBase;
+        static APPEND_NUM_SUFFIX: ConflictStrategyBase;
         /**
         * Specifies that naming conflicts should be ignored. This is not recommended in most
         * cases, unless it can be 100% guaranteed that the application does not cause naming
         * conflicts in the library (i.e. when an app-level system is in place to prevent this.)
         */
-        static IGNORE: library.ConflictStrategyBase;
+        static IGNORE: ConflictStrategyBase;
         /**
         * Specifies that an error should be thrown if a naming conflict is discovered. Use this
         * to be 100% sure that naming conflicts never occur unnoticed, and when it's undesirable
         * to have the library automatically rename assets to avoid such conflicts.
         */
-        static THROW_ERROR: library.ConflictStrategyBase;
+        static THROW_ERROR: ConflictStrategyBase;
     }
 }
 declare module away.library {
@@ -1526,7 +1525,7 @@ declare module away.library {
     * Its purpose is to create a container for 3D data management, both before and after parsing.
     * If you are interested in creating multiple library bundles, please use the <code>getInstance()</code> method.
     */
-    class AssetLibraryBundle extends away.events.EventDispatcher {
+    class AssetLibraryBundle extends events.EventDispatcher {
         private _loadingSessions;
         private _strategy;
         private _strategyPreference;
@@ -1576,7 +1575,7 @@ declare module away.library {
         * @see naming.ConflictStrategy
         * @see AssetLibrary.conflictPrecedence
         */
-        public conflictStrategy : library.ConflictStrategyBase;
+        public conflictStrategy : ConflictStrategyBase;
         /**
         * Defines which asset should have precedence when resolving a naming conflict between
         * two assets of which one has just been renamed by the user or by a parser. By default
@@ -1604,7 +1603,7 @@ declare module away.library {
         *
         * @see away.library.AssetType
         */
-        public createIterator(assetTypeFilter?: string, namespaceFilter?: string, filterFunc?: any): library.AssetLibraryIterator;
+        public createIterator(assetTypeFilter?: string, namespaceFilter?: string, filterFunc?: any): AssetLibraryIterator;
         /**
         * Loads a file and (optionally) all of its dependencies.
         *
@@ -1614,7 +1613,7 @@ declare module away.library {
         * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
         * @return A handle to the retrieved resource.
         */
-        public load(req: away.net.URLRequest, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
+        public load(req: net.URLRequest, context?: net.AssetLoaderContext, ns?: string, parser?: parsers.ParserBase): net.AssetLoaderToken;
         /**
         * Loads a resource from existing data in memory.
         *
@@ -1624,17 +1623,17 @@ declare module away.library {
         * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
         * @return A handle to the retrieved resource.
         */
-        public loadData(data: any, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
+        public loadData(data: any, context?: net.AssetLoaderContext, ns?: string, parser?: parsers.ParserBase): net.AssetLoaderToken;
         /**
         *
         */
-        public getAsset(name: string, ns?: string): library.IAsset;
+        public getAsset(name: string, ns?: string): IAsset;
         /**
         * Adds an asset to the asset library, first making sure that it's name is unique
         * using the method defined by the <code>conflictStrategy</code> and
         * <code>conflictPrecedence</code> properties.
         */
-        public addAsset(asset: library.IAsset): void;
+        public addAsset(asset: IAsset): void;
         /**
         * Removes an asset from the library, and optionally disposes that asset by calling
         * it's disposeAsset() method (which for most assets is implemented as a default
@@ -1643,7 +1642,7 @@ declare module away.library {
         * @param asset The asset which should be removed from this library.
         * @param dispose Defines whether the assets should also be disposed.
         */
-        public removeAsset(asset: library.IAsset, dispose?: boolean): void;
+        public removeAsset(asset: IAsset, dispose?: boolean): void;
         /**
         * Removes an asset which is specified using name and namespace.
         *
@@ -1653,7 +1652,7 @@ declare module away.library {
         *
         * @see away.library.AssetLibrary.removeAsset()
         */
-        public removeAssetByName(name: string, ns?: string, dispose?: boolean): library.IAsset;
+        public removeAssetByName(name: string, ns?: string, dispose?: boolean): IAsset;
         /**
         * Removes all assets from the asset library, optionally disposing them as they
         * are removed.
@@ -1715,7 +1714,7 @@ declare module away.library {
         * @param key Defines which multiton instance should be returned.
         * @return An instance of the asset library
         */
-        static getBundle(key?: string): library.AssetLibraryBundle;
+        static getBundle(key?: string): AssetLibraryBundle;
         /**
         *
         */
@@ -1729,7 +1728,7 @@ declare module away.library {
         *
         * @see away.library.AssetLibraryBundle.conflictStrategy
         */
-        static conflictStrategy : library.ConflictStrategyBase;
+        static conflictStrategy : ConflictStrategyBase;
         /**
         * Short-hand for conflictPrecedence property on default asset library bundle.
         *
@@ -1741,26 +1740,26 @@ declare module away.library {
         *
         * @see away.library.AssetLibraryBundle.createIterator()
         */
-        static createIterator(assetTypeFilter?: string, namespaceFilter?: string, filterFunc?: any): library.AssetLibraryIterator;
+        static createIterator(assetTypeFilter?: string, namespaceFilter?: string, filterFunc?: any): AssetLibraryIterator;
         /**
         * Short-hand for load() method on default asset library bundle.
         *
         * @see away.library.AssetLibraryBundle.load()
         */
-        static load(req: away.net.URLRequest, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
+        static load(req: net.URLRequest, context?: net.AssetLoaderContext, ns?: string, parser?: parsers.ParserBase): net.AssetLoaderToken;
         /**
         * Short-hand for loadData() method on default asset library bundle.
         *
         * @see away.library.AssetLibraryBundle.loadData()
         */
-        static loadData(data: any, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
+        static loadData(data: any, context?: net.AssetLoaderContext, ns?: string, parser?: parsers.ParserBase): net.AssetLoaderToken;
         static stopLoad(): void;
         /**
         * Short-hand for getAsset() method on default asset library bundle.
         *
         * @see away.library.AssetLibraryBundle.getAsset()
         */
-        static getAsset(name: string, ns?: string): library.IAsset;
+        static getAsset(name: string, ns?: string): IAsset;
         /**
         * Short-hand for addEventListener() method on default asset library bundle.
         */
@@ -1787,7 +1786,7 @@ declare module away.library {
         *
         * @see away.library.AssetLibraryBundle.addAsset()
         */
-        static addAsset(asset: library.IAsset): void;
+        static addAsset(asset: IAsset): void;
         /**
         * Short-hand for removeAsset() method on default asset library bundle.
         *
@@ -1796,7 +1795,7 @@ declare module away.library {
         *
         * @see away.library.AssetLibraryBundle.removeAsset()
         */
-        static removeAsset(asset: library.IAsset, dispose?: boolean): void;
+        static removeAsset(asset: IAsset, dispose?: boolean): void;
         /**
         * Short-hand for removeAssetByName() method on default asset library bundle.
         *
@@ -1806,7 +1805,7 @@ declare module away.library {
         *
         * @see away.library.AssetLibraryBundle.removeAssetByName()
         */
-        static removeAssetByName(name: string, ns?: string, dispose?: boolean): library.IAsset;
+        static removeAssetByName(name: string, ns?: string, dispose?: boolean): IAsset;
         /**
         * Short-hand for removeAllAssets() method on default asset library bundle.
         *
@@ -1857,8 +1856,8 @@ declare module away.gl {
     class VertexData {
         private _dataDirty;
         public invalid: boolean[];
-        public buffers: gl.VertexBuffer[];
-        public stageGLs: away.base.StageGL[];
+        public buffers: VertexBuffer[];
+        public stageGLs: base.StageGL[];
         public data: number[];
         public dataPerVertex: number;
         constructor();
@@ -1892,7 +1891,7 @@ declare module away.gl {
     class VertexDataPool {
         private static _pool;
         constructor();
-        static getItem(id: string, level: number, dataType: string): gl.VertexData;
+        static getItem(id: string, level: number, dataType: string): VertexData;
         static disposeItem(id: string, level: number, dataType: string): void;
         public disposeData(id: string): void;
     }
@@ -1921,8 +1920,8 @@ declare module away.gl {
         private static LIMIT_INDICES;
         private _dataDirty;
         public invalid: boolean[];
-        public stageGLs: away.base.StageGL[];
-        public buffers: gl.IndexBuffer[];
+        public stageGLs: base.StageGL[];
+        public buffers: IndexBuffer[];
         public data: number[];
         public indexMappings: number[];
         public originalIndices: number[];
@@ -1957,7 +1956,7 @@ declare module away.gl {
     class IndexDataPool {
         private static _pool;
         constructor();
-        static getItem(id: string, level: number): gl.IndexData;
+        static getItem(id: string, level: number): IndexData;
         static disposeItem(id: string, level: number): void;
         public disposeData(id: string): void;
     }
@@ -2000,7 +1999,7 @@ declare module away.gl {
     }
 }
 declare module away.gl {
-    class Texture extends gl.TextureBase {
+    class Texture extends TextureBase {
         public textureType: string;
         private _width;
         private _height;
@@ -2012,23 +2011,23 @@ declare module away.gl {
         public height : number;
         public frameBuffer : WebGLFramebuffer;
         public uploadFromHTMLImageElement(image: HTMLImageElement, miplevel?: number): void;
-        public uploadFromBitmapData(data: away.base.BitmapData, miplevel?: number): void;
-        public uploadCompressedTextureFromByteArray(data: away.utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
+        public uploadFromBitmapData(data: base.BitmapData, miplevel?: number): void;
+        public uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
         public glTexture : WebGLTexture;
-        public generateFromRenderBuffer(data: away.base.BitmapData): void;
+        public generateFromRenderBuffer(data: base.BitmapData): void;
         public generateMipmaps(): void;
     }
 }
 declare module away.gl {
-    class CubeTexture extends gl.TextureBase {
+    class CubeTexture extends TextureBase {
         public textureType: string;
         private _texture;
         private _size;
         constructor(gl: WebGLRenderingContext, size: number);
         public dispose(): void;
         public uploadFromHTMLImageElement(image: HTMLImageElement, side: number, miplevel?: number): void;
-        public uploadFromBitmapData(data: away.base.BitmapData, side: number, miplevel?: number): void;
-        public uploadCompressedTextureFromByteArray(data: away.utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
+        public uploadFromBitmapData(data: base.BitmapData, side: number, miplevel?: number): void;
+        public uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
         public size : number;
         public glTexture : WebGLTexture;
     }
@@ -2136,46 +2135,46 @@ declare module away.gl {
         private _samplerStates;
         static MAX_SAMPLERS: number;
         public _gl: WebGLRenderingContext;
-        public _currentProgram: gl.Program;
+        public _currentProgram: Program;
         constructor(canvas: HTMLCanvasElement);
         public gl(): WebGLRenderingContext;
         public clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): void;
         public configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): void;
-        public createCubeTexture(size: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): gl.CubeTexture;
-        public createIndexBuffer(numIndices: number): gl.IndexBuffer;
-        public createProgram(): gl.Program;
-        public createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): gl.Texture;
-        public createVertexBuffer(numVertices: number, data32PerVertex: number): gl.VertexBuffer;
+        public createCubeTexture(size: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): CubeTexture;
+        public createIndexBuffer(numIndices: number): IndexBuffer;
+        public createProgram(): Program;
+        public createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): Texture;
+        public createVertexBuffer(numVertices: number, data32PerVertex: number): VertexBuffer;
         public dispose(): void;
-        public drawToBitmapData(destination: away.base.BitmapData): void;
-        public drawTriangles(indexBuffer: gl.IndexBuffer, firstIndex?: number, numTriangles?: number): void;
+        public drawToBitmapData(destination: base.BitmapData): void;
+        public drawTriangles(indexBuffer: IndexBuffer, firstIndex?: number, numTriangles?: number): void;
         public present(): void;
         public setBlendFactors(sourceFactor: string, destinationFactor: string): void;
         public setColorMask(red: boolean, green: boolean, blue: boolean, alpha: boolean): void;
         public setCulling(triangleFaceToCull: string, coordinateSystem?: string): void;
         public setDepthTest(depthMask: boolean, passCompareMode: string): void;
-        public setProgram(program: gl.Program): void;
+        public setProgram(program: Program): void;
         private getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister);
-        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
+        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: geom.Matrix3D, transposedMatrix?: boolean): void;
         static modulo: number;
         public setProgramConstantsFromArray(programType: string, firstRegister: number, data: number[], numRegisters?: number): void;
-        public setGLSLProgramConstantsFromMatrix(locationName: string, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
+        public setGLSLProgramConstantsFromMatrix(locationName: string, matrix: geom.Matrix3D, transposedMatrix?: boolean): void;
         public setGLSLProgramConstantsFromArray(locationName: string, data: number[], startIndex?: number): void;
-        public setScissorRectangle(rectangle: away.geom.Rectangle): void;
-        public setTextureAt(sampler: number, texture: gl.TextureBase): void;
-        public setGLSLTextureAt(locationName: string, texture: gl.TextureBase, textureIndex: number): void;
+        public setScissorRectangle(rectangle: geom.Rectangle): void;
+        public setTextureAt(sampler: number, texture: TextureBase): void;
+        public setGLSLTextureAt(locationName: string, texture: TextureBase, textureIndex: number): void;
         public setSamplerStateAt(sampler: number, wrap: string, filter: string, mipfilter: string): void;
-        public setVertexBufferAt(index: number, buffer: gl.VertexBuffer, bufferOffset?: number, format?: string): void;
-        public setGLSLVertexBufferAt(locationName: any, buffer: gl.VertexBuffer, bufferOffset?: number, format?: string): void;
-        public setRenderToTexture(target: gl.TextureBase, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): void;
+        public setVertexBufferAt(index: number, buffer: VertexBuffer, bufferOffset?: number, format?: string): void;
+        public setGLSLVertexBufferAt(locationName: any, buffer: VertexBuffer, bufferOffset?: number, format?: string): void;
+        public setRenderToTexture(target: TextureBase, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): void;
         public setRenderToBackBuffer(): void;
         private updateBlendStatus();
     }
 }
 declare module away.gl {
-    class AGLSLContextGL extends gl.ContextGL {
+    class AGLSLContextGL extends ContextGL {
         constructor(canvas: HTMLCanvasElement);
-        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
+        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: geom.Matrix3D, transposedMatrix?: boolean): void;
     }
 }
 /**
@@ -2436,7 +2435,7 @@ declare module away.base {
         * @param rect
         * @param inputByteArray
         */
-        public setPixels(rect: away.geom.Rectangle, inputByteArray: away.utils.ByteArray): void;
+        public setPixels(rect: geom.Rectangle, inputByteArray: utils.ByteArray): void;
         /**
         *
         * @param x
@@ -2444,7 +2443,7 @@ declare module away.base {
         * @param color
         */
         public setPixel32(x: any, y: any, color: number): void;
-        public setVector(rect: away.geom.Rectangle, inputVector: number[]): void;
+        public setVector(rect: geom.Rectangle, inputVector: number[]): void;
         /**
         * Copy an HTMLImageElement or BitmapData object
         *
@@ -2452,8 +2451,8 @@ declare module away.base {
         * @param sourceRect - source rectange to copy from
         * @param destRect - destinatoin rectange to copy to
         */
-        public drawImage(img: BitmapData, sourceRect: away.geom.Rectangle, destRect: away.geom.Rectangle): any;
-        public drawImage(img: HTMLImageElement, sourceRect: away.geom.Rectangle, destRect: away.geom.Rectangle): any;
+        public drawImage(img: BitmapData, sourceRect: geom.Rectangle, destRect: geom.Rectangle): any;
+        public drawImage(img: HTMLImageElement, sourceRect: geom.Rectangle, destRect: geom.Rectangle): any;
         private _drawImage(img, sourceRect, destRect);
         /**
         *
@@ -2461,25 +2460,25 @@ declare module away.base {
         * @param sourceRect
         * @param destRect
         */
-        public copyPixels(bmpd: BitmapData, sourceRect: away.geom.Rectangle, destRect: away.geom.Rectangle): any;
-        public copyPixels(bmpd: HTMLImageElement, sourceRect: away.geom.Rectangle, destRect: away.geom.Rectangle): any;
+        public copyPixels(bmpd: BitmapData, sourceRect: geom.Rectangle, destRect: geom.Rectangle): any;
+        public copyPixels(bmpd: HTMLImageElement, sourceRect: geom.Rectangle, destRect: geom.Rectangle): any;
         private _copyPixels(bmpd, sourceRect, destRect);
         /**
         *
         * @param rect
         * @param color
         */
-        public fillRect(rect: away.geom.Rectangle, color: number): void;
+        public fillRect(rect: geom.Rectangle, color: number): void;
         /**
         *
         * @param source
         * @param matrix
         */
-        public draw(source: BitmapData, matrix?: away.geom.Matrix): any;
-        public draw(source: HTMLImageElement, matrix?: away.geom.Matrix): any;
+        public draw(source: BitmapData, matrix?: geom.Matrix): any;
+        public draw(source: HTMLImageElement, matrix?: geom.Matrix): any;
         private _draw(source, matrix);
-        public copyChannel(sourceBitmap: BitmapData, sourceRect: away.geom.Rectangle, destPoint: away.geom.Point, sourceChannel: number, destChannel: number): void;
-        public colorTransform(rect: away.geom.Rectangle, colorTransform: away.geom.ColorTransform): void;
+        public copyChannel(sourceBitmap: BitmapData, sourceRect: geom.Rectangle, destPoint: geom.Point, sourceChannel: number, destChannel: number): void;
+        public colorTransform(rect: geom.Rectangle, colorTransform: geom.ColorTransform): void;
         /**
         *
         * @returns {ImageData}
@@ -2511,7 +2510,7 @@ declare module away.base {
         *
         * @param {away.geom.Rectangle}
         */
-        public rect : away.geom.Rectangle;
+        public rect : geom.Rectangle;
         /**
         *
         * @returns {HTMLCanvasElement}
@@ -2692,7 +2691,7 @@ declare module away.base {
 *                         content is either minimized or obscured. </p>
 */
 declare module away.base {
-    class DisplayObject extends away.library.NamedAssetBase implements base.IBitmapDrawable {
+    class DisplayObject extends library.NamedAssetBase implements IBitmapDrawable {
         private _loaderInfo;
         private _mouseX;
         private _mouseY;
@@ -2702,13 +2701,13 @@ declare module away.base {
         private _depth;
         private _height;
         private _width;
-        public _pScene: away.containers.Scene;
-        public _pParent: away.containers.DisplayObjectContainer;
-        public _pSceneTransform: away.geom.Matrix3D;
+        public _pScene: containers.Scene;
+        public _pParent: containers.DisplayObjectContainer;
+        public _pSceneTransform: geom.Matrix3D;
         public _pSceneTransformDirty: boolean;
         public _pIsEntity: boolean;
         private _explicitPartition;
-        public _pImplicitPartition: away.partition.Partition;
+        public _pImplicitPartition: partition.Partition;
         private _partitionNode;
         private _sceneTransformChanged;
         private _scenechanged;
@@ -2756,14 +2755,14 @@ declare module away.base {
         private _transformComponents;
         public _pIgnoreTransform: boolean;
         private _shaderPickingDetails;
-        public _pPickingCollisionVO: away.pick.PickingCollisionVO;
-        public _pBounds: away.bounds.BoundingVolumeBase;
+        public _pPickingCollisionVO: pick.PickingCollisionVO;
+        public _pBounds: bounds.BoundingVolumeBase;
         public _pBoundsInvalid: boolean;
         private _worldBounds;
         private _worldBoundsInvalid;
-        public _pPickingCollider: away.pick.IPickingCollider;
-        public _pRenderables: away.pool.IRenderable[];
-        public _iSourcePrefab: away.prefabs.PrefabBase;
+        public _pPickingCollider: pick.IPickingCollider;
+        public _pRenderables: pool.IRenderable[];
+        public _iSourcePrefab: prefabs.PrefabBase;
         /**
         *
         */
@@ -2799,11 +2798,11 @@ declare module away.base {
         * the table show <code>blendMode</code> values applied to a circular display
         * object(2) superimposed on another display object(1).</p>
         */
-        public blendMode: base.BlendMode;
+        public blendMode: BlendMode;
         /**
         *
         */
-        public bounds : away.bounds.BoundingVolumeBase;
+        public bounds : bounds.BoundingVolumeBase;
         /**
         * If set to <code>true</code>, NME will use the software renderer to cache
         * an internal bitmap representation of the display object. For native targets,
@@ -2880,7 +2879,7 @@ declare module away.base {
         /**
         * Defines the rotation of the 3d object as a <code>Vector3D</code> object containing euler angles for rotation around x, y and z axis.
         */
-        public eulers : away.geom.Vector3D;
+        public eulers : geom.Vector3D;
         /**
         * An object that can contain any extra data.
         */
@@ -2908,7 +2907,7 @@ declare module away.base {
         /**
         *
         */
-        public inverseSceneTransform : away.geom.Matrix3D;
+        public inverseSceneTransform : geom.Matrix3D;
         /**
         *
         */
@@ -2930,7 +2929,7 @@ declare module away.base {
         * <code>this.root.loaderInfo.addEventListener(Event.COMPLETE,
         * func)</code>.</p>
         */
-        public loaderInfo : base.LoaderInfo;
+        public loaderInfo : LoaderInfo;
         /**
         * The calling display object is masked by the specified <code>mask</code>
         * object. To ensure that masking works when the Stage is scaled, the
@@ -3025,23 +3024,23 @@ declare module away.base {
         *                       avoid this situation by having the parent movie call
         *                       the <code>Security.allowDomain()</code> method.
         */
-        public parent : away.containers.DisplayObjectContainer;
+        public parent : containers.DisplayObjectContainer;
         /**
         *
         */
-        public partition : away.partition.Partition;
+        public partition : partition.Partition;
         /**
         *
         */
-        public partitionNode : away.partition.EntityNode;
+        public partitionNode : partition.EntityNode;
         /**
         *
         */
-        public pickingCollider : away.pick.IPickingCollider;
+        public pickingCollider : pick.IPickingCollider;
         /**
         * Defines the local point around which the object rotates.
         */
-        public pivot : away.geom.Vector3D;
+        public pivot : geom.Vector3D;
         /**
         * For a display object in a loaded SWF file, the <code>root</code> property
         * is the top-most display object in the portion of the display list's tree
@@ -3068,7 +3067,7 @@ declare module away.base {
         * as a child of a display object for which the <code>root</code> property is
         * set.</p>
         */
-        public root : away.containers.DisplayObjectContainer;
+        public root : containers.DisplayObjectContainer;
         /**
         * Indicates the rotation of the DisplayObject instance, in degrees, from its
         * original orientation. Values from 0 to 180 represent clockwise rotation;
@@ -3152,7 +3151,7 @@ declare module away.base {
         *
         * @throws ArgumentError If you pass an invalid argument to the method.
         */
-        public scale9Grid: away.geom.Rectangle;
+        public scale9Grid: geom.Rectangle;
         /**
         * Indicates the horizontal scale(percentage) of the object as applied from
         * the registration point. The default registration point is(0,0). 1.0
@@ -3184,12 +3183,12 @@ declare module away.base {
         /**
         *
         */
-        public scene : away.containers.Scene;
+        public scene : containers.Scene;
         /**
         *
         */
-        public scenePosition : away.geom.Vector3D;
-        public sceneTransform : away.geom.Matrix3D;
+        public scenePosition : geom.Vector3D;
+        public sceneTransform : geom.Matrix3D;
         /**
         * The scroll rectangle bounds of the display object. The display object is
         * cropped to the size defined by the rectangle, and it scrolls within the
@@ -3212,7 +3211,7 @@ declare module away.base {
         * 90° and you scroll it left and right, the display object actually scrolls
         * up and down.</p>
         */
-        public scrollRect: away.geom.Rectangle;
+        public scrollRect: geom.Rectangle;
         /**
         *
         */
@@ -3259,7 +3258,7 @@ declare module away.base {
         * <p>Note that AIR for TV devices use hardware acceleration, if it is
         * available, for color transforms.</p>
         */
-        public transform : away.geom.Transform;
+        public transform : geom.Transform;
         /**
         * Whether or not the display object is visible. Display objects that are not
         * visible are disabled. For example, if <code>visible=false</code> for an
@@ -3280,7 +3279,7 @@ declare module away.base {
         /**
         *
         */
-        public worldBounds : away.bounds.BoundingVolumeBase;
+        public worldBounds : bounds.BoundingVolumeBase;
         /**
         * Indicates the <i>x</i> coordinate of the DisplayObject instance relative
         * to the local coordinates of the parent DisplayObjectContainer. If the
@@ -3371,7 +3370,7 @@ declare module away.base {
         *         to the <code>targetCoordinateSpace</code> object's coordinate
         *         system.
         */
-        public getBounds(targetCoordinateSpace: DisplayObject): away.geom.Rectangle;
+        public getBounds(targetCoordinateSpace: DisplayObject): geom.Rectangle;
         /**
         * Returns a rectangle that defines the boundary of the display object, based
         * on the coordinate system defined by the <code>targetCoordinateSpace</code>
@@ -3390,7 +3389,7 @@ declare module away.base {
         *         to the <code>targetCoordinateSpace</code> object's coordinate
         *         system.
         */
-        public getRect(targetCoordinateSpace: DisplayObject): away.geom.Rectangle;
+        public getRect(targetCoordinateSpace: DisplayObject): geom.Rectangle;
         /**
         * Converts the <code>point</code> object from the Stage(global) coordinates
         * to the display object's(local) coordinates.
@@ -3408,7 +3407,7 @@ declare module away.base {
         *              properties.
         * @return A Point object with coordinates relative to the display object.
         */
-        public globalToLocal(point: away.geom.Point): away.geom.Point;
+        public globalToLocal(point: geom.Point): geom.Point;
         /**
         * Converts a two-dimensional point from the Stage(global) coordinates to a
         * three-dimensional display object's(local) coordinates.
@@ -3427,7 +3426,7 @@ declare module away.base {
         * @return A Vector3D object with coordinates relative to the
         *         three-dimensional display object.
         */
-        public globalToLocal3D(point: away.geom.Point): away.geom.Vector3D;
+        public globalToLocal3D(point: geom.Point): geom.Vector3D;
         /**
         * Evaluates the bounding box of the display object to see if it overlaps or
         * intersects with the bounding box of the <code>obj</code> display object.
@@ -3457,7 +3456,7 @@ declare module away.base {
         /**
         * @inheritDoc
         */
-        public isIntersectingRay(rayPosition: away.geom.Vector3D, rayDirection: away.geom.Vector3D): boolean;
+        public isIntersectingRay(rayPosition: geom.Vector3D, rayDirection: geom.Vector3D): boolean;
         /**
         * Converts a three-dimensional point of the three-dimensional display
         * object's(local) coordinates to a two-dimensional point in the Stage
@@ -3480,14 +3479,14 @@ declare module away.base {
         * @return A two-dimensional point representing a three-dimensional point in
         *         two-dimensional space.
         */
-        public local3DToGlobal(point3d: away.geom.Vector3D): away.geom.Point;
+        public local3DToGlobal(point3d: geom.Vector3D): geom.Point;
         /**
         * Rotates the 3d object around to face a point defined relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
         *
         * @param    target        The vector defining the point to be looked at
         * @param    upAxis        An optional vector used to define the desired up orientation of the 3d object after rotation has occurred
         */
-        public lookAt(target: away.geom.Vector3D, upAxis?: away.geom.Vector3D): void;
+        public lookAt(target: geom.Vector3D, upAxis?: geom.Vector3D): void;
         /**
         * Converts the <code>point</code> object from the display object's(local)
         * coordinates to the Stage(global) coordinates.
@@ -3511,7 +3510,7 @@ declare module away.base {
         *              properties.
         * @return A Point object with coordinates relative to the Stage.
         */
-        public localToGlobal(point: away.geom.Point): away.geom.Point;
+        public localToGlobal(point: geom.Point): geom.Point;
         /**
         * Moves the 3d object directly to a point in space
         *
@@ -3537,7 +3536,7 @@ declare module away.base {
         /**
         *
         */
-        public getRenderSceneTransform(camera: away.entities.Camera): away.geom.Matrix3D;
+        public getRenderSceneTransform(camera: entities.Camera): geom.Matrix3D;
         /**
         * Rotates the 3d object around it's local z-axis
         *
@@ -3550,7 +3549,7 @@ declare module away.base {
         * @param    axis        The vector defining the axis of rotation
         * @param    angle        The amount of rotation in degrees
         */
-        public rotate(axis: away.geom.Vector3D, angle: number): void;
+        public rotate(axis: geom.Vector3D, angle: number): void;
         /**
         * Rotates the 3d object directly to a euler angle
         *
@@ -3569,14 +3568,14 @@ declare module away.base {
         * @param    axis        The vector defining the axis of movement
         * @param    distance    The length of the movement
         */
-        public translate(axis: away.geom.Vector3D, distance: number): void;
+        public translate(axis: geom.Vector3D, distance: number): void;
         /**
         * Moves the 3d object along a vector by a defined length
         *
         * @param    axis        The vector defining the axis of movement
         * @param    distance    The length of the movement
         */
-        public translateLocal(axis: away.geom.Vector3D, distance: number): void;
+        public translateLocal(axis: geom.Vector3D, distance: number): void;
         /**
         * Rotates the 3d object around it's local y-axis
         *
@@ -3586,33 +3585,33 @@ declare module away.base {
         /**
         * @internal
         */
-        public _iController: away.controllers.ControllerBase;
+        public _iController: controllers.ControllerBase;
         /**
         * @internal
         */
-        public _iAssignedPartition : away.partition.Partition;
+        public _iAssignedPartition : partition.Partition;
         /**
         * The transformation of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
         *
         * @internal
         */
-        public _iMatrix3D : away.geom.Matrix3D;
+        public _iMatrix3D : geom.Matrix3D;
         /**
         * @internal
         */
-        public _iPickingCollisionVO : away.pick.PickingCollisionVO;
+        public _iPickingCollisionVO : pick.PickingCollisionVO;
         /**
         * @internal
         */
-        public iSetParent(value: away.containers.DisplayObjectContainer): void;
+        public iSetParent(value: containers.DisplayObjectContainer): void;
         /**
         * @protected
         */
-        public pCreateDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
+        public pCreateDefaultBoundingVolume(): bounds.BoundingVolumeBase;
         /**
         * @protected
         */
-        public pCreateEntityPartitionNode(): away.partition.EntityNode;
+        public pCreateEntityPartitionNode(): partition.EntityNode;
         /**
         * @protected
         */
@@ -3632,7 +3631,7 @@ declare module away.base {
         /**
         * @protected
         */
-        public _pUpdateImplicitPartition(value: away.partition.Partition): void;
+        public _pUpdateImplicitPartition(value: partition.Partition): void;
         /**
         * @protected
         */
@@ -3645,8 +3644,8 @@ declare module away.base {
         * @protected
         */
         public pUpdateSceneTransform(): void;
-        public _iAddRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
-        public _iRemoveRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
+        public _iAddRenderable(renderable: pool.IRenderable): pool.IRenderable;
+        public _iRemoveRenderable(renderable: pool.IRenderable): pool.IRenderable;
         /**
         * //TODO
         *
@@ -3672,11 +3671,11 @@ declare module away.base {
         /**
         * @internal
         */
-        public _iSetScene(value: away.containers.Scene): void;
+        public _iSetScene(value: containers.Scene): void;
         /**
         * @protected
         */
-        public _pUpdateScene(value: away.containers.Scene): void;
+        public _pUpdateScene(value: containers.Scene): void;
         /**
         * @private
         */
@@ -3743,29 +3742,29 @@ declare module away.base {
     *
     * @class away.base.Geometry
     */
-    class Geometry extends away.library.NamedAssetBase implements away.library.IAsset {
+    class Geometry extends library.NamedAssetBase implements library.IAsset {
         private _subGeometries;
         public assetType : string;
         /**
         * A collection of TriangleSubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.
         */
-        public subGeometries : base.SubGeometryBase[];
-        public getSubGeometries(): base.SubGeometryBase[];
+        public subGeometries : SubGeometryBase[];
+        public getSubGeometries(): SubGeometryBase[];
         /**
         * Creates a new Geometry object.
         */
         constructor();
-        public applyTransformation(transform: away.geom.Matrix3D): void;
+        public applyTransformation(transform: geom.Matrix3D): void;
         /**
         * Adds a new TriangleSubGeometry object to the list.
         * @param subGeometry The TriangleSubGeometry object to be added.
         */
-        public addSubGeometry(subGeometry: base.SubGeometryBase): void;
+        public addSubGeometry(subGeometry: SubGeometryBase): void;
         /**
         * Removes a new TriangleSubGeometry object from the list.
         * @param subGeometry The TriangleSubGeometry object to be removed.
         */
-        public removeSubGeometry(subGeometry: base.SubGeometryBase): void;
+        public removeSubGeometry(subGeometry: SubGeometryBase): void;
         /**
         * Clones the geometry.
         * @return An exact duplicate of the current Geometry object.
@@ -3786,7 +3785,7 @@ declare module away.base {
         * @param scaleV The amount by which to scale on the v axis. Default is 1;
         */
         public scaleUV(scaleU?: number, scaleV?: number): void;
-        public iInvalidateBounds(subGeom: base.SubGeometryBase): void;
+        public iInvalidateBounds(subGeom: SubGeometryBase): void;
     }
 }
 /**
@@ -3860,7 +3859,7 @@ declare module away.base {
         *               using a bilinear algorithm. Rendering by using the nearest
         *               neighbor algorithm is faster.
         */
-        public beginBitmapFill(bitmap: base.BitmapData, matrix?: away.geom.Matrix, repeat?: boolean, smooth?: boolean): void;
+        public beginBitmapFill(bitmap: BitmapData, matrix?: geom.Matrix, repeat?: boolean, smooth?: boolean): void;
         /**
         * Specifies a simple one-color fill that subsequent calls to other Graphics
         * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) use
@@ -3959,7 +3958,7 @@ declare module away.base {
         *                            a <code>focalPointRatio</code> set to 0.75:
         * @throws ArgumentError If the <code>type</code> parameter is not valid.
         */
-        public beginGradientFill(type: base.GradientType, colors: number[], alphas: number[], ratios: number[], matrix?: away.geom.Matrix, spreadMethod?: string, interpolationMethod?: string, focalPointRatio?: number): void;
+        public beginGradientFill(type: GradientType, colors: number[], alphas: number[], ratios: number[], matrix?: geom.Matrix, spreadMethod?: string, interpolationMethod?: string, focalPointRatio?: number): void;
         /**
         * Clears the graphics that were drawn to this Graphics object, and resets
         * fill and line style settings.
@@ -4101,7 +4100,7 @@ declare module away.base {
         * sub-paths are rendered during this operation. </p>
         *
         */
-        public drawGraphicsData(graphicsData: base.IGraphicsData[]): void;
+        public drawGraphicsData(graphicsData: IGraphicsData[]): void;
         /**
         * Submits a series of commands for drawing. The <code>drawPath()</code>
         * method uses vector arrays to consolidate individual <code>moveTo()</code>,
@@ -4147,7 +4146,7 @@ declare module away.base {
         * @param winding Specifies the winding rule using a value defined in the
         *                GraphicsPathWinding class.
         */
-        public drawPath(commands: number[], data: number[], winding: base.GraphicsPathWinding): void;
+        public drawPath(commands: number[], data: number[], winding: GraphicsPathWinding): void;
         /**
         * Draws a rectangle. Set the line style, fill, or both before you call the
         * <code>drawRect()</code> method, by calling the <code>linestyle()</code>,
@@ -4211,7 +4210,7 @@ declare module away.base {
         *                parameter can be set to any value defined by the
         *                TriangleCulling class.
         */
-        public drawTriangles(vertices: number[], indices?: number[], uvtData?: number[], culling?: base.TriangleCulling): void;
+        public drawTriangles(vertices: number[], indices?: number[], uvtData?: number[], culling?: TriangleCulling): void;
         /**
         * Applies a fill to the lines and curves that were added since the last call
         * to the <code>beginFill()</code>, <code>beginGradientFill()</code>, or
@@ -4253,7 +4252,7 @@ declare module away.base {
         * @param repeat Whether to repeat the bitmap in a tiled fashion.
         * @param smooth Whether smoothing should be applied to the bitmap.
         */
-        public lineBitmapStyle(bitmap: base.BitmapData, matrix?: away.geom.Matrix, repeat?: boolean, smooth?: boolean): void;
+        public lineBitmapStyle(bitmap: BitmapData, matrix?: geom.Matrix, repeat?: boolean, smooth?: boolean): void;
         /**
         * Specifies a gradient to use for the stroke when drawing lines.
         *
@@ -4324,7 +4323,7 @@ declare module away.base {
         *                            image shows a gradient with a
         *                            <code>focalPointRatio</code> of -0.75:
         */
-        public lineGradientStyle(type: base.GradientType, colors: number[], alphas: number[], ratios: number[], matrix?: away.geom.Matrix, spreadMethod?: base.SpreadMethod, interpolationMethod?: base.InterpolationMethod, focalPointRatio?: number): void;
+        public lineGradientStyle(type: GradientType, colors: number[], alphas: number[], ratios: number[], matrix?: geom.Matrix, spreadMethod?: SpreadMethod, interpolationMethod?: InterpolationMethod, focalPointRatio?: number): void;
         /**
         * Specifies a line style used for subsequent calls to Graphics methods such
         * as the <code>lineTo()</code> method or the <code>drawCircle()</code>
@@ -4464,7 +4463,7 @@ declare module away.base {
         *                     has a specific maximum angle for which the miter is
         *                     cut off. The following table lists some examples:</p>
         */
-        public lineStyle(thickness?: number, color?: number, alpha?: number, pixelHinting?: boolean, scaleMode?: base.LineScaleMode, caps?: base.CapsStyle, joints?: base.JointStyle, miterLimit?: number): void;
+        public lineStyle(thickness?: number, color?: number, alpha?: number, pixelHinting?: boolean, scaleMode?: LineScaleMode, caps?: CapsStyle, joints?: JointStyle, miterLimit?: number): void;
         /**
         * Draws a line using the current line style from the current drawing
         * position to(<code>x</code>, <code>y</code>); the current drawing position
@@ -4547,37 +4546,37 @@ declare module away.base {
     *
     * @interface away.base.IMaterialOwner
     */
-    interface IMaterialOwner extends away.library.IAsset {
+    interface IMaterialOwner extends library.IAsset {
         /**
         * The animation used by the material owner to assemble the vertex code.
         */
-        animator: away.animators.IAnimator;
+        animator: animators.IAnimator;
         /**
         * The material with which to render the object.
         */
-        material: away.materials.IMaterial;
+        material: materials.IMaterial;
         /**
         *
         */
-        uvTransform: away.geom.UVTransform;
-        /**
-        *
-        * @param renderable
-        * @private
-        */
-        _iAddRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
+        uvTransform: geom.UVTransform;
         /**
         *
         * @param renderable
         * @private
         */
-        _iRemoveRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
+        _iAddRenderable(renderable: pool.IRenderable): pool.IRenderable;
+        /**
+        *
+        * @param renderable
+        * @private
+        */
+        _iRemoveRenderable(renderable: pool.IRenderable): pool.IRenderable;
         /**
         *
         * @param renderer
         * @private
         */
-        _iCollectRenderable(renderer: away.render.IRenderer): any;
+        _iCollectRenderable(renderer: render.IRenderer): any;
     }
 }
 /**
@@ -4627,12 +4626,12 @@ declare module away.base {
     *
     * @class away.base.ISubMeshClass
     */
-    interface ISubMesh extends base.IMaterialOwner {
-        subGeometry: base.SubGeometryBase;
-        parentMesh: away.entities.Mesh;
+    interface ISubMesh extends IMaterialOwner {
+        subGeometry: SubGeometryBase;
+        parentMesh: entities.Mesh;
         _iIndex: number;
         _iInvalidateRenderableGeometry(): any;
-        _iGetExplicitMaterial(): away.materials.IMaterial;
+        _iGetExplicitMaterial(): materials.IMaterial;
     }
 }
 /**
@@ -4649,7 +4648,7 @@ declare module away.base {
         /**
         *
         */
-        new(subGeometry: base.SubGeometryBase, parentMesh: away.entities.Mesh, material?: away.materials.IMaterial): base.ISubMesh;
+        new(subGeometry: SubGeometryBase, parentMesh: entities.Mesh, material?: materials.IMaterial): ISubMesh;
     }
 }
 /**
@@ -4659,7 +4658,7 @@ declare module away.base {
     /**
     * @class away.base.TriangleSubGeometry
     */
-    class SubGeometryBase extends away.library.NamedAssetBase {
+    class SubGeometryBase extends library.NamedAssetBase {
         public _pStrideOffsetDirty: boolean;
         public _pIndices: number[];
         public _pVertices: number[];
@@ -4671,8 +4670,8 @@ declare module away.base {
         public _pStride: Object;
         public _pOffset: Object;
         public _pUpdateStrideOffset(): void;
-        public _pSubMeshClass: base.ISubMeshClass;
-        public subMeshClass : base.ISubMeshClass;
+        public _pSubMeshClass: ISubMeshClass;
+        public subMeshClass : ISubMeshClass;
         /**
         *
         */
@@ -4722,13 +4721,13 @@ declare module away.base {
         *
         * @private
         */
-        public parentGeometry: base.Geometry;
+        public parentGeometry: Geometry;
         /**
         * Clones the current object
         * @return An exact duplicate of the current object.
         */
         public clone(): SubGeometryBase;
-        public applyTransformation(transform: away.geom.Matrix3D): void;
+        public applyTransformation(transform: geom.Matrix3D): void;
         /**
         * Scales the geometry.
         * @param scale The amount by which to scale.
@@ -4753,32 +4752,32 @@ declare module away.base {
     *
     * @class away.base.SubMeshBase
     */
-    class SubMeshBase extends away.library.NamedAssetBase {
-        public _pParentMesh: away.entities.Mesh;
-        public _uvTransform: away.geom.UVTransform;
+    class SubMeshBase extends library.NamedAssetBase {
+        public _pParentMesh: entities.Mesh;
+        public _uvTransform: geom.UVTransform;
         public _iIndex: number;
-        public _material: away.materials.IMaterial;
+        public _material: materials.IMaterial;
         private _renderables;
         /**
         * The animator object that provides the state for the TriangleSubMesh's animation.
         */
-        public animator : away.animators.IAnimator;
+        public animator : animators.IAnimator;
         /**
         * The material used to render the current TriangleSubMesh. If set to null, its parent Mesh's material will be used instead.
         */
-        public material : away.materials.IMaterial;
+        public material : materials.IMaterial;
         /**
         * The scene transform object that transforms from model to world space.
         */
-        public sceneTransform : away.geom.Matrix3D;
+        public sceneTransform : geom.Matrix3D;
         /**
         * The entity that that initially provided the IRenderable to the render pipeline (ie: the owning Mesh object).
         */
-        public parentMesh : away.entities.Mesh;
+        public parentMesh : entities.Mesh;
         /**
         *
         */
-        public uvTransform : away.geom.UVTransform;
+        public uvTransform : geom.UVTransform;
         /**
         * Creates a new SubMeshBase object
         */
@@ -4792,12 +4791,12 @@ declare module away.base {
         * @param camera
         * @returns {away.geom.Matrix3D}
         */
-        public getRenderSceneTransform(camera: away.entities.Camera): away.geom.Matrix3D;
-        public _iAddRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
-        public _iRemoveRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
+        public getRenderSceneTransform(camera: entities.Camera): geom.Matrix3D;
+        public _iAddRenderable(renderable: pool.IRenderable): pool.IRenderable;
+        public _iRemoveRenderable(renderable: pool.IRenderable): pool.IRenderable;
         public _iInvalidateRenderableGeometry(): void;
-        public _iCollectRenderable(renderer: away.render.IRenderer): void;
-        public _iGetExplicitMaterial(): away.materials.IMaterial;
+        public _iCollectRenderable(renderer: render.IRenderer): void;
+        public _iGetExplicitMaterial(): materials.IMaterial;
     }
 }
 /**
@@ -4873,7 +4872,7 @@ declare module away.base {
     /**
     * @class away.base.TriangleSubGeometry
     */
-    class LineSubGeometry extends base.SubGeometryBase {
+    class LineSubGeometry extends SubGeometryBase {
         static VERTEX_DATA: string;
         static START_POSITION_DATA: string;
         static END_POSITION_DATA: string;
@@ -4955,7 +4954,7 @@ declare module away.base {
         *
         * @private
         */
-        public parentGeometry: base.Geometry;
+        public parentGeometry: Geometry;
         /**
         * Clones the current object
         * @return An exact duplicate of the current object.
@@ -4980,7 +4979,7 @@ declare module away.base {
     *
     * @class away.base.LineSubMesh
     */
-    class LineSubMesh extends base.SubMeshBase implements base.ISubMesh {
+    class LineSubMesh extends SubMeshBase implements ISubMesh {
         private _subGeometry;
         /**
         *
@@ -4989,19 +4988,19 @@ declare module away.base {
         /**
         * The LineSubGeometry object which provides the geometry data for this LineSubMesh.
         */
-        public subGeometry : base.LineSubGeometry;
+        public subGeometry : LineSubGeometry;
         /**
         * Creates a new LineSubMesh object
         * @param subGeometry The LineSubGeometry object which provides the geometry data for this LineSubMesh.
         * @param parentMesh The Mesh object to which this LineSubMesh belongs.
         * @param material An optional material used to render this LineSubMesh.
         */
-        constructor(subGeometry: base.LineSubGeometry, parentMesh: away.entities.Mesh, material?: away.materials.IMaterial);
+        constructor(subGeometry: LineSubGeometry, parentMesh: entities.Mesh, material?: materials.IMaterial);
         /**
         *
         */
         public dispose(): void;
-        public _iCollectRenderable(renderer: away.render.IRenderer): void;
+        public _iCollectRenderable(renderer: render.IRenderer): void;
     }
 }
 /**
@@ -5102,7 +5101,7 @@ declare module away.base {
 *                   content is removed prior to the load beginning.
 */
 declare module away.base {
-    class LoaderInfo extends away.events.EventDispatcher {
+    class LoaderInfo extends events.EventDispatcher {
         private _bytes;
         private _bytesLoaded;
         private _bytesTotal;
@@ -5126,7 +5125,7 @@ declare module away.base {
         *                       href="http://www.adobe.com/go/devnet_security_en"
         *                       scope="external">Security</a>.</p>
         */
-        public bytes : away.utils.ByteArray;
+        public bytes : utils.ByteArray;
         /**
         * The number of bytes that are loaded for the media. When this number equals
         * the value of <code>bytesTotal</code>, all of the bytes are loaded.
@@ -5158,7 +5157,7 @@ declare module away.base {
         *                       href="http://www.adobe.com/go/devnet_security_en"
         *                       scope="external">Security</a>.</p>
         */
-        public content : base.DisplayObject;
+        public content : DisplayObject;
         /**
         * The MIME type of the loaded file. The value is <code>null</code> if not
         * enough of the file has loaded in order to determine the type. The
@@ -5189,7 +5188,7 @@ declare module away.base {
         *                       href="http://www.adobe.com/go/devnet_security_en"
         *                       scope="external">Security</a>.</p>
         */
-        public loader : away.containers.Loader;
+        public loader : containers.Loader;
         /**
         * The URL of the media being loaded.
         *
@@ -5272,7 +5271,7 @@ declare module away.base {
     * todo: consider moving all creation methods (createVertexBuffer etc) in here, so that disposal can occur here
     * along with the context, instead of scattered throughout the framework
     */
-    class StageGL extends away.events.EventDispatcher {
+    class StageGL extends events.EventDispatcher {
         private _contextGL;
         private _canvas;
         private _width;
@@ -5299,7 +5298,7 @@ declare module away.base {
         private _viewportDirty;
         private _bufferClear;
         private _initialised;
-        constructor(canvas: HTMLCanvasElement, stageGLIndex: number, stageGLManager: away.managers.StageGLManager, forceSoftware?: boolean, profile?: string);
+        constructor(canvas: HTMLCanvasElement, stageGLIndex: number, stageGLManager: managers.StageGLManager, forceSoftware?: boolean, profile?: string);
         /**
         * Requests a ContextGL object to attach to the managed gl canvas.
         */
@@ -5325,7 +5324,7 @@ declare module away.base {
         /**
         * The ContextGL object associated with the given gl canvas object.
         */
-        public contextGL : away.gl.ContextGL;
+        public contextGL : gl.ContextGL;
         private notifyViewportUpdated();
         private notifyEnterFrame();
         private notifyExitFrame();
@@ -5343,9 +5342,9 @@ declare module away.base {
         */
         public configureBackBuffer(backBufferWidth: number, backBufferHeight: number, antiAlias: number, enableDepthAndStencil: boolean): void;
         public enableDepthAndStencil : boolean;
-        public renderTarget : away.gl.TextureBase;
+        public renderTarget : gl.TextureBase;
         public renderSurfaceSelector : number;
-        public setRenderTarget(target: away.gl.TextureBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
+        public setRenderTarget(target: gl.TextureBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
         public clear(): void;
         public present(): void;
         public addEventListener(type: string, listener: Function): void;
@@ -5358,7 +5357,7 @@ declare module away.base {
         * @param useCapture Specifies whether the listener was registered for the capture phase or the target and bubbling phases. If the listener was registered for both the capture phase and the target and bubbling phases, two calls to removeEventListener() are required to remove both, one call with useCapture() set to true, and another call with useCapture() set to false.
         */
         public removeEventListener(type: string, listener: Function): void;
-        public scissorRect : away.geom.Rectangle;
+        public scissorRect : geom.Rectangle;
         /**
         * The index of the StageGL which is managed by this instance of StageGLProxy.
         */
@@ -5376,7 +5375,7 @@ declare module away.base {
         /**
         * A viewPort rectangle equivalent of the StageGL size and position.
         */
-        public viewPort : away.geom.Rectangle;
+        public viewPort : geom.Rectangle;
         /**
         * The background color of the StageGL.
         */
@@ -5394,15 +5393,15 @@ declare module away.base {
         * @param stride
         * @param format
         */
-        public activateBuffer(index: number, buffer: away.gl.VertexData, offset: number, format: string): void;
-        public disposeVertexData(buffer: away.gl.VertexData): void;
+        public activateBuffer(index: number, buffer: gl.VertexData, offset: number, format: string): void;
+        public disposeVertexData(buffer: gl.VertexData): void;
         /**
         * Retrieves the VertexBuffer object that contains triangle indices.
         * @param context The ContextGL for which we request the buffer
         * @return The VertexBuffer object that contains triangle indices.
         */
-        public getIndexBuffer(buffer: away.gl.IndexData): away.gl.IndexBuffer;
-        public disposeIndexData(buffer: away.gl.IndexData): void;
+        public getIndexBuffer(buffer: gl.IndexData): gl.IndexBuffer;
+        public disposeIndexData(buffer: gl.IndexData): void;
         /**
         * Frees the ContextGL associated with this StageGLProxy.
         */
@@ -5461,7 +5460,7 @@ declare module away.base {
     /**
     * @class away.base.TriangleSubGeometry
     */
-    class TriangleSubGeometry extends base.SubGeometryBase {
+    class TriangleSubGeometry extends SubGeometryBase {
         static VERTEX_DATA: string;
         static POSITION_DATA: string;
         static NORMAL_DATA: string;
@@ -5648,7 +5647,7 @@ declare module away.base {
         * @param scale The amount by which to scale.
         */
         public scale(scale: number): void;
-        public applyTransformation(transform: away.geom.Matrix3D): void;
+        public applyTransformation(transform: geom.Matrix3D): void;
         /**
         * Updates the tangents for each face.
         */
@@ -5680,7 +5679,7 @@ declare module away.base {
     *
     * @class away.base.TriangleSubMesh
     */
-    class TriangleSubMesh extends base.SubMeshBase implements base.ISubMesh {
+    class TriangleSubMesh extends SubMeshBase implements ISubMesh {
         private _subGeometry;
         /**
         *
@@ -5689,19 +5688,19 @@ declare module away.base {
         /**
         * The TriangleSubGeometry object which provides the geometry data for this TriangleSubMesh.
         */
-        public subGeometry : base.TriangleSubGeometry;
+        public subGeometry : TriangleSubGeometry;
         /**
         * Creates a new TriangleSubMesh object
         * @param subGeometry The TriangleSubGeometry object which provides the geometry data for this TriangleSubMesh.
         * @param parentMesh The Mesh object to which this TriangleSubMesh belongs.
         * @param material An optional material used to render this TriangleSubMesh.
         */
-        constructor(subGeometry: base.TriangleSubGeometry, parentMesh: away.entities.Mesh, material?: away.materials.IMaterial);
+        constructor(subGeometry: TriangleSubGeometry, parentMesh: entities.Mesh, material?: materials.IMaterial);
         /**
         *
         */
         public dispose(): void;
-        public _iCollectRenderable(renderer: away.render.IRenderer): void;
+        public _iCollectRenderable(renderer: render.IRenderer): void;
     }
 }
 /**
@@ -5715,7 +5714,7 @@ declare module away.pool {
         /**
         *
         */
-        public entity: away.entities.IEntity;
+        public entity: entities.IEntity;
         /**
         *
         */
@@ -5740,7 +5739,7 @@ declare module away.pool {
         /**
         *
         */
-        public getItem(): pool.EntityListItem;
+        public getItem(): EntityListItem;
         /**
         *
         */
@@ -5811,7 +5810,7 @@ declare module away.pool {
         /**
         *
         */
-        new(pool: pool.RenderablePool, materialOwner: away.base.IMaterialOwner): pool.IRenderable;
+        new(pool: RenderablePool, materialOwner: base.IMaterialOwner): IRenderable;
     }
 }
 /**
@@ -5830,27 +5829,27 @@ declare module away.pool {
         *
         * @param renderableClass
         */
-        constructor(renderableClass: pool.IRenderableClass);
+        constructor(renderableClass: IRenderableClass);
         /**
         * //TODO
         *
         * @param materialOwner
         * @returns IRenderable
         */
-        public getItem(materialOwner: away.base.IMaterialOwner): pool.IRenderable;
+        public getItem(materialOwner: base.IMaterialOwner): IRenderable;
         /**
         * //TODO
         *
         * @param materialOwner
         */
-        public disposeItem(materialOwner: away.base.IMaterialOwner): void;
+        public disposeItem(materialOwner: base.IMaterialOwner): void;
         /**
         * //TODO
         *
         * @param renderableClass
         * @returns RenderablePool
         */
-        static getPool(renderableClass: pool.IRenderableClass): RenderablePool;
+        static getPool(renderableClass: IRenderableClass): RenderablePool;
         /**
         * //TODO
         *
@@ -5866,7 +5865,7 @@ declare module away.pool {
     /**
     * @class away.pool.RenderableListItem
     */
-    class CSSRenderableBase implements pool.IRenderable {
+    class CSSRenderableBase implements IRenderable {
         /**
         *
         */
@@ -5894,15 +5893,15 @@ declare module away.pool {
         /**
         *
         */
-        public renderSceneTransform: away.geom.Matrix3D;
+        public renderSceneTransform: geom.Matrix3D;
         /**
         *
         */
-        public sourceEntity: away.entities.IEntity;
+        public sourceEntity: entities.IEntity;
         /**
         *
         */
-        public materialOwner: away.base.IMaterialOwner;
+        public materialOwner: base.IMaterialOwner;
         /**
         *
         */
@@ -5913,7 +5912,7 @@ declare module away.pool {
         * @param material
         * @param animator
         */
-        constructor(pool: pool.RenderablePool, sourceEntity: away.entities.IEntity, materialOwner: away.base.IMaterialOwner);
+        constructor(pool: RenderablePool, sourceEntity: entities.IEntity, materialOwner: base.IMaterialOwner);
         /**
         *
         */
@@ -5939,9 +5938,9 @@ declare module away.pool {
     /**
     * @class away.pool.RenderableListItem
     */
-    class CSSBillboardRenderable extends pool.CSSRenderableBase {
+    class CSSBillboardRenderable extends CSSRenderableBase {
         static id: string;
-        constructor(pool: pool.RenderablePool, billboard: away.entities.Billboard);
+        constructor(pool: RenderablePool, billboard: entities.Billboard);
     }
 }
 /**
@@ -5951,9 +5950,9 @@ declare module away.pool {
     /**
     * @class away.pool.RenderableListItem
     */
-    class CSSLineSegmentRenderable extends pool.CSSRenderableBase {
+    class CSSLineSegmentRenderable extends CSSRenderableBase {
         static id: string;
-        constructor(pool: pool.RenderablePool, lineSegment: away.entities.LineSegment);
+        constructor(pool: RenderablePool, lineSegment: entities.LineSegment);
     }
 }
 /**
@@ -5967,11 +5966,11 @@ declare module away.traverse {
         /**
         *
         */
-        camera: away.entities.Camera;
+        camera: entities.Camera;
         /**
         *
         */
-        scene: away.containers.Scene;
+        scene: containers.Scene;
         /**
         *
         */
@@ -5992,27 +5991,27 @@ declare module away.traverse {
         *
         * @param node
         */
-        enterNode(node: away.partition.NodeBase): boolean;
+        enterNode(node: partition.NodeBase): boolean;
         /**
         *
         * @param entity
         */
-        applyDirectionalLight(entity: away.entities.IEntity): any;
+        applyDirectionalLight(entity: entities.IEntity): any;
         /**
         *
         * @param entity
         */
-        applyEntity(entity: away.entities.IEntity): any;
+        applyEntity(entity: entities.IEntity): any;
         /**
         *
         * @param entity
         */
-        applyLightProbe(entity: away.entities.IEntity): any;
+        applyLightProbe(entity: entities.IEntity): any;
         /**
         *
         * @param entity
         */
-        applyPointLight(entity: away.entities.IEntity): any;
+        applyPointLight(entity: entities.IEntity): any;
     }
 }
 /**
@@ -6022,11 +6021,11 @@ declare module away.traverse {
     /**
     * @class away.traverse.CollectorBase
     */
-    class CollectorBase implements traverse.ICollector {
-        public scene: away.containers.Scene;
-        public _pEntityHead: away.pool.EntityListItem;
-        public _pEntityListItemPool: away.pool.EntityListItemPool;
-        public _pCamera: away.entities.Camera;
+    class CollectorBase implements ICollector {
+        public scene: containers.Scene;
+        public _pEntityHead: pool.EntityListItem;
+        public _pEntityListItemPool: pool.EntityListItemPool;
+        public _pCamera: entities.Camera;
         private _customCullPlanes;
         private _cullPlanes;
         private _numCullPlanes;
@@ -6036,15 +6035,15 @@ declare module away.traverse {
         /**
         *
         */
-        public camera : away.entities.Camera;
+        public camera : entities.Camera;
         /**
         *
         */
-        public cullPlanes : away.geom.Plane3D[];
+        public cullPlanes : geom.Plane3D[];
         /**
         *
         */
-        public entityHead : away.pool.EntityListItem;
+        public entityHead : pool.EntityListItem;
         /**
         *
         */
@@ -6062,27 +6061,27 @@ declare module away.traverse {
         * @param node
         * @returns {boolean}
         */
-        public enterNode(node: away.partition.NodeBase): boolean;
+        public enterNode(node: partition.NodeBase): boolean;
         /**
         *
         * @param entity
         */
-        public applyDirectionalLight(entity: away.entities.IEntity): void;
+        public applyDirectionalLight(entity: entities.IEntity): void;
         /**
         *
         * @param entity
         */
-        public applyEntity(entity: away.entities.IEntity): void;
+        public applyEntity(entity: entities.IEntity): void;
         /**
         *
         * @param entity
         */
-        public applyLightProbe(entity: away.entities.IEntity): void;
+        public applyLightProbe(entity: entities.IEntity): void;
         /**
         *
         * @param entity
         */
-        public applyPointLight(entity: away.entities.IEntity): void;
+        public applyPointLight(entity: entities.IEntity): void;
     }
 }
 /**
@@ -6098,18 +6097,18 @@ declare module away.traverse {
     *
     * @class away.traverse.RaycastCollector
     */
-    class RaycastCollector extends traverse.CollectorBase implements traverse.ICollector {
+    class RaycastCollector extends CollectorBase implements ICollector {
         private _rayPosition;
         private _rayDirection;
         public _iCollectionMark: number;
         /**
         * Provides the starting position of the ray.
         */
-        public rayPosition : away.geom.Vector3D;
+        public rayPosition : geom.Vector3D;
         /**
         * Provides the direction vector of the ray.
         */
-        public rayDirection : away.geom.Vector3D;
+        public rayDirection : geom.Vector3D;
         /**
         * Creates a new RaycastCollector object.
         */
@@ -6119,7 +6118,7 @@ declare module away.traverse {
         *
         * @param node The Partition3DNode object to frustum-test.
         */
-        public enterNode(node: away.partition.NodeBase): boolean;
+        public enterNode(node: partition.NodeBase): boolean;
     }
 }
 /**
@@ -6129,7 +6128,7 @@ declare module away.traverse {
     /**
     * @class away.traverse.CSSEntityCollector
     */
-    class CSSEntityCollector extends traverse.CollectorBase implements traverse.ICollector {
+    class CSSEntityCollector extends CollectorBase implements ICollector {
         constructor();
     }
 }
@@ -6147,7 +6146,7 @@ declare module away.partition {
         public _iParent: NodeBase;
         public _pChildNodes: NodeBase[];
         public _pNumChildNodes: number;
-        public _pBoundsPrimitive: away.entities.IEntity;
+        public _pBoundsPrimitive: entities.IEntity;
         public _iNumEntities: number;
         public _iCollectionMark: number;
         /**
@@ -6175,14 +6174,14 @@ declare module away.partition {
         * @returns {boolean}
         * @internal
         */
-        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
+        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
         /**
         *
         * @param rayPosition
         * @param rayDirection
         * @returns {boolean}
         */
-        public isIntersectingRay(rayPosition: away.geom.Vector3D, rayDirection: away.geom.Vector3D): boolean;
+        public isIntersectingRay(rayPosition: geom.Vector3D, rayDirection: geom.Vector3D): boolean;
         /**
         *
         * @returns {boolean}
@@ -6193,17 +6192,17 @@ declare module away.partition {
         * @param entity
         * @returns {away.partition.NodeBase}
         */
-        public findPartitionForEntity(entity: away.entities.IEntity): NodeBase;
+        public findPartitionForEntity(entity: entities.IEntity): NodeBase;
         /**
         *
         * @param traverser
         */
-        public acceptTraverser(traverser: away.traverse.ICollector): void;
+        public acceptTraverser(traverser: traverse.ICollector): void;
         /**
         *
         * @protected
         */
-        public _pCreateBoundsPrimitive(): away.entities.IEntity;
+        public _pCreateBoundsPrimitive(): entities.IEntity;
         /**
         *
         * @param node
@@ -6243,14 +6242,14 @@ declare module away.partition {
     * @class away.partition.Partition
     */
     class Partition {
-        public _rootNode: partition.NodeBase;
+        public _rootNode: NodeBase;
         private _updatesMade;
         private _updateQueue;
-        constructor(rootNode: partition.NodeBase);
-        public rootNode : partition.NodeBase;
-        public traverse(traverser: away.traverse.ICollector): void;
-        public iMarkForUpdate(entity: away.base.DisplayObject): void;
-        public iRemoveEntity(entity: away.base.DisplayObject): void;
+        constructor(rootNode: NodeBase);
+        public rootNode : NodeBase;
+        public traverse(traverser: traverse.ICollector): void;
+        public iMarkForUpdate(entity: base.DisplayObject): void;
+        public iRemoveEntity(entity: base.DisplayObject): void;
         private updateEntities();
     }
 }
@@ -6261,11 +6260,11 @@ declare module away.partition {
     /**
     * @class away.partition.EntityNode
     */
-    class EntityNode extends partition.NodeBase {
+    class EntityNode extends NodeBase {
         private _entity;
         public _iUpdateQueueNext: EntityNode;
-        constructor(entity: away.entities.IEntity);
-        public entity : away.entities.IEntity;
+        constructor(entity: entities.IEntity);
+        public entity : entities.IEntity;
         public removeFromParent(): void;
         /**
         *
@@ -6278,20 +6277,20 @@ declare module away.partition {
         * @param numPlanes
         * @returns {boolean}
         */
-        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
+        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
         /**
         * @inheritDoc
         */
-        public acceptTraverser(traverser: away.traverse.ICollector): void;
+        public acceptTraverser(traverser: traverse.ICollector): void;
         /**
         * @inheritDoc
         */
-        public isIntersectingRay(rayPosition: away.geom.Vector3D, rayDirection: away.geom.Vector3D): boolean;
+        public isIntersectingRay(rayPosition: geom.Vector3D, rayDirection: geom.Vector3D): boolean;
         /**
         *
         * @protected
         */
-        public _pCreateBoundsPrimitive(): away.entities.IEntity;
+        public _pCreateBoundsPrimitive(): entities.IEntity;
     }
 }
 /**
@@ -6301,12 +6300,12 @@ declare module away.partition {
     /**
     * @class away.partition.CameraNode
     */
-    class CameraNode extends partition.EntityNode {
-        constructor(camera: away.entities.IEntity);
+    class CameraNode extends EntityNode {
+        constructor(camera: entities.IEntity);
         /**
         * @inheritDoc
         */
-        public acceptTraverser(traverser: away.traverse.ICollector): void;
+        public acceptTraverser(traverser: traverse.ICollector): void;
     }
 }
 /**
@@ -6318,20 +6317,20 @@ declare module away.partition {
     *
     * @class away.partition.SkyboxNode
     */
-    class SkyboxNode extends partition.EntityNode {
+    class SkyboxNode extends EntityNode {
         private _skyBox;
         /**
         * Creates a new SkyboxNode object.
         * @param skyBox The Skybox to be contained in the node.
         */
-        constructor(skyBox: away.entities.IEntity);
+        constructor(skyBox: entities.IEntity);
         /**
         *
         * @param planes
         * @param numPlanes
         * @returns {boolean}
         */
-        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
+        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
     }
 }
 /**
@@ -6354,7 +6353,7 @@ declare module away.pick {
         * @param localDirection The position vector in local coordinates
         * @param localPosition The direction vector in local coordinates
         */
-        setLocalRay(localPosition: away.geom.Vector3D, localDirection: away.geom.Vector3D): any;
+        setLocalRay(localPosition: geom.Vector3D, localDirection: geom.Vector3D): any;
         /**
         * Tests a <code>Billboard</code> object for a collision with the picking ray.
         *
@@ -6362,7 +6361,7 @@ declare module away.pick {
         * @param pickingCollisionVO The collision object used to store the collision results
         * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
         */
-        testBillboardCollision(entity: away.entities.IEntity, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number): boolean;
+        testBillboardCollision(entity: entities.IEntity, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number): boolean;
         /**
         * Tests a <code>Mesh</code> object for a collision with the picking ray.
         *
@@ -6371,7 +6370,7 @@ declare module away.pick {
         * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
         * @param findClosest
         */
-        testMeshCollision(entity: away.entities.IEntity, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number, findClosest: boolean): boolean;
+        testMeshCollision(entity: entities.IEntity, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number, findClosest: boolean): boolean;
     }
 }
 /**
@@ -6391,7 +6390,7 @@ declare module away.pick {
         * @param y The y coordinate of the picking ray in screen-space.
         * @param view The view on which the picking object acts.
         */
-        getViewCollision(x: number, y: number, view: away.containers.View): pick.PickingCollisionVO;
+        getViewCollision(x: number, y: number, view: containers.View): PickingCollisionVO;
         /**
         * Gets the collision object from the scene position and direction of the picking ray.
         *
@@ -6399,7 +6398,7 @@ declare module away.pick {
         * @param direction The direction of the picking ray in scene-space.
         * @param scene The scene on which the picking object acts.
         */
-        getSceneCollision(position: away.geom.Vector3D, direction: away.geom.Vector3D, scene: away.containers.Scene): pick.PickingCollisionVO;
+        getSceneCollision(position: geom.Vector3D, direction: geom.Vector3D, scene: containers.Scene): PickingCollisionVO;
         /**
         * Determines whether the picker takes account of the mouseEnabled properties of entities. Defaults to true.
         */
@@ -6426,19 +6425,19 @@ declare module away.pick {
         /**
         * The display object to which this collision object belongs.
         */
-        public displayObject: away.base.DisplayObject;
+        public displayObject: base.DisplayObject;
         /**
         * The local position of the collision on the entity's surface.
         */
-        public localPosition: away.geom.Vector3D;
+        public localPosition: geom.Vector3D;
         /**
         * The local normal vector at the position of the collision.
         */
-        public localNormal: away.geom.Vector3D;
+        public localNormal: geom.Vector3D;
         /**
         * The uv coordinate at the position of the collision.
         */
-        public uv: away.geom.Point;
+        public uv: geom.Point;
         /**
         * The index of the face where the event took pl ace.
         */
@@ -6446,19 +6445,19 @@ declare module away.pick {
         /**
         * The starting position of the colliding ray in local coordinates.
         */
-        public localRayPosition: away.geom.Vector3D;
+        public localRayPosition: geom.Vector3D;
         /**
         * The direction of the colliding ray in local coordinates.
         */
-        public localRayDirection: away.geom.Vector3D;
+        public localRayDirection: geom.Vector3D;
         /**
         * The starting position of the colliding ray in scene coordinates.
         */
-        public rayPosition: away.geom.Vector3D;
+        public rayPosition: geom.Vector3D;
         /**
         * The direction of the colliding ray in scene coordinates.
         */
-        public rayDirection: away.geom.Vector3D;
+        public rayDirection: geom.Vector3D;
         /**
         * Determines if the ray position is contained within the entity bounds.
         *
@@ -6472,13 +6471,13 @@ declare module away.pick {
         /**
         * The material ownwer associated with a collision.
         */
-        public materialOwner: away.base.IMaterialOwner;
+        public materialOwner: base.IMaterialOwner;
         /**
         * Creates a new <code>PickingCollisionVO</code> object.
         *
         * @param entity The entity to which this collision object belongs.
         */
-        constructor(displayObject: away.base.DisplayObject);
+        constructor(displayObject: base.DisplayObject);
     }
 }
 /**
@@ -6492,7 +6491,7 @@ declare module away.pick {
     *
     * @class away.pick.RaycastPicker
     */
-    class RaycastPicker implements pick.IPicker {
+    class RaycastPicker implements IPicker {
         private _findClosestCollision;
         private _raycastCollector;
         private _ignoredEntities;
@@ -6514,11 +6513,11 @@ declare module away.pick {
         /**
         * @inheritDoc
         */
-        public getViewCollision(x: number, y: number, view: away.containers.View): pick.PickingCollisionVO;
+        public getViewCollision(x: number, y: number, view: containers.View): PickingCollisionVO;
         /**
         * @inheritDoc
         */
-        public getSceneCollision(rayPosition: away.geom.Vector3D, rayDirection: away.geom.Vector3D, scene: away.containers.Scene): pick.PickingCollisionVO;
+        public getSceneCollision(rayPosition: geom.Vector3D, rayDirection: geom.Vector3D, scene: containers.Scene): PickingCollisionVO;
         public setIgnoreList(entities: any): void;
         private isIgnored(entity);
         private sortOnNearT(entity1, entity2);
@@ -6537,11 +6536,11 @@ declare module away.render {
     *
     * @class away.render.IRenderer
     */
-    interface IRenderer extends away.events.IEventDispatcher {
+    interface IRenderer extends events.IEventDispatcher {
         /**
         *
         */
-        renderableSorter: away.sort.IEntitySorter;
+        renderableSorter: sort.IEntitySorter;
         /**
         *
         */
@@ -6565,31 +6564,31 @@ declare module away.render {
         /**
         *
         */
-        viewPort: away.geom.Rectangle;
+        viewPort: geom.Rectangle;
         /**
         *
         */
-        scissorRect: away.geom.Rectangle;
+        scissorRect: geom.Rectangle;
         /**
         *
         * @param billboard
         */
-        applyBillboard(billboard: away.entities.Billboard): any;
+        applyBillboard(billboard: entities.Billboard): any;
         /**
         *
         * @param triangleSubMesh
         */
-        applyLineSubMesh(triangleSubMesh: away.base.LineSubMesh): any;
+        applyLineSubMesh(triangleSubMesh: base.LineSubMesh): any;
         /**
         *
         * @param skybox
         */
-        applySkybox(skybox: away.entities.Skybox): any;
+        applySkybox(skybox: entities.Skybox): any;
         /**
         *
         * @param triangleSubMesh
         */
-        applyTriangleSubMesh(triangleSubMesh: away.base.TriangleSubMesh): any;
+        applyTriangleSubMesh(triangleSubMesh: base.TriangleSubMesh): any;
         /**
         *
         */
@@ -6598,7 +6597,7 @@ declare module away.render {
         *
         * @param entityCollector
         */
-        render(entityCollector: away.traverse.ICollector): any;
+        render(entityCollector: traverse.ICollector): any;
         /**
         * @internal
         */
@@ -6618,7 +6617,7 @@ declare module away.render {
         /**
         * @internal
         */
-        _iCreateEntityCollector(): away.traverse.ICollector;
+        _iCreateEntityCollector(): traverse.ICollector;
     }
 }
 /**
@@ -6631,12 +6630,12 @@ declare module away.render {
     *
     * @class away.render.RendererBase
     */
-    class CSSRendererBase extends away.events.EventDispatcher {
+    class CSSRendererBase extends events.EventDispatcher {
         private _billboardRenderablePool;
         private _lineSegmentRenderablePool;
-        public _pCamera: away.entities.Camera;
-        public _iEntryPoint: away.geom.Vector3D;
-        public _pCameraForward: away.geom.Vector3D;
+        public _pCamera: entities.Camera;
+        public _iEntryPoint: geom.Vector3D;
+        public _pCameraForward: geom.Vector3D;
         private _backgroundR;
         private _backgroundG;
         private _backgroundB;
@@ -6644,7 +6643,7 @@ declare module away.render {
         private _shareContext;
         public _pBackBufferInvalid: boolean;
         public _depthTextureInvalid: boolean;
-        public _renderableHead: away.pool.CSSRenderableBase;
+        public _renderableHead: pool.CSSRenderableBase;
         public _width: number;
         public _height: number;
         private _viewPort;
@@ -6658,11 +6657,11 @@ declare module away.render {
         /**
         * A viewPort rectangle equivalent of the StageGL size and position.
         */
-        public viewPort : away.geom.Rectangle;
+        public viewPort : geom.Rectangle;
         /**
         * A scissor rectangle equivalent of the view size and position.
         */
-        public scissorRect : away.geom.Rectangle;
+        public scissorRect : geom.Rectangle;
         /**
         *
         */
@@ -6682,7 +6681,7 @@ declare module away.render {
         /**
         *
         */
-        public renderableSorter: away.sort.IEntitySorter;
+        public renderableSorter: sort.IEntitySorter;
         /**
         * Creates a new RendererBase object.
         */
@@ -6710,47 +6709,47 @@ declare module away.render {
         * Disposes the resources used by the RendererBase.
         */
         public dispose(): void;
-        public render(entityCollector: away.traverse.ICollector): void;
+        public render(entityCollector: traverse.ICollector): void;
         /**
         * Renders the potentially visible geometry to the back buffer or texture.
         * @param entityCollector The EntityCollector object containing the potentially visible geometry.
         * @param scissorRect
         */
-        public _iRender(entityCollector: away.traverse.CSSEntityCollector, scissorRect?: away.geom.Rectangle): void;
-        public pCollectRenderables(entityCollector: away.traverse.ICollector): void;
+        public _iRender(entityCollector: traverse.CSSEntityCollector, scissorRect?: geom.Rectangle): void;
+        public pCollectRenderables(entityCollector: traverse.ICollector): void;
         /**
         * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
         * @param entityCollector The EntityCollector object containing the potentially visible geometry.
         * @param scissorRect
         */
-        public pExecuteRender(entityCollector: away.traverse.CSSEntityCollector, scissorRect?: away.geom.Rectangle): void;
+        public pExecuteRender(entityCollector: traverse.CSSEntityCollector, scissorRect?: geom.Rectangle): void;
         /**
         * Performs the actual drawing of dom objects to the target.
         *
         * @param entityCollector The EntityCollector object containing the potentially visible dom objects.
         */
-        public pDraw(entityCollector: away.traverse.CSSEntityCollector): void;
+        public pDraw(entityCollector: traverse.CSSEntityCollector): void;
         public _iBackgroundAlpha : number;
         /**
         *
         * @param billboard
         */
-        public applyBillboard(billboard: away.entities.Billboard): void;
+        public applyBillboard(billboard: entities.Billboard): void;
         /**
         *
         * @param lineSubMesh
         */
-        public applyLineSubMesh(lineSubMesh: away.base.LineSubMesh): void;
+        public applyLineSubMesh(lineSubMesh: base.LineSubMesh): void;
         /**
         *
         * @param skybox
         */
-        public applySkybox(skybox: away.entities.Skybox): void;
+        public applySkybox(skybox: entities.Skybox): void;
         /**
         *
         * @param triangleSubMesh
         */
-        public applyTriangleSubMesh(triangleSubMesh: away.base.TriangleSubMesh): void;
+        public applyTriangleSubMesh(triangleSubMesh: base.TriangleSubMesh): void;
         /**
         *
         * @param renderable
@@ -6769,7 +6768,7 @@ declare module away.render {
         *
         */
         public updateGlobalPos(): void;
-        public _iCreateEntityCollector(): away.traverse.ICollector;
+        public _iCreateEntityCollector(): traverse.ICollector;
     }
 }
 /**
@@ -6782,7 +6781,7 @@ declare module away.render {
     *
     * @class away.render.DefaultRenderer
     */
-    class CSSDefaultRenderer extends render.CSSRendererBase implements render.IRenderer {
+    class CSSDefaultRenderer extends CSSRendererBase implements IRenderer {
         private _container;
         private _context;
         private _contextStyle;
@@ -6798,11 +6797,11 @@ declare module away.render {
         *
         * @param entityCollector
         */
-        public render(entityCollector: away.traverse.ICollector): void;
+        public render(entityCollector: traverse.ICollector): void;
         /**
         * @inheritDoc
         */
-        public pDraw(entityCollector: away.traverse.CSSEntityCollector): void;
+        public pDraw(entityCollector: traverse.CSSEntityCollector): void;
         /**
         * Updates the backbuffer properties.
         */
@@ -6819,7 +6818,7 @@ declare module away.render {
         */
         private drawRenderables(item, entityCollector);
         public dispose(): void;
-        public _iCreateEntityCollector(): away.traverse.ICollector;
+        public _iCreateEntityCollector(): traverse.ICollector;
     }
 }
 /**
@@ -6830,8 +6829,8 @@ declare module away.sort {
     * @interface away.sort.IEntitySorter
     */
     interface IEntitySorter {
-        sortBlendedRenderables(head: away.pool.IRenderable): away.pool.IRenderable;
-        sortOpaqueRenderables(head: away.pool.IRenderable): away.pool.IRenderable;
+        sortBlendedRenderables(head: pool.IRenderable): pool.IRenderable;
+        sortOpaqueRenderables(head: pool.IRenderable): pool.IRenderable;
     }
 }
 /**
@@ -6841,9 +6840,9 @@ declare module away.sort {
     /**
     * @class away.sort.RenderableMergeSort
     */
-    class RenderableMergeSort implements sort.IEntitySorter {
-        public sortBlendedRenderables(head: away.pool.IRenderable): away.pool.IRenderable;
-        public sortOpaqueRenderables(head: away.pool.IRenderable): away.pool.IRenderable;
+    class RenderableMergeSort implements IEntitySorter {
+        public sortBlendedRenderables(head: pool.IRenderable): pool.IRenderable;
+        public sortOpaqueRenderables(head: pool.IRenderable): pool.IRenderable;
     }
 }
 /**
@@ -6942,7 +6941,7 @@ declare module away.geom {
         * The location of the Box object's bottom-right corner, determined by the
         * values of the <code>right</code> and <code>bottom</code> properties.
         */
-        public bottomRightBack : geom.Vector3D;
+        public bottomRightBack : Vector3D;
         /**
         * The <i>z</i> coordinate of the top-left-front corner of the box. Changing
         * the <code>front</code> property of a Box object has no effect on the
@@ -6975,7 +6974,7 @@ declare module away.geom {
         * values of the <code>width</code>, <code>height</code> and
         * <code>depth</code> properties.
         */
-        public size : geom.Vector3D;
+        public size : Vector3D;
         /**
         * The <i>y</i> coordinate of the top-left-front corner of the box. Changing
         * the <code>top</code> property of a Box object has no effect on the
@@ -6991,7 +6990,7 @@ declare module away.geom {
         * The location of the Box object's top-left-front corner, determined by the
         * <i>x</i>, <i>y</i> and <i>z</i> coordinates of the point.
         */
-        public topLeftFront : geom.Vector3D;
+        public topLeftFront : Vector3D;
         /**
         * Creates a new Box object with the top-left-front corner specified by the
         * <code>x</code>, <code>y</code> and <code>z</code> parameters and with the
@@ -7044,7 +7043,7 @@ declare module away.geom {
         * @return A value of <code>true</code> if the Box object contains the
         *         specified position; otherwise <code>false</code>.
         */
-        public containsPoint(position: geom.Vector3D): boolean;
+        public containsPoint(position: Vector3D): boolean;
         /**
         * Determines whether the Box object specified by the <code>box</code>
         * parameter is contained within this Box object. A Box object is said to
@@ -7109,7 +7108,7 @@ declare module away.geom {
         *              The <code>z</code> property is used to increase the
         *              longitudinal dimension of the Box object.
         */
-        public inflatePoint(delta: geom.Vector3D): void;
+        public inflatePoint(delta: Vector3D): void;
         /**
         * If the Box object specified in the <code>toIntersect</code> parameter
         * intersects with this Box object, returns the area of intersection
@@ -7160,7 +7159,7 @@ declare module away.geom {
         *
         * @param position A Vector3D object to use to offset this Box object.
         */
-        public offsetPosition(position: geom.Vector3D): void;
+        public offsetPosition(position: Vector3D): void;
         /**
         * Sets all of the Box object's properties to 0. A Box object is empty if its
         * width, height or depth is less than or equal to 0.
@@ -7488,7 +7487,7 @@ declare module away.geom {
         * @param column   The column from which to copy the data from.
         * @param vector3D The Vector3D object from which to copy the data.
         */
-        public copyColumnFrom(column: number, vector3D: geom.Vector3D): void;
+        public copyColumnFrom(column: number, vector3D: Vector3D): void;
         /**
         * Copies specific column of the calling Matrix object into the Vector3D
         * object. The w element of the Vector3D object will not be changed.
@@ -7496,7 +7495,7 @@ declare module away.geom {
         * @param column   The column from which to copy the data from.
         * @param vector3D The Vector3D object from which to copy the data.
         */
-        public copyColumnTo(column: number, vector3D: geom.Vector3D): void;
+        public copyColumnTo(column: number, vector3D: Vector3D): void;
         /**
         * Copies all of the matrix data from the source Point object into the
         * calling Matrix object.
@@ -7510,7 +7509,7 @@ declare module away.geom {
         * @param row      The row from which to copy the data from.
         * @param vector3D The Vector3D object from which to copy the data.
         */
-        public copyRowFrom(row: number, vector3D: geom.Vector3D): void;
+        public copyRowFrom(row: number, vector3D: Vector3D): void;
         /**
         * Copies specific row of the calling Matrix object into the Vector3D object.
         * The w element of the Vector3D object will not be changed.
@@ -7518,7 +7517,7 @@ declare module away.geom {
         * @param row      The row from which to copy the data from.
         * @param vector3D The Vector3D object from which to copy the data.
         */
-        public copyRowTo(row: number, vector3D: geom.Vector3D): void;
+        public copyRowTo(row: number, vector3D: Vector3D): void;
         /**
         * Includes parameters for scaling, rotation, and translation. When applied
         * to a matrix it sets the matrix's values based on those parameters.
@@ -7584,7 +7583,7 @@ declare module away.geom {
         *              transformation.
         * @return The point resulting from applying the matrix transformation.
         */
-        public deltaTransformPoint(point: geom.Point): geom.Point;
+        public deltaTransformPoint(point: Point): Point;
         /**
         * Sets each matrix property to a value that causes a null transformation. An
         * object transformed by applying an identity matrix will be identical to the
@@ -7672,7 +7671,7 @@ declare module away.geom {
         *              transformation.
         * @return The point resulting from applying the Matrix transformation.
         */
-        public transformPoint(point: geom.Point): geom.Point;
+        public transformPoint(point: Point): Point;
         /**
         * Translates the matrix along the <i>x</i> and <i>y</i> axes, as specified
         * by the <code>dx</code> and <code>dy</code> parameters.
@@ -7704,7 +7703,7 @@ declare module away.geom {
         /**
         * Appends an incremental rotation to a Matrix3D object.
         */
-        public appendRotation(degrees: number, axis: geom.Vector3D): void;
+        public appendRotation(degrees: number, axis: Vector3D): void;
         /**
         * Appends an incremental scale change along the x, y, and z axes to a Matrix3D object.
         */
@@ -7720,11 +7719,11 @@ declare module away.geom {
         /**
         * Copies a Vector3D object into specific column of the calling Matrix3D object.
         */
-        public copyColumnFrom(column: number, vector3D: geom.Vector3D): void;
+        public copyColumnFrom(column: number, vector3D: Vector3D): void;
         /**
         * Copies specific column of the calling Matrix3D object into the Vector3D object.
         */
-        public copyColumnTo(column: number, vector3D: geom.Vector3D): void;
+        public copyColumnTo(column: number, vector3D: Vector3D): void;
         /**
         * Copies all of the matrix data from the source Matrix3D object into the calling Matrix3D object.
         */
@@ -7734,11 +7733,11 @@ declare module away.geom {
         /**
         * Copies a Vector3D object into specific row of the calling Matrix3D object.
         */
-        public copyRowFrom(row: number, vector3D: geom.Vector3D): void;
+        public copyRowFrom(row: number, vector3D: Vector3D): void;
         /**
         * Copies specific row of the calling Matrix3D object into the Vector3D object.
         */
-        public copyRowTo(row: number, vector3D: geom.Vector3D): void;
+        public copyRowTo(row: number, vector3D: Vector3D): void;
         /**
         * Copies this Matrix3D object into a destination Matrix3D object.
         */
@@ -7746,12 +7745,12 @@ declare module away.geom {
         /**
         * Returns the transformation matrix's translation, rotation, and scale settings as a Vector of three Vector3D objects.
         */
-        public decompose(orientationStyle?: string): geom.Vector3D[];
+        public decompose(orientationStyle?: string): Vector3D[];
         /**
         * Uses the transformation matrix without its translation elements to transform a Vector3D object from one space
         * coordinate to another.
         */
-        public deltaTransformVector(v: geom.Vector3D): geom.Vector3D;
+        public deltaTransformVector(v: Vector3D): Vector3D;
         /**
         * Converts the current matrix to an identity or unit matrix.
         */
@@ -7775,7 +7774,7 @@ declare module away.geom {
         /**
         * Prepends an incremental rotation to a Matrix3D object.
         */
-        public prependRotation(degrees: number, axis: geom.Vector3D): void;
+        public prependRotation(degrees: number, axis: Vector3D): void;
         /**
         * Prepends an incremental scale change along the x, y, and z axes to a Matrix3D object.
         */
@@ -7787,8 +7786,8 @@ declare module away.geom {
         /**
         * Sets the transformation matrix's translation, rotation, and scale settings.
         */
-        public recompose(components: geom.Vector3D[]): boolean;
-        public transformVector(v: geom.Vector3D): geom.Vector3D;
+        public recompose(components: Vector3D[]): boolean;
+        public transformVector(v: Vector3D): Vector3D;
         /**
         * Uses the transformation matrix to transform a Vector of Numbers from one coordinate space to another.
         */
@@ -7806,7 +7805,7 @@ declare module away.geom {
         * A Vector3D object that holds the position, the 3D coordinate (x,y,z) of a display object within the
         * transformation's frame of reference.
         */
-        public position : geom.Vector3D;
+        public position : Vector3D;
         public toFixed(decimalPlace: number): string;
         public toString(): string;
     }
@@ -7924,7 +7923,7 @@ declare module away.geom {
         * objects disappear toward the center of the stage as they move
         * backwards in the z axis.</p>
         */
-        public projectionCenter: geom.Point;
+        public projectionCenter: Point;
         /**
         * Creates an instance of a PerspectiveProjection object.
         */
@@ -7944,7 +7943,7 @@ declare module away.geom {
         *
         * @see away.geom.Matrix3D
         */
-        public toMatrix3D(): geom.Matrix3D;
+        public toMatrix3D(): Matrix3D;
     }
 }
 /**
@@ -8180,7 +8179,7 @@ declare module away.geom {
         * The location of the Rectangle object's bottom-right corner, determined by
         * the values of the <code>right</code> and <code>bottom</code> properties.
         */
-        public bottomRight : geom.Point;
+        public bottomRight : Point;
         /**
         * The <i>x</i> coordinate of the top-left corner of the rectangle. Changing
         * the <code>left</code> property of a Rectangle object has no effect on the
@@ -8200,7 +8199,7 @@ declare module away.geom {
         * The size of the Rectangle object, expressed as a Point object with the
         * values of the <code>width</code> and <code>height</code> properties.
         */
-        public size : geom.Point;
+        public size : Point;
         /**
         * The <i>y</i> coordinate of the top-left corner of the rectangle. Changing
         * the <code>top</code> property of a Rectangle object has no effect on the
@@ -8216,7 +8215,7 @@ declare module away.geom {
         * The location of the Rectangle object's top-left corner, determined by the
         * <i>x</i> and <i>y</i> coordinates of the point.
         */
-        public topLeft : geom.Point;
+        public topLeft : Point;
         /**
         * Creates a new Rectangle object with the top-left corner specified by the
         * <code>x</code> and <code>y</code> parameters and with the specified
@@ -8264,7 +8263,7 @@ declare module away.geom {
         * @return A value of <code>true</code> if the Rectangle object contains the
         *         specified point; otherwise <code>false</code>.
         */
-        public containsPoint(point: geom.Point): boolean;
+        public containsPoint(point: Point): boolean;
         /**
         * Determines whether the Rectangle object specified by the <code>rect</code>
         * parameter is contained within this Rectangle object. A Rectangle object is
@@ -8324,7 +8323,7 @@ declare module away.geom {
         *              The <code>y</code> property is used to increase the vertical
         *              dimension of the Rectangle object.
         */
-        public inflatePoint(point: geom.Point): void;
+        public inflatePoint(point: Point): void;
         /**
         * If the Rectangle object specified in the <code>toIntersect</code>
         * parameter intersects with this Rectangle object, returns the area of
@@ -8376,7 +8375,7 @@ declare module away.geom {
         *
         * @param point A Point object to use to offset this Rectangle object.
         */
-        public offsetPoint(point: geom.Point): void;
+        public offsetPoint(point: Point): void;
         /**
         * Sets all of the Rectangle object's properties to 0. A Rectangle object is
         * empty if its width or height is less than or equal to 0.
@@ -8480,18 +8479,18 @@ declare module away.geom {
         private _concatenatedColorTransform;
         private _concatenatedMatrix;
         private _pixelBounds;
-        public _position: geom.Vector3D;
+        public _position: Vector3D;
         /**
         *
         */
-        public backVector : geom.Vector3D;
+        public backVector : Vector3D;
         /**
         * A ColorTransform object containing values that universally adjust the
         * colors in the display object.
         *
         * @throws TypeError The colorTransform is null when being set
         */
-        public colorTransform: geom.ColorTransform;
+        public colorTransform: ColorTransform;
         /**
         * A ColorTransform object representing the combined color transformations
         * applied to the display object and all of its parent objects, back to the
@@ -8499,7 +8498,7 @@ declare module away.geom {
         * different levels, all of those transformations are concatenated into one
         * ColorTransform object for this property.
         */
-        public concatenatedColorTransform : geom.ColorTransform;
+        public concatenatedColorTransform : ColorTransform;
         /**
         * A Matrix object representing the combined transformation matrixes of the
         * display object and all of its parent objects, back to the root level. If
@@ -8511,19 +8510,19 @@ declare module away.geom {
         * window coordinates, which may not be the same coordinate space as that of
         * the Stage.
         */
-        public concatenatedMatrix : geom.Matrix;
+        public concatenatedMatrix : Matrix;
         /**
         *
         */
-        public downVector : geom.Vector3D;
+        public downVector : Vector3D;
         /**
         *
         */
-        public forwardVector : geom.Vector3D;
+        public forwardVector : Vector3D;
         /**
         *
         */
-        public leftVector : geom.Vector3D;
+        public leftVector : Vector3D;
         /**
         * A Matrix object containing values that alter the scaling, rotation, and
         * translation of the display object.
@@ -8536,7 +8535,7 @@ declare module away.geom {
         *
         * @throws TypeError The matrix is null when being set
         */
-        public matrix: geom.Matrix;
+        public matrix: Matrix;
         /**
         * Provides access to the Matrix3D object of a three-dimensional display
         * object. The Matrix3D object represents a transformation matrix that
@@ -8549,7 +8548,7 @@ declare module away.geom {
         * value(not <code>null</code>), the <code>matrix</code> property is
         * <code>null</code>.</p>
         */
-        public matrix3D : geom.Matrix3D;
+        public matrix3D : Matrix3D;
         /**
         * Provides access to the PerspectiveProjection object of a three-dimensional
         * display object. The PerspectiveProjection object can be used to modify the
@@ -8559,33 +8558,33 @@ declare module away.geom {
         * <p>Based on the field of view and aspect ratio(dimensions) of the stage,
         * a default PerspectiveProjection object is assigned to the root object.</p>
         */
-        public perspectiveProjection: geom.PerspectiveProjection;
+        public perspectiveProjection: PerspectiveProjection;
         /**
         * A Rectangle object that defines the bounding rectangle of the display
         * object on the stage.
         */
-        public pixelBounds : geom.Rectangle;
+        public pixelBounds : Rectangle;
         /**
         * Defines the position of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
         */
-        public position : geom.Vector3D;
+        public position : Vector3D;
         /**
         *
         */
-        public rightVector : geom.Vector3D;
+        public rightVector : Vector3D;
         /**
         * Defines the rotation of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
         */
-        public rotation : geom.Vector3D;
+        public rotation : Vector3D;
         /**
         * Defines the scale of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
         */
-        public scale : geom.Vector3D;
+        public scale : Vector3D;
         /**
         *
         */
-        public upVector : geom.Vector3D;
-        constructor(displayObject: away.base.DisplayObject);
+        public upVector : Vector3D;
+        constructor(displayObject: base.DisplayObject);
         /**
         * Returns a Matrix3D object, which can transform the space of a specified
         * display object in relation to the current display object's space. You can
@@ -8604,7 +8603,7 @@ declare module away.geom {
         *         <code>relativeTo</code> display object to the current display
         *         object space.
         */
-        public getRelativeMatrix3D(relativeTo: away.base.DisplayObject): geom.Matrix3D;
+        public getRelativeMatrix3D(relativeTo: base.DisplayObject): Matrix3D;
         /**
         * Moves the 3d object forwards along it's local z axis
         *
@@ -8675,7 +8674,7 @@ declare module away.geom {
         /**
         *
         */
-        public matrix : geom.Matrix;
+        public matrix : Matrix;
         constructor();
         /**
         * @private
@@ -9097,14 +9096,14 @@ declare module away.geom {
         * @param    qb    The second quaternion in the multiplication.
         */
         public multiply(qa: Quaternion, qb: Quaternion): void;
-        public multiplyVector(vector: geom.Vector3D, target?: Quaternion): Quaternion;
+        public multiplyVector(vector: Vector3D, target?: Quaternion): Quaternion;
         /**
         * Fills the quaternion object with values representing the given rotation around a vector.
         *
         * @param    axis    The axis around which to rotate
         * @param    angle    The angle in radians of the rotation.
         */
-        public fromAxisAngle(axis: geom.Vector3D, angle: number): void;
+        public fromAxisAngle(axis: Vector3D, angle: number): void;
         /**
         * Spherically interpolates between two quaternions, providing an interpolation between rotations with constant angle change rate.
         * @param qa The first quaternion to interpolate.
@@ -9132,7 +9131,7 @@ declare module away.geom {
         * @param target An optional Vector3D object to contain the Euler angles. If not provided, a new object is created.
         * @return The Vector3D containing the Euler angles.
         */
-        public toEulerAngles(target?: geom.Vector3D): geom.Vector3D;
+        public toEulerAngles(target?: Vector3D): Vector3D;
         /**
         * Normalises the quaternion object.
         */
@@ -9148,12 +9147,12 @@ declare module away.geom {
         * @param target An optional Matrix3D container to store the transformation in. If not provided, a new object is created.
         * @return A Matrix3D object representing an equivalent rotation.
         */
-        public toMatrix3D(target?: geom.Matrix3D): geom.Matrix3D;
+        public toMatrix3D(target?: Matrix3D): Matrix3D;
         /**
         * Extracts a quaternion rotation matrix out of a given Matrix3D object.
         * @param matrix The Matrix3D out of which the rotation will be extracted.
         */
-        public fromMatrix(matrix: geom.Matrix3D): void;
+        public fromMatrix(matrix: Matrix3D): void;
         /**
         * Converts the quaternion to a Vector.&lt;Number&gt; matrix representation of a rotation equivalent to this quaternion.
         * @param target The Vector.&lt;Number&gt; to contain the raw matrix data.
@@ -9171,7 +9170,7 @@ declare module away.geom {
         * @param target An optional Vector3D object that will contain the rotated coordinates. If not provided, a new object will be created.
         * @return A Vector3D object containing the rotated point.
         */
-        public rotatePoint(vector: geom.Vector3D, target?: geom.Vector3D): geom.Vector3D;
+        public rotatePoint(vector: Vector3D, target?: Vector3D): Vector3D;
         /**
         * Copies the data from a quaternion into this instance.
         * @param q The quaternion to copy from.
@@ -9221,13 +9220,13 @@ declare module away.geom {
         * @param p1 Vector3D
         * @param p2 Vector3D
         */
-        public fromPoints(p0: geom.Vector3D, p1: geom.Vector3D, p2: geom.Vector3D): void;
+        public fromPoints(p0: Vector3D, p1: Vector3D, p2: Vector3D): void;
         /**
         * Fills this Plane3D with the coefficients from the plane's normal and a point in 3d space.
         * @param normal Vector3D
         * @param point  Vector3D
         */
-        public fromNormalAndPoint(normal: geom.Vector3D, point: geom.Vector3D): void;
+        public fromNormalAndPoint(normal: Vector3D, point: Vector3D): void;
         /**
         * Normalize this Plane3D
         * @return Plane3D This Plane3D.
@@ -9238,13 +9237,13 @@ declare module away.geom {
         * @param p Vector3D
         * @returns Number
         */
-        public distance(p: geom.Vector3D): number;
+        public distance(p: Vector3D): number;
         /**
         * Classify a point against this Plane3D. (in front, back or intersecting)
         * @param p Vector3D
         * @return int Plane3.FRONT or Plane3D.BACK or Plane3D.INTERSECT
         */
-        public classifyPoint(p: geom.Vector3D, epsilon?: number): number;
+        public classifyPoint(p: Vector3D, epsilon?: number): number;
         public toString(): string;
     }
 }
@@ -9257,44 +9256,44 @@ declare module away.geom {
         * A reference to a Vector to be used as a temporary raw data container, to prevent object creation.
         */
         static RAW_DATA_CONTAINER: number[];
-        static CALCULATION_MATRIX: geom.Matrix3D;
+        static CALCULATION_MATRIX: Matrix3D;
         /**
         * Fills the 3d matrix object with values representing the transformation made by the given quaternion.
         *
         * @param    quarternion    The quarterion object to convert.
         */
-        static quaternion2matrix(quarternion: geom.Quaternion, m?: geom.Matrix3D): geom.Matrix3D;
+        static quaternion2matrix(quarternion: Quaternion, m?: Matrix3D): Matrix3D;
         /**
         * Returns a normalised <code>Vector3D</code> object representing the forward vector of the given matrix.
         * @param    m        The Matrix3D object to use to get the forward vector
         * @param    v        [optional] A vector holder to prevent make new Vector3D instance if already exists. Default is null.
         * @return            The forward vector
         */
-        static getForward(m: geom.Matrix3D, v?: geom.Vector3D): geom.Vector3D;
+        static getForward(m: Matrix3D, v?: Vector3D): Vector3D;
         /**
         * Returns a normalised <code>Vector3D</code> object representing the up vector of the given matrix.
         * @param    m        The Matrix3D object to use to get the up vector
         * @param    v        [optional] A vector holder to prevent make new Vector3D instance if already exists. Default is null.
         * @return            The up vector
         */
-        static getUp(m: geom.Matrix3D, v?: geom.Vector3D): geom.Vector3D;
+        static getUp(m: Matrix3D, v?: Vector3D): Vector3D;
         /**
         * Returns a normalised <code>Vector3D</code> object representing the right vector of the given matrix.
         * @param    m        The Matrix3D object to use to get the right vector
         * @param    v        [optional] A vector holder to prevent make new Vector3D instance if already exists. Default is null.
         * @return            The right vector
         */
-        static getRight(m: geom.Matrix3D, v?: geom.Vector3D): geom.Vector3D;
+        static getRight(m: Matrix3D, v?: Vector3D): Vector3D;
         /**
         * Returns a boolean value representing whether there is any significant difference between the two given 3d matrices.
         */
-        static compare(m1: geom.Matrix3D, m2: geom.Matrix3D): boolean;
-        static lookAt(matrix: geom.Matrix3D, pos: geom.Vector3D, dir: geom.Vector3D, up: geom.Vector3D): void;
-        static reflection(plane: geom.Plane3D, target?: geom.Matrix3D): geom.Matrix3D;
-        static transformVector(matrix: geom.Matrix3D, vector: geom.Vector3D, result?: geom.Vector3D): geom.Vector3D;
-        static deltaTransformVector(matrix: geom.Matrix3D, vector: geom.Vector3D, result?: geom.Vector3D): geom.Vector3D;
-        static getTranslation(transform: geom.Matrix3D, result?: geom.Vector3D): geom.Vector3D;
-        static deltaTransformVectors(matrix: geom.Matrix3D, vin: number[], vout: number[]): void;
+        static compare(m1: Matrix3D, m2: Matrix3D): boolean;
+        static lookAt(matrix: Matrix3D, pos: Vector3D, dir: Vector3D, up: Vector3D): void;
+        static reflection(plane: Plane3D, target?: Matrix3D): Matrix3D;
+        static transformVector(matrix: Matrix3D, vector: Vector3D, result?: Vector3D): Vector3D;
+        static deltaTransformVector(matrix: Matrix3D, vector: Vector3D, result?: Vector3D): Vector3D;
+        static getTranslation(transform: Matrix3D, result?: Vector3D): Vector3D;
+        static deltaTransformVectors(matrix: Matrix3D, vin: number[], vout: number[]): void;
     }
 }
 declare module away.geom {
@@ -9408,7 +9407,7 @@ declare module away.net {
     *
     * @see away.library.AssetLibrary
     */
-    class AssetLoader extends away.events.EventDispatcher {
+    class AssetLoader extends events.EventDispatcher {
         private _context;
         private _token;
         private _uri;
@@ -9452,7 +9451,7 @@ declare module away.net {
         /**
         * Returns the base dependency of the loader
         */
-        public baseDependency : away.parsers.ResourceDependency;
+        public baseDependency : parsers.ResourceDependency;
         /**
         * Create a new ResourceLoadSession object.
         */
@@ -9465,7 +9464,7 @@ declare module away.net {
         * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
         * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
         */
-        public load(req: net.URLRequest, context?: net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): net.AssetLoaderToken;
+        public load(req: URLRequest, context?: AssetLoaderContext, ns?: string, parser?: parsers.ParserBase): AssetLoaderToken;
         /**
         * Loads a resource from already loaded data.
         *
@@ -9474,7 +9473,7 @@ declare module away.net {
         * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
         * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
         */
-        public loadData(data: any, id: string, context?: net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): net.AssetLoaderToken;
+        public loadData(data: any, id: string, context?: AssetLoaderContext, ns?: string, parser?: parsers.ParserBase): AssetLoaderToken;
         /**
         * Recursively retrieves the next to-be-loaded and parsed dependency on the stack, or pops the list off the
         * stack when complete and continues on the top set.
@@ -9567,9 +9566,9 @@ declare module away.net {
     * while not providing an interface to obstruct the load and is as such a
     * safer return value for loader wrappers than the loader itself.
     */
-    class AssetLoaderToken extends away.events.EventDispatcher {
-        public _iLoader: net.AssetLoader;
-        constructor(loader: net.AssetLoader);
+    class AssetLoaderToken extends events.EventDispatcher {
+        public _iLoader: AssetLoader;
+        constructor(loader: AssetLoader);
         public addEventListener(type: string, listener: Function): void;
         public removeEventListener(type: string, listener: Function): void;
         public hasEventListener(type: string, listener?: Function): boolean;
@@ -9676,7 +9675,7 @@ declare module away.net {
     * @see AssetLoader
     * @see away.library.AssetLibrary
     */
-    class URLLoader extends away.events.EventDispatcher {
+    class URLLoader extends events.EventDispatcher {
         private _XHR;
         private _bytesLoaded;
         private _bytesTotal;
@@ -9724,7 +9723,7 @@ declare module away.net {
         *
         * @param request The URLRequest object containing the URL of the object to be loaded.
         */
-        public load(request: net.URLRequest): void;
+        public load(request: URLRequest): void;
         /**
         *
         */
@@ -11113,7 +11112,7 @@ declare module away.ui {
 * <i>ActionScript 3.0 Developer's Guide</i>.</p>
 */
 declare module away.containers {
-    class DisplayObjectContainer extends away.base.DisplayObject implements away.library.IAsset {
+    class DisplayObjectContainer extends base.DisplayObject implements library.IAsset {
         private _mouseChildren;
         private _children;
         public _iIsRoot: boolean;
@@ -11202,7 +11201,7 @@ declare module away.containers {
         * @event added Dispatched when a display object is added to the display
         *              list.
         */
-        public addChild(child: away.base.DisplayObject): away.base.DisplayObject;
+        public addChild(child: base.DisplayObject): base.DisplayObject;
         /**
         * Adds a child DisplayObject instance to this DisplayObjectContainer
         * instance. The child is added at the index position specified. An index of
@@ -11232,12 +11231,12 @@ declare module away.containers {
         * @event added Dispatched when a display object is added to the display
         *              list.
         */
-        public addChildAt(child: away.base.DisplayObject, index: number): away.base.DisplayObject;
-        public addChildren(...childarray: away.base.DisplayObject[]): void;
+        public addChildAt(child: base.DisplayObject, index: number): base.DisplayObject;
+        public addChildren(...childarray: base.DisplayObject[]): void;
         /**
         *
         */
-        public clone(): away.base.DisplayObject;
+        public clone(): base.DisplayObject;
         /**
         * Determines whether the specified display object is a child of the
         * DisplayObjectContainer instance or the instance itself. The search
@@ -11250,7 +11249,7 @@ declare module away.containers {
         *         the DisplayObjectContainer or the container itself; otherwise
         *         <code>false</code>.
         */
-        public contains(child: away.base.DisplayObject): boolean;
+        public contains(child: base.DisplayObject): boolean;
         /**
         *
         */
@@ -11264,7 +11263,7 @@ declare module away.containers {
         * @throws RangeError    Throws if the index does not exist in the child
         *                       list.
         */
-        public getChildAt(index: number): away.base.DisplayObject;
+        public getChildAt(index: number): base.DisplayObject;
         /**
         * Returns the child display object that exists with the specified name. If
         * more that one child display object has the specified name, the method
@@ -11279,7 +11278,7 @@ declare module away.containers {
         * @param name The name of the child to return.
         * @return The child display object with the specified name.
         */
-        public getChildByName(name: string): away.base.DisplayObject;
+        public getChildByName(name: string): base.DisplayObject;
         /**
         * Returns the index position of a <code>child</code> DisplayObject instance.
         *
@@ -11288,7 +11287,7 @@ declare module away.containers {
         * @throws ArgumentError Throws if the child parameter is not a child of this
         *                       object.
         */
-        public getChildIndex(child: away.base.DisplayObject): number;
+        public getChildIndex(child: base.DisplayObject): number;
         /**
         * Returns an array of objects that lie under the specified point and are
         * children(or grandchildren, and so on) of this DisplayObjectContainer
@@ -11308,7 +11307,7 @@ declare module away.containers {
         *         children(or grandchildren, and so on) of this
         *         DisplayObjectContainer instance.
         */
-        public getObjectsUnderPoint(point: away.geom.Point): away.base.DisplayObject[];
+        public getObjectsUnderPoint(point: geom.Point): base.DisplayObject[];
         /**
         * Removes the specified <code>child</code> DisplayObject instance from the
         * child list of the DisplayObjectContainer instance. The <code>parent</code>
@@ -11328,7 +11327,7 @@ declare module away.containers {
         * @throws ArgumentError Throws if the child parameter is not a child of this
         *                       object.
         */
-        public removeChild(child: away.base.DisplayObject): away.base.DisplayObject;
+        public removeChild(child: base.DisplayObject): base.DisplayObject;
         /**
         * Removes a child DisplayObject from the specified <code>index</code>
         * position in the child list of the DisplayObjectContainer. The
@@ -11351,7 +11350,7 @@ declare module away.containers {
         *                       can avoid this situation by having the child movie
         *                       call the <code>Security.allowDomain()</code> method.
         */
-        public removeChildAt(index: number): away.base.DisplayObject;
+        public removeChildAt(index: number): base.DisplayObject;
         /**
         * Removes all <code>child</code> DisplayObject instances from the child list
         * of the DisplayObjectContainer instance. The <code>parent</code> property
@@ -11397,7 +11396,7 @@ declare module away.containers {
         * @throws RangeError    Throws if the index does not exist in the child
         *                       list.
         */
-        public setChildIndex(child: away.base.DisplayObject, index: number): void;
+        public setChildIndex(child: base.DisplayObject, index: number): void;
         /**
         * Swaps the z-order (front-to-back order) of the two specified child
         * objects. All other child objects in the display object container remain in
@@ -11408,7 +11407,7 @@ declare module away.containers {
         * @throws ArgumentError Throws if either child parameter is not a child of
         *                       this object.
         */
-        public swapChildren(child1: away.base.DisplayObject, child2: away.base.DisplayObject): void;
+        public swapChildren(child1: base.DisplayObject, child2: base.DisplayObject): void;
         /**
         * Swaps the z-order(front-to-back order) of the child objects at the two
         * specified index positions in the child list. All other child objects in
@@ -11426,7 +11425,7 @@ declare module away.containers {
         /**
         * @protected
         */
-        public _pUpdateScene(value: containers.Scene): void;
+        public _pUpdateScene(value: Scene): void;
         /**
         * @protected
         */
@@ -11438,7 +11437,7 @@ declare module away.containers {
         /**
         * @protected
         */
-        public _pUpdateImplicitPartition(value: away.partition.Partition): void;
+        public _pUpdateImplicitPartition(value: partition.Partition): void;
         /**
         * @private
         *
@@ -11448,7 +11447,7 @@ declare module away.containers {
     }
 }
 declare module away.entities {
-    interface IEntity extends away.library.IAsset {
+    interface IEntity extends library.IAsset {
         x: number;
         y: number;
         z: number;
@@ -11461,7 +11460,7 @@ declare module away.entities {
         /**
         *
         */
-        bounds: away.bounds.BoundingVolumeBase;
+        bounds: bounds.BoundingVolumeBase;
         /**
         *
         */
@@ -11469,35 +11468,35 @@ declare module away.entities {
         /**
         *
         */
-        inverseSceneTransform: away.geom.Matrix3D;
+        inverseSceneTransform: geom.Matrix3D;
         /**
         *
         */
-        partitionNode: away.partition.EntityNode;
+        partitionNode: partition.EntityNode;
         /**
         *
         */
-        pickingCollider: away.pick.IPickingCollider;
+        pickingCollider: pick.IPickingCollider;
         /**
         *
         */
-        transform: away.geom.Transform;
+        transform: geom.Transform;
         /**
         *
         */
-        scene: away.containers.Scene;
+        scene: containers.Scene;
         /**
         *
         */
-        scenePosition: away.geom.Vector3D;
+        scenePosition: geom.Vector3D;
         /**
         *
         */
-        sceneTransform: away.geom.Matrix3D;
+        sceneTransform: geom.Matrix3D;
         /**
         *
         */
-        worldBounds: away.bounds.BoundingVolumeBase;
+        worldBounds: bounds.BoundingVolumeBase;
         /**
         *
         */
@@ -11505,26 +11504,26 @@ declare module away.entities {
         /**
         *
         */
-        isIntersectingRay(rayPosition: away.geom.Vector3D, rayDirection: away.geom.Vector3D): boolean;
+        isIntersectingRay(rayPosition: geom.Vector3D, rayDirection: geom.Vector3D): boolean;
         /**
         *
         *
         * @param target
         * @param upAxis
         */
-        lookAt(target: away.geom.Vector3D, upAxis?: away.geom.Vector3D): any;
+        lookAt(target: geom.Vector3D, upAxis?: geom.Vector3D): any;
         /**
         * @internal
         */
-        _iPickingCollisionVO: away.pick.PickingCollisionVO;
+        _iPickingCollisionVO: pick.PickingCollisionVO;
         /**
         * @internal
         */
-        _iController: away.controllers.ControllerBase;
+        _iController: controllers.ControllerBase;
         /**
         * @internal
         */
-        _iAssignedPartition: away.partition.Partition;
+        _iAssignedPartition: partition.Partition;
         /**
         * //TODO
         *
@@ -11549,13 +11548,13 @@ declare module away.entities {
         * For example, assuring certain alignedness which is not inherent in the scene transform. By default, this would
         * return the scene transform.
         */
-        getRenderSceneTransform(camera: entities.Camera): away.geom.Matrix3D;
+        getRenderSceneTransform(camera: Camera): geom.Matrix3D;
         /**
         *
         * @param renderer
         * @private
         */
-        _iCollectRenderables(renderer: away.render.IRenderer): any;
+        _iCollectRenderables(renderer: render.IRenderer): any;
     }
 }
 /**
@@ -11593,7 +11592,7 @@ declare module away.entities {
 * contains the Billboard object.</p>
 */
 declare module away.entities {
-    class Billboard extends away.base.DisplayObject implements entities.IEntity, away.base.IMaterialOwner {
+    class Billboard extends base.DisplayObject implements IEntity, base.IMaterialOwner {
         private _animator;
         private _billboardWidth;
         private _billboardHeight;
@@ -11603,7 +11602,7 @@ declare module away.entities {
         /**
         * Defines the animator of the mesh. Act on the mesh's geometry. Defaults to null
         */
-        public animator : away.animators.IAnimator;
+        public animator : animators.IAnimator;
         /**
         *
         */
@@ -11611,7 +11610,7 @@ declare module away.entities {
         /**
         * The BitmapData object being referenced.
         */
-        public bitmapData: away.base.BitmapData;
+        public bitmapData: base.BitmapData;
         /**
         *
         */
@@ -11623,7 +11622,7 @@ declare module away.entities {
         /**
         *
         */
-        public material : away.materials.IMaterial;
+        public material : materials.IMaterial;
         /**
         * Controls whether or not the Billboard object is snapped to the nearest pixel.
         * This value is ignored in the native and HTML5 targets.
@@ -11650,12 +11649,12 @@ declare module away.entities {
         /**
         *
         */
-        public uvTransform : away.geom.UVTransform;
-        constructor(material: away.materials.IMaterial, pixelSnapping?: string, smoothing?: boolean);
+        public uvTransform : geom.UVTransform;
+        constructor(material: materials.IMaterial, pixelSnapping?: string, smoothing?: boolean);
         /**
         * @protected
         */
-        public pCreateEntityPartitionNode(): away.partition.EntityNode;
+        public pCreateEntityPartitionNode(): partition.EntityNode;
         /**
         * @protected
         */
@@ -11674,27 +11673,27 @@ declare module away.entities {
         * @private
         */
         private onSizeChanged(event);
-        public _iCollectRenderables(renderer: away.render.IRenderer): void;
-        public _iCollectRenderable(renderer: away.render.IRenderer): void;
+        public _iCollectRenderables(renderer: render.IRenderer): void;
+        public _iCollectRenderable(renderer: render.IRenderer): void;
     }
 }
 declare module away.entities {
-    class Camera extends away.containers.DisplayObjectContainer implements entities.IEntity {
+    class Camera extends containers.DisplayObjectContainer implements IEntity {
         private _viewProjection;
         private _viewProjectionDirty;
         private _projection;
         private _frustumPlanes;
         private _frustumPlanesDirty;
         private _onProjectionMatrixChangedDelegate;
-        constructor(projection?: away.projections.IProjection);
-        public pCreateDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
+        constructor(projection?: projections.IProjection);
+        public pCreateDefaultBoundingVolume(): bounds.BoundingVolumeBase;
         /**
         * @protected
         */
-        public pCreateEntityPartitionNode(): away.partition.EntityNode;
+        public pCreateEntityPartitionNode(): partition.EntityNode;
         public assetType : string;
         private onProjectionMatrixChanged(event);
-        public frustumPlanes : away.geom.Plane3D[];
+        public frustumPlanes : geom.Plane3D[];
         private updateFrustum();
         /**
         * @protected
@@ -11707,11 +11706,11 @@ declare module away.entities {
         /**
         *
         */
-        public projection : away.projections.IProjection;
+        public projection : projections.IProjection;
         /**
         *
         */
-        public viewProjection : away.geom.Matrix3D;
+        public viewProjection : geom.Matrix3D;
         /**
         * Calculates the ray in scene space from the camera to the given normalized coordinates in screen space.
         *
@@ -11720,14 +11719,14 @@ declare module away.entities {
         * @param sZ The z coordinate in screen space, representing the distance into the screen.
         * @return The ray from the camera to the scene space position of the given screen coordinates.
         */
-        public getRay(nX: number, nY: number, sZ: number): away.geom.Vector3D;
+        public getRay(nX: number, nY: number, sZ: number): geom.Vector3D;
         /**
         * Calculates the normalised position in screen space of the given scene position.
         *
         * @param point3d the position vector of the scene coordinates to be projected.
         * @return The normalised screen position of the given scene coordinates.
         */
-        public project(point3d: away.geom.Vector3D): away.geom.Vector3D;
+        public project(point3d: geom.Vector3D): geom.Vector3D;
         /**
         * Calculates the scene position of the given normalized coordinates in screen space.
         *
@@ -11736,27 +11735,27 @@ declare module away.entities {
         * @param sZ The z coordinate in screen space, representing the distance into the screen.
         * @return The scene position of the given screen coordinates.
         */
-        public unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
-        public _iCollectRenderables(renderer: away.render.IRenderer): void;
-        public _iCollectRenderable(renderer: away.render.IRenderer): void;
+        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
+        public _iCollectRenderables(renderer: render.IRenderer): void;
+        public _iCollectRenderable(renderer: render.IRenderer): void;
     }
 }
 declare module away.entities {
     /**
     * A Line Segment primitive.
     */
-    class LineSegment extends away.base.DisplayObject implements entities.IEntity, away.base.IMaterialOwner {
+    class LineSegment extends base.DisplayObject implements IEntity, base.IMaterialOwner {
         private _animator;
         private _material;
         private _uvTransform;
         private onSizeChangedDelegate;
-        public _startPosition: away.geom.Vector3D;
-        public _endPosition: away.geom.Vector3D;
+        public _startPosition: geom.Vector3D;
+        public _endPosition: geom.Vector3D;
         public _halfThickness: number;
         /**
         * Defines the animator of the line segment. Act on the line segment's geometry. Defaults to null
         */
-        public animator : away.animators.IAnimator;
+        public animator : animators.IAnimator;
         /**
         *
         */
@@ -11764,16 +11763,16 @@ declare module away.entities {
         /**
         *
         */
-        public startPostion : away.geom.Vector3D;
-        public startPosition : away.geom.Vector3D;
+        public startPostion : geom.Vector3D;
+        public startPosition : geom.Vector3D;
         /**
         *
         */
-        public endPosition : away.geom.Vector3D;
+        public endPosition : geom.Vector3D;
         /**
         *
         */
-        public material : away.materials.IMaterial;
+        public material : materials.IMaterial;
         /**
         *
         */
@@ -11781,7 +11780,7 @@ declare module away.entities {
         /**
         *
         */
-        public uvTransform : away.geom.UVTransform;
+        public uvTransform : geom.UVTransform;
         /**
         * Create a line segment
         *
@@ -11789,12 +11788,12 @@ declare module away.entities {
         * @param endPosition Ending position of the line segment
         * @param thickness Thickness of the line
         */
-        constructor(material: away.materials.IMaterial, startPosition: away.geom.Vector3D, endPosition: away.geom.Vector3D, thickness?: number);
+        constructor(material: materials.IMaterial, startPosition: geom.Vector3D, endPosition: geom.Vector3D, thickness?: number);
         public dispose(): void;
         /**
         * @protected
         */
-        public pCreateEntityPartitionNode(): away.partition.EntityNode;
+        public pCreateEntityPartitionNode(): partition.EntityNode;
         /**
         * @protected
         */
@@ -11807,8 +11806,8 @@ declare module away.entities {
         * @private
         */
         private notifyRenderableUpdate();
-        public _iCollectRenderables(renderer: away.render.IRenderer): void;
-        public _iCollectRenderable(renderer: away.render.IRenderer): void;
+        public _iCollectRenderables(renderer: render.IRenderer): void;
+        public _iCollectRenderable(renderer: render.IRenderer): void;
     }
 }
 declare module away.entities {
@@ -11817,7 +11816,7 @@ declare module away.entities {
     * state. It consists out of SubMeshes, which in turn correspond to SubGeometries. SubMeshes allow different parts
     * of the geometry to be assigned different materials.
     */
-    class Mesh extends away.containers.DisplayObjectContainer implements entities.IEntity {
+    class Mesh extends containers.DisplayObjectContainer implements IEntity {
         private _uvTransform;
         private _subMeshes;
         private _geometry;
@@ -11831,7 +11830,7 @@ declare module away.entities {
         /**
         * Defines the animator of the mesh. Act on the mesh's geometry.  Default value is <code>null</code>.
         */
-        public animator : away.animators.IAnimator;
+        public animator : animators.IAnimator;
         /**
         *
         */
@@ -11843,11 +11842,11 @@ declare module away.entities {
         /**
         * The geometry used by the mesh that provides it with its shape.
         */
-        public geometry : away.base.Geometry;
+        public geometry : base.Geometry;
         /**
         * The material with which to render the Mesh.
         */
-        public material : away.materials.IMaterial;
+        public material : materials.IMaterial;
         /**
         * Indicates whether or not the mesh share the same animation geometry.
         */
@@ -11856,18 +11855,18 @@ declare module away.entities {
         * The SubMeshes out of which the Mesh consists. Every SubMesh can be assigned a material to override the Mesh's
         * material.
         */
-        public subMeshes : away.base.ISubMesh[];
+        public subMeshes : base.ISubMesh[];
         /**
         *
         */
-        public uvTransform : away.geom.UVTransform;
+        public uvTransform : geom.UVTransform;
         /**
         * Create a new Mesh object.
         *
         * @param geometry                    The geometry used by the mesh that provides it with its shape.
         * @param material    [optional]        The material with which to render the Mesh.
         */
-        constructor(geometry: away.base.Geometry, material?: away.materials.IMaterial);
+        constructor(geometry: base.Geometry, material?: materials.IMaterial);
         /**
         *
         */
@@ -11897,18 +11896,18 @@ declare module away.entities {
         * var clone : Mesh = new Mesh(original.geometry, original.material);
         * </code>
         */
-        public clone(): away.base.DisplayObject;
+        public clone(): base.DisplayObject;
         /**
         * //TODO
         *
         * @param subGeometry
         * @returns {SubMeshBase}
         */
-        public getSubMeshFromSubGeometry(subGeometry: away.base.TriangleSubGeometry): away.base.ISubMesh;
+        public getSubMeshFromSubGeometry(subGeometry: base.TriangleSubGeometry): base.ISubMesh;
         /**
         * @protected
         */
-        public pCreateEntityPartitionNode(): away.partition.EntityNode;
+        public pCreateEntityPartitionNode(): partition.EntityNode;
         /**
         * //TODO
         *
@@ -11955,7 +11954,7 @@ declare module away.entities {
         *
         * @internal
         */
-        public _iCollectRenderables(renderer: away.render.IRenderer): void;
+        public _iCollectRenderables(renderer: render.IRenderer): void;
     }
 }
 /**
@@ -11973,13 +11972,13 @@ declare module away.entities {
 * does not.</p>
 */
 declare module away.entities {
-    class Shape extends away.base.DisplayObject {
+    class Shape extends base.DisplayObject {
         private _graphics;
         /**
         * Specifies the Graphics object belonging to this Shape object, where vector
         * drawing commands can occur.
         */
-        public graphics : away.base.Graphics;
+        public graphics : base.Graphics;
         /**
         * Creates a new Shape object.
         */
@@ -11992,25 +11991,25 @@ declare module away.entities {
     * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
     * the sky box is always as large as possible without being clipped.
     */
-    class Skybox extends away.base.DisplayObject implements entities.IEntity, away.base.IMaterialOwner {
+    class Skybox extends base.DisplayObject implements IEntity, base.IMaterialOwner {
         private _uvTransform;
         private _material;
         private _animator;
-        public animator : away.animators.IAnimator;
+        public animator : animators.IAnimator;
         /**
         *
         */
-        public uvTransform : away.geom.UVTransform;
+        public uvTransform : geom.UVTransform;
         /**
         * Create a new Skybox object.
         *
         * @param material	The material with which to render the Skybox.
         */
-        constructor(material: away.materials.IMaterial);
+        constructor(material: materials.IMaterial);
         /**
         * The material with which to render the Skybox.
         */
-        public material : away.materials.IMaterial;
+        public material : materials.IMaterial;
         public assetType : string;
         /**
         * @protected
@@ -12019,18 +12018,18 @@ declare module away.entities {
         /**
         * @protected
         */
-        public pCreateEntityPartitionNode(): away.partition.EntityNode;
+        public pCreateEntityPartitionNode(): partition.EntityNode;
         /**
         * @protected
         */
-        public pGetDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
+        public pGetDefaultBoundingVolume(): bounds.BoundingVolumeBase;
         /**
         * @protected
         */
         public pUpdateBounds(): void;
         public castsShadows : boolean;
-        public _iCollectRenderables(renderer: away.render.IRenderer): void;
-        public _iCollectRenderable(renderer: away.render.IRenderer): void;
+        public _iCollectRenderables(renderer: render.IRenderer): void;
+        public _iCollectRenderable(renderer: render.IRenderer): void;
     }
 }
 /**
@@ -12113,7 +12112,7 @@ declare module away.entities {
 *                                  options
 */
 declare module away.entities {
-    class TextField extends away.base.DisplayObject {
+    class TextField extends base.DisplayObject {
         private _bottomScrollV;
         private _caretIndex;
         private _length;
@@ -12156,7 +12155,7 @@ declare module away.entities {
         *
         * <p>To set values for this property, use the following string values:</p>
         */
-        public antiAliasType: away.text.AntiAliasType;
+        public antiAliasType: text.AntiAliasType;
         /**
         * Controls automatic sizing and alignment of text fields. Acceptable values
         * for the <code>TextFieldAutoSize</code> constants:
@@ -12199,7 +12198,7 @@ declare module away.entities {
         * @throws ArgumentError The <code>autoSize</code> specified is not a member
         *                       of flash.text.TextFieldAutoSize.
         */
-        public autoSize: away.text.TextFieldAutoSize;
+        public autoSize: text.TextFieldAutoSize;
         /**
         * Specifies whether the text field has a background fill. If
         * <code>true</code>, the text field has a background fill. If
@@ -12296,7 +12295,7 @@ declare module away.entities {
         * @throws Error This method cannot be used on a text field with a style
         *               sheet.
         */
-        public defaultTextFormat: away.text.TextFormat;
+        public defaultTextFormat: text.TextFormat;
         /**
         * Specifies whether the text field is a password text field. If the value of
         * this property is <code>true</code>, the text field is treated as a
@@ -12338,7 +12337,7 @@ declare module away.entities {
         *
         * @default pixel
         */
-        public gridFitType: away.text.GridFitType;
+        public gridFitType: text.GridFitType;
         /**
         * Contains the HTML representation of the text field contents.
         *
@@ -12571,7 +12570,7 @@ declare module away.entities {
         * Desktop, the normal mode implies that the text is in scrollable as well as
         * selection mode.
         */
-        public textInteractionMode : away.text.TextInteractionMode;
+        public textInteractionMode : text.TextInteractionMode;
         /**
         * The width of the text in pixels.
         */
@@ -12599,7 +12598,7 @@ declare module away.entities {
         * @throws ArgumentError The <code>type</code> specified is not a member of
         *                       flash.text.TextFieldType.
         */
-        public type: away.text.TextFieldType;
+        public type: text.TextFieldType;
         /**
         * Specifies whether to copy and paste the text formatting along with the
         * text. When set to <code>true</code>, Flash Player copies and pastes
@@ -12644,7 +12643,7 @@ declare module away.entities {
         * @return A rectangle with <code>x</code> and <code>y</code> minimum and
         *         maximum values defining the bounding box of the character.
         */
-        public getCharBoundaries(charIndex: number): away.geom.Rectangle;
+        public getCharBoundaries(charIndex: number): geom.Rectangle;
         /**
         * Returns the zero-based index value of the character at the point specified
         * by the <code>x</code> and <code>y</code> parameters.
@@ -12688,7 +12687,7 @@ declare module away.entities {
         *         matching <code>id</code> exists, the method returns
         *         <code>null</code>.
         */
-        public getImageReference(id: string): away.base.DisplayObject;
+        public getImageReference(id: string): base.DisplayObject;
         /**
         * Returns the zero-based index value of the line at the point specified by
         * the <code>x</code> and <code>y</code> parameters.
@@ -12726,7 +12725,7 @@ declare module away.entities {
         * @return A TextLineMetrics object.
         * @throws RangeError The line number specified is out of range.
         */
-        public getLineMetrics(lineIndex: number): away.text.TextLineMetrics;
+        public getLineMetrics(lineIndex: number): text.TextLineMetrics;
         /**
         * Returns the character index of the first character in the line that the
         * <code>lineIndex</code> parameter specifies.
@@ -12778,7 +12777,7 @@ declare module away.entities {
         * @throws RangeError The <code>beginIndex</code> or <code>endIndex</code>
         *                    specified is out of range.
         */
-        public getTextFormat(beginIndex?: number, endIndex?: number): away.text.TextFormat;
+        public getTextFormat(beginIndex?: number, endIndex?: number): text.TextFormat;
         /**
         * Replaces the current selection with the contents of the <code>value</code>
         * parameter. The text is inserted at the position of the current selection,
@@ -12875,7 +12874,7 @@ declare module away.entities {
         * @throws RangeError The <code>beginIndex</code> or <code>endIndex</code>
         *                    specified is out of range.
         */
-        public setTextFormat(format: away.text.TextFormat, beginIndex?: number, endIndex?: number): void;
+        public setTextFormat(format: text.TextFormat, beginIndex?: number, endIndex?: number): void;
         /**
         * Returns true if an embedded font is available with the specified
         * <code>fontName</code> and <code>fontStyle</code> where
@@ -12934,26 +12933,26 @@ declare module away.projections {
     *
     * @interface away.base.IMaterialOwner
     */
-    interface IProjection extends away.events.IEventDispatcher {
+    interface IProjection extends events.IEventDispatcher {
         coordinateSystem: string;
         frustumCorners: number[];
-        matrix: away.geom.Matrix3D;
+        matrix: geom.Matrix3D;
         near: number;
         originX: number;
         originY: number;
         far: number;
         _iAspectRatio: number;
-        project(point3d: away.geom.Vector3D): away.geom.Vector3D;
-        unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
+        project(point3d: geom.Vector3D): geom.Vector3D;
+        unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
         _iUpdateScissorRect(x: number, y: number, width: number, height: number): any;
         _iUpdateViewport(x: number, y: number, width: number, height: number): any;
     }
 }
 declare module away.projections {
-    class ProjectionBase extends away.events.EventDispatcher implements projections.IProjection {
-        public _pMatrix: away.geom.Matrix3D;
-        public _pScissorRect: away.geom.Rectangle;
-        public _pViewPort: away.geom.Rectangle;
+    class ProjectionBase extends events.EventDispatcher implements IProjection {
+        public _pMatrix: geom.Matrix3D;
+        public _pScissorRect: geom.Rectangle;
+        public _pViewPort: geom.Rectangle;
         public _pNear: number;
         public _pFar: number;
         public _pAspectRatio: number;
@@ -12970,14 +12969,14 @@ declare module away.projections {
         */
         public coordinateSystem : string;
         public frustumCorners : number[];
-        public matrix : away.geom.Matrix3D;
+        public matrix : geom.Matrix3D;
         public near : number;
         public originX : number;
         public originY : number;
         public far : number;
-        public project(point3d: away.geom.Vector3D): away.geom.Vector3D;
-        public unprojectionMatrix : away.geom.Matrix3D;
-        public unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
+        public project(point3d: geom.Vector3D): geom.Vector3D;
+        public unprojectionMatrix : geom.Matrix3D;
+        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
         public clone(): ProjectionBase;
         public _iAspectRatio : number;
         public pInvalidateMatrix(): void;
@@ -12987,7 +12986,7 @@ declare module away.projections {
     }
 }
 declare module away.projections {
-    class PerspectiveProjection extends projections.ProjectionBase {
+    class PerspectiveProjection extends ProjectionBase {
         private _fieldOfView;
         private _focalLength;
         private _hFieldOfView;
@@ -13019,35 +13018,35 @@ declare module away.projections {
         *
         */
         public hFocalLength : number;
-        public unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
-        public clone(): projections.ProjectionBase;
+        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
+        public clone(): ProjectionBase;
         public pUpdateMatrix(): void;
     }
 }
 declare module away.projections {
-    class FreeMatrixProjection extends projections.ProjectionBase {
+    class FreeMatrixProjection extends ProjectionBase {
         constructor();
         public near : number;
         public far : number;
         public iAspectRatio : number;
-        public clone(): projections.ProjectionBase;
+        public clone(): ProjectionBase;
         public pUpdateMatrix(): void;
     }
 }
 declare module away.projections {
-    class OrthographicProjection extends projections.ProjectionBase {
+    class OrthographicProjection extends ProjectionBase {
         private _projectionHeight;
         private _xMax;
         private _yMax;
         constructor(projectionHeight?: number);
         public projectionHeight : number;
-        public unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
-        public clone(): projections.ProjectionBase;
+        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
+        public clone(): ProjectionBase;
         public pUpdateMatrix(): void;
     }
 }
 declare module away.projections {
-    class OrthographicOffCenterProjection extends projections.ProjectionBase {
+    class OrthographicOffCenterProjection extends ProjectionBase {
         private _minX;
         private _maxX;
         private _minY;
@@ -13057,23 +13056,23 @@ declare module away.projections {
         public maxX : number;
         public minY : number;
         public maxY : number;
-        public unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
-        public clone(): projections.ProjectionBase;
+        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
+        public clone(): ProjectionBase;
         public pUpdateMatrix(): void;
     }
 }
 declare module away.projections {
-    class ObliqueNearPlaneProjection extends projections.ProjectionBase {
+    class ObliqueNearPlaneProjection extends ProjectionBase {
         private _baseProjection;
         private _plane;
         private _onProjectionMatrixChangedDelegate;
-        constructor(baseProjection: projections.IProjection, plane: away.geom.Plane3D);
+        constructor(baseProjection: IProjection, plane: geom.Plane3D);
         public frustumCorners : number[];
         public near : number;
         public far : number;
         public iAspectRatio : number;
-        public plane : away.geom.Plane3D;
-        public baseProjection : projections.IProjection;
+        public plane : geom.Plane3D;
+        public baseProjection : IProjection;
         private onProjectionMatrixChanged(event);
         public pUpdateMatrix(): void;
     }
@@ -13088,7 +13087,7 @@ declare module away.managers {
         private _viewLookup;
         public _iActiveDiv: HTMLDivElement;
         public _iUpdateDirty: boolean;
-        public _iCollidingObject: away.pick.PickingCollisionVO;
+        public _iCollidingObject: pick.PickingCollisionVO;
         private _nullVector;
         private _previousCollidingObject;
         private _queuedEvents;
@@ -13115,8 +13114,8 @@ declare module away.managers {
         constructor();
         static getInstance(): MouseManager;
         public fireMouseEvents(forceMouseMove: boolean): void;
-        public registerView(view: away.containers.View): void;
-        public unregisterView(view: away.containers.View): void;
+        public registerView(view: containers.View): void;
+        public unregisterView(view: containers.View): void;
         private queueDispatch(event, sourceEvent, collider?);
         private onMouseMove(event);
         private onMouseOut(event);
@@ -13130,7 +13129,7 @@ declare module away.managers {
     }
 }
 declare module away.managers {
-    class RTTBufferManager extends away.events.EventDispatcher {
+    class RTTBufferManager extends events.EventDispatcher {
         private static _instances;
         private _renderToTextureVertexBuffer;
         private _renderToScreenVertexBuffer;
@@ -13144,18 +13143,18 @@ declare module away.managers {
         private _buffersInvalid;
         private _textureRatioX;
         private _textureRatioY;
-        constructor(se: SingletonEnforcer, stageGL: away.base.StageGL);
-        static getInstance(stageGL: away.base.StageGL): RTTBufferManager;
+        constructor(se: SingletonEnforcer, stageGL: base.StageGL);
+        static getInstance(stageGL: base.StageGL): RTTBufferManager;
         private static getRTTBufferManagerFromStageGL(stageGL);
         private static deleteRTTBufferManager(stageGL);
         public textureRatioX : number;
         public textureRatioY : number;
         public viewWidth : number;
         public viewHeight : number;
-        public renderToTextureVertexBuffer : away.gl.VertexBuffer;
-        public renderToScreenVertexBuffer : away.gl.VertexBuffer;
-        public indexBuffer : away.gl.IndexBuffer;
-        public renderToTextureRect : away.geom.Rectangle;
+        public renderToTextureVertexBuffer : gl.VertexBuffer;
+        public renderToScreenVertexBuffer : gl.VertexBuffer;
+        public indexBuffer : gl.IndexBuffer;
+        public renderToTextureRect : geom.Rectangle;
         public textureWidth : number;
         public textureHeight : number;
         public dispose(): void;
@@ -13175,7 +13174,7 @@ declare module away.managers {
     *
     * @see away.base.StageGLProxy
     */
-    class StageGLManager extends away.events.EventDispatcher {
+    class StageGLManager extends events.EventDispatcher {
         private static STAGEGL_MAX_QUANTITY;
         private _stageGLs;
         private static _instance;
@@ -13201,20 +13200,20 @@ declare module away.managers {
         * @param profile The compatibility profile, an enumeration of ContextGLProfile
         * @return The StageGL for the given index.
         */
-        public getStageGLAt(index: number, forceSoftware?: boolean, profile?: string): away.base.StageGL;
+        public getStageGLAt(index: number, forceSoftware?: boolean, profile?: string): base.StageGL;
         /**
         * Removes a StageGL from the manager.
         * @param stageGL
         * @private
         */
-        public iRemoveStageGL(stageGL: away.base.StageGL): void;
+        public iRemoveStageGL(stageGL: base.StageGL): void;
         /**
         * Get the next available stageGL. An error is thrown if there are no StageGLProxies available
         * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
         * @param profile The compatibility profile, an enumeration of ContextGLProfile
         * @return The allocated stageGL
         */
-        public getFreeStageGL(forceSoftware?: boolean, profile?: string): away.base.StageGL;
+        public getFreeStageGL(forceSoftware?: boolean, profile?: string): base.StageGL;
         /**
         * Checks if a new stageGL can be created and managed by the class.
         * @return true if there is one slot free for a new stageGL
@@ -13303,7 +13302,7 @@ declare class StageGLManagerSingletonEnforcer {
 * mask, as shown in the following code:</p>
 */
 declare module away.containers {
-    class Loader extends containers.DisplayObjectContainer {
+    class Loader extends DisplayObjectContainer {
         private _loadingSessions;
         private _useAssetLib;
         private _assetLibId;
@@ -13328,7 +13327,7 @@ declare module away.containers {
         *                       call the <code>load()</code> or
         *                       <code>loadBytes()</code> method.
         */
-        public content : away.base.DisplayObject;
+        public content : base.DisplayObject;
         /**
         * Returns a LoaderInfo object corresponding to the object being loaded.
         * LoaderInfo objects are shared between the Loader object and the loaded
@@ -13345,7 +13344,7 @@ declare module away.containers {
         * <code>Loader.uncaughtErrorEvents</code> property, not the
         * <code>Loader.contentLoaderInfo.uncaughtErrorEvents</code> property.</p>
         */
-        public contentLoaderInfo : away.base.LoaderInfo;
+        public contentLoaderInfo : base.LoaderInfo;
         /**
         * Creates a Loader object that you can use to load files, such as SWF, JPEG,
         * GIF, or PNG files. Call the <code>load()</code> method to load the asset
@@ -13568,7 +13567,7 @@ declare module away.containers {
         * @event unload        Dispatched by the <code>contentLoaderInfo</code>
         *                      object when a loaded object is removed.
         */
-        public load(request: away.net.URLRequest, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
+        public load(request: net.URLRequest, context?: net.AssetLoaderContext, ns?: string, parser?: parsers.ParserBase): net.AssetLoaderToken;
         /**
         * Loads from binary data stored in a ByteArray object.
         *
@@ -13655,7 +13654,7 @@ declare module away.containers {
         * @event unload        Dispatched by the <code>contentLoaderInfo</code>
         *                      object when a loaded object is removed.
         */
-        public loadData(data: any, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
+        public loadData(data: any, context?: net.AssetLoaderContext, ns?: string, parser?: parsers.ParserBase): net.AssetLoaderToken;
         /**
         * Removes a child of this Loader object that was loaded by using the
         * <code>load()</code> method. The <code>property</code> of the associated
@@ -13717,44 +13716,44 @@ declare module away.containers {
     }
 }
 declare module away.containers {
-    class Scene extends away.events.EventDispatcher {
+    class Scene extends events.EventDispatcher {
         private _expandedPartitions;
         private _partitions;
-        public _iSceneGraphRoot: containers.DisplayObjectContainer;
+        public _iSceneGraphRoot: DisplayObjectContainer;
         public _iCollectionMark: number;
         constructor();
-        public traversePartitions(traverser: away.traverse.ICollector): void;
-        public partition : away.partition.Partition;
-        public contains(child: away.base.DisplayObject): boolean;
-        public addChild(child: away.base.DisplayObject): away.base.DisplayObject;
-        public removeChild(child: away.base.DisplayObject): void;
+        public traversePartitions(traverser: traverse.ICollector): void;
+        public partition : partition.Partition;
+        public contains(child: base.DisplayObject): boolean;
+        public addChild(child: base.DisplayObject): base.DisplayObject;
+        public removeChild(child: base.DisplayObject): void;
         public removeChildAt(index: number): void;
-        public getChildAt(index: number): away.base.DisplayObject;
+        public getChildAt(index: number): base.DisplayObject;
         public numChildren : number;
         /**
         * @internal
         */
-        public iRegisterEntity(displayObject: away.base.DisplayObject): void;
+        public iRegisterEntity(displayObject: base.DisplayObject): void;
         /**
         * @internal
         */
-        public iRegisterPartition(partition: away.partition.Partition): void;
+        public iRegisterPartition(partition: partition.Partition): void;
         /**
         * @internal
         */
-        public iUnregisterEntity(displayObject: away.base.DisplayObject): void;
+        public iUnregisterEntity(displayObject: base.DisplayObject): void;
         /**
         * @internal
         */
-        public iUnregisterPartition(partition: away.partition.Partition): void;
+        public iUnregisterPartition(partition: partition.Partition): void;
     }
 }
 declare module away.containers {
     class View {
-        public _pScene: containers.Scene;
-        public _pCamera: away.entities.Camera;
-        public _pEntityCollector: away.traverse.ICollector;
-        public _pRenderer: away.render.IRenderer;
+        public _pScene: Scene;
+        public _pCamera: entities.Camera;
+        public _pEntityCollector: traverse.ICollector;
+        public _pRenderer: render.IRenderer;
         private _aspectRatio;
         private _width;
         private _height;
@@ -13774,7 +13773,7 @@ declare module away.containers {
         private _shareContext;
         public _pMouseX: number;
         public _pMouseY: number;
-        constructor(renderer: away.render.IRenderer, scene?: containers.Scene, camera?: away.entities.Camera);
+        constructor(renderer: render.IRenderer, scene?: Scene, camera?: entities.Camera);
         /**
         *
         * @param e
@@ -13790,7 +13789,7 @@ declare module away.containers {
         /**
         *
         */
-        public renderer : away.render.IRenderer;
+        public renderer : render.IRenderer;
         /**
         *
         */
@@ -13815,7 +13814,7 @@ declare module away.containers {
         /**
         * Set camera that's used to render the scene for this viewport
         */
-        public camera : away.entities.Camera;
+        public camera : entities.Camera;
         /**
         *
         * @returns {away.containers.Scene3D}
@@ -13823,7 +13822,7 @@ declare module away.containers {
         /**
         * Set the scene that's used to render for this viewport
         */
-        public scene : containers.Scene;
+        public scene : Scene;
         /**
         *
         * @returns {number}
@@ -13840,7 +13839,7 @@ declare module away.containers {
         /**
         *
         */
-        public mousePicker : away.pick.IPicker;
+        public mousePicker : pick.IPicker;
         /**
         *
         */
@@ -13873,7 +13872,7 @@ declare module away.containers {
         /**
         *
         */
-        public iEntityCollector : away.traverse.ICollector;
+        public iEntityCollector : traverse.ICollector;
         /**
         *
         */
@@ -13886,23 +13885,23 @@ declare module away.containers {
         *
         */
         private onScissorUpdated(event);
-        public project(point3d: away.geom.Vector3D): away.geom.Vector3D;
-        public unproject(sX: number, sY: number, sZ: number): away.geom.Vector3D;
-        public getRay(sX: number, sY: number, sZ: number): away.geom.Vector3D;
+        public project(point3d: geom.Vector3D): geom.Vector3D;
+        public unproject(sX: number, sY: number, sZ: number): geom.Vector3D;
+        public getRay(sX: number, sY: number, sZ: number): geom.Vector3D;
         public forceMouseMove: boolean;
         public updateCollider(): void;
     }
 }
 declare module away.bounds {
     class BoundingVolumeBase {
-        public _aabb: away.geom.Box;
+        public _aabb: geom.Box;
         public _pAabbPoints: number[];
         public _pAabbPointsDirty: boolean;
-        public _pBoundingEntity: away.entities.IEntity;
+        public _pBoundingEntity: entities.IEntity;
         constructor();
-        public aabb : away.geom.Box;
+        public aabb : geom.Box;
         public aabbPoints : number[];
-        public boundingEntity : away.entities.IEntity;
+        public boundingEntity : entities.IEntity;
         public nullify(): void;
         public disposeRenderable(): void;
         public fromVertices(vertices: number[]): void;
@@ -13911,36 +13910,36 @@ declare module away.bounds {
         *
         * @param geometry The Geometry object to be bounded.
         */
-        public fromGeometry(geometry: away.base.Geometry): void;
-        public fromSphere(center: away.geom.Vector3D, radius: number): void;
+        public fromGeometry(geometry: base.Geometry): void;
+        public fromSphere(center: geom.Vector3D, radius: number): void;
         public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
-        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
+        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
         public overlaps(bounds: BoundingVolumeBase): boolean;
         public clone(): BoundingVolumeBase;
-        public rayIntersection(position: away.geom.Vector3D, direction: away.geom.Vector3D, targetNormal: away.geom.Vector3D): number;
-        public containsPoint(position: away.geom.Vector3D): boolean;
+        public rayIntersection(position: geom.Vector3D, direction: geom.Vector3D, targetNormal: geom.Vector3D): number;
+        public containsPoint(position: geom.Vector3D): boolean;
         public pUpdateAABBPoints(): void;
         public pUpdateBoundingEntity(): void;
-        public pCreateBoundingEntity(): away.entities.IEntity;
-        public classifyToPlane(plane: away.geom.Plane3D): number;
-        public transformFrom(bounds: BoundingVolumeBase, matrix: away.geom.Matrix3D): void;
+        public pCreateBoundingEntity(): entities.IEntity;
+        public classifyToPlane(plane: geom.Plane3D): number;
+        public transformFrom(bounds: BoundingVolumeBase, matrix: geom.Matrix3D): void;
     }
 }
 declare module away.bounds {
-    class NullBounds extends bounds.BoundingVolumeBase {
+    class NullBounds extends BoundingVolumeBase {
         private _alwaysIn;
         constructor(alwaysIn?: boolean);
-        public clone(): bounds.BoundingVolumeBase;
-        public pCreateBoundingEntity(): away.entities.IEntity;
-        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
-        public fromSphere(center: away.geom.Vector3D, radius: number): void;
+        public clone(): BoundingVolumeBase;
+        public pCreateBoundingEntity(): entities.IEntity;
+        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
+        public fromSphere(center: geom.Vector3D, radius: number): void;
         public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
-        public classifyToPlane(plane: away.geom.Plane3D): number;
-        public transformFrom(bounds: bounds.BoundingVolumeBase, matrix: away.geom.Matrix3D): void;
+        public classifyToPlane(plane: geom.Plane3D): number;
+        public transformFrom(bounds: BoundingVolumeBase, matrix: geom.Matrix3D): void;
     }
 }
 declare module away.bounds {
-    class BoundingSphere extends bounds.BoundingVolumeBase {
+    class BoundingSphere extends BoundingVolumeBase {
         private _radius;
         private _centerX;
         private _centerY;
@@ -13948,16 +13947,16 @@ declare module away.bounds {
         constructor();
         public radius : number;
         public nullify(): void;
-        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
-        public fromSphere(center: away.geom.Vector3D, radius: number): void;
+        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
+        public fromSphere(center: geom.Vector3D, radius: number): void;
         public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
-        public clone(): bounds.BoundingVolumeBase;
-        public rayIntersection(position: away.geom.Vector3D, direction: away.geom.Vector3D, targetNormal: away.geom.Vector3D): number;
-        public containsPoint(position: away.geom.Vector3D): boolean;
+        public clone(): BoundingVolumeBase;
+        public rayIntersection(position: geom.Vector3D, direction: geom.Vector3D, targetNormal: geom.Vector3D): number;
+        public containsPoint(position: geom.Vector3D): boolean;
         public pUpdateBoundingEntity(): void;
-        public pCreateBoundingEntity(): away.entities.IEntity;
-        public classifyToPlane(plane: away.geom.Plane3D): number;
-        public transformFrom(bounds: bounds.BoundingVolumeBase, matrix: away.geom.Matrix3D): void;
+        public pCreateBoundingEntity(): entities.IEntity;
+        public classifyToPlane(plane: geom.Plane3D): number;
+        public transformFrom(bounds: BoundingVolumeBase, matrix: geom.Matrix3D): void;
     }
 }
 declare module away.bounds {
@@ -13965,7 +13964,7 @@ declare module away.bounds {
     * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
     * This is useful for most meshes.
     */
-    class AxisAlignedBoundingBox extends bounds.BoundingVolumeBase {
+    class AxisAlignedBoundingBox extends BoundingVolumeBase {
         private _centerX;
         private _centerY;
         private _centerZ;
@@ -13983,12 +13982,12 @@ declare module away.bounds {
         /**
         * @inheritDoc
         */
-        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
-        public rayIntersection(position: away.geom.Vector3D, direction: away.geom.Vector3D, targetNormal: away.geom.Vector3D): number;
+        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
+        public rayIntersection(position: geom.Vector3D, direction: geom.Vector3D, targetNormal: geom.Vector3D): number;
         /**
         * @inheritDoc
         */
-        public containsPoint(position: away.geom.Vector3D): boolean;
+        public containsPoint(position: geom.Vector3D): boolean;
         /**
         * @inheritDoc
         */
@@ -13996,7 +13995,7 @@ declare module away.bounds {
         /**
         * @inheritDoc
         */
-        public clone(): bounds.BoundingVolumeBase;
+        public clone(): BoundingVolumeBase;
         public halfExtentsX : number;
         public halfExtentsY : number;
         public halfExtentsZ : number;
@@ -14006,33 +14005,33 @@ declare module away.bounds {
         * @param target An optional Vector3D to store the result to prevent creating a new object.
         * @return
         */
-        public closestPointToPoint(point: away.geom.Vector3D, target?: away.geom.Vector3D): away.geom.Vector3D;
+        public closestPointToPoint(point: geom.Vector3D, target?: geom.Vector3D): geom.Vector3D;
         public pUpdateBoundingRenderable(): void;
-        public pCreateBoundingEntity(): away.entities.IEntity;
-        public classifyToPlane(plane: away.geom.Plane3D): number;
-        public transformFrom(bounds: bounds.BoundingVolumeBase, matrix: away.geom.Matrix3D): void;
+        public pCreateBoundingEntity(): entities.IEntity;
+        public classifyToPlane(plane: geom.Plane3D): number;
+        public transformFrom(bounds: BoundingVolumeBase, matrix: geom.Matrix3D): void;
     }
 }
 declare module away.controllers {
     class ControllerBase {
         public _pAutoUpdate: boolean;
-        public _pTargetObject: away.base.DisplayObject;
-        constructor(targetObject?: away.base.DisplayObject);
+        public _pTargetObject: base.DisplayObject;
+        constructor(targetObject?: base.DisplayObject);
         public pNotifyUpdate(): void;
-        public targetObject : away.base.DisplayObject;
+        public targetObject : base.DisplayObject;
         public autoUpdate : boolean;
         public update(interpolate?: boolean): void;
     }
 }
 declare module away.controllers {
-    class LookAtController extends controllers.ControllerBase {
-        public _pLookAtPosition: away.geom.Vector3D;
-        public _pLookAtObject: away.base.DisplayObject;
-        public _pOrigin: away.geom.Vector3D;
+    class LookAtController extends ControllerBase {
+        public _pLookAtPosition: geom.Vector3D;
+        public _pLookAtObject: base.DisplayObject;
+        public _pOrigin: geom.Vector3D;
         private _onLookAtObjectChangedDelegate;
-        constructor(targetObject?: away.base.DisplayObject, lookAtObject?: away.base.DisplayObject);
-        public lookAtPosition : away.geom.Vector3D;
-        public lookAtObject : away.base.DisplayObject;
+        constructor(targetObject?: base.DisplayObject, lookAtObject?: base.DisplayObject);
+        public lookAtPosition : geom.Vector3D;
+        public lookAtObject : base.DisplayObject;
         public update(interpolate?: boolean): void;
         private onLookAtObjectChanged(event);
     }
@@ -14043,7 +14042,7 @@ declare module away.controllers {
     *
     * @see    away3d.containers.View3D
     */
-    class HoverController extends controllers.LookAtController {
+    class HoverController extends LookAtController {
         public _iCurrentPanAngle: number;
         public _iCurrentTiltAngle: number;
         private _panAngle;
@@ -14115,7 +14114,7 @@ declare module away.controllers {
         /**
         * Creates a new <code>HoverController</code> object.
         */
-        constructor(targetObject?: away.base.DisplayObject, lookAtObject?: away.base.DisplayObject, panAngle?: number, tiltAngle?: number, distance?: number, minTiltAngle?: number, maxTiltAngle?: number, minPanAngle?: number, maxPanAngle?: number, steps?: number, yFactor?: number, wrapPanAngle?: boolean);
+        constructor(targetObject?: base.DisplayObject, lookAtObject?: base.DisplayObject, panAngle?: number, tiltAngle?: number, distance?: number, minTiltAngle?: number, maxTiltAngle?: number, minPanAngle?: number, maxPanAngle?: number, steps?: number, yFactor?: number, wrapPanAngle?: boolean);
         /**
         * Updates the current tilt angle and pan angle values.
         *
@@ -14136,7 +14135,7 @@ declare module away.controllers {
     *
     * @see    away3d.containers.View3D
     */
-    class FirstPersonController extends controllers.ControllerBase {
+    class FirstPersonController extends ControllerBase {
         public _iCurrentPanAngle: number;
         public _iCurrentTiltAngle: number;
         private _panAngle;
@@ -14184,7 +14183,7 @@ declare module away.controllers {
         /**
         * Creates a new <code>HoverController</code> object.
         */
-        constructor(targetObject?: away.base.DisplayObject, panAngle?: number, tiltAngle?: number, minTiltAngle?: number, maxTiltAngle?: number, steps?: number, wrapPanAngle?: boolean);
+        constructor(targetObject?: base.DisplayObject, panAngle?: number, tiltAngle?: number, minTiltAngle?: number, maxTiltAngle?: number, steps?: number, wrapPanAngle?: boolean);
         /**
         * Updates the current tilt angle and pan angle values.
         *
@@ -14208,8 +14207,8 @@ declare module away.controllers {
     *
     * @see    away3d.containers.View3D
     */
-    class FollowController extends controllers.HoverController {
-        constructor(targetObject?: away.base.DisplayObject, lookAtObject?: away.base.DisplayObject, tiltAngle?: number, distance?: number);
+    class FollowController extends HoverController {
+        constructor(targetObject?: base.DisplayObject, lookAtObject?: base.DisplayObject, tiltAngle?: number, distance?: number);
         public update(interpolate?: boolean): void;
     }
 }
@@ -14219,7 +14218,7 @@ declare module away.controllers {
     * defined as the lookAtTarget object's position plus the vector defined by the
     * positionOffset property.
     */
-    class SpringController extends controllers.LookAtController {
+    class SpringController extends LookAtController {
         private _velocity;
         private _dv;
         private _stretch;
@@ -14243,8 +14242,8 @@ declare module away.controllers {
         /**
         * Offset of spring center from target in target object space, ie: Where the camera should ideally be in the target object space.
         */
-        public positionOffset: away.geom.Vector3D;
-        constructor(targetObject?: away.base.DisplayObject, lookAtObject?: away.base.DisplayObject, stiffness?: number, mass?: number, damping?: number);
+        public positionOffset: geom.Vector3D;
+        constructor(targetObject?: base.DisplayObject, lookAtObject?: base.DisplayObject, stiffness?: number, mass?: number, damping?: number);
         public update(interpolate?: boolean): void;
     }
 }
@@ -14255,7 +14254,7 @@ declare module away.materials {
     /**
     * @class away.materials.IMaterial
     */
-    interface IMaterial extends away.library.IAsset {
+    interface IMaterial extends library.IAsset {
         id: string;
         /**
         *
@@ -14286,13 +14285,13 @@ declare module away.materials {
         *
         * @param owner
         */
-        iAddOwner(owner: away.base.IMaterialOwner): any;
+        iAddOwner(owner: base.IMaterialOwner): any;
         /**
         *
         *
         * @param owner
         */
-        iRemoveOwner(owner: away.base.IMaterialOwner): any;
+        iRemoveOwner(owner: base.IMaterialOwner): any;
     }
 }
 declare module away.materials {
@@ -14307,7 +14306,7 @@ declare module away.materials {
     * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
     * shaders, or entire new material frameworks.
     */
-    class CSSMaterialBase extends away.library.NamedAssetBase implements materials.IMaterial {
+    class CSSMaterialBase extends library.NamedAssetBase implements IMaterial {
         private _height;
         private _sizeChanged;
         private _width;
@@ -14362,7 +14361,7 @@ declare module away.materials {
         /**
         * The texture object to use for the albedo colour.
         */
-        public texture : away.textures.Texture2DBase;
+        public texture : textures.Texture2DBase;
         /**
         *
         */
@@ -14370,7 +14369,7 @@ declare module away.materials {
         /**
         * Creates a new MaterialBase object.
         */
-        constructor(texture?: away.textures.Texture2DBase, smooth?: boolean, repeat?: boolean);
+        constructor(texture?: textures.Texture2DBase, smooth?: boolean, repeat?: boolean);
         /**
         * @inheritDoc
         */
@@ -14408,20 +14407,20 @@ declare module away.materials {
         *
         * @private
         */
-        public iAddOwner(owner: away.base.IMaterialOwner): void;
+        public iAddOwner(owner: base.IMaterialOwner): void;
         /**
         * Removes an IMaterialOwner as owner.
         * @param owner
         *
         * @internal
         */
-        public iRemoveOwner(owner: away.base.IMaterialOwner): void;
+        public iRemoveOwner(owner: base.IMaterialOwner): void;
         /**
         * A list of the IMaterialOwners that use this material
         *
         * @internal
         */
-        public iOwners : away.base.IMaterialOwner[];
+        public iOwners : base.IMaterialOwner[];
         private notifySizeChanged();
     }
 }
@@ -14429,8 +14428,8 @@ declare module away.prefabs {
     /**
     * PrefabBase is an abstract base class for prefabs, which are prebuilt display objects that allow easy cloning and updating
     */
-    class PrefabBase extends away.library.NamedAssetBase {
-        public _pObjects: away.base.DisplayObject[];
+    class PrefabBase extends library.NamedAssetBase {
+        public _pObjects: base.DisplayObject[];
         /**
         * Creates a new PrefabBase object.
         */
@@ -14438,8 +14437,8 @@ declare module away.prefabs {
         /**
         * Returns a display object generated from this prefab
         */
-        public getNewObject(): away.base.DisplayObject;
-        public _pCreateObject(): away.base.DisplayObject;
+        public getNewObject(): base.DisplayObject;
+        public _pCreateObject(): base.DisplayObject;
         public _iValidate(): void;
     }
 }
@@ -14447,7 +14446,7 @@ declare module away.animators {
     /**
     * Provides an abstract base class for nodes in an animation blend tree.
     */
-    class AnimationNodeBase extends away.library.NamedAssetBase implements away.library.IAsset {
+    class AnimationNodeBase extends library.NamedAssetBase implements library.IAsset {
         public _pStateClass: any;
         public stateClass : any;
         /**
@@ -14482,7 +14481,7 @@ declare module away.animators {
         *
         * @param stateName The name of the animation state object to be retrieved.
         */
-        getAnimation(name: string): animators.AnimationNodeBase;
+        getAnimation(name: string): AnimationNodeBase;
         /**
         * Indicates whether the properties of the animation data contained within the set combined with
         * the vertex registers aslready in use on shading materials allows the animation data to utilise
@@ -14511,11 +14510,11 @@ declare module away.animators {
     *
     * @see away.animators.IAnimationSet
     */
-    interface IAnimator extends away.library.IAsset {
+    interface IAnimator extends library.IAsset {
         /**
         *
         */
-        animationSet: animators.IAnimationSet;
+        animationSet: IAnimationSet;
         /**
         *
         */
@@ -14529,23 +14528,23 @@ declare module away.animators {
         *
         * @private
         */
-        addOwner(mesh: away.entities.IEntity): any;
+        addOwner(mesh: entities.IEntity): any;
         /**
         * Used by the mesh object from which the animator is removed, unregisters the owner for internal use.
         *
         * @private
         */
-        removeOwner(mesh: away.entities.IEntity): any;
+        removeOwner(mesh: entities.IEntity): any;
         /**
         * //TODO
         *
         * @param sourceSubGeometry
         */
-        getRenderableSubGeometry(renderable: away.pool.IRenderable, sourceSubGeometry: away.base.SubGeometryBase): away.base.SubGeometryBase;
+        getRenderableSubGeometry(renderable: pool.IRenderable, sourceSubGeometry: base.SubGeometryBase): base.SubGeometryBase;
     }
 }
 declare module away.textures {
-    class TextureProxyBase extends away.library.NamedAssetBase implements away.library.IAsset {
+    class TextureProxyBase extends library.NamedAssetBase implements library.IAsset {
         public _pFormat: string;
         public _pHasMipmaps: boolean;
         private _textures;
@@ -14578,13 +14577,13 @@ declare module away.textures {
         * @returns {number}
         */
         public height : number;
-        public getTextureForStageGL(stageGL: away.base.StageGL): away.gl.TextureBase;
+        public getTextureForStageGL(stageGL: base.StageGL): gl.TextureBase;
         /**
         *
         * @param texture
         * @private
         */
-        public pUploadContent(texture: away.gl.TextureBase): void;
+        public pUploadContent(texture: gl.TextureBase): void;
         /**
         *
         * @param width
@@ -14606,7 +14605,7 @@ declare module away.textures {
         * @param context
         * @private
         */
-        public pCreateTexture(context: away.gl.ContextGL): away.gl.TextureBase;
+        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
         /**
         * @inheritDoc
         */
@@ -14614,16 +14613,16 @@ declare module away.textures {
     }
 }
 declare module away.textures {
-    class Texture2DBase extends textures.TextureProxyBase {
+    class Texture2DBase extends TextureProxyBase {
         constructor();
-        public pCreateTexture(context: away.gl.ContextGL): away.gl.TextureBase;
+        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
     }
 }
 declare module away.textures {
-    class CubeTextureBase extends textures.TextureProxyBase {
+    class CubeTextureBase extends TextureProxyBase {
         constructor();
         public size : number;
-        public pCreateTexture(context: away.gl.ContextGL): away.gl.TextureBase;
+        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
     }
 }
 declare module away.textures {
@@ -14635,31 +14634,31 @@ declare module away.textures {
         public width: number;
         public height: number;
         public numTextures: number;
-        public data: away.utils.ByteArray;
+        public data: utils.ByteArray;
         /** Create a new instance by parsing the given byte array. */
-        constructor(data: away.utils.ByteArray);
+        constructor(data: utils.ByteArray);
     }
 }
 declare module away.textures {
-    class ATFCubeTexture extends textures.CubeTextureBase {
+    class ATFCubeTexture extends CubeTextureBase {
         private _atfData;
-        constructor(byteArray: away.utils.ByteArray);
-        public atfData : textures.ATFData;
-        public pUploadContent(texture: away.gl.TextureBase): void;
-        public pCreateTexture(context: away.gl.ContextGL): away.gl.TextureBase;
+        constructor(byteArray: utils.ByteArray);
+        public atfData : ATFData;
+        public pUploadContent(texture: gl.TextureBase): void;
+        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
     }
 }
 declare module away.textures {
-    class ATFTexture extends textures.Texture2DBase {
+    class ATFTexture extends Texture2DBase {
         private _atfData;
-        constructor(byteArray: away.utils.ByteArray);
-        public atfData : textures.ATFData;
-        public pUploadContent(texture: away.gl.TextureBase): void;
-        public pCreateTexture(context: away.gl.ContextGL): away.gl.TextureBase;
+        constructor(byteArray: utils.ByteArray);
+        public atfData : ATFData;
+        public pUploadContent(texture: gl.TextureBase): void;
+        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
     }
 }
 declare module away.textures {
-    class ImageTexture extends textures.Texture2DBase {
+    class ImageTexture extends Texture2DBase {
         private static _mipMaps;
         private static _mipMapUses;
         private _htmlImageElement;
@@ -14667,29 +14666,29 @@ declare module away.textures {
         private _mipMapHolder;
         constructor(htmlImageElement: HTMLImageElement, generateMipmaps?: boolean);
         public htmlImageElement : HTMLImageElement;
-        public pUploadContent(texture: away.gl.TextureBase): void;
+        public pUploadContent(texture: gl.TextureBase): void;
         private getMipMapHolder();
         private freeMipMapHolder();
         public dispose(): void;
     }
 }
 declare module away.textures {
-    class BitmapTexture extends textures.Texture2DBase {
+    class BitmapTexture extends Texture2DBase {
         private static _mipMaps;
         private static _mipMapUses;
         private _bitmapData;
         private _mipMapHolder;
         private _generateMipmaps;
-        constructor(bitmapData: away.base.BitmapData, generateMipmaps?: boolean);
-        public bitmapData : away.base.BitmapData;
-        public pUploadContent(texture: away.gl.TextureBase): void;
+        constructor(bitmapData: base.BitmapData, generateMipmaps?: boolean);
+        public bitmapData : base.BitmapData;
+        public pUploadContent(texture: gl.TextureBase): void;
         private getMipMapHolder();
         private freeMipMapHolder();
         public dispose(): void;
     }
 }
 declare module away.textures {
-    class RenderTexture extends textures.Texture2DBase {
+    class RenderTexture extends Texture2DBase {
         constructor(width: number, height: number);
         /**
         *
@@ -14701,12 +14700,12 @@ declare module away.textures {
         * @returns {number}
         */
         public height : number;
-        public pUploadContent(texture: away.gl.TextureBase): void;
-        public pCreateTexture(context: away.gl.ContextGL): away.gl.TextureBase;
+        public pUploadContent(texture: gl.TextureBase): void;
+        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
     }
 }
 declare module away.textures {
-    class ImageCubeTexture extends textures.CubeTextureBase {
+    class ImageCubeTexture extends CubeTextureBase {
         private _bitmapDatas;
         private _useMipMaps;
         constructor(posX: HTMLImageElement, negX: HTMLImageElement, posY: HTMLImageElement, negY: HTMLImageElement, posZ: HTMLImageElement, negZ: HTMLImageElement);
@@ -14735,40 +14734,40 @@ declare module away.textures {
         */
         public negativeZ : HTMLImageElement;
         private testSize(value);
-        public pUploadContent(texture: away.gl.TextureBase): void;
+        public pUploadContent(texture: gl.TextureBase): void;
     }
 }
 declare module away.textures {
-    class BitmapCubeTexture extends textures.CubeTextureBase {
+    class BitmapCubeTexture extends CubeTextureBase {
         private _bitmapDatas;
         private _useMipMaps;
-        constructor(posX: away.base.BitmapData, negX: away.base.BitmapData, posY: away.base.BitmapData, negY: away.base.BitmapData, posZ: away.base.BitmapData, negZ: away.base.BitmapData);
+        constructor(posX: base.BitmapData, negX: base.BitmapData, posY: base.BitmapData, negY: base.BitmapData, posZ: base.BitmapData, negZ: base.BitmapData);
         /**
         * The texture on the cube's right face.
         */
-        public positiveX : away.base.BitmapData;
+        public positiveX : base.BitmapData;
         /**
         * The texture on the cube's left face.
         */
-        public negativeX : away.base.BitmapData;
+        public negativeX : base.BitmapData;
         /**
         * The texture on the cube's top face.
         */
-        public positiveY : away.base.BitmapData;
+        public positiveY : base.BitmapData;
         /**
         * The texture on the cube's bottom face.
         */
-        public negativeY : away.base.BitmapData;
+        public negativeY : base.BitmapData;
         /**
         * The texture on the cube's far face.
         */
-        public positiveZ : away.base.BitmapData;
+        public positiveZ : base.BitmapData;
         /**
         * The texture on the cube's near face.
         */
-        public negativeZ : away.base.BitmapData;
+        public negativeZ : base.BitmapData;
         private testSize(value);
-        public pUploadContent(texture: away.gl.TextureBase): void;
+        public pUploadContent(texture: gl.TextureBase): void;
     }
 }
 declare module away.textures {
@@ -14786,7 +14785,7 @@ declare module away.textures {
         * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
         * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
         */
-        static generateHTMLImageElementMipMaps(source: HTMLImageElement, target: away.gl.TextureBase, mipmap?: away.base.BitmapData, alpha?: boolean, side?: number): void;
+        static generateHTMLImageElementMipMaps(source: HTMLImageElement, target: gl.TextureBase, mipmap?: base.BitmapData, alpha?: boolean, side?: number): void;
         /**
         * Uploads a BitmapData with mip maps to a target Texture object.
         * @param source The source BitmapData to upload.
@@ -14794,21 +14793,21 @@ declare module away.textures {
         * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
         * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
         */
-        static generateMipMaps(source: away.base.BitmapData, target: away.gl.TextureBase, mipmap?: away.base.BitmapData, alpha?: boolean, side?: number): void;
+        static generateMipMaps(source: base.BitmapData, target: gl.TextureBase, mipmap?: base.BitmapData, alpha?: boolean, side?: number): void;
     }
 }
 declare module away.textures {
     /**
     * A convenience texture that encodes a specular map in the red channel, and the gloss map in the green channel, as expected by BasicSpecularMapMethod
     */
-    class SpecularBitmapTexture extends textures.BitmapTexture {
+    class SpecularBitmapTexture extends BitmapTexture {
         private _specularMap;
         private _glossMap;
-        constructor(specularMap?: away.base.BitmapData, glossMap?: away.base.BitmapData);
-        public specularMap : away.base.BitmapData;
-        public glossMap : away.base.BitmapData;
+        constructor(specularMap?: base.BitmapData, glossMap?: base.BitmapData);
+        public specularMap : base.BitmapData;
+        public glossMap : base.BitmapData;
         private testSize();
-        public pUploadContent(texture: away.gl.TextureBase): void;
+        public pUploadContent(texture: gl.TextureBase): void;
         public dispose(): void;
     }
 }
@@ -14826,10 +14825,10 @@ declare module aglsl {
 }
 declare module aglsl {
     class Token {
-        public dest: aglsl.Destination;
+        public dest: Destination;
         public opcode: number;
-        public a: aglsl.Destination;
-        public b: aglsl.Destination;
+        public a: Destination;
+        public b: Destination;
         constructor();
     }
 }
@@ -14865,8 +14864,8 @@ declare module aglsl {
         public writedepth: boolean;
         public hasmatrix: boolean;
         public samplers: any[];
-        public tokens: aglsl.Token[];
-        public header: aglsl.Header;
+        public tokens: Token[];
+        public header: Header;
         constructor();
     }
 }
@@ -14889,13 +14888,13 @@ declare module aglsl {
         static maxtemp: number;
         static maxstreams: number;
         static maxtextures: number;
-        static defaultsampler: aglsl.Sampler;
+        static defaultsampler: Sampler;
         constructor();
     }
 }
 declare module aglsl {
     class Mapping {
-        static agal2glsllut: aglsl.OpLUT[];
+        static agal2glsllut: OpLUT[];
     }
 }
 declare module aglsl.assembler {
@@ -14961,18 +14960,18 @@ declare module aglsl.assembler {
 declare module aglsl.assembler {
     class AGALMiniAssembler {
         public r: Object;
-        public cur: assembler.Part;
+        public cur: Part;
         constructor();
         public assemble(source: string, ext_part?: any, ext_version?: any): Object;
         private processLine(line, linenr);
-        public emitHeader(pr: assembler.Part): void;
-        public emitOpcode(pr: assembler.Part, opcode: any): void;
-        public emitZeroDword(pr: assembler.Part): void;
+        public emitHeader(pr: Part): void;
+        public emitOpcode(pr: Part, opcode: any): void;
+        public emitZeroDword(pr: Part): void;
         public emitZeroQword(pr: any): void;
         public emitDest(pr: any, token: any, opdest: any): boolean;
         public stringToMask(s: string): number;
         public stringToSwizzle(s: any): number;
-        public emitSampler(pr: assembler.Part, token: any, opsrc: any, opts: any): boolean;
+        public emitSampler(pr: Part, token: any, opsrc: any, opts: any): boolean;
         public emitSource(pr: any, token: any, opsrc: any): boolean;
         public addHeader(partname: any, version: any): void;
     }
@@ -14980,14 +14979,14 @@ declare module aglsl.assembler {
 declare module aglsl {
     class AGALTokenizer {
         constructor();
-        public decribeAGALByteArray(bytes: away.utils.ByteArray): aglsl.Description;
+        public decribeAGALByteArray(bytes: away.utils.ByteArray): Description;
         public readReg(s: any, mh: any, desc: any, bytes: any): void;
     }
 }
 declare module aglsl {
     class AGLSLParser {
-        public parse(desc: aglsl.Description): string;
-        public regtostring(regtype: number, regnum: number, desc: aglsl.Description, tag: any): string;
+        public parse(desc: Description): string;
+        public regtostring(regtype: number, regnum: number, desc: Description, tag: any): string;
         public sourcetostring(s: any, subline: any, dwm: any, isscalar: any, desc: any, tag: any): string;
     }
 }
@@ -14998,7 +14997,7 @@ declare module aglsl {
     }
 }
 declare module away {
-    class AwayJS extends away.events.EventDispatcher {
+    class AwayJS extends events.EventDispatcher {
         constructor();
     }
 }

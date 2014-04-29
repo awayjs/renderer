@@ -13,7 +13,7 @@ var away;
                 _super.call(this, message);
             }
             return AnimationSetError;
-        })(away.errors.Error);
+        })(errors.Error);
         errors.AnimationSetError = AnimationSetError;
     })(away.errors || (away.errors = {}));
     var errors = away.errors;
@@ -109,7 +109,7 @@ var away;
 
             AnimationStateEvent.TRANSITION_COMPLETE = "transitionComplete";
             return AnimationStateEvent;
-        })(away.events.Event);
+        })(events.Event);
         events.AnimationStateEvent = AnimationStateEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
@@ -155,7 +155,7 @@ var away;
 
             AnimatorEvent.CYCLE_COMPLETE = "cycle_complete";
             return AnimatorEvent;
-        })(away.events.Event);
+        })(events.Event);
         events.AnimatorEvent = AnimatorEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
@@ -196,7 +196,7 @@ var away;
                 _super.apply(this, arguments);
             }
             return ParticleGeometry;
-        })(away.base.Geometry);
+        })(base.Geometry);
         base.ParticleGeometry = ParticleGeometry;
     })(away.base || (away.base = {}));
     var base = away.base;
@@ -207,7 +207,7 @@ var away;
     /**
     * @module away.pool
     */
-    (function (pool) {
+    (function (_pool) {
         var SubGeometryEvent = away.events.SubGeometryEvent;
 
         /**
@@ -524,7 +524,7 @@ var away;
             };
             return RenderableBase;
         })();
-        pool.RenderableBase = RenderableBase;
+        _pool.RenderableBase = RenderableBase;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -534,7 +534,7 @@ var away;
     /**
     * @module away.pool
     */
-    (function (pool) {
+    (function (_pool) {
         /**
         * @class away.pool.RenderableListItem
         */
@@ -587,8 +587,8 @@ var away;
 
             BillboardRenderable.id = "billboard";
             return BillboardRenderable;
-        })(away.pool.RenderableBase);
-        pool.BillboardRenderable = BillboardRenderable;
+        })(_pool.RenderableBase);
+        _pool.BillboardRenderable = BillboardRenderable;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -598,9 +598,8 @@ var away;
     /**
     * @module away.pool
     */
-    (function (pool) {
+    (function (_pool) {
         var LineSubGeometry = away.base.LineSubGeometry;
-        var SubGeometryEvent = away.events.SubGeometryEvent;
 
         /**
         * @class away.pool.LineSubMeshRenderable
@@ -658,8 +657,8 @@ var away;
             };
             LineSubMeshRenderable.id = "linesubmesh";
             return LineSubMeshRenderable;
-        })(away.pool.RenderableBase);
-        pool.LineSubMeshRenderable = LineSubMeshRenderable;
+        })(_pool.RenderableBase);
+        _pool.LineSubMeshRenderable = LineSubMeshRenderable;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -669,9 +668,8 @@ var away;
     /**
     * @module away.pool
     */
-    (function (pool) {
+    (function (_pool) {
         var TriangleSubGeometry = away.base.TriangleSubGeometry;
-        var TriangleSubMesh = away.base.TriangleSubMesh;
 
         /**
         * @class away.pool.TriangleSubMeshRenderable
@@ -760,8 +758,8 @@ var away;
             };
             TriangleSubMeshRenderable.id = "trianglesubmesh";
             return TriangleSubMeshRenderable;
-        })(away.pool.RenderableBase);
-        pool.TriangleSubMeshRenderable = TriangleSubMeshRenderable;
+        })(_pool.RenderableBase);
+        _pool.TriangleSubMeshRenderable = TriangleSubMeshRenderable;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -771,7 +769,7 @@ var away;
     /**
     * @module away.pool
     */
-    (function (pool) {
+    (function (_pool) {
         var TriangleSubGeometry = away.base.TriangleSubGeometry;
 
         /**
@@ -815,8 +813,8 @@ var away;
             };
             SkyboxRenderable.id = "skybox";
             return SkyboxRenderable;
-        })(away.pool.RenderableBase);
-        pool.SkyboxRenderable = SkyboxRenderable;
+        })(_pool.RenderableBase);
+        _pool.SkyboxRenderable = SkyboxRenderable;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -944,7 +942,7 @@ var away;
                     this._lightProbes.length = this._numLightProbes = 0;
             };
             return EntityCollector;
-        })(away.traverse.CollectorBase);
+        })(traverse.CollectorBase);
         traverse.EntityCollector = EntityCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
@@ -979,7 +977,7 @@ var away;
                 return _super.prototype.enterNode.call(this, node);
             };
             return ShadowCasterCollector;
-        })(away.traverse.CollectorBase);
+        })(traverse.CollectorBase);
         traverse.ShadowCasterCollector = ShadowCasterCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
@@ -1021,7 +1019,7 @@ var away;
                 return false;
             };
             return DirectionalLightNode;
-        })(away.partition.EntityNode);
+        })(partition.EntityNode);
         partition.DirectionalLightNode = DirectionalLightNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -1063,7 +1061,7 @@ var away;
                 return false;
             };
             return LightProbeNode;
-        })(away.partition.EntityNode);
+        })(partition.EntityNode);
         partition.LightProbeNode = LightProbeNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -1105,7 +1103,7 @@ var away;
                 return false;
             };
             return PointLightNode;
-        })(away.partition.EntityNode);
+        })(partition.EntityNode);
         partition.PointLightNode = PointLightNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -1373,7 +1371,7 @@ var away;
                 return false;
             };
             return JSPickingCollider;
-        })(away.pick.PickingColliderBase);
+        })(pick.PickingColliderBase);
         pick.JSPickingCollider = JSPickingCollider;
     })(away.pick || (away.pick = {}));
     var pick = away.pick;
@@ -2714,7 +2712,7 @@ var away;
                 }
             };
             return DepthRenderer;
-        })(away.render.RendererBase);
+        })(render.RendererBase);
         render.DepthRenderer = DepthRenderer;
     })(away.render || (away.render = {}));
     var render = away.render;
@@ -2746,8 +2744,8 @@ var away;
                 _super.call(this);
                 this._skyboxProjection = new away.geom.Matrix3D();
 
-                this._pDepthRenderer = new away.render.DepthRenderer();
-                this._pDistanceRenderer = new away.render.DepthRenderer(false, true);
+                this._pDepthRenderer = new render.DepthRenderer();
+                this._pDistanceRenderer = new render.DepthRenderer(false, true);
 
                 if (this._pStageGL == null)
                     this.stageGL = away.managers.StageGLManager.getInstance().getFreeStageGL(this._forceSoftware, this._profile);
@@ -2815,7 +2813,7 @@ var away;
                         this._pFilter3DRenderer.dispose();
                         this._pFilter3DRenderer = null;
                     } else if (!this._pFilter3DRenderer && value) {
-                        this._pFilter3DRenderer = new away.render.Filter3DRenderer(this._pStageGL);
+                        this._pFilter3DRenderer = new render.Filter3DRenderer(this._pStageGL);
                         this._pFilter3DRenderer.filters = value;
                     }
 
@@ -3137,7 +3135,7 @@ var away;
             DefaultRenderer.SCREEN_PASSES = 2;
             DefaultRenderer.ALL_PASSES = 3;
             return DefaultRenderer;
-        })(away.render.RendererBase);
+        })(render.RendererBase);
         render.DefaultRenderer = DefaultRenderer;
     })(away.render || (away.render = {}));
     var render = away.render;
@@ -3384,14 +3382,14 @@ var away;
                 if (!DefaultMaterialManager._defaultTexture)
                     DefaultMaterialManager.createDefaultTexture();
 
-                DefaultMaterialManager._defaultTextureMaterial = new away.materials.TextureMaterial(DefaultMaterialManager._defaultTexture);
+                DefaultMaterialManager._defaultTextureMaterial = new materials.TextureMaterial(DefaultMaterialManager._defaultTexture);
                 DefaultMaterialManager._defaultTextureMaterial.mipmap = false;
                 DefaultMaterialManager._defaultTextureMaterial.smooth = false;
                 DefaultMaterialManager._defaultTextureMaterial.name = "defaultTextureMaterial";
             };
 
             DefaultMaterialManager.createDefaultSegmentMaterial = function () {
-                DefaultMaterialManager._defaultSegmentMaterial = new away.materials.SegmentMaterial();
+                DefaultMaterialManager._defaultSegmentMaterial = new materials.SegmentMaterial();
                 DefaultMaterialManager._defaultSegmentMaterial.name = "defaultSegmentMaterial";
             };
             return DefaultMaterialManager;
@@ -4609,16 +4607,11 @@ var away;
         var Camera = away.entities.Camera;
         var FreeMatrixProjection = away.projections.FreeMatrixProjection;
 
-        var Scene = away.containers.Scene;
         var Matrix3DUtils = away.geom.Matrix3DUtils;
-        var DepthRenderer = away.render.DepthRenderer;
-
-        var TextureBase = away.gl.TextureBase;
 
         //	import Event					= away.events.Event;
         var EventDispatcher = away.events.EventDispatcher;
 
-        var Matrix3D = away.geom.Matrix3D;
         var Rectangle = away.geom.Rectangle;
 
         var CascadeShadowMapper = (function (_super) {
@@ -4852,7 +4845,7 @@ var away;
                 configurable: true
             });
             return CascadeShadowMapper;
-        })(away.lights.DirectionalShadowMapper);
+        })(lights.DirectionalShadowMapper);
         lights.CascadeShadowMapper = CascadeShadowMapper;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
@@ -4861,8 +4854,6 @@ var away;
 var away;
 (function (away) {
     (function (lights) {
-        var Camera = away.entities.Camera;
-
         var NearDirectionalShadowMapper = (function (_super) {
             __extends(NearDirectionalShadowMapper, _super);
             function NearDirectionalShadowMapper(coverageRatio) {
@@ -4903,7 +4894,7 @@ var away;
                 this._pOverallDepthProjection.matrix = this._pMatrix;
             };
             return NearDirectionalShadowMapper;
-        })(away.lights.DirectionalShadowMapper);
+        })(lights.DirectionalShadowMapper);
         lights.NearDirectionalShadowMapper = NearDirectionalShadowMapper;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
@@ -4913,9 +4904,6 @@ var away;
 (function (away) {
     (function (managers) {
         var StageGLEvent = away.events.StageGLEvent;
-
-        var AGALProgramCache = away.managers.AGALProgramCache;
-        var StageGL = away.base.StageGL;
 
         var AGALProgramCache = (function () {
             function AGALProgramCache(stageGL, agalProgramCacheSingletonEnforcer) {
@@ -5084,15 +5072,12 @@ var AGALProgramCacheSingletonEnforcer = (function () {
 var away;
 (function (away) {
     (function (materials) {
-        var ContextGL = away.gl.ContextGL;
         var ContextGLBlendFactor = away.gl.ContextGLBlendFactor;
         var ContextGLCompareMode = away.gl.ContextGLCompareMode;
         var ContextGLTriangleFace = away.gl.ContextGLTriangleFace;
-        var Program = away.gl.Program;
-        var TextureBase = away.gl.TextureBase;
+
         var Event = away.events.Event;
-        var Rectangle = away.geom.Rectangle;
-        var StageGL = away.base.StageGL;
+
         var Delegate = away.utils.Delegate;
 
         /**
@@ -5666,16 +5651,12 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        var StageGL = away.base.StageGL;
         var SubGeometry = away.base.TriangleSubGeometry;
-        var Matrix = away.geom.Matrix;
-        var Matrix3D = away.geom.Matrix3D;
+
         var Matrix3DUtils = away.geom.Matrix3DUtils;
-        var Texture2DBase = away.textures.Texture2DBase;
+
         var Delegate = away.utils.Delegate;
 
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ShadingMethodEvent = away.events.ShadingMethodEvent;
 
         /**
@@ -6044,7 +6025,7 @@ var away;
             * Initializes the pass.
             */
             CompiledPass.prototype.init = function () {
-                this._pMethodSetup = new away.materials.ShaderMethodSetup();
+                this._pMethodSetup = new materials.ShaderMethodSetup();
 
                 this._pMethodSetup.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
             };
@@ -6338,14 +6319,14 @@ var away;
             * Indicates whether the shader uses any light probes.
             */
             CompiledPass.prototype.pUsesProbes = function () {
-                return this._pNumLightProbes > 0 && ((this._pDiffuseLightSources | this._pSpecularLightSources) & away.materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && ((this._pDiffuseLightSources | this._pSpecularLightSources) & materials.LightSources.PROBES) != 0;
             };
 
             /**
             * Indicates whether the shader uses any lights.
             */
             CompiledPass.prototype.pUsesLights = function () {
-                return (this._pNumPointLights > 0 || this._pNumDirectionalLights > 0) && ((this._pDiffuseLightSources | this._pSpecularLightSources) & away.materials.LightSources.LIGHTS) != 0;
+                return (this._pNumPointLights > 0 || this._pNumDirectionalLights > 0) && ((this._pDiffuseLightSources | this._pSpecularLightSources) & materials.LightSources.LIGHTS) != 0;
             };
 
             /**
@@ -6404,7 +6385,7 @@ var away;
             });
 
             return CompiledPass;
-        })(away.materials.MaterialPassBase);
+        })(materials.MaterialPassBase);
         materials.CompiledPass = CompiledPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -6435,7 +6416,7 @@ var away;
             * @inheritDoc
             */
             SuperShaderPass.prototype.pCreateCompiler = function (profile) {
-                return new away.materials.SuperShaderCompiler(profile);
+                return new materials.SuperShaderCompiler(profile);
             };
 
             Object.defineProperty(SuperShaderPass.prototype, "includeCasters", {
@@ -6467,7 +6448,7 @@ var away;
                     if (value) {
                         //colorTransformMethod ||= new away.geom.ColorTransform();
                         if (this.colorTransformMethod == null) {
-                            this.colorTransformMethod = new away.materials.EffectColorTransformMethod();
+                            this.colorTransformMethod = new materials.EffectColorTransformMethod();
                         }
 
                         this._pMethodSetup._iColorTransformMethod.colorTransform = value;
@@ -6643,14 +6624,14 @@ var away;
             * Indicates whether any light probes are used to contribute to the specular shading.
             */
             SuperShaderPass.prototype.usesProbesForSpecular = function () {
-                return this._pNumLightProbes > 0 && (this._pSpecularLightSources & away.materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && (this._pSpecularLightSources & materials.LightSources.PROBES) != 0;
             };
 
             /**
             * Indicates whether any light probes are used to contribute to the diffuse shading.
             */
             SuperShaderPass.prototype.usesProbesForDiffuse = function () {
-                return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & away.materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & materials.LightSources.PROBES) != 0;
             };
 
             /**
@@ -6823,7 +6804,7 @@ var away;
                 configurable: true
             });
             return SuperShaderPass;
-        })(away.materials.CompiledPass);
+        })(materials.CompiledPass);
         materials.SuperShaderPass = SuperShaderPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -6992,7 +6973,7 @@ var away;
                 }
             };
             return DepthMapPass;
-        })(away.materials.MaterialPassBase);
+        })(materials.MaterialPassBase);
         materials.DepthMapPass = DepthMapPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -7184,7 +7165,7 @@ var away;
                 }
             };
             return DistanceMapPass;
-        })(away.materials.MaterialPassBase);
+        })(materials.MaterialPassBase);
         materials.DistanceMapPass = DistanceMapPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -7280,7 +7261,7 @@ var away;
             */
             LightingPass.prototype.pCreateCompiler = function (profile) {
                 this._maxLights = profile == "baselineConstrained" ? 1 : 3;
-                return new away.materials.LightingShaderCompiler(profile);
+                return new materials.LightingShaderCompiler(profile);
             };
 
             Object.defineProperty(LightingPass.prototype, "includeCasters", {
@@ -7355,10 +7336,10 @@ var away;
             */
             LightingPass.prototype.calculateNumProbes = function (numLightProbes) {
                 var numChannels = 0;
-                if ((this._pSpecularLightSources & away.materials.LightSources.PROBES) != 0) {
+                if ((this._pSpecularLightSources & materials.LightSources.PROBES) != 0) {
                     ++numChannels;
                 }
-                if ((this._pDiffuseLightSources & away.materials.LightSources.PROBES) != 0)
+                if ((this._pDiffuseLightSources & materials.LightSources.PROBES) != 0)
                     ++numChannels;
 
                 // 4 channels available
@@ -7424,14 +7405,14 @@ var away;
             * Indicates whether any light probes are used to contribute to the specular shading.
             */
             LightingPass.prototype.usesProbesForSpecular = function () {
-                return this._pNumLightProbes > 0 && (this._pSpecularLightSources & away.materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && (this._pSpecularLightSources & materials.LightSources.PROBES) != 0;
             };
 
             /**
             * Indicates whether any light probes are used to contribute to the diffuse shading.
             */
             LightingPass.prototype.usesProbesForDiffuse = function () {
-                return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & away.materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & materials.LightSources.PROBES) != 0;
             };
 
             /**
@@ -7626,7 +7607,7 @@ var away;
                     this._pFragmentConstantData[this._pProbeWeightsIndex + i] = weights[this._lightProbesOffset + i];
             };
             return LightingPass;
-        })(away.materials.CompiledPass);
+        })(materials.CompiledPass);
         materials.LightingPass = LightingPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -7656,7 +7637,7 @@ var away;
             * @inheritDoc
             */
             ShadowCasterPass.prototype.pCreateCompiler = function (profile) {
-                return new away.materials.LightingShaderCompiler(profile);
+                return new materials.LightingShaderCompiler(profile);
             };
 
             /**
@@ -7849,7 +7830,7 @@ var away;
             ShadowCasterPass.prototype.pUpdateProbes = function (stageGL) {
             };
             return ShadowCasterPass;
-        })(away.materials.CompiledPass);
+        })(materials.CompiledPass);
         materials.ShadowCasterPass = ShadowCasterPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -8026,7 +8007,7 @@ var away;
                 stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
             };
             return SingleObjectDepthPass;
-        })(away.materials.MaterialPassBase);
+        })(materials.MaterialPassBase);
         materials.SingleObjectDepthPass = SingleObjectDepthPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -8122,7 +8103,7 @@ var away;
             SegmentPass.pONE_VECTOR = Array(1, 1, 1, 1);
             SegmentPass.pFRONT_VECTOR = Array(0, 0, -1, 0);
             return SegmentPass;
-        })(away.materials.MaterialPassBase);
+        })(materials.MaterialPassBase);
         materials.SegmentPass = SegmentPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -8221,7 +8202,7 @@ var away;
                 context.setTextureAt(0, this._cubeTexture.getTextureForStageGL(stageGL));
             };
             return SkyboxPass;
-        })(away.materials.MaterialPassBase);
+        })(materials.MaterialPassBase);
         materials.SkyboxPass = SkyboxPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -8378,7 +8359,7 @@ var away;
             * @internal
             */
             ShadingMethodBase.prototype.iCreateMethodVO = function () {
-                return new away.materials.MethodVO();
+                return new materials.MethodVO();
             };
 
             /**
@@ -8604,7 +8585,7 @@ var away;
                 return "";
             };
             return LightingMethodBase;
-        })(away.materials.ShadingMethodBase);
+        })(materials.ShadingMethodBase);
         materials.LightingMethodBase = LightingMethodBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -8698,7 +8679,7 @@ var away;
                 return null;
             };
             return ShadowMapMethodBase;
-        })(away.materials.ShadingMethodBase);
+        })(materials.ShadingMethodBase);
         materials.ShadowMapMethodBase = ShadowMapMethodBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -8725,10 +8706,10 @@ var away;
                 this._onShaderInvalidatedDelegate = Delegate.create(this, this.onShaderInvalidated);
 
                 this._iMethods = new Array();
-                this._iNormalMethod = new away.materials.NormalBasicMethod();
-                this._iAmbientMethod = new away.materials.AmbientBasicMethod();
-                this._iDiffuseMethod = new away.materials.DiffuseBasicMethod();
-                this._iSpecularMethod = new away.materials.SpecularBasicMethod();
+                this._iNormalMethod = new materials.NormalBasicMethod();
+                this._iAmbientMethod = new materials.AmbientBasicMethod();
+                this._iDiffuseMethod = new materials.DiffuseBasicMethod();
+                this._iSpecularMethod = new materials.SpecularBasicMethod();
 
                 this._iNormalMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
                 this._iDiffuseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
@@ -8962,7 +8943,7 @@ var away;
             * @param method The method to be added.
             */
             ShaderMethodSetup.prototype.addMethod = function (method) {
-                this._iMethods.push(new away.materials.MethodVOSet(method));
+                this._iMethods.push(new materials.MethodVOSet(method));
 
                 method.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 
@@ -8985,7 +8966,7 @@ var away;
             * @param index The index of the method's occurrence
             */
             ShaderMethodSetup.prototype.addMethodAt = function (method, index) {
-                this._iMethods.splice(index, 0, new away.materials.MethodVOSet(method));
+                this._iMethods.splice(index, 0, new materials.MethodVOSet(method));
 
                 method.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 
@@ -9222,7 +9203,7 @@ var away;
                 }
             };
             return AmbientBasicMethod;
-        })(away.materials.ShadingMethodBase);
+        })(materials.ShadingMethodBase);
         materials.AmbientBasicMethod = AmbientBasicMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -9296,7 +9277,7 @@ var away;
                 return code;
             };
             return AmbientEnvMapMethod;
-        })(away.materials.AmbientBasicMethod);
+        })(materials.AmbientBasicMethod);
         materials.AmbientEnvMapMethod = AmbientEnvMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -9684,7 +9665,7 @@ var away;
                 this._pShadowRegister = value;
             };
             return DiffuseBasicMethod;
-        })(away.materials.LightingMethodBase);
+        })(materials.LightingMethodBase);
         materials.DiffuseBasicMethod = DiffuseBasicMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -9693,8 +9674,6 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
-        var StageGL = away.base.StageGL;
-        var Texture2DBase = away.textures.Texture2DBase;
         var Delegate = away.utils.Delegate;
 
         var ShadingMethodEvent = away.events.ShadingMethodEvent;
@@ -9717,7 +9696,7 @@ var away;
 
                 this._onShaderInvalidatedDelegate = Delegate.create(this, this.onShaderInvalidated);
 
-                this.pBaseMethod = baseMethod || new away.materials.DiffuseBasicMethod();
+                this.pBaseMethod = baseMethod || new materials.DiffuseBasicMethod();
                 this.pBaseMethod._iModulateMethod = modulateMethod;
                 this.pBaseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
             }
@@ -9937,7 +9916,7 @@ var away;
                 this.iInvalidateShaderProgram();
             };
             return DiffuseCompositeMethod;
-        })(away.materials.DiffuseBasicMethod);
+        })(materials.DiffuseBasicMethod);
         materials.DiffuseCompositeMethod = DiffuseCompositeMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -10050,7 +10029,7 @@ var away;
                 return "mul " + t + ".w, " + t + ".w, " + this._dataReg + ".x\n" + "frc " + t + ".z, " + t + ".w\n" + "sub " + t + ".y, " + t + ".w, " + t + ".z\n" + "mov " + t + ".x, " + this._dataReg + ".x\n" + "sub " + t + ".x, " + t + ".x, " + this._dataReg + ".y\n" + "rcp " + t + ".x," + t + ".x\n" + "mul " + t + ".w, " + t + ".y, " + t + ".x\n" + "sub " + t + ".y, " + t + ".w, " + t + ".x\n" + "div " + t + ".z, " + t + ".z, " + this._dataReg + ".w\n" + "sat " + t + ".z, " + t + ".z\n" + "mul " + t + ".w, " + t + ".w, " + t + ".z\n" + "sub " + t + ".z, " + this._dataReg + ".y, " + t + ".z\n" + "mul " + t + ".y, " + t + ".y, " + t + ".z\n" + "add " + t + ".w, " + t + ".w, " + t + ".y\n" + "sat " + t + ".w, " + t + ".w\n";
             };
             return DiffuseCelMethod;
-        })(away.materials.DiffuseCompositeMethod);
+        })(materials.DiffuseCompositeMethod);
         materials.DiffuseCelMethod = DiffuseCelMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -10117,7 +10096,7 @@ var away;
                 return code;
             };
             return DiffuseDepthMethod;
-        })(away.materials.DiffuseBasicMethod);
+        })(materials.DiffuseBasicMethod);
         materials.DiffuseDepthMethod = DiffuseDepthMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -10233,7 +10212,7 @@ var away;
                 stageGL.contextGL.setTextureAt(vo.secondaryTexturesIndex, this._gradient.getTextureForStageGL(stageGL));
             };
             return DiffuseGradientMethod;
-        })(away.materials.DiffuseBasicMethod);
+        })(materials.DiffuseBasicMethod);
         materials.DiffuseGradientMethod = DiffuseGradientMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -10349,7 +10328,7 @@ var away;
 
             DiffuseLightMapMethod.ADD = "add";
             return DiffuseLightMapMethod;
-        })(away.materials.DiffuseCompositeMethod);
+        })(materials.DiffuseCompositeMethod);
         materials.DiffuseLightMapMethod = DiffuseLightMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -10389,7 +10368,7 @@ var away;
                 };
 
                 this._passes = new Array();
-                this._depthPass = new away.materials.SingleObjectDepthPass(depthMapSize, depthMapOffset);
+                this._depthPass = new materials.SingleObjectDepthPass(depthMapSize, depthMapOffset);
                 this._passes.push(this._depthPass);
                 this._scattering = 0.2;
                 this._translucency = 1;
@@ -10593,7 +10572,7 @@ var away;
                 return code;
             };
             return DiffuseSubSurfaceMethod;
-        })(away.materials.DiffuseCompositeMethod);
+        })(materials.DiffuseCompositeMethod);
         materials.DiffuseSubSurfaceMethod = DiffuseSubSurfaceMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -10698,7 +10677,7 @@ var away;
                 data[index + 1] = 1 / (this._wrapFactor + 1);
             };
             return DiffuseWrapMethod;
-        })(away.materials.DiffuseBasicMethod);
+        })(materials.DiffuseBasicMethod);
         materials.DiffuseWrapMethod = DiffuseWrapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -10739,7 +10718,7 @@ var away;
                 return "";
             };
             return EffectMethodBase;
-        })(away.materials.ShadingMethodBase);
+        })(materials.ShadingMethodBase);
         materials.EffectMethodBase = EffectMethodBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -10830,7 +10809,7 @@ var away;
                 return this.pGetTex2DSampleCode(vo, temp, textureReg, this._texture, uvReg) + "mul " + targetReg + ", " + targetReg + ", " + temp + ".x\n";
             };
             return EffectAlphaMaskMethod;
-        })(away.materials.EffectMethodBase);
+        })(materials.EffectMethodBase);
         materials.EffectAlphaMaskMethod = EffectAlphaMaskMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -10932,7 +10911,7 @@ var away;
                 data[index + 19] = matrix[19];
             };
             return EffectColorMatrixMethod;
-        })(away.materials.EffectMethodBase);
+        })(materials.EffectMethodBase);
         materials.EffectColorMatrixMethod = EffectColorMatrixMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -11008,7 +10987,7 @@ var away;
                 data[index + 7] = this._colorTransform.alphaOffset * inv;
             };
             return EffectColorTransformMethod;
-        })(away.materials.EffectMethodBase);
+        })(materials.EffectMethodBase);
         materials.EffectColorTransformMethod = EffectColorTransformMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -11144,7 +11123,7 @@ var away;
                 return code;
             };
             return EffectEnvMapMethod;
-        })(away.materials.EffectMethodBase);
+        })(materials.EffectMethodBase);
         materials.EffectEnvMapMethod = EffectEnvMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -11153,8 +11132,6 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        var StageGL = away.base.StageGL;
-
         /**
         * EffectFogMethod provides a method to add distance-based fog to a material.
         */
@@ -11273,7 +11250,7 @@ var away;
                 return code;
             };
             return EffectFogMethod;
-        })(away.materials.EffectMethodBase);
+        })(materials.EffectMethodBase);
         materials.EffectFogMethod = EffectFogMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -11447,7 +11424,7 @@ var away;
                 return code;
             };
             return EffectFresnelEnvMapMethod;
-        })(away.materials.EffectMethodBase);
+        })(materials.EffectMethodBase);
         materials.EffectFresnelEnvMapMethod = EffectFresnelEnvMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -11560,7 +11537,7 @@ var away;
 
             EffectLightMapMethod.ADD = "add";
             return EffectLightMapMethod;
-        })(away.materials.EffectMethodBase);
+        })(materials.EffectMethodBase);
         materials.EffectLightMapMethod = EffectLightMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -11802,7 +11779,7 @@ var away;
                 return code;
             };
             return EffectRefractionEnvMapMethod;
-        })(away.materials.EffectMethodBase);
+        })(materials.EffectMethodBase);
         materials.EffectRefractionEnvMapMethod = EffectRefractionEnvMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -11962,7 +11939,7 @@ var away;
             EffectRimLightMethod.MULTIPLY = "multiply";
             EffectRimLightMethod.MIX = "mix";
             return EffectRimLightMethod;
-        })(away.materials.EffectMethodBase);
+        })(materials.EffectMethodBase);
         materials.EffectRimLightMethod = EffectRimLightMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -12086,7 +12063,7 @@ var away;
                 return this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this._texture) + "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx\n" + "nrm " + targetReg + ".xyz, " + targetReg + "\n";
             };
             return NormalBasicMethod;
-        })(away.materials.ShadingMethodBase);
+        })(materials.ShadingMethodBase);
         materials.NormalBasicMethod = NormalBasicMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -12164,7 +12141,7 @@ var away;
                 return this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this.normalMap, this._sharedRegisters.uvVarying, "clamp") + "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg + ".xzzz\n" + this.pGetTex2DSampleCode(vo, temp, this._pNormalTextureRegister, this.normalMap, temp, "clamp") + "sub " + targetReg + ".x, " + targetReg + ".x, " + temp + ".x\n" + "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg + ".zyzz\n" + this.pGetTex2DSampleCode(vo, temp, this._pNormalTextureRegister, this.normalMap, temp, "clamp") + "sub " + targetReg + ".z, " + targetReg + ".z, " + temp + ".x\n" + "mov " + targetReg + ".y, " + dataReg + ".w\n" + "mul " + targetReg + ".xz, " + targetReg + ".xz, " + dataReg2 + ".xy\n" + "nrm " + targetReg + ".xyz, " + targetReg + ".xyz\n";
             };
             return NormalHeightMapMethod;
-        })(away.materials.NormalBasicMethod);
+        })(materials.NormalBasicMethod);
         materials.NormalHeightMapMethod = NormalHeightMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -12339,7 +12316,7 @@ var away;
                 return "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".xyxy\n" + this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this.normalMap, temp) + "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".zwzw\n" + this.pGetTex2DSampleCode(vo, temp, this._normalTextureRegister2, this._texture2, temp) + "add " + targetReg + ", " + targetReg + ", " + temp + "		\n" + "mul " + targetReg + ", " + targetReg + ", " + dataReg + ".x	\n" + "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx	\n" + "nrm " + targetReg + ".xyz, " + targetReg + ".xyz							\n";
             };
             return NormalSimpleWaterMethod;
-        })(away.materials.NormalBasicMethod);
+        })(materials.NormalBasicMethod);
         materials.NormalSimpleWaterMethod = NormalSimpleWaterMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -12556,7 +12533,7 @@ var away;
                 throw new Error("This shadow method is incompatible with cascade shadows");
             };
             return ShadowMethodBase;
-        })(away.materials.ShadowMapMethodBase);
+        })(materials.ShadowMapMethodBase);
         materials.ShadowMethodBase = ShadowMethodBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -12565,12 +12542,8 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        var Camera = away.entities.Camera;
-        var StageGL = away.base.StageGL;
         var ShadingMethodEvent = away.events.ShadingMethodEvent;
         var DirectionalLight = away.lights.DirectionalLight;
-        var CascadeShadowMapper = away.lights.CascadeShadowMapper;
-        var RenderableBase = away.pool.RenderableBase;
 
         var Event = away.events.Event;
 
@@ -12641,7 +12614,7 @@ var away;
             * @inheritDoc
             */
             ShadowCascadeMethod.prototype.iInitVO = function (vo) {
-                var tempVO = new away.materials.MethodVO();
+                var tempVO = new materials.MethodVO();
                 this._baseMethod.iInitVO(tempVO);
                 vo.needsGlobalVertexPos = true;
                 vo.needsProjection = true;
@@ -12821,7 +12794,7 @@ var away;
                 this.iInvalidateShaderProgram();
             };
             return ShadowCascadeMethod;
-        })(away.materials.ShadowMapMethodBase);
+        })(materials.ShadowMapMethodBase);
         materials.ShadowCascadeMethod = ShadowCascadeMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -13098,7 +13071,7 @@ var away;
                 return this.getSampleCode(regCache, dataReg, depthTexture, decodeRegister, targetRegister);
             };
             return ShadowDitheredMethod;
-        })(away.materials.ShadowMethodBase);
+        })(materials.ShadowMethodBase);
         materials.ShadowDitheredMethod = ShadowDitheredMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -13196,7 +13169,7 @@ var away;
                 return code;
             };
             return ShadowFilteredMethod;
-        })(away.materials.ShadowMethodBase);
+        })(materials.ShadowMethodBase);
         materials.ShadowFilteredMethod = ShadowFilteredMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -13276,7 +13249,7 @@ var away;
             ShadowHardMethod.prototype.iActivateForCascade = function (vo, stageGL) {
             };
             return ShadowHardMethod;
-        })(away.materials.ShadowMethodBase);
+        })(materials.ShadowMethodBase);
         materials.ShadowHardMethod = ShadowHardMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -13285,13 +13258,9 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        var StageGL = away.base.StageGL;
         var Delegate = away.utils.Delegate;
 
-        var Camera = away.entities.Camera;
-        var IRenderable = away.pool.RenderableBase;
         var ShadingMethodEvent = away.events.ShadingMethodEvent;
-        var NearDirectionalShadowMapper = away.lights.NearDirectionalShadowMapper;
 
         // TODO: shadow mappers references in materials should be an interface so that this class should NOT extend ShadowMapMethodBase just for some delegation work
         /**
@@ -13501,7 +13470,7 @@ var away;
                 this.iInvalidateShaderProgram();
             };
             return ShadowNearMethod;
-        })(away.materials.ShadowMethodBase);
+        })(materials.ShadowMethodBase);
         materials.ShadowNearMethod = ShadowNearMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -13694,7 +13663,7 @@ var away;
                 return code;
             };
             return ShadowSoftMethod;
-        })(away.materials.ShadowMethodBase);
+        })(materials.ShadowMethodBase);
         materials.ShadowSoftMethod = ShadowSoftMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -14045,7 +14014,7 @@ var away;
                 this._shadowRegister = shadowReg;
             };
             return SpecularBasicMethod;
-        })(away.materials.LightingMethodBase);
+        })(materials.LightingMethodBase);
         materials.SpecularBasicMethod = SpecularBasicMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -14054,8 +14023,6 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        var StageGL = away.base.StageGL;
-        var Texture2DBase = away.textures.Texture2DBase;
         var Delegate = away.utils.Delegate;
 
         var ShadingMethodEvent = away.events.ShadingMethodEvent;
@@ -14078,7 +14045,7 @@ var away;
 
                 this._onShaderInvalidatedDelegate = Delegate.create(this, this.onShaderInvalidated);
 
-                this._baseMethod = baseMethod || new away.materials.SpecularBasicMethod();
+                this._baseMethod = baseMethod || new materials.SpecularBasicMethod();
                 this._baseMethod._iModulateMethod = modulateMethod;
                 this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
             }
@@ -14282,7 +14249,7 @@ var away;
                 this.iInvalidateShaderProgram();
             };
             return SpecularCompositeMethod;
-        })(away.materials.SpecularBasicMethod);
+        })(materials.SpecularBasicMethod);
         materials.SpecularCompositeMethod = SpecularCompositeMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -14359,7 +14326,7 @@ var away;
                 return code;
             };
             return SpecularAnisotropicMethod;
-        })(away.materials.SpecularBasicMethod);
+        })(materials.SpecularBasicMethod);
         materials.SpecularAnisotropicMethod = SpecularAnisotropicMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -14465,7 +14432,7 @@ var away;
                 return _super.prototype.iGetFragmentPreLightingCode.call(this, vo, regCache);
             };
             return SpecularCelMethod;
-        })(away.materials.SpecularCompositeMethod);
+        })(materials.SpecularCompositeMethod);
         materials.SpecularCelMethod = SpecularCelMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -14609,7 +14576,7 @@ var away;
                 return code;
             };
             return SpecularFresnelMethod;
-        })(away.materials.SpecularCompositeMethod);
+        })(materials.SpecularCompositeMethod);
         materials.SpecularFresnelMethod = SpecularFresnelMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -14674,7 +14641,7 @@ var away;
                 return code;
             };
             return SpecularPhongMethod;
-        })(away.materials.SpecularBasicMethod);
+        })(materials.SpecularBasicMethod);
         materials.SpecularPhongMethod = SpecularPhongMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -14909,7 +14876,7 @@ var away;
 
         var LightEvent = away.events.LightEvent;
         var DirectionalLight = away.lights.DirectionalLight;
-        var LightBase = away.lights.LightBase;
+
         var LightProbe = away.lights.LightProbe;
         var PointLight = away.lights.PointLight;
 
@@ -15068,7 +15035,7 @@ var away;
                 }
             };
             return StaticLightPicker;
-        })(away.materials.LightPickerBase);
+        })(materials.LightPickerBase);
         materials.StaticLightPicker = StaticLightPicker;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -15099,15 +15066,15 @@ var away;
             */
             ShaderRegisterCache.prototype.reset = function () {
                 //TODO: AGAL <> GLSL Conversion
-                this._fragmentTempCache = new away.materials.RegisterPool("ft", 8, false);
-                this._vertexTempCache = new away.materials.RegisterPool("vt", 8, false);
-                this._varyingCache = new away.materials.RegisterPool("v", 8);
-                this._textureCache = new away.materials.RegisterPool("fs", 8);
-                this._vertexAttributesCache = new away.materials.RegisterPool("va", 8);
-                this._fragmentConstantsCache = new away.materials.RegisterPool("fc", 28);
-                this._vertexConstantsCache = new away.materials.RegisterPool("vc", 128);
-                this._fragmentOutputRegister = new away.materials.ShaderRegisterElement("oc", -1);
-                this._vertexOutputRegister = new away.materials.ShaderRegisterElement("op", -1);
+                this._fragmentTempCache = new materials.RegisterPool("ft", 8, false);
+                this._vertexTempCache = new materials.RegisterPool("vt", 8, false);
+                this._varyingCache = new materials.RegisterPool("v", 8);
+                this._textureCache = new materials.RegisterPool("fs", 8);
+                this._vertexAttributesCache = new materials.RegisterPool("va", 8);
+                this._fragmentConstantsCache = new materials.RegisterPool("fc", 28);
+                this._vertexConstantsCache = new materials.RegisterPool("vc", 128);
+                this._fragmentOutputRegister = new materials.ShaderRegisterElement("oc", -1);
+                this._vertexOutputRegister = new materials.ShaderRegisterElement("op", -1);
                 this._numUsedVertexConstants = 0;
                 this._numUsedStreams = 0;
                 this._numUsedTextures = 0;
@@ -15648,7 +15615,7 @@ var away;
                     ++this._globalPosDependencies;
                 }
 
-                if (this._numPointLights > 0 && (this._lightSourceMask & away.materials.LightSources.LIGHTS)) {
+                if (this._numPointLights > 0 && (this._lightSourceMask & materials.LightSources.LIGHTS)) {
                     ++this._globalPosDependencies;
 
                     if (fragmentLights) {
@@ -15813,10 +15780,10 @@ var away;
                 RegisterPool._regCompsPool[hash] = registerComponents;
 
                 for (var i = 0; i < regCount; ++i) {
-                    vectorRegisters[i] = new away.materials.ShaderRegisterElement(regName, i);
+                    vectorRegisters[i] = new materials.ShaderRegisterElement(regName, i);
 
                     for (var j = 0; j < 4; ++j)
-                        registerComponents[j][i] = new away.materials.ShaderRegisterElement(regName, i, j);
+                        registerComponents[j][i] = new materials.ShaderRegisterElement(regName, i, j);
                 }
 
                 //console.log ( 'RegisterPool._regCompsPool[hash] : ' , RegisterPool._regCompsPool[hash]  );
@@ -15884,8 +15851,8 @@ var away;
                 this._pSceneNormalMatrixIndex = -1;
                 this._pCameraPositionIndex = -1;
                 this._pProbeWeightsIndex = -1;
-                this._pSharedRegisters = new away.materials.ShaderRegisterData();
-                this._pDependencyCounter = new away.materials.MethodDependencyCounter();
+                this._pSharedRegisters = new materials.ShaderRegisterData();
+                this._pDependencyCounter = new materials.MethodDependencyCounter();
                 this._pProfile = profile;
                 this.initRegisterCache(profile);
             }
@@ -15960,7 +15927,7 @@ var away;
             * @param profile The compatibility profile of the renderer.
             */
             ShaderCompiler.prototype.initRegisterCache = function (profile) {
-                this._pRegisterCache = new away.materials.ShaderRegisterCache(profile);
+                this._pRegisterCache = new materials.ShaderRegisterCache(profile);
                 this._pRegisterCache.vertexAttributesOffset = 1;
                 this._pRegisterCache.reset();
             };
@@ -16418,14 +16385,14 @@ var away;
             * Indicates whether lights are used for specular reflections.
             */
             ShaderCompiler.prototype.pUsesLightsForSpecular = function () {
-                return this._pNumLights > 0 && (this._specularLightSources & away.materials.LightSources.LIGHTS) != 0;
+                return this._pNumLights > 0 && (this._specularLightSources & materials.LightSources.LIGHTS) != 0;
             };
 
             /**
             * Indicates whether lights are used for diffuse reflections.
             */
             ShaderCompiler.prototype.pUsesLightsForDiffuse = function () {
-                return this._pNumLights > 0 && (this._diffuseLightSources & away.materials.LightSources.LIGHTS) != 0;
+                return this._pNumLights > 0 && (this._diffuseLightSources & materials.LightSources.LIGHTS) != 0;
             };
 
             /**
@@ -16509,21 +16476,21 @@ var away;
             * Indicates whether light probes are being used for specular reflections.
             */
             ShaderCompiler.prototype.pUsesProbesForSpecular = function () {
-                return this._pNumLightProbes > 0 && (this._specularLightSources & away.materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && (this._specularLightSources & materials.LightSources.PROBES) != 0;
             };
 
             /**
             * Indicates whether light probes are being used for diffuse reflections.
             */
             ShaderCompiler.prototype.pUsesProbesForDiffuse = function () {
-                return this._pNumLightProbes > 0 && (this._diffuseLightSources & away.materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && (this._diffuseLightSources & materials.LightSources.PROBES) != 0;
             };
 
             /**
             * Indicates whether any light probes are used.
             */
             ShaderCompiler.prototype.pUsesProbes = function () {
-                return this._pNumLightProbes > 0 && ((this._diffuseLightSources | this._specularLightSources) & away.materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && ((this._diffuseLightSources | this._specularLightSources) & materials.LightSources.PROBES) != 0;
             };
 
             Object.defineProperty(ShaderCompiler.prototype, "uvBufferIndex", {
@@ -16784,7 +16751,7 @@ var away;
             * Indicates whether the compiled shader uses lights.
             */
             ShaderCompiler.prototype.pUsesLights = function () {
-                return this._pNumLights > 0 && (this._combinedLightSources & away.materials.LightSources.LIGHTS) != 0;
+                return this._pNumLights > 0 && (this._combinedLightSources & materials.LightSources.LIGHTS) != 0;
             };
 
             /**
@@ -17277,7 +17244,7 @@ var away;
                 }
             };
             return SuperShaderCompiler;
-        })(away.materials.ShaderCompiler);
+        })(materials.ShaderCompiler);
         materials.SuperShaderCompiler = SuperShaderCompiler;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -17315,22 +17282,15 @@ var away;
 (function (away) {
     (function (materials) {
         var BlendMode = away.base.BlendMode;
-        var ContextGL = away.gl.ContextGL;
+
         var ContextGLCompareMode = away.gl.ContextGLCompareMode;
         var Event = away.events.Event;
-        var Matrix3D = away.geom.Matrix3D;
+
         var AssetType = away.library.AssetType;
         var Delegate = away.utils.Delegate;
 
-        var AnimationSetBase = away.animators.AnimationSetBase;
-        var AnimatorBase = away.animators.AnimatorBase;
-
-        var Camera = away.entities.Camera;
-        var StageGL = away.base.StageGL;
         var DepthMapPass = away.materials.DepthMapPass;
         var DistanceMapPass = away.materials.DistanceMapPass;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var RenderableBase = away.pool.RenderableBase;
 
         /**
         * MaterialBase forms an abstract base class for any material.
@@ -18043,7 +18003,7 @@ var away;
                 _super.call(this);
                 this._alphaBlending = false;
 
-                this.pAddPass(this._pScreenPass = new away.materials.SuperShaderPass(this));
+                this.pAddPass(this._pScreenPass = new materials.SuperShaderPass(this));
             }
             Object.defineProperty(SinglePassMaterialBase.prototype, "enableLightFallOff", {
                 /**
@@ -18504,7 +18464,7 @@ var away;
                 configurable: true
             });
             return SinglePassMaterialBase;
-        })(away.materials.MaterialBase);
+        })(materials.MaterialBase);
         materials.SinglePassMaterialBase = SinglePassMaterialBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -18514,9 +18474,6 @@ var away;
 (function (away) {
     (function (materials) {
         var Delegate = away.utils.Delegate;
-
-        var Camera = away.entities.Camera;
-        var StageGL = away.base.StageGL;
 
         /**
         * MultiPassMaterialBase forms an abstract base class for the default multi-pass materials provided by Away3D,
@@ -18532,10 +18489,10 @@ var away;
                 this._alphaThreshold = 0;
                 this._specularLightSources = 0x01;
                 this._diffuseLightSources = 0x03;
-                this._ambientMethod = new away.materials.AmbientBasicMethod();
-                this._diffuseMethod = new away.materials.DiffuseBasicMethod();
-                this._normalMethod = new away.materials.NormalBasicMethod();
-                this._specularMethod = new away.materials.SpecularBasicMethod();
+                this._ambientMethod = new materials.AmbientBasicMethod();
+                this._diffuseMethod = new materials.DiffuseBasicMethod();
+                this._normalMethod = new materials.NormalBasicMethod();
+                this._specularMethod = new materials.SpecularBasicMethod();
                 this._screenPassesInvalid = true;
                 this._enableLightFallOff = true;
 
@@ -18779,7 +18736,7 @@ var away;
             */
             MultiPassMaterialBase.prototype.addMethod = function (method) {
                 if (this._pEffectsPass == null)
-                    this._pEffectsPass = new away.materials.SuperShaderPass(this);
+                    this._pEffectsPass = new materials.SuperShaderPass(this);
 
                 this._pEffectsPass.addMethod(method);
                 this.pInvalidateScreenPasses();
@@ -18822,7 +18779,7 @@ var away;
             */
             MultiPassMaterialBase.prototype.addMethodAt = function (method, index) {
                 if (this._pEffectsPass == null)
-                    this._pEffectsPass = new away.materials.SuperShaderPass(this);
+                    this._pEffectsPass = new materials.SuperShaderPass(this);
 
                 this._pEffectsPass.addMethodAt(method, index);
                 this.pInvalidateScreenPasses();
@@ -19158,7 +19115,7 @@ var away;
 
             MultiPassMaterialBase.prototype.initCasterLightPass = function () {
                 if (this._casterLightPass == null)
-                    this._casterLightPass = new away.materials.ShadowCasterPass(this);
+                    this._casterLightPass = new materials.ShadowCasterPass(this);
 
                 this._casterLightPass.diffuseMethod = null;
                 this._casterLightPass.ambientMethod = null;
@@ -19166,7 +19123,7 @@ var away;
                 this._casterLightPass.specularMethod = null;
                 this._casterLightPass.shadowMethod = null;
                 this._casterLightPass.enableLightFallOff = this._enableLightFallOff;
-                this._casterLightPass.lightPicker = new away.materials.StaticLightPicker([this._shadowMethod.castingLight]);
+                this._casterLightPass.lightPicker = new materials.StaticLightPicker([this._shadowMethod.castingLight]);
                 this._casterLightPass.shadowMethod = this._shadowMethod;
                 this._casterLightPass.diffuseMethod = this._diffuseMethod;
                 this._casterLightPass.ambientMethod = this._ambientMethod;
@@ -19203,7 +19160,7 @@ var away;
                 this._nonCasterLightPasses = new Array();
 
                 while (dirLightOffset < numDirLights || pointLightOffset < numPointLights || probeOffset < numLightProbes) {
-                    pass = new away.materials.LightingPass(this);
+                    pass = new materials.LightingPass(this);
                     pass.enableLightFallOff = this._enableLightFallOff;
                     pass.includeCasters = this._shadowMethod == null;
                     pass.directionalLightsOffset = dirLightOffset;
@@ -19250,7 +19207,7 @@ var away;
 
             MultiPassMaterialBase.prototype.initEffectsPass = function () {
                 if (this._pEffectsPass == null)
-                    this._pEffectsPass = new away.materials.SuperShaderPass(this);
+                    this._pEffectsPass = new materials.SuperShaderPass(this);
 
                 this._pEffectsPass.enableLightFallOff = this._enableLightFallOff;
                 if (this.numLights == 0) {
@@ -19258,7 +19215,7 @@ var away;
                     this._pEffectsPass.diffuseMethod = this._diffuseMethod;
                 } else {
                     this._pEffectsPass.diffuseMethod = null;
-                    this._pEffectsPass.diffuseMethod = new away.materials.DiffuseBasicMethod();
+                    this._pEffectsPass.diffuseMethod = new materials.DiffuseBasicMethod();
                     this._pEffectsPass.diffuseMethod.diffuseColor = 0x000000;
                     this._pEffectsPass.diffuseMethod.diffuseAlpha = 0;
                 }
@@ -19306,7 +19263,7 @@ var away;
                 this.pInvalidateScreenPasses();
             };
             return MultiPassMaterialBase;
-        })(away.materials.MaterialBase);
+        })(materials.MaterialBase);
         materials.MultiPassMaterialBase = MultiPassMaterialBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -19397,7 +19354,7 @@ var away;
                     this._pEffectsPass.animateUVs = this._animateUVs;
             };
             return TextureMultiPassMaterial;
-        })(away.materials.MultiPassMaterialBase);
+        })(materials.MultiPassMaterialBase);
         materials.TextureMultiPassMaterial = TextureMultiPassMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -19436,7 +19393,7 @@ var away;
             });
 
             return ColorMultiPassMaterial;
-        })(away.materials.MultiPassMaterialBase);
+        })(materials.MultiPassMaterialBase);
         materials.ColorMultiPassMaterial = ColorMultiPassMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -19557,7 +19514,7 @@ var away;
             });
 
             return TextureMaterial;
-        })(away.materials.SinglePassMaterialBase);
+        })(materials.SinglePassMaterialBase);
         materials.TextureMaterial = TextureMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -19634,7 +19591,7 @@ var away;
                 configurable: true
             });
             return ColorMaterial;
-        })(away.materials.SinglePassMaterialBase);
+        })(materials.SinglePassMaterialBase);
         materials.ColorMaterial = ColorMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -20103,7 +20060,7 @@ var away;
                 }
             };
             return LightingShaderCompiler;
-        })(away.materials.ShaderCompiler);
+        })(materials.ShaderCompiler);
         materials.LightingShaderCompiler = LightingShaderCompiler;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -20129,11 +20086,11 @@ var away;
                 _super.call(this);
 
                 this.bothSides = true;
-                this.pAddPass(this._screenPass = new away.materials.SegmentPass(thickness));
+                this.pAddPass(this._screenPass = new materials.SegmentPass(thickness));
                 this._screenPass.material = this;
             }
             return SegmentMaterial;
-        })(away.materials.MaterialBase);
+        })(materials.MaterialBase);
         materials.SegmentMaterial = SegmentMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -20157,7 +20114,7 @@ var away;
                 _super.call(this);
 
                 this._cubeMap = cubeMap;
-                this.pAddPass(this._skyboxPass = new away.materials.SkyboxPass());
+                this.pAddPass(this._skyboxPass = new materials.SkyboxPass());
                 this._skyboxPass.cubeTexture = this._cubeMap;
             }
             Object.defineProperty(SkyboxMaterial.prototype, "cubeMap", {
@@ -20179,7 +20136,7 @@ var away;
             });
 
             return SkyboxMaterial;
-        })(away.materials.MaterialBase);
+        })(materials.MaterialBase);
         materials.SkyboxMaterial = SkyboxMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -20188,14 +20145,11 @@ var away;
 var away;
 (function (away) {
     (function (prefabs) {
-        //	import BatchObject				= away.base.BatchObject;
-        var DisplayObject = away.base.DisplayObject;
         var Geometry = away.base.Geometry;
-        var SubGeometryBase = away.base.SubGeometryBase;
+
         var TriangleSubGeometry = away.base.TriangleSubGeometry;
         var LineSubGeometry = away.base.LineSubGeometry;
         var Mesh = away.entities.Mesh;
-        var AbstractMethodError = away.errors.AbstractMethodError;
 
         /**
         * PrimitivePrefabBase is an abstract base class for polytope prefabs, which are simple pre-built geometric shapes
@@ -20379,7 +20333,7 @@ var away;
                 return mesh;
             };
             return PrimitivePrefabBase;
-        })(away.prefabs.PrefabBase);
+        })(prefabs.PrefabBase);
         prefabs.PrimitivePrefabBase = PrimitivePrefabBase;
     })(away.prefabs || (away.prefabs = {}));
     var prefabs = away.prefabs;
@@ -20388,10 +20342,6 @@ var away;
 var away;
 (function (away) {
     (function (prefabs) {
-        var SubGeometryBase = away.base.SubGeometryBase;
-        var TriangleSubGeometry = away.base.TriangleSubGeometry;
-        var LineSubGeometry = away.base.LineSubGeometry;
-
         /**
         * A UV Cylinder primitive mesh.
         */
@@ -20681,10 +20631,6 @@ var away;
 var away;
 (function (away) {
     (function (prefabs) {
-        var SubGeometryBase = away.base.SubGeometryBase;
-        var TriangleSubGeometry = away.base.TriangleSubGeometry;
-        var LineSubGeometry = away.base.LineSubGeometry;
-
         /**
         * A Cube primitive prefab.
         */
@@ -21353,10 +21299,6 @@ var away;
 var away;
 (function (away) {
     (function (prefabs) {
-        var SubGeometryBase = away.base.SubGeometryBase;
-        var TriangleSubGeometry = away.base.TriangleSubGeometry;
-        var LineSubGeometry = away.base.LineSubGeometry;
-
         /**
         * A Plane primitive mesh.
         */
@@ -21729,10 +21671,6 @@ var away;
 var away;
 (function (away) {
     (function (prefabs) {
-        var SubGeometryBase = away.base.SubGeometryBase;
-        var TriangleSubGeometry = away.base.TriangleSubGeometry;
-        var LineSubGeometry = away.base.LineSubGeometry;
-
         /**
         * A Capsule primitive mesh.
         */
@@ -22027,10 +21965,6 @@ var away;
 var away;
 (function (away) {
     (function (prefabs) {
-        var SubGeometryBase = away.base.SubGeometryBase;
-        var TriangleSubGeometry = away.base.TriangleSubGeometry;
-        var LineSubGeometry = away.base.LineSubGeometry;
-
         /**
         * A Cylinder primitive mesh.
         */
@@ -22806,10 +22740,6 @@ var away;
 (function (away) {
     ///<reference path="../_definitions.ts"/>
     (function (prefabs) {
-        var SubGeometryBase = away.base.SubGeometryBase;
-        var TriangleSubGeometry = away.base.TriangleSubGeometry;
-        var LineSubGeometry = away.base.LineSubGeometry;
-
         /**
         * A UV Sphere primitive mesh.
         */
@@ -23177,7 +23107,6 @@ var away;
 (function (away) {
     (function (animators) {
         var ShaderRegisterElement = away.materials.ShaderRegisterElement;
-        var Matrix3D = away.geom.Matrix3D;
 
         /**
         * ...
@@ -23399,10 +23328,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var StageGL = away.base.StageGL;
-        var ContextGL = away.gl.ContextGL;
-        var VertexBuffer = away.gl.VertexBuffer;
-
         /**
         * ...
         */
@@ -23491,8 +23416,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ColorTransform = away.geom.ColorTransform;
-
         var ColorSegmentPoint = (function () {
             function ColorSegmentPoint(life, color) {
                 //0<life<1
@@ -23614,8 +23537,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var TriangleSubGeometry = away.base.TriangleSubGeometry;
-
         var ParticleData = (function () {
             function ParticleData() {
             }
@@ -23907,7 +23828,7 @@ var away;
                 var clone = new SkeletonPose();
                 var numJointPoses = this.jointPoses.length;
                 for (var i = 0; i < numJointPoses; i++) {
-                    var cloneJointPose = new away.animators.JointPose();
+                    var cloneJointPose = new animators.JointPose();
                     var thisJointPose = this.jointPoses[i];
                     cloneJointPose.name = thisJointPose.name;
                     cloneJointPose.copyFrom(thisJointPose);
@@ -24053,7 +23974,7 @@ var away;
                 this._pTotalDelta.z = 0;
             };
             return AnimationClipNodeBase;
-        })(away.animators.AnimationNodeBase);
+        })(animators.AnimationNodeBase);
         animators.AnimationClipNodeBase = AnimationClipNodeBase;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -24062,10 +23983,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var ShaderRegisterElement = away.materials.ShaderRegisterElement;
-
         /**
         * Provides an abstract base class for particle animation nodes.
         */
@@ -24192,7 +24109,7 @@ var away;
                 2: ParticleNodeBase.LOCAL_DYNAMIC
             };
             return ParticleNodeBase;
-        })(away.animators.AnimationNodeBase);
+        })(animators.AnimationNodeBase);
         animators.ParticleNodeBase = ParticleNodeBase;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -24202,8 +24119,6 @@ var away;
 (function (away) {
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         /**
         * A particle animation node used to apply a constant acceleration vector to the motion of a particle.
@@ -24220,7 +24135,7 @@ var away;
                 if (typeof acceleration === "undefined") { acceleration = null; }
                 _super.call(this, "ParticleAcceleration", mode, 3);
 
-                this._pStateClass = away.animators.ParticleAccelerationState;
+                this._pStateClass = animators.ParticleAccelerationState;
 
                 this._acceleration = acceleration || new Vector3D();
             }
@@ -24228,7 +24143,7 @@ var away;
             * @inheritDoc
             */
             ParticleAccelerationNode.prototype.pGetAGALVertexCode = function (pass, animationRegisterCache) {
-                var accelerationValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var accelerationValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleAccelerationNode.ACCELERATION_INDEX, accelerationValue.index);
 
                 var temp = animationRegisterCache.getFreeVertexVectorTemp();
@@ -24271,7 +24186,7 @@ var away;
 
             ParticleAccelerationNode.ACCELERATION_VECTOR3D = "AccelerationVector3D";
             return ParticleAccelerationNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleAccelerationNode = ParticleAccelerationNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -24281,7 +24196,7 @@ var away;
 (function (away) {
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
+
         var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         /**
@@ -24301,7 +24216,7 @@ var away;
                 if (typeof endPoint === "undefined") { endPoint = null; }
                 _super.call(this, "ParticleBezierCurve", mode, 6);
 
-                this._pStateClass = away.animators.ParticleBezierCurveState;
+                this._pStateClass = animators.ParticleBezierCurveState;
 
                 this._iControlPoint = controlPoint || new Vector3D();
                 this._iEndPoint = endPoint || new Vector3D();
@@ -24311,10 +24226,10 @@ var away;
             */
             ParticleBezierCurveNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
                 pass = pass;
-                var controlValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var controlValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleBezierCurveNode.BEZIER_CONTROL_INDEX, controlValue.index);
 
-                var endValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var endValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleBezierCurveNode.BEZIER_END_INDEX, endValue.index);
 
                 var temp = animationRegisterCache.getFreeVertexVectorTemp();
@@ -24384,7 +24299,7 @@ var away;
 
             ParticleBezierCurveNode.BEZIER_END_VECTOR3D = "BezierEndVector3D";
             return ParticleBezierCurveNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleBezierCurveNode = ParticleBezierCurveNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -24393,10 +24308,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var ShaderRegisterElement = away.materials.ShaderRegisterElement;
-
         /**
         * A particle animation node that controls the rotation of a particle to always face the camera.
         */
@@ -24407,9 +24318,9 @@ var away;
             */
             function ParticleBillboardNode(billboardAxis) {
                 if (typeof billboardAxis === "undefined") { billboardAxis = null; }
-                _super.call(this, "ParticleBillboard", away.animators.ParticlePropertiesMode.GLOBAL, 0, 4);
+                _super.call(this, "ParticleBillboard", animators.ParticlePropertiesMode.GLOBAL, 0, 4);
 
-                this._pStateClass = away.animators.ParticleBillboardState;
+                this._pStateClass = animators.ParticleBillboardState;
 
                 this._iBillboardAxis = billboardAxis;
             }
@@ -24451,7 +24362,7 @@ var away;
             };
             ParticleBillboardNode.MATRIX_INDEX = 0;
             return ParticleBillboardNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleBillboardNode = ParticleBillboardNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -24461,9 +24372,6 @@ var away;
 (function (away) {
     (function (animators) {
         var ColorTransform = away.geom.ColorTransform;
-        var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         /**
         * A particle animation node used to control the color variation of a particle over time.
@@ -24492,9 +24400,9 @@ var away;
                 if (typeof endColor === "undefined") { endColor = null; }
                 if (typeof cycleDuration === "undefined") { cycleDuration = 1; }
                 if (typeof cyclePhase === "undefined") { cyclePhase = 0; }
-                _super.call(this, "ParticleColor", mode, (usesMultiplier && usesOffset) ? 16 : 8, away.animators.ParticleAnimationSet.COLOR_PRIORITY);
+                _super.call(this, "ParticleColor", mode, (usesMultiplier && usesOffset) ? 16 : 8, animators.ParticleAnimationSet.COLOR_PRIORITY);
 
-                this._pStateClass = away.animators.ParticleColorState;
+                this._pStateClass = animators.ParticleColorState;
 
                 this._iUsesMultiplier = usesMultiplier;
                 this._iUsesOffset = usesOffset;
@@ -24531,8 +24439,8 @@ var away;
                     }
 
                     if (this._iUsesMultiplier) {
-                        var startMultiplierValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-                        var deltaMultiplierValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                        var startMultiplierValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                        var deltaMultiplierValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
 
                         animationRegisterCache.setRegisterIndex(this, ParticleColorNode.START_MULTIPLIER_INDEX, startMultiplierValue.index);
                         animationRegisterCache.setRegisterIndex(this, ParticleColorNode.DELTA_MULTIPLIER_INDEX, deltaMultiplierValue.index);
@@ -24543,8 +24451,8 @@ var away;
                     }
 
                     if (this._iUsesOffset) {
-                        var startOffsetValue = (this._pMode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
-                        var deltaOffsetValue = (this._pMode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
+                        var startOffsetValue = (this._pMode == animators.ParticlePropertiesMode.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
+                        var deltaOffsetValue = (this._pMode == animators.ParticlePropertiesMode.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
 
                         animationRegisterCache.setRegisterIndex(this, ParticleColorNode.START_OFFSET_INDEX, startOffsetValue.index);
                         animationRegisterCache.setRegisterIndex(this, ParticleColorNode.DELTA_OFFSET_INDEX, deltaOffsetValue.index);
@@ -24653,7 +24561,7 @@ var away;
 
             ParticleColorNode.COLOR_END_COLORTRANSFORM = "ColorEndColorTransform";
             return ParticleColorNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleColorNode = ParticleColorNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -24662,10 +24570,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var ShaderRegisterElement = away.materials.ShaderRegisterElement;
-
         /**
         * A particle animation node used to create a follow behaviour on a particle system.
         */
@@ -24682,9 +24586,9 @@ var away;
                 if (typeof usesPosition === "undefined") { usesPosition = true; }
                 if (typeof usesRotation === "undefined") { usesRotation = true; }
                 if (typeof smooth === "undefined") { smooth = false; }
-                _super.call(this, "ParticleFollow", away.animators.ParticlePropertiesMode.LOCAL_DYNAMIC, (usesPosition && usesRotation) ? 6 : 3, away.animators.ParticleAnimationSet.POST_PRIORITY);
+                _super.call(this, "ParticleFollow", animators.ParticlePropertiesMode.LOCAL_DYNAMIC, (usesPosition && usesRotation) ? 6 : 3, animators.ParticleAnimationSet.POST_PRIORITY);
 
-                this._pStateClass = away.animators.ParticleFollowState;
+                this._pStateClass = animators.ParticleFollowState;
 
                 this._iUsesPosition = usesPosition;
                 this._iUsesRotation = usesRotation;
@@ -24796,7 +24700,7 @@ var away;
 
             ParticleFollowNode.FOLLOW_ROTATION_INDEX = 1;
             return ParticleFollowNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleFollowNode = ParticleFollowNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -24806,9 +24710,6 @@ var away;
 (function (away) {
     (function (animators) {
         var ColorTransform = away.geom.ColorTransform;
-        var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         var ParticleInitialColorNode = (function (_super) {
             __extends(ParticleInitialColorNode, _super);
@@ -24816,9 +24717,9 @@ var away;
                 if (typeof usesMultiplier === "undefined") { usesMultiplier = true; }
                 if (typeof usesOffset === "undefined") { usesOffset = false; }
                 if (typeof initialColor === "undefined") { initialColor = null; }
-                _super.call(this, "ParticleInitialColor", mode, (usesMultiplier && usesOffset) ? 8 : 4, away.animators.ParticleAnimationSet.COLOR_PRIORITY);
+                _super.call(this, "ParticleInitialColor", mode, (usesMultiplier && usesOffset) ? 8 : 4, animators.ParticleAnimationSet.COLOR_PRIORITY);
 
-                this._pStateClass = away.animators.ParticleInitialColorState;
+                this._pStateClass = animators.ParticleInitialColorState;
 
                 this._iUsesMultiplier = usesMultiplier;
                 this._iUsesOffset = usesOffset;
@@ -24831,14 +24732,14 @@ var away;
                 var code = "";
                 if (animationRegisterCache.needFragmentAnimation) {
                     if (this._iUsesMultiplier) {
-                        var multiplierValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                        var multiplierValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                         animationRegisterCache.setRegisterIndex(this, ParticleInitialColorNode.MULTIPLIER_INDEX, multiplierValue.index);
 
                         code += "mul " + animationRegisterCache.colorMulTarget + "," + multiplierValue + "," + animationRegisterCache.colorMulTarget + "\n";
                     }
 
                     if (this._iUsesOffset) {
-                        var offsetValue = (this._pMode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
+                        var offsetValue = (this._pMode == animators.ParticlePropertiesMode.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
                         animationRegisterCache.setRegisterIndex(this, ParticleInitialColorNode.OFFSET_INDEX, offsetValue.index);
 
                         code += "add " + animationRegisterCache.colorAddTarget + "," + offsetValue + "," + animationRegisterCache.colorAddTarget + "\n";
@@ -24890,7 +24791,7 @@ var away;
 
             ParticleInitialColorNode.COLOR_INITIAL_COLORTRANSFORM = "ColorInitialColorTransform";
             return ParticleInitialColorNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleInitialColorNode = ParticleInitialColorNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -24900,7 +24801,7 @@ var away;
 (function (away) {
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
+
         var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         /**
@@ -24933,7 +24834,7 @@ var away;
                     len++;
                 _super.call(this, "ParticleOrbit", mode, len);
 
-                this._pStateClass = away.animators.ParticleOrbitState;
+                this._pStateClass = animators.ParticleOrbitState;
 
                 this._iUsesEulers = usesEulers;
                 this._iUsesCycle = usesCycle;
@@ -24948,7 +24849,7 @@ var away;
             * @inheritDoc
             */
             ParticleOrbitNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
-                var orbitRegister = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var orbitRegister = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleOrbitNode.ORBIT_INDEX, orbitRegister.index);
 
                 var eulersMatrixRegister = animationRegisterCache.getFreeVertexConstant();
@@ -25031,7 +24932,7 @@ var away;
 
             ParticleOrbitNode.ORBIT_VECTOR3D = "OrbitVector3D";
             return ParticleOrbitNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleOrbitNode = ParticleOrbitNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -25041,7 +24942,7 @@ var away;
 (function (away) {
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
+
         var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         /**
@@ -25059,7 +24960,7 @@ var away;
                 if (typeof oscillator === "undefined") { oscillator = null; }
                 _super.call(this, "ParticleOscillator", mode, 4);
 
-                this._pStateClass = away.animators.ParticleOscillatorState;
+                this._pStateClass = animators.ParticleOscillatorState;
 
                 this._iOscillator = oscillator || new Vector3D();
             }
@@ -25068,7 +24969,7 @@ var away;
             */
             ParticleOscillatorNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
                 pass = pass;
-                var oscillatorRegister = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var oscillatorRegister = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleOscillatorNode.OSCILLATOR_INDEX, oscillatorRegister.index);
                 var temp = animationRegisterCache.getFreeVertexVectorTemp();
                 var dgree = new ShaderRegisterElement(temp.regName, temp.index, 0);
@@ -25121,7 +25022,7 @@ var away;
 
             ParticleOscillatorNode.OSCILLATOR_VECTOR3D = "OscillatorVector3D";
             return ParticleOscillatorNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleOscillatorNode = ParticleOscillatorNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -25131,8 +25032,6 @@ var away;
 (function (away) {
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         /**
         * A particle animation node used to set the starting position of a particle.
@@ -25149,7 +25048,7 @@ var away;
                 if (typeof position === "undefined") { position = null; }
                 _super.call(this, "ParticlePosition", mode, 3);
 
-                this._pStateClass = away.animators.ParticlePositionState;
+                this._pStateClass = animators.ParticlePositionState;
 
                 this._iPosition = position || new Vector3D();
             }
@@ -25158,7 +25057,7 @@ var away;
             */
             ParticlePositionNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
                 pass = pass;
-                var positionAttribute = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var positionAttribute = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticlePositionNode.POSITION_INDEX, positionAttribute.index);
 
                 return "add " + animationRegisterCache.positionTarget + ".xyz," + positionAttribute + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
@@ -25187,7 +25086,7 @@ var away;
 
             ParticlePositionNode.POSITION_VECTOR3D = "PositionVector3D";
             return ParticlePositionNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticlePositionNode = ParticlePositionNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -25196,8 +25095,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
         var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         /**
@@ -25209,9 +25106,9 @@ var away;
             * Creates a new <code>ParticleBillboardNode</code>
             */
             function ParticleRotateToHeadingNode() {
-                _super.call(this, "ParticleRotateToHeading", away.animators.ParticlePropertiesMode.GLOBAL, 0, 3);
+                _super.call(this, "ParticleRotateToHeading", animators.ParticlePropertiesMode.GLOBAL, 0, 3);
 
-                this._pStateClass = away.animators.ParticleRotateToHeadingState;
+                this._pStateClass = animators.ParticleRotateToHeadingState;
             }
             /**
             * @inheritDoc
@@ -25373,7 +25270,7 @@ var away;
             };
             ParticleRotateToHeadingNode.MATRIX_INDEX = 0;
             return ParticleRotateToHeadingNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleRotateToHeadingNode = ParticleRotateToHeadingNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -25383,7 +25280,7 @@ var away;
 (function (away) {
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
+
         var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         /**
@@ -25398,7 +25295,7 @@ var away;
                 if (typeof position === "undefined") { position = null; }
                 _super.call(this, "ParticleRotateToPosition", mode, 3, 3);
 
-                this._pStateClass = away.animators.ParticleRotateToPositionState;
+                this._pStateClass = animators.ParticleRotateToPositionState;
 
                 this._iPosition = position || new Vector3D();
             }
@@ -25406,7 +25303,7 @@ var away;
             * @inheritDoc
             */
             ParticleRotateToPositionNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
-                var positionAttribute = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var positionAttribute = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleRotateToPositionNode.POSITION_INDEX, positionAttribute.index);
 
                 var code = "";
@@ -25578,7 +25475,7 @@ var away;
 
             ParticleRotateToPositionNode.POSITION_VECTOR3D = "RotateToPositionVector3D";
             return ParticleRotateToPositionNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleRotateToPositionNode = ParticleRotateToPositionNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -25588,7 +25485,7 @@ var away;
 (function (away) {
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
+
         var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         /**
@@ -25605,7 +25502,7 @@ var away;
                 if (typeof rotationalVelocity === "undefined") { rotationalVelocity = null; }
                 _super.call(this, "ParticleRotationalVelocity", mode, 4);
 
-                this._pStateClass = away.animators.ParticleRotationalVelocityState;
+                this._pStateClass = animators.ParticleRotationalVelocityState;
 
                 this._iRotationalVelocity = rotationalVelocity || new Vector3D();
             }
@@ -25613,7 +25510,7 @@ var away;
             * @inheritDoc
             */
             ParticleRotationalVelocityNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
-                var rotationRegister = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var rotationRegister = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleRotationalVelocityNode.ROTATIONALVELOCITY_INDEX, rotationRegister.index);
 
                 var nrmVel = animationRegisterCache.getFreeVertexVectorTemp();
@@ -25724,7 +25621,7 @@ var away;
 
             ParticleRotationalVelocityNode.ROTATIONALVELOCITY_VECTOR3D = "RotationalVelocityVector3D";
             return ParticleRotationalVelocityNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleRotationalVelocityNode = ParticleRotationalVelocityNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -25733,10 +25630,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var ShaderRegisterElement = away.materials.ShaderRegisterElement;
-
         /**
         * A particle animation node used to control the scale variation of a particle over time.
         */
@@ -25760,7 +25653,7 @@ var away;
                 if (typeof cyclePhase === "undefined") { cyclePhase = 0; }
                 _super.call(this, "ParticleScale", mode, (usesCycle && usesPhase) ? 4 : ((usesCycle || usesPhase) ? 3 : 2), 3);
 
-                this._pStateClass = away.animators.ParticleScaleState;
+                this._pStateClass = animators.ParticleScaleState;
 
                 this._iUsesCycle = usesCycle;
                 this._iUsesPhase = usesPhase;
@@ -25777,7 +25670,7 @@ var away;
                 var code = "";
                 var temp = animationRegisterCache.getFreeVertexSingleTemp();
 
-                var scaleRegister = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var scaleRegister = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleScaleNode.SCALE_INDEX, scaleRegister.index);
 
                 if (this._iUsesCycle) {
@@ -25828,7 +25721,7 @@ var away;
 
             ParticleScaleNode.SCALE_VECTOR3D = "ScaleVector3D";
             return ParticleScaleNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleScaleNode = ParticleScaleNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -25837,18 +25730,15 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ColorTransform = away.geom.ColorTransform;
-        var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
         var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         var ParticleSegmentedColorNode = (function (_super) {
             __extends(ParticleSegmentedColorNode, _super);
             function ParticleSegmentedColorNode(usesMultiplier, usesOffset, numSegmentPoint /*int*/ , startColor, endColor, segmentPoints) {
                 //because of the stage3d register limitation, it only support the global mode
-                _super.call(this, "ParticleSegmentedColor", away.animators.ParticlePropertiesMode.GLOBAL, 0, away.animators.ParticleAnimationSet.COLOR_PRIORITY);
+                _super.call(this, "ParticleSegmentedColor", animators.ParticlePropertiesMode.GLOBAL, 0, animators.ParticleAnimationSet.COLOR_PRIORITY);
 
-                this._pStateClass = away.animators.ParticleSegmentedColorState;
+                this._pStateClass = animators.ParticleSegmentedColorState;
 
                 if (numSegmentPoint > 4)
                     throw (new Error("the numSegmentPoint must be less or equal 4"));
@@ -25995,7 +25885,7 @@ var away;
 
             ParticleSegmentedColorNode.TIME_DATA_INDEX = 2;
             return ParticleSegmentedColorNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleSegmentedColorNode = ParticleSegmentedColorNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -26004,8 +25894,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
         var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         /**
@@ -26031,9 +25919,9 @@ var away;
                 if (typeof cycleDuration === "undefined") { cycleDuration = 1; }
                 if (typeof cyclePhase === "undefined") { cyclePhase = 0; }
                 if (typeof totalFrames === "undefined") { totalFrames = Number.MAX_VALUE; }
-                _super.call(this, "ParticleSpriteSheet", mode, usesCycle ? (usesPhase ? 3 : 2) : 1, away.animators.ParticleAnimationSet.POST_PRIORITY + 1);
+                _super.call(this, "ParticleSpriteSheet", mode, usesCycle ? (usesPhase ? 3 : 2) : 1, animators.ParticleAnimationSet.POST_PRIORITY + 1);
 
-                this._pStateClass = away.animators.ParticleSpriteSheetState;
+                this._pStateClass = animators.ParticleSpriteSheetState;
 
                 this._iUsesCycle = usesCycle;
                 this._iUsesPhase = usesPhase;
@@ -26083,7 +25971,7 @@ var away;
             ParticleSpriteSheetNode.prototype.getAGALUVCode = function (pass, animationRegisterCache) {
                 //get 2 vc
                 var uvParamConst1 = animationRegisterCache.getFreeVertexConstant();
-                var uvParamConst2 = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var uvParamConst2 = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleSpriteSheetNode.UV_INDEX_0, uvParamConst1.index);
                 animationRegisterCache.setRegisterIndex(this, ParticleSpriteSheetNode.UV_INDEX_1, uvParamConst2.index);
 
@@ -26179,7 +26067,7 @@ var away;
 
             ParticleSpriteSheetNode.UV_VECTOR3D = "UVVector3D";
             return ParticleSpriteSheetNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleSpriteSheetNode = ParticleSpriteSheetNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -26188,10 +26076,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var ShaderRegisterElement = away.materials.ShaderRegisterElement;
-
         /**
         * A particle animation node used as the base node for timekeeping inside a particle. Automatically added to a particle animation set on instatiation.
         */
@@ -26208,13 +26092,13 @@ var away;
                 if (typeof usesDuration === "undefined") { usesDuration = false; }
                 if (typeof usesLooping === "undefined") { usesLooping = false; }
                 if (typeof usesDelay === "undefined") { usesDelay = false; }
-                this._pStateClass = away.animators.ParticleTimeState;
+                this._pStateClass = animators.ParticleTimeState;
 
                 this._iUsesDuration = usesDuration;
                 this._iUsesLooping = usesLooping;
                 this._iUsesDelay = usesDelay;
 
-                _super.call(this, "ParticleTime", away.animators.ParticlePropertiesMode.LOCAL_STATIC, 4, 0);
+                _super.call(this, "ParticleTime", animators.ParticlePropertiesMode.LOCAL_STATIC, 4, 0);
             }
             /**
             * @inheritDoc
@@ -26276,7 +26160,7 @@ var away;
 
             ParticleTimeNode.TIME_CONSTANT_INDEX = 1;
             return ParticleTimeNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleTimeNode = ParticleTimeNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -26286,7 +26170,7 @@ var away;
 (function (away) {
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
+
         var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         /**
@@ -26307,9 +26191,9 @@ var away;
                 if (typeof scale === "undefined") { scale = 1; }
                 if (typeof axis === "undefined") { axis = "x"; }
                 //because of the stage3d register limitation, it only support the global mode
-                _super.call(this, "ParticleUV", away.animators.ParticlePropertiesMode.GLOBAL, 4, away.animators.ParticleAnimationSet.POST_PRIORITY + 1);
+                _super.call(this, "ParticleUV", animators.ParticlePropertiesMode.GLOBAL, 4, animators.ParticleAnimationSet.POST_PRIORITY + 1);
 
-                this._pStateClass = away.animators.ParticleUVState;
+                this._pStateClass = animators.ParticleUVState;
 
                 this._cycle = cycle;
                 this._scale = scale;
@@ -26415,7 +26299,7 @@ var away;
 
             ParticleUVNode.V_AXIS = "y";
             return ParticleUVNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleUVNode = ParticleUVNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -26425,8 +26309,6 @@ var away;
 (function (away) {
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var ShaderRegisterElement = away.materials.ShaderRegisterElement;
 
         /**
         * A particle animation node used to set the starting velocity of a particle.
@@ -26443,7 +26325,7 @@ var away;
                 if (typeof velocity === "undefined") { velocity = null; }
                 _super.call(this, "ParticleVelocity", mode, 3);
 
-                this._pStateClass = away.animators.ParticleVelocityState;
+                this._pStateClass = animators.ParticleVelocityState;
 
                 this._iVelocity = velocity || new Vector3D();
             }
@@ -26451,7 +26333,7 @@ var away;
             * @inheritDoc
             */
             ParticleVelocityNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
-                var velocityValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var velocityValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleVelocityNode.VELOCITY_INDEX, velocityValue.index);
 
                 var distance = animationRegisterCache.getFreeVertexVectorTemp();
@@ -26488,7 +26370,7 @@ var away;
 
             ParticleVelocityNode.VELOCITY_VECTOR3D = "VelocityVector3D";
             return ParticleVelocityNode;
-        })(away.animators.ParticleNodeBase);
+        })(animators.ParticleNodeBase);
         animators.ParticleVelocityNode = ParticleVelocityNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -26508,7 +26390,7 @@ var away;
             function SkeletonBinaryLERPNode() {
                 _super.call(this);
 
-                this._pStateClass = away.animators.SkeletonBinaryLERPState;
+                this._pStateClass = animators.SkeletonBinaryLERPState;
             }
             /**
             * @inheritDoc
@@ -26517,7 +26399,7 @@ var away;
                 return animator.getAnimationState(this);
             };
             return SkeletonBinaryLERPNode;
-        })(away.animators.AnimationNodeBase);
+        })(animators.AnimationNodeBase);
         animators.SkeletonBinaryLERPNode = SkeletonBinaryLERPNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -26526,8 +26408,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
-
         /**
         * A skeleton animation node containing time-based animation data as individual skeleton poses.
         */
@@ -26545,7 +26425,7 @@ var away;
                 */
                 this.highQuality = false;
 
-                this._pStateClass = away.animators.SkeletonClipState;
+                this._pStateClass = animators.SkeletonClipState;
             }
             Object.defineProperty(SkeletonClipNode.prototype, "frames", {
                 /**
@@ -26609,7 +26489,7 @@ var away;
                 }
             };
             return SkeletonClipNode;
-        })(away.animators.AnimationClipNodeBase);
+        })(animators.AnimationClipNodeBase);
         animators.SkeletonClipNode = SkeletonClipNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -26629,7 +26509,7 @@ var away;
             function SkeletonDifferenceNode() {
                 _super.call(this);
 
-                this._pStateClass = away.animators.SkeletonDifferenceState;
+                this._pStateClass = animators.SkeletonDifferenceState;
             }
             /**
             * @inheritDoc
@@ -26638,7 +26518,7 @@ var away;
                 return animator.getAnimationState(this);
             };
             return SkeletonDifferenceNode;
-        })(away.animators.AnimationNodeBase);
+        })(animators.AnimationNodeBase);
         animators.SkeletonDifferenceNode = SkeletonDifferenceNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -26655,7 +26535,7 @@ var away;
             function SkeletonDirectionalNode() {
                 _super.call(this);
 
-                this._pStateClass = away.animators.SkeletonDirectionalState;
+                this._pStateClass = animators.SkeletonDirectionalState;
             }
             /**
             * @inheritDoc
@@ -26664,7 +26544,7 @@ var away;
                 return animator.getAnimationState(this);
             };
             return SkeletonDirectionalNode;
-        })(away.animators.AnimationNodeBase);
+        })(animators.AnimationNodeBase);
         animators.SkeletonDirectionalNode = SkeletonDirectionalNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -26685,7 +26565,7 @@ var away;
                 _super.call(this);
                 this._iInputs = new Array();
 
-                this._pStateClass = away.animators.SkeletonNaryLERPState;
+                this._pStateClass = animators.SkeletonNaryLERPState;
             }
             Object.defineProperty(SkeletonNaryLERPNode.prototype, "numInputs", {
                 get: function () {
@@ -26727,7 +26607,7 @@ var away;
                 return animator.getAnimationState(this);
             };
             return SkeletonNaryLERPNode;
-        })(away.animators.AnimationNodeBase);
+        })(animators.AnimationNodeBase);
         animators.SkeletonNaryLERPNode = SkeletonNaryLERPNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -26809,7 +26689,7 @@ var away;
                 }
             };
             return VertexClipNode;
-        })(away.animators.AnimationClipNodeBase);
+        })(animators.AnimationClipNodeBase);
         animators.VertexClipNode = VertexClipNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -26818,7 +26698,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
@@ -26914,12 +26793,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var StageGL = away.base.StageGL;
-        var Camera = away.entities.Camera;
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
-        var Vector3D = away.geom.Vector3D;
-        var RenderableBase = away.pool.RenderableBase;
-
         /**
         * ...
         */
@@ -27005,7 +26878,7 @@ var away;
                 animationSubGeometry.invalidateBuffer();
             };
             return ParticleStateBase;
-        })(away.animators.AnimationStateBase);
+        })(animators.AnimationStateBase);
         animators.ParticleStateBase = ParticleStateBase;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -27014,11 +26887,8 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -27056,20 +26926,20 @@ var away;
             * @inheritDoc
             */
             ParticleAccelerationState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleAccelerationNode.ACCELERATION_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleAccelerationNode.ACCELERATION_INDEX);
 
-                if (this._particleAccelerationNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC)
+                if (this._particleAccelerationNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC)
                     animationSubGeometry.activateVertexBuffer(index, this._particleAccelerationNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 else
                     animationRegisterCache.setVertexConst(index, this._halfAcceleration.x, this._halfAcceleration.y, this._halfAcceleration.z);
             };
 
             ParticleAccelerationState.prototype.updateAccelerationData = function () {
-                if (this._particleAccelerationNode.mode == away.animators.ParticlePropertiesMode.GLOBAL)
+                if (this._particleAccelerationNode.mode == animators.ParticlePropertiesMode.GLOBAL)
                     this._halfAcceleration = new Vector3D(this._acceleration.x / 2, this._acceleration.y / 2, this._acceleration.z / 2);
             };
             return ParticleAccelerationState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleAccelerationState = ParticleAccelerationState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -27078,11 +26948,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
-        var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -27127,10 +26993,10 @@ var away;
 
 
             ParticleBezierCurveState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                var controlIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleBezierCurveNode.BEZIER_CONTROL_INDEX);
-                var endIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleBezierCurveNode.BEZIER_END_INDEX);
+                var controlIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleBezierCurveNode.BEZIER_CONTROL_INDEX);
+                var endIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleBezierCurveNode.BEZIER_END_INDEX);
 
-                if (this._particleBezierCurveNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                if (this._particleBezierCurveNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
                     animationSubGeometry.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                     animationSubGeometry.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 } else {
@@ -27139,7 +27005,7 @@ var away;
                 }
             };
             return ParticleBezierCurveState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleBezierCurveState = ParticleBezierCurveState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -27148,13 +27014,9 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Matrix3D = away.geom.Matrix3D;
         var Orientation3D = away.geom.Orientation3D;
-        var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
+
         var MathConsts = away.geom.MathConsts;
 
         /**
@@ -27203,7 +27065,7 @@ var away;
                 }
 
                 //set a new matrix transform constant
-                animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleBillboardNode.MATRIX_INDEX), this._matrix);
+                animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleBillboardNode.MATRIX_INDEX), this._matrix);
             };
 
             Object.defineProperty(ParticleBillboardState.prototype, "billboardAxis", {
@@ -27223,7 +27085,7 @@ var away;
             });
 
             return ParticleBillboardState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleBillboardState = ParticleBillboardState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -27232,12 +27094,9 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
-        var ColorTransform = away.geom.ColorTransform;
+
         var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -27332,28 +27191,28 @@ var away;
                 if (animationRegisterCache.needFragmentAnimation) {
                     var dataOffset = this._particleColorNode._iDataOffset;
                     if (this._usesCycle)
-                        animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.CYCLE_INDEX), this._cycleData.x, this._cycleData.y, this._cycleData.z, this._cycleData.w);
+                        animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.CYCLE_INDEX), this._cycleData.x, this._cycleData.y, this._cycleData.z, this._cycleData.w);
 
                     if (this._usesMultiplier) {
-                        if (this._particleColorNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.START_MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                        if (this._particleColorNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.DELTA_MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.DELTA_MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
                         } else {
-                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.START_MULTIPLIER_INDEX), this._startMultiplierData.x, this._startMultiplierData.y, this._startMultiplierData.z, this._startMultiplierData.w);
-                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.DELTA_MULTIPLIER_INDEX), this._deltaMultiplierData.x, this._deltaMultiplierData.y, this._deltaMultiplierData.z, this._deltaMultiplierData.w);
+                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_MULTIPLIER_INDEX), this._startMultiplierData.x, this._startMultiplierData.y, this._startMultiplierData.z, this._startMultiplierData.w);
+                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.DELTA_MULTIPLIER_INDEX), this._deltaMultiplierData.x, this._deltaMultiplierData.y, this._deltaMultiplierData.z, this._deltaMultiplierData.w);
                         }
                     }
                     if (this._usesOffset) {
-                        if (this._particleColorNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.START_OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                        if (this._particleColorNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.DELTA_OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.DELTA_OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
                         } else {
-                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);
-                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.DELTA_OFFSET_INDEX), this._deltaOffsetData.x, this._deltaOffsetData.y, this._deltaOffsetData.z, this._deltaOffsetData.w);
+                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);
+                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.DELTA_OFFSET_INDEX), this._deltaOffsetData.x, this._deltaOffsetData.y, this._deltaOffsetData.z, this._deltaOffsetData.w);
                         }
                     }
                 }
@@ -27365,7 +27224,7 @@ var away;
                         throw (new Error("the cycle duration must be greater than zero"));
                     this._cycleData = new Vector3D(Math.PI * 2 / this._cycleDuration, this._cyclePhase * Math.PI / 180, 0, 0);
                 }
-                if (this._particleColorNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleColorNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
                     if (this._usesCycle) {
                         if (this._usesMultiplier) {
                             this._startMultiplierData = new Vector3D((this._startColor.redMultiplier + this._endColor.redMultiplier) / 2, (this._startColor.greenMultiplier + this._endColor.greenMultiplier) / 2, (this._startColor.blueMultiplier + this._endColor.blueMultiplier) / 2, (this._startColor.alphaMultiplier + this._endColor.alphaMultiplier) / 2);
@@ -27390,7 +27249,7 @@ var away;
                 }
             };
             return ParticleColorState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleColorState = ParticleColorState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -27399,12 +27258,9 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var DisplayObject = away.base.DisplayObject;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
+
         var MathConsts = away.geom.MathConsts;
 
         /**
@@ -27480,18 +27336,18 @@ var away;
                     if (needProcess)
                         this.processPositionAndRotation(currentTime, deltaTime, animationSubGeometry);
 
-                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
-                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 } else if (this._particleFollowNode._iUsesPosition) {
                     if (needProcess)
                         this.processPosition(currentTime, deltaTime, animationSubGeometry);
 
-                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 } else if (this._particleFollowNode._iUsesRotation) {
                     if (needProcess)
                         this.precessRotation(currentTime, deltaTime, animationSubGeometry);
 
-                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 }
 
                 this._prePos.copyFrom(this._targetPos);
@@ -27634,7 +27490,7 @@ var away;
                     animationSubGeometry.invalidateBuffer();
             };
             return ParticleFollowState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleFollowState = ParticleFollowState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -27643,12 +27499,9 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
-        var ColorTransform = away.geom.ColorTransform;
+
         var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
 
         var ParticleInitialColorState = (function (_super) {
             __extends(ParticleInitialColorState, _super);
@@ -27686,25 +27539,25 @@ var away;
                 camera = camera;
 
                 if (animationRegisterCache.needFragmentAnimation) {
-                    if (this._particleInitialColorNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                    if (this._particleInitialColorNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
                         var dataOffset = this._particleInitialColorNode._iDataOffset;
                         if (this._usesMultiplier) {
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleInitialColorNode.MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
                         }
                         if (this._usesOffset)
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleInitialColorNode.OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                     } else {
                         if (this._usesMultiplier)
-                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleInitialColorNode.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);
+                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);
                         if (this._usesOffset)
-                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleInitialColorNode.OFFSET_INDEX), this._offsetData.x, this._offsetData.y, this._offsetData.z, this._offsetData.w);
+                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.OFFSET_INDEX), this._offsetData.x, this._offsetData.y, this._offsetData.z, this._offsetData.w);
                     }
                 }
             };
 
             ParticleInitialColorState.prototype.updateColorData = function () {
-                if (this._particleInitialColorNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleInitialColorNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
                     if (this._usesMultiplier)
                         this._multiplierData = new Vector3D(this._initialColor.redMultiplier, this._initialColor.greenMultiplier, this._initialColor.blueMultiplier, this._initialColor.alphaMultiplier);
                     if (this._usesOffset)
@@ -27712,7 +27565,7 @@ var away;
                 }
             };
             return ParticleInitialColorState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleInitialColorState = ParticleInitialColorState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -27721,12 +27574,9 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Matrix3D = away.geom.Matrix3D;
         var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -27815,9 +27665,9 @@ var away;
 
 
             ParticleOrbitState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleOrbitNode.ORBIT_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleOrbitNode.ORBIT_INDEX);
 
-                if (this._particleOrbitNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                if (this._particleOrbitNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
                     if (this._usesPhase)
                         animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                     else
@@ -27826,7 +27676,7 @@ var away;
                     animationRegisterCache.setVertexConst(index, this._orbitData.x, this._orbitData.y, this._orbitData.z, this._orbitData.w);
 
                 if (this._usesEulers)
-                    animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleOrbitNode.EULERS_INDEX), this._eulersMatrix);
+                    animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleOrbitNode.EULERS_INDEX), this._eulersMatrix);
             };
 
             ParticleOrbitState.prototype.updateOrbitData = function () {
@@ -27836,7 +27686,7 @@ var away;
                     this._eulersMatrix.appendRotation(this._eulers.y, Vector3D.Y_AXIS);
                     this._eulersMatrix.appendRotation(this._eulers.z, Vector3D.Z_AXIS);
                 }
-                if (this._particleOrbitNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleOrbitNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
                     this._orbitData = new Vector3D(this._radius, 0, this._radius * Math.PI * 2, this._cyclePhase * Math.PI / 180);
                     if (this._usesCycle) {
                         if (this._cycleDuration <= 0)
@@ -27847,7 +27697,7 @@ var away;
                 }
             };
             return ParticleOrbitState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleOrbitState = ParticleOrbitState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -27856,11 +27706,8 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -27896,16 +27743,16 @@ var away;
             * @inheritDoc
             */
             ParticleOscillatorState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleOscillatorNode.OSCILLATOR_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleOscillatorNode.OSCILLATOR_INDEX);
 
-                if (this._particleOscillatorNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC)
+                if (this._particleOscillatorNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC)
                     animationSubGeometry.activateVertexBuffer(index, this._particleOscillatorNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                 else
                     animationRegisterCache.setVertexConst(index, this._oscillatorData.x, this._oscillatorData.y, this._oscillatorData.z, this._oscillatorData.w);
             };
 
             ParticleOscillatorState.prototype.updateOscillatorData = function () {
-                if (this._particleOscillatorNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleOscillatorNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
                     if (this._oscillator.w <= 0)
                         throw (new Error("the cycle duration must greater than zero"));
 
@@ -27919,7 +27766,7 @@ var away;
                 }
             };
             return ParticleOscillatorState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleOscillatorState = ParticleOscillatorState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -27928,11 +27775,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
-        var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -27978,18 +27821,18 @@ var away;
             * @inheritDoc
             */
             ParticlePositionState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                if (this._particlePositionNode.mode == away.animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
+                if (this._particlePositionNode.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
                     this._pUpdateDynamicProperties(animationSubGeometry);
 
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticlePositionNode.POSITION_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticlePositionNode.POSITION_INDEX);
 
-                if (this._particlePositionNode.mode == away.animators.ParticlePropertiesMode.GLOBAL)
+                if (this._particlePositionNode.mode == animators.ParticlePropertiesMode.GLOBAL)
                     animationRegisterCache.setVertexConst(index, this._position.x, this._position.y, this._position.z);
                 else
                     animationSubGeometry.activateVertexBuffer(index, this._particlePositionNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
             };
             return ParticlePositionState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticlePositionState = ParticlePositionState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -27998,10 +27841,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var Matrix3D = away.geom.Matrix3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -28016,11 +27856,11 @@ var away;
                 if (animationRegisterCache.hasBillboard) {
                     this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
                     this._matrix.append(camera.inverseSceneTransform);
-                    animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleRotateToHeadingNode.MATRIX_INDEX), this._matrix);
+                    animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleRotateToHeadingNode.MATRIX_INDEX), this._matrix);
                 }
             };
             return ParticleRotateToHeadingState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleRotateToHeadingState = ParticleRotateToHeadingState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -28029,12 +27869,9 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
-        var Vector3D = away.geom.Vector3D;
+
         var Matrix3D = away.geom.Matrix3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -28064,22 +27901,22 @@ var away;
 
 
             ParticleRotateToPositionState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleRotateToPositionNode.POSITION_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleRotateToPositionNode.POSITION_INDEX);
 
                 if (animationRegisterCache.hasBillboard) {
                     this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
                     this._matrix.append(camera.inverseSceneTransform);
-                    animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleRotateToPositionNode.MATRIX_INDEX), this._matrix);
+                    animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleRotateToPositionNode.MATRIX_INDEX), this._matrix);
                 }
 
-                if (this._particleRotateToPositionNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleRotateToPositionNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
                     this._offset = renderable.sourceEntity.inverseSceneTransform.transformVector(this._position);
                     animationRegisterCache.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
                 } else
                     animationSubGeometry.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
             };
             return ParticleRotateToPositionState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleRotateToPositionState = ParticleRotateToPositionState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -28088,11 +27925,8 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -28141,19 +27975,19 @@ var away;
             * @inheritDoc
             */
             ParticleRotationalVelocityState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                if (this._particleRotationalVelocityNode.mode == away.animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
+                if (this._particleRotationalVelocityNode.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
                     this._pUpdateDynamicProperties(animationSubGeometry);
 
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleRotationalVelocityNode.ROTATIONALVELOCITY_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleRotationalVelocityNode.ROTATIONALVELOCITY_INDEX);
 
-                if (this._particleRotationalVelocityNode.mode == away.animators.ParticlePropertiesMode.GLOBAL)
+                if (this._particleRotationalVelocityNode.mode == animators.ParticlePropertiesMode.GLOBAL)
                     animationRegisterCache.setVertexConst(index, this._rotationalVelocityData.x, this._rotationalVelocityData.y, this._rotationalVelocityData.z, this._rotationalVelocityData.w);
                 else
                     animationSubGeometry.activateVertexBuffer(index, this._particleRotationalVelocityNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
             };
 
             ParticleRotationalVelocityState.prototype.updateRotationalVelocityData = function () {
-                if (this._particleRotationalVelocityNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleRotationalVelocityNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
                     if (this._rotationalVelocity.w <= 0)
                         throw (new Error("the cycle duration must greater than zero"));
                     var rotation = this._rotationalVelocity.clone();
@@ -28168,7 +28002,7 @@ var away;
                 }
             };
             return ParticleRotationalVelocityState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleRotationalVelocityState = ParticleRotationalVelocityState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -28177,11 +28011,8 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -28270,9 +28101,9 @@ var away;
 
 
             ParticleScaleState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleScaleNode.SCALE_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleScaleNode.SCALE_INDEX);
 
-                if (this._particleScaleNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                if (this._particleScaleNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
                     if (this._usesCycle) {
                         if (this._usesPhase)
                             animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
@@ -28285,7 +28116,7 @@ var away;
             };
 
             ParticleScaleState.prototype.updateScaleData = function () {
-                if (this._particleScaleNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleScaleNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
                     if (this._usesCycle) {
                         if (this._cycleDuration <= 0)
                             throw (new Error("the cycle duration must be greater than zero"));
@@ -28295,7 +28126,7 @@ var away;
                 }
             };
             return ParticleScaleState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleScaleState = ParticleScaleState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -28304,13 +28135,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
-        var ColorTransform = away.geom.ColorTransform;
-        var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
-
         var ParticleSegmentedColorState = (function (_super) {
             __extends(ParticleSegmentedColorState, _super);
             function ParticleSegmentedColorState(animator, particleSegmentedColorNode) {
@@ -28403,11 +28227,11 @@ var away;
             ParticleSegmentedColorState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (animationRegisterCache.needFragmentAnimation) {
                     if (this._numSegmentPoint > 0)
-                        animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleSegmentedColorNode.TIME_DATA_INDEX), this._timeLifeData[0], this._timeLifeData[1], this._timeLifeData[2], this._timeLifeData[3]);
+                        animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSegmentedColorNode.TIME_DATA_INDEX), this._timeLifeData[0], this._timeLifeData[1], this._timeLifeData[2], this._timeLifeData[3]);
                     if (this._usesMultiplier)
-                        animationRegisterCache.setVertexConstFromArray(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleSegmentedColorNode.START_MULTIPLIER_INDEX), this._multiplierData);
+                        animationRegisterCache.setVertexConstFromArray(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSegmentedColorNode.START_MULTIPLIER_INDEX), this._multiplierData);
                     if (this._usesOffset)
-                        animationRegisterCache.setVertexConstFromArray(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleSegmentedColorNode.START_OFFSET_INDEX), this._offsetData);
+                        animationRegisterCache.setVertexConstFromArray(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSegmentedColorNode.START_OFFSET_INDEX), this._offsetData);
                 }
             };
 
@@ -28459,7 +28283,7 @@ var away;
                 this._timeLifeData.length = 4;
             };
             return ParticleSegmentedColorState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleSegmentedColorState = ParticleSegmentedColorState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -28468,11 +28292,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
-        var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -28530,10 +28350,10 @@ var away;
 
             ParticleSpriteSheetState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (animationRegisterCache.needUVAnimation) {
-                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleSpriteSheetNode.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
+                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSpriteSheetNode.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
                     if (this._usesCycle) {
-                        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleSpriteSheetNode.UV_INDEX_1);
-                        if (this._particleSpriteSheetNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSpriteSheetNode.UV_INDEX_1);
+                        if (this._particleSpriteSheetNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
                             if (this._usesPhase)
                                 animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                             else
@@ -28563,7 +28383,7 @@ var away;
                 }
             };
             return ParticleSpriteSheetState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleSpriteSheetState = ParticleSpriteSheetState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -28572,11 +28392,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
-        var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -28589,13 +28405,13 @@ var away;
                 this._particleTimeNode = particleTimeNode;
             }
             ParticleTimeState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleTimeNode.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleTimeNode.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
 
                 var particleTime = this._pTime / 1000;
-                animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleTimeNode.TIME_CONSTANT_INDEX), particleTime, particleTime, particleTime, particleTime);
+                animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleTimeNode.TIME_CONSTANT_INDEX), particleTime, particleTime, particleTime, particleTime);
             };
             return ParticleTimeState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleTimeState = ParticleTimeState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -28604,12 +28420,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
-        var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
-
         /**
         * ...
         */
@@ -28622,13 +28432,13 @@ var away;
             }
             ParticleUVState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (animationRegisterCache.needUVAnimation) {
-                    var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleUVNode.UV_INDEX);
+                    var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleUVNode.UV_INDEX);
                     var data = this._particleUVNode._iUvData;
                     animationRegisterCache.setVertexConst(index, data.x, data.y);
                 }
             };
             return ParticleUVState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleUVState = ParticleUVState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -28637,11 +28447,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var RenderableBase = away.pool.RenderableBase;
-        var Camera = away.entities.Camera;
         var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
-        var Vector3D = away.geom.Vector3D;
-        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -28683,18 +28489,18 @@ var away;
             };
 
             ParticleVelocityState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                if (this._particleVelocityNode.mode == away.animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
+                if (this._particleVelocityNode.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
                     this._pUpdateDynamicProperties(animationSubGeometry);
 
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleVelocityNode.VELOCITY_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleVelocityNode.VELOCITY_INDEX);
 
-                if (this._particleVelocityNode.mode == away.animators.ParticlePropertiesMode.GLOBAL)
+                if (this._particleVelocityNode.mode == animators.ParticlePropertiesMode.GLOBAL)
                     animationRegisterCache.setVertexConst(index, this._velocity.x, this._velocity.y, this._velocity.z);
                 else
                     animationSubGeometry.activateVertexBuffer(index, this._particleVelocityNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
             };
             return ParticleVelocityState;
-        })(away.animators.ParticleStateBase);
+        })(animators.ParticleStateBase);
         animators.ParticleVelocityState = ParticleVelocityState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -28865,7 +28671,7 @@ var away;
                 this._animationClipNode.dispatchEvent(this._animationStatePlaybackComplete);
             };
             return AnimationClipState;
-        })(away.animators.AnimationStateBase);
+        })(animators.AnimationStateBase);
         animators.AnimationClipState = AnimationClipState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -28874,8 +28680,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
-
         /**
         *
         */
@@ -28884,7 +28688,7 @@ var away;
             function SkeletonBinaryLERPState(animator, skeletonAnimationNode) {
                 _super.call(this, animator, skeletonAnimationNode);
                 this._blendWeight = 0;
-                this._skeletonPose = new away.animators.SkeletonPose();
+                this._skeletonPose = new animators.SkeletonPose();
                 this._skeletonPoseDirty = true;
 
                 this._skeletonAnimationNode = skeletonAnimationNode;
@@ -28987,7 +28791,7 @@ var away;
                     endPose = endPoses[i];
 
                     if (endPose == null)
-                        endPose = endPoses[i] = new away.animators.JointPose();
+                        endPose = endPoses[i] = new animators.JointPose();
 
                     pose1 = poses1[i];
                     pose2 = poses2[i];
@@ -29003,7 +28807,7 @@ var away;
                 }
             };
             return SkeletonBinaryLERPState;
-        })(away.animators.AnimationStateBase);
+        })(animators.AnimationStateBase);
         animators.SkeletonBinaryLERPState = SkeletonBinaryLERPState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -29022,7 +28826,7 @@ var away;
             function SkeletonClipState(animator, skeletonClipNode) {
                 _super.call(this, animator, skeletonClipNode);
                 this._rootPos = new Vector3D();
-                this._skeletonPose = new away.animators.SkeletonPose();
+                this._skeletonPose = new animators.SkeletonPose();
                 this._skeletonPoseDirty = true;
 
                 this._skeletonClipNode = skeletonClipNode;
@@ -29124,7 +28928,7 @@ var away;
                     endPose = endPoses[i];
 
                     if (endPose == null)
-                        endPose = endPoses[i] = new away.animators.JointPose();
+                        endPose = endPoses[i] = new animators.JointPose();
 
                     pose1 = currentPose[i];
                     pose2 = nextPose[i];
@@ -29191,7 +28995,7 @@ var away;
                 this._pOldFrame = this._pNextFrame;
             };
             return SkeletonClipState;
-        })(away.animators.AnimationClipState);
+        })(animators.AnimationClipState);
         animators.SkeletonClipState = SkeletonClipState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -29200,7 +29004,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
         var Quaternion = away.geom.Quaternion;
 
         /**
@@ -29211,7 +29014,7 @@ var away;
             function SkeletonDifferenceState(animator, skeletonAnimationNode) {
                 _super.call(this, animator, skeletonAnimationNode);
                 this._blendWeight = 0;
-                this._skeletonPose = new away.animators.SkeletonPose();
+                this._skeletonPose = new animators.SkeletonPose();
                 this._skeletonPoseDirty = true;
 
                 this._skeletonAnimationNode = skeletonAnimationNode;
@@ -29314,7 +29117,7 @@ var away;
                     endPose = endPoses[i];
 
                     if (endPose == null)
-                        endPose = endPoses[i] = new away.animators.JointPose();
+                        endPose = endPoses[i] = new animators.JointPose();
 
                     base = basePoses[i];
                     diff = diffPoses[i];
@@ -29332,7 +29135,7 @@ var away;
             };
             SkeletonDifferenceState._tempQuat = new Quaternion();
             return SkeletonDifferenceState;
-        })(away.animators.AnimationStateBase);
+        })(animators.AnimationStateBase);
         animators.SkeletonDifferenceState = SkeletonDifferenceState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -29341,8 +29144,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
-
         /**
         *
         */
@@ -29350,7 +29151,7 @@ var away;
             __extends(SkeletonDirectionalState, _super);
             function SkeletonDirectionalState(animator, skeletonAnimationNode) {
                 _super.call(this, animator, skeletonAnimationNode);
-                this._skeletonPose = new away.animators.SkeletonPose();
+                this._skeletonPose = new animators.SkeletonPose();
                 this._skeletonPoseDirty = true;
                 this._blendWeight = 0;
                 this._direction = 0;
@@ -29472,7 +29273,7 @@ var away;
                     endPose = endPoses[i];
 
                     if (endPose == null)
-                        endPose = endPoses[i] = new away.animators.JointPose();
+                        endPose = endPoses[i] = new animators.JointPose();
 
                     pose1 = poses1[i];
                     pose2 = poses2[i];
@@ -29521,7 +29322,7 @@ var away;
                 }
             };
             return SkeletonDirectionalState;
-        })(away.animators.AnimationStateBase);
+        })(animators.AnimationStateBase);
         animators.SkeletonDirectionalState = SkeletonDirectionalState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -29530,9 +29331,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var Vector3D = away.geom.Vector3D;
-        var Quaternion = away.geom.Quaternion;
-
         /**
         *
         */
@@ -29540,7 +29338,7 @@ var away;
             __extends(SkeletonNaryLERPState, _super);
             function SkeletonNaryLERPState(animator, skeletonAnimationNode) {
                 _super.call(this, animator, skeletonAnimationNode);
-                this._skeletonPose = new away.animators.SkeletonPose();
+                this._skeletonPose = new animators.SkeletonPose();
                 this._skeletonPoseDirty = true;
                 this._blendWeights = new Array();
                 this._inputs = new Array();
@@ -29673,7 +29471,7 @@ var away;
                             endPose = endPoses[i];
 
                             if (endPose == null)
-                                endPose = endPoses[i] = new away.animators.JointPose();
+                                endPose = endPoses[i] = new animators.JointPose();
 
                             pose = poses[i];
                             q = pose.orientation;
@@ -29735,7 +29533,7 @@ var away;
                     endPoses[i].orientation.normalize();
             };
             return SkeletonNaryLERPState;
-        })(away.animators.AnimationStateBase);
+        })(animators.AnimationStateBase);
         animators.SkeletonNaryLERPState = SkeletonNaryLERPState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -29805,7 +29603,7 @@ var away;
                 //TODO:implement positiondelta functionality for vertex animations
             };
             return VertexClipState;
-        })(away.animators.AnimationClipState);
+        })(animators.AnimationClipState);
         animators.VertexClipState = VertexClipState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -29821,7 +29619,7 @@ var away;
                 this.blendSpeed = blendSpeed;
             }
             CrossfadeTransition.prototype.getAnimationNode = function (animator, startNode, endNode, startBlend /*int*/ ) {
-                var crossFadeTransitionNode = new away.animators.CrossfadeTransitionNode();
+                var crossFadeTransitionNode = new animators.CrossfadeTransitionNode();
                 crossFadeTransitionNode.inputA = startNode;
                 crossFadeTransitionNode.inputB = endNode;
                 crossFadeTransitionNode.blendSpeed = this.blendSpeed;
@@ -29850,10 +29648,10 @@ var away;
             function CrossfadeTransitionNode() {
                 _super.call(this);
 
-                this._pStateClass = away.animators.CrossfadeTransitionState;
+                this._pStateClass = animators.CrossfadeTransitionState;
             }
             return CrossfadeTransitionNode;
-        })(away.animators.SkeletonBinaryLERPNode);
+        })(animators.SkeletonBinaryLERPNode);
         animators.CrossfadeTransitionNode = CrossfadeTransitionNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -29892,7 +29690,7 @@ var away;
                 _super.prototype._pUpdateTime.call(this, time);
             };
             return CrossfadeTransitionState;
-        })(away.animators.SkeletonBinaryLERPState);
+        })(animators.SkeletonBinaryLERPState);
         animators.CrossfadeTransitionState = CrossfadeTransitionState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -29901,9 +29699,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var StageGL = away.base.StageGL;
         var AbstractMethodError = away.errors.AbstractMethodError;
-        var MaterialPassBase = away.materials.MaterialPassBase;
 
         /**
         * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
@@ -30093,12 +29889,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var TriangleSubGeometry = away.base.TriangleSubGeometry;
-        var StageGL = away.base.StageGL;
-        var Camera = away.entities.Camera;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var RenderableBase = away.pool.RenderableBase;
-
         /**
         * Dispatched when playback of an animation inside the animator object starts.
         *
@@ -30470,14 +30260,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var SubGeometryBase = away.base.SubGeometryBase;
-        var ParticleGeometry = away.base.ParticleGeometry;
-
-        var ContextGL = away.gl.ContextGL;
-        var Mesh = away.entities.Mesh;
-        var StageGL = away.base.StageGL;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-
         /**
         * The animation data set used by particle-based animators, containing particle animation data.
         *
@@ -30504,7 +30286,7 @@ var away;
                 this._totalLenOfOneVertex = 0;
 
                 //automatically add a particle time node to the set
-                this.addAnimation(this._timeNode = new away.animators.ParticleTimeNode(usesDuration, usesLooping, usesDelay));
+                this.addAnimation(this._timeNode = new animators.ParticleTimeNode(usesDuration, usesLooping, usesDelay));
             }
             Object.defineProperty(ParticleAnimationSet.prototype, "particleNodes", {
                 /**
@@ -30524,11 +30306,11 @@ var away;
                 var i;
                 var n = node;
                 n._iProcessAnimationSetting(this);
-                if (n.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                if (n.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
                     n._iDataOffset = this._totalLenOfOneVertex;
                     this._totalLenOfOneVertex += n.dataLength;
                     this._localStaticNodes.push(n);
-                } else if (n.mode == away.animators.ParticlePropertiesMode.LOCAL_DYNAMIC)
+                } else if (n.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC)
                     this._localDynamicNodes.push(n);
 
                 for (i = this._particleNodes.length - 1; i >= 0; i--) {
@@ -30567,7 +30349,7 @@ var away;
                 this._iAnimationRegisterCache = pass.animationRegisterCache;
 
                 if (this._iAnimationRegisterCache == null)
-                    this._iAnimationRegisterCache = pass.animationRegisterCache = new away.animators.AnimationRegisterCache(profile);
+                    this._iAnimationRegisterCache = pass.animationRegisterCache = new animators.AnimationRegisterCache(profile);
 
                 //reset animationRegisterCache
                 this._iAnimationRegisterCache.vertexConstantOffset = pass.numUsedVertexConstants;
@@ -30715,7 +30497,7 @@ var away;
                             continue;
                     }
 
-                    animationSubGeometry = new away.animators.AnimationSubGeometry();
+                    animationSubGeometry = new animators.AnimationSubGeometry();
 
                     if (mesh.shareAnimationGeometry)
                         this._animationSubGeometries[subGeometry.id] = animationSubGeometry;
@@ -30734,7 +30516,7 @@ var away;
                 var particles = geometry.particles;
                 var particlesLength = particles.length;
                 var numParticles = geometry.numParticles;
-                var particleProperties = new away.animators.ParticleProperties();
+                var particleProperties = new animators.ParticleProperties();
                 var particle;
 
                 var oneDataLen;
@@ -30794,7 +30576,7 @@ var away;
 
                         //store particle properties if they need to be retreived for dynamic local nodes
                         if (this._localDynamicNodes.length)
-                            animationSubGeometry.animationParticles.push(new away.animators.ParticleAnimationData(i, particleProperties.startTime, particleProperties.duration, particleProperties.delay, particle));
+                            animationSubGeometry.animationParticles.push(new animators.ParticleAnimationData(i, particleProperties.startTime, particleProperties.duration, particleProperties.delay, particle));
 
                         animationSubGeometry.numProcessedVertices += numVertices;
 
@@ -30810,7 +30592,7 @@ var away;
 
             ParticleAnimationSet.COLOR_PRIORITY = 18;
             return ParticleAnimationSet;
-        })(away.animators.AnimationSetBase);
+        })(animators.AnimationSetBase);
         animators.ParticleAnimationSet = ParticleAnimationSet;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -30819,15 +30601,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var SubGeometryBase = away.base.SubGeometryBase;
-
-        var StageGL = away.base.StageGL;
-        var Camera = away.entities.Camera;
-        var Vector3D = away.geom.Vector3D;
         var ContextGLProgramType = away.gl.ContextGLProgramType;
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-        var RenderableBase = away.pool.RenderableBase;
 
         /**
         * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
@@ -30860,7 +30634,7 @@ var away;
                 for (var i = 0; i < this._particleAnimationSet.particleNodes.length; i++) {
                     node = this._particleAnimationSet.particleNodes[i];
                     state = this.getAnimationState(node);
-                    if (node.mode == away.animators.ParticlePropertiesMode.LOCAL_DYNAMIC) {
+                    if (node.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC) {
                         this._animatorParticleStates.push(state);
                         node._iDataOffset = this._totalLenOfOneVertex;
                         this._totalLenOfOneVertex += node.dataLength;
@@ -30955,7 +30729,7 @@ var away;
                     return;
 
                 var subGeometry = subMesh.subGeometry;
-                var animatorSubGeometry = this._animatorSubGeometries[subGeometry.id] = new away.animators.AnimationSubGeometry();
+                var animatorSubGeometry = this._animatorSubGeometries[subGeometry.id] = new animators.AnimationSubGeometry();
 
                 //create the vertexData vector that will be used for local state data
                 animatorSubGeometry.createVertexData(subGeometry.numVertices, this._totalLenOfOneVertex);
@@ -30964,7 +30738,7 @@ var away;
                 animatorSubGeometry.animationParticles = this._particleAnimationSet.getAnimationSubGeometry(subMesh).animationParticles;
             };
             return ParticleAnimator;
-        })(away.animators.AnimatorBase);
+        })(animators.AnimatorBase);
         animators.ParticleAnimator = ParticleAnimator;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -30974,17 +30748,10 @@ var away;
 (function (away) {
     (function (animators) {
         var TriangleSubGeometry = away.base.TriangleSubGeometry;
-        var SubMesh = away.base.TriangleSubMesh;
-        var StageGL = away.base.StageGL;
-        var Camera = away.entities.Camera;
+
         var AnimationStateEvent = away.events.AnimationStateEvent;
-        var SubGeometryEvent = away.events.SubGeometryEvent;
+
         var ContextGLProgramType = away.gl.ContextGLProgramType;
-        var Quaternion = away.geom.Quaternion;
-        var Vector3D = away.geom.Vector3D;
-        var RenderableBase = away.pool.RenderableBase;
-        var TriangleSubMeshRenderable = away.pool.TriangleSubMeshRenderable;
-        var MaterialPassBase = away.materials.MaterialPassBase;
 
         /**
         * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects
@@ -31004,7 +30771,7 @@ var away;
                 if (typeof forceCPU === "undefined") { forceCPU = false; }
                 var _this = this;
                 _super.call(this, animationSet);
-                this._globalPose = new away.animators.SkeletonPose();
+                this._globalPose = new animators.SkeletonPose();
                 this._morphedSubGeometry = new Object();
                 this._morphedSubGeometryDirty = new Object();
 
@@ -31490,7 +31257,7 @@ var away;
                     globalJointPose = globalPoses[i];
 
                     if (globalJointPose == null)
-                        globalJointPose = globalPoses[i] = new away.animators.JointPose();
+                        globalJointPose = globalPoses[i] = new animators.JointPose();
 
                     joint = joints[i];
                     parentIndex = joint.parentIndex;
@@ -31585,7 +31352,7 @@ var away;
                 }
             };
             return SkeletonAnimator;
-        })(away.animators.AnimatorBase);
+        })(animators.AnimatorBase);
         animators.SkeletonAnimator = SkeletonAnimator;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -31594,10 +31361,6 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGL = away.gl.ContextGL;
-        var StageGL = away.base.StageGL;
-        var MaterialPassBase = away.materials.MaterialPassBase;
-
         /**
         * The animation data set used by skeleton-based animators, containing skeleton animation data.
         *
@@ -31703,7 +31466,7 @@ var away;
             SkeletonAnimationSet.prototype.doneAGALCode = function (pass) {
             };
             return SkeletonAnimationSet;
-        })(away.animators.AnimationSetBase);
+        })(animators.AnimationSetBase);
         animators.SkeletonAnimationSet = SkeletonAnimationSet;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -31898,7 +31661,7 @@ var away;
                 return code;
             };
             return VertexAnimationSet;
-        })(away.animators.AnimationSetBase);
+        })(animators.AnimationSetBase);
         animators.VertexAnimationSet = VertexAnimationSet;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -31908,11 +31671,6 @@ var away;
 (function (away) {
     (function (animators) {
         var TriangleSubGeometry = away.base.TriangleSubGeometry;
-        var SubMesh = away.base.TriangleSubMesh;
-        var Geometry = away.base.Geometry;
-        var StageGL = away.base.StageGL;
-        var RenderableBase = away.pool.RenderableBase;
-        var SubMeshRenderable = away.pool.TriangleSubMeshRenderable;
 
         /**
         * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
@@ -32009,7 +31767,7 @@ var away;
 
                 stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
-                if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE)
+                if (this._blendMode == animators.VertexAnimationMode.ABSOLUTE)
                     i = 1;
                 else
                     i = 0;
@@ -32027,7 +31785,7 @@ var away;
             VertexAnimator.prototype.setNullPose = function (stageGL, renderable, vertexConstantOffset /*int*/ , vertexStreamOffset /*int*/ ) {
                 stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
-                if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE) {
+                if (this._blendMode == animators.VertexAnimationMode.ABSOLUTE) {
                     var len = this._numPoses;
                     for (var i = 1; i < len; ++i) {
                         stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
@@ -32047,14 +31805,14 @@ var away;
             };
 
             VertexAnimator.prototype.getRenderableSubGeometry = function (renderable, sourceSubGeometry) {
-                if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE && this._poses.length)
+                if (this._blendMode == animators.VertexAnimationMode.ABSOLUTE && this._poses.length)
                     return this._poses[0].subGeometries[renderable.subMesh._iIndex] || sourceSubGeometry;
 
                 //nothing to do here
                 return sourceSubGeometry;
             };
             return VertexAnimator;
-        })(away.animators.AnimatorBase);
+        })(animators.AnimatorBase);
         animators.VertexAnimator = VertexAnimator;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -32069,7 +31827,7 @@ var away;
         var BasicSpecularMethod = away.materials.SpecularBasicMethod;
         var ColorMaterial = away.materials.ColorMaterial;
         var ColorMultiPassMaterial = away.materials.ColorMultiPassMaterial;
-        var MaterialBase = away.materials.MaterialBase;
+
         var TextureMaterial = away.materials.TextureMaterial;
         var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
         var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
@@ -32119,7 +31877,7 @@ var away;
             * @return Whether or not the given data is supported.
             */
             OBJParser.supportsData = function (data) {
-                var content = away.parsers.ParserUtils.toString(data);
+                var content = parsers.ParserUtils.toString(data);
                 var hasV = false;
                 var hasF = false;
 
@@ -32136,7 +31894,7 @@ var away;
             */
             OBJParser.prototype._iResolveDependency = function (resourceDependency) {
                 if (resourceDependency.id == 'mtl') {
-                    var str = away.parsers.ParserUtils.toString(resourceDependency.data);
+                    var str = parsers.ParserUtils.toString(resourceDependency.data);
                     this.parseMtl(str);
                 } else {
                     var asset;
@@ -32229,22 +31987,22 @@ var away;
                     // parsing being paused to retrieve dependencies, break
                     // here and do not continue parsing until un-paused.
                     if (this.parsingPaused) {
-                        return away.parsers.ParserBase.MORE_TO_PARSE;
+                        return parsers.ParserBase.MORE_TO_PARSE;
                     }
                 }
 
                 if (this._charIndex >= this._stringLength) {
                     if (this._mtlLib && !this._mtlLibLoaded) {
-                        return away.parsers.ParserBase.MORE_TO_PARSE;
+                        return parsers.ParserBase.MORE_TO_PARSE;
                     }
 
                     this.translate();
                     this.applyMaterials();
 
-                    return away.parsers.ParserBase.PARSING_DONE;
+                    return parsers.ParserBase.PARSING_DONE;
                 }
 
-                return away.parsers.ParserBase.MORE_TO_PARSE;
+                return parsers.ParserBase.MORE_TO_PARSE;
             };
 
             OBJParser.prototype._pStartParsing = function (frameLimit) {
@@ -32913,7 +32671,7 @@ var away;
                     this.applyMaterial(this._materialLoaded[i]);
             };
             return OBJParser;
-        })(away.parsers.ParserBase);
+        })(parsers.ParserBase);
         parsers.OBJParser = OBJParser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
@@ -33127,8 +32885,6 @@ var Vertex = (function () {
 var away;
 (function (away) {
     (function (parsers) {
-        var AnimationSetBase = away.animators.AnimationSetBase;
-        var AnimatorBase = away.animators.AnimatorBase;
         var JointPose = away.animators.JointPose;
         var Skeleton = away.animators.Skeleton;
         var SkeletonAnimationSet = away.animators.SkeletonAnimationSet;
@@ -33152,10 +32908,9 @@ var away;
         var SpecularFresnelMethod = away.materials.SpecularFresnelMethod;
         var ShadowHardMethod = away.materials.ShadowHardMethod;
         var SpecularPhongMethod = away.materials.SpecularPhongMethod;
-        var MultiPassMaterialBase = away.materials.MultiPassMaterialBase;
+
         var ShadowNearMethod = away.materials.ShadowNearMethod;
-        var ShadowMethodBase = away.materials.ShadowMethodBase;
-        var SinglePassMaterialBase = away.materials.SinglePassMaterialBase;
+
         var ShadowSoftMethod = away.materials.ShadowSoftMethod;
         var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
 
@@ -35666,14 +35421,11 @@ var away;
         var ColorMaterial = away.materials.ColorMaterial;
         var ColorMultiPassMaterial = away.materials.ColorMultiPassMaterial;
         var DefaultMaterialManager = away.materials.DefaultMaterialManager;
-        var MultiPassMaterialBase = away.materials.MultiPassMaterialBase;
-        var SinglePassMaterialBase = away.materials.SinglePassMaterialBase;
+
         var TextureMaterial = away.materials.TextureMaterial;
         var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
-        var MaterialBase = away.materials.MaterialBase;
+
         var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
-        var Texture2DBase = away.textures.Texture2DBase;
-        var ByteArray = away.utils.ByteArray;
 
         /**
         * Max3DSParser provides a parser for the 3ds data type.
@@ -35709,7 +35461,7 @@ var away;
             Max3DSParser.supportsData = function (data) {
                 var ba;
 
-                ba = away.parsers.ParserUtils.toByteArray(data);
+                ba = parsers.ParserUtils.toByteArray(data);
                 if (ba) {
                     ba.position = 0;
                     if (ba.readShort() == 0x4d4d)
@@ -35855,7 +35607,7 @@ var away;
                 // been read, or if there is a currently non-finalized object in
                 // the pipeline.
                 if (this._byteData.getBytesAvailable() || this._cur_obj || this._cur_mat) {
-                    return away.parsers.ParserBase.MORE_TO_PARSE;
+                    return parsers.ParserBase.MORE_TO_PARSE;
                 } else {
                     var name;
 
@@ -35870,7 +35622,7 @@ var away;
                         }
                     }
 
-                    return away.parsers.ParserBase.PARSING_DONE;
+                    return parsers.ParserBase.PARSING_DONE;
                 }
             };
 
@@ -36431,7 +36183,7 @@ var away;
                 return (r << 16) | (g << 8) | b;
             };
             return Max3DSParser;
-        })(away.parsers.ParserBase);
+        })(parsers.ParserBase);
         parsers.Max3DSParser = Max3DSParser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
@@ -36477,8 +36229,6 @@ var away;
         var VertexAnimationSet = away.animators.VertexAnimationSet;
         var VertexClipNode = away.animators.VertexClipNode;
         var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
-        var Texture2DBase = away.textures.Texture2DBase;
-        var ByteArray = away.utils.ByteArray;
 
         /**
         * MD2Parser provides a parser for the MD2 data type.
@@ -36518,7 +36268,7 @@ var away;
             * @return Whether or not the given data is supported.
             */
             MD2Parser.supportsData = function (data) {
-                return (away.parsers.ParserUtils.toString(data, 4) == 'IDP2');
+                return (parsers.ParserUtils.toString(data, 4) == 'IDP2');
             };
 
             /**
@@ -36906,7 +36656,7 @@ var away;
             };
             MD2Parser.FPS = 6;
             return MD2Parser;
-        })(away.parsers.ParserBase);
+        })(parsers.ParserBase);
         parsers.MD2Parser = MD2Parser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
@@ -37039,10 +36789,10 @@ var away;
                         this._clip = new SkeletonClipNode();
                         this.translateClip();
                         this._pFinalizeAsset(this._clip);
-                        return away.parsers.ParserBase.PARSING_DONE;
+                        return parsers.ParserBase.PARSING_DONE;
                     }
                 }
-                return away.parsers.ParserBase.MORE_TO_PARSE;
+                return parsers.ParserBase.MORE_TO_PARSE;
             };
 
             /**
@@ -37467,7 +37217,7 @@ var away;
 
             MD5AnimParser.COMMENT_TOKEN = "//";
             return MD5AnimParser;
-        })(away.parsers.ParserBase);
+        })(parsers.ParserBase);
         parsers.MD5AnimParser = MD5AnimParser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
@@ -37514,7 +37264,7 @@ var away;
         var SkeletonJoint = away.animators.SkeletonJoint;
         var Geometry = away.base.Geometry;
         var TriangleSubGeometry = away.base.TriangleSubGeometry;
-        var Matrix3D = away.geom.Matrix3D;
+
         var Quaternion = away.geom.Quaternion;
         var Vector3D = away.geom.Vector3D;
         var Mesh = away.entities.Mesh;
@@ -37629,10 +37379,10 @@ var away;
                         this._pFinalizeAsset(this._mesh);
                         this._pFinalizeAsset(this._skeleton);
                         this._pFinalizeAsset(this._animationSet);
-                        return away.parsers.ParserBase.PARSING_DONE;
+                        return parsers.ParserBase.PARSING_DONE;
                     }
                 }
-                return away.parsers.ParserBase.MORE_TO_PARSE;
+                return parsers.ParserBase.MORE_TO_PARSE;
             };
 
             MD5MeshParser.prototype._pStartParsing = function (frameLimit) {
@@ -38114,7 +37864,7 @@ var away;
             MD5MeshParser.MESH_NUM_WEIGHTS_TOKEN = "numweights";
             MD5MeshParser.MESH_WEIGHT_TOKEN = "weight";
             return MD5MeshParser;
-        })(away.parsers.ParserBase);
+        })(parsers.ParserBase);
         parsers.MD5MeshParser = MD5MeshParser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
@@ -38167,7 +37917,6 @@ var away;
 var away;
 (function (away) {
     (function (commands) {
-        var DisplayObjectContainer = away.containers.DisplayObjectContainer;
         var Geometry = away.base.Geometry;
         var TriangleSubGeometry = away.base.TriangleSubGeometry;
         var Matrix3DUtils = away.geom.Matrix3DUtils;
@@ -38519,9 +38268,6 @@ var GeometryVO = (function () {
 var away;
 (function (away) {
     (function (tools) {
-        var Matrix = away.geom.Matrix;
-        var Matrix3D = away.geom.Matrix3D;
-
         /**
         * ...
         */
@@ -38574,10 +38320,9 @@ var away;
     (function (tools) {
         var ParticleData = away.animators.ParticleData;
         var ParticleGeometry = away.base.ParticleGeometry;
-        var Geometry = away.base.Geometry;
+
         var TriangleSubGeometry = away.base.TriangleSubGeometry;
-        var Matrix = away.geom.Matrix;
-        var Matrix3D = away.geom.Matrix3D;
+
         var Point = away.geom.Point;
         var Vector3D = away.geom.Vector3D;
 
@@ -38775,6 +38520,231 @@ var away;
     })(away.tools || (away.tools = {}));
     var tools = away.tools;
 })(away || (away = {}));
+/**********************************************************************************************************************************************************************************************************
+* This file contains a reference to all the classes used in the project.
+********************************************************************************************************************************************************************************************************
+*
+* The TypeScript compiler exports classes in a non deterministic manner, as the extend functionality copies the prototype chain
+* of one object onto another during initialisation and load (to create extensible functionality), the non deterministic nature of the
+* compiler can result in an extend operation referencing a class that is undefined and not yet loaded - which throw an JavaScript error.
+*
+* This file provides the compiler with a strict order in which to export the TypeScript classes to mitigate undefined extend errors
+*
+* @see https://typescript.codeplex.com/workitem/1356 @see https://typescript.codeplex.com/workitem/913
+*
+*********************************************************************************************************************************************************************************************************/
+///<reference path="../../libs/ref/js.d.ts"/>
+///<reference path="../../libs/awayjs.next.d.ts"/>
+///<reference path="errors/AnimationSetError.ts"/>
+///<reference path="events/LightEvent.ts" />
+///<reference path="events/AnimationStateEvent.ts" />
+///<reference path="events/AnimatorEvent.ts" />
+///<reference path="events/ShadingMethodEvent.ts"/>
+///<reference path="core/base/ParticleGeometry.ts"/>
+///<reference path="core/pool/RenderableBase.ts"/>
+///<reference path="core/pool/BillboardRenderable.ts"/>
+///<reference path="core/pool/LineSubMeshRenderable.ts"/>
+///<reference path="core/pool/TriangleSubMeshRenderable.ts"/>
+///<reference path="core/pool/SkyboxRenderable.ts"/>
+///<reference path="core/traverse/EntityCollector.ts" />
+///<reference path="core/traverse/ShadowCasterCollector.ts" />
+///<reference path="core/partition/DirectionalLightNode.ts" />
+///<reference path="core/partition/LightProbeNode.ts" />
+///<reference path="core/partition/PointLightNode.ts" />
+///<reference path="core/pick/PickingColliderBase.ts" />
+///<reference path="core/pick/JSPickingCollider.ts" />
+///<reference path="core/pick/ShaderPicker.ts" />
+///<reference path="core/render/RendererBase.ts"/>
+///<reference path="core/render/DepthRenderer.ts"/>
+///<reference path="core/render/DefaultRenderer.ts"/>
+///<reference path="core/render/Filter3DRenderer.ts"/>
+///<reference path="materials/utils/DefaultMaterialManager.ts"/>
+///<reference path="filters/tasks/Filter3DTaskBase.ts"/>
+///<reference path="filters/Filter3DBase.ts"/>
+///<reference path="lights/LightBase.ts"/>
+///<reference path="lights/LightProbe.ts"/>
+///<reference path="lights/PointLight.ts"/>
+///<reference path="lights/DirectionalLight.ts"/>
+///<reference path="lights/shadowmaps/ShadowMapperBase.ts"/>
+///<reference path="lights/shadowmaps/CubeMapShadowMapper.ts"/>
+///<reference path="lights/shadowmaps/DirectionalShadowMapper.ts"/>
+///<reference path="lights/shadowmaps/CascadeShadowMapper.ts"/>
+///<reference path="lights/shadowmaps/NearDirectionalShadowMapper.ts"/>
+///<reference path="managers/AGALProgramCache.ts"/>
+///<reference path="materials/passes/MaterialPassBase.ts"/>
+///<reference path="materials/passes/CompiledPass.ts"/>
+///<reference path="materials/passes/SuperShaderPass.ts"/>
+///<reference path="materials/passes/DepthMapPass.ts"/>
+///<reference path="materials/passes/DistanceMapPass.ts"/>
+///<reference path="materials/passes/LightingPass.ts"/>
+///<reference path="materials/passes/ShadowCasterPass.ts"/>
+///<reference path="materials/passes/SingleObjectDepthPass.ts"/>
+///<reference path="materials/passes/SegmentPass.ts"/>
+///<reference path="materials/passes/SkyboxPass.ts"/>
+///<reference path="materials/methods/MethodVO.ts"/>
+///<reference path="materials/methods/MethodVOSet.ts"/>
+///<reference path="materials/methods/ShadingMethodBase.ts"/>
+///<reference path="materials/methods/LightingMethodBase.ts"/>
+///<reference path="materials/methods/ShadowMapMethodBase.ts"/>
+///<reference path="materials/methods/ShaderMethodSetup.ts"/>
+///<reference path="materials/methods/AmbientBasicMethod.ts"/>
+///<reference path="materials/methods/AmbientEnvMapMethod.ts"/>
+///<reference path="materials/methods/DiffuseBasicMethod.ts"/>
+///<reference path="materials/methods/DiffuseCompositeMethod.ts"/>
+///<reference path="materials/methods/DiffuseCelMethod.ts"/>
+///<reference path="materials/methods/DiffuseDepthMethod.ts"/>
+///<reference path="materials/methods/DiffuseGradientMethod.ts"/>
+///<reference path="materials/methods/DiffuseLightMapMethod.ts"/>
+///<reference path="materials/methods/DiffuseSubSurfaceMethod.ts"/>
+///<reference path="materials/methods/DiffuseWrapMethod.ts"/>
+///<reference path="materials/methods/EffectMethodBase.ts"/>
+///<reference path="materials/methods/EffectAlphaMaskMethod.ts"/>
+///<reference path="materials/methods/EffectColorMatrixMethod.ts"/>
+///<reference path="materials/methods/EffectColorTransformMethod.ts"/>
+///<reference path="materials/methods/EffectEnvMapMethod.ts"/>
+///<reference path="materials/methods/EffectFogMethod.ts"/>
+///<reference path="materials/methods/EffectFresnelEnvMapMethod.ts"/>
+///<reference path="materials/methods/EffectLightMapMethod.ts"/>
+///<reference path="materials/methods/EffectRefractionEnvMapMethod.ts"/>
+///<reference path="materials/methods/EffectRimLightMethod.ts"/>
+///<reference path="materials/methods/NormalBasicMethod.ts"/>
+///<reference path="materials/methods/NormalHeightMapMethod.ts"/>
+///<reference path="materials/methods/NormalSimpleWaterMethod.ts"/>
+///<reference path="materials/methods/ShadowMethodBase.ts"/>
+///<reference path="materials/methods/ShadowCascadeMethod.ts"/>
+///<reference path="materials/methods/ShadowDitheredMethod.ts"/>
+///<reference path="materials/methods/ShadowFilteredMethod.ts"/>
+///<reference path="materials/methods/ShadowHardMethod.ts"/>
+///<reference path="materials/methods/ShadowNearMethod.ts"/>
+///<reference path="materials/methods/ShadowSoftMethod.ts"/>
+///<reference path="materials/methods/SpecularBasicMethod.ts"/>
+///<reference path="materials/methods/SpecularCompositeMethod.ts"/>
+///<reference path="materials/methods/SpecularAnisotropicMethod.ts"/>
+///<reference path="materials/methods/SpecularCelMethod.ts"/>
+///<reference path="materials/methods/SpecularFresnelMethod.ts"/>
+///<reference path="materials/methods/SpecularPhongMethod.ts"/>
+///<reference path="materials/lightpickers/LightPickerBase.ts"/>
+///<reference path="materials/lightpickers/StaticLightPicker.ts"/>
+///<reference path="materials/compilation/ShaderRegisterCache.ts"/>
+///<reference path="materials/compilation/ShaderRegisterElement.ts"/>
+///<reference path="materials/compilation/ShaderRegisterData.ts"/>
+///<reference path="materials/compilation/MethodDependencyCounter.ts"/>
+///<reference path="materials/compilation/RegisterPool.ts"/>
+///<reference path="materials/compilation/ShaderRegisterCache.ts"/>
+///<reference path="materials/compilation/ShaderCompiler.ts"/>
+///<reference path="materials/compilation/SuperShaderCompiler.ts"/>
+///<reference path="materials/LightSources.ts"/>
+///<reference path="materials/MaterialBase.ts"/>
+///<reference path="materials/SinglePassMaterialBase.ts"/>
+///<reference path="materials/MultiPassMaterialBase.ts"/>
+///<reference path="materials/TextureMultiPassMaterial.ts"/>
+///<reference path="materials/ColorMultiPassMaterial.ts"/>
+///<reference path="materials/TextureMaterial.ts"/>
+///<reference path="materials/ColorMaterial.ts"/>
+///<reference path="materials/compilation/LightingShaderCompiler.ts"/>
+///<reference path="materials/SegmentMaterial.ts"/>
+///<reference path="materials/SkyboxMaterial.ts"/>
+///<reference path="prefabs/PrimitivePrefabBase.ts"/>
+///<reference path="prefabs/PrimitiveTorusPrefab.ts"/>
+///<reference path="prefabs/PrimitiveCubePrefab.ts"/>
+///<reference path="prefabs/PrimitivePlanePrefab.ts"/>
+///<reference path="prefabs/PrimitiveCapsulePrefab.ts" />
+///<reference path="prefabs/PrimitiveCylinderPrefab.ts" />
+///<reference path="prefabs/PrimitiveConePrefab.ts" />
+///<reference path="prefabs/PrimitivePolygonPrefab.ts" />
+///<reference path="prefabs/PrimitiveSpherePrefab.ts" />
+///<reference path="utils/PerspectiveMatrix3D.ts"/>
+///<reference path="animators/data/AnimationRegisterCache.ts"/>
+///<reference path="animators/data/AnimationSubGeometry.ts"/>
+///<reference path="animators/data/ColorSegmentPoint.ts"/>
+///<reference path="animators/data/JointPose.ts"/>
+///<reference path="animators/data/ParticleAnimationData.ts"/>
+///<reference path="animators/data/ParticleData.ts"/>
+///<reference path="animators/data/ParticleProperties.ts"/>
+///<reference path="animators/data/ParticlePropertiesMode.ts"/>
+///<reference path="animators/data/Skeleton.ts"/>
+///<reference path="animators/data/VertexAnimationMode.ts"/>
+///<reference path="animators/data/SkeletonJoint.ts"/>
+///<reference path="animators/data/SkeletonPose.ts"/>
+///<reference path="animators/data/VertexAnimationMode.ts"/>
+///<reference path="animators/nodes/AnimationClipNodeBase.ts"/>
+///<reference path="animators/nodes/ParticleNodeBase.ts"/>
+///<reference path="animators/nodes/ParticleAccelerationNode.ts"/>
+///<reference path="animators/nodes/ParticleBezierCurveNode.ts"/>
+///<reference path="animators/nodes/ParticleBillboardNode.ts"/>
+///<reference path="animators/nodes/ParticleColorNode.ts"/>
+///<reference path="animators/nodes/ParticleFollowNode.ts"/>
+///<reference path="animators/nodes/ParticleInitialColorNode.ts"/>
+///<reference path="animators/nodes/ParticleOrbitNode.ts"/>
+///<reference path="animators/nodes/ParticleOscillatorNode.ts"/>
+///<reference path="animators/nodes/ParticlePositionNode.ts"/>
+///<reference path="animators/nodes/ParticleRotateToHeadingNode.ts"/>
+///<reference path="animators/nodes/ParticleRotateToPositionNode.ts"/>
+///<reference path="animators/nodes/ParticleRotationalVelocityNode.ts"/>
+///<reference path="animators/nodes/ParticleScaleNode.ts"/>
+///<reference path="animators/nodes/ParticleSegmentedColorNode.ts"/>
+///<reference path="animators/nodes/ParticleSpriteSheetNode.ts"/>
+///<reference path="animators/nodes/ParticleTimeNode.ts"/>
+///<reference path="animators/nodes/ParticleUVNode.ts"/>
+///<reference path="animators/nodes/ParticleVelocityNode.ts"/>
+///<reference path="animators/nodes/SkeletonBinaryLERPNode.ts"/>
+///<reference path="animators/nodes/SkeletonClipNode.ts"/>
+///<reference path="animators/nodes/SkeletonDifferenceNode.ts"/>
+///<reference path="animators/nodes/SkeletonDirectionalNode.ts"/>
+///<reference path="animators/nodes/SkeletonNaryLERPNode.ts"/>
+///<reference path="animators/nodes/VertexClipNode.ts"/>
+///<reference path="animators/states/IAnimationState.ts"/>
+///<reference path="animators/states/ISkeletonAnimationState.ts"/>
+///<reference path="animators/states/IVertexAnimationState.ts"/>
+///<reference path="animators/states/AnimationStateBase.ts"/>
+///<reference path="animators/states/ParticleStateBase.ts"/>
+///<reference path="animators/states/ParticleAccelerationState.ts"/>
+///<reference path="animators/states/ParticleBezierCurveState.ts"/>
+///<reference path="animators/states/ParticleBillboardState.ts"/>
+///<reference path="animators/states/ParticleColorState.ts"/>
+///<reference path="animators/states/ParticleFollowState.ts"/>
+///<reference path="animators/states/ParticleInitialColorState.ts"/>
+///<reference path="animators/states/ParticleOrbitState.ts"/>
+///<reference path="animators/states/ParticleOscillatorState.ts"/>
+///<reference path="animators/states/ParticlePositionState.ts"/>
+///<reference path="animators/states/ParticleRotateToHeadingState.ts"/>
+///<reference path="animators/states/ParticleRotateToPositionState.ts"/>
+///<reference path="animators/states/ParticleRotationalVelocityState.ts"/>
+///<reference path="animators/states/ParticleScaleState.ts"/>
+///<reference path="animators/states/ParticleSegmentedColorState.ts"/>
+///<reference path="animators/states/ParticleSpriteSheetState.ts"/>
+///<reference path="animators/states/ParticleTimeState.ts"/>
+///<reference path="animators/states/ParticleUVState.ts"/>
+///<reference path="animators/states/ParticleVelocityState.ts"/>
+///<reference path="animators/states/AnimationClipState.ts"/>
+///<reference path="animators/states/SkeletonBinaryLERPState.ts"/>
+///<reference path="animators/states/SkeletonClipState.ts"/>
+///<reference path="animators/states/SkeletonDifferenceState.ts"/>
+///<reference path="animators/states/SkeletonDirectionalState.ts"/>
+///<reference path="animators/states/SkeletonNaryLERPState.ts"/>
+///<reference path="animators/states/VertexClipState.ts"/>
+///<reference path="animators/transitions/IAnimationTransition.ts"/>
+///<reference path="animators/transitions/CrossfadeTransition.ts"/>
+///<reference path="animators/transitions/CrossfadeTransitionNode.ts"/>
+///<reference path="animators/transitions/CrossfadeTransitionState.ts"/>
+///<reference path="animators/AnimationSetBase.ts"/>
+///<reference path="animators/AnimatorBase.ts"/>
+///<reference path="animators/ParticleAnimationSet.ts"/>
+///<reference path="animators/ParticleAnimator.ts"/>
+///<reference path="animators/SkeletonAnimator.ts"/>
+///<reference path="animators/SkeletonAnimationSet.ts"/>
+///<reference path="animators/VertexAnimationSet.ts"/>
+///<reference path="animators/VertexAnimator.ts"/>
+///<reference path="parsers/OBJParser.ts"/>
+///<reference path="parsers/AWDParser.ts"/>
+///<reference path="parsers/Max3DSParser.ts"/>
+///<reference path="parsers/MD2Parser.ts"/>
+///<reference path="parsers/MD5AnimParser.ts"/>
+///<reference path="parsers/MD5MeshParser.ts"/>
+///<reference path="parsers/Parsers.ts"/>
+///<reference path="tools/commands/Merge.ts"/>
+///<reference path="tools/data/ParticleGeometryTransform.ts"/>
+///<reference path="tools/helpers/ParticleGeometryHelper.ts"/>
 ///<reference path="away/_definitions.ts"/>
 away.Debug.THROW_ERRORS = false;
 away.Debug.LOG_PI_ERRORS = false;
