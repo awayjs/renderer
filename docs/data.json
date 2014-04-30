@@ -691,7 +691,7 @@
             "namespaces": {}
         },
         "src/away/core/base/SubGeometry.ts": {
-            "name": "src/away/core/base/SubGeometry.ts",
+            "name": "src/away/core/base/TriangleSubGeometry.ts",
             "modules": {},
             "classes": {
                 "away.base.SubGeometry": 1
@@ -700,7 +700,7 @@
             "namespaces": {}
         },
         "src/away/core/base/SubGeometryBase.ts": {
-            "name": "src/away/core/base/SubGeometryBase.ts",
+            "name": "src/away/core/base/TriangleSubGeometry.ts",
             "modules": {},
             "classes": {
                 "away.base.SubGeometryBase": 1
@@ -709,7 +709,7 @@
             "namespaces": {}
         },
         "src/away/core/base/SubMesh.ts": {
-            "name": "src/away/core/base/SubMesh.ts",
+            "name": "src/away/core/base/TriangleSubMesh.ts",
             "modules": {},
             "classes": {
                 "away.base.SubMesh": 1
@@ -1108,7 +1108,7 @@
             "namespaces": {}
         },
         "src/away/events/MouseEvent3D.ts": {
-            "name": "src/away/events/MouseEvent3D.ts",
+            "name": "src/away/events/MouseEvent.ts",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -1150,7 +1150,7 @@
             "namespaces": {}
         },
         "src/away/managers/Mouse3DManager.ts": {
-            "name": "src/away/managers/Mouse3DManager.ts",
+            "name": "src/away/managers/MouseManager.ts",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -1584,14 +1584,14 @@
             "namespaces": {}
         },
         "src/away/primitives/CapsuleGeometry.ts": {
-            "name": "src/away/primitives/CapsuleGeometry.ts",
+            "name": "src/away/primitives/PrimitiveCapsulePrefab.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/primitives/ConeGeometry.ts": {
-            "name": "src/away/primitives/ConeGeometry.ts",
+            "name": "src/away/primitives/PrimitiveConePrefab.ts",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -1605,49 +1605,49 @@
             "namespaces": {}
         },
         "src/away/primitives/CylinderGeometry.ts": {
-            "name": "src/away/primitives/CylinderGeometry.ts",
+            "name": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/primitives/PlaneGeometry.ts": {
-            "name": "src/away/primitives/PlaneGeometry.ts",
+            "name": "src/away/primitives/PrimitivePlanePrefab.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/primitives/PrimitiveBase.ts": {
-            "name": "src/away/primitives/PrimitiveBase.ts",
+            "name": "src/away/primitives/PrimitivePrefabBase.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/primitives/RegularPolygonGeometry.ts": {
-            "name": "src/away/primitives/RegularPolygonGeometry.ts",
+            "name": "src/away/primitives/PrimitivePolygonPrefab.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/primitives/SphereGeometry.ts": {
-            "name": "src/away/primitives/SphereGeometry.ts",
+            "name": "src/away/primitives/PrimitiveSpherePrefab.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/primitives/TorusGeometry.ts": {
-            "name": "src/away/primitives/TorusGeometry.ts",
+            "name": "src/away/primitives/PrimitiveTorusPrefab.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/primitives/WireframeCube.ts": {
-            "name": "src/away/primitives/WireframeCube.ts",
+            "name": "src/away/primitives/PrimitiveCubePrefab.ts",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -1741,7 +1741,7 @@
             "fors": {},
             "namespaces": {},
             "tag": "module",
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 8
         },
         "away.data": {
@@ -1882,9 +1882,9 @@
             "namespace": "",
             "file": "src/away/core/base/Geometry.ts",
             "line": 8,
-            "description": "Geometry is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,\n normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.\n A Geometry object is assigned to a Mesh, a scene graph occurence of the geometry, which in turn assigns\n the SubGeometries to its respective SubMesh objects.",
+            "description": "Geometry is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,\n normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.\n A Geometry object is assigned to a Mesh, a scene graph occurence of the geometry, which in turn assigns\n the SubGeometries to its respective TriangleSubMesh objects.",
             "see": [
-                "away.core.base.SubGeometry",
+                "away.core.base.TriangleSubGeometry",
                 "away.entities.Mesh"
             ]
         },
@@ -1927,11 +1927,11 @@
             "namespace": "",
             "file": "src/away/core/base/SkinnedSubGeometry.ts",
             "line": 8,
-            "description": "SkinnedSubGeometry provides a SubGeometry extension that contains data needed to skin vertices. In particular,\nit provides joint indices and weights.\nImportant! Joint indices need to be pre-multiplied by 3, since they index the matrix array (and each matrix has 3 float4 elements)"
+            "description": "SkinnedSubGeometry provides a TriangleSubGeometry extension that contains data needed to skin vertices. In particular,\nit provides joint indices and weights.\nImportant! Joint indices need to be pre-multiplied by 3, since they index the matrix array (and each matrix has 3 float4 elements)"
         },
         "away.base.SubGeometry": {
-            "name": "away.base.SubGeometry",
-            "shortname": "away.base.SubGeometry",
+            "name": "away.base.TriangleSubGeometry",
+            "shortname": "away.base.TriangleSubGeometry",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -1939,12 +1939,12 @@
             "extension_for": [],
             "module": "away.base",
             "namespace": "",
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 8,
-            "description": "The SubGeometry class is a collections of geometric data that describes a triangle mesh. It is owned by a\nGeometry instance, and wrapped by a SubMesh in the scene graph.\nSeveral SubGeometries are grouped so they can be rendered with different materials, but still represent a single\nobject.",
+            "description": "The TriangleSubGeometry class is a collections of geometric data that describes a triangle mesh. It is owned by a\nGeometry instance, and wrapped by a TriangleSubMesh in the scene graph.\nSeveral SubGeometries are grouped so they can be rendered with different materials, but still represent a single\nobject.",
             "see": [
                 "away.base.Geometry",
-                "away.base.SubMesh"
+                "away.base.TriangleSubMesh"
             ]
         },
         "away.base.SubGeometryBase": {
@@ -1957,12 +1957,12 @@
             "extension_for": [],
             "module": "away.base",
             "namespace": "",
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 8
         },
         "away.base.SubMesh": {
-            "name": "away.base.SubMesh",
-            "shortname": "away.base.SubMesh",
+            "name": "away.base.TriangleSubMesh",
+            "shortname": "away.base.TriangleSubMesh",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -1970,11 +1970,11 @@
             "extension_for": [],
             "module": "away.base",
             "namespace": "",
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 8,
-            "description": "SubMesh wraps a SubGeometry as a scene graph instantiation. A SubMesh is owned by a Mesh object.",
+            "description": "TriangleSubMesh wraps a TriangleSubGeometry as a scene graph instantiation. A TriangleSubMesh is owned by a Mesh object.",
             "see": [
-                "away.base.SubGeometry",
+                "away.base.TriangleSubGeometry",
                 "away.entities.Mesh"
             ]
         },
@@ -2173,7 +2173,7 @@
             "namespace": "",
             "file": "src/away/core/partition/RenderableNode.ts",
             "line": 8,
-            "description": "RenderableNode is a space partitioning leaf node that contains any Entity that is itself a IRenderable\nobject. This excludes Mesh (since the renderable objects are its SubMesh children)."
+            "description": "RenderableNode is a space partitioning leaf node that contains any Entity that is itself a IRenderable\nobject. This excludes Mesh (since the renderable objects are its TriangleSubMesh children)."
         },
         "away.partition.SkyBoxNode": {
             "name": "away.partition.SkyBoxNode",
@@ -7577,7 +7577,7 @@
         {
             "file": "src/away/core/base/Geometry.ts",
             "line": 33,
-            "description": "A collection of SubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.",
+            "description": "A collection of TriangleSubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.",
             "class": "away.base.Geometry",
             "module": "away.base"
         },
@@ -7591,11 +7591,11 @@
         {
             "file": "src/away/core/base/Geometry.ts",
             "line": 72,
-            "description": "Adds a new SubGeometry object to the list.",
+            "description": "Adds a new TriangleSubGeometry object to the list.",
             "params": [
                 {
                     "name": "subGeometry",
-                    "description": "The SubGeometry object to be added."
+                    "description": "The TriangleSubGeometry object to be added."
                 }
             ],
             "class": "away.base.Geometry",
@@ -7604,11 +7604,11 @@
         {
             "file": "src/away/core/base/Geometry.ts",
             "line": 90,
-            "description": "Removes a new SubGeometry object from the list.",
+            "description": "Removes a new TriangleSubGeometry object from the list.",
             "params": [
                 {
                     "name": "subGeometry",
-                    "description": "The SubGeometry object to be removed."
+                    "description": "The TriangleSubGeometry object to be removed."
                 }
             ],
             "class": "away.base.Geometry",
@@ -7750,7 +7750,7 @@
         {
             "file": "src/away/core/base/IRenderable.ts",
             "line": 55,
-            "description": "The total amount of vertices in the SubGeometry.",
+            "description": "The total amount of vertices in the TriangleSubGeometry.",
             "class": "away.base.Object3D",
             "module": "away.base"
         },
@@ -7914,7 +7914,7 @@
         {
             "file": "src/away/core/base/ISubGeometry.ts",
             "line": 13,
-            "description": "The total amount of vertices in the SubGeometry.",
+            "description": "The total amount of vertices in the TriangleSubGeometry.",
             "class": "away.base.Object3D",
             "module": "away.base"
         },
@@ -8697,42 +8697,42 @@
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 49,
-            "description": "Creates a new SubGeometry object.",
-            "class": "away.base.SubGeometry",
+            "description": "Creates a new TriangleSubGeometry object.",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 57,
-            "description": "The total amount of vertices in the SubGeometry.",
-            "class": "away.base.SubGeometry",
+            "description": "The total amount of vertices in the TriangleSubGeometry.",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 65,
             "inheritdoc": "",
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 88,
             "inheritdoc": "",
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 115,
             "inheritdoc": "",
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 137,
             "description": "Retrieves the VertexBuffer object that contains vertex normals.",
             "params": [
@@ -8744,11 +8744,11 @@
             "return": {
                 "description": "The VertexBuffer object that contains vertex normals."
             },
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 165,
             "description": "Retrieves the VertexBuffer object that contains vertex tangents.",
             "params": [
@@ -8760,124 +8760,124 @@
             "return": {
                 "description": "The VertexBuffer object that contains vertex tangents."
             },
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 201,
             "description": "Clones the current object",
             "return": {
                 "description": "An exact duplicate of the current object."
             },
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 227,
             "inheritdoc": "",
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 236,
             "inheritdoc": "",
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 245,
-            "description": "Clears all resources used by the SubGeometry object.",
-            "class": "away.base.SubGeometry",
+            "description": "Clears all resources used by the TriangleSubGeometry object.",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 278,
             "description": "The raw vertex position data.",
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 291,
-            "description": "Updates the vertex data of the SubGeometry.",
+            "description": "Updates the vertex data of the TriangleSubGeometry.",
             "params": [
                 {
                     "name": "vertices",
                     "description": "The new vertex data to upload."
                 }
             ],
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 318,
             "description": "The raw texture coordinate data.",
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 335,
-            "description": "Updates the uv coordinates of the SubGeometry.",
+            "description": "Updates the uv coordinates of the TriangleSubGeometry.",
             "params": [
                 {
                     "name": "uvs",
                     "description": "The uv coordinates to upload."
                 }
             ],
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 357,
             "description": "The raw vertex normal data.",
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 369,
-            "description": "Updates the vertex normals of the SubGeometry. When updating the vertex normals like this,\nautoDeriveVertexNormals will be set to false and vertex normals will no longer be calculated automatically.",
+            "description": "Updates the vertex normals of the TriangleSubGeometry. When updating the vertex normals like this,\nautoDeriveVertexNormals will be set to false and vertex normals will no longer be calculated automatically.",
             "params": [
                 {
                     "name": "vertexNormals",
                     "description": "The vertex normals to upload."
                 }
             ],
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 382,
             "description": "The raw vertex tangent data.",
             "access": "private",
             "tagname": "",
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometry.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 396,
-            "description": "Updates the vertex tangents of the SubGeometry. When updating the vertex tangents like this,\nautoDeriveVertexTangents will be set to false and vertex tangents will no longer be calculated automatically.",
+            "description": "Updates the vertex tangents of the TriangleSubGeometry. When updating the vertex tangents like this,\nautoDeriveVertexTangents will be set to false and vertex tangents will no longer be calculated automatically.",
             "params": [
                 {
                     "name": "vertexTangents",
                     "description": "The vertex tangents to upload."
                 }
             ],
-            "class": "away.base.SubGeometry",
+            "class": "away.base.TriangleSubGeometry",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 41,
             "description": "An id for this subgeometry, used to identify subgeometries when using animation sets.",
             "access": "private",
@@ -8886,42 +8886,42 @@
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 53,
             "description": "Defines whether a UV buffer should be automatically generated to contain dummy UV coordinates.\nSet to true if a geometry lacks UV data but uses a material that requires it, or leave as false\nin cases where UV data is explicitly defined or the material does not require UV data.",
             "class": "away.base.SubGeometryBase",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 69,
             "description": "True if the vertex normals should be derived from the geometry, false if the vertex normals are set\nexplicitly.",
             "class": "away.base.SubGeometryBase",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 84,
             "description": "Indicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.",
             "class": "away.base.SubGeometryBase",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 109,
-            "description": "The total amount of triangles in the SubGeometry.",
+            "description": "The total amount of triangles in the TriangleSubGeometry.",
             "class": "away.base.SubGeometryBase",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 117,
             "description": "Unique identifier for a subgeometry",
             "class": "away.base.SubGeometryBase",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 125,
             "description": "Retrieves the VertexBuffer object that contains triangle indices.",
             "params": [
@@ -8937,35 +8937,35 @@
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 149,
             "description": "Updates the tangents for each face.",
             "class": "away.base.SubGeometryBase",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 219,
             "description": "Updates the normals for each face.",
             "class": "away.base.SubGeometryBase",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 297,
             "description": "Updates the vertex normals based on the geometry.",
             "class": "away.base.SubGeometryBase",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 371,
             "description": "Updates the vertex tangents based on the geometry.",
             "class": "away.base.SubGeometryBase",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 460,
             "description": "The raw index data that define the faces.",
             "access": "private",
@@ -8974,9 +8974,9 @@
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 470,
-            "description": "Updates the face indices of the SubGeometry.",
+            "description": "Updates the face indices of the TriangleSubGeometry.",
             "params": [
                 {
                     "name": "indices",
@@ -8987,7 +8987,7 @@
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 499,
             "description": "Disposes all buffers in a given vector.",
             "params": [
@@ -9000,7 +9000,7 @@
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 513,
             "description": "Disposes all buffers in a given vector.",
             "params": [
@@ -9013,14 +9013,14 @@
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 527,
             "description": "True if the vertex tangents should be derived from the geometry, false if the vertex normals are set\nexplicitly.",
             "class": "away.base.SubGeometryBase",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 542,
             "description": "The raw data of the face normals, in the same order as the faces are listed in the index list.",
             "access": "private",
@@ -9029,7 +9029,7 @@
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 556,
             "description": "Invalidates all buffers in a vector, causing them the update when they are first requested.",
             "params": [
@@ -9042,16 +9042,16 @@
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 641,
-            "description": "The Geometry object that 'owns' this SubGeometry object.",
+            "description": "The Geometry object that 'owns' this TriangleSubGeometry object.",
             "access": "private",
             "tagname": "",
             "class": "away.base.SubGeometryBase",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 656,
             "description": "Scales the uv coordinates",
             "params": [
@@ -9068,7 +9068,7 @@
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubGeometryBase.ts",
+            "file": "src/away/core/base/TriangleSubGeometry.ts",
             "line": 689,
             "description": "Scales the geometry.",
             "params": [
@@ -9081,131 +9081,131 @@
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 34,
-            "description": "Creates a new SubMesh object",
+            "description": "Creates a new TriangleSubMesh object",
             "params": [
                 {
                     "name": "subGeometry",
-                    "description": "The SubGeometry object which provides the geometry data for this SubMesh."
+                    "description": "The TriangleSubGeometry object which provides the geometry data for this TriangleSubMesh."
                 },
                 {
                     "name": "parentMesh",
-                    "description": "The Mesh object to which this SubMesh belongs."
+                    "description": "The Mesh object to which this TriangleSubMesh belongs."
                 },
                 {
                     "name": "material",
-                    "description": "An optional material used to render this SubMesh."
+                    "description": "An optional material used to render this TriangleSubMesh."
                 }
             ],
-            "class": "away.base.SubMesh",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 139,
             "description": "The entity that that initially provided the IRenderable to the render pipeline (ie: the owning Mesh object).",
-            "class": "away.base.SubMesh",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 147,
-            "description": "The SubGeometry object which provides the geometry data for this SubMesh.",
-            "class": "away.base.SubMesh",
+            "description": "The TriangleSubGeometry object which provides the geometry data for this TriangleSubMesh.",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 160,
-            "description": "The material used to render the current SubMesh. If set to null, its parent Mesh's material will be used instead.",
-            "class": "away.base.SubMesh",
+            "description": "The material used to render the current TriangleSubMesh. If set to null, its parent Mesh's material will be used instead.",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 189,
             "description": "The scene transform object that transforms from model to world space.",
-            "class": "away.base.SubMesh",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 197,
             "description": "The inverse scene transform object that transforms from world to model space.",
-            "class": "away.base.SubMesh",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 205,
             "inheritdoc": "",
-            "class": "away.base.SubMesh",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 213,
             "inheritdoc": "",
-            "class": "away.base.SubMesh",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 221,
             "inheritdoc": "",
-            "class": "away.base.SubMesh",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 229,
             "inheritdoc": "",
-            "class": "away.base.SubMesh",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 237,
             "inheritdoc": "",
-            "class": "away.base.SubMesh",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 245,
             "inheritdoc": "",
-            "class": "away.base.SubMesh",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 253,
-            "description": "The amount of triangles that make up this SubMesh.",
-            "class": "away.base.SubMesh",
+            "description": "The amount of triangles that make up this TriangleSubMesh.",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 261,
-            "description": "The animator object that provides the state for the SubMesh's animation.",
-            "class": "away.base.SubMesh",
+            "description": "The animator object that provides the state for the TriangleSubMesh's animation.",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 271,
-            "description": "Indicates whether the SubMesh should trigger mouse events, and hence should be rendered for hit testing.",
-            "class": "away.base.SubMesh",
+            "description": "Indicates whether the TriangleSubMesh should trigger mouse events, and hence should be rendered for hit testing.",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
-            "file": "src/away/core/base/SubMesh.ts",
+            "file": "src/away/core/base/TriangleSubMesh.ts",
             "line": 286,
             "description": "A reference to the owning Mesh object",
             "access": "private",
             "tagname": "",
-            "class": "away.base.SubMesh",
+            "class": "away.base.TriangleSubMesh",
             "module": "away.base"
         },
         {
@@ -9405,11 +9405,11 @@
         {
             "file": "src/away/core/pick/IPickingCollider.ts",
             "line": 27,
-            "description": "Tests a <code>SubMesh</code> object for a collision with the picking ray.",
+            "description": "Tests a <code>TriangleSubMesh</code> object for a collision with the picking ray.",
             "params": [
                 {
                     "name": "subMesh",
-                    "description": "The <code>SubMesh</code> instance to be tested."
+                    "description": "The <code>TriangleSubMesh</code> instance to be tested."
                 },
                 {
                     "name": "pickingCollisionVO",
@@ -10121,7 +10121,7 @@
         {
             "file": "src/away/entities/Mesh.ts",
             "line": 223,
-            "description": "The SubMeshes out of which the Mesh consists. Every SubMesh can be assigned a material to override the Mesh's\nmaterial.",
+            "description": "The SubMeshes out of which the Mesh consists. Every TriangleSubMesh can be assigned a material to override the Mesh's\nmaterial.",
             "class": "away.events.CameraEvent",
             "module": "away.traverse"
         },
@@ -10180,21 +10180,21 @@
         {
             "file": "src/away/entities/Mesh.ts",
             "line": 360,
-            "description": "Called when a SubGeometry was added to the Geometry.",
+            "description": "Called when a TriangleSubGeometry was added to the Geometry.",
             "class": "away.events.CameraEvent",
             "module": "away.traverse"
         },
         {
             "file": "src/away/entities/Mesh.ts",
             "line": 368,
-            "description": "Called when a SubGeometry was removed from the Geometry.",
+            "description": "Called when a TriangleSubGeometry was removed from the Geometry.",
             "class": "away.events.CameraEvent",
             "module": "away.traverse"
         },
         {
             "file": "src/away/entities/Mesh.ts",
             "line": 405,
-            "description": "Adds a SubMesh wrapping a SubGeometry.",
+            "description": "Adds a TriangleSubMesh wrapping a TriangleSubGeometry.",
             "class": "away.events.CameraEvent",
             "module": "away.traverse"
         },
@@ -10447,14 +10447,14 @@
         {
             "file": "src/away/events/GeometryEvent.ts",
             "line": 13,
-            "description": "Dispatched when a SubGeometry was added from the dispatching Geometry.",
+            "description": "Dispatched when a TriangleSubGeometry was added from the dispatching Geometry.",
             "class": "away.events.GeometryEvent",
             "module": "away.events"
         },
         {
             "file": "src/away/events/GeometryEvent.ts",
             "line": 18,
-            "description": "Dispatched when a SubGeometry was removed from the dispatching Geometry.",
+            "description": "Dispatched when a TriangleSubGeometry was removed from the dispatching Geometry.",
             "class": "away.events.GeometryEvent",
             "module": "away.events"
         },
@@ -10469,7 +10469,7 @@
                 },
                 {
                     "name": "subGeometry",
-                    "description": "An optional SubGeometry object that is the subject of this event."
+                    "description": "An optional TriangleSubGeometry object that is the subject of this event."
                 }
             ],
             "class": "away.events.GeometryEvent",
@@ -10478,7 +10478,7 @@
         {
             "file": "src/away/events/GeometryEvent.ts",
             "line": 38,
-            "description": "The SubGeometry object that is the subject of this event, if appropriate.",
+            "description": "The TriangleSubGeometry object that is the subject of this event, if appropriate.",
             "class": "away.events.GeometryEvent",
             "module": "away.events"
         },
@@ -10493,189 +10493,189 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 19,
             "description": "A MouseEvent3D is dispatched when a mouse event occurs over a mouseEnabled object in View3D.\ntodo: we don't have screenZ data, tho this should be easy to implement",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 29,
             "description": "Defines the value of the type property of a mouseOver3d event object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 34,
             "description": "Defines the value of the type property of a mouseOut3d event object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 39,
             "description": "Defines the value of the type property of a mouseUp3d event object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 44,
             "description": "Defines the value of the type property of a mouseDown3d event object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 49,
             "description": "Defines the value of the type property of a mouseMove3d event object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 54,
             "description": "Defines the value of the type property of a rollOver3d event object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 59,
             "description": "Defines the value of the type property of a rollOut3d event object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 64,
             "description": "Defines the value of the type property of a click3d event object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 69,
             "description": "Defines the value of the type property of a doubleClick3d event object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 74,
             "description": "Defines the value of the type property of a mouseWheel3d event object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 79,
             "description": "The horizontal coordinate at which the event occurred in view coordinates.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 84,
             "description": "The vertical coordinate at which the event occurred in view coordinates.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 89,
             "description": "The view object inside which the event took place.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 94,
             "description": "The 3d object inside which the event took place.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 99,
             "description": "The renderable inside which the event took place.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 104,
             "description": "The material of the 3d element inside which the event took place.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 109,
             "description": "The uv coordinate inside the draw primitive where the event took place.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 114,
             "description": "The index of the face where the event took place.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 119,
             "description": "The index of the subGeometry where the event took place.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 124,
             "description": "The position in object space where the event took place",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 129,
             "description": "The normal in object space where the event took place",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 134,
             "description": "Indicates whether the Control key is active (true) or inactive (false).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 139,
             "description": "Indicates whether the Alt key is active (true) or inactive (false).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 144,
             "description": "Indicates whether the Shift key is active (true) or inactive (false).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 149,
             "description": "Indicates how many lines should be scrolled for each unit the user rotates the mouse wheel.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 154,
             "description": "Create a new MouseEvent3D object.",
             "params": [
@@ -10688,42 +10688,42 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 163,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 174,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 189,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 204,
             "description": "Creates a copy of the MouseEvent3D object and sets the value of each property to match that of the original.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 239,
             "description": "The position in scene space where the event took place",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/events/MouseEvent3D.ts",
+            "file": "src/away/events/MouseEvent.ts",
             "line": 258,
             "description": "The normal in scene space where the event took place",
             "class": "",
@@ -10744,14 +10744,14 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/managers/Mouse3DManager.ts",
+            "file": "src/away/managers/MouseManager.ts",
             "line": 24,
             "description": "Mouse3DManager enforces a singleton pattern and is not intended to be instanced.\nit provides a manager class for detecting 3D mouse hits on View3D objects and sending out 3D mouse events.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/managers/Mouse3DManager.ts",
+            "file": "src/away/managers/MouseManager.ts",
             "line": 62,
             "description": "Creates a new <code>Mouse3DManager</code> object.",
             "class": "",
@@ -18341,7 +18341,7 @@
                 },
                 {
                     "name": "geometry",
-                    "description": "The Geometry to contain the converted SubGeometry."
+                    "description": "The Geometry to contain the converted TriangleSubGeometry."
                 }
             ],
             "class": "",
@@ -18602,14 +18602,14 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CapsuleGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCapsulePrefab.ts",
             "line": 6,
             "description": "A Capsule primitive mesh.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CapsuleGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCapsulePrefab.ts",
             "line": 17,
             "description": "Creates a new Capsule object.",
             "params": [
@@ -18638,70 +18638,70 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CapsuleGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCapsulePrefab.ts",
             "line": 36,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CapsuleGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCapsulePrefab.ts",
             "line": 168,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CapsuleGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCapsulePrefab.ts",
             "line": 201,
             "description": "The radius of the capsule.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CapsuleGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCapsulePrefab.ts",
             "line": 215,
             "description": "The height of the capsule.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CapsuleGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCapsulePrefab.ts",
             "line": 229,
             "description": "Defines the number of horizontal segments that make up the capsule. Defaults to 16.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CapsuleGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCapsulePrefab.ts",
             "line": 244,
             "description": "Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CapsuleGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCapsulePrefab.ts",
             "line": 259,
             "description": "Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/ConeGeometry.ts",
+            "file": "src/away/primitives/PrimitiveConePrefab.ts",
             "line": 6,
             "description": "A UV Cone primitive mesh.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/ConeGeometry.ts",
+            "file": "src/away/primitives/PrimitiveConePrefab.ts",
             "line": 12,
             "description": "The radius of the bottom end of the cone.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/ConeGeometry.ts",
+            "file": "src/away/primitives/PrimitiveConePrefab.ts",
             "line": 26,
             "description": "Creates a new Cone object.",
             "params": [
@@ -18837,84 +18837,84 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CylinderGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "line": 6,
             "description": "A Cylinder primitive mesh.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CylinderGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "line": 54,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CylinderGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "line": 280,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CylinderGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "line": 361,
             "description": "The radius of the top end of the cylinder.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CylinderGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "line": 375,
             "description": "The radius of the bottom end of the cylinder.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CylinderGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "line": 389,
             "description": "The radius of the top end of the cylinder.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CylinderGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "line": 403,
             "description": "Defines the number of horizontal segments that make up the cylinder. Defaults to 16.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CylinderGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "line": 423,
             "description": "Defines the number of vertical segments that make up the cylinder. Defaults to 1.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CylinderGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "line": 446,
             "description": "Defines whether the top end of the cylinder is closed (true) or open.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CylinderGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "line": 460,
             "description": "Defines whether the bottom end of the cylinder is closed (true) or open.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CylinderGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "line": 474,
             "description": "Defines whether the cylinder poles should lay on the Y-axis (true) or on the Z-axis (false).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/CylinderGeometry.ts",
+            "file": "src/away/primitives/PrimitiveCylinderPrefab.ts",
             "line": 488,
             "description": "Creates a new Cylinder object.",
             "params": [
@@ -18955,14 +18955,14 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PlaneGeometry.ts",
+            "file": "src/away/primitives/PrimitivePlanePrefab.ts",
             "line": 5,
             "description": "A Plane primitive mesh.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PlaneGeometry.ts",
+            "file": "src/away/primitives/PrimitivePlanePrefab.ts",
             "line": 17,
             "description": "Creates a new Plane object.",
             "params": [
@@ -18995,70 +18995,70 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PlaneGeometry.ts",
+            "file": "src/away/primitives/PrimitivePlanePrefab.ts",
             "line": 40,
             "description": "The number of segments that make up the plane along the X-axis. Defaults to 1.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PlaneGeometry.ts",
+            "file": "src/away/primitives/PrimitivePlanePrefab.ts",
             "line": 58,
             "description": "The number of segments that make up the plane along the Y or Z-axis, depending on whether yUp is true or\nfalse, respectively. Defaults to 1.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PlaneGeometry.ts",
+            "file": "src/away/primitives/PrimitivePlanePrefab.ts",
             "line": 77,
             "description": "Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false). Defaults to true.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PlaneGeometry.ts",
+            "file": "src/away/primitives/PrimitivePlanePrefab.ts",
             "line": 91,
             "description": "Defines whether the plane will be visible from both sides, with correct vertex normals (as opposed to bothSides on Material). Defaults to false.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PlaneGeometry.ts",
+            "file": "src/away/primitives/PrimitivePlanePrefab.ts",
             "line": 105,
             "description": "The width of the plane.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PlaneGeometry.ts",
+            "file": "src/away/primitives/PrimitivePlanePrefab.ts",
             "line": 119,
             "description": "The height of the plane.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PlaneGeometry.ts",
+            "file": "src/away/primitives/PrimitivePlanePrefab.ts",
             "line": 133,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PlaneGeometry.ts",
+            "file": "src/away/primitives/PrimitivePlanePrefab.ts",
             "line": 260,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 15,
             "description": "PrimitiveBase is an abstract base class for mesh primitives, which are prebuilt simple meshes.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 25,
             "description": "Creates a new PrimitiveBase object.",
             "params": [
@@ -19071,112 +19071,112 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 38,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 58,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 77,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 90,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 105,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 120,
             "description": "Builds the primitive's geometry when invalid. This method should not be called directly. The calling should\nbe triggered by the invalidateGeometry method (and in turn by updateGeometry).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 129,
             "description": "Builds the primitive's uv coordinates when invalid. This method should not be called directly. The calling\nshould be triggered by the invalidateUVs method (and in turn by updateUVs).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 138,
             "description": "Invalidates the primitive's geometry, causing it to be updated when requested.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 146,
             "description": "Invalidates the primitive's uv coordinates, causing them to be updated when requested.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 154,
             "description": "Updates the geometry when invalid.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/PrimitiveBase.ts",
+            "file": "src/away/primitives/PrimitivePrefabBase.ts",
             "line": 163,
             "description": "Updates the uv coordinates when invalid.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/RegularPolygonGeometry.ts",
+            "file": "src/away/primitives/PrimitivePolygonPrefab.ts",
             "line": 6,
             "description": "A UV RegularPolygon primitive mesh.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/RegularPolygonGeometry.ts",
+            "file": "src/away/primitives/PrimitivePolygonPrefab.ts",
             "line": 12,
             "description": "The radius of the regular polygon.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/RegularPolygonGeometry.ts",
+            "file": "src/away/primitives/PrimitivePolygonPrefab.ts",
             "line": 26,
             "description": "The number of sides of the regular polygon.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/RegularPolygonGeometry.ts",
+            "file": "src/away/primitives/PrimitivePolygonPrefab.ts",
             "line": 39,
             "description": "The number of subdivisions from the edge to the center of the regular polygon.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/RegularPolygonGeometry.ts",
+            "file": "src/away/primitives/PrimitivePolygonPrefab.ts",
             "line": 52,
             "description": "Creates a new RegularPolygon disc object.",
             "params": [
@@ -19197,14 +19197,14 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/SphereGeometry.ts",
+            "file": "src/away/primitives/PrimitiveSpherePrefab.ts",
             "line": 7,
             "description": "A UV Sphere primitive mesh.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/SphereGeometry.ts",
+            "file": "src/away/primitives/PrimitiveSpherePrefab.ts",
             "line": 17,
             "description": "Creates a new Sphere object.",
             "params": [
@@ -19229,105 +19229,105 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/SphereGeometry.ts",
+            "file": "src/away/primitives/PrimitiveSpherePrefab.ts",
             "line": 34,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/SphereGeometry.ts",
+            "file": "src/away/primitives/PrimitiveSpherePrefab.ts",
             "line": 168,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/SphereGeometry.ts",
+            "file": "src/away/primitives/PrimitiveSpherePrefab.ts",
             "line": 197,
             "description": "The radius of the sphere.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/SphereGeometry.ts",
+            "file": "src/away/primitives/PrimitiveSpherePrefab.ts",
             "line": 211,
             "description": "Defines the number of horizontal segments that make up the sphere. Defaults to 16.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/SphereGeometry.ts",
+            "file": "src/away/primitives/PrimitiveSpherePrefab.ts",
             "line": 226,
             "description": "Defines the number of vertical segments that make up the sphere. Defaults to 12.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/SphereGeometry.ts",
+            "file": "src/away/primitives/PrimitiveSpherePrefab.ts",
             "line": 241,
             "description": "Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/TorusGeometry.ts",
+            "file": "src/away/primitives/PrimitiveTorusPrefab.ts",
             "line": 10,
             "description": "A UV Cylinder primitive mesh.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/TorusGeometry.ts",
+            "file": "src/away/primitives/PrimitiveTorusPrefab.ts",
             "line": 53,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/TorusGeometry.ts",
+            "file": "src/away/primitives/PrimitiveTorusPrefab.ts",
             "line": 162,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/TorusGeometry.ts",
+            "file": "src/away/primitives/PrimitiveTorusPrefab.ts",
             "line": 204,
             "description": "The radius of the torus.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/TorusGeometry.ts",
+            "file": "src/away/primitives/PrimitiveTorusPrefab.ts",
             "line": 218,
             "description": "The radius of the inner tube of the torus.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/TorusGeometry.ts",
+            "file": "src/away/primitives/PrimitiveTorusPrefab.ts",
             "line": 232,
             "description": "Defines the number of horizontal segments that make up the torus. Defaults to 16.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/TorusGeometry.ts",
+            "file": "src/away/primitives/PrimitiveTorusPrefab.ts",
             "line": 247,
             "description": "Defines the number of vertical segments that make up the torus. Defaults to 8.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/TorusGeometry.ts",
+            "file": "src/away/primitives/PrimitiveTorusPrefab.ts",
             "line": 262,
             "description": "Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/TorusGeometry.ts",
+            "file": "src/away/primitives/PrimitiveTorusPrefab.ts",
             "line": 276,
             "description": "Creates a new <code>Torus</code> object.",
             "params": [
@@ -19356,14 +19356,14 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/WireframeCube.ts",
+            "file": "src/away/primitives/PrimitiveCubePrefab.ts",
             "line": 7,
             "description": "A WirefameCube primitive mesh.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/WireframeCube.ts",
+            "file": "src/away/primitives/PrimitiveCubePrefab.ts",
             "line": 16,
             "description": "Creates a new WireframeCube object.",
             "params": [
@@ -19392,28 +19392,28 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/WireframeCube.ts",
+            "file": "src/away/primitives/PrimitiveCubePrefab.ts",
             "line": 33,
             "description": "The size of the cube along its X-axis.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/WireframeCube.ts",
+            "file": "src/away/primitives/PrimitiveCubePrefab.ts",
             "line": 47,
             "description": "The size of the cube along its Y-axis.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/WireframeCube.ts",
+            "file": "src/away/primitives/PrimitiveCubePrefab.ts",
             "line": 63,
             "description": "The size of the cube along its Z-axis.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/primitives/WireframeCube.ts",
+            "file": "src/away/primitives/PrimitiveCubePrefab.ts",
             "line": 77,
             "inheritdoc": "",
             "class": "",
@@ -20569,47 +20569,47 @@
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/core/base/SubGeometry.ts:65"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:65"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/core/base/SubGeometry.ts:88"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:88"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/core/base/SubGeometry.ts:115"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:115"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/core/base/SubGeometry.ts:227"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:227"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/core/base/SubGeometry.ts:236"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:236"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/core/base/SubMesh.ts:205"
+            "line": " src/away/core/base/TriangleSubMesh.ts:205"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/core/base/SubMesh.ts:213"
+            "line": " src/away/core/base/TriangleSubMesh.ts:213"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/core/base/SubMesh.ts:221"
+            "line": " src/away/core/base/TriangleSubMesh.ts:221"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/core/base/SubMesh.ts:229"
+            "line": " src/away/core/base/TriangleSubMesh.ts:229"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/core/base/SubMesh.ts:237"
+            "line": " src/away/core/base/TriangleSubMesh.ts:237"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/core/base/SubMesh.ts:245"
+            "line": " src/away/core/base/TriangleSubMesh.ts:245"
         },
         {
             "message": "unknown tag: inheritdoc",
@@ -20741,15 +20741,15 @@
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/events/MouseEvent3D.ts:163"
+            "line": " src/away/events/MouseEvent.ts:163"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/events/MouseEvent3D.ts:174"
+            "line": " src/away/events/MouseEvent.ts:174"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/events/MouseEvent3D.ts:189"
+            "line": " src/away/events/MouseEvent.ts:189"
         },
         {
             "message": "unknown tag: inheritdoc",
@@ -21677,11 +21677,11 @@
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/CapsuleGeometry.ts:36"
+            "line": " src/away/primitives/PrimitiveCapsulePrefab.ts:36"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/CapsuleGeometry.ts:168"
+            "line": " src/away/primitives/PrimitiveCapsulePrefab.ts:168"
         },
         {
             "message": "unknown tag: inheritdoc",
@@ -21693,59 +21693,59 @@
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/CylinderGeometry.ts:54"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:54"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/CylinderGeometry.ts:280"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:280"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/PlaneGeometry.ts:133"
+            "line": " src/away/primitives/PrimitivePlanePrefab.ts:133"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/PlaneGeometry.ts:260"
+            "line": " src/away/primitives/PrimitivePlanePrefab.ts:260"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/PrimitiveBase.ts:38"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:38"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/PrimitiveBase.ts:58"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:58"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/PrimitiveBase.ts:77"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:77"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/PrimitiveBase.ts:90"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:90"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/PrimitiveBase.ts:105"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:105"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/SphereGeometry.ts:34"
+            "line": " src/away/primitives/PrimitiveSpherePrefab.ts:34"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/SphereGeometry.ts:168"
+            "line": " src/away/primitives/PrimitiveSpherePrefab.ts:168"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/TorusGeometry.ts:53"
+            "line": " src/away/primitives/PrimitiveTorusPrefab.ts:53"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/TorusGeometry.ts:162"
+            "line": " src/away/primitives/PrimitiveTorusPrefab.ts:162"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/primitives/WireframeCube.ts:77"
+            "line": " src/away/primitives/PrimitiveCubePrefab.ts:77"
         },
         {
             "message": "unknown tag: inheritdoc",
@@ -24420,7 +24420,7 @@
             "line": " src/away/core/base/CompactSubGeometry.ts:419"
         },
         {
-            "message": "Missing item type\nA collection of SubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.",
+            "message": "Missing item type\nA collection of TriangleSubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.",
             "line": " src/away/core/base/Geometry.ts:33"
         },
         {
@@ -24428,11 +24428,11 @@
             "line": " src/away/core/base/Geometry.ts:50"
         },
         {
-            "message": "Missing item type\nAdds a new SubGeometry object to the list.",
+            "message": "Missing item type\nAdds a new TriangleSubGeometry object to the list.",
             "line": " src/away/core/base/Geometry.ts:72"
         },
         {
-            "message": "Missing item type\nRemoves a new SubGeometry object from the list.",
+            "message": "Missing item type\nRemoves a new TriangleSubGeometry object from the list.",
             "line": " src/away/core/base/Geometry.ts:90"
         },
         {
@@ -24500,7 +24500,7 @@
             "line": " src/away/core/base/IRenderable.ts:47"
         },
         {
-            "message": "Missing item type\nThe total amount of vertices in the SubGeometry.",
+            "message": "Missing item type\nThe total amount of vertices in the TriangleSubGeometry.",
             "line": " src/away/core/base/IRenderable.ts:55"
         },
         {
@@ -24560,7 +24560,7 @@
             "line": " src/away/core/base/ISubGeometry.ts:8"
         },
         {
-            "message": "Missing item type\nThe total amount of vertices in the SubGeometry.",
+            "message": "Missing item type\nThe total amount of vertices in the TriangleSubGeometry.",
             "line": " src/away/core/base/ISubGeometry.ts:13"
         },
         {
@@ -24880,228 +24880,228 @@
             "line": " src/away/core/base/SkinnedSubGeometry.ts:208"
         },
         {
-            "message": "Missing item type\nCreates a new SubGeometry object.",
-            "line": " src/away/core/base/SubGeometry.ts:49"
+            "message": "Missing item type\nCreates a new TriangleSubGeometry object.",
+            "line": " src/away/core/base/TriangleSubGeometry.ts:49"
         },
         {
-            "message": "Missing item type\nThe total amount of vertices in the SubGeometry.",
-            "line": " src/away/core/base/SubGeometry.ts:57"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/away/core/base/SubGeometry.ts:65"
+            "message": "Missing item type\nThe total amount of vertices in the TriangleSubGeometry.",
+            "line": " src/away/core/base/TriangleSubGeometry.ts:57"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/core/base/SubGeometry.ts:88"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:65"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/core/base/SubGeometry.ts:115"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:88"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/away/core/base/TriangleSubGeometry.ts:115"
         },
         {
             "message": "Missing item type\nRetrieves the VertexBuffer object that contains vertex normals.",
-            "line": " src/away/core/base/SubGeometry.ts:137"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:137"
         },
         {
             "message": "Missing item type\nRetrieves the VertexBuffer object that contains vertex tangents.",
-            "line": " src/away/core/base/SubGeometry.ts:165"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:165"
         },
         {
             "message": "Missing item type\nClones the current object",
-            "line": " src/away/core/base/SubGeometry.ts:201"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:201"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/core/base/SubGeometry.ts:227"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:227"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/core/base/SubGeometry.ts:236"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:236"
         },
         {
-            "message": "Missing item type\nClears all resources used by the SubGeometry object.",
-            "line": " src/away/core/base/SubGeometry.ts:245"
+            "message": "Missing item type\nClears all resources used by the TriangleSubGeometry object.",
+            "line": " src/away/core/base/TriangleSubGeometry.ts:245"
         },
         {
             "message": "Missing item type\nThe raw vertex position data.",
-            "line": " src/away/core/base/SubGeometry.ts:278"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:278"
         },
         {
-            "message": "Missing item type\nUpdates the vertex data of the SubGeometry.",
-            "line": " src/away/core/base/SubGeometry.ts:291"
+            "message": "Missing item type\nUpdates the vertex data of the TriangleSubGeometry.",
+            "line": " src/away/core/base/TriangleSubGeometry.ts:291"
         },
         {
             "message": "Missing item type\nThe raw texture coordinate data.",
-            "line": " src/away/core/base/SubGeometry.ts:318"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:318"
         },
         {
-            "message": "Missing item type\nUpdates the uv coordinates of the SubGeometry.",
-            "line": " src/away/core/base/SubGeometry.ts:335"
+            "message": "Missing item type\nUpdates the uv coordinates of the TriangleSubGeometry.",
+            "line": " src/away/core/base/TriangleSubGeometry.ts:335"
         },
         {
             "message": "Missing item type\nThe raw vertex normal data.",
-            "line": " src/away/core/base/SubGeometry.ts:357"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:357"
         },
         {
-            "message": "Missing item type\nUpdates the vertex normals of the SubGeometry. When updating the vertex normals like this,\nautoDeriveVertexNormals will be set to false and vertex normals will no longer be calculated automatically.",
-            "line": " src/away/core/base/SubGeometry.ts:369"
+            "message": "Missing item type\nUpdates the vertex normals of the TriangleSubGeometry. When updating the vertex normals like this,\nautoDeriveVertexNormals will be set to false and vertex normals will no longer be calculated automatically.",
+            "line": " src/away/core/base/TriangleSubGeometry.ts:369"
         },
         {
             "message": "Missing item type\nThe raw vertex tangent data.",
-            "line": " src/away/core/base/SubGeometry.ts:382"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:382"
         },
         {
-            "message": "Missing item type\nUpdates the vertex tangents of the SubGeometry. When updating the vertex tangents like this,\nautoDeriveVertexTangents will be set to false and vertex tangents will no longer be calculated automatically.",
-            "line": " src/away/core/base/SubGeometry.ts:396"
+            "message": "Missing item type\nUpdates the vertex tangents of the TriangleSubGeometry. When updating the vertex tangents like this,\nautoDeriveVertexTangents will be set to false and vertex tangents will no longer be calculated automatically.",
+            "line": " src/away/core/base/TriangleSubGeometry.ts:396"
         },
         {
             "message": "Missing item type\nAn id for this subgeometry, used to identify subgeometries when using animation sets.",
-            "line": " src/away/core/base/SubGeometryBase.ts:41"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:41"
         },
         {
             "message": "Missing item type\nDefines whether a UV buffer should be automatically generated to contain dummy UV coordinates.\nSet to true if a geometry lacks UV data but uses a material that requires it, or leave as false\nin cases where UV data is explicitly defined or the material does not require UV data.",
-            "line": " src/away/core/base/SubGeometryBase.ts:53"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:53"
         },
         {
             "message": "Missing item type\nTrue if the vertex normals should be derived from the geometry, false if the vertex normals are set\nexplicitly.",
-            "line": " src/away/core/base/SubGeometryBase.ts:69"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:69"
         },
         {
             "message": "Missing item type\nIndicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.",
-            "line": " src/away/core/base/SubGeometryBase.ts:84"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:84"
         },
         {
-            "message": "Missing item type\nThe total amount of triangles in the SubGeometry.",
-            "line": " src/away/core/base/SubGeometryBase.ts:109"
+            "message": "Missing item type\nThe total amount of triangles in the TriangleSubGeometry.",
+            "line": " src/away/core/base/TriangleSubGeometry.ts:109"
         },
         {
             "message": "Missing item type\nUnique identifier for a subgeometry",
-            "line": " src/away/core/base/SubGeometryBase.ts:117"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:117"
         },
         {
             "message": "Missing item type\nRetrieves the VertexBuffer object that contains triangle indices.",
-            "line": " src/away/core/base/SubGeometryBase.ts:125"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:125"
         },
         {
             "message": "Missing item type\nUpdates the tangents for each face.",
-            "line": " src/away/core/base/SubGeometryBase.ts:149"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:149"
         },
         {
             "message": "Missing item type\nUpdates the normals for each face.",
-            "line": " src/away/core/base/SubGeometryBase.ts:219"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:219"
         },
         {
             "message": "Missing item type\nUpdates the vertex normals based on the geometry.",
-            "line": " src/away/core/base/SubGeometryBase.ts:297"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:297"
         },
         {
             "message": "Missing item type\nUpdates the vertex tangents based on the geometry.",
-            "line": " src/away/core/base/SubGeometryBase.ts:371"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:371"
         },
         {
             "message": "Missing item type\nThe raw index data that define the faces.",
-            "line": " src/away/core/base/SubGeometryBase.ts:460"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:460"
         },
         {
-            "message": "Missing item type\nUpdates the face indices of the SubGeometry.",
-            "line": " src/away/core/base/SubGeometryBase.ts:470"
-        },
-        {
-            "message": "Missing item type\nDisposes all buffers in a given vector.",
-            "line": " src/away/core/base/SubGeometryBase.ts:499"
+            "message": "Missing item type\nUpdates the face indices of the TriangleSubGeometry.",
+            "line": " src/away/core/base/TriangleSubGeometry.ts:470"
         },
         {
             "message": "Missing item type\nDisposes all buffers in a given vector.",
-            "line": " src/away/core/base/SubGeometryBase.ts:513"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:499"
+        },
+        {
+            "message": "Missing item type\nDisposes all buffers in a given vector.",
+            "line": " src/away/core/base/TriangleSubGeometry.ts:513"
         },
         {
             "message": "Missing item type\nTrue if the vertex tangents should be derived from the geometry, false if the vertex normals are set\nexplicitly.",
-            "line": " src/away/core/base/SubGeometryBase.ts:527"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:527"
         },
         {
             "message": "Missing item type\nThe raw data of the face normals, in the same order as the faces are listed in the index list.",
-            "line": " src/away/core/base/SubGeometryBase.ts:542"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:542"
         },
         {
             "message": "Missing item type\nInvalidates all buffers in a vector, causing them the update when they are first requested.",
-            "line": " src/away/core/base/SubGeometryBase.ts:556"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:556"
         },
         {
-            "message": "Missing item type\nThe Geometry object that 'owns' this SubGeometry object.",
-            "line": " src/away/core/base/SubGeometryBase.ts:641"
+            "message": "Missing item type\nThe Geometry object that 'owns' this TriangleSubGeometry object.",
+            "line": " src/away/core/base/TriangleSubGeometry.ts:641"
         },
         {
             "message": "Missing item type\nScales the uv coordinates",
-            "line": " src/away/core/base/SubGeometryBase.ts:656"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:656"
         },
         {
             "message": "Missing item type\nScales the geometry.",
-            "line": " src/away/core/base/SubGeometryBase.ts:689"
+            "line": " src/away/core/base/TriangleSubGeometry.ts:689"
         },
         {
-            "message": "Missing item type\nCreates a new SubMesh object",
-            "line": " src/away/core/base/SubMesh.ts:34"
+            "message": "Missing item type\nCreates a new TriangleSubMesh object",
+            "line": " src/away/core/base/TriangleSubMesh.ts:34"
         },
         {
             "message": "Missing item type\nThe entity that that initially provided the IRenderable to the render pipeline (ie: the owning Mesh object).",
-            "line": " src/away/core/base/SubMesh.ts:139"
+            "line": " src/away/core/base/TriangleSubMesh.ts:139"
         },
         {
-            "message": "Missing item type\nThe SubGeometry object which provides the geometry data for this SubMesh.",
-            "line": " src/away/core/base/SubMesh.ts:147"
+            "message": "Missing item type\nThe TriangleSubGeometry object which provides the geometry data for this TriangleSubMesh.",
+            "line": " src/away/core/base/TriangleSubMesh.ts:147"
         },
         {
-            "message": "Missing item type\nThe material used to render the current SubMesh. If set to null, its parent Mesh's material will be used instead.",
-            "line": " src/away/core/base/SubMesh.ts:160"
+            "message": "Missing item type\nThe material used to render the current TriangleSubMesh. If set to null, its parent Mesh's material will be used instead.",
+            "line": " src/away/core/base/TriangleSubMesh.ts:160"
         },
         {
             "message": "Missing item type\nThe scene transform object that transforms from model to world space.",
-            "line": " src/away/core/base/SubMesh.ts:189"
+            "line": " src/away/core/base/TriangleSubMesh.ts:189"
         },
         {
             "message": "Missing item type\nThe inverse scene transform object that transforms from world to model space.",
-            "line": " src/away/core/base/SubMesh.ts:197"
+            "line": " src/away/core/base/TriangleSubMesh.ts:197"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/core/base/SubMesh.ts:205"
+            "line": " src/away/core/base/TriangleSubMesh.ts:205"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/core/base/SubMesh.ts:213"
+            "line": " src/away/core/base/TriangleSubMesh.ts:213"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/core/base/SubMesh.ts:221"
+            "line": " src/away/core/base/TriangleSubMesh.ts:221"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/core/base/SubMesh.ts:229"
+            "line": " src/away/core/base/TriangleSubMesh.ts:229"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/core/base/SubMesh.ts:237"
+            "line": " src/away/core/base/TriangleSubMesh.ts:237"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/core/base/SubMesh.ts:245"
+            "line": " src/away/core/base/TriangleSubMesh.ts:245"
         },
         {
-            "message": "Missing item type\nThe amount of triangles that make up this SubMesh.",
-            "line": " src/away/core/base/SubMesh.ts:253"
+            "message": "Missing item type\nThe amount of triangles that make up this TriangleSubMesh.",
+            "line": " src/away/core/base/TriangleSubMesh.ts:253"
         },
         {
-            "message": "Missing item type\nThe animator object that provides the state for the SubMesh's animation.",
-            "line": " src/away/core/base/SubMesh.ts:261"
+            "message": "Missing item type\nThe animator object that provides the state for the TriangleSubMesh's animation.",
+            "line": " src/away/core/base/TriangleSubMesh.ts:261"
         },
         {
-            "message": "Missing item type\nIndicates whether the SubMesh should trigger mouse events, and hence should be rendered for hit testing.",
-            "line": " src/away/core/base/SubMesh.ts:271"
+            "message": "Missing item type\nIndicates whether the TriangleSubMesh should trigger mouse events, and hence should be rendered for hit testing.",
+            "line": " src/away/core/base/TriangleSubMesh.ts:271"
         },
         {
             "message": "Missing item type\nA reference to the owning Mesh object",
-            "line": " src/away/core/base/SubMesh.ts:286"
+            "line": " src/away/core/base/TriangleSubMesh.ts:286"
         },
         {
             "message": "Missing item type",
@@ -25176,7 +25176,7 @@
             "line": " src/away/core/pick/IPickingCollider.ts:19"
         },
         {
-            "message": "Missing item type\nTests a <code>SubMesh</code> object for a collision with the picking ray.",
+            "message": "Missing item type\nTests a <code>TriangleSubMesh</code> object for a collision with the picking ray.",
             "line": " src/away/core/pick/IPickingCollider.ts:27"
         },
         {
@@ -25460,7 +25460,7 @@
             "line": " src/away/entities/Mesh.ts:190"
         },
         {
-            "message": "Missing item type\nThe SubMeshes out of which the Mesh consists. Every SubMesh can be assigned a material to override the Mesh's\nmaterial.",
+            "message": "Missing item type\nThe SubMeshes out of which the Mesh consists. Every TriangleSubMesh can be assigned a material to override the Mesh's\nmaterial.",
             "line": " src/away/entities/Mesh.ts:223"
         },
         {
@@ -25492,15 +25492,15 @@
             "line": " src/away/entities/Mesh.ts:352"
         },
         {
-            "message": "Missing item type\nCalled when a SubGeometry was added to the Geometry.",
+            "message": "Missing item type\nCalled when a TriangleSubGeometry was added to the Geometry.",
             "line": " src/away/entities/Mesh.ts:360"
         },
         {
-            "message": "Missing item type\nCalled when a SubGeometry was removed from the Geometry.",
+            "message": "Missing item type\nCalled when a TriangleSubGeometry was removed from the Geometry.",
             "line": " src/away/entities/Mesh.ts:368"
         },
         {
-            "message": "Missing item type\nAdds a SubMesh wrapping a SubGeometry.",
+            "message": "Missing item type\nAdds a TriangleSubMesh wrapping a TriangleSubGeometry.",
             "line": " src/away/entities/Mesh.ts:405"
         },
         {
@@ -25624,11 +25624,11 @@
             "line": " src/away/events/AnimatorEvent.ts:44"
         },
         {
-            "message": "Missing item type\nDispatched when a SubGeometry was added from the dispatching Geometry.",
+            "message": "Missing item type\nDispatched when a TriangleSubGeometry was added from the dispatching Geometry.",
             "line": " src/away/events/GeometryEvent.ts:13"
         },
         {
-            "message": "Missing item type\nDispatched when a SubGeometry was removed from the dispatching Geometry.",
+            "message": "Missing item type\nDispatched when a TriangleSubGeometry was removed from the dispatching Geometry.",
             "line": " src/away/events/GeometryEvent.ts:18"
         },
         {
@@ -25636,7 +25636,7 @@
             "line": " src/away/events/GeometryEvent.ts:27"
         },
         {
-            "message": "Missing item type\nThe SubGeometry object that is the subject of this event, if appropriate.",
+            "message": "Missing item type\nThe TriangleSubGeometry object that is the subject of this event, if appropriate.",
             "line": " src/away/events/GeometryEvent.ts:38"
         },
         {
@@ -25645,135 +25645,135 @@
         },
         {
             "message": "Missing item type\nA MouseEvent3D is dispatched when a mouse event occurs over a mouseEnabled object in View3D.\ntodo: we don't have screenZ data, tho this should be easy to implement",
-            "line": " src/away/events/MouseEvent3D.ts:19"
+            "line": " src/away/events/MouseEvent.ts:19"
         },
         {
             "message": "Missing item type\nDefines the value of the type property of a mouseOver3d event object.",
-            "line": " src/away/events/MouseEvent3D.ts:29"
+            "line": " src/away/events/MouseEvent.ts:29"
         },
         {
             "message": "Missing item type\nDefines the value of the type property of a mouseOut3d event object.",
-            "line": " src/away/events/MouseEvent3D.ts:34"
+            "line": " src/away/events/MouseEvent.ts:34"
         },
         {
             "message": "Missing item type\nDefines the value of the type property of a mouseUp3d event object.",
-            "line": " src/away/events/MouseEvent3D.ts:39"
+            "line": " src/away/events/MouseEvent.ts:39"
         },
         {
             "message": "Missing item type\nDefines the value of the type property of a mouseDown3d event object.",
-            "line": " src/away/events/MouseEvent3D.ts:44"
+            "line": " src/away/events/MouseEvent.ts:44"
         },
         {
             "message": "Missing item type\nDefines the value of the type property of a mouseMove3d event object.",
-            "line": " src/away/events/MouseEvent3D.ts:49"
+            "line": " src/away/events/MouseEvent.ts:49"
         },
         {
             "message": "Missing item type\nDefines the value of the type property of a rollOver3d event object.",
-            "line": " src/away/events/MouseEvent3D.ts:54"
+            "line": " src/away/events/MouseEvent.ts:54"
         },
         {
             "message": "Missing item type\nDefines the value of the type property of a rollOut3d event object.",
-            "line": " src/away/events/MouseEvent3D.ts:59"
+            "line": " src/away/events/MouseEvent.ts:59"
         },
         {
             "message": "Missing item type\nDefines the value of the type property of a click3d event object.",
-            "line": " src/away/events/MouseEvent3D.ts:64"
+            "line": " src/away/events/MouseEvent.ts:64"
         },
         {
             "message": "Missing item type\nDefines the value of the type property of a doubleClick3d event object.",
-            "line": " src/away/events/MouseEvent3D.ts:69"
+            "line": " src/away/events/MouseEvent.ts:69"
         },
         {
             "message": "Missing item type\nDefines the value of the type property of a mouseWheel3d event object.",
-            "line": " src/away/events/MouseEvent3D.ts:74"
+            "line": " src/away/events/MouseEvent.ts:74"
         },
         {
             "message": "Missing item type\nThe horizontal coordinate at which the event occurred in view coordinates.",
-            "line": " src/away/events/MouseEvent3D.ts:79"
+            "line": " src/away/events/MouseEvent.ts:79"
         },
         {
             "message": "Missing item type\nThe vertical coordinate at which the event occurred in view coordinates.",
-            "line": " src/away/events/MouseEvent3D.ts:84"
+            "line": " src/away/events/MouseEvent.ts:84"
         },
         {
             "message": "Missing item type\nThe view object inside which the event took place.",
-            "line": " src/away/events/MouseEvent3D.ts:89"
+            "line": " src/away/events/MouseEvent.ts:89"
         },
         {
             "message": "Missing item type\nThe 3d object inside which the event took place.",
-            "line": " src/away/events/MouseEvent3D.ts:94"
+            "line": " src/away/events/MouseEvent.ts:94"
         },
         {
             "message": "Missing item type\nThe renderable inside which the event took place.",
-            "line": " src/away/events/MouseEvent3D.ts:99"
+            "line": " src/away/events/MouseEvent.ts:99"
         },
         {
             "message": "Missing item type\nThe material of the 3d element inside which the event took place.",
-            "line": " src/away/events/MouseEvent3D.ts:104"
+            "line": " src/away/events/MouseEvent.ts:104"
         },
         {
             "message": "Missing item type\nThe uv coordinate inside the draw primitive where the event took place.",
-            "line": " src/away/events/MouseEvent3D.ts:109"
+            "line": " src/away/events/MouseEvent.ts:109"
         },
         {
             "message": "Missing item type\nThe index of the face where the event took place.",
-            "line": " src/away/events/MouseEvent3D.ts:114"
+            "line": " src/away/events/MouseEvent.ts:114"
         },
         {
             "message": "Missing item type\nThe index of the subGeometry where the event took place.",
-            "line": " src/away/events/MouseEvent3D.ts:119"
+            "line": " src/away/events/MouseEvent.ts:119"
         },
         {
             "message": "Missing item type\nThe position in object space where the event took place",
-            "line": " src/away/events/MouseEvent3D.ts:124"
+            "line": " src/away/events/MouseEvent.ts:124"
         },
         {
             "message": "Missing item type\nThe normal in object space where the event took place",
-            "line": " src/away/events/MouseEvent3D.ts:129"
+            "line": " src/away/events/MouseEvent.ts:129"
         },
         {
             "message": "Missing item type\nIndicates whether the Control key is active (true) or inactive (false).",
-            "line": " src/away/events/MouseEvent3D.ts:134"
+            "line": " src/away/events/MouseEvent.ts:134"
         },
         {
             "message": "Missing item type\nIndicates whether the Alt key is active (true) or inactive (false).",
-            "line": " src/away/events/MouseEvent3D.ts:139"
+            "line": " src/away/events/MouseEvent.ts:139"
         },
         {
             "message": "Missing item type\nIndicates whether the Shift key is active (true) or inactive (false).",
-            "line": " src/away/events/MouseEvent3D.ts:144"
+            "line": " src/away/events/MouseEvent.ts:144"
         },
         {
             "message": "Missing item type\nIndicates how many lines should be scrolled for each unit the user rotates the mouse wheel.",
-            "line": " src/away/events/MouseEvent3D.ts:149"
+            "line": " src/away/events/MouseEvent.ts:149"
         },
         {
             "message": "Missing item type\nCreate a new MouseEvent3D object.",
-            "line": " src/away/events/MouseEvent3D.ts:154"
+            "line": " src/away/events/MouseEvent.ts:154"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/events/MouseEvent3D.ts:163"
+            "line": " src/away/events/MouseEvent.ts:163"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/events/MouseEvent3D.ts:174"
+            "line": " src/away/events/MouseEvent.ts:174"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/events/MouseEvent3D.ts:189"
+            "line": " src/away/events/MouseEvent.ts:189"
         },
         {
             "message": "Missing item type\nCreates a copy of the MouseEvent3D object and sets the value of each property to match that of the original.",
-            "line": " src/away/events/MouseEvent3D.ts:204"
+            "line": " src/away/events/MouseEvent.ts:204"
         },
         {
             "message": "Missing item type\nThe position in scene space where the event took place",
-            "line": " src/away/events/MouseEvent3D.ts:239"
+            "line": " src/away/events/MouseEvent.ts:239"
         },
         {
             "message": "Missing item type\nThe normal in scene space where the event took place",
-            "line": " src/away/events/MouseEvent3D.ts:258"
+            "line": " src/away/events/MouseEvent.ts:258"
         },
         {
             "message": "Missing item type\nThe texture scale for the input of this texture. This will define the output of the previous entry in the chain",
@@ -25785,11 +25785,11 @@
         },
         {
             "message": "Missing item type\nMouse3DManager enforces a singleton pattern and is not intended to be instanced.\nit provides a manager class for detecting 3D mouse hits on View3D objects and sending out 3D mouse events.",
-            "line": " src/away/managers/Mouse3DManager.ts:24"
+            "line": " src/away/managers/MouseManager.ts:24"
         },
         {
             "message": "Missing item type\nCreates a new <code>Mouse3DManager</code> object.",
-            "line": " src/away/managers/Mouse3DManager.ts:62"
+            "line": " src/away/managers/MouseManager.ts:62"
         },
         {
             "message": "Missing item type\nLightingShaderCompiler is a ShaderCompiler that generates code for passes performing shading only (no effect passes)",
@@ -29341,51 +29341,51 @@
         },
         {
             "message": "Missing item type\nA Capsule primitive mesh.",
-            "line": " src/away/primitives/CapsuleGeometry.ts:6"
+            "line": " src/away/primitives/PrimitiveCapsulePrefab.ts:6"
         },
         {
             "message": "Missing item type\nCreates a new Capsule object.",
-            "line": " src/away/primitives/CapsuleGeometry.ts:17"
+            "line": " src/away/primitives/PrimitiveCapsulePrefab.ts:17"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/CapsuleGeometry.ts:36"
+            "line": " src/away/primitives/PrimitiveCapsulePrefab.ts:36"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/CapsuleGeometry.ts:168"
+            "line": " src/away/primitives/PrimitiveCapsulePrefab.ts:168"
         },
         {
             "message": "Missing item type\nThe radius of the capsule.",
-            "line": " src/away/primitives/CapsuleGeometry.ts:201"
+            "line": " src/away/primitives/PrimitiveCapsulePrefab.ts:201"
         },
         {
             "message": "Missing item type\nThe height of the capsule.",
-            "line": " src/away/primitives/CapsuleGeometry.ts:215"
+            "line": " src/away/primitives/PrimitiveCapsulePrefab.ts:215"
         },
         {
             "message": "Missing item type\nDefines the number of horizontal segments that make up the capsule. Defaults to 16.",
-            "line": " src/away/primitives/CapsuleGeometry.ts:229"
+            "line": " src/away/primitives/PrimitiveCapsulePrefab.ts:229"
         },
         {
             "message": "Missing item type\nDefines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven.",
-            "line": " src/away/primitives/CapsuleGeometry.ts:244"
+            "line": " src/away/primitives/PrimitiveCapsulePrefab.ts:244"
         },
         {
             "message": "Missing item type\nDefines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).",
-            "line": " src/away/primitives/CapsuleGeometry.ts:259"
+            "line": " src/away/primitives/PrimitiveCapsulePrefab.ts:259"
         },
         {
             "message": "Missing item type\nA UV Cone primitive mesh.",
-            "line": " src/away/primitives/ConeGeometry.ts:6"
+            "line": " src/away/primitives/PrimitiveConePrefab.ts:6"
         },
         {
             "message": "Missing item type\nThe radius of the bottom end of the cone.",
-            "line": " src/away/primitives/ConeGeometry.ts:12"
+            "line": " src/away/primitives/PrimitiveConePrefab.ts:12"
         },
         {
             "message": "Missing item type\nCreates a new Cone object.",
-            "line": " src/away/primitives/ConeGeometry.ts:26"
+            "line": " src/away/primitives/PrimitiveConePrefab.ts:26"
         },
         {
             "message": "Missing item type\nA Cube primitive mesh.",
@@ -29433,255 +29433,255 @@
         },
         {
             "message": "Missing item type\nA Cylinder primitive mesh.",
-            "line": " src/away/primitives/CylinderGeometry.ts:6"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:6"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/CylinderGeometry.ts:54"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:54"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/CylinderGeometry.ts:280"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:280"
         },
         {
             "message": "Missing item type\nThe radius of the top end of the cylinder.",
-            "line": " src/away/primitives/CylinderGeometry.ts:361"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:361"
         },
         {
             "message": "Missing item type\nThe radius of the bottom end of the cylinder.",
-            "line": " src/away/primitives/CylinderGeometry.ts:375"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:375"
         },
         {
             "message": "Missing item type\nThe radius of the top end of the cylinder.",
-            "line": " src/away/primitives/CylinderGeometry.ts:389"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:389"
         },
         {
             "message": "Missing item type\nDefines the number of horizontal segments that make up the cylinder. Defaults to 16.",
-            "line": " src/away/primitives/CylinderGeometry.ts:403"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:403"
         },
         {
             "message": "Missing item type\nDefines the number of vertical segments that make up the cylinder. Defaults to 1.",
-            "line": " src/away/primitives/CylinderGeometry.ts:423"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:423"
         },
         {
             "message": "Missing item type\nDefines whether the top end of the cylinder is closed (true) or open.",
-            "line": " src/away/primitives/CylinderGeometry.ts:446"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:446"
         },
         {
             "message": "Missing item type\nDefines whether the bottom end of the cylinder is closed (true) or open.",
-            "line": " src/away/primitives/CylinderGeometry.ts:460"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:460"
         },
         {
             "message": "Missing item type\nDefines whether the cylinder poles should lay on the Y-axis (true) or on the Z-axis (false).",
-            "line": " src/away/primitives/CylinderGeometry.ts:474"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:474"
         },
         {
             "message": "Missing item type\nCreates a new Cylinder object.",
-            "line": " src/away/primitives/CylinderGeometry.ts:488"
+            "line": " src/away/primitives/PrimitiveCylinderPrefab.ts:488"
         },
         {
             "message": "Missing item type\nA Plane primitive mesh.",
-            "line": " src/away/primitives/PlaneGeometry.ts:5"
+            "line": " src/away/primitives/PrimitivePlanePrefab.ts:5"
         },
         {
             "message": "Missing item type\nCreates a new Plane object.",
-            "line": " src/away/primitives/PlaneGeometry.ts:17"
+            "line": " src/away/primitives/PrimitivePlanePrefab.ts:17"
         },
         {
             "message": "Missing item type\nThe number of segments that make up the plane along the X-axis. Defaults to 1.",
-            "line": " src/away/primitives/PlaneGeometry.ts:40"
+            "line": " src/away/primitives/PrimitivePlanePrefab.ts:40"
         },
         {
             "message": "Missing item type\nThe number of segments that make up the plane along the Y or Z-axis, depending on whether yUp is true or\nfalse, respectively. Defaults to 1.",
-            "line": " src/away/primitives/PlaneGeometry.ts:58"
+            "line": " src/away/primitives/PrimitivePlanePrefab.ts:58"
         },
         {
             "message": "Missing item type\nDefines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false). Defaults to true.",
-            "line": " src/away/primitives/PlaneGeometry.ts:77"
+            "line": " src/away/primitives/PrimitivePlanePrefab.ts:77"
         },
         {
             "message": "Missing item type\nDefines whether the plane will be visible from both sides, with correct vertex normals (as opposed to bothSides on Material). Defaults to false.",
-            "line": " src/away/primitives/PlaneGeometry.ts:91"
+            "line": " src/away/primitives/PrimitivePlanePrefab.ts:91"
         },
         {
             "message": "Missing item type\nThe width of the plane.",
-            "line": " src/away/primitives/PlaneGeometry.ts:105"
+            "line": " src/away/primitives/PrimitivePlanePrefab.ts:105"
         },
         {
             "message": "Missing item type\nThe height of the plane.",
-            "line": " src/away/primitives/PlaneGeometry.ts:119"
+            "line": " src/away/primitives/PrimitivePlanePrefab.ts:119"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/PlaneGeometry.ts:133"
+            "line": " src/away/primitives/PrimitivePlanePrefab.ts:133"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/PlaneGeometry.ts:260"
+            "line": " src/away/primitives/PrimitivePlanePrefab.ts:260"
         },
         {
             "message": "Missing item type\nPrimitiveBase is an abstract base class for mesh primitives, which are prebuilt simple meshes.",
-            "line": " src/away/primitives/PrimitiveBase.ts:15"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:15"
         },
         {
             "message": "Missing item type\nCreates a new PrimitiveBase object.",
-            "line": " src/away/primitives/PrimitiveBase.ts:25"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:25"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/PrimitiveBase.ts:38"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:38"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/PrimitiveBase.ts:58"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:58"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/PrimitiveBase.ts:77"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:77"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/PrimitiveBase.ts:90"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:90"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/PrimitiveBase.ts:105"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:105"
         },
         {
             "message": "Missing item type\nBuilds the primitive's geometry when invalid. This method should not be called directly. The calling should\nbe triggered by the invalidateGeometry method (and in turn by updateGeometry).",
-            "line": " src/away/primitives/PrimitiveBase.ts:120"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:120"
         },
         {
             "message": "Missing item type\nBuilds the primitive's uv coordinates when invalid. This method should not be called directly. The calling\nshould be triggered by the invalidateUVs method (and in turn by updateUVs).",
-            "line": " src/away/primitives/PrimitiveBase.ts:129"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:129"
         },
         {
             "message": "Missing item type\nInvalidates the primitive's geometry, causing it to be updated when requested.",
-            "line": " src/away/primitives/PrimitiveBase.ts:138"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:138"
         },
         {
             "message": "Missing item type\nInvalidates the primitive's uv coordinates, causing them to be updated when requested.",
-            "line": " src/away/primitives/PrimitiveBase.ts:146"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:146"
         },
         {
             "message": "Missing item type\nUpdates the geometry when invalid.",
-            "line": " src/away/primitives/PrimitiveBase.ts:154"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:154"
         },
         {
             "message": "Missing item type\nUpdates the uv coordinates when invalid.",
-            "line": " src/away/primitives/PrimitiveBase.ts:163"
+            "line": " src/away/primitives/PrimitivePrefabBase.ts:163"
         },
         {
             "message": "Missing item type\nA UV RegularPolygon primitive mesh.",
-            "line": " src/away/primitives/RegularPolygonGeometry.ts:6"
+            "line": " src/away/primitives/PrimitivePolygonPrefab.ts:6"
         },
         {
             "message": "Missing item type\nThe radius of the regular polygon.",
-            "line": " src/away/primitives/RegularPolygonGeometry.ts:12"
+            "line": " src/away/primitives/PrimitivePolygonPrefab.ts:12"
         },
         {
             "message": "Missing item type\nThe number of sides of the regular polygon.",
-            "line": " src/away/primitives/RegularPolygonGeometry.ts:26"
+            "line": " src/away/primitives/PrimitivePolygonPrefab.ts:26"
         },
         {
             "message": "Missing item type\nThe number of subdivisions from the edge to the center of the regular polygon.",
-            "line": " src/away/primitives/RegularPolygonGeometry.ts:39"
+            "line": " src/away/primitives/PrimitivePolygonPrefab.ts:39"
         },
         {
             "message": "Missing item type\nCreates a new RegularPolygon disc object.",
-            "line": " src/away/primitives/RegularPolygonGeometry.ts:52"
+            "line": " src/away/primitives/PrimitivePolygonPrefab.ts:52"
         },
         {
             "message": "Missing item type\nA UV Sphere primitive mesh.",
-            "line": " src/away/primitives/SphereGeometry.ts:7"
+            "line": " src/away/primitives/PrimitiveSpherePrefab.ts:7"
         },
         {
             "message": "Missing item type\nCreates a new Sphere object.",
-            "line": " src/away/primitives/SphereGeometry.ts:17"
+            "line": " src/away/primitives/PrimitiveSpherePrefab.ts:17"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/SphereGeometry.ts:34"
+            "line": " src/away/primitives/PrimitiveSpherePrefab.ts:34"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/SphereGeometry.ts:168"
+            "line": " src/away/primitives/PrimitiveSpherePrefab.ts:168"
         },
         {
             "message": "Missing item type\nThe radius of the sphere.",
-            "line": " src/away/primitives/SphereGeometry.ts:197"
+            "line": " src/away/primitives/PrimitiveSpherePrefab.ts:197"
         },
         {
             "message": "Missing item type\nDefines the number of horizontal segments that make up the sphere. Defaults to 16.",
-            "line": " src/away/primitives/SphereGeometry.ts:211"
+            "line": " src/away/primitives/PrimitiveSpherePrefab.ts:211"
         },
         {
             "message": "Missing item type\nDefines the number of vertical segments that make up the sphere. Defaults to 12.",
-            "line": " src/away/primitives/SphereGeometry.ts:226"
+            "line": " src/away/primitives/PrimitiveSpherePrefab.ts:226"
         },
         {
             "message": "Missing item type\nDefines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).",
-            "line": " src/away/primitives/SphereGeometry.ts:241"
+            "line": " src/away/primitives/PrimitiveSpherePrefab.ts:241"
         },
         {
             "message": "Missing item type\nA UV Cylinder primitive mesh.",
-            "line": " src/away/primitives/TorusGeometry.ts:10"
+            "line": " src/away/primitives/PrimitiveTorusPrefab.ts:10"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/TorusGeometry.ts:53"
+            "line": " src/away/primitives/PrimitiveTorusPrefab.ts:53"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/TorusGeometry.ts:162"
+            "line": " src/away/primitives/PrimitiveTorusPrefab.ts:162"
         },
         {
             "message": "Missing item type\nThe radius of the torus.",
-            "line": " src/away/primitives/TorusGeometry.ts:204"
+            "line": " src/away/primitives/PrimitiveTorusPrefab.ts:204"
         },
         {
             "message": "Missing item type\nThe radius of the inner tube of the torus.",
-            "line": " src/away/primitives/TorusGeometry.ts:218"
+            "line": " src/away/primitives/PrimitiveTorusPrefab.ts:218"
         },
         {
             "message": "Missing item type\nDefines the number of horizontal segments that make up the torus. Defaults to 16.",
-            "line": " src/away/primitives/TorusGeometry.ts:232"
+            "line": " src/away/primitives/PrimitiveTorusPrefab.ts:232"
         },
         {
             "message": "Missing item type\nDefines the number of vertical segments that make up the torus. Defaults to 8.",
-            "line": " src/away/primitives/TorusGeometry.ts:247"
+            "line": " src/away/primitives/PrimitiveTorusPrefab.ts:247"
         },
         {
             "message": "Missing item type\nDefines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).",
-            "line": " src/away/primitives/TorusGeometry.ts:262"
+            "line": " src/away/primitives/PrimitiveTorusPrefab.ts:262"
         },
         {
             "message": "Missing item type\nCreates a new <code>Torus</code> object.",
-            "line": " src/away/primitives/TorusGeometry.ts:276"
+            "line": " src/away/primitives/PrimitiveTorusPrefab.ts:276"
         },
         {
             "message": "Missing item type\nA WirefameCube primitive mesh.",
-            "line": " src/away/primitives/WireframeCube.ts:7"
+            "line": " src/away/primitives/PrimitiveCubePrefab.ts:7"
         },
         {
             "message": "Missing item type\nCreates a new WireframeCube object.",
-            "line": " src/away/primitives/WireframeCube.ts:16"
+            "line": " src/away/primitives/PrimitiveCubePrefab.ts:16"
         },
         {
             "message": "Missing item type\nThe size of the cube along its X-axis.",
-            "line": " src/away/primitives/WireframeCube.ts:33"
+            "line": " src/away/primitives/PrimitiveCubePrefab.ts:33"
         },
         {
             "message": "Missing item type\nThe size of the cube along its Y-axis.",
-            "line": " src/away/primitives/WireframeCube.ts:47"
+            "line": " src/away/primitives/PrimitiveCubePrefab.ts:47"
         },
         {
             "message": "Missing item type\nThe size of the cube along its Z-axis.",
-            "line": " src/away/primitives/WireframeCube.ts:63"
+            "line": " src/away/primitives/PrimitiveCubePrefab.ts:63"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/primitives/WireframeCube.ts:77"
+            "line": " src/away/primitives/PrimitiveCubePrefab.ts:77"
         },
         {
             "message": "Missing item type\nGenerates a wireframd cylinder primitive.",

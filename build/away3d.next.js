@@ -256,6 +256,9 @@ var away;
                     if (this._geometryDirty)
                         this._updateGeometry();
 
+                    if (this._indexDataDirty)
+                        this._updateIndexData();
+
                     return this._overflow;
                 },
                 enumerable: true,
@@ -332,12 +335,6 @@ var away;
             */
             RenderableBase.prototype.invalidateIndexData = function () {
                 this._indexDataDirty = true;
-
-                if (this._overflow)
-                    this._overflow.invalidateIndexData();
-
-                if (this._indexData)
-                    this._indexData.invalidateData();
             };
 
             /**
@@ -347,15 +344,6 @@ var away;
             */
             RenderableBase.prototype.invalidateVertexData = function (dataType) {
                 this._pVertexDataDirty[dataType] = true;
-
-                if (this._overflow)
-                    this._overflow.invalidateVertexData(dataType);
-
-                if (this._concatenateArrays)
-                    dataType = away.base.TriangleSubGeometry.VERTEX_DATA;
-
-                if (this._vertexData[dataType])
-                    this._vertexData[dataType].invalidateData();
             };
 
             RenderableBase.prototype._pGetSubGeometry = function () {
@@ -369,37 +357,26 @@ var away;
             * @param offset
             * @internal
             */
-            RenderableBase.prototype._iFillIndexData = function (subGeometry, indexOffset) {
-                this._constructIndices(subGeometry, indexOffset);
+            RenderableBase.prototype._iFillIndexData = function (indexOffset) {
+                if (!this._indexData)
+                    this._indexData = away.gl.IndexDataPool.getItem(this._subGeometry.id, this._level);
+
+                this._indexData.updateData(indexOffset, this._subGeometry.indices, this._subGeometry.numVertices);
+
+                this._numTriangles = this._indexData.data.length / 3;
 
                 indexOffset = this._indexData.offset;
 
                 //check if there is more to split
-                if (indexOffset < subGeometry.indices.length) {
+                if (indexOffset < this._subGeometry.indices.length) {
                     if (!this._overflow)
                         this._overflow = this._pGetOverflowRenderable(this._pool, this.materialOwner, indexOffset, this._level + 1);
                     else
-                        this._overflow._iFillIndexData(subGeometry, indexOffset);
+                        this._overflow._iFillIndexData(indexOffset);
                 } else if (this._overflow) {
                     this._overflow.dispose();
                     this._overflow = null;
                 }
-            };
-
-            /**
-            * //TODO
-            *
-            * @param subGeometry
-            * @param dataType
-            * @internal
-            */
-            RenderableBase.prototype._iFillVertexData = function (subGeometry, dataType) {
-                this._vertexOffset[dataType] = subGeometry.getOffset(dataType);
-
-                this._constructVertices(subGeometry, this._concatenateArrays ? away.base.TriangleSubGeometry.VERTEX_DATA : dataType, this.getIndexData().originalIndices, this.getIndexData().indexMappings);
-
-                if (this._overflow)
-                    this._overflow._iFillVertexData(subGeometry, dataType);
             };
 
             RenderableBase.prototype._pGetOverflowRenderable = function (pool, materialOwner, level, indexOffset) {
@@ -409,45 +386,12 @@ var away;
             /**
             * //TODO
             *
-            * @param subGeometry
-            * @param offset
-            * @private
-            */
-            RenderableBase.prototype._constructIndices = function (subGeometry, offset) {
-                if (!this._indexData)
-                    this._indexData = away.gl.IndexDataPool.getItem(subGeometry.id, this._level);
-
-                this._indexData.updateData(offset, subGeometry.indices, subGeometry.numVertices);
-
-                this._numTriangles = this._indexData.data.length / 3;
-            };
-
-            /**
-            * //TODO
-            *
-            * @param subGeometry
-            * @param dataType
-            * @param originalIndices
-            * @param indexMappings
-            * @private
-            */
-            RenderableBase.prototype._constructVertices = function (subGeometry, dataType, originalIndices, indexMappings) {
-                if (typeof originalIndices === "undefined") { originalIndices = null; }
-                if (typeof indexMappings === "undefined") { indexMappings = null; }
-                if (!this._vertexData[dataType])
-                    this._vertexData[dataType] = away.gl.VertexDataPool.getItem(subGeometry.id, this._level, dataType);
-
-                this._vertexData[dataType].updateData(subGeometry[dataType], subGeometry.getStride(dataType), originalIndices, indexMappings);
-            };
-
-            /**
-            * //TODO
-            *
             * @private
             */
             RenderableBase.prototype._updateGeometry = function () {
-                if (this._subGeometry && this._level == 0) {
-                    this._subGeometry.removeEventListener(SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdatedDelegate);
+                if (this._subGeometry) {
+                    if (this._level == 0)
+                        this._subGeometry.removeEventListener(SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdatedDelegate);
                     this._subGeometry.removeEventListener(SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdatedDelegate);
                 }
 
@@ -455,26 +399,28 @@ var away;
 
                 this._concatenateArrays = this._subGeometry.concatenateArrays;
 
-                if (this._subGeometry && this._level == 0) {
-                    this._subGeometry.addEventListener(SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdatedDelegate);
+                if (this._subGeometry) {
+                    if (this._level == 0)
+                        this._subGeometry.addEventListener(SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdatedDelegate);
                     this._subGeometry.addEventListener(SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdatedDelegate);
                 }
 
                 //dispose
                 if (this._indexData) {
-                    this._indexData.dispose();
+                    //this._indexData.dispose(); //TODO where is a good place to dispose?
                     this._indexData = null;
                 }
 
                 for (var dataType in this._vertexData) {
-                    this._vertexData[dataType].dispose();
+                    //(<away.gl.VertexData> this._vertexData[dataType]).dispose(); //TODO where is a good place to dispose?
                     this._vertexData[dataType] = null;
                 }
 
                 this._geometryDirty = false;
 
                 //invalidate indices
-                this._indexDataDirty = true;
+                if (this._level == 0)
+                    this._indexDataDirty = true;
                 //specific vertex data types have to be invalidated in the specific renderable
             };
 
@@ -484,7 +430,7 @@ var away;
             * @private
             */
             RenderableBase.prototype._updateIndexData = function () {
-                this._iFillIndexData(this._subGeometry, this._indexOffset);
+                this._iFillIndexData(this._indexOffset);
 
                 this._indexDataDirty = false;
             };
@@ -496,7 +442,12 @@ var away;
             * @private
             */
             RenderableBase.prototype._updateVertexData = function (dataType) {
-                this._iFillVertexData(this._subGeometry, dataType);
+                this._vertexOffset[dataType] = this._subGeometry.getOffset(dataType);
+
+                if (this._subGeometry.concatenateArrays)
+                    dataType = away.base.SubGeometryBase.VERTEX_DATA;
+
+                this._vertexData[dataType] = away.gl.VertexDataPool.getItem(this._subGeometry, this.getIndexData(), dataType);
 
                 this._pVertexDataDirty[dataType] = false;
             };
@@ -535,6 +486,8 @@ var away;
     * @module away.pool
     */
     (function (_pool) {
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+
         /**
         * @class away.pool.RenderableListItem
         */
@@ -550,13 +503,6 @@ var away;
                 _super.call(this, pool, billboard, billboard);
 
                 this._billboard = billboard;
-
-                this._iFillIndexData(this._pGetSubGeometry(), 0);
-
-                this.invalidateVertexData(away.base.TriangleSubGeometry.POSITION_DATA);
-                this.invalidateVertexData(away.base.TriangleSubGeometry.NORMAL_DATA);
-                this.invalidateVertexData(away.base.TriangleSubGeometry.TANGENT_DATA);
-                this.invalidateVertexData(away.base.TriangleSubGeometry.UV_DATA);
             }
             /**
             * //TODO
@@ -569,7 +515,7 @@ var away;
                 var geometry = BillboardRenderable._materialGeometry[material.id];
 
                 if (!geometry) {
-                    geometry = BillboardRenderable._materialGeometry[material.id] = new away.base.TriangleSubGeometry(true);
+                    geometry = BillboardRenderable._materialGeometry[material.id] = new TriangleSubGeometry(true);
                     geometry.autoDeriveNormals = false;
                     geometry.autoDeriveTangents = false;
                     geometry.updateIndices(Array(0, 1, 2, 0, 2, 3));
@@ -580,6 +526,11 @@ var away;
                 } else {
                     geometry.updatePositions(Array(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
                 }
+
+                this._pVertexDataDirty[TriangleSubGeometry.POSITION_DATA] = true;
+                this._pVertexDataDirty[TriangleSubGeometry.NORMAL_DATA] = true;
+                this._pVertexDataDirty[TriangleSubGeometry.TANGENT_DATA] = true;
+                this._pVertexDataDirty[TriangleSubGeometry.UV_DATA] = true;
 
                 return geometry;
             };
@@ -785,10 +736,6 @@ var away;
             */
             function SkyboxRenderable(pool, skybox) {
                 _super.call(this, pool, skybox, skybox);
-
-                this._iFillIndexData(this._pGetSubGeometry(), 0);
-
-                this.invalidateVertexData(TriangleSubGeometry.POSITION_DATA);
             }
             /**
             * //TODO
@@ -31672,6 +31619,8 @@ var away;
     (function (animators) {
         var TriangleSubGeometry = away.base.TriangleSubGeometry;
 
+        var VertexDataPool = away.gl.VertexDataPool;
+
         /**
         * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
         * and controlling the various available states of animation through an interative playhead that can be
@@ -31741,11 +31690,29 @@ var away;
             VertexAnimator.prototype._pUpdateDeltaTime = function (dt) {
                 _super.prototype._pUpdateDeltaTime.call(this, dt);
 
-                this._poses[0] = this._activeVertexState.currentGeometry;
-                this._poses[1] = this._activeVertexState.nextGeometry;
+                var geometryFlag = false;
+
+                if (this._poses[0] != this._activeVertexState.currentGeometry) {
+                    this._poses[0] = this._activeVertexState.currentGeometry;
+                    geometryFlag = true;
+                }
+
+                if (this._poses[1] != this._activeVertexState.nextGeometry) {
+                    this._poses[1] = this._activeVertexState.nextGeometry;
+                    geometryFlag = true;
+                }
+
                 this._weights[0] = 1 - (this._weights[1] = this._activeVertexState.blendWeight);
-                //TODO fire a check when the current active geometry changes
-                //send geometry invalidation to renderables
+
+                if (geometryFlag) {
+                    //invalidate meshes
+                    var mesh;
+                    var len = this._pOwners.length;
+                    for (var i = 0; i < len; i++) {
+                        mesh = this._pOwners[i];
+                        mesh._iInvalidateRenderableGeometries();
+                    }
+                }
             };
 
             /**
@@ -31773,12 +31740,12 @@ var away;
                     i = 0;
 
                 for (; i < len; ++i) {
-                    //TODO this needs fixing
-                    //subGeom = this._poses[i].subGeometries[subMesh._iIndex] || renderable.subGeometry;
-                    stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+                    subGeom = this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
+
+                    stageGL.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.POSITION_DATA), subGeom.getOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
                     if (this._vertexAnimationSet.useNormals)
-                        stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+                        stageGL.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.NORMAL_DATA), subGeom.getOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
                 }
             };
 

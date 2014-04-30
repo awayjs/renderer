@@ -1854,15 +1854,17 @@ declare module away.gl {
     *
     */
     class VertexData {
+        private _onVerticesUpdatedDelegate;
+        private _subGeometry;
+        private _dataType;
         private _dataDirty;
         public invalid: boolean[];
         public buffers: VertexBuffer[];
         public stageGLs: base.StageGL[];
         public data: number[];
         public dataPerVertex: number;
-        constructor();
-        public updateData(vertices: number[], dataPerVertex: number, originalIndices?: number[], indexMappings?: number[]): void;
-        public invalidateData(): void;
+        constructor(subGeometry: base.SubGeometryBase, dataType: string);
+        public updateData(originalIndices?: number[], indexMappings?: number[]): void;
         public dispose(): void;
         /**
         * @private
@@ -1878,7 +1880,14 @@ declare module away.gl {
         * @param dataPerVertex
         * @private
         */
-        private setData(data, dataPerVertex);
+        private setData(data);
+        /**
+        * //TODO
+        *
+        * @param event
+        * @private
+        */
+        private _onVerticesUpdated(event);
     }
 }
 /**
@@ -1891,9 +1900,9 @@ declare module away.gl {
     class VertexDataPool {
         private static _pool;
         constructor();
-        static getItem(id: string, level: number, dataType: string): VertexData;
-        static disposeItem(id: string, level: number, dataType: string): void;
-        public disposeData(id: string): void;
+        static getItem(subGeometry: base.SubGeometryBase, indexData: IndexData, dataType: string): VertexData;
+        static disposeItem(subGeometry: base.SubGeometryBase, level: number, dataType: string): void;
+        public disposeData(subGeometry: base.SubGeometryBase): void;
     }
 }
 declare module away.gl {
@@ -1926,7 +1935,8 @@ declare module away.gl {
         public indexMappings: number[];
         public originalIndices: number[];
         public offset: number;
-        constructor();
+        public level: number;
+        constructor(level: number);
         public updateData(offset: number, indices: number[], numVertices: number): void;
         public invalidateData(): void;
         public dispose(): void;
@@ -4659,6 +4669,7 @@ declare module away.base {
     * @class away.base.TriangleSubGeometry
     */
     class SubGeometryBase extends library.NamedAssetBase {
+        static VERTEX_DATA: string;
         public _pStrideOffsetDirty: boolean;
         public _pIndices: number[];
         public _pVertices: number[];
@@ -5461,7 +5472,6 @@ declare module away.base {
     * @class away.base.TriangleSubGeometry
     */
     class TriangleSubGeometry extends SubGeometryBase {
-        static VERTEX_DATA: string;
         static POSITION_DATA: string;
         static NORMAL_DATA: string;
         static TANGENT_DATA: string;
@@ -11955,6 +11965,7 @@ declare module away.entities {
         * @internal
         */
         public _iCollectRenderables(renderer: render.IRenderer): void;
+        public _iInvalidateRenderableGeometries(): void;
     }
 }
 /**

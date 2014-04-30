@@ -2,12 +2,16 @@
 
 module away.animators
 {
-	import TriangleSubGeometry		= away.base.TriangleSubGeometry;
-	import SubMesh					= away.base.TriangleSubMesh;
-	import Geometry					= away.base.Geometry;
-	import StageGL					= away.base.StageGL;
-	import RenderableBase			= away.pool.RenderableBase;
-	import SubMeshRenderable		= away.pool.TriangleSubMeshRenderable;
+	import SubGeometryBase					= away.base.SubGeometryBase;
+	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
+	import SubMesh							= away.base.TriangleSubMesh;
+	import Geometry							= away.base.Geometry;
+	import StageGL							= away.base.StageGL;
+	import Mesh								= away.entities.Mesh;
+	import VertexDataPool					= away.gl.VertexDataPool;
+	import MaterialPassBase					= away.materials.MaterialPassBase;
+	import RenderableBase					= away.pool.RenderableBase;
+	import TriangleSubMeshRenderable		= away.pool.TriangleSubMeshRenderable;
 
 
 	/**
@@ -88,13 +92,29 @@ module away.animators
 		{
 			super._pUpdateDeltaTime(dt);
 
-			this._poses[0] = this._activeVertexState.currentGeometry;
-			this._poses[1] = this._activeVertexState.nextGeometry;
+			var geometryFlag:boolean = false;
+
+			if (this._poses[0] != this._activeVertexState.currentGeometry) {
+				this._poses[0] = this._activeVertexState.currentGeometry;
+				geometryFlag = true;
+			}
+
+			if (this._poses[1] != this._activeVertexState.nextGeometry) {
+				this._poses[1] = this._activeVertexState.nextGeometry;
+				geometryFlag = true;
+			}
+
 			this._weights[0] = 1 - (this._weights[1] = this._activeVertexState.blendWeight);
 
-			//TODO fire a check when the current active geometry changes
-			//send geometry invalidation to renderables
-
+			if (geometryFlag) {
+				//invalidate meshes
+				var mesh:Mesh;
+				var len:number = this._pOwners.length;
+				for (var i:number = 0; i < len; i++) {
+					mesh = this._pOwners[i];
+					mesh._iInvalidateRenderableGeometries();
+				}
+			}
 		}
 
 		/**
@@ -111,8 +131,8 @@ module away.animators
 			}
 
 			// this type of animation can only be SubMesh
-			var subMesh:SubMesh = <SubMesh> (<SubMeshRenderable> renderable).subMesh;
-			var subGeom:TriangleSubGeometry;
+			var subMesh:SubMesh = <SubMesh> (<TriangleSubMeshRenderable> renderable).subMesh;
+			var subGeom:SubGeometryBase;
 			var i:number /*uint*/;
 			var len:number /*uint*/ = this._numPoses;
 
@@ -124,13 +144,12 @@ module away.animators
 				i = 0;
 
 			for (; i < len; ++i) {
-				//TODO this needs fixing
-				//subGeom = this._poses[i].subGeometries[subMesh._iIndex] || renderable.subGeometry;
+				subGeom = this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
 
-				stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+				stageGL.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.POSITION_DATA), subGeom.getOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
 				if (this._vertexAnimationSet.useNormals)
-					stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+					stageGL.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.NORMAL_DATA), subGeom.getOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 			}
 		}
 
@@ -154,11 +173,11 @@ module away.animators
 		 * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
 		 * Needs to be called if gpu code is potentially required.
 		 */
-		public testGPUCompatibility(pass:away.materials.MaterialPassBase)
+		public testGPUCompatibility(pass:MaterialPassBase)
 		{
 		}
 
-		public getRenderableSubGeometry(renderable:away.pool.TriangleSubMeshRenderable, sourceSubGeometry:TriangleSubGeometry):TriangleSubGeometry
+		public getRenderableSubGeometry(renderable:TriangleSubMeshRenderable, sourceSubGeometry:TriangleSubGeometry):TriangleSubGeometry
 		{
 			if (this._blendMode == VertexAnimationMode.ABSOLUTE && this._poses.length)
 				return <TriangleSubGeometry> this._poses[0].subGeometries[renderable.subMesh._iIndex] || sourceSubGeometry;

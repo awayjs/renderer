@@ -4837,26 +4837,40 @@ var away;
     * @module away.base
     */
     (function (gl) {
+        var SubGeometryEvent = away.events.SubGeometryEvent;
+
         /**
         *
         */
         var VertexData = (function () {
-            function VertexData() {
+            function VertexData(subGeometry, dataType) {
+                var _this = this;
                 this._dataDirty = true;
                 this.invalid = new Array(8);
                 this.buffers = new Array(8);
                 this.stageGLs = new Array(8);
+                this._subGeometry = subGeometry;
+                this._dataType = dataType;
+
+                this._onVerticesUpdatedDelegate = function (event) {
+                    return _this._onVerticesUpdated(event);
+                };
+                this._subGeometry.addEventListener(SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdatedDelegate);
             }
-            VertexData.prototype.updateData = function (vertices, dataPerVertex, originalIndices, indexMappings) {
+            VertexData.prototype.updateData = function (originalIndices, indexMappings) {
                 if (typeof originalIndices === "undefined") { originalIndices = null; }
                 if (typeof indexMappings === "undefined") { indexMappings = null; }
                 if (this._dataDirty) {
                     this._dataDirty = false;
 
+                    this.dataPerVertex = this._subGeometry.getStride(this._dataType);
+
+                    var vertices = this._subGeometry[this._dataType];
+
                     if (indexMappings == null) {
-                        this.setData(vertices, dataPerVertex);
+                        this.setData(vertices);
                     } else {
-                        var splitVerts = new Array(originalIndices.length * dataPerVertex);
+                        var splitVerts = new Array(originalIndices.length * this.dataPerVertex);
                         var originalIndex;
                         var splitIndex;
                         var i = 0;
@@ -4864,22 +4878,18 @@ var away;
                         while (i < originalIndices.length) {
                             originalIndex = originalIndices[i];
 
-                            splitIndex = indexMappings[originalIndex] * dataPerVertex;
-                            originalIndex *= dataPerVertex;
+                            splitIndex = indexMappings[originalIndex] * this.dataPerVertex;
+                            originalIndex *= this.dataPerVertex;
 
-                            for (j = 0; j < dataPerVertex; j++)
+                            for (j = 0; j < this.dataPerVertex; j++)
                                 splitVerts[splitIndex + j] = vertices[originalIndex + j];
 
                             i++;
                         }
 
-                        this.setData(splitVerts, dataPerVertex);
+                        this.setData(splitVerts);
                     }
                 }
-            };
-
-            VertexData.prototype.invalidateData = function () {
-                this._dataDirty = true;
             };
 
             VertexData.prototype.dispose = function () {
@@ -4917,14 +4927,26 @@ var away;
             * @param dataPerVertex
             * @private
             */
-            VertexData.prototype.setData = function (data, dataPerVertex) {
+            VertexData.prototype.setData = function (data) {
                 if (this.data && this.data.length != data.length)
                     this.disposeBuffers();
                 else
                     this.invalidateBuffers();
 
                 this.data = data;
-                this.dataPerVertex = dataPerVertex;
+            };
+
+            /**
+            * //TODO
+            *
+            * @param event
+            * @private
+            */
+            VertexData.prototype._onVerticesUpdated = function (event) {
+                var dataType = this._subGeometry.concatenateArrays ? away.base.SubGeometryBase.VERTEX_DATA : event.dataType;
+
+                if (dataType == this._dataType)
+                    this._dataDirty = true;
             };
             return VertexData;
         })();
@@ -4945,23 +4967,29 @@ var away;
         var VertexDataPool = (function () {
             function VertexDataPool() {
             }
-            VertexDataPool.getItem = function (id, level, dataType) {
-                var subGeometryDictionary = (VertexDataPool._pool[id] || (VertexDataPool._pool[id] = new Object()));
+            VertexDataPool.getItem = function (subGeometry, indexData, dataType) {
+                if (subGeometry.concatenateArrays)
+                    dataType = away.base.SubGeometryBase.VERTEX_DATA;
+
+                var subGeometryDictionary = (VertexDataPool._pool[subGeometry.id] || (VertexDataPool._pool[subGeometry.id] = new Object()));
                 var subGeometryData = (subGeometryDictionary[dataType] || (subGeometryDictionary[dataType] = new Array()));
 
-                return subGeometryData[level] || (subGeometryData[level] = new gl.VertexData());
+                var vertexData = subGeometryData[indexData.level] || (subGeometryData[indexData.level] = new gl.VertexData(subGeometry, dataType));
+                vertexData.updateData(indexData.originalIndices, indexData.indexMappings);
+
+                return vertexData;
             };
 
-            VertexDataPool.disposeItem = function (id, level, dataType) {
-                var subGeometryDictionary = VertexDataPool._pool[id];
+            VertexDataPool.disposeItem = function (subGeometry, level, dataType) {
+                var subGeometryDictionary = VertexDataPool._pool[subGeometry.id];
                 var subGeometryData = subGeometryDictionary[dataType];
 
                 subGeometryData[level].dispose();
                 subGeometryData[level] = null;
             };
 
-            VertexDataPool.prototype.disposeData = function (id) {
-                var subGeometryDictionary = VertexDataPool._pool[id];
+            VertexDataPool.prototype.disposeData = function (subGeometry) {
+                var subGeometryDictionary = VertexDataPool._pool[subGeometry.id];
 
                 for (var key in subGeometryDictionary) {
                     var subGeometryData = subGeometryDictionary[key];
@@ -4973,7 +5001,7 @@ var away;
                     }
                 }
 
-                VertexDataPool._pool[id] = null;
+                VertexDataPool._pool[subGeometry.id] = null;
             };
             VertexDataPool._pool = new Object();
             return VertexDataPool;
@@ -5035,11 +5063,12 @@ var away;
         *
         */
         var IndexData = (function () {
-            function IndexData() {
+            function IndexData(level) {
                 this._dataDirty = true;
                 this.invalid = new Array(8);
                 this.stageGLs = new Array(8);
                 this.buffers = new Array(8);
+                this.level = level;
             }
             IndexData.prototype.updateData = function (offset, indices, numVertices) {
                 if (this._dataDirty) {
@@ -5175,7 +5204,7 @@ var away;
             IndexDataPool.getItem = function (id, level) {
                 var subGeometryData = (IndexDataPool._pool[id] || (IndexDataPool._pool[id] = new Array()));
 
-                return subGeometryData[level] || (subGeometryData[level] = new gl.IndexData());
+                return subGeometryData[level] || (subGeometryData[level] = new gl.IndexData(level));
             };
 
             IndexDataPool.disposeItem = function (id, level) {
@@ -10371,6 +10400,7 @@ var away;
             SubGeometryBase.prototype._pNotifyVerticesUpdate = function () {
                 throw new away.errors.AbstractMethodError();
             };
+            SubGeometryBase.VERTEX_DATA = "vertices";
             return SubGeometryBase;
         })(away.library.NamedAssetBase);
         base.SubGeometryBase = SubGeometryBase;
@@ -13506,7 +13536,6 @@ var away;
 
                 this.dispatchEvent(this._jointWeightsUpdated);
             };
-            TriangleSubGeometry.VERTEX_DATA = "vertices";
             TriangleSubGeometry.POSITION_DATA = "positions";
             TriangleSubGeometry.NORMAL_DATA = "vertexNormals";
             TriangleSubGeometry.TANGENT_DATA = "vertexTangents";
@@ -24181,6 +24210,12 @@ var away;
                 var len = this._subMeshes.length;
                 for (var i = 0; i < len; i++)
                     this._subMeshes[i]._iCollectRenderable(renderer);
+            };
+
+            Mesh.prototype._iInvalidateRenderableGeometries = function () {
+                var len = this._subMeshes.length;
+                for (var i = 0; i < len; ++i)
+                    this._subMeshes[i]._iInvalidateRenderableGeometry();
             };
             return Mesh;
         })(away.containers.DisplayObjectContainer);

@@ -223,34 +223,8 @@ declare module away.pool {
         * @param offset
         * @internal
         */
-        public _iFillIndexData(subGeometry: base.SubGeometryBase, indexOffset: number): void;
-        /**
-        * //TODO
-        *
-        * @param subGeometry
-        * @param dataType
-        * @internal
-        */
-        public _iFillVertexData(subGeometry: base.SubGeometryBase, dataType: string): void;
+        public _iFillIndexData(indexOffset: number): void;
         public _pGetOverflowRenderable(pool: RenderablePool, materialOwner: base.IMaterialOwner, level: number, indexOffset: number): RenderableBase;
-        /**
-        * //TODO
-        *
-        * @param subGeometry
-        * @param offset
-        * @private
-        */
-        private _constructIndices(subGeometry, offset);
-        /**
-        * //TODO
-        *
-        * @param subGeometry
-        * @param dataType
-        * @param originalIndices
-        * @param indexMappings
-        * @private
-        */
-        private _constructVertices(subGeometry, dataType, originalIndices?, indexMappings?);
         /**
         * //TODO
         *

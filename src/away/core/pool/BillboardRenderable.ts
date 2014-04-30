@@ -5,6 +5,9 @@
  */
 module away.pool
 {
+	import SubGeometryBase					= away.base.SubGeometryBase;
+	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
+
 	/**
 	 * @class away.pool.RenderableListItem
 	 */
@@ -33,13 +36,6 @@ module away.pool
 			super(pool, billboard, billboard);
 
 			this._billboard = billboard;
-
-			this._iFillIndexData(this._pGetSubGeometry(), 0);
-
-			this.invalidateVertexData(away.base.TriangleSubGeometry.POSITION_DATA);
-			this.invalidateVertexData(away.base.TriangleSubGeometry.NORMAL_DATA);
-			this.invalidateVertexData(away.base.TriangleSubGeometry.TANGENT_DATA);
-			this.invalidateVertexData(away.base.TriangleSubGeometry.UV_DATA);
 		}
 
 		/**
@@ -47,14 +43,14 @@ module away.pool
 		 *
 		 * @returns {away.base.TriangleSubGeometry}
 		 */
-		public _pGetSubGeometry():away.base.SubGeometryBase
+		public _pGetSubGeometry():SubGeometryBase
 		{
 			var material:away.materials.IMaterial = this._billboard.material;
 
-			var geometry:away.base.TriangleSubGeometry = BillboardRenderable._materialGeometry[material.id];
+			var geometry:TriangleSubGeometry = BillboardRenderable._materialGeometry[material.id];
 
 			if (!geometry) {
-				geometry = BillboardRenderable._materialGeometry[material.id] = new away.base.TriangleSubGeometry(true);
+				geometry = BillboardRenderable._materialGeometry[material.id] = new TriangleSubGeometry(true);
 				geometry.autoDeriveNormals = false;
 				geometry.autoDeriveTangents = false;
 				geometry.updateIndices(Array<number>(0, 1, 2, 0, 2, 3));
@@ -66,7 +62,10 @@ module away.pool
 				geometry.updatePositions(Array<number>(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
 			}
 
-
+			this._pVertexDataDirty[TriangleSubGeometry.POSITION_DATA] = true;
+			this._pVertexDataDirty[TriangleSubGeometry.NORMAL_DATA] = true;
+			this._pVertexDataDirty[TriangleSubGeometry.TANGENT_DATA] = true;
+			this._pVertexDataDirty[TriangleSubGeometry.UV_DATA] = true;
 
 			return geometry;
 		}

@@ -31,10 +31,6 @@ module away.pool
 		constructor(pool:RenderablePool, skybox:away.entities.Skybox)
 		{
 			super(pool, skybox, skybox);
-
-			this._iFillIndexData(this._pGetSubGeometry(), 0);
-
-			this.invalidateVertexData(TriangleSubGeometry.POSITION_DATA);
 		}
 
 		/**
