@@ -30019,6 +30019,2946 @@ var away;
     })(away.prefabs || (away.prefabs = {}));
     var prefabs = away.prefabs;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (prefabs) {
+        var Geometry = away.base.Geometry;
+
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+        var LineSubGeometry = away.base.LineSubGeometry;
+        var Mesh = away.entities.Mesh;
+
+        /**
+        * PrimitivePrefabBase is an abstract base class for polytope prefabs, which are simple pre-built geometric shapes
+        */
+        var PrimitivePrefabBase = (function (_super) {
+            __extends(PrimitivePrefabBase, _super);
+            /**
+            * Creates a new PrimitivePrefabBase object.
+            *
+            * @param material The material with which to render the object
+            */
+            function PrimitivePrefabBase(material, geometryType) {
+                if (typeof material === "undefined") { material = null; }
+                if (typeof geometryType === "undefined") { geometryType = "triangleSubGeometry"; }
+                _super.call(this);
+                this._geomDirty = true;
+                this._uvDirty = true;
+                this._geometryTypeDirty = true;
+
+                this._geometry = new Geometry();
+                this._material = material;
+                this._geometryType = geometryType;
+            }
+            Object.defineProperty(PrimitivePrefabBase.prototype, "assetType", {
+                /**
+                *
+                */
+                get: function () {
+                    return away.library.AssetType.PRIMITIVE_PREFAB;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(PrimitivePrefabBase.prototype, "geometryType", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._geometryType;
+                },
+                set: function (value) {
+                    if (this._geometryType == value)
+                        return;
+
+                    this._geometryType = value;
+
+                    this.invalidateGeometryType();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitivePrefabBase.prototype, "geometry", {
+                get: function () {
+                    this._iValidate();
+
+                    return this._geometry;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(PrimitivePrefabBase.prototype, "material", {
+                /**
+                * The material with which to render the primitive.
+                */
+                get: function () {
+                    return this._material;
+                },
+                set: function (value) {
+                    if (value == this._material)
+                        return;
+
+                    this._material = value;
+
+                    var len = this._pObjects.length;
+                    for (var i = 0; i < len; i++)
+                        this._pObjects[i].material = this._material;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Builds the primitive's geometry when invalid. This method should not be called directly. The calling should
+            * be triggered by the invalidateGeometry method (and in turn by updateGeometry).
+            */
+            PrimitivePrefabBase.prototype._pBuildGeometry = function (target, geometryType) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * Builds the primitive's uv coordinates when invalid. This method should not be called directly. The calling
+            * should be triggered by the invalidateUVs method (and in turn by updateUVs).
+            */
+            PrimitivePrefabBase.prototype._pBuildUVs = function (target, geometryType) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * Invalidates the primitive's geometry type, causing it to be updated when requested.
+            */
+            PrimitivePrefabBase.prototype.invalidateGeometryType = function () {
+                this._geometryTypeDirty = true;
+                this._geomDirty = true;
+                this._uvDirty = true;
+            };
+
+            /**
+            * Invalidates the primitive's geometry, causing it to be updated when requested.
+            */
+            PrimitivePrefabBase.prototype._pInvalidateGeometry = function () {
+                this._geomDirty = true;
+            };
+
+            /**
+            * Invalidates the primitive's uv coordinates, causing them to be updated when requested.
+            */
+            PrimitivePrefabBase.prototype._pInvalidateUVs = function () {
+                this._uvDirty = true;
+            };
+
+            /**
+            * Updates the subgeometry when invalid.
+            */
+            PrimitivePrefabBase.prototype.updateGeometryType = function () {
+                //remove any existing sub geometry
+                if (this._subGeometry)
+                    this._geometry.removeSubGeometry(this._subGeometry);
+
+                if (this._geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = new TriangleSubGeometry(true);
+                    triangleGeometry.autoDeriveNormals = false;
+                    triangleGeometry.autoDeriveTangents = false;
+                    triangleGeometry.autoDeriveUVs = false;
+                    this._geometry.addSubGeometry(triangleGeometry);
+                    this._subGeometry = triangleGeometry;
+                } else if (this._geometryType == "lineSubGeometry") {
+                    this._geometry.addSubGeometry(this._subGeometry = new LineSubGeometry());
+                }
+
+                this._geometryTypeDirty = false;
+            };
+
+            /**
+            * Updates the geometry when invalid.
+            */
+            PrimitivePrefabBase.prototype.updateGeometry = function () {
+                this._pBuildGeometry(this._subGeometry, this._geometryType);
+
+                this._geomDirty = false;
+            };
+
+            /**
+            * Updates the uv coordinates when invalid.
+            */
+            PrimitivePrefabBase.prototype.updateUVs = function () {
+                this._pBuildUVs(this._subGeometry, this._geometryType);
+
+                this._uvDirty = false;
+            };
+
+            PrimitivePrefabBase.prototype._iValidate = function () {
+                if (this._geometryTypeDirty)
+                    this.updateGeometryType();
+
+                if (this._geomDirty)
+                    this.updateGeometry();
+
+                if (this._uvDirty)
+                    this.updateUVs();
+            };
+
+            PrimitivePrefabBase.prototype._pCreateObject = function () {
+                var mesh = new Mesh(this._geometry, this._material);
+                mesh._iSourcePrefab = this;
+
+                return mesh;
+            };
+            return PrimitivePrefabBase;
+        })(prefabs.PrefabBase);
+        prefabs.PrimitivePrefabBase = PrimitivePrefabBase;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (prefabs) {
+        /**
+        * A UV Cylinder primitive mesh.
+        */
+        var PrimitiveTorusPrefab = (function (_super) {
+            __extends(PrimitiveTorusPrefab, _super);
+            /**
+            * Creates a new <code>Torus</code> object.
+            * @param radius The radius of the torus.
+            * @param tuebRadius The radius of the inner tube of the torus.
+            * @param segmentsR Defines the number of horizontal segments that make up the torus.
+            * @param segmentsT Defines the number of vertical segments that make up the torus.
+            * @param yUp Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
+            */
+            function PrimitiveTorusPrefab(radius, tubeRadius, segmentsR, segmentsT, yUp) {
+                if (typeof radius === "undefined") { radius = 50; }
+                if (typeof tubeRadius === "undefined") { tubeRadius = 50; }
+                if (typeof segmentsR === "undefined") { segmentsR = 16; }
+                if (typeof segmentsT === "undefined") { segmentsT = 8; }
+                if (typeof yUp === "undefined") { yUp = true; }
+                _super.call(this);
+                this._numVertices = 0;
+
+                this._radius = radius;
+                this._tubeRadius = tubeRadius;
+                this._segmentsR = segmentsR;
+                this._segmentsT = segmentsT;
+                this._yUp = yUp;
+            }
+            Object.defineProperty(PrimitiveTorusPrefab.prototype, "radius", {
+                /**
+                * The radius of the torus.
+                */
+                get: function () {
+                    return this._radius;
+                },
+                set: function (value) {
+                    this._radius = value;
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveTorusPrefab.prototype, "tubeRadius", {
+                /**
+                * The radius of the inner tube of the torus.
+                */
+                get: function () {
+                    return this._tubeRadius;
+                },
+                set: function (value) {
+                    this._tubeRadius = value;
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveTorusPrefab.prototype, "segmentsR", {
+                /**
+                * Defines the number of horizontal segments that make up the torus. Defaults to 16.
+                */
+                get: function () {
+                    return this._segmentsR;
+                },
+                set: function (value) {
+                    this._segmentsR = value;
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveTorusPrefab.prototype, "segmentsT", {
+                /**
+                * Defines the number of vertical segments that make up the torus. Defaults to 8.
+                */
+                get: function () {
+                    return this._segmentsT;
+                },
+                set: function (value) {
+                    this._segmentsT = value;
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveTorusPrefab.prototype, "yUp", {
+                /**
+                * Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
+                */
+                get: function () {
+                    return this._yUp;
+                },
+                set: function (value) {
+                    this._yUp = value;
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveTorusPrefab.prototype._pBuildGeometry = function (target, geometryType) {
+                var indices;
+                var positions;
+                var normals;
+                var tangents;
+
+                var i, j;
+                var x, y, z, nx, ny, nz, revolutionAngleR, revolutionAngleT;
+                var vidx;
+                var fidx;
+                var numIndices = 0;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    // evaluate target number of vertices, triangles and indices
+                    this._numVertices = (this._segmentsT + 1) * (this._segmentsR + 1); // segmentsT + 1 because of closure, segmentsR + 1 because of closure
+                    numIndices = this._segmentsT * this._segmentsR * 6; // each level has segmentR quads, each of 2 triangles
+
+                    // need to initialize raw arrays or can be reused?
+                    if (this._numVertices == triangleGeometry.numVertices) {
+                        indices = triangleGeometry.indices;
+                        positions = triangleGeometry.positions;
+                        normals = triangleGeometry.vertexNormals;
+                        tangents = triangleGeometry.vertexTangents;
+                    } else {
+                        indices = new Array(numIndices);
+                        positions = new Array(this._numVertices * 3);
+                        normals = new Array(this._numVertices * 3);
+                        tangents = new Array(this._numVertices * 3);
+
+                        this._pInvalidateUVs();
+                    }
+
+                    vidx = 0;
+                    fidx = 0;
+
+                    // evaluate revolution steps
+                    var revolutionAngleDeltaR = 2 * Math.PI / this._segmentsR;
+                    var revolutionAngleDeltaT = 2 * Math.PI / this._segmentsT;
+
+                    var comp1, comp2;
+                    var t1, t2, n1, n2;
+                    var startIndex = 0;
+                    var nextVertexIndex = 0;
+
+                    // surface
+                    var a, b, c, d, length;
+
+                    for (j = 0; j <= this._segmentsT; ++j) {
+                        startIndex = nextVertexIndex * 3;
+
+                        for (i = 0; i <= this._segmentsR; ++i) {
+                            // revolution vertex
+                            revolutionAngleR = i * revolutionAngleDeltaR;
+                            revolutionAngleT = j * revolutionAngleDeltaT;
+
+                            length = Math.cos(revolutionAngleT);
+                            nx = length * Math.cos(revolutionAngleR);
+                            ny = length * Math.sin(revolutionAngleR);
+                            nz = Math.sin(revolutionAngleT);
+
+                            x = this._radius * Math.cos(revolutionAngleR) + this._tubeRadius * nx;
+                            y = this._radius * Math.sin(revolutionAngleR) + this._tubeRadius * ny;
+                            z = (j == this._segmentsT) ? 0 : this._tubeRadius * nz;
+
+                            if (this._yUp) {
+                                n1 = -nz;
+                                n2 = ny;
+                                t1 = 0;
+                                t2 = (length ? nx / length : x / this._radius);
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                n1 = ny;
+                                n2 = nz;
+                                t1 = (length ? nx / length : x / this._radius);
+                                t2 = 0;
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i == this._segmentsR) {
+                                positions[vidx] = x;
+                                positions[vidx + 1] = positions[startIndex + 1];
+                                positions[vidx + 2] = positions[startIndex + 2];
+                            } else {
+                                positions[vidx] = x;
+                                positions[vidx + 1] = comp1;
+                                positions[vidx + 2] = comp2;
+                            }
+
+                            normals[vidx] = nx;
+                            normals[vidx + 1] = n1;
+                            normals[vidx + 2] = n2;
+                            tangents[vidx] = -(length ? ny / length : y / this._radius);
+                            tangents[vidx + 1] = t1;
+                            tangents[vidx + 2] = t2;
+
+                            vidx += 3;
+
+                            // close triangle
+                            if (i > 0 && j > 0) {
+                                a = nextVertexIndex; // current
+                                b = nextVertexIndex - 1; // previous
+                                c = b - this._segmentsR - 1; // previous of last level
+                                d = a - this._segmentsR - 1; // current of last level
+
+                                indices[fidx++] = a;
+                                indices[fidx++] = b;
+                                indices[fidx++] = c;
+
+                                indices[fidx++] = a;
+                                indices[fidx++] = c;
+                                indices[fidx++] = d;
+                            }
+
+                            nextVertexIndex++;
+                        }
+                    }
+
+                    // build real data from raw data
+                    triangleGeometry.updateIndices(indices);
+
+                    triangleGeometry.updatePositions(positions);
+                    triangleGeometry.updateVertexNormals(normals);
+                    triangleGeometry.updateVertexTangents(tangents);
+                } else if (geometryType == "lineSubGeometry") {
+                    //TODO
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveTorusPrefab.prototype._pBuildUVs = function (target, geometryType) {
+                var i, j;
+                var uvs;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    // need to initialize raw array or can be reused?
+                    if (triangleGeometry.uvs && this._numVertices == triangleGeometry.numVertices) {
+                        uvs = triangleGeometry.uvs;
+                    } else {
+                        uvs = new Array(this._numVertices * 2);
+                    }
+
+                    // current uv component index
+                    var index = 0;
+
+                    for (j = 0; j <= this._segmentsT; ++j) {
+                        for (i = 0; i <= this._segmentsR; ++i) {
+                            // revolution vertex
+                            uvs[index++] = (i / this._segmentsR) * triangleGeometry.scaleU;
+                            uvs[index++] = (j / this._segmentsT) * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    // build real data from raw data
+                    triangleGeometry.updateUVs(uvs);
+                } else if (geometryType == "lineSubGeometry") {
+                    //nothing to do here
+                }
+            };
+            return PrimitiveTorusPrefab;
+        })(away.prefabs.PrimitivePrefabBase);
+        prefabs.PrimitiveTorusPrefab = PrimitiveTorusPrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (prefabs) {
+        /**
+        * A Cube primitive prefab.
+        */
+        var PrimitiveCubePrefab = (function (_super) {
+            __extends(PrimitiveCubePrefab, _super);
+            /**
+            * Creates a new Cube object.
+            * @param width The size of the cube along its X-axis.
+            * @param height The size of the cube along its Y-axis.
+            * @param depth The size of the cube along its Z-axis.
+            * @param segmentsW The number of segments that make up the cube along the X-axis.
+            * @param segmentsH The number of segments that make up the cube along the Y-axis.
+            * @param segmentsD The number of segments that make up the cube along the Z-axis.
+            * @param tile6 The type of uv mapping to use. When true, a texture will be subdivided in a 2x3 grid, each used for a single face. When false, the entire image is mapped on each face.
+            */
+            function PrimitiveCubePrefab(width, height, depth, segmentsW, segmentsH, segmentsD, tile6) {
+                if (typeof width === "undefined") { width = 100; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof depth === "undefined") { depth = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 1; }
+                if (typeof segmentsH === "undefined") { segmentsH = 1; }
+                if (typeof segmentsD === "undefined") { segmentsD = 1; }
+                if (typeof tile6 === "undefined") { tile6 = true; }
+                _super.call(this);
+
+                this._width = width;
+                this._height = height;
+                this._depth = depth;
+                this._segmentsW = segmentsW;
+                this._segmentsH = segmentsH;
+                this._segmentsD = segmentsD;
+                this._tile6 = tile6;
+            }
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "width", {
+                /**
+                * The size of the cube along its X-axis.
+                */
+                get: function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    this._width = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "height", {
+                /**
+                * The size of the cube along its Y-axis.
+                */
+                get: function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    this._height = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "depth", {
+                /**
+                * The size of the cube along its Z-axis.
+                */
+                get: function () {
+                    return this._depth;
+                },
+                set: function (value) {
+                    this._depth = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "tile6", {
+                /**
+                * The type of uv mapping to use. When false, the entire image is mapped on each face.
+                * When true, a texture will be subdivided in a 3x2 grid, each used for a single face.
+                * Reading the tiles from left to right, top to bottom they represent the faces of the
+                * cube in the following order: bottom, top, back, left, front, right. This creates
+                * several shared edges (between the top, front, left and right faces) which simplifies
+                * texture painting.
+                */
+                get: function () {
+                    return this._tile6;
+                },
+                set: function (value) {
+                    this._tile6 = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "segmentsW", {
+                /**
+                * The number of segments that make up the cube along the X-axis. Defaults to 1.
+                */
+                get: function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    this._segmentsW = value;
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "segmentsH", {
+                /**
+                * The number of segments that make up the cube along the Y-axis. Defaults to 1.
+                */
+                get: function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    this._segmentsH = value;
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCubePrefab.prototype, "segmentsD", {
+                /**
+                * The number of segments that make up the cube along the Z-axis. Defaults to 1.
+                */
+                get: function () {
+                    return this._segmentsD;
+                },
+                set: function (value) {
+                    this._segmentsD = value;
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveCubePrefab.prototype._pBuildGeometry = function (target, geometryType) {
+                var indices;
+                var positions;
+                var normals;
+                var tangents;
+
+                var tl, tr, bl, br;
+                var i, j, inc = 0;
+
+                var vidx, fidx;
+                var hw, hh, hd;
+                var dw, dh, dd;
+
+                var outer_pos;
+                var numIndices;
+                var numVertices;
+
+                // half cube dimensions
+                hw = this._width / 2;
+                hh = this._height / 2;
+                hd = this._depth / 2;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    numVertices = ((this._segmentsW + 1) * (this._segmentsH + 1) + (this._segmentsW + 1) * (this._segmentsD + 1) + (this._segmentsH + 1) * (this._segmentsD + 1)) * 2;
+
+                    numIndices = ((this._segmentsW * this._segmentsH + this._segmentsW * this._segmentsD + this._segmentsH * this._segmentsD) * 12);
+
+                    if (numVertices == triangleGeometry.numVertices && triangleGeometry.indices != null) {
+                        indices = triangleGeometry.indices;
+                        positions = triangleGeometry.positions;
+                        normals = triangleGeometry.vertexNormals;
+                        tangents = triangleGeometry.vertexTangents;
+                    } else {
+                        indices = new Array(numIndices);
+                        positions = new Array(numVertices * 3);
+                        normals = new Array(numVertices * 3);
+                        tangents = new Array(numVertices * 3);
+
+                        this._pInvalidateUVs();
+                    }
+
+                    vidx = 0;
+                    fidx = 0;
+
+                    // Segment dimensions
+                    dw = this._width / this._segmentsW;
+                    dh = this._height / this._segmentsH;
+                    dd = this._depth / this._segmentsD;
+
+                    for (i = 0; i <= this._segmentsW; i++) {
+                        outer_pos = -hw + i * dw;
+
+                        for (j = 0; j <= this._segmentsH; j++) {
+                            // front
+                            positions[vidx] = outer_pos;
+                            positions[vidx + 1] = -hh + j * dh;
+                            positions[vidx + 2] = -hd;
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = 0;
+                            normals[vidx + 2] = -1;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            // back
+                            positions[vidx] = outer_pos;
+                            positions[vidx + 1] = -hh + j * dh;
+                            positions[vidx + 2] = hd;
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = 0;
+                            normals[vidx + 2] = 1;
+                            tangents[vidx] = -1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            if (i && j) {
+                                tl = 2 * ((i - 1) * (this._segmentsH + 1) + (j - 1));
+                                tr = 2 * (i * (this._segmentsH + 1) + (j - 1));
+                                bl = tl + 2;
+                                br = tr + 2;
+
+                                indices[fidx++] = tl;
+                                indices[fidx++] = bl;
+                                indices[fidx++] = br;
+                                indices[fidx++] = tl;
+                                indices[fidx++] = br;
+                                indices[fidx++] = tr;
+                                indices[fidx++] = tr + 1;
+                                indices[fidx++] = br + 1;
+                                indices[fidx++] = bl + 1;
+                                indices[fidx++] = tr + 1;
+                                indices[fidx++] = bl + 1;
+                                indices[fidx++] = tl + 1;
+                            }
+                        }
+                    }
+
+                    inc += 2 * (this._segmentsW + 1) * (this._segmentsH + 1);
+
+                    for (i = 0; i <= this._segmentsW; i++) {
+                        outer_pos = -hw + i * dw;
+
+                        for (j = 0; j <= this._segmentsD; j++) {
+                            // top
+                            positions[vidx] = outer_pos;
+                            positions[vidx + 1] = hh;
+                            positions[vidx + 2] = -hd + j * dd;
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = 1;
+                            normals[vidx + 2] = 0;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            // bottom
+                            positions[vidx] = outer_pos;
+                            positions[vidx + 1] = -hh;
+                            positions[vidx + 2] = -hd + j * dd;
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = -1;
+                            normals[vidx + 2] = 0;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            if (i && j) {
+                                tl = inc + 2 * ((i - 1) * (this._segmentsD + 1) + (j - 1));
+                                tr = inc + 2 * (i * (this._segmentsD + 1) + (j - 1));
+                                bl = tl + 2;
+                                br = tr + 2;
+
+                                indices[fidx++] = tl;
+                                indices[fidx++] = bl;
+                                indices[fidx++] = br;
+                                indices[fidx++] = tl;
+                                indices[fidx++] = br;
+                                indices[fidx++] = tr;
+                                indices[fidx++] = tr + 1;
+                                indices[fidx++] = br + 1;
+                                indices[fidx++] = bl + 1;
+                                indices[fidx++] = tr + 1;
+                                indices[fidx++] = bl + 1;
+                                indices[fidx++] = tl + 1;
+                            }
+                        }
+                    }
+
+                    inc += 2 * (this._segmentsW + 1) * (this._segmentsD + 1);
+
+                    for (i = 0; i <= this._segmentsD; i++) {
+                        outer_pos = hd - i * dd;
+
+                        for (j = 0; j <= this._segmentsH; j++) {
+                            // left
+                            positions[vidx] = -hw;
+                            positions[vidx + 1] = -hh + j * dh;
+                            positions[vidx + 2] = outer_pos;
+                            normals[vidx] = -1;
+                            normals[vidx + 1] = 0;
+                            normals[vidx + 2] = 0;
+                            tangents[vidx] = 0;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = -1;
+                            vidx += 3;
+
+                            // right
+                            positions[vidx] = hw;
+                            positions[vidx + 1] = -hh + j * dh;
+                            positions[vidx + 2] = outer_pos;
+                            normals[vidx] = 1;
+                            normals[vidx + 1] = 0;
+                            normals[vidx + 2] = 0;
+                            tangents[vidx] = 0;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 1;
+                            vidx += 3;
+
+                            if (i && j) {
+                                tl = inc + 2 * ((i - 1) * (this._segmentsH + 1) + (j - 1));
+                                tr = inc + 2 * (i * (this._segmentsH + 1) + (j - 1));
+                                bl = tl + 2;
+                                br = tr + 2;
+
+                                indices[fidx++] = tl;
+                                indices[fidx++] = bl;
+                                indices[fidx++] = br;
+                                indices[fidx++] = tl;
+                                indices[fidx++] = br;
+                                indices[fidx++] = tr;
+                                indices[fidx++] = tr + 1;
+                                indices[fidx++] = br + 1;
+                                indices[fidx++] = bl + 1;
+                                indices[fidx++] = tr + 1;
+                                indices[fidx++] = bl + 1;
+                                indices[fidx++] = tl + 1;
+                            }
+                        }
+                    }
+
+                    triangleGeometry.updateIndices(indices);
+
+                    triangleGeometry.updatePositions(positions);
+                    triangleGeometry.updateVertexNormals(normals);
+                    triangleGeometry.updateVertexTangents(tangents);
+                } else if (geometryType == "lineSubGeometry") {
+                    var lineGeometry = target;
+
+                    var numSegments = this._segmentsH * 4 + this._segmentsW * 4 + this._segmentsD * 4;
+                    var startPositions;
+                    var endPositions;
+                    var thickness;
+
+                    if (lineGeometry.indices != null && numSegments == lineGeometry.numSegments) {
+                        startPositions = lineGeometry.startPositions;
+                        endPositions = lineGeometry.endPositions;
+                        thickness = lineGeometry.thickness;
+                    } else {
+                        startPositions = new Array(numSegments * 3);
+                        endPositions = new Array(numSegments * 3);
+                        thickness = new Array(numSegments);
+                    }
+
+                    vidx = 0;
+
+                    fidx = 0;
+
+                    for (i = 0; i < this._segmentsH; ++i) {
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = i * this._height / this._segmentsH - hh;
+                        startPositions[vidx + 2] = -hd;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = i * this._height / this._segmentsH - hh;
+                        endPositions[vidx + 2] = -hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = hh - i * this._height / this._segmentsH;
+                        startPositions[vidx + 2] = hd;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = hh - i * this._height / this._segmentsH;
+                        endPositions[vidx + 2] = hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    for (i = 0; i < this._segmentsW; ++i) {
+                        startPositions[vidx] = i * this._width / this._segmentsW - hw;
+                        startPositions[vidx + 1] = -hh;
+                        startPositions[vidx + 2] = -hd;
+
+                        endPositions[vidx] = i * this._width / this._segmentsW - hw;
+                        endPositions[vidx + 1] = hh;
+                        endPositions[vidx + 2] = -hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+
+                        startPositions[vidx] = hw - i * this._width / this._segmentsW;
+                        startPositions[vidx + 1] = -hh;
+                        startPositions[vidx + 2] = hd;
+
+                        endPositions[vidx] = hw - i * this._width / this._segmentsW;
+                        endPositions[vidx + 1] = hh;
+                        endPositions[vidx + 2] = hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    for (i = 0; i < this._segmentsH; ++i) {
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = i * this._height / this._segmentsH - hh;
+                        startPositions[vidx + 2] = -hd;
+
+                        endPositions[vidx] = -hw;
+                        endPositions[vidx + 1] = i * this._height / this._segmentsH - hh;
+                        endPositions[vidx + 2] = hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+
+                        startPositions[vidx] = hw;
+                        startPositions[vidx + 1] = hh - i * this._height / this._segmentsH;
+                        startPositions[vidx + 2] = -hd;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = hh - i * this._height / this._segmentsH;
+                        endPositions[vidx + 2] = hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    for (i = 0; i < this._segmentsD; ++i) {
+                        startPositions[vidx] = hw;
+                        startPositions[vidx + 1] = -hh;
+                        startPositions[vidx + 2] = i * this._depth / this._segmentsD - hd;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = hh;
+                        endPositions[vidx + 2] = i * this._depth / this._segmentsD - hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = -hh;
+                        startPositions[vidx + 2] = hd - i * this._depth / this._segmentsD;
+
+                        endPositions[vidx] = -hw;
+                        endPositions[vidx + 1] = hh;
+                        endPositions[vidx + 2] = hd - i * this._depth / this._segmentsD;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    for (i = 0; i < this._segmentsD; ++i) {
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = -hh;
+                        startPositions[vidx + 2] = hd - i * this._depth / this._segmentsD;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = -hh;
+                        endPositions[vidx + 2] = hd - i * this._depth / this._segmentsD;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = hh;
+                        startPositions[vidx + 2] = i * this._depth / this._segmentsD - hd;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = hh;
+                        endPositions[vidx + 2] = i * this._depth / this._segmentsD - hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    for (i = 0; i < this._segmentsW; ++i) {
+                        startPositions[vidx] = hw - i * this._width / this._segmentsW;
+                        startPositions[vidx + 1] = -hh;
+                        startPositions[vidx + 2] = -hd;
+
+                        endPositions[vidx] = hw - i * this._width / this._segmentsW;
+                        endPositions[vidx + 1] = -hh;
+                        endPositions[vidx + 2] = hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+
+                        startPositions[vidx] = i * this._width / this._segmentsW - hw;
+                        startPositions[vidx + 1] = hh;
+                        startPositions[vidx + 2] = -hd;
+
+                        endPositions[vidx] = i * this._width / this._segmentsW - hw;
+                        endPositions[vidx + 1] = hh;
+                        endPositions[vidx + 2] = hd;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    // build real data from raw data
+                    lineGeometry.updatePositions(startPositions, endPositions);
+                    lineGeometry.updateThickness(thickness);
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveCubePrefab.prototype._pBuildUVs = function (target, geometryType) {
+                var i, j, index;
+                var uvs;
+
+                var u_tile_dim, v_tile_dim;
+                var u_tile_step, v_tile_step;
+                var tl0u, tl0v;
+                var tl1u, tl1v;
+                var du, dv;
+                var numVertices;
+
+                if (geometryType == "triangleSubGeometry") {
+                    numVertices = ((this._segmentsW + 1) * (this._segmentsH + 1) + (this._segmentsW + 1) * (this._segmentsD + 1) + (this._segmentsH + 1) * (this._segmentsD + 1)) * 2;
+
+                    var triangleGeometry = target;
+
+                    if (numVertices == triangleGeometry.numVertices && triangleGeometry.uvs != null) {
+                        uvs = triangleGeometry.uvs;
+                    } else {
+                        uvs = new Array(numVertices * 2);
+                    }
+
+                    if (this._tile6) {
+                        u_tile_dim = u_tile_step = 1 / 3;
+                        v_tile_dim = v_tile_step = 1 / 2;
+                    } else {
+                        u_tile_dim = v_tile_dim = 1;
+                        u_tile_step = v_tile_step = 0;
+                    }
+
+                    // Create planes two and two, the same way that they were
+                    // constructed in the buildGeometry() function. First calculate
+                    // the top-left UV coordinate for both planes, and then loop
+                    // over the points, calculating the UVs from these numbers.
+                    // When tile6 is true, the layout is as follows:
+                    //       .-----.-----.-----. (1,1)
+                    //       | Bot |  T  | Bak |
+                    //       |-----+-----+-----|
+                    //       |  L  |  F  |  R  |
+                    // (0,0)'-----'-----'-----'
+                    index = 0;
+
+                    // FRONT / BACK
+                    tl0u = 1 * u_tile_step;
+                    tl0v = 1 * v_tile_step;
+                    tl1u = 2 * u_tile_step;
+                    tl1v = 0 * v_tile_step;
+                    du = u_tile_dim / this._segmentsW;
+                    dv = v_tile_dim / this._segmentsH;
+                    for (i = 0; i <= this._segmentsW; i++) {
+                        for (j = 0; j <= this._segmentsH; j++) {
+                            uvs[index++] = (tl0u + i * du) * triangleGeometry.scaleU;
+                            uvs[index++] = (tl0v + (v_tile_dim - j * dv)) * triangleGeometry.scaleV;
+
+                            uvs[index++] = (tl1u + (u_tile_dim - i * du)) * triangleGeometry.scaleU;
+                            uvs[index++] = (tl1v + (v_tile_dim - j * dv)) * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    // TOP / BOTTOM
+                    tl0u = 1 * u_tile_step;
+                    tl0v = 0 * v_tile_step;
+                    tl1u = 0 * u_tile_step;
+                    tl1v = 0 * v_tile_step;
+                    du = u_tile_dim / this._segmentsW;
+                    dv = v_tile_dim / this._segmentsD;
+                    for (i = 0; i <= this._segmentsW; i++) {
+                        for (j = 0; j <= this._segmentsD; j++) {
+                            uvs[index++] = (tl0u + i * du) * triangleGeometry.scaleU;
+                            uvs[index++] = (tl0v + (v_tile_dim - j * dv)) * triangleGeometry.scaleV;
+
+                            uvs[index++] = (tl1u + i * du) * triangleGeometry.scaleU;
+                            uvs[index++] = (tl1v + j * dv) * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    // LEFT / RIGHT
+                    tl0u = 0 * u_tile_step;
+                    tl0v = 1 * v_tile_step;
+                    tl1u = 2 * u_tile_step;
+                    tl1v = 1 * v_tile_step;
+                    du = u_tile_dim / this._segmentsD;
+                    dv = v_tile_dim / this._segmentsH;
+                    for (i = 0; i <= this._segmentsD; i++) {
+                        for (j = 0; j <= this._segmentsH; j++) {
+                            uvs[index++] = (tl0u + i * du) * triangleGeometry.scaleU;
+                            uvs[index++] = (tl0v + (v_tile_dim - j * dv)) * triangleGeometry.scaleV;
+
+                            uvs[index++] = (tl1u + (u_tile_dim - i * du)) * triangleGeometry.scaleU;
+                            uvs[index++] = (tl1v + (v_tile_dim - j * dv)) * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    triangleGeometry.updateUVs(uvs);
+                } else if (geometryType == "lineSubGeometry") {
+                    //nothing to do here
+                }
+            };
+            return PrimitiveCubePrefab;
+        })(away.prefabs.PrimitivePrefabBase);
+        prefabs.PrimitiveCubePrefab = PrimitiveCubePrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (prefabs) {
+        /**
+        * A Plane primitive mesh.
+        */
+        var PrimitivePlanePrefab = (function (_super) {
+            __extends(PrimitivePlanePrefab, _super);
+            /**
+            * Creates a new Plane object.
+            * @param width The width of the plane.
+            * @param height The height of the plane.
+            * @param segmentsW The number of segments that make up the plane along the X-axis.
+            * @param segmentsH The number of segments that make up the plane along the Y or Z-axis.
+            * @param yUp Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false).
+            * @param doubleSided Defines whether the plane will be visible from both sides, with correct vertex normals.
+            */
+            function PrimitivePlanePrefab(width, height, segmentsW, segmentsH, yUp, doubleSided) {
+                if (typeof width === "undefined") { width = 100; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 1; }
+                if (typeof segmentsH === "undefined") { segmentsH = 1; }
+                if (typeof yUp === "undefined") { yUp = true; }
+                if (typeof doubleSided === "undefined") { doubleSided = false; }
+                _super.call(this);
+
+                this._segmentsW = segmentsW;
+                this._segmentsH = segmentsH;
+                this._yUp = yUp;
+                this._width = width;
+                this._height = height;
+                this._doubleSided = doubleSided;
+            }
+            Object.defineProperty(PrimitivePlanePrefab.prototype, "segmentsW", {
+                /**
+                * The number of segments that make up the plane along the X-axis. Defaults to 1.
+                */
+                get: function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    this._segmentsW = value;
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitivePlanePrefab.prototype, "segmentsH", {
+                /**
+                * The number of segments that make up the plane along the Y or Z-axis, depending on whether yUp is true or
+                * false, respectively. Defaults to 1.
+                */
+                get: function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    this._segmentsH = value;
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitivePlanePrefab.prototype, "yUp", {
+                /**
+                *  Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false). Defaults to true.
+                */
+                get: function () {
+                    return this._yUp;
+                },
+                set: function (value) {
+                    this._yUp = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitivePlanePrefab.prototype, "doubleSided", {
+                /**
+                * Defines whether the plane will be visible from both sides, with correct vertex normals (as opposed to bothSides on Material). Defaults to false.
+                */
+                get: function () {
+                    return this._doubleSided;
+                },
+                set: function (value) {
+                    this._doubleSided = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitivePlanePrefab.prototype, "width", {
+                /**
+                * The width of the plane.
+                */
+                get: function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    this._width = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitivePlanePrefab.prototype, "height", {
+                /**
+                * The height of the plane.
+                */
+                get: function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    this._height = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            PrimitivePlanePrefab.prototype._pBuildGeometry = function (target, geometryType) {
+                var indices;
+                var x, y;
+                var numIndices;
+                var base;
+                var tw = this._segmentsW + 1;
+                var numVertices;
+
+                var vidx, fidx;
+
+                var xi;
+                var yi;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    var numVertices = (this._segmentsH + 1) * tw;
+                    var positions;
+                    var normals;
+                    var tangents;
+
+                    if (this._doubleSided)
+                        numVertices *= 2;
+
+                    numIndices = this._segmentsH * this._segmentsW * 6;
+
+                    if (this._doubleSided)
+                        numIndices *= 2;
+
+                    if (triangleGeometry.indices != null && numIndices == triangleGeometry.indices.length) {
+                        indices = triangleGeometry.indices;
+                    } else {
+                        indices = new Array(numIndices);
+
+                        this._pInvalidateUVs();
+                    }
+
+                    if (numVertices == triangleGeometry.numVertices) {
+                        positions = triangleGeometry.positions;
+                        normals = triangleGeometry.vertexNormals;
+                        tangents = triangleGeometry.vertexTangents;
+                    } else {
+                        positions = new Array(numVertices * 3);
+                        normals = new Array(numVertices * 3);
+                        tangents = new Array(numVertices * 3);
+
+                        this._pInvalidateUVs();
+                    }
+
+                    fidx = 0;
+
+                    vidx = 0;
+
+                    for (yi = 0; yi <= this._segmentsH; ++yi) {
+                        for (xi = 0; xi <= this._segmentsW; ++xi) {
+                            x = (xi / this._segmentsW - .5) * this._width;
+                            y = (yi / this._segmentsH - .5) * this._height;
+
+                            positions[vidx] = x;
+                            if (this._yUp) {
+                                positions[vidx + 1] = 0;
+                                positions[vidx + 2] = y;
+                            } else {
+                                positions[vidx + 1] = y;
+                                positions[vidx + 2] = 0;
+                            }
+
+                            normals[vidx] = 0;
+
+                            if (this._yUp) {
+                                normals[vidx + 1] = 1;
+                                normals[vidx + 2] = 0;
+                            } else {
+                                normals[vidx + 1] = 0;
+                                normals[vidx + 2] = -1;
+                            }
+
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+
+                            vidx += 3;
+
+                            // add vertex with same position, but with inverted normal & tangent
+                            if (this._doubleSided) {
+                                for (var i = vidx; i < vidx + 3; ++i) {
+                                    positions[i] = positions[i - 3];
+                                    normals[i] = -normals[i - 3];
+                                    tangents[i] = -tangents[i - 3];
+                                }
+
+                                vidx += 3;
+                            }
+
+                            if (xi != this._segmentsW && yi != this._segmentsH) {
+                                base = xi + yi * tw;
+                                var mult = this._doubleSided ? 2 : 1;
+
+                                indices[fidx++] = base * mult;
+                                indices[fidx++] = (base + tw) * mult;
+                                indices[fidx++] = (base + tw + 1) * mult;
+                                indices[fidx++] = base * mult;
+                                indices[fidx++] = (base + tw + 1) * mult;
+                                indices[fidx++] = (base + 1) * mult;
+
+                                if (this._doubleSided) {
+                                    indices[fidx++] = (base + tw + 1) * mult + 1;
+                                    indices[fidx++] = (base + tw) * mult + 1;
+                                    indices[fidx++] = base * mult + 1;
+                                    indices[fidx++] = (base + 1) * mult + 1;
+                                    indices[fidx++] = (base + tw + 1) * mult + 1;
+                                    indices[fidx++] = base * mult + 1;
+                                }
+                            }
+                        }
+                    }
+
+                    triangleGeometry.updateIndices(indices);
+
+                    triangleGeometry.updatePositions(positions);
+                    triangleGeometry.updateVertexNormals(normals);
+                    triangleGeometry.updateVertexTangents(tangents);
+                } else if (geometryType == "lineSubGeometry") {
+                    var lineGeometry = target;
+
+                    var numSegments = (this._segmentsH + 1) + tw;
+                    var startPositions;
+                    var endPositions;
+                    var thickness;
+
+                    var hw = this._width / 2;
+                    var hh = this._height / 2;
+
+                    if (lineGeometry.indices != null && numSegments == lineGeometry.numSegments) {
+                        startPositions = lineGeometry.startPositions;
+                        endPositions = lineGeometry.endPositions;
+                        thickness = lineGeometry.thickness;
+                    } else {
+                        startPositions = new Array(numSegments * 3);
+                        endPositions = new Array(numSegments * 3);
+                        thickness = new Array(numSegments);
+                    }
+
+                    fidx = 0;
+
+                    vidx = 0;
+
+                    for (yi = 0; yi <= this._segmentsH; ++yi) {
+                        startPositions[vidx] = -hw;
+                        startPositions[vidx + 1] = 0;
+                        startPositions[vidx + 2] = yi * this._height - hh;
+
+                        endPositions[vidx] = hw;
+                        endPositions[vidx + 1] = 0;
+                        endPositions[vidx + 2] = yi * this._height - hh;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    for (xi = 0; xi <= this._segmentsW; ++xi) {
+                        startPositions[vidx] = xi * this._width - hw;
+                        startPositions[vidx + 1] = 0;
+                        startPositions[vidx + 2] = -hh;
+
+                        endPositions[vidx] = xi * this._width - hw;
+                        endPositions[vidx + 1] = 0;
+                        endPositions[vidx + 2] = hh;
+
+                        thickness[fidx++] = 1;
+
+                        vidx += 3;
+                    }
+
+                    // build real data from raw data
+                    lineGeometry.updatePositions(startPositions, endPositions);
+                    lineGeometry.updateThickness(thickness);
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            PrimitivePlanePrefab.prototype._pBuildUVs = function (target, geometryType) {
+                var uvs;
+                var numVertices;
+
+                if (geometryType == "triangleSubGeometry") {
+                    numVertices = (this._segmentsH + 1) * (this._segmentsW + 1);
+
+                    if (this._doubleSided)
+                        numVertices *= 2;
+
+                    var triangleGeometry = target;
+
+                    if (triangleGeometry.uvs && numVertices == triangleGeometry.numVertices) {
+                        uvs = triangleGeometry.uvs;
+                    } else {
+                        uvs = new Array(numVertices * 2);
+                        this._pInvalidateGeometry();
+                    }
+
+                    var index = 0;
+
+                    for (var yi = 0; yi <= this._segmentsH; ++yi) {
+                        for (var xi = 0; xi <= this._segmentsW; ++xi) {
+                            uvs[index] = (xi / this._segmentsW) * triangleGeometry.scaleU;
+                            uvs[index + 1] = (1 - yi / this._segmentsH) * triangleGeometry.scaleV;
+                            index += 2;
+
+                            if (this._doubleSided) {
+                                uvs[index] = (xi / this._segmentsW) * triangleGeometry.scaleU;
+                                uvs[index + 1] = (1 - yi / this._segmentsH) * triangleGeometry.scaleV;
+                                index += 2;
+                            }
+                        }
+                    }
+
+                    triangleGeometry.updateUVs(uvs);
+                } else if (geometryType == "lineSubGeometry") {
+                    //nothing to do here
+                }
+            };
+            return PrimitivePlanePrefab;
+        })(away.prefabs.PrimitivePrefabBase);
+        prefabs.PrimitivePlanePrefab = PrimitivePlanePrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (prefabs) {
+        /**
+        * A Capsule primitive mesh.
+        */
+        var PrimitiveCapsulePrefab = (function (_super) {
+            __extends(PrimitiveCapsulePrefab, _super);
+            /**
+            * Creates a new Capsule object.
+            * @param radius The radius of the capsule.
+            * @param height The height of the capsule.
+            * @param segmentsW Defines the number of horizontal segments that make up the capsule. Defaults to 16.
+            * @param segmentsH Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven value.
+            * @param yUp Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
+            */
+            function PrimitiveCapsulePrefab(radius, height, segmentsW, segmentsH, yUp) {
+                if (typeof radius === "undefined") { radius = 50; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 16; }
+                if (typeof segmentsH === "undefined") { segmentsH = 15; }
+                if (typeof yUp === "undefined") { yUp = true; }
+                _super.call(this);
+                this._numVertices = 0;
+
+                this._radius = radius;
+                this._height = height;
+                this._segmentsW = segmentsW;
+                this._segmentsH = (segmentsH % 2 == 0) ? segmentsH + 1 : segmentsH;
+                this._yUp = yUp;
+            }
+            Object.defineProperty(PrimitiveCapsulePrefab.prototype, "radius", {
+                /**
+                * The radius of the capsule.
+                */
+                get: function () {
+                    return this._radius;
+                },
+                set: function (value) {
+                    this._radius = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCapsulePrefab.prototype, "height", {
+                /**
+                * The height of the capsule.
+                */
+                get: function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    this._height = value;
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCapsulePrefab.prototype, "segmentsW", {
+                /**
+                * Defines the number of horizontal segments that make up the capsule. Defaults to 16.
+                */
+                get: function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    this._segmentsW = value;
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCapsulePrefab.prototype, "segmentsH", {
+                /**
+                * Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven.
+                */
+                get: function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    this._segmentsH = (value % 2 == 0) ? value + 1 : value;
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCapsulePrefab.prototype, "yUp", {
+                /**
+                * Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
+                */
+                get: function () {
+                    return this._yUp;
+                },
+                set: function (value) {
+                    this._yUp = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveCapsulePrefab.prototype._pBuildGeometry = function (target, geometryType) {
+                var indices;
+                var positions;
+                var normals;
+                var tangents;
+
+                var i;
+                var j;
+                var triIndex = 0;
+                var index = 0;
+                var startIndex;
+                var comp1, comp2, t1, t2;
+                var numIndices = 0;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    // evaluate target number of vertices, triangles and indices
+                    this._numVertices = (this._segmentsH + 1) * (this._segmentsW + 1); // segmentsH + 1 because of closure, segmentsW + 1 because of closure
+                    numIndices = (this._segmentsH - 1) * this._segmentsW * 6; // each level has segmentH quads, each of 2 triangles
+
+                    // need to initialize raw arrays or can be reused?
+                    if (this._numVertices == triangleGeometry.numVertices) {
+                        indices = triangleGeometry.indices;
+                        positions = triangleGeometry.positions;
+                        normals = triangleGeometry.vertexNormals;
+                        tangents = triangleGeometry.vertexTangents;
+                    } else {
+                        indices = new Array(numIndices);
+                        positions = new Array(this._numVertices * 3);
+                        normals = new Array(this._numVertices * 3);
+                        tangents = new Array(this._numVertices * 3);
+
+                        this._pInvalidateUVs();
+                    }
+
+                    for (j = 0; j <= this._segmentsH; ++j) {
+                        var horangle = Math.PI * j / this._segmentsH;
+                        var z = -this._radius * Math.cos(horangle);
+                        var ringradius = this._radius * Math.sin(horangle);
+
+                        startIndex = index;
+
+                        for (i = 0; i <= this._segmentsW; ++i) {
+                            var verangle = 2 * Math.PI * i / this._segmentsW;
+                            var x = ringradius * Math.cos(verangle);
+                            var offset = j > this._segmentsH / 2 ? this._height / 2 : -this._height / 2;
+                            var y = ringradius * Math.sin(verangle);
+                            var normLen = 1 / Math.sqrt(x * x + y * y + z * z);
+                            var tanLen = Math.sqrt(y * y + x * x);
+
+                            if (this._yUp) {
+                                t1 = 0;
+                                t2 = tanLen > .007 ? x / tanLen : 0;
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                t1 = tanLen > .007 ? x / tanLen : 0;
+                                t2 = 0;
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i == this._segmentsW) {
+                                positions[index] = positions[startIndex];
+                                positions[index + 1] = positions[startIndex + 1];
+                                positions[index + 2] = positions[startIndex + 2];
+                                normals[index] = (normals[startIndex] + (x * normLen)) * .5;
+                                normals[index + 1] = (normals[startIndex + 1] + (comp1 * normLen)) * .5;
+                                normals[index + 2] = (normals[startIndex + 2] + (comp2 * normLen)) * .5;
+                                tangents[index] = (tangents[startIndex] + (tanLen > .007 ? -y / tanLen : 1)) * .5;
+                                tangents[index + 1] = (tangents[startIndex + 1] + t1) * .5;
+                                tangents[index + 2] = (tangents[startIndex + 2] + t2) * .5;
+                            } else {
+                                // vertex
+                                positions[index] = x;
+                                positions[index + 1] = (this._yUp) ? comp1 - offset : comp1;
+                                positions[index + 2] = (this._yUp) ? comp2 : comp2 + offset;
+
+                                // normal
+                                normals[index] = x * normLen;
+                                normals[index + 1] = comp1 * normLen;
+                                normals[index + 2] = comp2 * normLen;
+
+                                // tangent
+                                tangents[index] = tanLen > .007 ? -y / tanLen : 1;
+                                tangents[index + 1] = t1;
+                                tangents[index + 2] = t2;
+                            }
+
+                            if (i > 0 && j > 0) {
+                                var a = (this._segmentsW + 1) * j + i;
+                                var b = (this._segmentsW + 1) * j + i - 1;
+                                var c = (this._segmentsW + 1) * (j - 1) + i - 1;
+                                var d = (this._segmentsW + 1) * (j - 1) + i;
+
+                                if (j == this._segmentsH) {
+                                    positions[index] = positions[startIndex];
+                                    positions[index + 1] = positions[startIndex + 1];
+                                    positions[index + 2] = positions[startIndex + 2];
+
+                                    indices[triIndex++] = a;
+                                    indices[triIndex++] = c;
+                                    indices[triIndex++] = d;
+                                } else if (j == 1) {
+                                    indices[triIndex++] = a;
+                                    indices[triIndex++] = b;
+                                    indices[triIndex++] = c;
+                                } else {
+                                    indices[triIndex++] = a;
+                                    indices[triIndex++] = b;
+                                    indices[triIndex++] = c;
+                                    indices[triIndex++] = a;
+                                    indices[triIndex++] = c;
+                                    indices[triIndex++] = d;
+                                }
+                            }
+
+                            index += 3;
+                        }
+                    }
+
+                    // build real data from raw data
+                    triangleGeometry.updateIndices(indices);
+
+                    triangleGeometry.updatePositions(positions);
+                    triangleGeometry.updateVertexNormals(normals);
+                    triangleGeometry.updateVertexTangents(tangents);
+                } else if (geometryType == "lineSubGeometry") {
+                    //TODO
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveCapsulePrefab.prototype._pBuildUVs = function (target, geometryType) {
+                var i, j;
+                var uvs;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    // need to initialize raw array or can be reused?
+                    if (triangleGeometry.uvs && this._numVertices == triangleGeometry.numVertices) {
+                        uvs = triangleGeometry.uvs;
+                    } else {
+                        uvs = new Array(this._numVertices * 2);
+                    }
+
+                    // current uv component index
+                    var index = 0;
+
+                    for (j = 0; j <= this._segmentsH; ++j) {
+                        for (i = 0; i <= this._segmentsW; ++i) {
+                            // revolution vertex
+                            uvs[index++] = (i / this._segmentsW) * triangleGeometry.scaleU;
+                            uvs[index++] = (j / this._segmentsH) * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    // build real data from raw data
+                    triangleGeometry.updateUVs(uvs);
+                } else if (geometryType == "lineSubGeometry") {
+                    //nothing to do here
+                }
+            };
+            return PrimitiveCapsulePrefab;
+        })(away.prefabs.PrimitivePrefabBase);
+        prefabs.PrimitiveCapsulePrefab = PrimitiveCapsulePrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (prefabs) {
+        /**
+        * A Cylinder primitive mesh.
+        */
+        var PrimitiveCylinderPrefab = (function (_super) {
+            __extends(PrimitiveCylinderPrefab, _super);
+            /**
+            * Creates a new Cylinder object.
+            * @param topRadius The radius of the top end of the cylinder.
+            * @param bottomRadius The radius of the bottom end of the cylinder
+            * @param height The radius of the bottom end of the cylinder
+            * @param segmentsW Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
+            * @param segmentsH Defines the number of vertical segments that make up the cylinder. Defaults to 1.
+            * @param topClosed Defines whether the top end of the cylinder is closed (true) or open.
+            * @param bottomClosed Defines whether the bottom end of the cylinder is closed (true) or open.
+            * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
+            */
+            function PrimitiveCylinderPrefab(topRadius, bottomRadius, height, segmentsW, segmentsH, topClosed, bottomClosed, surfaceClosed, yUp) {
+                if (typeof topRadius === "undefined") { topRadius = 50; }
+                if (typeof bottomRadius === "undefined") { bottomRadius = 50; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 16; }
+                if (typeof segmentsH === "undefined") { segmentsH = 1; }
+                if (typeof topClosed === "undefined") { topClosed = true; }
+                if (typeof bottomClosed === "undefined") { bottomClosed = true; }
+                if (typeof surfaceClosed === "undefined") { surfaceClosed = true; }
+                if (typeof yUp === "undefined") { yUp = true; }
+                _super.call(this);
+                this._numVertices = 0;
+
+                this._topRadius = topRadius;
+                this._pBottomRadius = bottomRadius;
+                this._height = height;
+                this._pSegmentsW = segmentsW;
+                this._pSegmentsH = segmentsH;
+                this._topClosed = topClosed;
+                this._bottomClosed = bottomClosed;
+                this._surfaceClosed = surfaceClosed;
+                this._yUp = yUp;
+            }
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "topRadius", {
+                /**
+                * The radius of the top end of the cylinder.
+                */
+                get: function () {
+                    return this._topRadius;
+                },
+                set: function (value) {
+                    this._topRadius = value;
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "bottomRadius", {
+                /**
+                * The radius of the bottom end of the cylinder.
+                */
+                get: function () {
+                    return this._pBottomRadius;
+                },
+                set: function (value) {
+                    this._pBottomRadius = value;
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "height", {
+                /**
+                * The radius of the top end of the cylinder.
+                */
+                get: function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    this._height = value;
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "segmentsW", {
+                /**
+                * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
+                */
+                get: function () {
+                    return this._pSegmentsW;
+                },
+                set: function (value) {
+                    this.setSegmentsW(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            PrimitiveCylinderPrefab.prototype.setSegmentsW = function (value) {
+                this._pSegmentsW = value;
+                this._pInvalidateGeometry();
+                this._pInvalidateUVs();
+            };
+
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "segmentsH", {
+                /**
+                * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
+                */
+                get: function () {
+                    return this._pSegmentsH;
+                },
+                set: function (value) {
+                    this.setSegmentsH(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            PrimitiveCylinderPrefab.prototype.setSegmentsH = function (value) {
+                this._pSegmentsH = value;
+                this._pInvalidateGeometry();
+                this._pInvalidateUVs();
+            };
+
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "topClosed", {
+                /**
+                * Defines whether the top end of the cylinder is closed (true) or open.
+                */
+                get: function () {
+                    return this._topClosed;
+                },
+                set: function (value) {
+                    this._topClosed = value;
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "bottomClosed", {
+                /**
+                * Defines whether the bottom end of the cylinder is closed (true) or open.
+                */
+                get: function () {
+                    return this._bottomClosed;
+                },
+                set: function (value) {
+                    this._bottomClosed = value;
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveCylinderPrefab.prototype, "yUp", {
+                /**
+                * Defines whether the cylinder poles should lay on the Y-axis (true) or on the Z-axis (false).
+                */
+                get: function () {
+                    return this._yUp;
+                },
+                set: function (value) {
+                    this._yUp = value;
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveCylinderPrefab.prototype._pBuildGeometry = function (target, geometryType) {
+                var indices;
+                var positions;
+                var normals;
+                var tangents;
+
+                var i;
+                var j;
+                var x;
+                var y;
+                var z;
+                var vidx;
+                var fidx;
+
+                var radius;
+                var revolutionAngle;
+
+                var dr;
+                var latNormElev;
+                var latNormBase;
+                var numIndices = 0;
+
+                var comp1;
+                var comp2;
+                var startIndex = 0;
+                var nextVertexIndex = 0;
+
+                var t1;
+                var t2;
+
+                // reset utility variables
+                this._numVertices = 0;
+
+                // evaluate revolution steps
+                var revolutionAngleDelta = 2 * Math.PI / this._pSegmentsW;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    // evaluate target number of vertices, triangles and indices
+                    if (this._surfaceClosed) {
+                        this._numVertices += (this._pSegmentsH + 1) * (this._pSegmentsW + 1); // segmentsH + 1 because of closure, segmentsW + 1 because of UV unwrapping
+                        numIndices += this._pSegmentsH * this._pSegmentsW * 6; // each level has segmentW quads, each of 2 triangles
+                    }
+                    if (this._topClosed) {
+                        this._numVertices += 2 * (this._pSegmentsW + 1); // segmentsW + 1 because of unwrapping
+                        numIndices += this._pSegmentsW * 3; // one triangle for each segment
+                    }
+                    if (this._bottomClosed) {
+                        this._numVertices += 2 * (this._pSegmentsW + 1);
+                        numIndices += this._pSegmentsW * 3;
+                    }
+
+                    // need to initialize raw arrays or can be reused?
+                    if (this._numVertices == triangleGeometry.numVertices) {
+                        indices = triangleGeometry.indices;
+                        positions = triangleGeometry.positions;
+                        normals = triangleGeometry.vertexNormals;
+                        tangents = triangleGeometry.vertexTangents;
+                    } else {
+                        indices = new Array(numIndices);
+                        positions = new Array(this._numVertices * 3);
+                        normals = new Array(this._numVertices * 3);
+                        tangents = new Array(this._numVertices * 3);
+
+                        this._pInvalidateUVs();
+                    }
+
+                    vidx = 0;
+                    fidx = 0;
+
+                    // top
+                    if (this._topClosed && this._topRadius > 0) {
+                        z = -0.5 * this._height;
+
+                        for (i = 0; i <= this._pSegmentsW; ++i) {
+                            // central vertex
+                            if (this._yUp) {
+                                t1 = 1;
+                                t2 = 0;
+                                comp1 = -z;
+                                comp2 = 0;
+                            } else {
+                                t1 = 0;
+                                t2 = -1;
+                                comp1 = 0;
+                                comp2 = z;
+                            }
+
+                            positions[vidx] = 0;
+                            positions[vidx + 1] = comp1;
+                            positions[vidx + 2] = comp2;
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = t1;
+                            normals[vidx + 2] = t2;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            // revolution vertex
+                            revolutionAngle = i * revolutionAngleDelta;
+                            x = this._topRadius * Math.cos(revolutionAngle);
+                            y = this._topRadius * Math.sin(revolutionAngle);
+
+                            if (this._yUp) {
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i == this._pSegmentsW) {
+                                positions[vidx] = positions[startIndex + 3];
+                                positions[vidx + 1] = positions[startIndex + 4];
+                                positions[vidx + 2] = positions[startIndex + 5];
+                            } else {
+                                positions[vidx] = x;
+                                positions[vidx + 1] = comp1;
+                                positions[vidx + 2] = comp2;
+                            }
+
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = t1;
+                            normals[vidx + 2] = t2;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            if (i > 0) {
+                                // add triangle
+                                indices[fidx++] = nextVertexIndex;
+                                indices[fidx++] = nextVertexIndex + 1;
+                                indices[fidx++] = nextVertexIndex + 2;
+
+                                nextVertexIndex += 2;
+                            }
+                        }
+
+                        nextVertexIndex += 2;
+                    }
+
+                    // bottom
+                    if (this._bottomClosed && this._pBottomRadius > 0) {
+                        z = 0.5 * this._height;
+
+                        startIndex = nextVertexIndex * 3;
+
+                        for (i = 0; i <= this._pSegmentsW; ++i) {
+                            if (this._yUp) {
+                                t1 = -1;
+                                t2 = 0;
+                                comp1 = -z;
+                                comp2 = 0;
+                            } else {
+                                t1 = 0;
+                                t2 = 1;
+                                comp1 = 0;
+                                comp2 = z;
+                            }
+
+                            positions[vidx] = 0;
+                            positions[vidx + 1] = comp1;
+                            positions[vidx + 2] = comp2;
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = t1;
+                            normals[vidx + 2] = t2;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            // revolution vertex
+                            revolutionAngle = i * revolutionAngleDelta;
+                            x = this._pBottomRadius * Math.cos(revolutionAngle);
+                            y = this._pBottomRadius * Math.sin(revolutionAngle);
+
+                            if (this._yUp) {
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i == this._pSegmentsW) {
+                                positions[vidx] = positions[startIndex + 3];
+                                positions[vidx + 1] = positions[startIndex + 4];
+                                positions[vidx + 2] = positions[startIndex + 5];
+                            } else {
+                                positions[vidx] = x;
+                                positions[vidx + 1] = comp1;
+                                positions[vidx + 2] = comp2;
+                            }
+
+                            normals[vidx] = 0;
+                            normals[vidx + 1] = t1;
+                            normals[vidx + 2] = t2;
+                            tangents[vidx] = 1;
+                            tangents[vidx + 1] = 0;
+                            tangents[vidx + 2] = 0;
+                            vidx += 3;
+
+                            if (i > 0) {
+                                // add triangle
+                                indices[fidx++] = nextVertexIndex;
+                                indices[fidx++] = nextVertexIndex + 2;
+                                indices[fidx++] = nextVertexIndex + 1;
+
+                                nextVertexIndex += 2;
+                            }
+                        }
+
+                        nextVertexIndex += 2;
+                    }
+
+                    // The normals on the lateral surface all have the same incline, i.e.
+                    // the "elevation" component (Y or Z depending on yUp) is constant.
+                    // Same principle goes for the "base" of these vectors, which will be
+                    // calculated such that a vector [base,elev] will be a unit vector.
+                    dr = (this._pBottomRadius - this._topRadius);
+                    latNormElev = dr / this._height;
+                    latNormBase = (latNormElev == 0) ? 1 : this._height / dr;
+
+                    // lateral surface
+                    if (this._surfaceClosed) {
+                        var a;
+                        var b;
+                        var c;
+                        var d;
+                        var na0, na1, naComp1, naComp2;
+
+                        for (j = 0; j <= this._pSegmentsH; ++j) {
+                            radius = this._topRadius - ((j / this._pSegmentsH) * (this._topRadius - this._pBottomRadius));
+                            z = -(this._height / 2) + (j / this._pSegmentsH * this._height);
+
+                            startIndex = nextVertexIndex * 3;
+
+                            for (i = 0; i <= this._pSegmentsW; ++i) {
+                                // revolution vertex
+                                revolutionAngle = i * revolutionAngleDelta;
+                                x = radius * Math.cos(revolutionAngle);
+                                y = radius * Math.sin(revolutionAngle);
+                                na0 = latNormBase * Math.cos(revolutionAngle);
+                                na1 = latNormBase * Math.sin(revolutionAngle);
+
+                                if (this._yUp) {
+                                    t1 = 0;
+                                    t2 = -na0;
+                                    comp1 = -z;
+                                    comp2 = y;
+                                    naComp1 = latNormElev;
+                                    naComp2 = na1;
+                                } else {
+                                    t1 = -na0;
+                                    t2 = 0;
+                                    comp1 = y;
+                                    comp2 = z;
+                                    naComp1 = na1;
+                                    naComp2 = latNormElev;
+                                }
+
+                                if (i == this._pSegmentsW) {
+                                    positions[vidx] = positions[startIndex];
+                                    positions[vidx + 1] = positions[startIndex + 1];
+                                    positions[vidx + 2] = positions[startIndex + 2];
+                                    normals[vidx] = na0;
+                                    normals[vidx + 1] = latNormElev;
+                                    normals[vidx + 2] = na1;
+                                    tangents[vidx] = na1;
+                                    tangents[vidx + 1] = t1;
+                                    tangents[vidx + 2] = t2;
+                                } else {
+                                    positions[vidx] = x;
+                                    positions[vidx + 1] = comp1;
+                                    positions[vidx + 2] = comp2;
+                                    normals[vidx] = na0;
+                                    normals[vidx + 1] = naComp1;
+                                    normals[vidx + 2] = naComp2;
+                                    tangents[vidx] = -na1;
+                                    tangents[vidx + 1] = t1;
+                                    tangents[vidx + 2] = t2;
+                                }
+                                vidx += 3;
+
+                                // close triangle
+                                if (i > 0 && j > 0) {
+                                    a = nextVertexIndex; // current
+                                    b = nextVertexIndex - 1; // previous
+                                    c = b - this._pSegmentsW - 1; // previous of last level
+                                    d = a - this._pSegmentsW - 1; // current of last level
+
+                                    indices[fidx++] = a;
+                                    indices[fidx++] = b;
+                                    indices[fidx++] = c;
+
+                                    indices[fidx++] = a;
+                                    indices[fidx++] = c;
+                                    indices[fidx++] = d;
+                                }
+
+                                nextVertexIndex++;
+                            }
+                        }
+                    }
+
+                    // build real data from raw data
+                    triangleGeometry.updateIndices(indices);
+
+                    triangleGeometry.updatePositions(positions);
+                    triangleGeometry.updateVertexNormals(normals);
+                    triangleGeometry.updateVertexTangents(tangents);
+                } else if (geometryType == "lineSubGeometry") {
+                    var lineGeometry = target;
+
+                    var numSegments = (this._pSegmentsH + 1) * (this._pSegmentsW) + this._pSegmentsW;
+                    var startPositions;
+                    var endPositions;
+                    var thickness;
+
+                    if (lineGeometry.indices != null && numSegments == lineGeometry.numSegments) {
+                        startPositions = lineGeometry.startPositions;
+                        endPositions = lineGeometry.endPositions;
+                        thickness = lineGeometry.thickness;
+                    } else {
+                        startPositions = new Array(numSegments * 3);
+                        endPositions = new Array(numSegments * 3);
+                        thickness = new Array(numSegments);
+                    }
+
+                    vidx = 0;
+
+                    fidx = 0;
+
+                    for (j = 0; j <= this._pSegmentsH; ++j) {
+                        radius = this._topRadius - ((j / this._pSegmentsH) * (this._topRadius - this._pBottomRadius));
+                        z = this._height * (j / this._pSegmentsH - 0.5);
+
+                        for (i = 0; i <= this._pSegmentsW; ++i) {
+                            // revolution vertex
+                            revolutionAngle = i * revolutionAngleDelta;
+                            x = radius * Math.cos(revolutionAngle);
+                            y = radius * Math.sin(revolutionAngle);
+
+                            if (this._yUp) {
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i > 0) {
+                                endPositions[vidx] = x;
+                                endPositions[vidx + 1] = comp1;
+                                endPositions[vidx + 2] = comp2;
+
+                                thickness[fidx++] = 1;
+
+                                vidx += 3;
+
+                                //vertical lines
+                                startPositions[vidx] = endPositions[vidx - this._pSegmentsW * 6];
+                                startPositions[vidx + 1] = endPositions[vidx + 1 - this._pSegmentsW * 6];
+                                startPositions[vidx + 2] = endPositions[vidx + 2 - this._pSegmentsW * 6];
+
+                                endPositions[vidx] = x;
+                                endPositions[vidx + 1] = comp1;
+                                endPositions[vidx + 2] = comp2;
+
+                                thickness[fidx++] = 1;
+
+                                vidx += 3;
+                            }
+
+                            if (i < this._pSegmentsW) {
+                                startPositions[vidx] = x;
+                                startPositions[vidx + 1] = comp1;
+                                startPositions[vidx + 2] = comp2;
+                            }
+                        }
+                    }
+
+                    // build real data from raw data
+                    lineGeometry.updatePositions(startPositions, endPositions);
+                    lineGeometry.updateThickness(thickness);
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveCylinderPrefab.prototype._pBuildUVs = function (target, geometryType) {
+                var i;
+                var j;
+                var x;
+                var y;
+                var revolutionAngle;
+                var uvs;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    // need to initialize raw array or can be reused?
+                    if (triangleGeometry.uvs && this._numVertices == triangleGeometry.numVertices) {
+                        uvs = triangleGeometry.uvs;
+                    } else {
+                        uvs = new Array(this._numVertices * 2);
+                    }
+
+                    // evaluate revolution steps
+                    var revolutionAngleDelta = 2 * Math.PI / this._pSegmentsW;
+
+                    // current uv component index
+                    var index = 0;
+
+                    // top
+                    if (this._topClosed) {
+                        for (i = 0; i <= this._pSegmentsW; ++i) {
+                            revolutionAngle = i * revolutionAngleDelta;
+                            x = 0.5 + 0.5 * -Math.cos(revolutionAngle);
+                            y = 0.5 + 0.5 * Math.sin(revolutionAngle);
+
+                            uvs[index++] = 0.5 * triangleGeometry.scaleU; // central vertex
+                            uvs[index++] = 0.5 * triangleGeometry.scaleV;
+
+                            uvs[index++] = x * triangleGeometry.scaleU; // revolution vertex
+                            uvs[index++] = y * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    // bottom
+                    if (this._bottomClosed) {
+                        for (i = 0; i <= this._pSegmentsW; ++i) {
+                            revolutionAngle = i * revolutionAngleDelta;
+                            x = 0.5 + 0.5 * Math.cos(revolutionAngle);
+                            y = 0.5 + 0.5 * Math.sin(revolutionAngle);
+
+                            uvs[index++] = 0.5 * triangleGeometry.scaleU; // central vertex
+                            uvs[index++] = 0.5 * triangleGeometry.scaleV;
+
+                            uvs[index++] = x * triangleGeometry.scaleU; // revolution vertex
+                            uvs[index++] = y * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    // lateral surface
+                    if (this._surfaceClosed) {
+                        for (j = 0; j <= this._pSegmentsH; ++j) {
+                            for (i = 0; i <= this._pSegmentsW; ++i) {
+                                // revolution vertex
+                                uvs[index++] = (i / this._pSegmentsW) * triangleGeometry.scaleU;
+                                uvs[index++] = (j / this._pSegmentsH) * triangleGeometry.scaleV;
+                            }
+                        }
+                    }
+
+                    // build real data from raw data
+                    triangleGeometry.updateUVs(uvs);
+                } else if (geometryType == "lineSubGeometry") {
+                    //nothing to do here
+                }
+            };
+            return PrimitiveCylinderPrefab;
+        })(away.prefabs.PrimitivePrefabBase);
+        prefabs.PrimitiveCylinderPrefab = PrimitiveCylinderPrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (prefabs) {
+        /**
+        * A UV Cone primitive mesh.
+        */
+        var PrimitiveConePrefab = (function (_super) {
+            __extends(PrimitiveConePrefab, _super);
+            /**
+            * Creates a new Cone object.
+            * @param radius The radius of the bottom end of the cone
+            * @param height The height of the cone
+            * @param segmentsW Defines the number of horizontal segments that make up the cone. Defaults to 16.
+            * @param segmentsH Defines the number of vertical segments that make up the cone. Defaults to 1.
+            * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
+            */
+            function PrimitiveConePrefab(radius, height, segmentsW, segmentsH, closed, yUp) {
+                if (typeof radius === "undefined") { radius = 50; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 16; }
+                if (typeof segmentsH === "undefined") { segmentsH = 1; }
+                if (typeof closed === "undefined") { closed = true; }
+                if (typeof yUp === "undefined") { yUp = true; }
+                _super.call(this, 0, radius, height, segmentsW, segmentsH, false, closed, true, yUp);
+            }
+            Object.defineProperty(PrimitiveConePrefab.prototype, "radius", {
+                /**
+                * The radius of the bottom end of the cone.
+                */
+                get: function () {
+                    return this._pBottomRadius;
+                },
+                set: function (value) {
+                    this._pBottomRadius = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return PrimitiveConePrefab;
+        })(away.prefabs.PrimitiveCylinderPrefab);
+        prefabs.PrimitiveConePrefab = PrimitiveConePrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (prefabs) {
+        /**
+        * A UV RegularPolygon primitive mesh.
+        */
+        var PrimitivePolygonPrefab = (function (_super) {
+            __extends(PrimitivePolygonPrefab, _super);
+            /**
+            * Creates a new RegularPolygon disc object.
+            * @param radius The radius of the regular polygon
+            * @param sides Defines the number of sides of the regular polygon.
+            * @param yUp Defines whether the regular polygon should lay on the Y-axis (true) or on the Z-axis (false).
+            */
+            function PrimitivePolygonPrefab(radius, sides, yUp) {
+                if (typeof radius === "undefined") { radius = 100; }
+                if (typeof sides === "undefined") { sides = 16; }
+                if (typeof yUp === "undefined") { yUp = true; }
+                _super.call(this, radius, 0, 0, sides, 1, true, false, false, yUp);
+            }
+            Object.defineProperty(PrimitivePolygonPrefab.prototype, "radius", {
+                /**
+                * The radius of the regular polygon.
+                */
+                get: function () {
+                    return this._pBottomRadius;
+                },
+                set: function (value) {
+                    this._pBottomRadius = value;
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitivePolygonPrefab.prototype, "sides", {
+                /**
+                * The number of sides of the regular polygon.
+                */
+                get: function () {
+                    return this._pSegmentsW;
+                },
+                set: function (value) {
+                    this.setSegmentsW(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitivePolygonPrefab.prototype, "subdivisions", {
+                /**
+                * The number of subdivisions from the edge to the center of the regular polygon.
+                */
+                get: function () {
+                    return this._pSegmentsH;
+                },
+                set: function (value) {
+                    this.setSegmentsH(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return PrimitivePolygonPrefab;
+        })(away.prefabs.PrimitiveCylinderPrefab);
+        prefabs.PrimitivePolygonPrefab = PrimitivePolygonPrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (prefabs) {
+        /**
+        * A UV Sphere primitive mesh.
+        */
+        var PrimitiveSpherePrefab = (function (_super) {
+            __extends(PrimitiveSpherePrefab, _super);
+            /**
+            * Creates a new Sphere object.
+            *
+            * @param radius The radius of the sphere.
+            * @param segmentsW Defines the number of horizontal segments that make up the sphere.
+            * @param segmentsH Defines the number of vertical segments that make up the sphere.
+            * @param yUp Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
+            */
+            function PrimitiveSpherePrefab(radius, segmentsW, segmentsH, yUp) {
+                if (typeof radius === "undefined") { radius = 50; }
+                if (typeof segmentsW === "undefined") { segmentsW = 16; }
+                if (typeof segmentsH === "undefined") { segmentsH = 12; }
+                if (typeof yUp === "undefined") { yUp = true; }
+                _super.call(this);
+
+                this._radius = radius;
+                this._segmentsW = segmentsW;
+                this._segmentsH = segmentsH;
+                this._yUp = yUp;
+            }
+            Object.defineProperty(PrimitiveSpherePrefab.prototype, "radius", {
+                /**
+                * The radius of the sphere.
+                */
+                get: function () {
+                    return this._radius;
+                },
+                set: function (value) {
+                    this._radius = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveSpherePrefab.prototype, "segmentsW", {
+                /**
+                * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+                */
+                get: function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    this._segmentsW = value;
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveSpherePrefab.prototype, "segmentsH", {
+                /**
+                * Defines the number of vertical segments that make up the sphere. Defaults to 12.
+                */
+                get: function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    this._segmentsH = value;
+
+                    this._pInvalidateGeometry();
+                    this._pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PrimitiveSpherePrefab.prototype, "yUp", {
+                /**
+                * Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
+                */
+                get: function () {
+                    return this._yUp;
+                },
+                set: function (value) {
+                    this._yUp = value;
+
+                    this._pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveSpherePrefab.prototype._pBuildGeometry = function (target, geometryType) {
+                var indices;
+                var positions;
+                var normals;
+                var tangents;
+
+                var i;
+                var j;
+                var vidx, fidx;
+
+                var comp1;
+                var comp2;
+                var numVertices;
+
+                if (geometryType == "triangleSubGeometry") {
+                    var triangleGeometry = target;
+
+                    numVertices = (this._segmentsH + 1) * (this._segmentsW + 1);
+
+                    if (numVertices == triangleGeometry.numVertices && triangleGeometry.indices != null) {
+                        indices = triangleGeometry.indices;
+                        positions = triangleGeometry.positions;
+                        normals = triangleGeometry.vertexNormals;
+                        tangents = triangleGeometry.vertexTangents;
+                    } else {
+                        indices = new Array((this._segmentsH - 1) * this._segmentsW * 6);
+                        positions = new Array(numVertices * 3);
+                        normals = new Array(numVertices * 3);
+                        tangents = new Array(numVertices * 3);
+
+                        this._pInvalidateUVs();
+                    }
+
+                    vidx = 0;
+                    fidx = 0;
+
+                    var startIndex;
+                    var t1;
+                    var t2;
+
+                    for (j = 0; j <= this._segmentsH; ++j) {
+                        startIndex = vidx;
+
+                        var horangle = Math.PI * j / this._segmentsH;
+                        var z = -this._radius * Math.cos(horangle);
+                        var ringradius = this._radius * Math.sin(horangle);
+
+                        for (i = 0; i <= this._segmentsW; ++i) {
+                            var verangle = 2 * Math.PI * i / this._segmentsW;
+                            var x = ringradius * Math.cos(verangle);
+                            var y = ringradius * Math.sin(verangle);
+                            var normLen = 1 / Math.sqrt(x * x + y * y + z * z);
+                            var tanLen = Math.sqrt(y * y + x * x);
+
+                            if (this._yUp) {
+                                t1 = 0;
+                                t2 = tanLen > .007 ? x / tanLen : 0;
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                t1 = tanLen > .007 ? x / tanLen : 0;
+                                t2 = 0;
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i == this._segmentsW) {
+                                positions[vidx] = positions[startIndex];
+                                positions[vidx + 1] = positions[startIndex + 1];
+                                positions[vidx + 2] = positions[startIndex + 2];
+                                normals[vidx] = normals[startIndex] + (x * normLen) * .5;
+                                normals[vidx + 1] = normals[startIndex + 1] + (comp1 * normLen) * .5;
+                                normals[vidx + 2] = normals[startIndex + 2] + (comp2 * normLen) * .5;
+                                tangents[vidx] = tanLen > .007 ? -y / tanLen : 1;
+                                tangents[vidx + 1] = t1;
+                                tangents[vidx + 2] = t2;
+                            } else {
+                                positions[vidx] = x;
+                                positions[vidx + 1] = comp1;
+                                positions[vidx + 2] = comp2;
+                                normals[vidx] = x * normLen;
+                                normals[vidx + 1] = comp1 * normLen;
+                                normals[vidx + 2] = comp2 * normLen;
+                                tangents[vidx] = tanLen > .007 ? -y / tanLen : 1;
+                                tangents[vidx + 1] = t1;
+                                tangents[vidx + 2] = t2;
+                            }
+
+                            if (i > 0 && j > 0) {
+                                var a = (this._segmentsW + 1) * j + i;
+                                var b = (this._segmentsW + 1) * j + i - 1;
+                                var c = (this._segmentsW + 1) * (j - 1) + i - 1;
+                                var d = (this._segmentsW + 1) * (j - 1) + i;
+
+                                if (j == this._segmentsH) {
+                                    positions[vidx] = positions[startIndex];
+                                    positions[vidx + 1] = positions[startIndex + 1];
+                                    positions[vidx + 2] = positions[startIndex + 2];
+
+                                    indices[fidx++] = a;
+                                    indices[fidx++] = c;
+                                    indices[fidx++] = d;
+                                } else if (j == 1) {
+                                    indices[fidx++] = a;
+                                    indices[fidx++] = b;
+                                    indices[fidx++] = c;
+                                } else {
+                                    indices[fidx++] = a;
+                                    indices[fidx++] = b;
+                                    indices[fidx++] = c;
+                                    indices[fidx++] = a;
+                                    indices[fidx++] = c;
+                                    indices[fidx++] = d;
+                                }
+                            }
+
+                            vidx += 3;
+                        }
+                    }
+
+                    triangleGeometry.updateIndices(indices);
+
+                    triangleGeometry.updatePositions(positions);
+                    triangleGeometry.updateVertexNormals(normals);
+                    triangleGeometry.updateVertexTangents(tangents);
+                } else if (geometryType == "lineSubGeometry") {
+                    var lineGeometry = target;
+
+                    var numSegments = (this._segmentsH - 1) * this._segmentsW * 2;
+                    var startPositions;
+                    var endPositions;
+                    var thickness;
+
+                    if (lineGeometry.indices != null && numSegments == lineGeometry.numSegments) {
+                        startPositions = lineGeometry.startPositions;
+                        endPositions = lineGeometry.endPositions;
+                        thickness = lineGeometry.thickness;
+                    } else {
+                        startPositions = new Array(numSegments * 3);
+                        endPositions = new Array(numSegments * 3);
+                        thickness = new Array(numSegments);
+                    }
+
+                    vidx = 0;
+
+                    fidx = 0;
+
+                    for (j = 0; j <= this._segmentsH; ++j) {
+                        var horangle = Math.PI * j / this._segmentsH;
+                        var z = -this._radius * Math.cos(horangle);
+                        var ringradius = this._radius * Math.sin(horangle);
+
+                        for (i = 0; i <= this._segmentsW; ++i) {
+                            var verangle = 2 * Math.PI * i / this._segmentsW;
+                            var x = ringradius * Math.cos(verangle);
+                            var y = ringradius * Math.sin(verangle);
+
+                            if (this._yUp) {
+                                comp1 = -z;
+                                comp2 = y;
+                            } else {
+                                comp1 = y;
+                                comp2 = z;
+                            }
+
+                            if (i > 0 && j > 0) {
+                                //horizonal lines
+                                if (j < this._segmentsH) {
+                                    endPositions[vidx] = x;
+                                    endPositions[vidx + 1] = comp1;
+                                    endPositions[vidx + 2] = comp2;
+
+                                    thickness[fidx++] = 1;
+
+                                    vidx += 3;
+                                }
+
+                                //vertical lines
+                                startPositions[vidx] = endPositions[vidx - this._segmentsW * 6];
+                                startPositions[vidx + 1] = endPositions[vidx + 1 - this._segmentsW * 6];
+                                startPositions[vidx + 2] = endPositions[vidx + 2 - this._segmentsW * 6];
+
+                                endPositions[vidx] = x;
+                                endPositions[vidx + 1] = comp1;
+                                endPositions[vidx + 2] = comp2;
+
+                                thickness[fidx++] = 1;
+
+                                vidx += 3;
+                            }
+
+                            if (i < this._segmentsW && j > 0 && j < this._segmentsH) {
+                                startPositions[vidx] = x;
+                                startPositions[vidx + 1] = comp1;
+                                startPositions[vidx + 2] = comp2;
+                            }
+                        }
+                    }
+
+                    // build real data from raw data
+                    lineGeometry.updatePositions(startPositions, endPositions);
+                    lineGeometry.updateThickness(thickness);
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            PrimitiveSpherePrefab.prototype._pBuildUVs = function (target, geometryType) {
+                var i, j;
+                var numVertices = (this._segmentsH + 1) * (this._segmentsW + 1);
+                var uvs;
+
+                if (geometryType == "triangleSubGeometry") {
+                    numVertices = (this._segmentsH + 1) * (this._segmentsW + 1);
+
+                    var triangleGeometry = target;
+
+                    if (numVertices == triangleGeometry.numVertices && triangleGeometry.uvs != null) {
+                        uvs = triangleGeometry.uvs;
+                    } else {
+                        uvs = new Array(numVertices * 2);
+                    }
+
+                    var index = 0;
+                    for (j = 0; j <= this._segmentsH; ++j) {
+                        for (i = 0; i <= this._segmentsW; ++i) {
+                            uvs[index++] = (i / this._segmentsW) * triangleGeometry.scaleU;
+                            uvs[index++] = (j / this._segmentsH) * triangleGeometry.scaleV;
+                        }
+                    }
+
+                    triangleGeometry.updateUVs(uvs);
+                } else if (geometryType == "lineSubGeometry") {
+                    //nothing to do here
+                }
+            };
+            return PrimitiveSpherePrefab;
+        })(away.prefabs.PrimitivePrefabBase);
+        prefabs.PrimitiveSpherePrefab = PrimitiveSpherePrefab;
+    })(away.prefabs || (away.prefabs = {}));
+    var prefabs = away.prefabs;
+})(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
@@ -30070,15 +33010,21 @@ var away;
 var away;
 (function (away) {
     (function (textures) {
+        /**
+        *
+        */
         var TextureProxyBase = (function (_super) {
             __extends(TextureProxyBase, _super);
+            /**
+            *
+            */
             function TextureProxyBase() {
                 _super.call(this);
                 this._pFormat = away.gl.ContextGLTextureFormat.BGRA;
                 this._pHasMipmaps = false;
 
-                this._textures = new Array(8); //_textures = new Vector.<TextureBase>(8);
-                this._dirty = new Array(8); //_dirty = new Vector.<ContextGL>(8);
+                this._textures = new Array(8);
+                this._dirty = new Array(8);
             }
             Object.defineProperty(TextureProxyBase.prototype, "hasMipMaps", {
                 /**
@@ -30140,6 +33086,11 @@ var away;
                 configurable: true
             });
 
+            /**
+            *
+            * @param stageGL
+            * @returns {away.gl.TextureBase}
+            */
             TextureProxyBase.prototype.getTextureForStageGL = function (stageGL) {
                 var contextIndex = stageGL._iStageGLIndex;
 
@@ -30150,7 +33101,7 @@ var away;
                 if (!tex || this._dirty[contextIndex] != context) {
                     this._textures[contextIndex] = tex = this.pCreateTexture(context);
                     this._dirty[contextIndex] = context;
-                    this.pUploadContent(tex); //_pUploadContent
+                    this.pUploadContent(tex);
                 }
 
                 return tex;
@@ -30433,6 +33384,11 @@ var away;
     (function (textures) {
         var ImageTexture = (function (_super) {
             __extends(ImageTexture, _super);
+            /**
+            *
+            * @param htmlImageElement
+            * @param generateMipmaps
+            */
             function ImageTexture(htmlImageElement, generateMipmaps) {
                 if (typeof generateMipmaps === "undefined") { generateMipmaps = true; }
                 _super.call(this);
@@ -30441,48 +33397,62 @@ var away;
                 this._generateMipmaps = generateMipmaps;
             }
             Object.defineProperty(ImageTexture.prototype, "htmlImageElement", {
+                /**
+                *
+                */
                 get: function () {
                     return this._htmlImageElement;
                 },
                 set: function (value) {
-                    if (value == this._htmlImageElement) {
+                    if (value == this._htmlImageElement)
                         return;
-                    }
 
-                    if (!away.utils.TextureUtils.isHTMLImageElementValid(value)) {
+                    if (!away.utils.TextureUtils.isHTMLImageElementValid(value))
                         throw new away.errors.Error("Invalid bitmapData: Width and height must be power of 2 and cannot exceed 2048");
-                    }
 
                     this.invalidateContent();
                     this.pSetSize(value.width, value.height);
                     this._htmlImageElement = value;
 
-                    if (this._generateMipmaps) {
+                    if (this._generateMipmaps)
                         this.getMipMapHolder();
-                    }
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            ImageTexture.prototype.pUploadContent = function (texture) {
-                if (this._generateMipmaps) {
-                    away.textures.MipmapGenerator.generateHTMLImageElementMipMaps(this._htmlImageElement, texture, this._mipMapHolder, true);
-                } else {
-                    var tx = texture;
-                    tx.uploadFromHTMLImageElement(this._htmlImageElement, 0);
-                }
+            /**
+            *
+            */
+            ImageTexture.prototype.dispose = function () {
+                _super.prototype.dispose.call(this);
+
+                if (this._mipMapHolder)
+                    this.freeMipMapHolder();
             };
 
+            /**
+            *
+            * @param texture
+            */
+            ImageTexture.prototype.pUploadContent = function (texture) {
+                if (this._generateMipmaps)
+                    away.textures.MipmapGenerator.generateHTMLImageElementMipMaps(this._htmlImageElement, texture, this._mipMapHolder, true);
+                else
+                    texture.uploadFromHTMLImageElement(this._htmlImageElement, 0);
+            };
+
+            /**
+            *
+            */
             ImageTexture.prototype.getMipMapHolder = function () {
                 var newW = this._htmlImageElement.width;
                 var newH = this._htmlImageElement.height;
 
                 if (this._mipMapHolder) {
-                    if (this._mipMapHolder.width == newW && this._htmlImageElement.height == newH) {
+                    if (this._mipMapHolder.width == newW && this._htmlImageElement.height == newH)
                         return;
-                    }
 
                     this.freeMipMapHolder();
                 }
@@ -30501,6 +33471,9 @@ var away;
                 }
             };
 
+            /**
+            *
+            */
             ImageTexture.prototype.freeMipMapHolder = function () {
                 var holderWidth = this._mipMapHolder.width;
                 var holderHeight = this._mipMapHolder.height;
@@ -30508,14 +33481,6 @@ var away;
                 if (--ImageTexture._mipMapUses[holderWidth][holderHeight] == 0) {
                     ImageTexture._mipMaps[holderWidth][holderHeight].dispose();
                     ImageTexture._mipMaps[holderWidth][holderHeight] = null;
-                }
-            };
-
-            ImageTexture.prototype.dispose = function () {
-                _super.prototype.dispose.call(this);
-
-                if (this._mipMapHolder) {
-                    this.freeMipMapHolder();
                 }
             };
             ImageTexture._mipMaps = [];
@@ -32634,6 +35599,15 @@ var aglsl;
 ///<reference path="materials/IMaterial.ts"/>
 ///<reference path="materials/CSSMaterialBase.ts"/>
 ///<reference path="prefabs/PrefabBase.ts"/>
+///<reference path="prefabs/PrimitivePrefabBase.ts"/>
+///<reference path="prefabs/PrimitiveTorusPrefab.ts"/>
+///<reference path="prefabs/PrimitiveCubePrefab.ts"/>
+///<reference path="prefabs/PrimitivePlanePrefab.ts"/>
+///<reference path="prefabs/PrimitiveCapsulePrefab.ts" />
+///<reference path="prefabs/PrimitiveCylinderPrefab.ts" />
+///<reference path="prefabs/PrimitiveConePrefab.ts" />
+///<reference path="prefabs/PrimitivePolygonPrefab.ts" />
+///<reference path="prefabs/PrimitiveSpherePrefab.ts" />
 ///<reference path="animators/nodes/AnimationNodeBase.ts"/>
 ///<reference path="animators/IAnimationSet.ts"/>
 ///<reference path="animators/IAnimator.ts"/>
