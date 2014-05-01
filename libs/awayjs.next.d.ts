@@ -1291,7 +1291,7 @@ declare module away.parsers {
 declare module away.library {
     interface IAsset extends events.IEventDispatcher {
         name: string;
-        id: string;
+        id: number;
         assetNamespace: string;
         assetType: string;
         assetFullPath: string[];
@@ -1351,7 +1351,7 @@ declare module away.library {
         /**
         * A unique id for the asset, used to identify assets in an associative array
         */
-        public id : string;
+        public id : number;
         public name : string;
         public dispose(): void;
         public assetNamespace : string;
@@ -1966,9 +1966,9 @@ declare module away.gl {
     class IndexDataPool {
         private static _pool;
         constructor();
-        static getItem(id: string, level: number): IndexData;
-        static disposeItem(id: string, level: number): void;
-        public disposeData(id: string): void;
+        static getItem(id: number, level: number): IndexData;
+        static disposeItem(id: number, level: number): void;
+        public disposeData(id: number): void;
     }
 }
 declare module away.gl {
@@ -14266,7 +14266,6 @@ declare module away.materials {
     * @class away.materials.IMaterial
     */
     interface IMaterial extends library.IAsset {
-        id: string;
         /**
         *
         */

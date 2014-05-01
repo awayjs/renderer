@@ -221,8 +221,7 @@ module away.pool
 		 */
 		public _iFillIndexData(indexOffset:number)
 		{
-			if (!this._indexData)
-				this._indexData = away.gl.IndexDataPool.getItem(this._subGeometry.id, this._level);
+			this._indexData = away.gl.IndexDataPool.getItem(this._subGeometry.id, this._level);
 
 			this._indexData.updateData(indexOffset, this._subGeometry.indices, this._subGeometry.numVertices);
 
@@ -271,15 +270,15 @@ module away.pool
 			}
 
 			//dispose
-			if (this._indexData) {
-				//this._indexData.dispose(); //TODO where is a good place to dispose?
-				this._indexData = null;
-			}
+//			if (this._indexData) {
+//				this._indexData.dispose(); //TODO where is a good place to dispose?
+//				this._indexData = null;
+//			}
 
-			for (var dataType in this._vertexData) {
-				//(<away.gl.VertexData> this._vertexData[dataType]).dispose(); //TODO where is a good place to dispose?
-				this._vertexData[dataType] = null;
-			}
+//			for (var dataType in this._vertexData) {
+//				(<away.gl.VertexData> this._vertexData[dataType]).dispose(); //TODO where is a good place to dispose?
+//				this._vertexData[dataType] = null;
+//			}
 
 			this._geometryDirty = false;
 

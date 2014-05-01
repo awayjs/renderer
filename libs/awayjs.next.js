@@ -3482,7 +3482,7 @@ var away;
                 if (typeof name === "undefined") { name = null; }
                 _super.call(this);
 
-                this._id = (NamedAssetBase.ID_COUNT++).toString();
+                this._id = NamedAssetBase.ID_COUNT++;
 
                 if (name == null)
                     name = 'null';
@@ -4198,8 +4198,7 @@ var away;
                     this._strategy.resolveConflict(asset, old, this._assetDictionary[ns], this._strategyPreference);
 
                 //create unique-id (for now this is used in AwayBuilder only
-                asset.id = library.IDUtil.createUID();
-
+                //asset.id = IDUtil.createUID();
                 // Add it
                 this._assets.push(asset);
 

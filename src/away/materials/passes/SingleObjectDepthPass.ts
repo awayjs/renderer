@@ -144,7 +144,7 @@ module away.materials
 			var len:number /*uint*/;
 			var light:away.lights.LightBase;
 			var lights:Array<away.lights.LightBase> = this._pLightPicker.allPickedLights;
-			var rId:string = renderable.materialOwner.id;
+			var rId:number = renderable.materialOwner.id;
 
 			if (this._textures[contextIndex] == undefined)
 				this._textures[contextIndex] = new Object();

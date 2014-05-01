@@ -406,16 +406,14 @@ var away;
                 }
 
                 //dispose
-                if (this._indexData) {
-                    //this._indexData.dispose(); //TODO where is a good place to dispose?
-                    this._indexData = null;
-                }
-
-                for (var dataType in this._vertexData) {
-                    //(<away.gl.VertexData> this._vertexData[dataType]).dispose(); //TODO where is a good place to dispose?
-                    this._vertexData[dataType] = null;
-                }
-
+                //			if (this._indexData) {
+                //				this._indexData.dispose(); //TODO where is a good place to dispose?
+                //				this._indexData = null;
+                //			}
+                //			for (var dataType in this._vertexData) {
+                //				(<away.gl.VertexData> this._vertexData[dataType]).dispose(); //TODO where is a good place to dispose?
+                //				this._vertexData[dataType] = null;
+                //			}
                 this._geometryDirty = false;
 
                 //invalidate indices

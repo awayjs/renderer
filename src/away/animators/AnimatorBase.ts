@@ -64,7 +64,7 @@ module away.animators
 		public getAnimationState(node:AnimationNodeBase):IAnimationState
 		{
 			var className:any = node.stateClass;
-			var uID:string = node.id;
+			var uID:number = node.id;
 
 			if (this._animationStates[uID] == null)
 				this._animationStates[uID] = new className(this, node);
