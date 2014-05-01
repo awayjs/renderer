@@ -358,10 +358,7 @@ var away;
             * @internal
             */
             RenderableBase.prototype._iFillIndexData = function (indexOffset) {
-                if (!this._indexData)
-                    this._indexData = away.gl.IndexDataPool.getItem(this._subGeometry.id, this._level);
-
-                this._indexData.updateData(indexOffset, this._subGeometry.indices, this._subGeometry.numVertices);
+                this._indexData = away.gl.IndexDataPool.getItem(this._subGeometry, this._level, indexOffset);
 
                 this._numTriangles = this._indexData.data.length / 3;
 

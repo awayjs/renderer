@@ -2151,16 +2151,16 @@ var away;
                 this._prevTime = this._getTimer();
                 this._active = true;
 
-                if (window['mozRequestAnimationFrame']) {
-                    window.requestAnimationFrame = window['mozRequestAnimationFrame'];
-                } else if (window['webkitRequestAnimationFrame']) {
-                    window.requestAnimationFrame = window['webkitRequestAnimationFrame'];
-                } else if (window['oRequestAnimationFrame']) {
-                    window.requestAnimationFrame = window['oRequestAnimationFrame'];
-                }
-
                 if (window.requestAnimationFrame) {
                     window.requestAnimationFrame(this._rafUpdateFunction);
+                } else {
+                    if (window['mozRequestAnimationFrame']) {
+                        window.requestAnimationFrame = window['mozRequestAnimationFrame'];
+                    } else if (window['webkitRequestAnimationFrame']) {
+                        window.requestAnimationFrame = window['webkitRequestAnimationFrame'];
+                    } else if (window['oRequestAnimationFrame']) {
+                        window.requestAnimationFrame = window['oRequestAnimationFrame'];
+                    }
                 }
             };
 
@@ -5200,10 +5200,13 @@ var away;
         var IndexDataPool = (function () {
             function IndexDataPool() {
             }
-            IndexDataPool.getItem = function (id, level) {
-                var subGeometryData = (IndexDataPool._pool[id] || (IndexDataPool._pool[id] = new Array()));
+            IndexDataPool.getItem = function (subGeometry, level, indexOffset) {
+                var subGeometryData = (IndexDataPool._pool[subGeometry.id] || (IndexDataPool._pool[subGeometry.id] = new Array()));
 
-                return subGeometryData[level] || (subGeometryData[level] = new gl.IndexData(level));
+                var indexData = subGeometryData[level] || (subGeometryData[level] = new gl.IndexData(level));
+                indexData.updateData(indexOffset, subGeometry.indices, subGeometry.numVertices);
+
+                return indexData;
             };
 
             IndexDataPool.disposeItem = function (id, level) {

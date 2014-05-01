@@ -1966,7 +1966,7 @@ declare module away.gl {
     class IndexDataPool {
         private static _pool;
         constructor();
-        static getItem(id: number, level: number): IndexData;
+        static getItem(subGeometry: base.SubGeometryBase, level: number, indexOffset: number): IndexData;
         static disposeItem(id: number, level: number): void;
         public disposeData(id: number): void;
     }
