@@ -46,7 +46,6 @@ module away.render
 		public _width:number;
 		public _height:number;
 
-		private _renderToTexture:boolean;
 		public textureRatioX:number = 1;
 		public textureRatioY:number = 1;
 
@@ -189,7 +188,7 @@ module away.render
 		/**
 		 * Creates a new RendererBase object.
 		 */
-		constructor(renderToTexture:boolean = false)
+		constructor()
 		{
 			super();
 
@@ -200,8 +199,6 @@ module away.render
 			this._triangleSubMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.TriangleSubMeshRenderable);
 			this._lineSubMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.LineSubMeshRenderable);
 
-			this._renderToTexture = renderToTexture;
-
 			this._onContextUpdateDelegate = away.utils.Delegate.create(this, this.onContextUpdate);
 
 			//default sorting algorithm
@@ -211,11 +208,6 @@ module away.render
 		public _iCreateEntityCollector():away.traverse.ICollector
 		{
 			return new away.traverse.EntityCollector();
-		}
-
-		public get iRenderToTexture():boolean
-		{
-			return this._renderToTexture;
 		}
 
 		/**
@@ -439,9 +431,6 @@ module away.render
 			this._pRenderTarget = target;
 			this._pRenderTargetSurface = surfaceSelector;
 
-			if (this._renderToTexture)
-				this.pExecuteRenderToTexturePass(entityCollector);
-
 			this._pStageGL.setRenderTarget(target, true, surfaceSelector);
 
 			if ((target || !this._shareContext) && !this._depthPrepass)
@@ -478,11 +467,6 @@ module away.render
 		{
 			this._snapshotRequired = true;
 			this._snapshotBitmapData = bmd;
-		}
-
-		public pExecuteRenderToTexturePass(entityCollector:away.traverse.ICollector)
-		{
-			throw new away.errors.AbstractMethodError();
 		}
 
 		/**

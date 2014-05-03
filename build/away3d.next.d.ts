@@ -784,7 +784,6 @@ declare module away.render {
         public _pRenderTargetSurface: number;
         public _width: number;
         public _height: number;
-        private _renderToTexture;
         public textureRatioX: number;
         public textureRatioY: number;
         private _snapshotBitmapData;
@@ -835,9 +834,8 @@ declare module away.render {
         /**
         * Creates a new RendererBase object.
         */
-        constructor(renderToTexture?: boolean);
+        constructor();
         public _iCreateEntityCollector(): traverse.ICollector;
-        public iRenderToTexture : boolean;
         /**
         * The background color's red component, used when clearing.
         *
@@ -889,7 +887,6 @@ declare module away.render {
         */
         public pExecuteRender(entityCollector: traverse.ICollector, target?: gl.TextureBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
         public queueSnapshot(bmd: base.BitmapData): void;
-        public pExecuteRenderToTexturePass(entityCollector: traverse.ICollector): void;
         /**
         * Performs the actual drawing of geometry to the target.
         * @param entityCollector The EntityCollector object containing the potentially visible geometry.

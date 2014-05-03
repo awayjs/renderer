@@ -141,7 +141,7 @@ module away.render
 			if (this._shareContext)
 				this._pStageGL.clearDepthBuffer();
 
-			if (this._pFilter3DRenderer || this.iRenderToTexture) {
+			if (this._pFilter3DRenderer) {
 				this.textureRatioX = this._pRttBufferManager.textureRatioX;
 				this.textureRatioY = this._pRttBufferManager.textureRatioY;
 			} else {
@@ -379,7 +379,7 @@ module away.render
 		{
 			this._pDepthRenderer.disableColor = true;
 
-			if (this._pFilter3DRenderer || this.iRenderToTexture) {
+			if (this._pFilter3DRenderer) {
 				this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
 				this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
 				this._pDepthRenderer._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStageGL), this._pRttBufferManager.renderToTextureRect);

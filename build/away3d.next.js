@@ -1834,8 +1834,7 @@ var away;
             /**
             * Creates a new RendererBase object.
             */
-            function RendererBase(renderToTexture) {
-                if (typeof renderToTexture === "undefined") { renderToTexture = false; }
+            function RendererBase() {
                 _super.call(this);
                 this._viewPort = new away.geom.Rectangle();
                 this._pBackBufferInvalid = true;
@@ -1860,8 +1859,6 @@ var away;
                 this._skyboxRenderablePool = away.pool.RenderablePool.getPool(away.pool.SkyboxRenderable);
                 this._triangleSubMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.TriangleSubMeshRenderable);
                 this._lineSubMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.LineSubMeshRenderable);
-
-                this._renderToTexture = renderToTexture;
 
                 this._onContextUpdateDelegate = away.utils.Delegate.create(this, this.onContextUpdate);
 
@@ -1998,14 +1995,6 @@ var away;
             RendererBase.prototype._iCreateEntityCollector = function () {
                 return new away.traverse.EntityCollector();
             };
-
-            Object.defineProperty(RendererBase.prototype, "iRenderToTexture", {
-                get: function () {
-                    return this._renderToTexture;
-                },
-                enumerable: true,
-                configurable: true
-            });
 
             Object.defineProperty(RendererBase.prototype, "_iBackgroundR", {
                 /**
@@ -2235,9 +2224,6 @@ var away;
                 this._pRenderTarget = target;
                 this._pRenderTargetSurface = surfaceSelector;
 
-                if (this._renderToTexture)
-                    this.pExecuteRenderToTexturePass(entityCollector);
-
                 this._pStageGL.setRenderTarget(target, true, surfaceSelector);
 
                 if ((target || !this._shareContext) && !this._depthPrepass)
@@ -2271,10 +2257,6 @@ var away;
             RendererBase.prototype.queueSnapshot = function (bmd) {
                 this._snapshotRequired = true;
                 this._snapshotBitmapData = bmd;
-            };
-
-            RendererBase.prototype.pExecuteRenderToTexturePass = function (entityCollector) {
-                throw new away.errors.AbstractMethodError();
             };
 
             /**
@@ -2789,7 +2771,7 @@ var away;
                 if (this._shareContext)
                     this._pStageGL.clearDepthBuffer();
 
-                if (this._pFilter3DRenderer || this.iRenderToTexture) {
+                if (this._pFilter3DRenderer) {
                     this.textureRatioX = this._pRttBufferManager.textureRatioX;
                     this.textureRatioY = this._pRttBufferManager.textureRatioY;
                 } else {
@@ -3015,7 +2997,7 @@ var away;
             DefaultRenderer.prototype.pRenderDepthPrepass = function (entityCollector) {
                 this._pDepthRenderer.disableColor = true;
 
-                if (this._pFilter3DRenderer || this.iRenderToTexture) {
+                if (this._pFilter3DRenderer) {
                     this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
                     this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
                     this._pDepthRenderer._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStageGL), this._pRttBufferManager.renderToTextureRect);
@@ -12455,6 +12437,7 @@ var away;
                     vo.vertexData[vo.vertexConstantsIndex + 3] = -1 / (this._pShadowMapper.depth * this._pEpsilon);
 
                 fragmentData[index + 5] = 1 - this._pAlpha;
+
                 if (this._pUsePoint) {
                     var pos = this._pCastingLight.scenePosition;
                     fragmentData[index + 8] = pos.x;

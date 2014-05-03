@@ -201,10 +201,12 @@ module away.materials
 			var index:number /*int*/ = vo.fragmentConstantsIndex;
 
 			if (this._pUsePoint)
-				fragmentData[index + 4] = -Math.pow(1/((< away.lights.PointLight> this._pCastingLight).fallOff*this._pEpsilon), 2); else
+				fragmentData[index + 4] = -Math.pow(1/((< away.lights.PointLight> this._pCastingLight).fallOff*this._pEpsilon), 2);
+			else
 				vo.vertexData[vo.vertexConstantsIndex + 3] = -1/((<away.lights.DirectionalShadowMapper> this._pShadowMapper).depth*this._pEpsilon);
 
 			fragmentData[index + 5] = 1 - this._pAlpha;
+
 			if (this._pUsePoint) {
 				var pos:away.geom.Vector3D = this._pCastingLight.scenePosition;
 				fragmentData[index + 8] = pos.x;
