@@ -111,6 +111,171 @@ declare module away.base {
         public numParticles: number;
     }
 }
+declare module away.base {
+    /**
+    * StageGL provides a proxy class to handle the creation and attachment of the ContextGL
+    * (and in turn the back buffer) it uses. StageGL should never be created directly,
+    * but requested through StageGLManager.
+    *
+    * @see away.managers.StageGLManager
+    *
+    * todo: consider moving all creation methods (createVertexBuffer etc) in here, so that disposal can occur here
+    * along with the context, instead of scattered throughout the framework
+    */
+    class StageGL extends events.EventDispatcher implements IStage {
+        private _renderTexturePool;
+        private _bitmapTexturePool;
+        private _imageTexturePool;
+        private _bitmapCubeTexturePool;
+        private _imageCubeTexturePool;
+        private _contextGL;
+        private _canvas;
+        private _width;
+        private _height;
+        private _x;
+        private _y;
+        public _iStageGLIndex: number;
+        private _usesSoftwareRendering;
+        private _profile;
+        private _activeProgram;
+        private _stageGLManager;
+        private _antiAlias;
+        private _enableDepthAndStencil;
+        private _contextRequested;
+        private _renderTarget;
+        private _renderSurfaceSelector;
+        private _scissorRect;
+        private _color;
+        private _backBufferDirty;
+        private _viewPort;
+        private _enterFrame;
+        private _exitFrame;
+        private _viewportUpdated;
+        private _viewportDirty;
+        private _bufferClear;
+        private _initialised;
+        constructor(canvas: HTMLCanvasElement, stageGLIndex: number, stageGLManager: managers.StageGLManager, forceSoftware?: boolean, profile?: string);
+        /**
+        * Requests a ContextGL object to attach to the managed gl canvas.
+        */
+        public requestContext(aglslContext?: boolean, forceSoftware?: boolean, profile?: string): void;
+        /**
+        * The width of the gl canvas
+        */
+        public width : number;
+        /**
+        * The height of the gl canvas
+        */
+        public height : number;
+        /**
+        * The x position of the gl canvas
+        */
+        public x : number;
+        /**
+        * The y position of the gl canvas
+        */
+        public y : number;
+        public visible : boolean;
+        public canvas : HTMLCanvasElement;
+        /**
+        * The ContextGL object associated with the given gl canvas object.
+        */
+        public contextGL : gl.ContextGL;
+        private notifyViewportUpdated();
+        private notifyEnterFrame();
+        private notifyExitFrame();
+        public profile : string;
+        /**
+        * Disposes the StageGL object, freeing the ContextGL attached to the StageGL.
+        */
+        public dispose(): void;
+        /**
+        * Configures the back buffer associated with the StageGL object.
+        * @param backBufferWidth The width of the backbuffer.
+        * @param backBufferHeight The height of the backbuffer.
+        * @param antiAlias The amount of anti-aliasing to use.
+        * @param enableDepthAndStencil Indicates whether the back buffer contains a depth and stencil buffer.
+        */
+        public configureBackBuffer(backBufferWidth: number, backBufferHeight: number, antiAlias: number, enableDepthAndStencil: boolean): void;
+        public enableDepthAndStencil : boolean;
+        public renderTarget : textures.TextureProxyBase;
+        public renderSurfaceSelector : number;
+        public setRenderTarget(target: textures.TextureProxyBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
+        public clear(): void;
+        public present(): void;
+        public addEventListener(type: string, listener: Function): void;
+        /**
+        * Removes a listener from the EventDispatcher object. Special case for enterframe and exitframe events - will switch StageGLProxy out of automatic render mode.
+        * If there is no matching listener registered with the EventDispatcher object, a call to this method has no effect.
+        *
+        * @param type The type of event.
+        * @param listener The listener object to remove.
+        * @param useCapture Specifies whether the listener was registered for the capture phase or the target and bubbling phases. If the listener was registered for both the capture phase and the target and bubbling phases, two calls to removeEventListener() are required to remove both, one call with useCapture() set to true, and another call with useCapture() set to false.
+        */
+        public removeEventListener(type: string, listener: Function): void;
+        public scissorRect : geom.Rectangle;
+        /**
+        * The index of the StageGL which is managed by this instance of StageGLProxy.
+        */
+        public stageGLIndex : number;
+        /**
+        * Indicates whether the StageGL managed by this proxy is running in software mode.
+        * Remember to wait for the CONTEXTGL_CREATED event before checking this property,
+        * as only then will it be guaranteed to be accurate.
+        */
+        public usesSoftwareRendering : boolean;
+        /**
+        * The antiAliasing of the StageGL.
+        */
+        public antiAlias : number;
+        /**
+        * A viewPort rectangle equivalent of the StageGL size and position.
+        */
+        public viewPort : geom.Rectangle;
+        /**
+        * The background color of the StageGL.
+        */
+        public color : number;
+        /**
+        * The freshly cleared state of the backbuffer before any rendering
+        */
+        public bufferClear : boolean;
+        /**
+        * Assigns an attribute stream
+        *
+        * @param index The attribute stream index for the vertex shader
+        * @param buffer
+        * @param offset
+        * @param stride
+        * @param format
+        */
+        public activateBuffer(index: number, buffer: pool.VertexData, offset: number, format: string): void;
+        public disposeVertexData(buffer: pool.VertexData): void;
+        public activateRenderTexture(index: number, texture: textures.RenderTexture): void;
+        public activateImageTexture(index: number, texture: textures.ImageTexture): void;
+        public activateImageCubeTexture(index: number, texture: textures.ImageCubeTexture): void;
+        public activateBitmapTexture(index: number, texture: textures.BitmapTexture): void;
+        public activateBitmapCubeTexture(index: number, texture: textures.BitmapCubeTexture): void;
+        /**
+        * Retrieves the VertexBuffer object that contains triangle indices.
+        * @param context The ContextGL for which we request the buffer
+        * @return The VertexBuffer object that contains triangle indices.
+        */
+        public getIndexBuffer(buffer: pool.IndexData): gl.IndexBuffer;
+        public disposeIndexData(buffer: pool.IndexData): void;
+        /**
+        * Frees the ContextGL associated with this StageGLProxy.
+        */
+        private freeContextGL();
+        /**
+        * The Enter_Frame handler for processing the proxy.ENTER_FRAME and proxy.EXIT_FRAME event handlers.
+        * Typically the proxy.ENTER_FRAME listener would render the layers for this StageGL instance.
+        */
+        private onEnterFrame(event);
+        public recoverFromDisposal(): boolean;
+        public clearDepthBuffer(): void;
+    }
+}
 /**
 * @module away.pool
 */
@@ -186,11 +351,11 @@ declare module away.pool {
         /**
         *
         */
-        public getIndexData(): gl.IndexData;
+        public getIndexData(): IndexData;
         /**
         *
         */
-        public getVertexData(dataType: string): gl.VertexData;
+        public getVertexData(dataType: string): VertexData;
         /**
         *
         */
@@ -265,6 +430,35 @@ declare module away.pool {
 */
 declare module away.pool {
     /**
+    *
+    * @class away.pool.TextureDataBase
+    */
+    class TextureDataBase {
+        public _pStageGL: base.StageGL;
+        public _pTexture: gl.TextureBase;
+        private _dirty;
+        constructor(stageGL: base.StageGL);
+        /**
+        *
+        */
+        public getTexture(): gl.TextureBase;
+        /**
+        *
+        */
+        public dispose(): void;
+        /**
+        *
+        */
+        public invalidate(): void;
+        public _pCreateTexture(): void;
+        public _pUpdateContent(): void;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
     * @class away.pool.RenderableListItem
     */
     class BillboardRenderable extends RenderableBase {
@@ -290,6 +484,136 @@ declare module away.pool {
         * @returns {away.base.TriangleSubGeometry}
         */
         public _pGetSubGeometry(): base.SubGeometryBase;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    *
+    * @class away.pool.TextureDataBase
+    */
+    class BitmapCubeTextureData extends TextureDataBase implements ITextureData {
+        /**
+        *
+        */
+        static id: string;
+        private _textureProxy;
+        constructor(stageGL: base.StageGL, textureProxy: textures.BitmapCubeTexture);
+        public _pCreateTexture(): void;
+        public _pUpdateContent(): void;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    *
+    * @class away.pool.TextureDataBase
+    */
+    class BitmapTextureData extends TextureDataBase implements ITextureData {
+        /**
+        *
+        */
+        static id: string;
+        private _textureProxy;
+        constructor(stageGL: base.StageGL, textureProxy: textures.BitmapTexture);
+        public _pCreateTexture(): void;
+        public _pUpdateContent(): void;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    *
+    * @class away.pool.TextureDataBase
+    */
+    class ImageCubeTextureData extends TextureDataBase implements ITextureData {
+        /**
+        *
+        */
+        static id: string;
+        private _textureProxy;
+        constructor(stageGL: base.StageGL, textureProxy: textures.ImageCubeTexture);
+        public _pCreateTexture(): void;
+        public _pUpdateContent(): void;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    *
+    * @class away.pool.TextureDataBase
+    */
+    class ImageTextureData extends TextureDataBase implements ITextureData {
+        /**
+        *
+        */
+        static id: string;
+        private _textureProxy;
+        constructor(stageGL: base.StageGL, textureProxy: textures.ImageTexture);
+        public _pCreateTexture(): void;
+        public _pUpdateContent(): void;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.pool {
+    /**
+    *
+    */
+    class IndexData {
+        private static LIMIT_VERTS;
+        private static LIMIT_INDICES;
+        private _dataDirty;
+        public invalid: boolean[];
+        public stageGLs: base.StageGL[];
+        public buffers: gl.IndexBuffer[];
+        public data: number[];
+        public indexMappings: number[];
+        public originalIndices: number[];
+        public offset: number;
+        public level: number;
+        constructor(level: number);
+        public updateData(offset: number, indices: number[], numVertices: number): void;
+        public invalidateData(): void;
+        public dispose(): void;
+        /**
+        * @private
+        */
+        private disposeBuffers();
+        /**
+        * @private
+        */
+        private invalidateBuffers();
+        /**
+        *
+        * @param data
+        * @private
+        */
+        private setData(data);
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.pool {
+    /**
+    *
+    */
+    class IndexDataPool {
+        private static _pool;
+        constructor();
+        static getItem(subGeometry: base.SubGeometryBase, level: number, indexOffset: number): IndexData;
+        static disposeItem(id: number, level: number): void;
+        public disposeData(id: number): void;
     }
 }
 /**
@@ -342,6 +666,57 @@ declare module away.pool {
 */
 declare module away.pool {
     /**
+    *
+    * @class away.pool.TextureDataBase
+    */
+    class RenderTextureData extends TextureDataBase implements ITextureData {
+        /**
+        *
+        */
+        static id: string;
+        private _textureProxy;
+        constructor(stageGL: base.StageGL, textureProxy: textures.RenderTexture);
+        public _pCreateTexture(): void;
+        public _pUpdateContent(): void;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    * @class away.pool.SkyboxRenderable
+    */
+    class SkyboxRenderable extends RenderableBase {
+        /**
+        *
+        */
+        static id: string;
+        /**
+        *
+        */
+        private static _geometry;
+        /**
+        * //TODO
+        *
+        * @param pool
+        * @param skybox
+        */
+        constructor(pool: RenderablePool, skybox: entities.Skybox);
+        /**
+        * //TODO
+        *
+        * @returns {away.base.TriangleSubGeometry}
+        * @private
+        */
+        public _pGetSubGeometry(): base.TriangleSubGeometry;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
     * @class away.pool.TriangleSubMeshRenderable
     */
     class TriangleSubMeshRenderable extends RenderableBase {
@@ -382,35 +757,62 @@ declare module away.pool {
     }
 }
 /**
-* @module away.pool
+* @module away.base
 */
 declare module away.pool {
     /**
-    * @class away.pool.SkyboxRenderable
+    *
     */
-    class SkyboxRenderable extends RenderableBase {
+    class VertexData {
+        private _onVerticesUpdatedDelegate;
+        private _subGeometry;
+        private _dataType;
+        private _dataDirty;
+        public invalid: boolean[];
+        public buffers: gl.VertexBuffer[];
+        public stageGLs: base.StageGL[];
+        public data: number[];
+        public dataPerVertex: number;
+        constructor(subGeometry: base.SubGeometryBase, dataType: string);
+        public updateData(originalIndices?: number[], indexMappings?: number[]): void;
+        public dispose(): void;
         /**
-        *
-        */
-        static id: string;
-        /**
-        *
-        */
-        private static _geometry;
-        /**
-        * //TODO
-        *
-        * @param pool
-        * @param skybox
-        */
-        constructor(pool: RenderablePool, skybox: entities.Skybox);
-        /**
-        * //TODO
-        *
-        * @returns {away.base.TriangleSubGeometry}
         * @private
         */
-        public _pGetSubGeometry(): base.TriangleSubGeometry;
+        private disposeBuffers();
+        /**
+        * @private
+        */
+        private invalidateBuffers();
+        /**
+        *
+        * @param data
+        * @param dataPerVertex
+        * @private
+        */
+        private setData(data);
+        /**
+        * //TODO
+        *
+        * @param event
+        * @private
+        */
+        private _onVerticesUpdated(event);
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.pool {
+    /**
+    *
+    */
+    class VertexDataPool {
+        private static _pool;
+        constructor();
+        static getItem(subGeometry: base.SubGeometryBase, indexData: IndexData, dataType: string): VertexData;
+        static disposeItem(subGeometry: base.SubGeometryBase, level: number, dataType: string): void;
+        public disposeData(subGeometry: base.SubGeometryBase): void;
     }
 }
 /**
@@ -780,8 +1182,6 @@ declare module away.render {
         private _backgroundB;
         private _backgroundAlpha;
         public _shareContext: boolean;
-        public _pRenderTarget: gl.TextureBase;
-        public _pRenderTargetSurface: number;
         public _width: number;
         public _height: number;
         public textureRatioX: number;
@@ -876,7 +1276,7 @@ declare module away.render {
         * @param surfaceSelector The index of a CubeTexture's face to render to.
         * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
         */
-        public _iRender(entityCollector: traverse.ICollector, target?: gl.TextureBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
+        public _iRender(entityCollector: traverse.ICollector, target?: textures.TextureProxyBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
         public pCollectRenderables(entityCollector: traverse.ICollector): void;
         /**
         * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
@@ -885,13 +1285,13 @@ declare module away.render {
         * @param surfaceSelector The index of a CubeTexture's face to render to.
         * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
         */
-        public pExecuteRender(entityCollector: traverse.ICollector, target?: gl.TextureBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
+        public pExecuteRender(entityCollector: traverse.ICollector, target?: textures.TextureProxyBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
         public queueSnapshot(bmd: base.BitmapData): void;
         /**
         * Performs the actual drawing of geometry to the target.
         * @param entityCollector The EntityCollector object containing the potentially visible geometry.
         */
-        public pDraw(entityCollector: traverse.ICollector, target: gl.TextureBase): void;
+        public pDraw(entityCollector: traverse.ICollector, target: textures.TextureProxyBase): void;
         /**
         * Assign the context once retrieved
         */
@@ -963,12 +1363,12 @@ declare module away.render {
         */
         constructor(renderBlended?: boolean, distanceBased?: boolean);
         public disableColor : boolean;
-        public iRenderCascades(entityCollector: traverse.ShadowCasterCollector, target: gl.TextureBase, numCascades: number, scissorRects: geom.Rectangle[], cameras: entities.Camera[]): void;
+        public iRenderCascades(entityCollector: traverse.ShadowCasterCollector, target: textures.TextureProxyBase, numCascades: number, scissorRects: geom.Rectangle[], cameras: entities.Camera[]): void;
         private drawCascadeRenderables(renderable, camera, cullPlanes);
         /**
         * @inheritDoc
         */
-        public pDraw(entityCollector: traverse.EntityCollector, target: gl.TextureBase): void;
+        public pDraw(entityCollector: traverse.EntityCollector, target: textures.TextureProxyBase): void;
         /**
         * Draw a list of renderables.
         * @param renderables The renderables to draw.
@@ -997,7 +1397,7 @@ declare module away.render {
         private _pDepthRenderer;
         private _skyboxProjection;
         public _pFilter3DRenderer: Filter3DRenderer;
-        public _pDepthRender: gl.Texture;
+        public _pDepthRender: textures.TextureProxyBase;
         private _forceSoftware;
         private _profile;
         private _antiAlias;
@@ -1019,12 +1419,12 @@ declare module away.render {
         */
         constructor(forceSoftware?: boolean, profile?: string);
         public render(entityCollector: traverse.ICollector): void;
-        public pExecuteRender(entityCollector: traverse.EntityCollector, target?: gl.TextureBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
+        public pExecuteRender(entityCollector: traverse.EntityCollector, target?: textures.TextureProxyBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
         private updateLights(entityCollector);
         /**
         * @inheritDoc
         */
-        public pDraw(entityCollector: traverse.EntityCollector, target: gl.TextureBase): void;
+        public pDraw(entityCollector: traverse.EntityCollector, target: textures.TextureProxyBase): void;
         /**
         * Draw the skybox if present.
         * @param entityCollector The EntityCollector containing all potentially visible information.
@@ -1267,7 +1667,7 @@ declare module away.lights {
         public pCreateDepthTexture(): textures.TextureProxyBase;
         public iRenderDepthMap(stageGL: base.StageGL, entityCollector: traverse.EntityCollector, renderer: render.DepthRenderer): void;
         public pUpdateDepthProjection(viewCamera: entities.Camera): void;
-        public pDrawDepthMap(target: gl.TextureBase, scene: containers.Scene, renderer: render.DepthRenderer): void;
+        public pDrawDepthMap(target: textures.TextureProxyBase, scene: containers.Scene, renderer: render.DepthRenderer): void;
         public _pSetDepthMapSize(value: any): void;
     }
 }
@@ -1281,7 +1681,7 @@ declare module away.lights {
         private addCamera(rotationX, rotationY, rotationZ);
         public pCreateDepthTexture(): textures.TextureProxyBase;
         public pUpdateDepthProjection(viewCamera: entities.Camera): void;
-        public pDrawDepthMap(target: gl.TextureBase, scene: containers.Scene, renderer: render.DepthRenderer): void;
+        public pDrawDepthMap(target: textures.RenderTexture, scene: containers.Scene, renderer: render.DepthRenderer): void;
     }
 }
 declare module away.lights {
@@ -1300,7 +1700,7 @@ declare module away.lights {
         public lightOffset : number;
         public iDepthProjection : geom.Matrix3D;
         public depth : number;
-        public pDrawDepthMap(target: gl.TextureBase, scene: containers.Scene, renderer: render.DepthRenderer): void;
+        public pDrawDepthMap(target: textures.TextureProxyBase, scene: containers.Scene, renderer: render.DepthRenderer): void;
         public pUpdateCullPlanes(viewCamera: entities.Camera): void;
         public pUpdateDepthProjection(viewCamera: entities.Camera): void;
         public pUpdateProjectionFromFrustumCorners(viewCamera: entities.Camera, corners: number[], matrix: geom.Matrix3D): void;
@@ -1326,7 +1726,7 @@ declare module away.lights {
         public _pSetDepthMapSize(value: number): void;
         private invalidateScissorRects();
         public numCascades : number;
-        public pDrawDepthMap(target: gl.TextureBase, scene: containers.Scene, renderer: render.DepthRenderer): void;
+        public pDrawDepthMap(target: textures.RenderTexture, scene: containers.Scene, renderer: render.DepthRenderer): void;
         private updateScissorRects();
         public pUpdateDepthProjection(viewCamera: entities.Camera): void;
         private updateProjectionPartition(matrix, splitRatio, texOffsetX, texOffsetY);
@@ -1370,6 +1770,116 @@ declare module away.managers {
     }
 }
 declare class AGALProgramCacheSingletonEnforcer {
+}
+declare module away.managers {
+    class RTTBufferManager extends events.EventDispatcher {
+        private static _instances;
+        private _renderToTextureVertexBuffer;
+        private _renderToScreenVertexBuffer;
+        private _indexBuffer;
+        private _stageGL;
+        private _viewWidth;
+        private _viewHeight;
+        private _textureWidth;
+        private _textureHeight;
+        private _renderToTextureRect;
+        private _buffersInvalid;
+        private _textureRatioX;
+        private _textureRatioY;
+        constructor(se: SingletonEnforcer, stageGL: base.StageGL);
+        static getInstance(stageGL: base.StageGL): RTTBufferManager;
+        private static getRTTBufferManagerFromStageGL(stageGL);
+        private static deleteRTTBufferManager(stageGL);
+        public textureRatioX : number;
+        public textureRatioY : number;
+        public viewWidth : number;
+        public viewHeight : number;
+        public renderToTextureVertexBuffer : gl.VertexBuffer;
+        public renderToScreenVertexBuffer : gl.VertexBuffer;
+        public indexBuffer : gl.IndexBuffer;
+        public renderToTextureRect : geom.Rectangle;
+        public textureWidth : number;
+        public textureHeight : number;
+        public dispose(): void;
+        private updateRTTBuffers();
+    }
+}
+declare class RTTBufferManagerVO {
+    public stage3d: away.base.StageGL;
+    public rttbfm: away.managers.RTTBufferManager;
+}
+declare class SingletonEnforcer {
+}
+declare module away.managers {
+    /**
+    * The StageGLManager class provides a multiton object that handles management for StageGL objects. StageGL objects
+    * should not be requested directly, but are exposed by a StageGLProxy.
+    *
+    * @see away.base.StageGLProxy
+    */
+    class StageGLManager extends events.EventDispatcher {
+        private static STAGEGL_MAX_QUANTITY;
+        private _stageGLs;
+        private static _instance;
+        private static _numStageGLs;
+        private _onContextCreatedDelegate;
+        /**
+        * Creates a new StageGLManager class.
+        * @param stage The Stage object that contains the StageGL objects to be managed.
+        * @private
+        */
+        constructor(StageGLManagerSingletonEnforcer: StageGLManagerSingletonEnforcer);
+        /**
+        * Gets a StageGLManager instance for the given Stage object.
+        * @param stage The Stage object that contains the StageGL objects to be managed.
+        * @return The StageGLManager instance for the given Stage object.
+        */
+        static getInstance(): StageGLManager;
+        /**
+        * Requests the StageGL for the given index.
+        *
+        * @param index The index of the requested StageGL.
+        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
+        * @param profile The compatibility profile, an enumeration of ContextGLProfile
+        * @return The StageGL for the given index.
+        */
+        public getStageGLAt(index: number, forceSoftware?: boolean, profile?: string): base.StageGL;
+        /**
+        * Removes a StageGL from the manager.
+        * @param stageGL
+        * @private
+        */
+        public iRemoveStageGL(stageGL: base.StageGL): void;
+        /**
+        * Get the next available stageGL. An error is thrown if there are no StageGLProxies available
+        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
+        * @param profile The compatibility profile, an enumeration of ContextGLProfile
+        * @return The allocated stageGL
+        */
+        public getFreeStageGL(forceSoftware?: boolean, profile?: string): base.StageGL;
+        /**
+        * Checks if a new stageGL can be created and managed by the class.
+        * @return true if there is one slot free for a new stageGL
+        */
+        public hasFreeStageGL : boolean;
+        /**
+        * Returns the amount of stageGL objects that can be created and managed by the class
+        * @return the amount of free slots
+        */
+        public numSlotsFree : number;
+        /**
+        * Returns the amount of StageGL objects currently managed by the class.
+        * @return the amount of slots used
+        */
+        public numSlotsUsed : number;
+        /**
+        * The maximum amount of StageGL objects that can be managed by the class
+        */
+        public numSlotsTotal : number;
+        private onContextCreated(e);
+    }
+}
+declare class StageGLManagerSingletonEnforcer {
 }
 declare module away.materials {
     /**
@@ -2204,7 +2714,7 @@ declare module away.materials {
         * @param stage3DProxy The Stage3DProxy object currently used for rendering.
         * @return A list of depth map textures for all supported lights.
         */
-        public _iGetDepthMap(renderable: pool.RenderableBase, stageGL: base.StageGL): gl.Texture;
+        public _iGetDepthMap(renderable: pool.RenderableBase): textures.RenderTexture;
         /**
         * Retrieves the depth map projection maps for all lights.
         * @param renderable The renderable for which to retrieve the projection maps.

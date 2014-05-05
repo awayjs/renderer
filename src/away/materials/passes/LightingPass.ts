@@ -431,7 +431,6 @@ module away.materials
 		 */
 		public pUpdateProbes(stageGL:away.base.StageGL)
 		{
-			var context:away.gl.ContextGL = stageGL.contextGL;
 			var probe:away.lights.LightProbe;
 			var lightProbes:Array<away.lights.LightProbe> = this._pLightPicker.lightProbes;
 			var weights:Array<number> = this._pLightPicker.lightProbeWeights;
@@ -449,12 +448,11 @@ module away.materials
 			for (var i:number = 0; i < len; ++i) {
 				probe = lightProbes[ this._lightProbesOffset + i];
 
-				if (addDiff) {
-					context.setTextureAt(this._pLightProbeDiffuseIndices[i], probe.diffuseMap.getTextureForStageGL(stageGL));
-				}
-				if (addSpec) {
-					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGL));
-				}
+				if (addDiff)
+					probe.diffuseMap.activateTextureForStage(this._pLightProbeDiffuseIndices[i], stageGL);
+
+				if (addSpec)
+					probe.specularMap.activateTextureForStage(this._pLightProbeSpecularIndices[i], stageGL);
 			}
 
 			for (i = 0; i < len; ++i)

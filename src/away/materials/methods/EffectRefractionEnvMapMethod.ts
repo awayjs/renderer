@@ -170,7 +170,7 @@ module away.materials
 			}
 			data[index + 3] = this._alpha;
 
-			stageGL.contextGL.setTextureAt(vo.texturesIndex, this._envMap.getTextureForStageGL(stageGL));
+			this._envMap.activateTextureForStage(vo.texturesIndex, stageGL);
 		}
 
 		/**

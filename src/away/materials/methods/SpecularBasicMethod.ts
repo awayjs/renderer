@@ -116,7 +116,7 @@ module away.materials
 
 			var b:boolean = ( value != null );
 
-			if (b != this._pUseTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
+			if (b != this._pUseTexture || (value && this._texture && (value.hasMipmaps != this._texture.hasMipmaps || value.format != this._texture.format))) {
 				this.iInvalidateShaderProgram();
 			}
 			this._pUseTexture = b;
@@ -374,7 +374,7 @@ module away.materials
 			if (this._pUseTexture) {
 
 				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.gl.ContextGLWrapMode.REPEAT:away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.gl.ContextGLTextureFilter.LINEAR:away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.gl.ContextGLMipFilter.MIPLINEAR:away.gl.ContextGLMipFilter.MIPNONE);
-				stageGL.contextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGL));
+				this._texture.activateTextureForStage(vo.texturesIndex, stageGL);
 
 			}
 

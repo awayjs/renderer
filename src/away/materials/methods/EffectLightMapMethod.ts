@@ -79,7 +79,7 @@ module away.materials
 		
 		public set texture(value:away.textures.Texture2DBase)
 		{
-			if (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format)
+			if (value.hasMipmaps != this._texture.hasMipmaps || value.format != this._texture.format)
 				this.iInvalidateShaderProgram();
 			this._texture = value;
 		}
@@ -89,7 +89,7 @@ module away.materials
 		 */
 		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
-			stageGL.contextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGL));
+			this._texture.activateTextureForStage(vo.texturesIndex, stageGL);
 			super.iActivate(vo, stageGL);
 		}
 

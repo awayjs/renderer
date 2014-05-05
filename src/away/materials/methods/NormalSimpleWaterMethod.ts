@@ -150,7 +150,7 @@ module away.materials
 
 			//if (this._useSecondNormalMap >= 0)
 			if (this._useSecondNormalMap)
-				stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, this._texture2.getTextureForStageGL(stageGL));
+				this._texture2.activateTextureForStage(vo.texturesIndex + 1, stageGL);
 		}
 
 		/**

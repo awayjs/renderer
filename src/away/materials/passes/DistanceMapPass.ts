@@ -191,7 +191,7 @@ module away.materials
 			this._fragmentData[3] = 16581375.0*f;
 
 			if (this._alphaThreshold > 0) {
-				context.setTextureAt(0, this._alphaMask.getTextureForStageGL(stageGL));
+				this._alphaMask.activateTextureForStage(0, stageGL);
 				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
 			} else {
 				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);

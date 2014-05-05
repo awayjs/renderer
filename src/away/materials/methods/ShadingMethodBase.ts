@@ -182,7 +182,7 @@ module away.materials
 			var filter:string;
 
 			var format:string = this.getFormatStringForTexture(texture);
-			var enableMipMaps:boolean = vo.useMipmapping && texture.hasMipMaps;
+			var enableMipMaps:boolean = vo.useMipmapping && texture.hasMipmaps;
 
 			if (vo.useSmoothTextures)
 				filter = enableMipMaps? "linear,miplinear":"linear";
@@ -210,7 +210,7 @@ module away.materials
 		{
 			var filter:string;
 			var format:string = this.getFormatStringForTexture(texture);
-			var enableMipMaps:boolean = vo.useMipmapping && texture.hasMipMaps;
+			var enableMipMaps:boolean = vo.useMipmapping && texture.hasMipmaps;
 
 			if (vo.useSmoothTextures)
 				filter = enableMipMaps? "linear,miplinear":"linear"; else

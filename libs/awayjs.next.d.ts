@@ -1846,65 +1846,6 @@ declare module away.gl {
         public dispose(): void;
     }
 }
-/**
-* @module away.base
-*/
-declare module away.gl {
-    /**
-    *
-    */
-    class VertexData {
-        private _onVerticesUpdatedDelegate;
-        private _subGeometry;
-        private _dataType;
-        private _dataDirty;
-        public invalid: boolean[];
-        public buffers: VertexBuffer[];
-        public stageGLs: base.StageGL[];
-        public data: number[];
-        public dataPerVertex: number;
-        constructor(subGeometry: base.SubGeometryBase, dataType: string);
-        public updateData(originalIndices?: number[], indexMappings?: number[]): void;
-        public dispose(): void;
-        /**
-        * @private
-        */
-        private disposeBuffers();
-        /**
-        * @private
-        */
-        private invalidateBuffers();
-        /**
-        *
-        * @param data
-        * @param dataPerVertex
-        * @private
-        */
-        private setData(data);
-        /**
-        * //TODO
-        *
-        * @param event
-        * @private
-        */
-        private _onVerticesUpdated(event);
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.gl {
-    /**
-    *
-    */
-    class VertexDataPool {
-        private static _pool;
-        constructor();
-        static getItem(subGeometry: base.SubGeometryBase, indexData: IndexData, dataType: string): VertexData;
-        static disposeItem(subGeometry: base.SubGeometryBase, level: number, dataType: string): void;
-        public disposeData(subGeometry: base.SubGeometryBase): void;
-    }
-}
 declare module away.gl {
     class IndexBuffer {
         private _gl;
@@ -1915,60 +1856,6 @@ declare module away.gl {
         public dispose(): void;
         public numIndices : number;
         public glBuffer : WebGLBuffer;
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.gl {
-    /**
-    *
-    */
-    class IndexData {
-        private static LIMIT_VERTS;
-        private static LIMIT_INDICES;
-        private _dataDirty;
-        public invalid: boolean[];
-        public stageGLs: base.StageGL[];
-        public buffers: IndexBuffer[];
-        public data: number[];
-        public indexMappings: number[];
-        public originalIndices: number[];
-        public offset: number;
-        public level: number;
-        constructor(level: number);
-        public updateData(offset: number, indices: number[], numVertices: number): void;
-        public invalidateData(): void;
-        public dispose(): void;
-        /**
-        * @private
-        */
-        private disposeBuffers();
-        /**
-        * @private
-        */
-        private invalidateBuffers();
-        /**
-        *
-        * @param data
-        * @private
-        */
-        private setData(data);
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.gl {
-    /**
-    *
-    */
-    class IndexDataPool {
-        private static _pool;
-        constructor();
-        static getItem(subGeometry: base.SubGeometryBase, level: number, indexOffset: number): IndexData;
-        static disposeItem(id: number, level: number): void;
-        public disposeData(id: number): void;
     }
 }
 declare module away.gl {
@@ -2024,7 +1911,7 @@ declare module away.gl {
         public uploadFromBitmapData(data: base.BitmapData, miplevel?: number): void;
         public uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
         public glTexture : WebGLTexture;
-        public generateFromRenderBuffer(data: base.BitmapData): void;
+        public generateFromRenderBuffer(): void;
         public generateMipmaps(): void;
     }
 }
@@ -4631,6 +4518,47 @@ declare module away.base {
 */
 declare module away.base {
     /**
+    *
+    * @class away.base.IStage
+    */
+    interface IStage {
+        /**
+        *
+        * @param index
+        * @param texture
+        */
+        activateRenderTexture(index: number, texture: textures.RenderTexture): any;
+        /**
+        *
+        * @param index
+        * @param texture
+        */
+        activateImageTexture(index: number, texture: textures.ImageTexture): any;
+        /**
+        *
+        * @param index
+        * @param texture
+        */
+        activateImageCubeTexture(index: number, texture: textures.ImageCubeTexture): any;
+        /**
+        *
+        * @param index
+        * @param texture
+        */
+        activateBitmapTexture(index: number, texture: textures.BitmapTexture): any;
+        /**
+        *
+        * @param index
+        * @param texture
+        */
+        activateBitmapCubeTexture(index: number, texture: textures.BitmapCubeTexture): any;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.base {
+    /**
     * ISubMeshClass is an interface for the constructable class definition SubMesh that is used to
     * create apply a marterial to a SubGeometry class
     *
@@ -4741,7 +4669,7 @@ declare module away.base {
         public applyTransformation(transform: geom.Matrix3D): void;
         /**
         * Scales the geometry.
-        * @param scale The amount by which to scale.
+        * @param scale The amount by which to scale.w
         */
         public scale(scale: number): void;
         public scaleUV(scaleU?: number, scaleV?: number): void;
@@ -5271,161 +5199,6 @@ declare module away.base {
         static REPEAT: string;
     }
 }
-declare module away.base {
-    /**
-    * StageGL provides a proxy class to handle the creation and attachment of the ContextGL
-    * (and in turn the back buffer) it uses. StageGL should never be created directly,
-    * but requested through StageGLManager.
-    *
-    * @see away.managers.StageGLManager
-    *
-    * todo: consider moving all creation methods (createVertexBuffer etc) in here, so that disposal can occur here
-    * along with the context, instead of scattered throughout the framework
-    */
-    class StageGL extends events.EventDispatcher {
-        private _contextGL;
-        private _canvas;
-        private _width;
-        private _height;
-        private _x;
-        private _y;
-        public _iStageGLIndex: number;
-        private _usesSoftwareRendering;
-        private _profile;
-        private _activeProgram;
-        private _stageGLManager;
-        private _antiAlias;
-        private _enableDepthAndStencil;
-        private _contextRequested;
-        private _renderTarget;
-        private _renderSurfaceSelector;
-        private _scissorRect;
-        private _color;
-        private _backBufferDirty;
-        private _viewPort;
-        private _enterFrame;
-        private _exitFrame;
-        private _viewportUpdated;
-        private _viewportDirty;
-        private _bufferClear;
-        private _initialised;
-        constructor(canvas: HTMLCanvasElement, stageGLIndex: number, stageGLManager: managers.StageGLManager, forceSoftware?: boolean, profile?: string);
-        /**
-        * Requests a ContextGL object to attach to the managed gl canvas.
-        */
-        public requestContext(aglslContext?: boolean, forceSoftware?: boolean, profile?: string): void;
-        /**
-        * The width of the gl canvas
-        */
-        public width : number;
-        /**
-        * The height of the gl canvas
-        */
-        public height : number;
-        /**
-        * The x position of the gl canvas
-        */
-        public x : number;
-        /**
-        * The y position of the gl canvas
-        */
-        public y : number;
-        public visible : boolean;
-        public canvas : HTMLCanvasElement;
-        /**
-        * The ContextGL object associated with the given gl canvas object.
-        */
-        public contextGL : gl.ContextGL;
-        private notifyViewportUpdated();
-        private notifyEnterFrame();
-        private notifyExitFrame();
-        public profile : string;
-        /**
-        * Disposes the StageGLProxy object, freeing the ContextGL attached to the StageGL.
-        */
-        public dispose(): void;
-        /**
-        * Configures the back buffer associated with the StageGL object.
-        * @param backBufferWidth The width of the backbuffer.
-        * @param backBufferHeight The height of the backbuffer.
-        * @param antiAlias The amount of anti-aliasing to use.
-        * @param enableDepthAndStencil Indicates whether the back buffer contains a depth and stencil buffer.
-        */
-        public configureBackBuffer(backBufferWidth: number, backBufferHeight: number, antiAlias: number, enableDepthAndStencil: boolean): void;
-        public enableDepthAndStencil : boolean;
-        public renderTarget : gl.TextureBase;
-        public renderSurfaceSelector : number;
-        public setRenderTarget(target: gl.TextureBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
-        public clear(): void;
-        public present(): void;
-        public addEventListener(type: string, listener: Function): void;
-        /**
-        * Removes a listener from the EventDispatcher object. Special case for enterframe and exitframe events - will switch StageGLProxy out of automatic render mode.
-        * If there is no matching listener registered with the EventDispatcher object, a call to this method has no effect.
-        *
-        * @param type The type of event.
-        * @param listener The listener object to remove.
-        * @param useCapture Specifies whether the listener was registered for the capture phase or the target and bubbling phases. If the listener was registered for both the capture phase and the target and bubbling phases, two calls to removeEventListener() are required to remove both, one call with useCapture() set to true, and another call with useCapture() set to false.
-        */
-        public removeEventListener(type: string, listener: Function): void;
-        public scissorRect : geom.Rectangle;
-        /**
-        * The index of the StageGL which is managed by this instance of StageGLProxy.
-        */
-        public stageGLIndex : number;
-        /**
-        * Indicates whether the StageGL managed by this proxy is running in software mode.
-        * Remember to wait for the CONTEXTGL_CREATED event before checking this property,
-        * as only then will it be guaranteed to be accurate.
-        */
-        public usesSoftwareRendering : boolean;
-        /**
-        * The antiAliasing of the StageGL.
-        */
-        public antiAlias : number;
-        /**
-        * A viewPort rectangle equivalent of the StageGL size and position.
-        */
-        public viewPort : geom.Rectangle;
-        /**
-        * The background color of the StageGL.
-        */
-        public color : number;
-        /**
-        * The freshly cleared state of the backbuffer before any rendering
-        */
-        public bufferClear : boolean;
-        /**
-        * Assigns an attribute stream
-        *
-        * @param index The attribute stream index for the vertex shader
-        * @param buffer
-        * @param offset
-        * @param stride
-        * @param format
-        */
-        public activateBuffer(index: number, buffer: gl.VertexData, offset: number, format: string): void;
-        public disposeVertexData(buffer: gl.VertexData): void;
-        /**
-        * Retrieves the VertexBuffer object that contains triangle indices.
-        * @param context The ContextGL for which we request the buffer
-        * @return The VertexBuffer object that contains triangle indices.
-        */
-        public getIndexBuffer(buffer: gl.IndexData): gl.IndexBuffer;
-        public disposeIndexData(buffer: gl.IndexData): void;
-        /**
-        * Frees the ContextGL associated with this StageGLProxy.
-        */
-        private freeContextGL();
-        /**
-        * The Enter_Frame handler for processing the proxy.ENTER_FRAME and proxy.EXIT_FRAME event handlers.
-        * Typically the proxy.ENTER_FRAME listener would render the layers for this StageGL instance.
-        */
-        private onEnterFrame(event);
-        public recoverFromDisposal(): boolean;
-        public clearDepthBuffer(): void;
-    }
-}
 /**
 * Defines codes for culling algorithms that determine which triangles not to
 * render when drawing triangle paths.
@@ -5869,6 +5642,80 @@ declare module away.pool {
     }
 }
 /**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    * ITextureData is an interface for classes that are used in the rendering pipeline to render the
+    * contents of a texture
+    *
+    * @class away.pool.ITextureData
+    */
+    interface ITextureData {
+        /**
+        *
+        */
+        dispose(): any;
+        /**
+        *
+        */
+        invalidate(): any;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    * ITextureDataClass is an interface for the constructable class definition ITextureData that is used to
+    * create textures in the rendering pipeline to render the contents of a texture
+    *
+    * @class away.render.ITextureDataClass
+    */
+    interface ITextureDataClass {
+        /**
+        *
+        */
+        id: string;
+        /**
+        *
+        */
+        new(stage: base.IStage, textureProxy: textures.TextureProxyBase): ITextureData;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    * @class away.pool.TextureDataPool
+    */
+    class TextureDataPool {
+        private _pool;
+        private _stage;
+        private _textureDataClass;
+        /**
+        * //TODO
+        *
+        * @param textureDataClass
+        */
+        constructor(stage: base.IStage, textureDataClass: ITextureDataClass);
+        /**
+        * //TODO
+        *
+        * @param materialOwner
+        * @returns ITexture
+        */
+        public getItem(textureProxy: textures.TextureProxyBase): ITextureData;
+        /**
+        * //TODO
+        *
+        * @param materialOwner
+        */
+        public disposeItem(textureProxy: textures.TextureProxyBase): void;
+    }
+}
+/**
 * @module away.data
 */
 declare module away.pool {
@@ -5963,6 +5810,18 @@ declare module away.pool {
     class CSSLineSegmentRenderable extends CSSRenderableBase {
         static id: string;
         constructor(pool: RenderablePool, lineSegment: entities.LineSegment);
+    }
+}
+/**
+* @module away.data
+*/
+declare module away.pool {
+    /**
+    * @class away.pool.CSSSkyboxRenderable
+    */
+    class CSSSkyboxRenderable extends CSSRenderableBase {
+        static id: string;
+        constructor(pool: RenderablePool, skyBox: entities.Skybox);
     }
 }
 /**
@@ -13139,116 +12998,6 @@ declare module away.managers {
         private updateColliders(event);
     }
 }
-declare module away.managers {
-    class RTTBufferManager extends events.EventDispatcher {
-        private static _instances;
-        private _renderToTextureVertexBuffer;
-        private _renderToScreenVertexBuffer;
-        private _indexBuffer;
-        private _stageGL;
-        private _viewWidth;
-        private _viewHeight;
-        private _textureWidth;
-        private _textureHeight;
-        private _renderToTextureRect;
-        private _buffersInvalid;
-        private _textureRatioX;
-        private _textureRatioY;
-        constructor(se: SingletonEnforcer, stageGL: base.StageGL);
-        static getInstance(stageGL: base.StageGL): RTTBufferManager;
-        private static getRTTBufferManagerFromStageGL(stageGL);
-        private static deleteRTTBufferManager(stageGL);
-        public textureRatioX : number;
-        public textureRatioY : number;
-        public viewWidth : number;
-        public viewHeight : number;
-        public renderToTextureVertexBuffer : gl.VertexBuffer;
-        public renderToScreenVertexBuffer : gl.VertexBuffer;
-        public indexBuffer : gl.IndexBuffer;
-        public renderToTextureRect : geom.Rectangle;
-        public textureWidth : number;
-        public textureHeight : number;
-        public dispose(): void;
-        private updateRTTBuffers();
-    }
-}
-declare class RTTBufferManagerVO {
-    public stage3d: away.base.StageGL;
-    public rttbfm: away.managers.RTTBufferManager;
-}
-declare class SingletonEnforcer {
-}
-declare module away.managers {
-    /**
-    * The StageGLManager class provides a multiton object that handles management for StageGL objects. StageGL objects
-    * should not be requested directly, but are exposed by a StageGLProxy.
-    *
-    * @see away.base.StageGLProxy
-    */
-    class StageGLManager extends events.EventDispatcher {
-        private static STAGEGL_MAX_QUANTITY;
-        private _stageGLs;
-        private static _instance;
-        private static _numStageGLs;
-        private _onContextCreatedDelegate;
-        /**
-        * Creates a new StageGLManager class.
-        * @param stage The Stage object that contains the StageGL objects to be managed.
-        * @private
-        */
-        constructor(StageGLManagerSingletonEnforcer: StageGLManagerSingletonEnforcer);
-        /**
-        * Gets a StageGLManager instance for the given Stage object.
-        * @param stage The Stage object that contains the StageGL objects to be managed.
-        * @return The StageGLManager instance for the given Stage object.
-        */
-        static getInstance(): StageGLManager;
-        /**
-        * Requests the StageGL for the given index.
-        *
-        * @param index The index of the requested StageGL.
-        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
-        * @param profile The compatibility profile, an enumeration of ContextGLProfile
-        * @return The StageGL for the given index.
-        */
-        public getStageGLAt(index: number, forceSoftware?: boolean, profile?: string): base.StageGL;
-        /**
-        * Removes a StageGL from the manager.
-        * @param stageGL
-        * @private
-        */
-        public iRemoveStageGL(stageGL: base.StageGL): void;
-        /**
-        * Get the next available stageGL. An error is thrown if there are no StageGLProxies available
-        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
-        * @param profile The compatibility profile, an enumeration of ContextGLProfile
-        * @return The allocated stageGL
-        */
-        public getFreeStageGL(forceSoftware?: boolean, profile?: string): base.StageGL;
-        /**
-        * Checks if a new stageGL can be created and managed by the class.
-        * @return true if there is one slot free for a new stageGL
-        */
-        public hasFreeStageGL : boolean;
-        /**
-        * Returns the amount of stageGL objects that can be created and managed by the class
-        * @return the amount of free slots
-        */
-        public numSlotsFree : number;
-        /**
-        * Returns the amount of StageGL objects currently managed by the class.
-        * @return the amount of slots used
-        */
-        public numSlotsUsed : number;
-        /**
-        * The maximum amount of StageGL objects that can be managed by the class
-        */
-        public numSlotsTotal : number;
-        private onContextCreated(e);
-    }
-}
-declare class StageGLManagerSingletonEnforcer {
-}
 /**
 * The Loader class is used to load SWF files or image(JPG, PNG, or GIF)
 * files. Use the <code>load()</code> method to initiate loading. The loaded
@@ -15010,21 +14759,17 @@ declare module away.textures {
     *
     */
     class TextureProxyBase extends library.NamedAssetBase implements library.IAsset {
+        public _pSize: number;
         public _pFormat: string;
-        public _pHasMipmaps: boolean;
-        private _textures;
-        private _dirty;
-        public _pWidth: number;
-        public _pHeight: number;
+        private _hasMipmaps;
+        private _generateMipmaps;
+        private _textureData;
         /**
         *
         */
-        constructor();
-        /**
-        *
-        * @returns {boolean}
-        */
-        public hasMipMaps : boolean;
+        constructor(generateMipmaps?: boolean);
+        public size : number;
+        public hasMipmaps : boolean;
         /**
         *
         * @returns {string}
@@ -15032,9 +14777,42 @@ declare module away.textures {
         public format : string;
         /**
         *
+        * @returns {boolean}
+        */
+        public generateMipmaps : boolean;
+        /**
+        *
         * @returns {string}
         */
         public assetType : string;
+        /**
+        *
+        * @param stage
+        */
+        public activateTextureForStage(index: number, stage: base.IStage): void;
+        /**
+        *
+        */
+        public invalidateContent(): void;
+        /**
+        *
+        * @private
+        */
+        public invalidateSize(): void;
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        public _iAddTextureData(textureData: pool.ITextureData): pool.ITextureData;
+        public _iRemoveTextureData(textureData: pool.ITextureData): pool.ITextureData;
+    }
+}
+declare module away.textures {
+    class Texture2DBase extends TextureProxyBase {
+        public _pMipmapData: base.BitmapData[];
+        public _pMipmapDataDirty: boolean;
+        public _pWidth: number;
+        public _pHeight: number;
         /**
         *
         * @returns {number}
@@ -15045,98 +14823,50 @@ declare module away.textures {
         * @returns {number}
         */
         public height : number;
+        public size : number;
+        constructor(generateMipmaps?: boolean);
         /**
-        *
-        * @param stageGL
-        * @returns {away.gl.TextureBase}
+        * @inheritDoc
         */
-        public getTextureForStageGL(stageGL: base.StageGL): gl.TextureBase;
-        /**
-        *
-        * @param texture
-        * @private
-        */
-        public pUploadContent(texture: gl.TextureBase): void;
-        /**
-        *
-        * @param width
-        * @param height
-        * @private
-        */
-        public pSetSize(width: number, height: number): void;
+        public dispose(): void;
         /**
         *
         */
         public invalidateContent(): void;
         /**
         *
+        * @param width
+        * @param height
         * @private
         */
-        public pInvalidateSize(): void;
-        /**
-        *
-        * @param context
-        * @private
-        */
-        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
-        /**
-        * @inheritDoc
-        */
-        public dispose(): void;
-    }
-}
-declare module away.textures {
-    class Texture2DBase extends TextureProxyBase {
-        constructor();
-        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
+        public _pSetSize(width: number, height: number): void;
     }
 }
 declare module away.textures {
     class CubeTextureBase extends TextureProxyBase {
-        constructor();
-        public size : number;
-        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
-    }
-}
-declare module away.textures {
-    class ATFData {
-        static TYPE_NORMAL: number;
-        static TYPE_CUBE: number;
-        public type: number;
-        public format: string;
-        public width: number;
-        public height: number;
-        public numTextures: number;
-        public data: utils.ByteArray;
-        /** Create a new instance by parsing the given byte array. */
-        constructor(data: utils.ByteArray);
-    }
-}
-declare module away.textures {
-    class ATFCubeTexture extends CubeTextureBase {
-        private _atfData;
-        constructor(byteArray: utils.ByteArray);
-        public atfData : ATFData;
-        public pUploadContent(texture: gl.TextureBase): void;
-        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
-    }
-}
-declare module away.textures {
-    class ATFTexture extends Texture2DBase {
-        private _atfData;
-        constructor(byteArray: utils.ByteArray);
-        public atfData : ATFData;
-        public pUploadContent(texture: gl.TextureBase): void;
-        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
+        public _pMipmapDataArray: base.BitmapData[][];
+        public _pMipmapDataDirtyArray: boolean[];
+        constructor(generateMipmaps?: boolean);
+        /**
+        *
+        * @param width
+        * @param height
+        * @private
+        */
+        public _pSetSize(size: number): void;
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        *
+        */
+        public invalidateContent(): void;
     }
 }
 declare module away.textures {
     class ImageTexture extends Texture2DBase {
-        private static _mipMaps;
-        private static _mipMapUses;
         private _htmlImageElement;
-        private _generateMipmaps;
-        private _mipMapHolder;
         /**
         *
         * @param htmlImageElement
@@ -15149,41 +14879,32 @@ declare module away.textures {
         public htmlImageElement : HTMLImageElement;
         /**
         *
+        * @param stage
         */
-        public dispose(): void;
-        /**
-        *
-        * @param texture
-        */
-        public pUploadContent(texture: gl.TextureBase): void;
-        /**
-        *
-        */
-        private getMipMapHolder();
-        /**
-        *
-        */
-        private freeMipMapHolder();
+        public activateTextureForStage(index: number, stage: base.IStage): void;
+        public _iGetMipmapData(): base.BitmapData[];
     }
 }
 declare module away.textures {
     class BitmapTexture extends Texture2DBase {
-        private static _mipMaps;
-        private static _mipMapUses;
-        private _bitmapData;
-        private _mipMapHolder;
-        private _generateMipmaps;
-        constructor(bitmapData: base.BitmapData, generateMipmaps?: boolean);
+        public _bitmapData: base.BitmapData;
+        /**
+        *
+        * @returns {away.base.BitmapData}
+        */
         public bitmapData : base.BitmapData;
-        public pUploadContent(texture: gl.TextureBase): void;
-        private getMipMapHolder();
-        private freeMipMapHolder();
+        constructor(bitmapData: base.BitmapData, generateMipmaps?: boolean);
+        /**
+        *
+        * @param stage
+        */
+        public activateTextureForStage(index: number, stage: base.IStage): void;
         public dispose(): void;
+        public _iGetMipmapData(): base.BitmapData[];
     }
 }
 declare module away.textures {
     class RenderTexture extends Texture2DBase {
-        constructor(width: number, height: number);
         /**
         *
         * @returns {number}
@@ -15194,15 +14915,17 @@ declare module away.textures {
         * @returns {number}
         */
         public height : number;
-        public pUploadContent(texture: gl.TextureBase): void;
-        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
+        constructor(width: number, height: number);
+        /**
+        *
+        * @param stage
+        */
+        public activateTextureForStage(index: number, stage: base.IStage): void;
     }
 }
 declare module away.textures {
     class ImageCubeTexture extends CubeTextureBase {
-        private _bitmapDatas;
-        private _useMipMaps;
-        constructor(posX: HTMLImageElement, negX: HTMLImageElement, posY: HTMLImageElement, negY: HTMLImageElement, posZ: HTMLImageElement, negZ: HTMLImageElement);
+        public _pHTMLImageElements: HTMLImageElement[];
         /**
         * The texture on the cube's right face.
         */
@@ -15227,15 +14950,19 @@ declare module away.textures {
         * The texture on the cube's near face.
         */
         public negativeZ : HTMLImageElement;
-        private testSize(value);
-        public pUploadContent(texture: gl.TextureBase): void;
+        constructor(posX: HTMLImageElement, negX: HTMLImageElement, posY: HTMLImageElement, negY: HTMLImageElement, posZ: HTMLImageElement, negZ: HTMLImageElement, generateMipmaps?: boolean);
+        private _testSize(value);
+        /**
+        *
+        * @param stage
+        */
+        public activateTextureForStage(index: number, stage: base.IStage): void;
+        public _iGetMipmapData(side: number): base.BitmapData[];
     }
 }
 declare module away.textures {
     class BitmapCubeTexture extends CubeTextureBase {
-        private _bitmapDatas;
-        private _useMipMaps;
-        constructor(posX: base.BitmapData, negX: base.BitmapData, posY: base.BitmapData, negY: base.BitmapData, posZ: base.BitmapData, negZ: base.BitmapData);
+        public _pBitmapDatas: base.BitmapData[];
         /**
         * The texture on the cube's right face.
         */
@@ -15260,8 +14987,20 @@ declare module away.textures {
         * The texture on the cube's near face.
         */
         public negativeZ : base.BitmapData;
-        private testSize(value);
-        public pUploadContent(texture: gl.TextureBase): void;
+        constructor(posX: base.BitmapData, negX: base.BitmapData, posY: base.BitmapData, negY: base.BitmapData, posZ: base.BitmapData, negZ: base.BitmapData, generateMipmaps?: boolean);
+        /**
+        *
+        * @param stage
+        */
+        public activateTextureForStage(index: number, stage: base.IStage): void;
+        /**
+        *
+        * @param value
+        * @private
+        */
+        private _testSize(value);
+        public dispose(): void;
+        public _iGetMipmapData(side: number): base.BitmapData[];
     }
 }
 declare module away.textures {
@@ -15269,17 +15008,18 @@ declare module away.textures {
     * MipmapGenerator is a helper class that uploads BitmapData to a Texture including mipmap levels.
     */
     class MipmapGenerator {
+        private static _mipMaps;
+        private static _mipMapUses;
         private static _matrix;
         private static _rect;
         private static _source;
         /**
         * Uploads a BitmapData with mip maps to a target Texture object.
         * @param source
-        * @param target The target Texture to upload to.
         * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
         * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
         */
-        static generateHTMLImageElementMipMaps(source: HTMLImageElement, target: gl.TextureBase, mipmap?: base.BitmapData, alpha?: boolean, side?: number): void;
+        static generateHTMLImageElementMipMaps(source: HTMLImageElement, output?: base.BitmapData[], alpha?: boolean): void;
         /**
         * Uploads a BitmapData with mip maps to a target Texture object.
         * @param source The source BitmapData to upload.
@@ -15287,7 +15027,9 @@ declare module away.textures {
         * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
         * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
         */
-        static generateMipMaps(source: base.BitmapData, target: gl.TextureBase, mipmap?: base.BitmapData, alpha?: boolean, side?: number): void;
+        static generateMipMaps(source: base.BitmapData, output?: base.BitmapData[], alpha?: boolean): void;
+        private static _getMipmapHolder(mipMapHolder, newW, newH);
+        static freeMipMapHolder(mipMapHolder: base.BitmapData): void;
     }
 }
 declare module away.textures {
@@ -15297,12 +15039,11 @@ declare module away.textures {
     class SpecularBitmapTexture extends BitmapTexture {
         private _specularMap;
         private _glossMap;
-        constructor(specularMap?: base.BitmapData, glossMap?: base.BitmapData);
+        constructor(specularMap?: base.BitmapData, glossMap?: base.BitmapData, generateMipmaps?: boolean);
         public specularMap : base.BitmapData;
         public glossMap : base.BitmapData;
-        private testSize();
-        public pUploadContent(texture: gl.TextureBase): void;
-        public dispose(): void;
+        private _testSize();
+        public bitmapData : base.BitmapData;
     }
 }
 declare module aglsl {

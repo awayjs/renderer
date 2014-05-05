@@ -8,7 +8,7 @@ module away.animators
 	import Geometry							= away.base.Geometry;
 	import StageGL							= away.base.StageGL;
 	import Mesh								= away.entities.Mesh;
-	import VertexDataPool					= away.gl.VertexDataPool;
+	import VertexDataPool					= away.pool.VertexDataPool;
 	import MaterialPassBase					= away.materials.MaterialPassBase;
 	import RenderableBase					= away.pool.RenderableBase;
 	import TriangleSubMeshRenderable		= away.pool.TriangleSubMeshRenderable;

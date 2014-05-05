@@ -57,7 +57,7 @@ module away.materials
 		public set mask(value:away.textures.Texture2DBase)
 		{
 			if (Boolean(value) != Boolean(this._mask) ||
-				(value && this._mask && (value.hasMipMaps != this._mask.hasMipMaps || value.format != this._mask.format))) {
+				(value && this._mask && (value.hasMipmaps != this._mask.hasMipmaps || value.format != this._mask.format))) {
 				this.iInvalidateShaderProgram();
 			}
 			this._mask = value;
@@ -125,9 +125,9 @@ module away.materials
 			data[index] = this._alpha;
 			data[index + 1] = this._normalReflectance;
 			data[index + 2] = this._fresnelPower;
-			stageGL.contextGL.setTextureAt(vo.texturesIndex, this._cubeTexture.getTextureForStageGL(stageGL));
+			this._cubeTexture.activateTextureForStage(vo.texturesIndex, stageGL);
 			if (this._mask)
-				stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, this._mask.getTextureForStageGL(stageGL));
+				this._mask.activateTextureForStage(vo.texturesIndex + 1, stageGL);
 		}
 
 		/**

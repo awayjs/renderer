@@ -142,7 +142,7 @@ module away.materials
 			data[index + 9] = (stageGL.width - 1)/63;
 			data[index + 10] = (stageGL.height - 1)/63;
 			data[index + 11] = 2*this._range/this._depthMapSize;
-			stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, ShadowDitheredMethod._grainTexture.getTextureForStageGL(stageGL));
+			ShadowDitheredMethod._grainTexture.activateTextureForStage(vo.texturesIndex + 1, stageGL);
 		}
 
 		/**
@@ -264,7 +264,7 @@ module away.materials
 			data[index + 1] = (stageGL.width - 1)/63;
 			data[index + 2] = (stageGL.height - 1)/63;
 			data[index + 3] = 2*this._range/this._depthMapSize;
-			stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, ShadowDitheredMethod._grainTexture.getTextureForStageGL(stageGL));
+			ShadowDitheredMethod._grainTexture.activateTextureForStage(vo.texturesIndex + 1, stageGL);
 		}
 
 		/**

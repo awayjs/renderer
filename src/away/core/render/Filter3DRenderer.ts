@@ -165,7 +165,7 @@ module away.render
 
 				task = this._tasks[i];
 
-				stageGL.setRenderTarget(task.target);
+				//stageGL.setRenderTarget(task.target); //TODO
 
 				if (!task.target) {
 

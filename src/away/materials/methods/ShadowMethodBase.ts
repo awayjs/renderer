@@ -216,7 +216,7 @@ module away.materials
 				var f:number = (<away.lights.PointLight> this._pCastingLight).fallOff;
 				fragmentData[index + 11] = 1/(2*f*f);
 			}
-			stageGL.contextGL.setTextureAt(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap.getTextureForStageGL(stageGL));
+			this._pCastingLight.shadowMapper.depthMap.activateTextureForStage(vo.texturesIndex, stageGL);
 		}
 
 		/**

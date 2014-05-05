@@ -17,7 +17,7 @@ module away.pool
 
 		private _subGeometry:away.base.SubGeometryBase;
 		private _geometryDirty:boolean = true;
-		private _indexData:away.gl.IndexData;
+		private _indexData:away.pool.IndexData;
 		private _indexDataDirty:boolean;
 		private _vertexData:Object = new Object();
 		public _pVertexDataDirty:Object = new Object();
@@ -108,7 +108,7 @@ module away.pool
 		/**
 		 *
 		 */
-		public getIndexData():away.gl.IndexData
+		public getIndexData():away.pool.IndexData
 		{
 			if (this._indexDataDirty)
 				this._updateIndexData();
@@ -119,7 +119,7 @@ module away.pool
 		/**
 		 *
 		 */
-		public getVertexData(dataType:string):away.gl.VertexData
+		public getVertexData(dataType:string):away.pool.VertexData
 		{
 			if (this._pVertexDataDirty[dataType])
 				this._updateVertexData(dataType);
@@ -171,7 +171,7 @@ module away.pool
 			this._indexData = null;
 
 			for (var dataType in this._vertexData) {
-				(<away.gl.VertexData> this._vertexData[dataType]).dispose();
+				(<away.pool.VertexData> this._vertexData[dataType]).dispose();
 				this._vertexData[dataType] = null;
 			}
 
@@ -221,7 +221,7 @@ module away.pool
 		 */
 		public _iFillIndexData(indexOffset:number)
 		{
-			this._indexData = away.gl.IndexDataPool.getItem(this._subGeometry, this._level, indexOffset);
+			this._indexData = away.pool.IndexDataPool.getItem(this._subGeometry, this._level, indexOffset);
 
 			this._numTriangles = this._indexData.data.length/3;
 
@@ -274,7 +274,7 @@ module away.pool
 //			}
 
 //			for (var dataType in this._vertexData) {
-//				(<away.gl.VertexData> this._vertexData[dataType]).dispose(); //TODO where is a good place to dispose?
+//				(<away.pool.VertexData> this._vertexData[dataType]).dispose(); //TODO where is a good place to dispose?
 //				this._vertexData[dataType] = null;
 //			}
 
@@ -312,7 +312,7 @@ module away.pool
 			if (this._subGeometry.concatenateArrays)
 				dataType = away.base.SubGeometryBase.VERTEX_DATA;
 
-			this._vertexData[dataType] = away.gl.VertexDataPool.getItem(this._subGeometry, this.getIndexData(), dataType);
+			this._vertexData[dataType] = away.pool.VertexDataPool.getItem(this._subGeometry, this.getIndexData(), dataType);
 
 			this._pVertexDataDirty[dataType] = false;
 		}

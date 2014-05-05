@@ -41,16 +41,17 @@ module away.lights
 
 		public iSetDepthMap(depthMap:away.textures.TextureProxyBase)
 		{
-			if (this._depthMap == depthMap) {
+			if (this._depthMap == depthMap)
 				return;
-			}
-			if (this._depthMap && !this._explicitDepthMap) {
+
+			if (this._depthMap && !this._explicitDepthMap)
 				this._depthMap.dispose();
-			}
+
 			this._depthMap = depthMap;
+
 			if (this._depthMap) {
 				this._explicitDepthMap = true;
-				this._pDepthMapSize = this._depthMap.width;
+				this._pDepthMapSize = this._depthMap.size;
 			} else {
 				this._explicitDepthMap = false;
 			}
@@ -68,9 +69,9 @@ module away.lights
 
 		public get depthMap():away.textures.TextureProxyBase
 		{
-			if (!this._depthMap) {
-				this._depthMap = this.pCreateDepthTexture()
-			}
+			if (!this._depthMap)
+				this._depthMap = this.pCreateDepthTexture();
+
 			return this._depthMap;
 		}
 
@@ -111,7 +112,7 @@ module away.lights
 			if (!this._depthMap)
 				this._depthMap = this.pCreateDepthTexture();
 
-			this.pDrawDepthMap(this._depthMap.getTextureForStageGL(stageGL), entityCollector.scene, renderer);
+			this.pDrawDepthMap(this._depthMap, entityCollector.scene, renderer);
 		}
 
 		public pUpdateDepthProjection(viewCamera:away.entities.Camera)
@@ -119,7 +120,7 @@ module away.lights
 			throw new away.errors.AbstractMethodError();
 		}
 
-		public pDrawDepthMap(target:away.gl.TextureBase, scene:away.containers.Scene, renderer:away.render.DepthRenderer)
+		public pDrawDepthMap(target:away.textures.TextureProxyBase, scene:away.containers.Scene, renderer:away.render.DepthRenderer)
 		{
 			throw new away.errors.AbstractMethodError();
 		}

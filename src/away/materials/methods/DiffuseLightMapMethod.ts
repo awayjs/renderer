@@ -90,7 +90,7 @@ module away.materials
 		 */
 		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
-			stageGL.contextGL.setTextureAt(vo.secondaryTexturesIndex, this._lightMapTexture.getTextureForStageGL(stageGL));
+			this._lightMapTexture.activateTextureForStage(vo.secondaryTexturesIndex, stageGL);
 			super.iActivate(vo, stageGL);
 		}
 

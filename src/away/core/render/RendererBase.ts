@@ -39,9 +39,6 @@ module away.render
 		private _backgroundAlpha:number = 1;
 		public _shareContext:boolean = false;
 
-		public _pRenderTarget:away.gl.TextureBase;
-		public _pRenderTargetSurface:number;
-
 		// only used by renderers that need to render geometry to textures
 		public _width:number;
 		public _height:number;
@@ -372,7 +369,7 @@ module away.render
 		 * @param surfaceSelector The index of a CubeTexture's face to render to.
 		 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 		 */
-		public _iRender(entityCollector:away.traverse.ICollector, target:away.gl.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
+		public _iRender(entityCollector:away.traverse.ICollector, target:away.textures.TextureProxyBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
 		{
 			if (!this._pStageGL || !this._pContext || !entityCollector.entityHead)
 				return;
@@ -382,9 +379,9 @@ module away.render
 
 			this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
 
-			// generate mip maps on target (if target exists)
-			if (target)
-				(<away.gl.Texture>target).generateMipmaps();
+			// generate mip maps on target (if target exists) //TODO
+			//if (target)
+			//	(<away.gl.Texture>target).generateMipmaps();
 
 			// clear buffers
 			for (var i:number = 0; i < 8; ++i) {
@@ -426,11 +423,8 @@ module away.render
 		 * @param surfaceSelector The index of a CubeTexture's face to render to.
 		 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 		 */
-		public pExecuteRender(entityCollector:away.traverse.ICollector, target:away.gl.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
+		public pExecuteRender(entityCollector:away.traverse.ICollector, target:away.textures.TextureProxyBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
 		{
-			this._pRenderTarget = target;
-			this._pRenderTargetSurface = surfaceSelector;
-
 			this._pStageGL.setRenderTarget(target, true, surfaceSelector);
 
 			if ((target || !this._shareContext) && !this._depthPrepass)
@@ -473,7 +467,7 @@ module away.render
 		 * Performs the actual drawing of geometry to the target.
 		 * @param entityCollector The EntityCollector object containing the potentially visible geometry.
 		 */
-		public pDraw(entityCollector:away.traverse.ICollector, target:away.gl.TextureBase)
+		public pDraw(entityCollector:away.traverse.ICollector, target:away.textures.TextureProxyBase)
 		{
 			throw new away.errors.AbstractMethodError();
 		}

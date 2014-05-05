@@ -60,7 +60,7 @@ module away.lights
 		}
 
 		//@override
-		public pDrawDepthMap(target:away.gl.TextureBase, scene:away.containers.Scene, renderer:away.render.DepthRenderer)
+		public pDrawDepthMap(target:away.textures.TextureProxyBase, scene:away.containers.Scene, renderer:away.render.DepthRenderer)
 		{
 			this._pCasterCollector.camera = this._pOverallDepthCamera;
 			this._pCasterCollector.cullPlanes = this._pCullPlanes;

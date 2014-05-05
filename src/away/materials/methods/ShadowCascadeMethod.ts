@@ -216,7 +216,7 @@ module away.materials
 		 */
 		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
-			stageGL.contextGL.setTextureAt(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap.getTextureForStageGL(stageGL));
+			this._pCastingLight.shadowMapper.depthMap.activateTextureForStage(vo.texturesIndex, stageGL);
 			
 			var vertexData:Array<number> = vo.vertexData;
 			var vertexIndex:number = vo.vertexConstantsIndex;

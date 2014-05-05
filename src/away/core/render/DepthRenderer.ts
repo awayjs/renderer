@@ -44,11 +44,8 @@ module away.render
 			this._disableColor = value;
 		}
 
-		public iRenderCascades(entityCollector:away.traverse.ShadowCasterCollector, target:away.gl.TextureBase, numCascades:number, scissorRects:Array<away.geom.Rectangle>, cameras:Array<away.entities.Camera>)
+		public iRenderCascades(entityCollector:away.traverse.ShadowCasterCollector, target:away.textures.TextureProxyBase, numCascades:number, scissorRects:Array<away.geom.Rectangle>, cameras:Array<away.entities.Camera>)
 		{
-			this._pRenderTarget = target;
-			this._pRenderTargetSurface = 0;
-
 			this.pCollectRenderables(entityCollector);
 
 			this._pStageGL.setRenderTarget(target, true, 0);
@@ -120,7 +117,7 @@ module away.render
 		/**
 		 * @inheritDoc
 		 */
-		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase)
+		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.textures.TextureProxyBase)
 		{
 			this.pCollectRenderables(entityCollector);
 

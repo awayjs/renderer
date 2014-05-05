@@ -35,12 +35,12 @@ module away.materials
 
 		public set mask(value:away.textures.Texture2DBase)
 		{
-			if (value != this._mask || (value && this._mask && (value.hasMipMaps != this._mask.hasMipMaps || value.format != this._mask.format)))
+			if (value != this._mask || (value && this._mask && (value.hasMipmaps != this._mask.hasMipmaps || value.format != this._mask.format)))
 				this.iInvalidateShaderProgram();
 
 			/*
 			 if (Boolean(value) != Boolean(_mask) ||
-			 (value && _mask && (value.hasMipMaps != _mask.hasMipMaps || value.format != _mask.format))) {
+			 (value && _mask && (value.hasMipmaps != _mask.hasMipmaps || value.format != _mask.format))) {
 			 iInvalidateShaderProgram();
 			 }
 			 */
@@ -99,10 +99,9 @@ module away.materials
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			vo.fragmentData[vo.fragmentConstantsIndex] = this._alpha;
 
-			context.setTextureAt(vo.texturesIndex, this._cubeTexture.getTextureForStageGL(stageGL));
-			if (this._mask) {
-				context.setTextureAt(vo.texturesIndex + 1, this._mask.getTextureForStageGL(stageGL));
-			}
+			this._cubeTexture.activateTextureForStage(vo.texturesIndex, stageGL);
+			if (this._mask)
+				this._mask.activateTextureForStage(vo.texturesIndex + 1, stageGL);
 		}
 
 		/**

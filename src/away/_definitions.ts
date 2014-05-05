@@ -23,12 +23,23 @@
 ///<reference path="events/ShadingMethodEvent.ts"/>
 
 ///<reference path="core/base/ParticleGeometry.ts"/>
+///<reference path="core/base/StageGL.ts" />
 
 ///<reference path="core/pool/RenderableBase.ts"/>
+///<reference path="core/pool/TextureDataBase.ts"/>
 ///<reference path="core/pool/BillboardRenderable.ts"/>
+///<reference path="core/pool/BitmapCubeTextureData.ts"/>
+///<reference path="core/pool/BitmapTextureData.ts"/>
+///<reference path="core/pool/ImageCubeTextureData.ts"/>
+///<reference path="core/pool/ImageTextureData.ts"/>
+///<reference path="core/pool/IndexData.ts" />
+///<reference path="core/pool/IndexDataPool.ts" />
 ///<reference path="core/pool/LineSubMeshRenderable.ts"/>
-///<reference path="core/pool/TriangleSubMeshRenderable.ts"/>
+///<reference path="core/pool/RenderTextureData.ts"/>
 ///<reference path="core/pool/SkyboxRenderable.ts"/>
+///<reference path="core/pool/TriangleSubMeshRenderable.ts"/>
+///<reference path="core/pool/VertexData.ts" />
+///<reference path="core/pool/VertexDataPool.ts" />
 
 ///<reference path="core/traverse/EntityCollector.ts" />
 ///<reference path="core/traverse/ShadowCasterCollector.ts" />
@@ -63,6 +74,8 @@
 ///<reference path="lights/shadowmaps/NearDirectionalShadowMapper.ts"/>
 
 ///<reference path="managers/AGALProgramCache.ts"/>
+///<reference path="managers/RTTBufferManager.ts"/>
+///<reference path="managers/StageGLManager.ts"/>
 
 ///<reference path="materials/passes/MaterialPassBase.ts"/>
 ///<reference path="materials/passes/CompiledPass.ts"/>

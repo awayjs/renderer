@@ -119,7 +119,7 @@ module away.lights
 			this.dispatchEvent(new away.events.Event(away.events.Event.CHANGE));
 		}
 		
-		public pDrawDepthMap(target:TextureBase, scene:Scene, renderer:DepthRenderer)
+		public pDrawDepthMap(target:away.textures.RenderTexture, scene:Scene, renderer:DepthRenderer)
 		{
 			if (this._pScissorRectsInvalid)
 				this.updateScissorRects();

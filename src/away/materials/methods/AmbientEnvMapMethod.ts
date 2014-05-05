@@ -50,7 +50,7 @@ module away.materials
 		{
 			super.iActivate(vo, stageGL);
 
-			stageGL.contextGL.setTextureAt(vo.texturesIndex, this._cubeTexture.getTextureForStageGL(stageGL));
+			this._cubeTexture.activateTextureForStage(vo.texturesIndex, stageGL);
 		}
 		
 		/**

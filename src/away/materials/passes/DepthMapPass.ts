@@ -168,7 +168,7 @@ module away.materials
 			super.iActivate(stageGL, camera);
 
 			if (this._alphaThreshold > 0) {
-				context.setTextureAt(0, this._alphaMask.getTextureForStageGL(stageGL));
+				this._alphaMask.activateTextureForStage(0, stageGL);
 				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._data, 3);
 			} else {
 				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._data, 2);

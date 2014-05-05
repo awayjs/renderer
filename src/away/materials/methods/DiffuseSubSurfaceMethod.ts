@@ -213,10 +213,10 @@ module away.materials
 		 */
 		public setRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
-			var depthMap:away.gl.Texture = this._depthPass._iGetDepthMap(renderable, stageGL);
+			var depthMap:away.textures.RenderTexture = this._depthPass._iGetDepthMap(renderable);
 			var projection:away.geom.Matrix3D = this._depthPass._iGetProjection(renderable);
-			
-			stageGL.contextGL.setTextureAt(vo.secondaryTexturesIndex, depthMap);
+
+			depthMap.activateTextureForStage(vo.secondaryTexturesIndex, stageGL);
 			projection.copyRawDataTo(vo.vertexData, vo.secondaryVertexConstantsIndex + 4, true);
 		}
 		

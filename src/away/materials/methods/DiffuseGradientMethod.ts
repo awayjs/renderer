@@ -36,7 +36,7 @@ module away.materials
 		
 		public set gradient(value:away.textures.Texture2DBase)
 		{
-			if (value.hasMipMaps != this._gradient.hasMipMaps || value.format != this._gradient.format)
+			if (value.hasMipmaps != this._gradient.hasMipmaps || value.format != this._gradient.format)
 				this.iInvalidateShaderProgram();
 			this._gradient = value;
 		}
@@ -121,7 +121,7 @@ module away.materials
 		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			super.iActivate(vo, stageGL);
-			stageGL.contextGL.setTextureAt(vo.secondaryTexturesIndex, this._gradient.getTextureForStageGL(stageGL));
+			this._gradient.activateTextureForStage(vo.secondaryTexturesIndex, stageGL);
 		}
 	}
 }

@@ -7,7 +7,7 @@ module away.materials
 	import ContextGLCompareMode			= away.gl.ContextGLCompareMode;
 	import ContextGLTriangleFace		= away.gl.ContextGLTriangleFace;
 	import Program						= away.gl.Program;
-	import TextureBase					= away.gl.TextureBase;
+	import TextureProxyBase				= away.textures.TextureProxyBase;
 	import Event						= away.events.Event;
 	import Rectangle					= away.geom.Rectangle;
 	import StageGL						= away.base.StageGL;
@@ -74,7 +74,7 @@ module away.materials
 		private _renderToTexture:boolean;
 
 		// render state mementos for render-to-texture passes
-		private _oldTarget:TextureBase;
+		private _oldTarget:TextureProxyBase;
 		private _oldSurface:number;
 		private _oldDepthStencil:boolean;
 		private _oldRect:Rectangle;

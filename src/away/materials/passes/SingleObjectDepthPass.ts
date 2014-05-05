@@ -10,7 +10,7 @@ module away.materials
 	 */
 	export class SingleObjectDepthPass extends MaterialPassBase
 	{
-		private _textures:Array<Object>;
+		private _textures:Object;
 		private _projections:Object;
 		private _textureSize:number /*uint*/;
 		private _polyOffset:Array<number>;
@@ -44,12 +44,9 @@ module away.materials
 		public dispose()
 		{
 			if (this._textures) {
-				for (var i:number /*uint*/ = 0; i < 8; ++i) {
-					for (var key in this._textures[i]) {
-						var vec:Array<away.gl.Texture> = this._textures[i][key];
-						for (var j:number /*uint*/ = 0; j < vec.length; ++j)
-							vec[j].dispose();
-					}
+				for (var key in this._textures) {
+					var texture:away.textures.RenderTexture = this._textures[key];
+					texture.dispose();
 				}
 				this._textures = null;
 			}
@@ -61,16 +58,13 @@ module away.materials
 		private updateProjectionTextures()
 		{
 			if (this._textures) {
-				for (var i:number /*uint*/ = 0; i < 8; ++i) {
-					for (var key in this._textures[i]) {
-						var vec:Array<away.gl.Texture> = this._textures[i][key];
-						for (var j:number /*uint*/ = 0; j < vec.length; ++j)
-							vec[j].dispose();
-					}
+				for (var key in this._textures) {
+					var texture:away.textures.RenderTexture = this._textures[key];
+					texture.dispose();
 				}
 			}
 
-			this._textures = new Array<Object>(8);
+			this._textures = new Object();
 			this._projections = new Object();
 			this._projectionTexturesInvalid = false;
 		}
@@ -118,9 +112,9 @@ module away.materials
 		 * @param stage3DProxy The Stage3DProxy object currently used for rendering.
 		 * @return A list of depth map textures for all supported lights.
 		 */
-		public _iGetDepthMap(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL):away.gl.Texture
+		public _iGetDepthMap(renderable:away.pool.RenderableBase):away.textures.RenderTexture
 		{
-			return this._textures[stageGL.stageGLIndex][renderable.materialOwner.id];
+			return this._textures[renderable.materialOwner.id];
 		}
 		
 		/**
@@ -139,15 +133,14 @@ module away.materials
 		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
 			var matrix:away.geom.Matrix3D;
-			var contextIndex:number /*int*/ = stageGL.stageGLIndex;
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			var len:number /*uint*/;
 			var light:away.lights.LightBase;
 			var lights:Array<away.lights.LightBase> = this._pLightPicker.allPickedLights;
 			var rId:number = renderable.materialOwner.id;
 
-			if (this._textures[contextIndex] == undefined)
-				this._textures[contextIndex] = new Object();
+			if (!this._textures[rId])
+				this._textures[rId] = new away.textures.RenderTexture(this._textureSize, this._textureSize);
 			
 			if (!this._projections[rId])
 				this._projections[rId] = new away.geom.Matrix3D();
@@ -157,14 +150,8 @@ module away.materials
 			light = lights[0];
 			
 			matrix = light.iGetObjectProjectionMatrix(renderable.sourceEntity, camera, this._projections[rId]);
-			
-			// todo: use texture proxy?
-			var target:away.gl.Texture = this._textures[contextIndex][rId];
 
-			if (target == null)
-				target = context.createTexture(this._textureSize, this._textureSize, away.gl.ContextGLTextureFormat.BGRA, true);
-
-			stageGL.setRenderTarget(target, true);
+			stageGL.setRenderTarget(this._textures[rId], true);
 			context.clear(1.0, 1.0, 1.0);
 			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
 			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._enc, 2);

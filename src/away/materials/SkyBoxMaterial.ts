@@ -38,7 +38,7 @@ module away.materials
 
 		public set cubeMap(value:away.textures.CubeTextureBase)
 		{
-			if (value && this._cubeMap && (value.hasMipMaps != this._cubeMap.hasMipMaps || value.format != this._cubeMap.format))
+			if (value && this._cubeMap && (value.hasMipmaps != this._cubeMap.hasMipmaps || value.format != this._cubeMap.format))
 				this.iInvalidatePasses(null);
 
 			this._cubeMap = value;

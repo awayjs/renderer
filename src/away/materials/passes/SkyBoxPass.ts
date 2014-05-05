@@ -66,7 +66,7 @@ module away.materials
 
 			var mip:string = ",mipnone";
 
-			if (this._cubeTexture.hasMipMaps) {
+			if (this._cubeTexture.hasMipmaps) {
 				mip = ",miplinear";
 			}
 			return "tex ft0, v0, fs0 <cube," + format + "linear,clamp" + mip + ">\n" +
@@ -98,9 +98,9 @@ module away.materials
 		{
 			super.iActivate(stageGL, camera);
 			var context:away.gl.ContextGL = stageGL.contextGL;
-			context.setSamplerStateAt(0, away.gl.ContextGLWrapMode.CLAMP, away.gl.ContextGLTextureFilter.LINEAR, this._cubeTexture.hasMipMaps? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
+			context.setSamplerStateAt(0, away.gl.ContextGLWrapMode.CLAMP, away.gl.ContextGLTextureFilter.LINEAR, this._cubeTexture.hasMipmaps? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
 			context.setDepthTest(false, away.gl.ContextGLCompareMode.LESS);
-			context.setTextureAt(0, this._cubeTexture.getTextureForStageGL(stageGL));
+			this._cubeTexture.activateTextureForStage(0, stageGL);
 		}
 	}
 }

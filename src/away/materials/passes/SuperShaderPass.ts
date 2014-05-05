@@ -449,13 +449,13 @@ module away.materials
 
 				if (addDiff) {
 
-					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.diffuseMap.getTextureForStageGL(stageGL));//<------ TODO: implement
+					probe.diffuseMap.activateTextureForStage(this._pLightProbeSpecularIndices[i], stageGL);//<------ TODO: implement
 
 				}
 
 				if (addSpec) {
 
-					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGL));//<------ TODO: implement
+					probe.specularMap.activateTextureForStage(this._pLightProbeSpecularIndices[i], stageGL);//<------ TODO: implement
 
 				}
 
