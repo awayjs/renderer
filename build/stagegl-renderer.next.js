@@ -35552,13 +35552,13 @@ away.Debug.LOG_PI_ERRORS = false;
 
 var away;
 (function (away) {
-    var Away3D = (function (_super) {
-        __extends(Away3D, _super);
-        function Away3D() {
+    var StageGLRenderer = (function (_super) {
+        __extends(StageGLRenderer, _super);
+        function StageGLRenderer() {
             _super.call(this);
         }
-        return Away3D;
+        return StageGLRenderer;
     })(away.events.EventDispatcher);
-    away.Away3D = Away3D;
+    away.StageGLRenderer = StageGLRenderer;
 })(away || (away = {}));
-//# sourceMappingURL=away3d.next.js.map
+//# sourceMappingURL=stagegl-renderer.next.js.map

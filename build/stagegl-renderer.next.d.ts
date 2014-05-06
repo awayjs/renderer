@@ -10439,7 +10439,7 @@ declare module away.tools {
     }
 }
 declare module away {
-    class Away3D extends events.EventDispatcher {
+    class StageGLRenderer extends events.EventDispatcher {
         constructor();
     }
 }
