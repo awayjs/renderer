@@ -123,11 +123,7 @@ declare module away.base {
     * along with the context, instead of scattered throughout the framework
     */
     class StageGL extends events.EventDispatcher implements IStage {
-        private _renderTexturePool;
-        private _bitmapTexturePool;
-        private _imageTexturePool;
-        private _bitmapCubeTexturePool;
-        private _imageCubeTexturePool;
+        private _texturePool;
         private _contextGL;
         private _canvas;
         private _width;
@@ -201,6 +197,7 @@ declare module away.base {
         public renderTarget : textures.TextureProxyBase;
         public renderSurfaceSelector : number;
         public setRenderTarget(target: textures.TextureProxyBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
+        public getRenderTexture(textureProxy: textures.RenderTexture): gl.TextureBase;
         public clear(): void;
         public present(): void;
         public addEventListener(type: string, listener: Function): void;
@@ -251,11 +248,9 @@ declare module away.base {
         */
         public activateBuffer(index: number, buffer: pool.VertexData, offset: number, format: string): void;
         public disposeVertexData(buffer: pool.VertexData): void;
-        public activateRenderTexture(index: number, texture: textures.RenderTexture): void;
-        public activateImageTexture(index: number, texture: textures.ImageTexture): void;
-        public activateImageCubeTexture(index: number, texture: textures.ImageCubeTexture): void;
-        public activateBitmapTexture(index: number, texture: textures.BitmapTexture): void;
-        public activateBitmapCubeTexture(index: number, texture: textures.BitmapCubeTexture): void;
+        public activateRenderTexture(index: number, textureProxy: textures.RenderTexture): void;
+        public activateTexture(index: number, textureProxy: textures.Texture2DBase): void;
+        public activateCubeTexture(index: number, textureProxy: textures.CubeTextureBase): void;
         /**
         * Retrieves the VertexBuffer object that contains triangle indices.
         * @param context The ContextGL for which we request the buffer
@@ -430,35 +425,6 @@ declare module away.pool {
 */
 declare module away.pool {
     /**
-    *
-    * @class away.pool.TextureDataBase
-    */
-    class TextureDataBase {
-        public _pStageGL: base.StageGL;
-        public _pTexture: gl.TextureBase;
-        private _dirty;
-        constructor(stageGL: base.StageGL);
-        /**
-        *
-        */
-        public getTexture(): gl.TextureBase;
-        /**
-        *
-        */
-        public dispose(): void;
-        /**
-        *
-        */
-        public invalidate(): void;
-        public _pCreateTexture(): void;
-        public _pUpdateContent(): void;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
     * @class away.pool.RenderableListItem
     */
     class BillboardRenderable extends RenderableBase {
@@ -484,82 +450,6 @@ declare module away.pool {
         * @returns {away.base.TriangleSubGeometry}
         */
         public _pGetSubGeometry(): base.SubGeometryBase;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    *
-    * @class away.pool.TextureDataBase
-    */
-    class BitmapCubeTextureData extends TextureDataBase implements ITextureData {
-        /**
-        *
-        */
-        static id: string;
-        private _textureProxy;
-        constructor(stageGL: base.StageGL, textureProxy: textures.BitmapCubeTexture);
-        public _pCreateTexture(): void;
-        public _pUpdateContent(): void;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    *
-    * @class away.pool.TextureDataBase
-    */
-    class BitmapTextureData extends TextureDataBase implements ITextureData {
-        /**
-        *
-        */
-        static id: string;
-        private _textureProxy;
-        constructor(stageGL: base.StageGL, textureProxy: textures.BitmapTexture);
-        public _pCreateTexture(): void;
-        public _pUpdateContent(): void;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    *
-    * @class away.pool.TextureDataBase
-    */
-    class ImageCubeTextureData extends TextureDataBase implements ITextureData {
-        /**
-        *
-        */
-        static id: string;
-        private _textureProxy;
-        constructor(stageGL: base.StageGL, textureProxy: textures.ImageCubeTexture);
-        public _pCreateTexture(): void;
-        public _pUpdateContent(): void;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    *
-    * @class away.pool.TextureDataBase
-    */
-    class ImageTextureData extends TextureDataBase implements ITextureData {
-        /**
-        *
-        */
-        static id: string;
-        private _textureProxy;
-        constructor(stageGL: base.StageGL, textureProxy: textures.ImageTexture);
-        public _pCreateTexture(): void;
-        public _pUpdateContent(): void;
     }
 }
 /**
@@ -666,25 +556,6 @@ declare module away.pool {
 */
 declare module away.pool {
     /**
-    *
-    * @class away.pool.TextureDataBase
-    */
-    class RenderTextureData extends TextureDataBase implements ITextureData {
-        /**
-        *
-        */
-        static id: string;
-        private _textureProxy;
-        constructor(stageGL: base.StageGL, textureProxy: textures.RenderTexture);
-        public _pCreateTexture(): void;
-        public _pUpdateContent(): void;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
     * @class away.pool.SkyboxRenderable
     */
     class SkyboxRenderable extends RenderableBase {
@@ -754,6 +625,61 @@ declare module away.pool {
         * @protected
         */
         public _pGetOverflowRenderable(pool: RenderablePool, materialOwner: base.IMaterialOwner, level: number, indexOffset: number): RenderableBase;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    *
+    * @class away.pool.TextureDataBase
+    */
+    class TextureData implements ITextureData {
+        public stageGL: base.IStage;
+        public texture: gl.TextureBase;
+        public textureProxy: textures.TextureProxyBase;
+        public dirty: boolean;
+        constructor(stageGL: base.IStage, textureProxy: textures.TextureProxyBase);
+        /**
+        *
+        */
+        public dispose(): void;
+        /**
+        *
+        */
+        public invalidate(): void;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    * @class away.pool.TextureDataPool
+    */
+    class TextureDataPool {
+        private _pool;
+        private _stage;
+        /**
+        * //TODO
+        *
+        * @param textureDataClass
+        */
+        constructor(stage: base.IStage);
+        /**
+        * //TODO
+        *
+        * @param materialOwner
+        * @returns ITexture
+        */
+        public getItem(textureProxy: textures.TextureProxyBase): TextureData;
+        /**
+        * //TODO
+        *
+        * @param materialOwner
+        */
+        public disposeItem(textureProxy: textures.TextureProxyBase): void;
     }
 }
 /**

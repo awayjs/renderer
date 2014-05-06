@@ -234,11 +234,7 @@ var away;
                 //private _touch3DManager:Touch3DManager; //TODO: imeplement dependency Touch3DManager
                 this._initialised = false;
 
-                this._renderTexturePool = new away.pool.TextureDataPool(this, away.pool.RenderTextureData);
-                this._bitmapTexturePool = new away.pool.TextureDataPool(this, away.pool.BitmapTextureData);
-                this._imageTexturePool = new away.pool.TextureDataPool(this, away.pool.ImageTextureData);
-                this._bitmapCubeTexturePool = new away.pool.TextureDataPool(this, away.pool.BitmapCubeTextureData);
-                this._imageCubeTexturePool = new away.pool.TextureDataPool(this, away.pool.ImageCubeTextureData);
+                this._texturePool = new away.pool.TextureDataPool(this);
 
                 this._canvas = canvas;
 
@@ -527,13 +523,30 @@ var away;
                 this._renderTarget = target;
                 this._renderSurfaceSelector = surfaceSelector;
                 this._enableDepthAndStencil = enableDepthAndStencil;
-
-                if (target) {
-                    this._contextGL.setRenderToTexture(this._renderTexturePool.getItem(target).getTexture(), enableDepthAndStencil, this._antiAlias, surfaceSelector);
+                if (target instanceof away.textures.RenderTexture) {
+                    this._contextGL.setRenderToTexture(this.getRenderTexture(target), enableDepthAndStencil, this._antiAlias, surfaceSelector);
                 } else {
                     this._contextGL.setRenderToBackBuffer();
                     this.configureBackBuffer(this._width, this._height, this._antiAlias, this._enableDepthAndStencil);
                 }
+            };
+
+            StageGL.prototype.getRenderTexture = function (textureProxy) {
+                var textureData = this._texturePool.getItem(textureProxy);
+
+                if (!textureData.texture) {
+                    textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, true);
+                    textureData.dirty = true;
+                }
+
+                if (textureData.dirty) {
+                    textureData.dirty = false;
+
+                    // fake data, to complete texture for sampling
+                    textureData.texture.generateFromRenderBuffer();
+                }
+
+                return textureData.texture;
             };
 
             /*
@@ -745,24 +758,56 @@ var away;
                 buffer.buffers[this._iStageGLIndex] = null;
             };
 
-            StageGL.prototype.activateRenderTexture = function (index, texture) {
-                this._contextGL.setTextureAt(index, this._renderTexturePool.getItem(texture).getTexture());
+            StageGL.prototype.activateRenderTexture = function (index, textureProxy) {
+                this._contextGL.setTextureAt(index, this.getRenderTexture(textureProxy));
             };
 
-            StageGL.prototype.activateImageTexture = function (index, texture) {
-                this._contextGL.setTextureAt(index, this._imageTexturePool.getItem(texture).getTexture());
+            StageGL.prototype.activateTexture = function (index, textureProxy) {
+                var textureData = this._texturePool.getItem(textureProxy);
+
+                if (!textureData.texture) {
+                    textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, true);
+                    textureData.dirty = true;
+                }
+
+                if (textureData.dirty) {
+                    textureData.dirty = false;
+                    if (textureProxy.generateMipmaps) {
+                        var mipmapData = textureProxy._iGetMipmapData();
+                        var len = mipmapData.length;
+                        for (var i = 0; i < len; i++)
+                            textureData.texture.uploadFromData(mipmapData[i], i);
+                    } else {
+                        textureData.texture.uploadFromData(textureProxy._iGetTextureData(), 0);
+                    }
+                }
+
+                this._contextGL.setTextureAt(index, textureData.texture);
             };
 
-            StageGL.prototype.activateImageCubeTexture = function (index, texture) {
-                this._contextGL.setTextureAt(index, this._imageCubeTexturePool.getItem(texture).getTexture());
-            };
+            StageGL.prototype.activateCubeTexture = function (index, textureProxy) {
+                var textureData = this._texturePool.getItem(textureProxy);
 
-            StageGL.prototype.activateBitmapTexture = function (index, texture) {
-                this._contextGL.setTextureAt(index, this._bitmapTexturePool.getItem(texture).getTexture());
-            };
+                if (!textureData.texture) {
+                    textureData.texture = this._contextGL.createCubeTexture(textureProxy.size, away.gl.ContextGLTextureFormat.BGRA, false);
+                    textureData.dirty = true;
+                }
 
-            StageGL.prototype.activateBitmapCubeTexture = function (index, texture) {
-                this._contextGL.setTextureAt(index, this._bitmapCubeTexturePool.getItem(texture).getTexture());
+                if (textureData.dirty) {
+                    textureData.dirty = false;
+                    for (var i = 0; i < 6; ++i) {
+                        if (textureProxy.generateMipmaps) {
+                            var mipmapData = textureProxy._iGetMipmapData(i);
+                            var len = mipmapData.length;
+                            for (var j = 0; j < len; j++)
+                                textureData.texture.uploadFromData(mipmapData[j], i, j);
+                        } else {
+                            textureData.texture.uploadFromData(textureProxy._iGetTextureData(i), i, 0);
+                        }
+                    }
+                }
+
+                this._contextGL.setTextureAt(index, textureData.texture);
             };
 
             /**
@@ -1159,66 +1204,6 @@ var away;
     /**
     * @module away.pool
     */
-    (function (pool) {
-        /**
-        *
-        * @class away.pool.TextureDataBase
-        */
-        var TextureDataBase = (function () {
-            function TextureDataBase(stageGL) {
-                this._pStageGL = stageGL;
-            }
-            /**
-            *
-            */
-            TextureDataBase.prototype.getTexture = function () {
-                if (!this._pTexture) {
-                    this._pCreateTexture();
-                    this._dirty = true;
-                }
-
-                if (this._dirty) {
-                    this._dirty = false;
-                    this._pUpdateContent();
-                }
-
-                return this._pTexture;
-            };
-
-            /**
-            *
-            */
-            TextureDataBase.prototype.dispose = function () {
-                this._pTexture.dispose();
-                this._pTexture = null;
-            };
-
-            /**
-            *
-            */
-            TextureDataBase.prototype.invalidate = function () {
-                this._dirty = true;
-            };
-
-            TextureDataBase.prototype._pCreateTexture = function () {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            TextureDataBase.prototype._pUpdateContent = function () {
-                throw new away.errors.AbstractMethodError();
-            };
-            return TextureDataBase;
-        })();
-        pool.TextureDataBase = TextureDataBase;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.pool
-    */
     (function (_pool) {
         var TriangleSubGeometry = away.base.TriangleSubGeometry;
 
@@ -1274,166 +1259,6 @@ var away;
             return BillboardRenderable;
         })(_pool.RenderableBase);
         _pool.BillboardRenderable = BillboardRenderable;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.pool
-    */
-    (function (pool) {
-        /**
-        *
-        * @class away.pool.TextureDataBase
-        */
-        var BitmapCubeTextureData = (function (_super) {
-            __extends(BitmapCubeTextureData, _super);
-            function BitmapCubeTextureData(stageGL, textureProxy) {
-                _super.call(this, stageGL);
-
-                this._textureProxy = textureProxy;
-            }
-            BitmapCubeTextureData.prototype._pCreateTexture = function () {
-                this._pTexture = this._pStageGL.contextGL.createCubeTexture(this._textureProxy.size, away.gl.ContextGLTextureFormat.BGRA, false);
-            };
-
-            BitmapCubeTextureData.prototype._pUpdateContent = function () {
-                for (var i = 0; i < 6; ++i) {
-                    if (this._textureProxy.generateMipmaps) {
-                        var mipmapData = this._textureProxy._iGetMipmapData(i);
-                        var len = mipmapData.length;
-                        for (var j = 0; j < len; j++)
-                            this._pTexture.uploadFromBitmapData(mipmapData[j], i, j);
-                    } else {
-                        this._pTexture.uploadFromBitmapData(this._textureProxy._pBitmapDatas[i], i, 0);
-                    }
-                }
-            };
-            BitmapCubeTextureData.id = "bitmapcubetexture";
-            return BitmapCubeTextureData;
-        })(pool.TextureDataBase);
-        pool.BitmapCubeTextureData = BitmapCubeTextureData;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.pool
-    */
-    (function (pool) {
-        /**
-        *
-        * @class away.pool.TextureDataBase
-        */
-        var BitmapTextureData = (function (_super) {
-            __extends(BitmapTextureData, _super);
-            function BitmapTextureData(stageGL, textureProxy) {
-                _super.call(this, stageGL);
-
-                this._textureProxy = textureProxy;
-            }
-            BitmapTextureData.prototype._pCreateTexture = function () {
-                this._pTexture = this._pStageGL.contextGL.createTexture(this._textureProxy.width, this._textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, false);
-            };
-
-            BitmapTextureData.prototype._pUpdateContent = function () {
-                if (this._textureProxy.generateMipmaps) {
-                    var mipmapData = this._textureProxy._iGetMipmapData();
-                    var len = mipmapData.length;
-                    for (var i = 0; i < len; i++)
-                        this._pTexture.uploadFromBitmapData(mipmapData[i], i);
-                } else {
-                    this._pTexture.uploadFromBitmapData(this._textureProxy.bitmapData, 0);
-                }
-            };
-            BitmapTextureData.id = "bitmaptexture";
-            return BitmapTextureData;
-        })(pool.TextureDataBase);
-        pool.BitmapTextureData = BitmapTextureData;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.pool
-    */
-    (function (pool) {
-        /**
-        *
-        * @class away.pool.TextureDataBase
-        */
-        var ImageCubeTextureData = (function (_super) {
-            __extends(ImageCubeTextureData, _super);
-            function ImageCubeTextureData(stageGL, textureProxy) {
-                _super.call(this, stageGL);
-
-                this._textureProxy = textureProxy;
-            }
-            ImageCubeTextureData.prototype._pCreateTexture = function () {
-                this._pTexture = this._pStageGL.contextGL.createCubeTexture(this._textureProxy.size, away.gl.ContextGLTextureFormat.BGRA, false);
-            };
-
-            ImageCubeTextureData.prototype._pUpdateContent = function () {
-                for (var i = 0; i < 6; ++i) {
-                    if (this._textureProxy.generateMipmaps) {
-                        var mipmapData = this._textureProxy._iGetMipmapData(i);
-                        var len = mipmapData.length;
-                        for (var j = 0; j < len; j++)
-                            this._pTexture.uploadFromBitmapData(mipmapData[j], i, j);
-                    } else {
-                        this._pTexture.uploadFromHTMLImageElement(this._textureProxy._pHTMLImageElements[i], i, 0);
-                    }
-                }
-            };
-            ImageCubeTextureData.id = "imagecubetexture";
-            return ImageCubeTextureData;
-        })(pool.TextureDataBase);
-        pool.ImageCubeTextureData = ImageCubeTextureData;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.pool
-    */
-    (function (pool) {
-        /**
-        *
-        * @class away.pool.TextureDataBase
-        */
-        var ImageTextureData = (function (_super) {
-            __extends(ImageTextureData, _super);
-            function ImageTextureData(stageGL, textureProxy) {
-                _super.call(this, stageGL);
-
-                this._textureProxy = textureProxy;
-            }
-            ImageTextureData.prototype._pCreateTexture = function () {
-                this._pTexture = this._pStageGL.contextGL.createTexture(this._textureProxy.width, this._textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, false);
-            };
-
-            ImageTextureData.prototype._pUpdateContent = function () {
-                if (this._textureProxy.generateMipmaps) {
-                    var mipmapData = this._textureProxy._iGetMipmapData();
-                    var len = mipmapData.length;
-                    for (var i = 0; i < len; i++)
-                        this._pTexture.uploadFromBitmapData(mipmapData[i], i);
-                } else {
-                    this._pTexture.uploadFromHTMLImageElement(this._textureProxy.htmlImageElement, 0);
-                }
-            };
-            ImageTextureData.id = "imagetexture";
-            return ImageTextureData;
-        })(pool.TextureDataBase);
-        pool.ImageTextureData = ImageTextureData;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -1696,39 +1521,6 @@ var away;
     /**
     * @module away.pool
     */
-    (function (pool) {
-        /**
-        *
-        * @class away.pool.TextureDataBase
-        */
-        var RenderTextureData = (function (_super) {
-            __extends(RenderTextureData, _super);
-            function RenderTextureData(stageGL, textureProxy) {
-                _super.call(this, stageGL);
-
-                this._textureProxy = textureProxy;
-            }
-            RenderTextureData.prototype._pCreateTexture = function () {
-                this._pTexture = this._pStageGL.contextGL.createTexture(this._textureProxy.width, this._textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, true);
-            };
-
-            RenderTextureData.prototype._pUpdateContent = function () {
-                // fake data, to complete texture for sampling
-                this._pTexture.generateFromRenderBuffer();
-            };
-            RenderTextureData.id = "rendertexture";
-            return RenderTextureData;
-        })(pool.TextureDataBase);
-        pool.RenderTextureData = RenderTextureData;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.pool
-    */
     (function (_pool) {
         var TriangleSubGeometry = away.base.TriangleSubGeometry;
 
@@ -1872,6 +1664,88 @@ var away;
             return TriangleSubMeshRenderable;
         })(_pool.RenderableBase);
         _pool.TriangleSubMeshRenderable = TriangleSubMeshRenderable;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.pool
+    */
+    (function (pool) {
+        /**
+        *
+        * @class away.pool.TextureDataBase
+        */
+        var TextureData = (function () {
+            function TextureData(stageGL, textureProxy) {
+                this.stageGL = stageGL;
+                this.textureProxy = textureProxy;
+            }
+            /**
+            *
+            */
+            TextureData.prototype.dispose = function () {
+                this.texture.dispose();
+                this.texture = null;
+            };
+
+            /**
+            *
+            */
+            TextureData.prototype.invalidate = function () {
+                this.dirty = true;
+            };
+            return TextureData;
+        })();
+        pool.TextureData = TextureData;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.pool
+    */
+    (function (pool) {
+        /**
+        * @class away.pool.TextureDataPool
+        */
+        var TextureDataPool = (function () {
+            /**
+            * //TODO
+            *
+            * @param textureDataClass
+            */
+            function TextureDataPool(stage) {
+                this._pool = new Object();
+                this._stage = stage;
+            }
+            /**
+            * //TODO
+            *
+            * @param materialOwner
+            * @returns ITexture
+            */
+            TextureDataPool.prototype.getItem = function (textureProxy) {
+                return (this._pool[textureProxy.id] || (this._pool[textureProxy.id] = textureProxy._iAddTextureData(new pool.TextureData(this._stage, textureProxy))));
+            };
+
+            /**
+            * //TODO
+            *
+            * @param materialOwner
+            */
+            TextureDataPool.prototype.disposeItem = function (textureProxy) {
+                textureProxy._iRemoveTextureData(this._pool[textureProxy.id]);
+
+                this._pool[textureProxy.id] = null;
+            };
+            return TextureDataPool;
+        })();
+        pool.TextureDataPool = TextureDataPool;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
@@ -37280,18 +37154,14 @@ var away;
 ///<reference path="core/base/ParticleGeometry.ts"/>
 ///<reference path="core/base/StageGL.ts" />
 ///<reference path="core/pool/RenderableBase.ts"/>
-///<reference path="core/pool/TextureDataBase.ts"/>
 ///<reference path="core/pool/BillboardRenderable.ts"/>
-///<reference path="core/pool/BitmapCubeTextureData.ts"/>
-///<reference path="core/pool/BitmapTextureData.ts"/>
-///<reference path="core/pool/ImageCubeTextureData.ts"/>
-///<reference path="core/pool/ImageTextureData.ts"/>
 ///<reference path="core/pool/IndexData.ts" />
 ///<reference path="core/pool/IndexDataPool.ts" />
 ///<reference path="core/pool/LineSubMeshRenderable.ts"/>
-///<reference path="core/pool/RenderTextureData.ts"/>
 ///<reference path="core/pool/SkyboxRenderable.ts"/>
 ///<reference path="core/pool/TriangleSubMeshRenderable.ts"/>
+///<reference path="core/pool/TextureData.ts"/>
+///<reference path="core/pool/TextureDataPool.ts"/>
 ///<reference path="core/pool/VertexData.ts" />
 ///<reference path="core/pool/VertexDataPool.ts" />
 ///<reference path="core/traverse/EntityCollector.ts" />

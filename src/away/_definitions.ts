@@ -26,18 +26,14 @@
 ///<reference path="core/base/StageGL.ts" />
 
 ///<reference path="core/pool/RenderableBase.ts"/>
-///<reference path="core/pool/TextureDataBase.ts"/>
 ///<reference path="core/pool/BillboardRenderable.ts"/>
-///<reference path="core/pool/BitmapCubeTextureData.ts"/>
-///<reference path="core/pool/BitmapTextureData.ts"/>
-///<reference path="core/pool/ImageCubeTextureData.ts"/>
-///<reference path="core/pool/ImageTextureData.ts"/>
 ///<reference path="core/pool/IndexData.ts" />
 ///<reference path="core/pool/IndexDataPool.ts" />
 ///<reference path="core/pool/LineSubMeshRenderable.ts"/>
-///<reference path="core/pool/RenderTextureData.ts"/>
 ///<reference path="core/pool/SkyboxRenderable.ts"/>
 ///<reference path="core/pool/TriangleSubMeshRenderable.ts"/>
+///<reference path="core/pool/TextureData.ts"/>
+///<reference path="core/pool/TextureDataPool.ts"/>
 ///<reference path="core/pool/VertexData.ts" />
 ///<reference path="core/pool/VertexDataPool.ts" />
 

@@ -14,12 +14,7 @@ module away.base
 	 */
 	export class StageGL extends away.events.EventDispatcher implements IStage
 	{
-		private _renderTexturePool:away.pool.TextureDataPool;
-		private _bitmapTexturePool:away.pool.TextureDataPool;
-		private _imageTexturePool:away.pool.TextureDataPool;
-		private _bitmapCubeTexturePool:away.pool.TextureDataPool;
-		private _imageCubeTexturePool:away.pool.TextureDataPool;
-
+		private _texturePool:away.pool.TextureDataPool;
 
 		private _contextGL:away.gl.ContextGL;
 		private _canvas:HTMLCanvasElement;
@@ -62,11 +57,7 @@ module away.base
 		{
 			super();
 
-			this._renderTexturePool = new away.pool.TextureDataPool(this, away.pool.RenderTextureData);
-			this._bitmapTexturePool = new away.pool.TextureDataPool(this, away.pool.BitmapTextureData);
-			this._imageTexturePool = new away.pool.TextureDataPool(this, away.pool.ImageTextureData);
-			this._bitmapCubeTexturePool = new away.pool.TextureDataPool(this, away.pool.BitmapCubeTextureData);
-			this._imageCubeTexturePool = new away.pool.TextureDataPool(this, away.pool.ImageCubeTextureData);
+			this._texturePool = new away.pool.TextureDataPool(this);
 
 			this._canvas = canvas;
 
@@ -337,13 +328,30 @@ module away.base
 			this._renderTarget = target;
 			this._renderSurfaceSelector = surfaceSelector;
 			this._enableDepthAndStencil = enableDepthAndStencil;
-
-			if (target) {
-				this._contextGL.setRenderToTexture((<away.pool.TextureDataBase> this._renderTexturePool.getItem(target)).getTexture(), enableDepthAndStencil, this._antiAlias, surfaceSelector);
+			if (target instanceof away.textures.RenderTexture) {
+				this._contextGL.setRenderToTexture(this.getRenderTexture(<away.textures.RenderTexture> target), enableDepthAndStencil, this._antiAlias, surfaceSelector);
 			} else {
 				this._contextGL.setRenderToBackBuffer();
 				this.configureBackBuffer(this._width, this._height, this._antiAlias, this._enableDepthAndStencil);
 			}
+		}
+
+		public getRenderTexture(textureProxy:away.textures.RenderTexture):away.gl.TextureBase
+		{
+			var textureData:away.pool.TextureData = <away.pool.TextureData> this._texturePool.getItem(textureProxy);
+
+			if (!textureData.texture) {
+				textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, true);
+				textureData.dirty = true;
+			}
+
+			if (textureData.dirty) {
+				textureData.dirty = false;
+				// fake data, to complete texture for sampling
+				(<away.gl.Texture> textureData.texture).generateFromRenderBuffer();
+			}
+
+			return textureData.texture;
 		}
 
 		/*
@@ -556,29 +564,59 @@ module away.base
 			buffer.buffers[this._iStageGLIndex] = null;
 		}
 
-		public activateRenderTexture(index:number, texture:away.textures.RenderTexture)
+		public activateRenderTexture(index:number, textureProxy:away.textures.RenderTexture)
 		{
-			this._contextGL.setTextureAt(index, (<away.pool.TextureDataBase> this._renderTexturePool.getItem(texture)).getTexture());
+			this._contextGL.setTextureAt(index, this.getRenderTexture(textureProxy));
 		}
 
-		public activateImageTexture(index:number, texture:away.textures.ImageTexture)
+		public activateTexture(index:number, textureProxy:away.textures.Texture2DBase)
 		{
-			this._contextGL.setTextureAt(index, (<away.pool.TextureDataBase> this._imageTexturePool.getItem(texture)).getTexture());
+			var textureData:away.pool.TextureData = <away.pool.TextureData> this._texturePool.getItem(textureProxy);
+
+			if (!textureData.texture) {
+				textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, true);
+				textureData.dirty = true;
+			}
+
+			if (textureData.dirty) {
+				textureData.dirty = false;
+				if (textureProxy.generateMipmaps) {
+					var mipmapData:Array<away.base.BitmapData> = textureProxy._iGetMipmapData();
+					var len:number = mipmapData.length;
+					for (var i:number = 0; i < len; i++)
+						(<away.gl.Texture> textureData.texture).uploadFromData(mipmapData[i], i);
+				} else {
+					(<away.gl.Texture> textureData.texture).uploadFromData(textureProxy._iGetTextureData(), 0);
+				}
+			}
+
+			this._contextGL.setTextureAt(index, textureData.texture);
 		}
 
-		public activateImageCubeTexture(index:number, texture:away.textures.ImageCubeTexture)
+		public activateCubeTexture(index:number, textureProxy:away.textures.CubeTextureBase)
 		{
-			this._contextGL.setTextureAt(index, (<away.pool.TextureDataBase> this._imageCubeTexturePool.getItem(texture)).getTexture());
-		}
+			var textureData:away.pool.TextureData = <away.pool.TextureData> this._texturePool.getItem(textureProxy);
 
-		public activateBitmapTexture(index:number, texture:away.textures.BitmapTexture)
-		{
-			this._contextGL.setTextureAt(index, (<away.pool.TextureDataBase> this._bitmapTexturePool.getItem(texture)).getTexture());
-		}
+			if (!textureData.texture) {
+				textureData.texture = this._contextGL.createCubeTexture(textureProxy.size, away.gl.ContextGLTextureFormat.BGRA, false);
+				textureData.dirty = true;
+			}
 
-		public activateBitmapCubeTexture(index:number, texture:away.textures.BitmapCubeTexture)
-		{
-			this._contextGL.setTextureAt(index, (<away.pool.TextureDataBase> this._bitmapCubeTexturePool.getItem(texture)).getTexture());
+			if (textureData.dirty) {
+				textureData.dirty = false;
+				for (var i:number = 0; i < 6; ++i) {
+					if (textureProxy.generateMipmaps) {
+						var mipmapData:Array<away.base.BitmapData> = textureProxy._iGetMipmapData(i);
+						var len:number = mipmapData.length;
+						for (var j:number = 0; j < len; j++)
+							(<away.gl.CubeTexture> textureData.texture).uploadFromData(mipmapData[j], i, j);
+					} else {
+						(<away.gl.CubeTexture> textureData.texture).uploadFromData(textureProxy._iGetTextureData(i), i, 0);
+					}
+				}
+			}
+
+			this._contextGL.setTextureAt(index, textureData.texture);
 		}
 
 		/**

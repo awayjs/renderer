@@ -1907,8 +1907,8 @@ declare module away.gl {
         public width : number;
         public height : number;
         public frameBuffer : WebGLFramebuffer;
-        public uploadFromHTMLImageElement(image: HTMLImageElement, miplevel?: number): void;
-        public uploadFromBitmapData(data: base.BitmapData, miplevel?: number): void;
+        public uploadFromData(bitmapData: base.BitmapData, miplevel?: number): any;
+        public uploadFromData(image: HTMLImageElement, miplevel?: number): any;
         public uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
         public glTexture : WebGLTexture;
         public generateFromRenderBuffer(): void;
@@ -1922,8 +1922,8 @@ declare module away.gl {
         private _size;
         constructor(gl: WebGLRenderingContext, size: number);
         public dispose(): void;
-        public uploadFromHTMLImageElement(image: HTMLImageElement, side: number, miplevel?: number): void;
-        public uploadFromBitmapData(data: base.BitmapData, side: number, miplevel?: number): void;
+        public uploadFromData(bitmapData: base.BitmapData, side: number, miplevel?: number): any;
+        public uploadFromData(image: HTMLImageElement, side: number, miplevel?: number): any;
         public uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
         public size : number;
         public glTexture : WebGLTexture;
@@ -4533,25 +4533,13 @@ declare module away.base {
         * @param index
         * @param texture
         */
-        activateImageTexture(index: number, texture: textures.ImageTexture): any;
+        activateTexture(index: number, texture: textures.Texture2DBase): any;
         /**
         *
         * @param index
         * @param texture
         */
-        activateImageCubeTexture(index: number, texture: textures.ImageCubeTexture): any;
-        /**
-        *
-        * @param index
-        * @param texture
-        */
-        activateBitmapTexture(index: number, texture: textures.BitmapTexture): any;
-        /**
-        *
-        * @param index
-        * @param texture
-        */
-        activateBitmapCubeTexture(index: number, texture: textures.BitmapCubeTexture): any;
+        activateCubeTexture(index: number, texture: textures.CubeTextureBase): any;
     }
 }
 /**
@@ -4669,7 +4657,7 @@ declare module away.base {
         public applyTransformation(transform: geom.Matrix3D): void;
         /**
         * Scales the geometry.
-        * @param scale The amount by which to scale.w
+        * @param scale The amount by which to scale.
         */
         public scale(scale: number): void;
         public scaleUV(scaleU?: number, scaleV?: number): void;
@@ -5660,59 +5648,6 @@ declare module away.pool {
         *
         */
         invalidate(): any;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * ITextureDataClass is an interface for the constructable class definition ITextureData that is used to
-    * create textures in the rendering pipeline to render the contents of a texture
-    *
-    * @class away.render.ITextureDataClass
-    */
-    interface ITextureDataClass {
-        /**
-        *
-        */
-        id: string;
-        /**
-        *
-        */
-        new(stage: base.IStage, textureProxy: textures.TextureProxyBase): ITextureData;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * @class away.pool.TextureDataPool
-    */
-    class TextureDataPool {
-        private _pool;
-        private _stage;
-        private _textureDataClass;
-        /**
-        * //TODO
-        *
-        * @param textureDataClass
-        */
-        constructor(stage: base.IStage, textureDataClass: ITextureDataClass);
-        /**
-        * //TODO
-        *
-        * @param materialOwner
-        * @returns ITexture
-        */
-        public getItem(textureProxy: textures.TextureProxyBase): ITextureData;
-        /**
-        * //TODO
-        *
-        * @param materialOwner
-        */
-        public disposeItem(textureProxy: textures.TextureProxyBase): void;
     }
 }
 /**
@@ -14809,8 +14744,8 @@ declare module away.textures {
 }
 declare module away.textures {
     class Texture2DBase extends TextureProxyBase {
-        public _pMipmapData: base.BitmapData[];
-        public _pMipmapDataDirty: boolean;
+        private _mipmapData;
+        private _mipmapDataDirty;
         public _pWidth: number;
         public _pHeight: number;
         /**
@@ -14840,12 +14775,19 @@ declare module away.textures {
         * @private
         */
         public _pSetSize(width: number, height: number): void;
+        /**
+        *
+        * @param stage
+        */
+        public activateTextureForStage(index: number, stage: base.IStage): void;
+        public _iGetMipmapData(): base.BitmapData[];
+        public _iGetTextureData(): any;
     }
 }
 declare module away.textures {
     class CubeTextureBase extends TextureProxyBase {
-        public _pMipmapDataArray: base.BitmapData[][];
-        public _pMipmapDataDirtyArray: boolean[];
+        public _mipmapDataArray: base.BitmapData[][];
+        public _mipmapDataDirtyArray: boolean[];
         constructor(generateMipmaps?: boolean);
         /**
         *
@@ -14862,6 +14804,13 @@ declare module away.textures {
         *
         */
         public invalidateContent(): void;
+        /**
+        *
+        * @param stage
+        */
+        public activateTextureForStage(index: number, stage: base.IStage): void;
+        public _iGetMipmapData(side: number): base.BitmapData[];
+        public _iGetTextureData(side: number): any;
     }
 }
 declare module away.textures {
@@ -14877,12 +14826,7 @@ declare module away.textures {
         *
         */
         public htmlImageElement : HTMLImageElement;
-        /**
-        *
-        * @param stage
-        */
-        public activateTextureForStage(index: number, stage: base.IStage): void;
-        public _iGetMipmapData(): base.BitmapData[];
+        public _iGetTextureData(): HTMLImageElement;
     }
 }
 declare module away.textures {
@@ -14894,13 +14838,8 @@ declare module away.textures {
         */
         public bitmapData : base.BitmapData;
         constructor(bitmapData: base.BitmapData, generateMipmaps?: boolean);
-        /**
-        *
-        * @param stage
-        */
-        public activateTextureForStage(index: number, stage: base.IStage): void;
         public dispose(): void;
-        public _iGetMipmapData(): base.BitmapData[];
+        public _iGetTextureData(): base.BitmapData;
     }
 }
 declare module away.textures {
@@ -14925,7 +14864,7 @@ declare module away.textures {
 }
 declare module away.textures {
     class ImageCubeTexture extends CubeTextureBase {
-        public _pHTMLImageElements: HTMLImageElement[];
+        private _htmlImageElements;
         /**
         * The texture on the cube's right face.
         */
@@ -14952,17 +14891,12 @@ declare module away.textures {
         public negativeZ : HTMLImageElement;
         constructor(posX: HTMLImageElement, negX: HTMLImageElement, posY: HTMLImageElement, negY: HTMLImageElement, posZ: HTMLImageElement, negZ: HTMLImageElement, generateMipmaps?: boolean);
         private _testSize(value);
-        /**
-        *
-        * @param stage
-        */
-        public activateTextureForStage(index: number, stage: base.IStage): void;
-        public _iGetMipmapData(side: number): base.BitmapData[];
+        public _iGetTextureData(side: number): HTMLImageElement;
     }
 }
 declare module away.textures {
     class BitmapCubeTexture extends CubeTextureBase {
-        public _pBitmapDatas: base.BitmapData[];
+        private _bitmapDatas;
         /**
         * The texture on the cube's right face.
         */
@@ -14990,17 +14924,12 @@ declare module away.textures {
         constructor(posX: base.BitmapData, negX: base.BitmapData, posY: base.BitmapData, negY: base.BitmapData, posZ: base.BitmapData, negZ: base.BitmapData, generateMipmaps?: boolean);
         /**
         *
-        * @param stage
-        */
-        public activateTextureForStage(index: number, stage: base.IStage): void;
-        /**
-        *
         * @param value
         * @private
         */
         private _testSize(value);
         public dispose(): void;
-        public _iGetMipmapData(side: number): base.BitmapData[];
+        public _iGetTextureData(side: number): base.BitmapData;
     }
 }
 declare module away.textures {
@@ -15015,19 +14944,13 @@ declare module away.textures {
         private static _source;
         /**
         * Uploads a BitmapData with mip maps to a target Texture object.
-        * @param source
-        * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
-        * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
-        */
-        static generateHTMLImageElementMipMaps(source: HTMLImageElement, output?: base.BitmapData[], alpha?: boolean): void;
-        /**
-        * Uploads a BitmapData with mip maps to a target Texture object.
-        * @param source The source BitmapData to upload.
+        * @param source The source to upload.
         * @param target The target Texture to upload to.
         * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
         * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
         */
-        static generateMipMaps(source: base.BitmapData, output?: base.BitmapData[], alpha?: boolean): void;
+        static generateMipMaps(source: HTMLImageElement, output?: base.BitmapData[], alpha?: boolean): any;
+        static generateMipMaps(source: base.BitmapData, output?: base.BitmapData[], alpha?: boolean): any;
         private static _getMipmapHolder(mipMapHolder, newW, newH);
         static freeMipMapHolder(mipMapHolder: base.BitmapData): void;
     }

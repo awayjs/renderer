@@ -5024,21 +5024,15 @@ var away;
                 configurable: true
             });
 
-            Texture.prototype.uploadFromHTMLImageElement = function (image, miplevel) {
+            Texture.prototype.uploadFromData = function (data, miplevel) {
                 if (typeof miplevel === "undefined") { miplevel = 0; }
+                if (data instanceof away.base.BitmapData)
+                    data = data.imageData;
+
                 this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
 
                 //this._gl.pixelStorei( this._gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._gl.ZERO );
-                this._gl.texImage2D(this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                this._gl.bindTexture(this._gl.TEXTURE_2D, null);
-            };
-
-            Texture.prototype.uploadFromBitmapData = function (data, miplevel) {
-                if (typeof miplevel === "undefined") { miplevel = 0; }
-                this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
-
-                //this._gl.pixelStorei( this._gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._gl.ZERO );
-                this._gl.texImage2D(this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
+                this._gl.texImage2D(this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
                 this._gl.bindTexture(this._gl.TEXTURE_2D, null);
             };
 
@@ -5109,73 +5103,38 @@ var away;
                 this._gl.deleteTexture(this._texture);
             };
 
-            CubeTexture.prototype.uploadFromHTMLImageElement = function (image, side, miplevel) {
+            CubeTexture.prototype.uploadFromData = function (data, side, miplevel) {
                 if (typeof miplevel === "undefined") { miplevel = 0; }
+                if (data instanceof away.base.BitmapData)
+                    data = data.imageData;
+
                 this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
 
                 switch (side) {
                     case 0:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
 
                         break;
                     case 1:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
                         break;
                     case 2:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
                         break;
                     case 3:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
                         break;
                     case 4:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
                         break;
                     case 5:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
+                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
                         break;
                     default:
                         throw "unknown side type";
                 }
 
                 this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-            };
-
-            CubeTexture.prototype.uploadFromBitmapData = function (data, side, miplevel) {
-                if (typeof miplevel === "undefined") { miplevel = 0; }
-                switch (side) {
-                    case 0:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                        break;
-                    case 1:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                        break;
-                    case 2:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                        break;
-                    case 3:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                        break;
-                    case 4:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                        break;
-                    case 5:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-                        break;
-                    default:
-                        throw "unknown side type";
-                }
             };
 
             CubeTexture.prototype.uploadCompressedTextureFromByteArray = function (data, byteArrayOffset /*uint*/ , async) {
@@ -10016,7 +9975,7 @@ var away;
 
             /**
             * Scales the geometry.
-            * @param scale The amount by which to scale.w
+            * @param scale The amount by which to scale.
             */
             SubGeometryBase.prototype.scale = function (scale) {
             };
@@ -12755,54 +12714,6 @@ var away;
     var pool = away.pool;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
-///<reference path="../../_definitions.ts"/>
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.pool
-    */
-    (function (pool) {
-        /**
-        * @class away.pool.TextureDataPool
-        */
-        var TextureDataPool = (function () {
-            /**
-            * //TODO
-            *
-            * @param textureDataClass
-            */
-            function TextureDataPool(stage, textureDataClass) {
-                this._pool = new Object();
-                this._stage = stage;
-                this._textureDataClass = textureDataClass;
-            }
-            /**
-            * //TODO
-            *
-            * @param materialOwner
-            * @returns ITexture
-            */
-            TextureDataPool.prototype.getItem = function (textureProxy) {
-                return (this._pool[textureProxy.id] || (this._pool[textureProxy.id] = textureProxy._iAddTextureData(new this._textureDataClass(this._stage, textureProxy))));
-            };
-
-            /**
-            * //TODO
-            *
-            * @param materialOwner
-            */
-            TextureDataPool.prototype.disposeItem = function (textureProxy) {
-                textureProxy._iRemoveTextureData(this._pool[textureProxy.id]);
-
-                this._pool[textureProxy.id] = null;
-            };
-            return TextureDataPool;
-        })();
-        pool.TextureDataPool = TextureDataPool;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
@@ -31798,10 +31709,10 @@ var away;
             Texture2DBase.prototype.dispose = function () {
                 _super.prototype.dispose.call(this);
 
-                if (this._pMipmapData) {
-                    var len = this._pMipmapData.length;
+                if (this._mipmapData) {
+                    var len = this._mipmapData.length;
                     for (var i = 0; i < len; i++)
-                        textures.MipmapGenerator.freeMipMapHolder(this._pMipmapData[i]);
+                        textures.MipmapGenerator.freeMipMapHolder(this._mipmapData[i]);
                 }
             };
 
@@ -31811,7 +31722,7 @@ var away;
             Texture2DBase.prototype.invalidateContent = function () {
                 _super.prototype.invalidateContent.call(this);
 
-                this._pMipmapDataDirty = true;
+                this._mipmapDataDirty = true;
             };
 
             /**
@@ -31824,10 +31735,35 @@ var away;
                 if (this._pWidth != width || this._pHeight != height)
                     this.invalidateSize();
 
-                this._pMipmapDataDirty = true;
+                this._mipmapDataDirty = true;
 
                 this._pWidth = width;
                 this._pHeight = height;
+            };
+
+            /**
+            *
+            * @param stage
+            */
+            Texture2DBase.prototype.activateTextureForStage = function (index, stage) {
+                stage.activateTexture(index, this);
+            };
+
+            Texture2DBase.prototype._iGetMipmapData = function () {
+                if (this._mipmapDataDirty) {
+                    this._mipmapDataDirty = false;
+
+                    if (!this._mipmapData)
+                        this._mipmapData = new Array();
+
+                    away.textures.MipmapGenerator.generateMipMaps(this._iGetTextureData(), this._mipmapData, true);
+                }
+
+                return this._mipmapData;
+            };
+
+            Texture2DBase.prototype._iGetTextureData = function () {
+                throw new away.errors.AbstractMethodError();
             };
             return Texture2DBase;
         })(textures.TextureProxyBase);
@@ -31844,8 +31780,8 @@ var away;
             function CubeTextureBase(generateMipmaps) {
                 if (typeof generateMipmaps === "undefined") { generateMipmaps = true; }
                 _super.call(this, generateMipmaps);
-                this._pMipmapDataArray = new Array(6);
-                this._pMipmapDataDirtyArray = new Array(6);
+                this._mipmapDataArray = new Array(6);
+                this._mipmapDataDirtyArray = new Array(6);
             }
             /**
             *
@@ -31858,7 +31794,7 @@ var away;
                     this.invalidateSize();
 
                 for (var i = 0; i < 6; i++)
-                    this._pMipmapDataDirtyArray[i] = true;
+                    this._mipmapDataDirtyArray[i] = true;
 
                 this._pSize = size;
             };
@@ -31870,7 +31806,7 @@ var away;
                 _super.prototype.dispose.call(this);
 
                 for (var i = 0; i < 6; i++) {
-                    var mipmapData = this._pMipmapDataArray[i];
+                    var mipmapData = this._mipmapDataArray[i];
                     var len = mipmapData.length;
                     for (var j = 0; j < len; j++)
                         textures.MipmapGenerator.freeMipMapHolder(mipmapData[j]);
@@ -31884,7 +31820,30 @@ var away;
                 _super.prototype.invalidateContent.call(this);
 
                 for (var i = 0; i < 6; i++)
-                    this._pMipmapDataDirtyArray[i] = true;
+                    this._mipmapDataDirtyArray[i] = true;
+            };
+
+            /**
+            *
+            * @param stage
+            */
+            CubeTextureBase.prototype.activateTextureForStage = function (index, stage) {
+                stage.activateCubeTexture(index, this);
+            };
+
+            CubeTextureBase.prototype._iGetMipmapData = function (side) {
+                if (this._mipmapDataDirtyArray[side]) {
+                    this._mipmapDataDirtyArray[side] = false;
+
+                    var mipmapData = this._mipmapDataArray[side] || (this._mipmapDataArray[side] = new Array());
+                    away.textures.MipmapGenerator.generateMipMaps(this._iGetTextureData(side), mipmapData, true);
+                }
+
+                return this._mipmapDataArray[side];
+            };
+
+            CubeTextureBase.prototype._iGetTextureData = function (side) {
+                throw new away.errors.AbstractMethodError();
             };
             return CubeTextureBase;
         })(away.textures.TextureProxyBase);
@@ -31933,25 +31892,8 @@ var away;
             });
 
 
-            /**
-            *
-            * @param stage
-            */
-            ImageTexture.prototype.activateTextureForStage = function (index, stage) {
-                stage.activateImageTexture(index, this);
-            };
-
-            ImageTexture.prototype._iGetMipmapData = function () {
-                if (this._pMipmapDataDirty) {
-                    this._pMipmapDataDirty = false;
-
-                    if (!this._pMipmapData)
-                        this._pMipmapData = new Array();
-
-                    away.textures.MipmapGenerator.generateHTMLImageElementMipMaps(this._htmlImageElement, this._pMipmapData, true);
-                }
-
-                return this._pMipmapData;
+            ImageTexture.prototype._iGetTextureData = function () {
+                return this._htmlImageElement;
             };
             return ImageTexture;
         })(away.textures.Texture2DBase);
@@ -31997,14 +31939,6 @@ var away;
             });
 
 
-            /**
-            *
-            * @param stage
-            */
-            BitmapTexture.prototype.activateTextureForStage = function (index, stage) {
-                stage.activateBitmapTexture(index, this);
-            };
-
             BitmapTexture.prototype.dispose = function () {
                 _super.prototype.dispose.call(this);
 
@@ -32012,17 +31946,8 @@ var away;
                 this._bitmapData = null;
             };
 
-            BitmapTexture.prototype._iGetMipmapData = function () {
-                if (this._pMipmapDataDirty) {
-                    this._pMipmapDataDirty = false;
-
-                    if (!this._pMipmapData)
-                        this._pMipmapData = new Array();
-
-                    away.textures.MipmapGenerator.generateMipMaps(this.bitmapData, this._pMipmapData, true);
-                }
-
-                return this._pMipmapData;
+            BitmapTexture.prototype._iGetTextureData = function () {
+                return this._bitmapData;
             };
             return BitmapTexture;
         })(textures.Texture2DBase);
@@ -32110,14 +32035,14 @@ var away;
             function ImageCubeTexture(posX, negX, posY, negY, posZ, negZ, generateMipmaps) {
                 if (typeof generateMipmaps === "undefined") { generateMipmaps = false; }
                 _super.call(this, generateMipmaps);
-                this._pHTMLImageElements = new Array(6);
+                this._htmlImageElements = new Array(6);
 
-                this._testSize(this._pHTMLImageElements[0] = posX);
-                this._testSize(this._pHTMLImageElements[1] = negX);
-                this._testSize(this._pHTMLImageElements[2] = posY);
-                this._testSize(this._pHTMLImageElements[3] = negY);
-                this._testSize(this._pHTMLImageElements[4] = posZ);
-                this._testSize(this._pHTMLImageElements[5] = negZ);
+                this._testSize(this._htmlImageElements[0] = posX);
+                this._testSize(this._htmlImageElements[1] = negX);
+                this._testSize(this._htmlImageElements[2] = posY);
+                this._testSize(this._htmlImageElements[3] = negY);
+                this._testSize(this._htmlImageElements[4] = posZ);
+                this._testSize(this._htmlImageElements[5] = negZ);
 
                 this.invalidateContent();
 
@@ -32128,13 +32053,13 @@ var away;
                 * The texture on the cube's right face.
                 */
                 get: function () {
-                    return this._pHTMLImageElements[0];
+                    return this._htmlImageElements[0];
                 },
                 set: function (value) {
                     this._testSize(value);
                     this.invalidateContent();
                     this._pSetSize(value.width);
-                    this._pHTMLImageElements[0] = value;
+                    this._htmlImageElements[0] = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -32146,13 +32071,13 @@ var away;
                 * The texture on the cube's left face.
                 */
                 get: function () {
-                    return this._pHTMLImageElements[1];
+                    return this._htmlImageElements[1];
                 },
                 set: function (value) {
                     this._testSize(value);
                     this.invalidateContent();
                     this._pSetSize(value.width);
-                    this._pHTMLImageElements[1] = value;
+                    this._htmlImageElements[1] = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -32164,13 +32089,13 @@ var away;
                 * The texture on the cube's top face.
                 */
                 get: function () {
-                    return this._pHTMLImageElements[2];
+                    return this._htmlImageElements[2];
                 },
                 set: function (value) {
                     this._testSize(value);
                     this.invalidateContent();
                     this._pSetSize(value.width);
-                    this._pHTMLImageElements[2] = value;
+                    this._htmlImageElements[2] = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -32182,13 +32107,13 @@ var away;
                 * The texture on the cube's bottom face.
                 */
                 get: function () {
-                    return this._pHTMLImageElements[3];
+                    return this._htmlImageElements[3];
                 },
                 set: function (value) {
                     this._testSize(value);
                     this.invalidateContent();
                     this._pSetSize(value.width);
-                    this._pHTMLImageElements[3] = value;
+                    this._htmlImageElements[3] = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -32200,13 +32125,13 @@ var away;
                 * The texture on the cube's far face.
                 */
                 get: function () {
-                    return this._pHTMLImageElements[4];
+                    return this._htmlImageElements[4];
                 },
                 set: function (value) {
                     this._testSize(value);
                     this.invalidateContent();
                     this._pSetSize(value.width);
-                    this._pHTMLImageElements[4] = value;
+                    this._htmlImageElements[4] = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -32218,13 +32143,13 @@ var away;
                 * The texture on the cube's near face.
                 */
                 get: function () {
-                    return this._pHTMLImageElements[5];
+                    return this._htmlImageElements[5];
                 },
                 set: function (value) {
                     this._testSize(value);
                     this.invalidateContent();
                     this._pSetSize(value.width);
-                    this._pHTMLImageElements[5] = value;
+                    this._htmlImageElements[5] = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -32238,23 +32163,8 @@ var away;
                     throw new Error("Invalid bitmapData: Width and height must be power of 2 and cannot exceed 2048");
             };
 
-            /**
-            *
-            * @param stage
-            */
-            ImageCubeTexture.prototype.activateTextureForStage = function (index, stage) {
-                stage.activateImageCubeTexture(index, this);
-            };
-
-            ImageCubeTexture.prototype._iGetMipmapData = function (side) {
-                if (this._pMipmapDataDirtyArray[side]) {
-                    this._pMipmapDataDirtyArray[side] = false;
-
-                    var mipmapData = this._pMipmapDataArray[side] || (this._pMipmapDataArray[side] = new Array());
-                    away.textures.MipmapGenerator.generateHTMLImageElementMipMaps(this._pHTMLImageElements[side], mipmapData, true);
-                }
-
-                return this._pMipmapDataArray[side];
+            ImageCubeTexture.prototype._iGetTextureData = function (side) {
+                return this._htmlImageElements[side];
             };
             return ImageCubeTexture;
         })(textures.CubeTextureBase);
@@ -32271,14 +32181,14 @@ var away;
             function BitmapCubeTexture(posX, negX, posY, negY, posZ, negZ, generateMipmaps) {
                 if (typeof generateMipmaps === "undefined") { generateMipmaps = false; }
                 _super.call(this, generateMipmaps);
-                this._pBitmapDatas = new Array(6);
+                this._bitmapDatas = new Array(6);
 
-                this._testSize(this._pBitmapDatas[0] = posX);
-                this._testSize(this._pBitmapDatas[1] = negX);
-                this._testSize(this._pBitmapDatas[2] = posY);
-                this._testSize(this._pBitmapDatas[3] = negY);
-                this._testSize(this._pBitmapDatas[4] = posZ);
-                this._testSize(this._pBitmapDatas[5] = negZ);
+                this._testSize(this._bitmapDatas[0] = posX);
+                this._testSize(this._bitmapDatas[1] = negX);
+                this._testSize(this._bitmapDatas[2] = posY);
+                this._testSize(this._bitmapDatas[3] = negY);
+                this._testSize(this._bitmapDatas[4] = posZ);
+                this._testSize(this._bitmapDatas[5] = negZ);
 
                 this.invalidateContent();
 
@@ -32289,13 +32199,13 @@ var away;
                 * The texture on the cube's right face.
                 */
                 get: function () {
-                    return this._pBitmapDatas[0];
+                    return this._bitmapDatas[0];
                 },
                 set: function (value) {
                     this._testSize(value);
                     this.invalidateContent();
                     this._pSetSize(value.width);
-                    this._pBitmapDatas[0] = value;
+                    this._bitmapDatas[0] = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -32307,13 +32217,13 @@ var away;
                 * The texture on the cube's left face.
                 */
                 get: function () {
-                    return this._pBitmapDatas[1];
+                    return this._bitmapDatas[1];
                 },
                 set: function (value) {
                     this._testSize(value);
                     this.invalidateContent();
                     this._pSetSize(value.width);
-                    this._pBitmapDatas[1] = value;
+                    this._bitmapDatas[1] = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -32325,13 +32235,13 @@ var away;
                 * The texture on the cube's top face.
                 */
                 get: function () {
-                    return this._pBitmapDatas[2];
+                    return this._bitmapDatas[2];
                 },
                 set: function (value) {
                     this._testSize(value);
                     this.invalidateContent();
                     this._pSetSize(value.width);
-                    this._pBitmapDatas[2] = value;
+                    this._bitmapDatas[2] = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -32343,13 +32253,13 @@ var away;
                 * The texture on the cube's bottom face.
                 */
                 get: function () {
-                    return this._pBitmapDatas[3];
+                    return this._bitmapDatas[3];
                 },
                 set: function (value) {
                     this._testSize(value);
                     this.invalidateContent();
                     this._pSetSize(value.width);
-                    this._pBitmapDatas[3] = value;
+                    this._bitmapDatas[3] = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -32361,13 +32271,13 @@ var away;
                 * The texture on the cube's far face.
                 */
                 get: function () {
-                    return this._pBitmapDatas[4];
+                    return this._bitmapDatas[4];
                 },
                 set: function (value) {
                     this._testSize(value);
                     this.invalidateContent();
                     this._pSetSize(value.width);
-                    this._pBitmapDatas[4] = value;
+                    this._bitmapDatas[4] = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -32379,26 +32289,18 @@ var away;
                 * The texture on the cube's near face.
                 */
                 get: function () {
-                    return this._pBitmapDatas[5];
+                    return this._bitmapDatas[5];
                 },
                 set: function (value) {
                     this._testSize(value);
                     this.invalidateContent();
                     this._pSetSize(value.width);
-                    this._pBitmapDatas[5] = value;
+                    this._bitmapDatas[5] = value;
                 },
                 enumerable: true,
                 configurable: true
             });
 
-
-            /**
-            *
-            * @param stage
-            */
-            BitmapCubeTexture.prototype.activateTextureForStage = function (index, stage) {
-                stage.activateBitmapCubeTexture(index, this);
-            };
 
             /**
             *
@@ -32415,24 +32317,17 @@ var away;
             BitmapCubeTexture.prototype.dispose = function () {
                 _super.prototype.dispose.call(this);
 
-                var len = this._pBitmapDatas.length;
+                var len = this._bitmapDatas.length;
                 for (var i = 0; i < len; i++) {
-                    this._pBitmapDatas[i].dispose();
-                    this._pBitmapDatas[i] = null;
+                    this._bitmapDatas[i].dispose();
+                    this._bitmapDatas[i] = null;
                 }
 
-                this._pBitmapDatas = null;
+                this._bitmapDatas = null;
             };
 
-            BitmapCubeTexture.prototype._iGetMipmapData = function (side) {
-                if (this._pMipmapDataDirtyArray[side]) {
-                    this._pMipmapDataDirtyArray[side] = false;
-
-                    var mipmapData = this._pMipmapDataArray[side] || (this._pMipmapDataArray[side] = new Array());
-                    away.textures.MipmapGenerator.generateMipMaps(this._pBitmapDatas[side], mipmapData, true);
-                }
-
-                return this._pMipmapDataArray[side];
+            BitmapCubeTexture.prototype._iGetTextureData = function (side) {
+                return this._bitmapDatas[side];
             };
             return BitmapCubeTexture;
         })(textures.CubeTextureBase);
@@ -32455,36 +32350,7 @@ var away;
         var MipmapGenerator = (function () {
             function MipmapGenerator() {
             }
-            /**
-            * Uploads a BitmapData with mip maps to a target Texture object.
-            * @param source
-            * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
-            * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
-            */
-            MipmapGenerator.generateHTMLImageElementMipMaps = function (source, output, alpha) {
-                if (typeof output === "undefined") { output = null; }
-                if (typeof alpha === "undefined") { alpha = false; }
-                MipmapGenerator._rect.width = source.width;
-                MipmapGenerator._rect.height = source.height;
-
-                MipmapGenerator._source = new away.base.BitmapData(source.width, source.height, alpha);
-                MipmapGenerator._source.drawImage(source, MipmapGenerator._rect, MipmapGenerator._rect);
-
-                MipmapGenerator.generateMipMaps(MipmapGenerator._source, output, alpha);
-
-                MipmapGenerator._source.dispose();
-                MipmapGenerator._source = null;
-            };
-
-            /**
-            * Uploads a BitmapData with mip maps to a target Texture object.
-            * @param source The source BitmapData to upload.
-            * @param target The target Texture to upload to.
-            * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
-            * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
-            */
             MipmapGenerator.generateMipMaps = function (source, output, alpha) {
-                if (typeof output === "undefined") { output = null; }
                 if (typeof alpha === "undefined") { alpha = false; }
                 var w = source.width;
                 var h = source.height;
@@ -33994,8 +33860,6 @@ var aglsl;
 ///<reference path="core/pool/IRenderableClass.ts"/>
 ///<reference path="core/pool/RenderablePool.ts"/>
 ///<reference path="core/pool/ITextureData.ts"/>
-///<reference path="core/pool/ITextureDataClass.ts"/>
-///<reference path="core/pool/TextureDataPool.ts"/>
 ///<reference path="core/pool/CSSRenderableBase.ts"/>
 ///<reference path="core/pool/CSSBillboardRenderable.ts"/>
 ///<reference path="core/pool/CSSLineSegmentRenderable.ts"/>
