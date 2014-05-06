@@ -588,7 +588,7 @@ module away.materials
 			 }
 			 */
 
-			away.managers.AGALProgramCache.getInstance(stageGL).setProgram(this, vertexCode, fragmentCode);
+			away.managers.AGALProgramCache.getInstance(stageGL).setProgram(this._iProgramids, this._iPrograms, vertexCode, fragmentCode);
 
 		}
 
