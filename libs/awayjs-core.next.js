@@ -31549,13 +31549,13 @@ away.Debug.LOG_PI_ERRORS = false;
 
 var away;
 (function (away) {
-    var AwayJS = (function (_super) {
-        __extends(AwayJS, _super);
-        function AwayJS() {
+    var AwayJSCore = (function (_super) {
+        __extends(AwayJSCore, _super);
+        function AwayJSCore() {
             _super.call(this);
         }
-        return AwayJS;
+        return AwayJSCore;
     })(away.events.EventDispatcher);
-    away.AwayJS = AwayJS;
+    away.AwayJSCore = AwayJSCore;
 })(away || (away = {}));
-//# sourceMappingURL=awayjs.next.js.map
+//# sourceMappingURL=awayjs-core.next.js.map

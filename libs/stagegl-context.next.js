@@ -1602,7 +1602,7 @@ var away;
                 configurable: true
             });
             return CubeTexture;
-        })(away.gl.TextureBase);
+        })(_gl.TextureBase);
         _gl.CubeTexture = CubeTexture;
     })(away.gl || (away.gl = {}));
     var gl = away.gl;
@@ -1815,7 +1815,7 @@ var away;
                 }
 
                 for (var i = 0; i < ContextGL.MAX_SAMPLERS; ++i) {
-                    this._samplerStates[i] = new away.gl.SamplerState();
+                    this._samplerStates[i] = new gl.SamplerState();
                     this._samplerStates[i].wrap = this._gl.REPEAT;
                     this._samplerStates[i].filter = this._gl.LINEAR;
                     this._samplerStates[i].mipfilter = 0;
@@ -1858,19 +1858,19 @@ var away;
 
             ContextGL.prototype.createCubeTexture = function (size, format, optimizeForRenderToTexture, streamingLevels) {
                 if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
-                var texture = new away.gl.CubeTexture(this._gl, size);
+                var texture = new gl.CubeTexture(this._gl, size);
                 this._textureList.push(texture);
                 return texture;
             };
 
             ContextGL.prototype.createIndexBuffer = function (numIndices) {
-                var indexBuffer = new away.gl.IndexBuffer(this._gl, numIndices);
+                var indexBuffer = new gl.IndexBuffer(this._gl, numIndices);
                 this._indexBufferList.push(indexBuffer);
                 return indexBuffer;
             };
 
             ContextGL.prototype.createProgram = function () {
-                var program = new away.gl.Program(this._gl);
+                var program = new gl.Program(this._gl);
                 this._programList.push(program);
                 return program;
             };
@@ -1878,13 +1878,13 @@ var away;
             ContextGL.prototype.createTexture = function (width, height, format, optimizeForRenderToTexture, streamingLevels) {
                 if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
                 //TODO streaming
-                var texture = new away.gl.Texture(this._gl, width, height);
+                var texture = new gl.Texture(this._gl, width, height);
                 this._textureList.push(texture);
                 return texture;
             };
 
             ContextGL.prototype.createVertexBuffer = function (numVertices, data32PerVertex) {
-                var vertexBuffer = new away.gl.VertexBuffer(this._gl, numVertices, data32PerVertex);
+                var vertexBuffer = new gl.VertexBuffer(this._gl, numVertices, data32PerVertex);
                 this._vertexBufferList.push(vertexBuffer);
                 return vertexBuffer;
             };
@@ -1946,37 +1946,37 @@ var away;
                 this._blendEnabled = true;
 
                 switch (sourceFactor) {
-                    case away.gl.ContextGLBlendFactor.ONE:
+                    case gl.ContextGLBlendFactor.ONE:
                         this._blendSourceFactor = this._gl.ONE;
                         break;
-                    case away.gl.ContextGLBlendFactor.DESTINATION_ALPHA:
+                    case gl.ContextGLBlendFactor.DESTINATION_ALPHA:
                         this._blendSourceFactor = this._gl.DST_ALPHA;
                         break;
-                    case away.gl.ContextGLBlendFactor.DESTINATION_COLOR:
+                    case gl.ContextGLBlendFactor.DESTINATION_COLOR:
                         this._blendSourceFactor = this._gl.DST_COLOR;
                         break;
-                    case away.gl.ContextGLBlendFactor.ONE:
+                    case gl.ContextGLBlendFactor.ONE:
                         this._blendSourceFactor = this._gl.ONE;
                         break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
+                    case gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
                         this._blendSourceFactor = this._gl.ONE_MINUS_DST_ALPHA;
                         break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR:
+                    case gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR:
                         this._blendSourceFactor = this._gl.ONE_MINUS_DST_COLOR;
                         break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA:
+                    case gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA:
                         this._blendSourceFactor = this._gl.ONE_MINUS_SRC_ALPHA;
                         break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR:
+                    case gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR:
                         this._blendSourceFactor = this._gl.ONE_MINUS_SRC_COLOR;
                         break;
-                    case away.gl.ContextGLBlendFactor.SOURCE_ALPHA:
+                    case gl.ContextGLBlendFactor.SOURCE_ALPHA:
                         this._blendSourceFactor = this._gl.SRC_ALPHA;
                         break;
-                    case away.gl.ContextGLBlendFactor.SOURCE_COLOR:
+                    case gl.ContextGLBlendFactor.SOURCE_COLOR:
                         this._blendSourceFactor = this._gl.SRC_COLOR;
                         break;
-                    case away.gl.ContextGLBlendFactor.ZERO:
+                    case gl.ContextGLBlendFactor.ZERO:
                         this._blendSourceFactor = this._gl.ZERO;
                         break;
                     default:
@@ -1985,37 +1985,37 @@ var away;
                 }
 
                 switch (destinationFactor) {
-                    case away.gl.ContextGLBlendFactor.ONE:
+                    case gl.ContextGLBlendFactor.ONE:
                         this._blendDestinationFactor = this._gl.ONE;
                         break;
-                    case away.gl.ContextGLBlendFactor.DESTINATION_ALPHA:
+                    case gl.ContextGLBlendFactor.DESTINATION_ALPHA:
                         this._blendDestinationFactor = this._gl.DST_ALPHA;
                         break;
-                    case away.gl.ContextGLBlendFactor.DESTINATION_COLOR:
+                    case gl.ContextGLBlendFactor.DESTINATION_COLOR:
                         this._blendDestinationFactor = this._gl.DST_COLOR;
                         break;
-                    case away.gl.ContextGLBlendFactor.ONE:
+                    case gl.ContextGLBlendFactor.ONE:
                         this._blendDestinationFactor = this._gl.ONE;
                         break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
+                    case gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
                         this._blendDestinationFactor = this._gl.ONE_MINUS_DST_ALPHA;
                         break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR:
+                    case gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR:
                         this._blendDestinationFactor = this._gl.ONE_MINUS_DST_COLOR;
                         break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA:
+                    case gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA:
                         this._blendDestinationFactor = this._gl.ONE_MINUS_SRC_ALPHA;
                         break;
-                    case away.gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR:
+                    case gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR:
                         this._blendDestinationFactor = this._gl.ONE_MINUS_SRC_COLOR;
                         break;
-                    case away.gl.ContextGLBlendFactor.SOURCE_ALPHA:
+                    case gl.ContextGLBlendFactor.SOURCE_ALPHA:
                         this._blendDestinationFactor = this._gl.SRC_ALPHA;
                         break;
-                    case away.gl.ContextGLBlendFactor.SOURCE_COLOR:
+                    case gl.ContextGLBlendFactor.SOURCE_COLOR:
                         this._blendDestinationFactor = this._gl.SRC_COLOR;
                         break;
-                    case away.gl.ContextGLBlendFactor.ZERO:
+                    case gl.ContextGLBlendFactor.ZERO:
                         this._blendDestinationFactor = this._gl.ZERO;
                         break;
                     default:
@@ -3408,6 +3408,8 @@ var away;
     * @module away.base
     */
     (function (pool) {
+        var SubGeometryBase = away.base.SubGeometryBase;
+
         var SubGeometryEvent = away.events.SubGeometryEvent;
 
         /**
@@ -3514,7 +3516,7 @@ var away;
             * @private
             */
             VertexData.prototype._onVerticesUpdated = function (event) {
-                var dataType = this._subGeometry.concatenateArrays ? away.base.SubGeometryBase.VERTEX_DATA : event.dataType;
+                var dataType = this._subGeometry.concatenateArrays ? SubGeometryBase.VERTEX_DATA : event.dataType;
 
                 if (dataType == this._dataType)
                     this._dataDirty = true;
@@ -3532,6 +3534,8 @@ var away;
     * @module away.base
     */
     (function (pool) {
+        var SubGeometryBase = away.base.SubGeometryBase;
+
         /**
         *
         */
@@ -3540,7 +3544,7 @@ var away;
             }
             VertexDataPool.getItem = function (subGeometry, indexData, dataType) {
                 if (subGeometry.concatenateArrays)
-                    dataType = away.base.SubGeometryBase.VERTEX_DATA;
+                    dataType = SubGeometryBase.VERTEX_DATA;
 
                 var subGeometryDictionary = (VertexDataPool._pool[subGeometry.id] || (VertexDataPool._pool[subGeometry.id] = new Object()));
                 var subGeometryData = (subGeometryDictionary[dataType] || (subGeometryDictionary[dataType] = new Array()));
@@ -3782,7 +3786,7 @@ var away;
                 var rttBufferManager = RTTBufferManager.getRTTBufferManagerFromStageGL(stageGL);
 
                 if (rttBufferManager == null) {
-                    rttBufferManager = new away.managers.RTTBufferManager(new SingletonEnforcer(), stageGL);
+                    rttBufferManager = new RTTBufferManager(new SingletonEnforcer(), stageGL);
 
                     var vo = new RTTBufferManagerVO();
 
@@ -4017,15 +4021,15 @@ var away;
             return RTTBufferManager;
         })(away.events.EventDispatcher);
         managers.RTTBufferManager = RTTBufferManager;
+
+        var RTTBufferManagerVO = (function () {
+            function RTTBufferManagerVO() {
+            }
+            return RTTBufferManagerVO;
+        })();
     })(away.managers || (away.managers = {}));
     var managers = away.managers;
 })(away || (away = {}));
-
-var RTTBufferManagerVO = (function () {
-    function RTTBufferManagerVO() {
-    }
-    return RTTBufferManagerVO;
-})();
 
 var SingletonEnforcer = (function () {
     function SingletonEnforcer() {
@@ -4036,15 +4040,13 @@ var SingletonEnforcer = (function () {
 var away;
 (function (away) {
     (function (managers) {
-        //import away.arcane;
-        //import flash.base.Stage;
-        //import flash.utils.Dictionary;
-        //use namespace arcane;
+        var StageGL = away.base.StageGL;
+
         /**
         * The StageGLManager class provides a multiton object that handles management for StageGL objects. StageGL objects
         * should not be requested directly, but are exposed by a StageGLProxy.
         *
-        * @see away.base.StageGLProxy
+        * @see away.base.StageGL
         */
         var StageGLManager = (function (_super) {
             __extends(StageGLManager, _super);
@@ -4093,7 +4095,7 @@ var away;
                     StageGLManager._numStageGLs++;
 
                     var canvas = document.createElement("canvas");
-                    var stageGL = this._stageGLs[index] = new away.base.StageGL(canvas, index, this, forceSoftware, profile);
+                    var stageGL = this._stageGLs[index] = new StageGL(canvas, index, this, forceSoftware, profile);
                     stageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextCreatedDelegate);
                     stageGL.requestContext(true, forceSoftware, profile);
                 }
@@ -4216,7 +4218,7 @@ var StageGLManagerSingletonEnforcer = (function () {
 *
 *********************************************************************************************************************************************************************************************************/
 ///<reference path="../../libs/ref/js.d.ts"/>
-///<reference path="../../libs/awayjs.next.d.ts"/>
+///<reference path="../../libs/awayjs-core.next.d.ts"/>
 ///<reference path="../aglsl/Sampler.ts"/>
 ///<reference path="../aglsl/Token.ts"/>
 ///<reference path="../aglsl/Header.ts"/>

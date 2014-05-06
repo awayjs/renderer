@@ -13,7 +13,7 @@
  *********************************************************************************************************************************************************************************************************/
 
 ///<reference path="../../libs/ref/js.d.ts"/>
-///<reference path="../../libs/awayjs.next.d.ts"/>
+///<reference path="../../libs/awayjs-core.next.d.ts"/>
 ///<reference path="../../libs/stagegl-context.next.d.ts"/>
 
 ///<reference path="errors/AnimationSetError.ts"/>

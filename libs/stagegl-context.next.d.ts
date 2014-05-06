@@ -1,5 +1,5 @@
 /// <reference path="../libs/ref/js.d.ts" />
-/// <reference path="../libs/awayjs.next.d.ts" />
+/// <reference path="../libs/awayjs-core.next.d.ts" />
 declare module aglsl {
     class Sampler {
         public lodbias: number;
@@ -658,11 +658,11 @@ declare module away.pool {
     * @class away.pool.TextureDataBase
     */
     class TextureData implements ITextureData {
-        public stageGL: base.IStage;
+        public stageGL: base.StageGL;
         public texture: gl.TextureBase;
         public textureProxy: textures.TextureProxyBase;
         public invalid: boolean;
-        constructor(stageGL: base.IStage, textureProxy: textures.TextureProxyBase);
+        constructor(stageGL: base.StageGL, textureProxy: textures.TextureProxyBase);
         /**
         *
         */
@@ -688,7 +688,7 @@ declare module away.pool {
         *
         * @param textureDataClass
         */
-        constructor(stage: base.IStage);
+        constructor(stage: base.StageGL);
         /**
         * //TODO
         *
@@ -819,10 +819,6 @@ declare module away.managers {
         private updateRTTBuffers();
     }
 }
-declare class RTTBufferManagerVO {
-    public stage3d: away.base.StageGL;
-    public rttbfm: away.managers.RTTBufferManager;
-}
 declare class SingletonEnforcer {
 }
 declare module away.managers {
@@ -830,7 +826,7 @@ declare module away.managers {
     * The StageGLManager class provides a multiton object that handles management for StageGL objects. StageGL objects
     * should not be requested directly, but are exposed by a StageGLProxy.
     *
-    * @see away.base.StageGLProxy
+    * @see away.base.StageGL
     */
     class StageGLManager extends events.EventDispatcher {
         private static STAGEGL_MAX_QUANTITY;

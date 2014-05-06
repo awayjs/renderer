@@ -14720,7 +14720,7 @@ declare module away.textures {
     }
 }
 declare module away {
-    class AwayJS extends events.EventDispatcher {
+    class AwayJSCore extends events.EventDispatcher {
         constructor();
     }
 }
