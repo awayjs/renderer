@@ -17,7 +17,7 @@ module away.pool
 
 		public textureProxy:away.textures.TextureProxyBase;
 
-		public dirty:boolean;
+		public invalid:boolean;
 
 		constructor(stageGL:away.base.IStage, textureProxy:away.textures.TextureProxyBase)
 		{
@@ -39,7 +39,7 @@ module away.pool
 		 */
 		public invalidate()
 		{
-			this.dirty = true;
+			this.invalid = true;
 		}
 	}
 }

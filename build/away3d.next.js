@@ -536,11 +536,11 @@ var away;
 
                 if (!textureData.texture) {
                     textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, true);
-                    textureData.dirty = true;
+                    textureData.invalid = true;
                 }
 
-                if (textureData.dirty) {
-                    textureData.dirty = false;
+                if (textureData.invalid) {
+                    textureData.invalid = false;
 
                     // fake data, to complete texture for sampling
                     textureData.texture.generateFromRenderBuffer();
@@ -767,11 +767,11 @@ var away;
 
                 if (!textureData.texture) {
                     textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, true);
-                    textureData.dirty = true;
+                    textureData.invalid = true;
                 }
 
-                if (textureData.dirty) {
-                    textureData.dirty = false;
+                if (textureData.invalid) {
+                    textureData.invalid = false;
                     if (textureProxy.generateMipmaps) {
                         var mipmapData = textureProxy._iGetMipmapData();
                         var len = mipmapData.length;
@@ -790,11 +790,11 @@ var away;
 
                 if (!textureData.texture) {
                     textureData.texture = this._contextGL.createCubeTexture(textureProxy.size, away.gl.ContextGLTextureFormat.BGRA, false);
-                    textureData.dirty = true;
+                    textureData.invalid = true;
                 }
 
-                if (textureData.dirty) {
-                    textureData.dirty = false;
+                if (textureData.invalid) {
+                    textureData.invalid = false;
                     for (var i = 0; i < 6; ++i) {
                         if (textureProxy.generateMipmaps) {
                             var mipmapData = textureProxy._iGetMipmapData(i);
@@ -1695,7 +1695,7 @@ var away;
             *
             */
             TextureData.prototype.invalidate = function () {
-                this.dirty = true;
+                this.invalid = true;
             };
             return TextureData;
         })();

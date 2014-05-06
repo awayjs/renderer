@@ -639,7 +639,7 @@ declare module away.pool {
         public stageGL: base.IStage;
         public texture: gl.TextureBase;
         public textureProxy: textures.TextureProxyBase;
-        public dirty: boolean;
+        public invalid: boolean;
         constructor(stageGL: base.IStage, textureProxy: textures.TextureProxyBase);
         /**
         *

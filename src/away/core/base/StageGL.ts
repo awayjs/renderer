@@ -342,11 +342,11 @@ module away.base
 
 			if (!textureData.texture) {
 				textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, true);
-				textureData.dirty = true;
+				textureData.invalid = true;
 			}
 
-			if (textureData.dirty) {
-				textureData.dirty = false;
+			if (textureData.invalid) {
+				textureData.invalid = false;
 				// fake data, to complete texture for sampling
 				(<away.gl.Texture> textureData.texture).generateFromRenderBuffer();
 			}
@@ -575,11 +575,11 @@ module away.base
 
 			if (!textureData.texture) {
 				textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, true);
-				textureData.dirty = true;
+				textureData.invalid = true;
 			}
 
-			if (textureData.dirty) {
-				textureData.dirty = false;
+			if (textureData.invalid) {
+				textureData.invalid = false;
 				if (textureProxy.generateMipmaps) {
 					var mipmapData:Array<away.base.BitmapData> = textureProxy._iGetMipmapData();
 					var len:number = mipmapData.length;
@@ -599,11 +599,11 @@ module away.base
 
 			if (!textureData.texture) {
 				textureData.texture = this._contextGL.createCubeTexture(textureProxy.size, away.gl.ContextGLTextureFormat.BGRA, false);
-				textureData.dirty = true;
+				textureData.invalid = true;
 			}
 
-			if (textureData.dirty) {
-				textureData.dirty = false;
+			if (textureData.invalid) {
+				textureData.invalid = false;
 				for (var i:number = 0; i < 6; ++i) {
 					if (textureProxy.generateMipmaps) {
 						var mipmapData:Array<away.base.BitmapData> = textureProxy._iGetMipmapData(i);
