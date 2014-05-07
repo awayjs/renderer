@@ -14716,7 +14716,7 @@ declare module away.textures {
         public specularMap : base.BitmapData;
         public glossMap : base.BitmapData;
         private _testSize();
-        public bitmapData : base.BitmapData;
+        public _iGetTextureData(): base.BitmapData;
     }
 }
 declare module away {

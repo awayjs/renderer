@@ -31154,7 +31154,7 @@ var away;
                 MipmapGenerator._rect.width = w;
                 MipmapGenerator._rect.height = h;
 
-                while (w >= 1 || h >= 1) {
+                while (w >= 1 && h >= 1) {
                     mipmap = output[i] = MipmapGenerator._getMipmapHolder(output[i], w, h);
 
                     if (alpha)
@@ -31297,24 +31297,20 @@ var away;
                 }
             };
 
-            Object.defineProperty(SpecularBitmapTexture.prototype, "bitmapData", {
-                get: function () {
-                    var rect = this._specularMap.rect;
-                    var origin = new Point();
+            SpecularBitmapTexture.prototype._iGetTextureData = function () {
+                var rect = this._specularMap.rect;
+                var origin = new Point();
 
-                    this._bitmapData.fillRect(rect, 0xffffff);
+                this._bitmapData.fillRect(rect, 0xffffff);
 
-                    if (this._glossMap)
-                        this._bitmapData.copyChannel(this._glossMap, rect, origin, BitmapDataChannel.GREEN, BitmapDataChannel.GREEN);
+                if (this._glossMap)
+                    this._bitmapData.copyChannel(this._glossMap, rect, origin, BitmapDataChannel.GREEN, BitmapDataChannel.GREEN);
 
-                    if (this._specularMap)
-                        this._bitmapData.copyChannel(this._specularMap, rect, origin, BitmapDataChannel.RED, BitmapDataChannel.RED);
+                if (this._specularMap)
+                    this._bitmapData.copyChannel(this._specularMap, rect, origin, BitmapDataChannel.RED, BitmapDataChannel.RED);
 
-                    return this._bitmapData;
-                },
-                enumerable: true,
-                configurable: true
-            });
+                return this._bitmapData;
+            };
             return SpecularBitmapTexture;
         })(textures.BitmapTexture);
         textures.SpecularBitmapTexture = SpecularBitmapTexture;
