@@ -3271,7 +3271,7 @@ var away;
 
             DefaultMaterialManager.createDefaultTexture = function () {
                 DefaultMaterialManager._defaultTextureBitmapData = DefaultMaterialManager.createCheckeredBitmapData();
-                DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture(DefaultMaterialManager._defaultTextureBitmapData, false);
+                DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture(DefaultMaterialManager._defaultTextureBitmapData, true);
                 DefaultMaterialManager._defaultTexture.name = "defaultTexture";
             };
 
@@ -17055,7 +17055,7 @@ var away;
                 this._bothSides = false;
                 this._pBlendMode = BlendMode.NORMAL;
                 this._numPasses = 0;
-                this._pMipmap = true;
+                this._pMipmap = false;
                 this._smooth = true;
                 this._repeat = false;
                 this._pDepthCompareMode = ContextGLCompareMode.LESS_EQUAL;
@@ -19011,14 +19011,14 @@ var away;
             * Creates a new TextureMultiPassMaterial.
             * @param texture The texture used for the material's albedo color.
             * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
-            * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
-            * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
+            * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
+            * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
             */
             function TextureMultiPassMaterial(texture, smooth, repeat, mipmap) {
                 if (typeof texture === "undefined") { texture = null; }
                 if (typeof smooth === "undefined") { smooth = true; }
                 if (typeof repeat === "undefined") { repeat = false; }
-                if (typeof mipmap === "undefined") { mipmap = true; }
+                if (typeof mipmap === "undefined") { mipmap = false; }
                 _super.call(this);
                 this._animateUVs = false;
                 this.texture = texture;
@@ -19146,8 +19146,8 @@ var away;
             * Creates a new TextureMaterial.
             * @param texture The texture used for the material's albedo color.
             * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
-            * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
-            * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
+            * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
+            * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
             */
             function TextureMaterial(texture, smooth, repeat, mipmap) {
                 if (typeof texture === "undefined") { texture = null; }
@@ -19840,7 +19840,10 @@ var away;
             * Creates a new SkyboxMaterial object.
             * @param cubeMap The CubeMap to use as the skybox.
             */
-            function SkyboxMaterial(cubeMap) {
+            function SkyboxMaterial(cubeMap, smooth, repeat, mipmap) {
+                if (typeof smooth === "undefined") { smooth = true; }
+                if (typeof repeat === "undefined") { repeat = false; }
+                if (typeof mipmap === "undefined") { mipmap = false; }
                 _super.call(this);
 
                 this._cubeMap = cubeMap;

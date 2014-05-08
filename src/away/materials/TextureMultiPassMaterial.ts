@@ -14,10 +14,10 @@ module away.materials
 		 * Creates a new TextureMultiPassMaterial.
 		 * @param texture The texture used for the material's albedo color.
 		 * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
-		 * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
-		 * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
+		 * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
+		 * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
 		 */
-		constructor(texture:away.textures.Texture2DBase = null, smooth:boolean = true, repeat:boolean = false, mipmap:boolean = true)
+		constructor(texture:away.textures.Texture2DBase = null, smooth:boolean = true, repeat:boolean = false, mipmap:boolean = false)
 		{
 			super();
 			this.texture = texture;

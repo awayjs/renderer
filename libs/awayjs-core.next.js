@@ -2762,12 +2762,12 @@ var away;
                     return away.parsers.ParserBase.MORE_TO_PARSE;
                 } else if (this._htmlImageElement) {
                     if (away.utils.TextureUtils.isHTMLImageElementValid(this._htmlImageElement)) {
-                        asset = new away.textures.ImageTexture(this._htmlImageElement, false);
+                        asset = new away.textures.ImageTexture(this._htmlImageElement);
                         this._pFinalizeAsset(asset, this._iFileName);
                     }
                 } else if (this.data instanceof HTMLImageElement) {
                     if (away.utils.TextureUtils.isHTMLImageElementValid(this.data)) {
-                        asset = new away.textures.ImageTexture(this.data, false);
+                        asset = new away.textures.ImageTexture(this.data);
                         this._pFinalizeAsset(asset, this._iFileName);
                     } else {
                         sizeError = true;
@@ -2778,7 +2778,7 @@ var away;
                     var htmlImageElement = away.parsers.ParserUtils.byteArrayToImage(this.data);
 
                     if (away.utils.TextureUtils.isHTMLImageElementValid(htmlImageElement)) {
-                        asset = new away.textures.ImageTexture(htmlImageElement, false);
+                        asset = new away.textures.ImageTexture(htmlImageElement);
                         this._pFinalizeAsset(asset, this._iFileName);
                     } else {
                         sizeError = true;
@@ -2786,7 +2786,7 @@ var away;
                 } else if (this.data instanceof ArrayBuffer) {
                     this._htmlImageElement = away.parsers.ParserUtils.arrayBufferToImage(this.data);
 
-                    asset = new away.textures.ImageTexture(this._htmlImageElement, false);
+                    asset = new away.textures.ImageTexture(this._htmlImageElement);
                     this._pFinalizeAsset(asset, this._iFileName);
                 } else if (this.data instanceof Blob) {
                     this._htmlImageElement = away.parsers.ParserUtils.blobToImage(this.data);
@@ -3032,7 +3032,7 @@ var away;
 
                 if (this.data instanceof HTMLImageElement) {
                     if (away.utils.TextureUtils.isHTMLImageElementValid(this.data)) {
-                        asset = new away.textures.ImageTexture(this.data, false);
+                        asset = new away.textures.ImageTexture(this.data);
                         this._pFinalizeAsset(asset, this._iFileName);
                     } else {
                         sizeError = true;
@@ -3043,7 +3043,7 @@ var away;
                     var htmlImageElement = away.parsers.ParserUtils.byteArrayToImage(this.data);
 
                     if (away.utils.TextureUtils.isHTMLImageElementValid(htmlImageElement)) {
-                        asset = new away.textures.ImageTexture(htmlImageElement, false);
+                        asset = new away.textures.ImageTexture(htmlImageElement);
                         this._pFinalizeAsset(asset, this._iFileName);
                     } else {
                         sizeError = true;
@@ -30335,7 +30335,7 @@ var away;
             *
             */
             function TextureProxyBase(generateMipmaps) {
-                if (typeof generateMipmaps === "undefined") { generateMipmaps = true; }
+                if (typeof generateMipmaps === "undefined") { generateMipmaps = false; }
                 _super.call(this);
                 this._pFormat = "bgra";
                 this._textureData = new Array();
@@ -30461,7 +30461,7 @@ var away;
         var Texture2DBase = (function (_super) {
             __extends(Texture2DBase, _super);
             function Texture2DBase(generateMipmaps) {
-                if (typeof generateMipmaps === "undefined") { generateMipmaps = true; }
+                if (typeof generateMipmaps === "undefined") { generateMipmaps = false; }
                 _super.call(this, generateMipmaps);
             }
             Object.defineProperty(Texture2DBase.prototype, "width", {
@@ -30571,7 +30571,7 @@ var away;
         var CubeTextureBase = (function (_super) {
             __extends(CubeTextureBase, _super);
             function CubeTextureBase(generateMipmaps) {
-                if (typeof generateMipmaps === "undefined") { generateMipmaps = true; }
+                if (typeof generateMipmaps === "undefined") { generateMipmaps = false; }
                 _super.call(this, generateMipmaps);
                 this._mipmapDataArray = new Array(6);
                 this._mipmapDataDirtyArray = new Array(6);
@@ -30656,7 +30656,7 @@ var away;
             * @param generateMipmaps
             */
             function ImageTexture(htmlImageElement, generateMipmaps) {
-                if (typeof generateMipmaps === "undefined") { generateMipmaps = true; }
+                if (typeof generateMipmaps === "undefined") { generateMipmaps = false; }
                 _super.call(this, generateMipmaps);
 
                 this.htmlImageElement = htmlImageElement;
@@ -30701,7 +30701,7 @@ var away;
         var BitmapTexture = (function (_super) {
             __extends(BitmapTexture, _super);
             function BitmapTexture(bitmapData, generateMipmaps) {
-                if (typeof generateMipmaps === "undefined") { generateMipmaps = true; }
+                if (typeof generateMipmaps === "undefined") { generateMipmaps = false; }
                 _super.call(this, generateMipmaps);
 
                 this.bitmapData = bitmapData;

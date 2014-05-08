@@ -85,7 +85,7 @@ module away.materials
 		private _numPasses:number = 0;
 		private _passes:Array<MaterialPassBase>;
 
-		public _pMipmap:boolean = true;
+		public _pMipmap:boolean = false; // Update
 		private _smooth:boolean = true;
 		private _repeat:boolean = false; // Update
 

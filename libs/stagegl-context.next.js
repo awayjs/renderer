@@ -1375,9 +1375,6 @@ var away;
     (function (gl) {
         var SamplerState = (function () {
             function SamplerState() {
-                this.wrap = 0;
-                this.filter = 0;
-                this.mipfilter = 0;
             }
             return SamplerState;
         })();
@@ -1415,6 +1412,14 @@ var away;
             TextureBase.prototype.dispose = function () {
                 throw "Abstract method must be overridden.";
             };
+
+            Object.defineProperty(TextureBase.prototype, "glTexture", {
+                get: function () {
+                    throw new away.errors.AbstractMethodError();
+                },
+                enumerable: true,
+                configurable: true
+            });
             return TextureBase;
         })();
         _gl.TextureBase = TextureBase;
@@ -1475,8 +1480,6 @@ var away;
                     data = data.imageData;
 
                 this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
-
-                //this._gl.pixelStorei( this._gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._gl.ZERO );
                 this._gl.texImage2D(this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
                 this._gl.bindTexture(this._gl.TEXTURE_2D, null);
             };
@@ -1498,15 +1501,7 @@ var away;
             Texture.prototype.generateFromRenderBuffer = function () {
                 this._frameBuffer = this._gl.createFramebuffer();
                 this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
-
-                //this._frameBuffer.width = this._width;
-                //this._frameBuffer.height = this._height;
                 this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
-
-                //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, this._gl.LINEAR);
-                //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, this._gl.LINEAR_MIPMAP_NEAREST);
-                //this._gl.generateMipmap(this._gl.TEXTURE_2D);
-                //this._gl.texImage2D( this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData );
                 this._gl.texImage2D(this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._width, this._height, 0, this._gl.RGBA, this._gl.UNSIGNED_BYTE, null);
 
                 var renderBuffer = this._gl.createRenderbuffer();
@@ -1522,6 +1517,7 @@ var away;
             };
 
             Texture.prototype.generateMipmaps = function () {
+                //TODO: implement generating mipmaps
                 //this._gl.bindTexture( this._gl.TEXTURE_2D, this._glTexture );
                 //this._gl.generateMipmap(this._gl.TEXTURE_2D);
                 //this._gl.bindTexture( this._gl.TEXTURE_2D, null );
@@ -1540,9 +1536,17 @@ var away;
             __extends(CubeTexture, _super);
             function CubeTexture(gl, size) {
                 _super.call(this, gl);
+                this._textureSelectorDictionary = new Array(6);
                 this.textureType = "textureCube";
                 this._size = size;
                 this._texture = this._gl.createTexture();
+
+                this._textureSelectorDictionary[0] = gl.TEXTURE_CUBE_MAP_POSITIVE_X;
+                this._textureSelectorDictionary[1] = gl.TEXTURE_CUBE_MAP_NEGATIVE_X;
+                this._textureSelectorDictionary[2] = gl.TEXTURE_CUBE_MAP_POSITIVE_Y;
+                this._textureSelectorDictionary[3] = gl.TEXTURE_CUBE_MAP_NEGATIVE_Y;
+                this._textureSelectorDictionary[4] = gl.TEXTURE_CUBE_MAP_POSITIVE_Z;
+                this._textureSelectorDictionary[5] = gl.TEXTURE_CUBE_MAP_NEGATIVE_Z;
             }
             CubeTexture.prototype.dispose = function () {
                 this._gl.deleteTexture(this._texture);
@@ -1554,31 +1558,7 @@ var away;
                     data = data.imageData;
 
                 this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-
-                switch (side) {
-                    case 0:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
-
-                        break;
-                    case 1:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
-                        break;
-                    case 2:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
-                        break;
-                    case 3:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
-                        break;
-                    case 4:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
-                        break;
-                    case 5:
-                        this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
-                        break;
-                    default:
-                        throw "unknown side type";
-                }
-
+                this._gl.texImage2D(this._textureSelectorDictionary[side], miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
                 this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
             };
 
@@ -1790,25 +1770,88 @@ var away;
     (function (gl) {
         var ContextGL = (function () {
             function ContextGL(canvas) {
-                this._currentWrap = 0;
-                this._currentFilter = 0;
-                this._currentMipFilter = 0;
-                this._indexBufferList = [];
-                this._vertexBufferList = [];
-                this._textureList = [];
-                this._programList = [];
-                this._samplerStates = [];
+                this._blendFactorDictionary = new Object();
+                this._depthTestDictionary = new Object();
+                this._textureIndexDictionary = new Array(8);
+                this._textureTypeDictionary = new Object();
+                this._wrapDictionary = new Object();
+                this._filterDictionary = new Object();
+                this._mipmapFilterDictionary = new Object();
+                this._uniformLocationNameDictionary = new Object();
+                this._vertexBufferDimensionDictionary = new Object();
+                this._indexBufferList = new Array();
+                this._vertexBufferList = new Array();
+                this._textureList = new Array();
+                this._programList = new Array();
+                this._samplerStates = new Array(8);
                 try  {
                     this._gl = canvas.getContext("experimental-webgl", { premultipliedAlpha: false, alpha: false });
-                    if (!this._gl) {
+
+                    if (!this._gl)
                         this._gl = canvas.getContext("webgl", { premultipliedAlpha: false, alpha: false });
-                    }
                 } catch (e) {
                     //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
                 }
 
                 if (this._gl) {
                     //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_SUCCESS ) );
+                    //setup shortcut dictionaries
+                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ONE] = this._gl.ONE;
+                    this._blendFactorDictionary[gl.ContextGLBlendFactor.DESTINATION_ALPHA] = this._gl.DST_ALPHA;
+                    this._blendFactorDictionary[gl.ContextGLBlendFactor.DESTINATION_COLOR] = this._gl.DST_COLOR;
+                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ONE] = this._gl.ONE;
+                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA] = this._gl.ONE_MINUS_DST_ALPHA;
+                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR] = this._gl.ONE_MINUS_DST_COLOR;
+                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA] = this._gl.ONE_MINUS_SRC_ALPHA;
+                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR] = this._gl.ONE_MINUS_SRC_COLOR;
+                    this._blendFactorDictionary[gl.ContextGLBlendFactor.SOURCE_ALPHA] = this._gl.SRC_ALPHA;
+                    this._blendFactorDictionary[gl.ContextGLBlendFactor.SOURCE_COLOR] = this._gl.SRC_COLOR;
+                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ZERO] = this._gl.ZERO;
+
+                    this._depthTestDictionary[gl.ContextGLCompareMode.ALWAYS] = this._gl.ALWAYS;
+                    this._depthTestDictionary[gl.ContextGLCompareMode.EQUAL] = this._gl.EQUAL;
+                    this._depthTestDictionary[gl.ContextGLCompareMode.GREATER] = this._gl.GREATER;
+                    this._depthTestDictionary[gl.ContextGLCompareMode.GREATER_EQUAL] = this._gl.GEQUAL;
+                    this._depthTestDictionary[gl.ContextGLCompareMode.LESS] = this._gl.LESS;
+                    this._depthTestDictionary[gl.ContextGLCompareMode.LESS_EQUAL] = this._gl.LEQUAL;
+                    this._depthTestDictionary[gl.ContextGLCompareMode.NEVER] = this._gl.NEVER;
+                    this._depthTestDictionary[gl.ContextGLCompareMode.NOT_EQUAL] = this._gl.NOTEQUAL;
+
+                    this._textureIndexDictionary[0] = this._gl.TEXTURE0;
+                    this._textureIndexDictionary[1] = this._gl.TEXTURE1;
+                    this._textureIndexDictionary[2] = this._gl.TEXTURE2;
+                    this._textureIndexDictionary[3] = this._gl.TEXTURE3;
+                    this._textureIndexDictionary[4] = this._gl.TEXTURE4;
+                    this._textureIndexDictionary[5] = this._gl.TEXTURE5;
+                    this._textureIndexDictionary[6] = this._gl.TEXTURE6;
+                    this._textureIndexDictionary[7] = this._gl.TEXTURE7;
+
+                    this._textureTypeDictionary["texture2d"] = this._gl.TEXTURE_2D;
+                    this._textureTypeDictionary["textureCube"] = this._gl.TEXTURE_CUBE_MAP;
+
+                    this._wrapDictionary[gl.ContextGLWrapMode.REPEAT] = this._gl.REPEAT;
+                    this._wrapDictionary[gl.ContextGLWrapMode.CLAMP] = this._gl.CLAMP_TO_EDGE;
+
+                    this._filterDictionary[gl.ContextGLTextureFilter.LINEAR] = this._gl.LINEAR;
+                    this._filterDictionary[gl.ContextGLTextureFilter.NEAREST] = this._gl.NEAREST;
+
+                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.LINEAR] = new Object();
+                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.LINEAR][gl.ContextGLMipFilter.MIPNEAREST] = this._gl.LINEAR_MIPMAP_NEAREST;
+                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.LINEAR][gl.ContextGLMipFilter.MIPLINEAR] = this._gl.LINEAR_MIPMAP_LINEAR;
+                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.LINEAR][gl.ContextGLMipFilter.MIPNONE] = this._gl.LINEAR;
+                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.NEAREST] = new Object();
+                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.NEAREST][gl.ContextGLMipFilter.MIPNEAREST] = this._gl.NEAREST_MIPMAP_NEAREST;
+                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.NEAREST][gl.ContextGLMipFilter.MIPLINEAR] = this._gl.NEAREST_MIPMAP_LINEAR;
+                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.NEAREST][gl.ContextGLMipFilter.MIPNONE] = this._gl.NEAREST;
+
+                    this._uniformLocationNameDictionary[gl.ContextGLProgramType.VERTEX] = "vc";
+                    this._uniformLocationNameDictionary[gl.ContextGLProgramType.FRAGMENT] = "fc";
+
+                    this._vertexBufferDimensionDictionary[gl.ContextGLVertexBufferFormat.FLOAT_1] = 1;
+                    this._vertexBufferDimensionDictionary[gl.ContextGLVertexBufferFormat.FLOAT_2] = 2;
+                    this._vertexBufferDimensionDictionary[gl.ContextGLVertexBufferFormat.FLOAT_3] = 3;
+                    this._vertexBufferDimensionDictionary[gl.ContextGLVertexBufferFormat.FLOAT_4] = 4;
+                    this._vertexBufferDimensionDictionary[gl.ContextGLVertexBufferFormat.BYTES_4] = 4;
                 } else {
                     //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
                     alert("WebGL is not available.");
@@ -1818,7 +1861,7 @@ var away;
                     this._samplerStates[i] = new gl.SamplerState();
                     this._samplerStates[i].wrap = this._gl.REPEAT;
                     this._samplerStates[i].filter = this._gl.LINEAR;
-                    this._samplerStates[i].mipfilter = 0;
+                    this._samplerStates[i].mipfilter = this._gl.LINEAR;
                 }
             }
             ContextGL.prototype.gl = function () {
@@ -1837,6 +1880,7 @@ var away;
                     this.updateBlendStatus();
                     this._drawing = true;
                 }
+
                 this._gl.clearColor(red, green, blue, alpha);
                 this._gl.clearDepth(depth);
                 this._gl.clearStencil(stencil);
@@ -1938,90 +1982,14 @@ var away;
 
             ContextGL.prototype.present = function () {
                 this._drawing = false;
-                //this._gl.useProgram( null );
             };
 
             ContextGL.prototype.setBlendFactors = function (sourceFactor, destinationFactor) {
-                //TODO optimise with table lookup
                 this._blendEnabled = true;
 
-                switch (sourceFactor) {
-                    case gl.ContextGLBlendFactor.ONE:
-                        this._blendSourceFactor = this._gl.ONE;
-                        break;
-                    case gl.ContextGLBlendFactor.DESTINATION_ALPHA:
-                        this._blendSourceFactor = this._gl.DST_ALPHA;
-                        break;
-                    case gl.ContextGLBlendFactor.DESTINATION_COLOR:
-                        this._blendSourceFactor = this._gl.DST_COLOR;
-                        break;
-                    case gl.ContextGLBlendFactor.ONE:
-                        this._blendSourceFactor = this._gl.ONE;
-                        break;
-                    case gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
-                        this._blendSourceFactor = this._gl.ONE_MINUS_DST_ALPHA;
-                        break;
-                    case gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR:
-                        this._blendSourceFactor = this._gl.ONE_MINUS_DST_COLOR;
-                        break;
-                    case gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA:
-                        this._blendSourceFactor = this._gl.ONE_MINUS_SRC_ALPHA;
-                        break;
-                    case gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR:
-                        this._blendSourceFactor = this._gl.ONE_MINUS_SRC_COLOR;
-                        break;
-                    case gl.ContextGLBlendFactor.SOURCE_ALPHA:
-                        this._blendSourceFactor = this._gl.SRC_ALPHA;
-                        break;
-                    case gl.ContextGLBlendFactor.SOURCE_COLOR:
-                        this._blendSourceFactor = this._gl.SRC_COLOR;
-                        break;
-                    case gl.ContextGLBlendFactor.ZERO:
-                        this._blendSourceFactor = this._gl.ZERO;
-                        break;
-                    default:
-                        throw "Unknown blend source factor";
-                        break;
-                }
+                this._blendSourceFactor = this._blendFactorDictionary[sourceFactor];
 
-                switch (destinationFactor) {
-                    case gl.ContextGLBlendFactor.ONE:
-                        this._blendDestinationFactor = this._gl.ONE;
-                        break;
-                    case gl.ContextGLBlendFactor.DESTINATION_ALPHA:
-                        this._blendDestinationFactor = this._gl.DST_ALPHA;
-                        break;
-                    case gl.ContextGLBlendFactor.DESTINATION_COLOR:
-                        this._blendDestinationFactor = this._gl.DST_COLOR;
-                        break;
-                    case gl.ContextGLBlendFactor.ONE:
-                        this._blendDestinationFactor = this._gl.ONE;
-                        break;
-                    case gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
-                        this._blendDestinationFactor = this._gl.ONE_MINUS_DST_ALPHA;
-                        break;
-                    case gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR:
-                        this._blendDestinationFactor = this._gl.ONE_MINUS_DST_COLOR;
-                        break;
-                    case gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA:
-                        this._blendDestinationFactor = this._gl.ONE_MINUS_SRC_ALPHA;
-                        break;
-                    case gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR:
-                        this._blendDestinationFactor = this._gl.ONE_MINUS_SRC_COLOR;
-                        break;
-                    case gl.ContextGLBlendFactor.SOURCE_ALPHA:
-                        this._blendDestinationFactor = this._gl.SRC_ALPHA;
-                        break;
-                    case gl.ContextGLBlendFactor.SOURCE_COLOR:
-                        this._blendDestinationFactor = this._gl.SRC_COLOR;
-                        break;
-                    case gl.ContextGLBlendFactor.ZERO:
-                        this._blendDestinationFactor = this._gl.ZERO;
-                        break;
-                    default:
-                        throw "Unknown blend destination factor";
-                        break;
-                }
+                this._blendDestinationFactor = this._blendFactorDictionary[destinationFactor];
 
                 this.updateBlendStatus();
             };
@@ -2054,35 +2022,8 @@ var away;
 
             // TODO ContextGLCompareMode
             ContextGL.prototype.setDepthTest = function (depthMask, passCompareMode) {
-                switch (passCompareMode) {
-                    case gl.ContextGLCompareMode.ALWAYS:
-                        this._gl.depthFunc(this._gl.ALWAYS);
-                        break;
-                    case gl.ContextGLCompareMode.EQUAL:
-                        this._gl.depthFunc(this._gl.EQUAL);
-                        break;
-                    case gl.ContextGLCompareMode.GREATER:
-                        this._gl.depthFunc(this._gl.GREATER);
-                        break;
-                    case gl.ContextGLCompareMode.GREATER_EQUAL:
-                        this._gl.depthFunc(this._gl.GEQUAL);
-                        break;
-                    case gl.ContextGLCompareMode.LESS:
-                        this._gl.depthFunc(this._gl.LESS);
-                        break;
-                    case gl.ContextGLCompareMode.LESS_EQUAL:
-                        this._gl.depthFunc(this._gl.LEQUAL);
-                        break;
-                    case gl.ContextGLCompareMode.NEVER:
-                        this._gl.depthFunc(this._gl.NEVER);
-                        break;
-                    case gl.ContextGLCompareMode.NOT_EQUAL:
-                        this._gl.depthFunc(this._gl.NOTEQUAL);
-                        break;
-                    default:
-                        throw "Unknown ContextGLCompareMode type.";
-                        break;
-                }
+                this._gl.depthFunc(this._depthTestDictionary[passCompareMode]);
+
                 this._gl.depthMask(depthMask);
             };
 
@@ -2092,52 +2033,19 @@ var away;
                 program.focusProgram();
             };
 
-            ContextGL.prototype.getUniformLocationNameFromAgalRegisterIndex = function (programType, firstRegister) {
-                switch (programType) {
-                    case gl.ContextGLProgramType.VERTEX:
-                        return "vc";
-                        break;
-                    case gl.ContextGLProgramType.FRAGMENT:
-                        return "fc";
-                        break;
-                    default:
-                        throw "Program Type " + programType + " not supported";
-                }
-            };
-
-            /*
-            public setProgramConstantsFromByteArray
-            */
             ContextGL.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
                 if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
-                var locationName = this.getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister);
-                this.setGLSLProgramConstantsFromMatrix(locationName, matrix, transposedMatrix);
+                this._gl.uniformMatrix4fv(this._gl.getUniformLocation(this._currentProgram.glProgram, this._uniformLocationNameDictionary[programType]), !transposedMatrix, new Float32Array(matrix.rawData));
             };
 
             ContextGL.prototype.setProgramConstantsFromArray = function (programType, firstRegister, data, numRegisters) {
                 if (typeof numRegisters === "undefined") { numRegisters = -1; }
-                for (var i = 0; i < numRegisters; ++i) {
-                    var currentIndex = i * 4;
-                    var locationName = this.getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister + i) + (i + firstRegister);
-
-                    this.setGLSLProgramConstantsFromArray(locationName, data, currentIndex);
+                var locationName = this._uniformLocationNameDictionary[programType];
+                var startIndex;
+                for (var i = 0; i < numRegisters; i++) {
+                    startIndex = i * 4;
+                    this._gl.uniform4f(this._gl.getUniformLocation(this._currentProgram.glProgram, locationName + (firstRegister + i)), data[startIndex], data[startIndex + 1], data[startIndex + 2], data[startIndex + 3]);
                 }
-            };
-
-            /*
-            public setGLSLProgramConstantsFromByteArray
-            
-            */
-            ContextGL.prototype.setGLSLProgramConstantsFromMatrix = function (locationName, matrix, transposedMatrix) {
-                if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
-                var location = this._gl.getUniformLocation(this._currentProgram.glProgram, locationName);
-                this._gl.uniformMatrix4fv(location, !transposedMatrix, new Float32Array(matrix.rawData));
-            };
-
-            ContextGL.prototype.setGLSLProgramConstantsFromArray = function (locationName, data, startIndex) {
-                if (typeof startIndex === "undefined") { startIndex = 0; }
-                var location = this._gl.getUniformLocation(this._currentProgram.glProgram, locationName);
-                this._gl.uniform4f(location, data[startIndex], data[startIndex + 1], data[startIndex + 2], data[startIndex + 3]);
             };
 
             ContextGL.prototype.setScissorRectangle = function (rectangle) {
@@ -2151,143 +2059,41 @@ var away;
             };
 
             ContextGL.prototype.setTextureAt = function (sampler, texture) {
-                var locationName = "fs" + sampler;
-                this.setGLSLTextureAt(locationName, texture, sampler);
-            };
+                var samplerState = this._samplerStates[sampler];
 
-            ContextGL.prototype.setGLSLTextureAt = function (locationName, texture, textureIndex) {
+                if (this._activeTexture != sampler && (texture || samplerState.type)) {
+                    this._activeTexture = sampler;
+                    this._gl.activeTexture(this._textureIndexDictionary[sampler]);
+                }
+
                 if (!texture) {
-                    this._gl.activeTexture(this._gl.TEXTURE0 + (textureIndex));
-                    this._gl.bindTexture(this._gl.TEXTURE_2D, null);
-                    this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
+                    if (samplerState.type) {
+                        this._gl.bindTexture(samplerState.type, null);
+                        samplerState.type = null;
+                    }
+
                     return;
                 }
 
-                switch (textureIndex) {
-                    case 0:
-                        this._gl.activeTexture(this._gl.TEXTURE0);
-                        break;
-                    case 1:
-                        this._gl.activeTexture(this._gl.TEXTURE1);
-                        break;
-                    case 2:
-                        this._gl.activeTexture(this._gl.TEXTURE2);
-                        break;
-                    case 3:
-                        this._gl.activeTexture(this._gl.TEXTURE3);
-                        break;
-                    case 4:
-                        this._gl.activeTexture(this._gl.TEXTURE4);
-                        break;
-                    case 5:
-                        this._gl.activeTexture(this._gl.TEXTURE5);
-                        break;
-                    case 6:
-                        this._gl.activeTexture(this._gl.TEXTURE6);
-                        break;
-                    case 7:
-                        this._gl.activeTexture(this._gl.TEXTURE7);
-                        break;
-                    default:
-                        throw "Texture " + textureIndex + " is out of bounds.";
-                }
+                var textureType = this._textureTypeDictionary[texture.textureType];
+                samplerState.type = textureType;
 
-                var location = this._gl.getUniformLocation(this._currentProgram.glProgram, locationName);
+                this._gl.bindTexture(textureType, texture.glTexture);
 
-                if (texture.textureType == "texture2d") {
-                    this._gl.bindTexture(this._gl.TEXTURE_2D, texture.glTexture);
-                    this._gl.uniform1i(location, textureIndex);
-                    var samplerState = this._samplerStates[textureIndex];
+                this._gl.uniform1i(this._gl.getUniformLocation(this._currentProgram.glProgram, "fs" + sampler), sampler);
 
-                    if (samplerState.wrap != this._currentWrap) {
-                        //this._currentWrap = samplerState.wrap;
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, samplerState.wrap);
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, samplerState.wrap);
-                    }
+                this._gl.texParameteri(textureType, this._gl.TEXTURE_WRAP_S, samplerState.wrap);
+                this._gl.texParameteri(textureType, this._gl.TEXTURE_WRAP_T, samplerState.wrap);
 
-                    if (samplerState.filter != this._currentFilter) {
-                        //this._currentFilter = samplerState.filter;
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter);
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
-                    }
-
-                    if (samplerState.mipfilter != this._currentMipFilter) {
-                        //this._currentMipFilter = samplerState.mipfilter;
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.mipfilter);
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.mipfilter);
-                    }
-                    //this._gl.bindTexture( this._gl.TEXTURE_2D, null );
-                } else if (texture.textureType == "textureCube") {
-                    this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, texture.glTexture);
-                    this._gl.uniform1i(location, textureIndex);
-                    var samplerState = this._samplerStates[textureIndex];
-
-                    if (samplerState.wrap != this._currentWrap) {
-                        //this._currentWrap = samplerState.wrap;
-                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_S, samplerState.wrap);
-                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_T, samplerState.wrap);
-                    }
-
-                    if (samplerState.filter != this._currentFilter) {
-                        //this._currentFilter = samplerState.filter;
-                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MIN_FILTER, samplerState.filter);
-                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
-                    }
-
-                    if (samplerState.mipfilter != this._currentMipFilter) {
-                        //this._currentMipFilter = samplerState.mipfilter;
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.mipfilter);
-                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.mipfilter);
-                    }
-                    //this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
-                }
+                this._gl.texParameteri(textureType, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
+                this._gl.texParameteri(textureType, this._gl.TEXTURE_MIN_FILTER, samplerState.mipfilter);
             };
 
             ContextGL.prototype.setSamplerStateAt = function (sampler, wrap, filter, mipfilter) {
-                var glWrap = 0;
-                var glFilter = 0;
-                var glMipFilter = 0;
-
-                switch (wrap) {
-                    case gl.ContextGLWrapMode.REPEAT:
-                        glWrap = this._gl.REPEAT;
-                        break;
-                    case gl.ContextGLWrapMode.CLAMP:
-                        glWrap = this._gl.CLAMP_TO_EDGE;
-                        break;
-                    default:
-                        throw "Wrap is not supported: " + wrap;
-                }
-
-                switch (filter) {
-                    case gl.ContextGLTextureFilter.LINEAR:
-                        glFilter = this._gl.LINEAR;
-                        break;
-                    case gl.ContextGLTextureFilter.NEAREST:
-                        glFilter = this._gl.NEAREST;
-                        break;
-                    default:
-                        throw "Filter is not supported " + filter;
-                }
-
-                switch (mipfilter) {
-                    case gl.ContextGLMipFilter.MIPNEAREST:
-                        glMipFilter = this._gl.NEAREST_MIPMAP_NEAREST;
-                        break;
-                    case gl.ContextGLMipFilter.MIPLINEAR:
-                        glMipFilter = this._gl.LINEAR_MIPMAP_LINEAR;
-                        break;
-                    case gl.ContextGLMipFilter.MIPNONE:
-                        glMipFilter = this._gl.NONE;
-                        break;
-                    default:
-                        throw "MipFilter is not supported " + mipfilter;
-                }
-
                 if (0 <= sampler && sampler < ContextGL.MAX_SAMPLERS) {
-                    this._samplerStates[sampler].wrap = glWrap;
-                    this._samplerStates[sampler].filter = glFilter;
-                    this._samplerStates[sampler].mipfilter = glMipFilter;
+                    this._samplerStates[sampler].wrap = this._wrapDictionary[wrap];
+                    this._samplerStates[sampler].filter = this._filterDictionary[filter];
+                    this._samplerStates[sampler].mipfilter = this._mipmapFilterDictionary[filter][mipfilter];
                 } else {
                     throw "Sampler is out of bounds.";
                 }
@@ -2296,15 +2102,8 @@ var away;
             ContextGL.prototype.setVertexBufferAt = function (index, buffer, bufferOffset, format) {
                 if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
                 if (typeof format === "undefined") { format = null; }
-                var locationName = "va" + index;
-                this.setGLSLVertexBufferAt(locationName, buffer, bufferOffset, format);
-            };
+                var location = this._currentProgram ? this._gl.getAttribLocation(this._currentProgram.glProgram, "va" + index) : -1;
 
-            ContextGL.prototype.setGLSLVertexBufferAt = function (locationName, buffer, bufferOffset, format) {
-                //if ( buffer == null )return;
-                if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
-                if (typeof format === "undefined") { format = null; }
-                var location = this._currentProgram ? this._gl.getAttribLocation(this._currentProgram.glProgram, locationName) : -1;
                 if (!buffer) {
                     if (location > -1)
                         this._gl.disableVertexAttribArray(location);
@@ -2313,33 +2112,8 @@ var away;
                 }
 
                 this._gl.bindBuffer(this._gl.ARRAY_BUFFER, buffer.glBuffer);
-
-                var dimension;
-                var type = this._gl.FLOAT;
-                var numBytes = 4;
-
-                switch (format) {
-                    case gl.ContextGLVertexBufferFormat.BYTES_4:
-                        dimension = 4;
-                        break;
-                    case gl.ContextGLVertexBufferFormat.FLOAT_1:
-                        dimension = 1;
-                        break;
-                    case gl.ContextGLVertexBufferFormat.FLOAT_2:
-                        dimension = 2;
-                        break;
-                    case gl.ContextGLVertexBufferFormat.FLOAT_3:
-                        dimension = 3;
-                        break;
-                    case gl.ContextGLVertexBufferFormat.FLOAT_4:
-                        dimension = 4;
-                        break;
-                    default:
-                        throw "Buffer format " + format + " is not supported.";
-                }
-
                 this._gl.enableVertexAttribArray(location);
-                this._gl.vertexAttribPointer(location, dimension, type, false, buffer.data32PerVertex * numBytes, bufferOffset * numBytes);
+                this._gl.vertexAttribPointer(location, this._vertexBufferDimensionDictionary[format], this._gl.FLOAT, false, buffer.data32PerVertex * 4, bufferOffset * 4);
             };
 
             ContextGL.prototype.setRenderToTexture = function (target, enableDepthAndStencil, antiAlias, surfaceSelector) {

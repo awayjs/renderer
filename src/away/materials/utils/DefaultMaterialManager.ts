@@ -35,7 +35,7 @@ module away.materials
 		private static createDefaultTexture()
 		{
 			DefaultMaterialManager._defaultTextureBitmapData = DefaultMaterialManager.createCheckeredBitmapData();
-			DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture(DefaultMaterialManager._defaultTextureBitmapData, false);
+			DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture(DefaultMaterialManager._defaultTextureBitmapData, true);
 			DefaultMaterialManager._defaultTexture.name = "defaultTexture";
 		}
 

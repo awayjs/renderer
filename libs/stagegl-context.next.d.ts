@@ -234,6 +234,7 @@ declare module away.gl {
 }
 declare module away.gl {
     class SamplerState {
+        public type: number;
         public wrap: number;
         public filter: number;
         public mipfilter: number;
@@ -254,6 +255,7 @@ declare module away.gl {
         public _gl: WebGLRenderingContext;
         constructor(gl: WebGLRenderingContext);
         public dispose(): void;
+        public glTexture : WebGLTexture;
     }
 }
 declare module away.gl {
@@ -278,6 +280,7 @@ declare module away.gl {
 }
 declare module away.gl {
     class CubeTexture extends TextureBase {
+        private _textureSelectorDictionary;
         public textureType: string;
         private _texture;
         private _size;
@@ -379,13 +382,19 @@ declare module away.gl {
 }
 declare module away.gl {
     class ContextGL {
+        private _blendFactorDictionary;
+        private _depthTestDictionary;
+        private _textureIndexDictionary;
+        private _textureTypeDictionary;
+        private _wrapDictionary;
+        private _filterDictionary;
+        private _mipmapFilterDictionary;
+        private _uniformLocationNameDictionary;
+        private _vertexBufferDimensionDictionary;
         private _drawing;
         private _blendEnabled;
         private _blendSourceFactor;
         private _blendDestinationFactor;
-        private _currentWrap;
-        private _currentFilter;
-        private _currentMipFilter;
         private _indexBufferList;
         private _vertexBufferList;
         private _textureList;
@@ -394,6 +403,7 @@ declare module away.gl {
         static MAX_SAMPLERS: number;
         public _gl: WebGLRenderingContext;
         public _currentProgram: Program;
+        private _activeTexture;
         constructor(canvas: HTMLCanvasElement);
         public gl(): WebGLRenderingContext;
         public clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): void;
@@ -412,18 +422,13 @@ declare module away.gl {
         public setCulling(triangleFaceToCull: string, coordinateSystem?: string): void;
         public setDepthTest(depthMask: boolean, passCompareMode: string): void;
         public setProgram(program: Program): void;
-        private getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister);
         public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: geom.Matrix3D, transposedMatrix?: boolean): void;
         static modulo: number;
         public setProgramConstantsFromArray(programType: string, firstRegister: number, data: number[], numRegisters?: number): void;
-        public setGLSLProgramConstantsFromMatrix(locationName: string, matrix: geom.Matrix3D, transposedMatrix?: boolean): void;
-        public setGLSLProgramConstantsFromArray(locationName: string, data: number[], startIndex?: number): void;
         public setScissorRectangle(rectangle: geom.Rectangle): void;
         public setTextureAt(sampler: number, texture: TextureBase): void;
-        public setGLSLTextureAt(locationName: string, texture: TextureBase, textureIndex: number): void;
         public setSamplerStateAt(sampler: number, wrap: string, filter: string, mipfilter: string): void;
         public setVertexBufferAt(index: number, buffer: VertexBuffer, bufferOffset?: number, format?: string): void;
-        public setGLSLVertexBufferAt(locationName: any, buffer: VertexBuffer, bufferOffset?: number, format?: string): void;
         public setRenderToTexture(target: TextureBase, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): void;
         public setRenderToBackBuffer(): void;
         private updateBlendStatus();

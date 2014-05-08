@@ -6205,8 +6205,8 @@ declare module away.materials {
         * Creates a new TextureMultiPassMaterial.
         * @param texture The texture used for the material's albedo color.
         * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
-        * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
-        * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
+        * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
+        * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
         */
         constructor(texture?: textures.Texture2DBase, smooth?: boolean, repeat?: boolean, mipmap?: boolean);
         /**
@@ -6250,8 +6250,8 @@ declare module away.materials {
         * Creates a new TextureMaterial.
         * @param texture The texture used for the material's albedo color.
         * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
-        * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
-        * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
+        * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
+        * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
         */
         constructor(texture?: textures.Texture2DBase, smooth?: boolean, repeat?: boolean, mipmap?: boolean);
         /**
@@ -6408,7 +6408,7 @@ declare module away.materials {
         * Creates a new SkyboxMaterial object.
         * @param cubeMap The CubeMap to use as the skybox.
         */
-        constructor(cubeMap: textures.CubeTextureBase);
+        constructor(cubeMap: textures.CubeTextureBase, smooth?: boolean, repeat?: boolean, mipmap?: boolean);
         /**
         * The cube texture to use as the skybox.
         */
