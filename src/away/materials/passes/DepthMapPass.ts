@@ -117,7 +117,7 @@ module away.materials
 				var format:string;
 
 				switch (this._alphaMask.format) {
-					case away.gl.ContextGLTextureFormat.COMPRESSED:
+					case away.stagegl.ContextGLTextureFormat.COMPRESSED:
 						format = "dxt1,";
 						break;
 
@@ -146,12 +146,12 @@ module away.materials
 				stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.UV_DATA), renderable.getVertexOffset(SubGeometry.UV_DATA), SubGeometry.UV_FORMAT);
 
 
-			var context:away.gl.ContextGL = stageGL.contextGL;
+			var context:away.stagegl.IContext = stageGL.contextGL;
 			var matrix:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
 
 			matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
 			matrix.append(viewProjection);
-			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
+			context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
 
 			stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA),  renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
 			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
@@ -163,15 +163,15 @@ module away.materials
 		 */
 		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
-			var context:away.gl.ContextGL = stageGL.contextGL;
+			var context:away.stagegl.IContext = stageGL.contextGL;
 
 			super.iActivate(stageGL, camera);
 
 			if (this._alphaThreshold > 0) {
 				this._alphaMask.activateTextureForStage(0, stageGL);
-				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._data, 3);
+				context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._data, 3);
 			} else {
-				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._data, 2);
+				context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._data, 2);
 			}
 		}
 	}

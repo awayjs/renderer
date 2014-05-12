@@ -1,11 +1,9 @@
-///<reference path="../../../build/Away3D.next.d.ts" />
-//<reference path="../../../src/Away3D.ts" />
+///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 var demos;
 (function (demos) {
     (function (object3d) {
-        var PerspectiveProjection = away.projections.PerspectiveProjection;
         var View = away.containers.View;
-        var Mesh = away.entities.Mesh;
+
         var PointLight = away.lights.PointLight;
         var URLLoader = away.net.URLLoader;
         var URLRequest = away.net.URLRequest;
@@ -28,7 +26,7 @@ var demos;
 
                 this.meshes = new Array();
                 this.light = new PointLight();
-                this.view = new View(new DefaultRenderer());
+                this.view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
                 this.pointLight = new PointLight();
                 this.lightPicker = new StaticLightPicker([this.pointLight]);
 

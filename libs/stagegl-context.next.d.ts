@@ -1,5 +1,6 @@
 /// <reference path="../libs/ref/js.d.ts" />
 /// <reference path="../libs/awayjs-core.next.d.ts" />
+/// <reference path="../libs/swfobject.d.ts" />
 declare module aglsl {
     class Sampler {
         public lodbias: number;
@@ -64,20 +65,6 @@ declare module aglsl {
         public regnum: number;
         public regtype: number;
         public dim: number;
-        constructor();
-    }
-}
-declare module aglsl {
-    class ContextGL {
-        public enableErrorChecking: boolean;
-        public resources: any[];
-        public driverInfo: string;
-        static maxvertexconstants: number;
-        static maxfragconstants: number;
-        static maxtemp: number;
-        static maxstreams: number;
-        static maxtextures: number;
-        static defaultsampler: Sampler;
         constructor();
     }
 }
@@ -179,13 +166,7 @@ declare module aglsl {
         public sourcetostring(s: any, subline: any, dwm: any, isscalar: any, desc: any, tag: any): string;
     }
 }
-declare module aglsl {
-    class AGLSLCompiler {
-        public glsl: string;
-        public compile(programType: string, source: string): string;
-    }
-}
-declare module away.gl {
+declare module away.stagegl {
     class ContextGLClearMask {
         static COLOR: number;
         static DEPTH: number;
@@ -193,54 +174,7 @@ declare module away.gl {
         static ALL: number;
     }
 }
-declare module away.gl {
-    class VertexBuffer {
-        private _gl;
-        private _numVertices;
-        private _data32PerVertex;
-        private _buffer;
-        constructor(gl: WebGLRenderingContext, numVertices: number, data32PerVertex: number);
-        public uploadFromArray(vertices: number[], startVertex: number, numVertices: number): void;
-        public numVertices : number;
-        public data32PerVertex : number;
-        public glBuffer : WebGLBuffer;
-        public dispose(): void;
-    }
-}
-declare module away.gl {
-    class IndexBuffer {
-        private _gl;
-        private _numIndices;
-        private _buffer;
-        constructor(gl: WebGLRenderingContext, numIndices: number);
-        public uploadFromArray(data: number[], startOffset: number, count: number): void;
-        public dispose(): void;
-        public numIndices : number;
-        public glBuffer : WebGLBuffer;
-    }
-}
-declare module away.gl {
-    class Program {
-        private _gl;
-        private _program;
-        private _vertexShader;
-        private _fragmentShader;
-        constructor(gl: WebGLRenderingContext);
-        public upload(vertexProgram: string, fragmentProgram: string): any;
-        public dispose(): void;
-        public focusProgram(): void;
-        public glProgram : WebGLProgram;
-    }
-}
-declare module away.gl {
-    class SamplerState {
-        public type: number;
-        public wrap: number;
-        public filter: number;
-        public mipfilter: number;
-    }
-}
-declare module away.gl {
+declare module away.stagegl {
     class ContextGLTextureFormat {
         static BGRA: string;
         static BGRA_PACKED: string;
@@ -249,51 +183,7 @@ declare module away.gl {
         static COMPRESSED_ALPHA: string;
     }
 }
-declare module away.gl {
-    class TextureBase {
-        public textureType: string;
-        public _gl: WebGLRenderingContext;
-        constructor(gl: WebGLRenderingContext);
-        public dispose(): void;
-        public glTexture : WebGLTexture;
-    }
-}
-declare module away.gl {
-    class Texture extends TextureBase {
-        public textureType: string;
-        private _width;
-        private _height;
-        private _frameBuffer;
-        private _glTexture;
-        constructor(gl: WebGLRenderingContext, width: number, height: number);
-        public dispose(): void;
-        public width : number;
-        public height : number;
-        public frameBuffer : WebGLFramebuffer;
-        public uploadFromData(bitmapData: base.BitmapData, miplevel?: number): any;
-        public uploadFromData(image: HTMLImageElement, miplevel?: number): any;
-        public uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
-        public glTexture : WebGLTexture;
-        public generateFromRenderBuffer(): void;
-        public generateMipmaps(): void;
-    }
-}
-declare module away.gl {
-    class CubeTexture extends TextureBase {
-        private _textureSelectorDictionary;
-        public textureType: string;
-        private _texture;
-        private _size;
-        constructor(gl: WebGLRenderingContext, size: number);
-        public dispose(): void;
-        public uploadFromData(bitmapData: base.BitmapData, side: number, miplevel?: number): any;
-        public uploadFromData(image: HTMLImageElement, side: number, miplevel?: number): any;
-        public uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
-        public size : number;
-        public glTexture : WebGLTexture;
-    }
-}
-declare module away.gl {
+declare module away.stagegl {
     class ContextGLTriangleFace {
         static BACK: string;
         static FRONT: string;
@@ -301,7 +191,7 @@ declare module away.gl {
         static NONE: string;
     }
 }
-declare module away.gl {
+declare module away.stagegl {
     class ContextGLVertexBufferFormat {
         static BYTES_4: string;
         static FLOAT_1: string;
@@ -310,13 +200,13 @@ declare module away.gl {
         static FLOAT_4: string;
     }
 }
-declare module away.gl {
+declare module away.stagegl {
     class ContextGLProgramType {
         static FRAGMENT: string;
         static VERTEX: string;
     }
 }
-declare module away.gl {
+declare module away.stagegl {
     class ContextGLBlendFactor {
         static DESTINATION_ALPHA: string;
         static DESTINATION_COLOR: string;
@@ -330,7 +220,7 @@ declare module away.gl {
         static ZERO: string;
     }
 }
-declare module away.gl {
+declare module away.stagegl {
     class ContextGLCompareMode {
         static ALWAYS: string;
         static EQUAL: string;
@@ -342,21 +232,29 @@ declare module away.gl {
         static NOT_EQUAL: string;
     }
 }
-declare module away.gl {
+declare module away.stagegl {
     class ContextGLMipFilter {
         static MIPLINEAR: string;
         static MIPNEAREST: string;
         static MIPNONE: string;
     }
 }
-declare module away.gl {
+declare module away.stagegl {
+    class ContextGLMode {
+        static AUTO: string;
+        static WEBGL: string;
+        static FLASH: string;
+        static NATIVE: string;
+    }
+}
+declare module away.stagegl {
     class ContextGLProfile {
         static BASELINE: string;
         static BASELINE_CONSTRAINED: string;
         static BASELINE_EXTENDED: string;
     }
 }
-declare module away.gl {
+declare module away.stagegl {
     class ContextGLStencilAction {
         static DECREMENT_SATURATE: string;
         static DECREMENT_WRAP: string;
@@ -368,20 +266,80 @@ declare module away.gl {
         static ZERO: string;
     }
 }
-declare module away.gl {
+declare module away.stagegl {
     class ContextGLTextureFilter {
         static LINEAR: string;
         static NEAREST: string;
     }
 }
-declare module away.gl {
+declare module away.stagegl {
     class ContextGLWrapMode {
         static CLAMP: string;
         static REPEAT: string;
     }
 }
-declare module away.gl {
-    class ContextGL {
+declare module away.stagegl {
+    class ContextStage3D implements IContext {
+        private _container;
+        static contexts: Object;
+        static maxvertexconstants: number;
+        static maxfragconstants: number;
+        static maxtemp: number;
+        static maxstreams: number;
+        static maxtextures: number;
+        static defaultsampler: aglsl.Sampler;
+        public _iDriverInfo: any;
+        private _cmdStream;
+        private _errorCheckingEnabled;
+        private _resources;
+        private _oldCanvas;
+        private _oldParent;
+        static debug: boolean;
+        static logStream: boolean;
+        public _iCallback: (context: IContext) => void;
+        public container : HTMLElement;
+        public driverInfo : any;
+        public errorCheckingEnabled : boolean;
+        constructor(container: HTMLCanvasElement, callback: (context: IContext) => void);
+        public _iAddResource(resource: ResourceBaseFlash): void;
+        public _iRemoveResource(resource: ResourceBaseFlash): void;
+        public createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): TextureFlash;
+        public createCubeTexture(size: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): CubeTextureFlash;
+        public setTextureAt(sampler: number, texture: ResourceBaseFlash): void;
+        public setSamplerStateAt(sampler: number, wrap: string, filter: string, mipfilter: string): void;
+        public setStencilActions(triangleFace?: string, compareMode?: string, actionOnBothPass?: string, actionOnDepthFail?: string, actionOnDepthPassStencilFail?: string): void;
+        public setStencilReferenceValue(referenceValue: number, readMask?: number, writeMask?: number): void;
+        public setCulling(triangleFaceToCull: string, coordinateSystem?: string): void;
+        public drawTriangles(indexBuffer: IndexBufferFlash, firstIndex?: number, numTriangles?: number): void;
+        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: geom.Matrix3D, transposedMatrix?: boolean): void;
+        public setProgramConstantsFromArray(programType: string, firstRegister: number, data: number[], numRegisters?: number): void;
+        public setProgram(program: ProgramFlash): void;
+        public present(): void;
+        public clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): void;
+        public createProgram(): ProgramFlash;
+        public createVertexBuffer(numVertices: number, data32PerVertex: number): VertexBufferFlash;
+        public createIndexBuffer(numIndices: number): IndexBufferFlash;
+        public configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): void;
+        public drawToBitmapData(destination: base.BitmapData): void;
+        public setVertexBufferAt(index: number, buffer: VertexBufferFlash, bufferOffset?: number, format?: string): void;
+        public setColorMask(red: boolean, green: boolean, blue: boolean, alpha: boolean): void;
+        public setBlendFactors(sourceFactor: string, destinationFactor: string): void;
+        public setRenderToTexture(target: ResourceBaseFlash, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): void;
+        public setRenderToBackBuffer(): void;
+        public setScissorRectangle(rectangle: geom.Rectangle): void;
+        public setDepthTest(depthMask: boolean, passCompareMode: string): void;
+        public dispose(): void;
+        public addStream(stream: string): void;
+        public execute(): number;
+    }
+}
+/**
+* global function for flash callback
+*/
+declare function mountain_js_context_available(id: any, driverInfo: any): void;
+declare module away.stagegl {
+    class ContextWebGL implements IContext {
+        private _container;
         private _blendFactorDictionary;
         private _depthTestDictionary;
         private _textureIndexDictionary;
@@ -402,47 +360,313 @@ declare module away.gl {
         private _samplerStates;
         static MAX_SAMPLERS: number;
         public _gl: WebGLRenderingContext;
-        public _currentProgram: Program;
+        public _currentProgram: ProgramWebGL;
         private _activeTexture;
+        public container : HTMLElement;
         constructor(canvas: HTMLCanvasElement);
         public gl(): WebGLRenderingContext;
         public clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): void;
         public configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): void;
-        public createCubeTexture(size: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): CubeTexture;
-        public createIndexBuffer(numIndices: number): IndexBuffer;
-        public createProgram(): Program;
-        public createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): Texture;
-        public createVertexBuffer(numVertices: number, data32PerVertex: number): VertexBuffer;
+        public createCubeTexture(size: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): CubeTextureWebGL;
+        public createIndexBuffer(numIndices: number): IndexBufferWebGL;
+        public createProgram(): ProgramWebGL;
+        public createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): TextureWebGL;
+        public createVertexBuffer(numVertices: number, data32PerVertex: number): VertexBufferWebGL;
         public dispose(): void;
         public drawToBitmapData(destination: base.BitmapData): void;
-        public drawTriangles(indexBuffer: IndexBuffer, firstIndex?: number, numTriangles?: number): void;
+        public drawTriangles(indexBuffer: IndexBufferWebGL, firstIndex?: number, numTriangles?: number): void;
         public present(): void;
         public setBlendFactors(sourceFactor: string, destinationFactor: string): void;
         public setColorMask(red: boolean, green: boolean, blue: boolean, alpha: boolean): void;
         public setCulling(triangleFaceToCull: string, coordinateSystem?: string): void;
         public setDepthTest(depthMask: boolean, passCompareMode: string): void;
-        public setProgram(program: Program): void;
+        public setProgram(program: ProgramWebGL): void;
         public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: geom.Matrix3D, transposedMatrix?: boolean): void;
         static modulo: number;
         public setProgramConstantsFromArray(programType: string, firstRegister: number, data: number[], numRegisters?: number): void;
         public setScissorRectangle(rectangle: geom.Rectangle): void;
-        public setTextureAt(sampler: number, texture: TextureBase): void;
+        public setTextureAt(sampler: number, texture: TextureBaseWebGL): void;
         public setSamplerStateAt(sampler: number, wrap: string, filter: string, mipfilter: string): void;
-        public setVertexBufferAt(index: number, buffer: VertexBuffer, bufferOffset?: number, format?: string): void;
-        public setRenderToTexture(target: TextureBase, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): void;
+        public setVertexBufferAt(index: number, buffer: VertexBufferWebGL, bufferOffset?: number, format?: string): void;
+        public setRenderToTexture(target: TextureBaseWebGL, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): void;
         public setRenderToBackBuffer(): void;
         private updateBlendStatus();
     }
 }
-declare module away.gl {
-    class AGLSLContextGL extends ContextGL {
-        constructor(canvas: HTMLCanvasElement);
-        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: geom.Matrix3D, transposedMatrix?: boolean): void;
+declare module away.stagegl {
+    class ResourceBaseFlash {
+        public _pId: number;
+        public id : number;
+        public dispose(): void;
+    }
+}
+declare module away.stagegl {
+    class TextureBaseWebGL {
+        public textureType: string;
+        public _gl: WebGLRenderingContext;
+        constructor(gl: WebGLRenderingContext);
+        public dispose(): void;
+        public glTexture : WebGLTexture;
+    }
+}
+declare module away.stagegl {
+    class CubeTextureFlash extends ResourceBaseFlash implements ICubeTexture {
+        private _context;
+        private _size;
+        public size : number;
+        constructor(context: ContextStage3D, size: number, format: string, forRTT: boolean, streaming?: boolean);
+        public dispose(): void;
+        public uploadFromData(bitmapData: base.BitmapData, side: number, miplevel?: number): any;
+        public uploadFromData(image: HTMLImageElement, side: number, miplevel?: number): any;
+        public uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
+    }
+}
+declare module away.stagegl {
+    class CubeTextureWebGL extends TextureBaseWebGL implements ICubeTexture {
+        private _textureSelectorDictionary;
+        public textureType: string;
+        private _texture;
+        private _size;
+        constructor(gl: WebGLRenderingContext, size: number);
+        public dispose(): void;
+        public uploadFromData(bitmapData: base.BitmapData, side: number, miplevel?: number): any;
+        public uploadFromData(image: HTMLImageElement, side: number, miplevel?: number): any;
+        public uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
+        public size : number;
+        public glTexture : WebGLTexture;
+    }
+}
+declare module away.stagegl {
+    interface IContext {
+        container: HTMLElement;
+        clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): any;
+        configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): any;
+        createCubeTexture(size: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): ICubeTexture;
+        createIndexBuffer(numIndices: number): IIndexBuffer;
+        createProgram(): IProgram;
+        createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): ITexture;
+        createVertexBuffer(numVertices: number, data32PerVertex: number): IVertexBuffer;
+        dispose(): any;
+        drawToBitmapData(destination: base.BitmapData): any;
+        drawTriangles(indexBuffer: IIndexBuffer, firstIndex?: number, numTriangles?: number): any;
+        present(): any;
+        setBlendFactors(sourceFactor: string, destinationFactor: string): any;
+        setColorMask(red: boolean, green: boolean, blue: boolean, alpha: boolean): any;
+        setCulling(triangleFaceToCull: string, coordinateSystem?: string): any;
+        setDepthTest(depthMask: boolean, passCompareMode: string): any;
+        setProgram(program: IProgram): any;
+        setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: geom.Matrix3D, transposedMatrix?: boolean): any;
+        setProgramConstantsFromArray(programType: string, firstRegister: number, data: number[], numRegisters?: number): any;
+        setSamplerStateAt(sampler: number, wrap: string, filter: string, mipfilter: string): any;
+        setScissorRectangle(rectangle: geom.Rectangle): any;
+        setTextureAt(sampler: number, texture: ITextureBase): any;
+        setVertexBufferAt(index: number, buffer: IVertexBuffer, bufferOffset?: number, format?: string): any;
+        setRenderToTexture(target: ITextureBase, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): any;
+        setRenderToBackBuffer(): any;
+    }
+}
+declare module away.stagegl {
+    interface ICubeTexture extends ITextureBase {
+        size: number;
+        uploadFromData(bitmapData: base.BitmapData, side: number, miplevel?: number): any;
+        uploadFromData(image: HTMLImageElement, side: number, miplevel?: number): any;
+        uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async: boolean): any;
+    }
+}
+declare module away.stagegl {
+    interface IIndexBuffer {
+        numIndices: number;
+        uploadFromArray(data: number[], startOffset: number, count: number): any;
+        dispose(): any;
+    }
+}
+declare module away.stagegl {
+    class IndexBufferFlash extends ResourceBaseFlash implements IIndexBuffer {
+        private _context;
+        private _numIndices;
+        constructor(context: ContextStage3D, numIndices: number);
+        public uploadFromArray(data: number[], startOffset: number, count: number): void;
+        public dispose(): void;
+        public numIndices : number;
+    }
+}
+declare module away.stagegl {
+    class IndexBufferWebGL implements IIndexBuffer {
+        private _gl;
+        private _numIndices;
+        private _buffer;
+        constructor(gl: WebGLRenderingContext, numIndices: number);
+        public uploadFromArray(data: number[], startOffset: number, count: number): void;
+        public dispose(): void;
+        public numIndices : number;
+        public glBuffer : WebGLBuffer;
+    }
+}
+declare module away.stagegl {
+    interface IProgram {
+        upload(vertexProgram: utils.ByteArray, fragmentProgram: utils.ByteArray): any;
+        dispose(): any;
+    }
+}
+declare module away.stagegl {
+    interface ITexture extends ITextureBase {
+        width: number;
+        height: number;
+        uploadFromData(bitmapData: base.BitmapData, miplevel?: number): any;
+        uploadFromData(image: HTMLImageElement, miplevel?: number): any;
+    }
+}
+declare module away.stagegl {
+    interface ITextureBase {
+        dispose(): any;
+    }
+}
+declare module away.stagegl {
+    interface IVertexBuffer {
+        numVertices: number;
+        data32PerVertex: number;
+        uploadFromArray(data: number[], startVertex: number, numVertices: number): any;
+        dispose(): any;
+    }
+}
+declare module away.stagegl {
+    class OpCodes {
+        static trueValue: number;
+        static falseValue: number;
+        static intMask: number;
+        static drawTriangles: number;
+        static setProgramConstant: number;
+        static setProgram: number;
+        static present: number;
+        static clear: number;
+        static initProgram: number;
+        static initVertexBuffer: number;
+        static initIndexBuffer: number;
+        static configureBackBuffer: number;
+        static uploadArrayIndexBuffer: number;
+        static uploadArrayVertexBuffer: number;
+        static uploadAGALBytesProgram: number;
+        static setVertexBufferAt: number;
+        static uploadBytesIndexBuffer: number;
+        static uploadBytesVertexBuffer: number;
+        static setColorMask: number;
+        static setDepthTest: number;
+        static disposeProgram: number;
+        static disposeContext: number;
+        static disposeVertexBuffer: number;
+        static disposeIndexBuffer: number;
+        static initTexture: number;
+        static setTextureAt: number;
+        static uploadBytesTexture: number;
+        static disposeTexture: number;
+        static setCulling: number;
+        static setScissorRect: number;
+        static clearScissorRect: number;
+        static setBlendFactors: number;
+        static setRenderToTexture: number;
+        static clearTextureAt: number;
+        static clearVertexBufferAt: number;
+        static setStencilActions: number;
+        static setStencilReferenceValue: number;
+        static initCubeTexture: number;
+        static disposeCubeTexture: number;
+        static uploadBytesCubeTexture: number;
+        static clearRenderToTexture: number;
+        static enableErrorChecking: number;
+    }
+}
+declare module away.stagegl {
+    class ProgramFlash extends ResourceBaseFlash implements IProgram {
+        private _context;
+        constructor(context: ContextStage3D);
+        public upload(vertexProgram: utils.ByteArray, fragmentProgram: utils.ByteArray): void;
+        public dispose(): void;
+    }
+}
+declare module away.stagegl {
+    class ProgramWebGL implements IProgram {
+        private static _tokenizer;
+        private static _aglslParser;
+        private _gl;
+        private _program;
+        private _vertexShader;
+        private _fragmentShader;
+        constructor(gl: WebGLRenderingContext);
+        public upload(vertexProgram: utils.ByteArray, fragmentProgram: utils.ByteArray): any;
+        public dispose(): void;
+        public focusProgram(): void;
+        public glProgram : WebGLProgram;
+    }
+}
+declare module away.stagegl {
+    class SamplerState {
+        public type: number;
+        public wrap: number;
+        public filter: number;
+        public mipfilter: number;
+    }
+}
+declare module away.stagegl {
+    class TextureFlash extends ResourceBaseFlash implements ITexture {
+        private _context;
+        private _width;
+        private _height;
+        public width : number;
+        public height : number;
+        constructor(context: ContextStage3D, width: number, height: number, format: string, forRTT: boolean, streaming?: boolean);
+        public dispose(): void;
+        public uploadFromData(bitmapData: base.BitmapData, miplevel?: number): any;
+        public uploadFromData(image: HTMLImageElement, miplevel?: number): any;
+    }
+}
+declare module away.stagegl {
+    class TextureWebGL extends TextureBaseWebGL implements ITexture {
+        public textureType: string;
+        private _width;
+        private _height;
+        private _frameBuffer;
+        private _glTexture;
+        constructor(gl: WebGLRenderingContext, width: number, height: number);
+        public dispose(): void;
+        public width : number;
+        public height : number;
+        public frameBuffer : WebGLFramebuffer;
+        public uploadFromData(bitmapData: base.BitmapData, miplevel?: number): any;
+        public uploadFromData(image: HTMLImageElement, miplevel?: number): any;
+        public uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
+        public glTexture : WebGLTexture;
+        public generateMipmaps(): void;
+    }
+}
+declare module away.stagegl {
+    class VertexBufferFlash extends ResourceBaseFlash implements IVertexBuffer {
+        private _context;
+        private _numVertices;
+        private _data32PerVertex;
+        constructor(context: ContextStage3D, numVertices: number, data32PerVertex: number);
+        public uploadFromArray(data: number[], startVertex: number, numVertices: number): void;
+        public numVertices : number;
+        public data32PerVertex : number;
+        public dispose(): void;
+    }
+}
+declare module away.stagegl {
+    class VertexBufferWebGL implements IVertexBuffer {
+        private _gl;
+        private _numVertices;
+        private _data32PerVertex;
+        private _buffer;
+        constructor(gl: WebGLRenderingContext, numVertices: number, data32PerVertex: number);
+        public uploadFromArray(vertices: number[], startVertex: number, numVertices: number): void;
+        public numVertices : number;
+        public data32PerVertex : number;
+        public glBuffer : WebGLBuffer;
+        public dispose(): void;
     }
 }
 declare module away.base {
     /**
-    * StageGL provides a proxy class to handle the creation and attachment of the ContextGL
+    * StageGL provides a proxy class to handle the creation and attachment of the ContextWebGL
     * (and in turn the back buffer) it uses. StageGL should never be created directly,
     * but requested through StageGLManager.
     *
@@ -454,7 +678,7 @@ declare module away.base {
     class StageGL extends events.EventDispatcher implements IStage {
         private _texturePool;
         private _contextGL;
-        private _canvas;
+        private _container;
         private _width;
         private _height;
         private _x;
@@ -479,11 +703,11 @@ declare module away.base {
         private _viewportDirty;
         private _bufferClear;
         private _initialised;
-        constructor(canvas: HTMLCanvasElement, stageGLIndex: number, stageGLManager: managers.StageGLManager, forceSoftware?: boolean, profile?: string);
+        constructor(container: HTMLCanvasElement, stageGLIndex: number, stageGLManager: managers.StageGLManager, forceSoftware?: boolean, profile?: string);
         /**
-        * Requests a ContextGL object to attach to the managed gl canvas.
+        * Requests a ContextWebGL object to attach to the managed gl canvas.
         */
-        public requestContext(aglslContext?: boolean, forceSoftware?: boolean, profile?: string): void;
+        public requestContext(forceSoftware?: boolean, profile?: string, mode?: string): void;
         /**
         * The width of the gl canvas
         */
@@ -501,17 +725,17 @@ declare module away.base {
         */
         public y : number;
         public visible : boolean;
-        public canvas : HTMLCanvasElement;
+        public container : HTMLElement;
         /**
-        * The ContextGL object associated with the given gl canvas object.
+        * The ContextWebGL object associated with the given gl canvas object.
         */
-        public contextGL : gl.ContextGL;
+        public contextGL : stagegl.IContext;
         private notifyViewportUpdated();
         private notifyEnterFrame();
         private notifyExitFrame();
         public profile : string;
         /**
-        * Disposes the StageGL object, freeing the ContextGL attached to the StageGL.
+        * Disposes the StageGL object, freeing the ContextWebGL attached to the StageGL.
         */
         public dispose(): void;
         /**
@@ -526,7 +750,7 @@ declare module away.base {
         public renderTarget : textures.TextureProxyBase;
         public renderSurfaceSelector : number;
         public setRenderTarget(target: textures.TextureProxyBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
-        public getRenderTexture(textureProxy: textures.RenderTexture): gl.TextureBase;
+        public getRenderTexture(textureProxy: textures.RenderTexture): stagegl.ITextureBase;
         public clear(): void;
         public present(): void;
         public addEventListener(type: string, listener: Function): void;
@@ -582,13 +806,13 @@ declare module away.base {
         public activateCubeTexture(index: number, textureProxy: textures.CubeTextureBase): void;
         /**
         * Retrieves the VertexBuffer object that contains triangle indices.
-        * @param context The ContextGL for which we request the buffer
+        * @param context The ContextWebGL for which we request the buffer
         * @return The VertexBuffer object that contains triangle indices.
         */
-        public getIndexBuffer(buffer: pool.IndexData): gl.IndexBuffer;
+        public getIndexBuffer(buffer: pool.IndexData): stagegl.IIndexBuffer;
         public disposeIndexData(buffer: pool.IndexData): void;
         /**
-        * Frees the ContextGL associated with this StageGLProxy.
+        * Frees the ContextWebGL associated with this StageGLProxy.
         */
         private freeContextGL();
         /**
@@ -598,6 +822,7 @@ declare module away.base {
         private onEnterFrame(event);
         public recoverFromDisposal(): boolean;
         public clearDepthBuffer(): void;
+        private _callback(context);
     }
 }
 /**
@@ -613,7 +838,7 @@ declare module away.pool {
         private _dataDirty;
         public invalid: boolean[];
         public stageGLs: base.StageGL[];
-        public buffers: gl.IndexBuffer[];
+        public buffers: stagegl.IIndexBuffer[];
         public data: number[];
         public indexMappings: number[];
         public originalIndices: number[];
@@ -664,7 +889,7 @@ declare module away.pool {
     */
     class TextureData implements ITextureData {
         public stageGL: base.StageGL;
-        public texture: gl.TextureBase;
+        public texture: stagegl.ITextureBase;
         public textureProxy: textures.TextureProxyBase;
         public invalid: boolean;
         constructor(stageGL: base.StageGL, textureProxy: textures.TextureProxyBase);
@@ -722,7 +947,7 @@ declare module away.pool {
         private _dataType;
         private _dataDirty;
         public invalid: boolean[];
-        public buffers: gl.VertexBuffer[];
+        public buffers: stagegl.IVertexBuffer[];
         public stageGLs: base.StageGL[];
         public data: number[];
         public dataPerVertex: number;
@@ -783,7 +1008,7 @@ declare module away.managers {
         static getInstanceFromIndex(index: number): AGALProgramCache;
         private static onContextGLDisposed(event);
         public dispose(): void;
-        public setProgram(programIds: number[], programs: gl.Program[], vertexCode: string, fragmentCode: string): void;
+        public setProgram(programIds: number[], programs: stagegl.IProgram[], vertexCode: string, fragmentCode: string): void;
         public freeProgram(programId: number): void;
         private destroyProgram(key);
         private getKey(vertexCode, fragmentCode);
@@ -814,9 +1039,9 @@ declare module away.managers {
         public textureRatioY : number;
         public viewWidth : number;
         public viewHeight : number;
-        public renderToTextureVertexBuffer : gl.VertexBuffer;
-        public renderToScreenVertexBuffer : gl.VertexBuffer;
-        public indexBuffer : gl.IndexBuffer;
+        public renderToTextureVertexBuffer : stagegl.IVertexBuffer;
+        public renderToScreenVertexBuffer : stagegl.IVertexBuffer;
+        public indexBuffer : stagegl.IIndexBuffer;
         public renderToTextureRect : geom.Rectangle;
         public textureWidth : number;
         public textureHeight : number;
@@ -859,7 +1084,7 @@ declare module away.managers {
         * @param profile The compatibility profile, an enumeration of ContextGLProfile
         * @return The StageGL for the given index.
         */
-        public getStageGLAt(index: number, forceSoftware?: boolean, profile?: string): base.StageGL;
+        public getStageGLAt(index: number, forceSoftware?: boolean, profile?: string, mode?: string): base.StageGL;
         /**
         * Removes a StageGL from the manager.
         * @param stageGL
@@ -872,7 +1097,7 @@ declare module away.managers {
         * @param profile The compatibility profile, an enumeration of ContextGLProfile
         * @return The allocated stageGL
         */
-        public getFreeStageGL(forceSoftware?: boolean, profile?: string): base.StageGL;
+        public getFreeStageGL(forceSoftware?: boolean, profile?: string, mode?: string): base.StageGL;
         /**
         * Checks if a new stageGL can be created and managed by the class.
         * @return true if there is one slot free for a new stageGL

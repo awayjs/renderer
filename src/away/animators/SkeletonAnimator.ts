@@ -8,7 +8,7 @@ module away.animators
 	import Camera                         	= away.entities.Camera;
 	import AnimationStateEvent              = away.events.AnimationStateEvent;
 	import SubGeometryEvent              	= away.events.SubGeometryEvent;
-	import ContextGLProgramType             = away.gl.ContextGLProgramType;
+	import ContextGLProgramType             = away.stagegl.ContextGLProgramType;
 	import Quaternion                       = away.geom.Quaternion;
 	import Vector3D                         = away.geom.Vector3D;
 	import RenderableBase                   = away.pool.RenderableBase;

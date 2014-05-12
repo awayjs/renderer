@@ -676,7 +676,7 @@ declare module away.utils {
         public position: number;
         public length: number;
         public _mode: string;
-        public Base64Key: string;
+        static Base64Key: string;
         constructor();
         public writeByte(b: number): void;
         public readByte(): number;
@@ -695,7 +695,8 @@ declare module away.utils {
         public compareEqual(other: any, count: any): boolean;
         public writeBase64String(s: string): void;
         public dumpToConsole(): void;
-        public internalGetBase64String(count: any, getUnsignedByteFunc: any, self: any): string;
+        public readBase64String(count: number): string;
+        static internalGetBase64String(count: any, getUnsignedByteFunc: any, self: any): string;
     }
 }
 declare module away.utils {
@@ -772,15 +773,15 @@ declare module away.utils {
 }
 declare module away.utils {
     class CSS {
-        static setCanvasSize(canvas: HTMLCanvasElement, width: number, height: number): void;
-        static setCanvasWidth(canvas: HTMLCanvasElement, width: number): void;
-        static setCanvasHeight(canvas: HTMLCanvasElement, height: number): void;
-        static setCanvasX(canvas: HTMLCanvasElement, x: number): void;
-        static setCanvasY(canvas: HTMLCanvasElement, y: number): void;
-        static getCanvasVisibility(canvas: HTMLCanvasElement): boolean;
-        static setCanvasVisibility(canvas: HTMLCanvasElement, visible: boolean): void;
-        static setCanvasAlpha(canvas: HTMLCanvasElement, alpha: number): void;
-        static setCanvasPosition(canvas: HTMLCanvasElement, x: number, y: number, absolute?: boolean): void;
+        static setElementSize(element: HTMLElement, width: number, height: number): void;
+        static setElementWidth(element: HTMLElement, width: number): void;
+        static setElementHeight(element: HTMLElement, height: number): void;
+        static setElementX(element: HTMLElement, x: number): void;
+        static setElementY(element: HTMLElement, y: number): void;
+        static getElementVisibility(element: HTMLElement): boolean;
+        static setElementVisibility(element: HTMLElement, visible: boolean): void;
+        static setElementAlpha(element: HTMLElement, alpha: number): void;
+        static setElementPosition(element: HTMLElement, x: number, y: number, absolute?: boolean): void;
     }
 }
 declare module away {

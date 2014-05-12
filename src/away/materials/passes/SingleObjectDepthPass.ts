@@ -133,7 +133,7 @@ module away.materials
 		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
 			var matrix:away.geom.Matrix3D;
-			var context:away.gl.ContextGL = stageGL.contextGL;
+			var context:away.stagegl.IContext = stageGL.contextGL;
 			var len:number /*uint*/;
 			var light:away.lights.LightBase;
 			var lights:Array<away.lights.LightBase> = this._pLightPicker.allPickedLights;
@@ -153,8 +153,8 @@ module away.materials
 
 			stageGL.setRenderTarget(this._textures[rId], true);
 			context.clear(1.0, 1.0, 1.0);
-			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
-			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
+			context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
+			context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
 
 			stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
 			stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.NORMAL_DATA), renderable.getVertexOffset(SubGeometry.NORMAL_DATA), SubGeometry.NORMAL_FORMAT);
@@ -172,7 +172,7 @@ module away.materials
 			// never scale
 			super.iActivate(stageGL, camera);
 
-			stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
+			stageGL.contextGL.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
 		}
 	}
 }

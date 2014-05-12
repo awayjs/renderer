@@ -1,4 +1,4 @@
-///<reference path="../../../build/Away3D.next.d.ts" />
+///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 
 module tests.entities
 {

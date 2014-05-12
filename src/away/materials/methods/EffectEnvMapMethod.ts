@@ -96,7 +96,6 @@ module away.materials
 		 */
 		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
-			var context:away.gl.ContextGL = stageGL.contextGL;
 			vo.fragmentData[vo.fragmentConstantsIndex] = this._alpha;
 
 			this._cubeTexture.activateTextureForStage(vo.texturesIndex, stageGL);

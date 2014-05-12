@@ -1,19 +1,17 @@
-///<reference path="../../../build/Away3D.next.d.ts" />
+///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 //<reference path="../../../src/Away3D.ts" />
 var tests;
 (function (tests) {
-    (function (primitives) {
+    (function (_primitives) {
         var View = away.containers.View;
-        var Mesh = away.entities.Mesh;
+
         var Vector3D = away.geom.Vector3D;
         var DirectionalLight = away.lights.DirectionalLight;
         var StaticLightPicker = away.materials.StaticLightPicker;
-        var TextureMaterial = away.materials.TextureMaterial;
-        var DefaultMaterialManager = away.materials.DefaultMaterialManager;
-        var PrimitivePrefabBase = away.prefabs.PrimitivePrefabBase;
+
         var PrimitivePolygonPrefab = away.prefabs.PrimitivePolygonPrefab;
         var PrimitiveSpherePrefab = away.prefabs.PrimitiveSpherePrefab;
-        var PrimitiveCapsulePrefab = away.prefabs.PrimitiveCapsulePrefab;
+
         var PrimitiveCylinderPrefab = away.prefabs.PrimitiveCylinderPrefab;
         var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
         var PrimitiveConePrefab = away.prefabs.PrimitiveConePrefab;
@@ -29,7 +27,7 @@ var tests;
                 away.Debug.LOG_PI_ERRORS = false;
                 away.Debug.THROW_ERRORS = false;
 
-                this.view = new View(new DefaultRenderer());
+                this.view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
                 this.raf = new RequestAnimationFrame(this.render, this);
 
                 this.light = new DirectionalLight();
@@ -109,7 +107,7 @@ var tests;
             };
             return WireframePrimitiveTest;
         })();
-        primitives.WireframePrimitiveTest = WireframePrimitiveTest;
+        _primitives.WireframePrimitiveTest = WireframePrimitiveTest;
     })(tests.primitives || (tests.primitives = {}));
     var primitives = tests.primitives;
 })(tests || (tests = {}));

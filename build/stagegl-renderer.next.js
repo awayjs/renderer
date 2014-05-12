@@ -723,16 +723,16 @@ var away;
 
                 switch (subGeometry.jointsPerVertex) {
                     case 1:
-                        this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_1;
+                        this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.stagegl.ContextGLVertexBufferFormat.FLOAT_1;
                         break;
                     case 2:
-                        this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_2;
+                        this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.stagegl.ContextGLVertexBufferFormat.FLOAT_2;
                         break;
                     case 3:
-                        this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_3;
+                        this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.stagegl.ContextGLVertexBufferFormat.FLOAT_3;
                         break;
                     case 4:
-                        this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_4;
+                        this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.stagegl.ContextGLVertexBufferFormat.FLOAT_4;
                         break;
                     default:
                 }
@@ -1466,10 +1466,10 @@ var away;
                 if (!this._objectProgram)
                     this.initObjectProgram();
 
-                this._context.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
-                this._context.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
+                this._context.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
+                this._context.setDepthTest(true, away.stagegl.ContextGLCompareMode.LESS);
                 this._context.setProgram(this._objectProgram);
-                this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
+                this._context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
                 //this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
                 //this.drawRenderables(entityCollector.blendedRenderableHead, camera);
                 //TODO: reimplement ShaderPicker inheriting from RendererBase
@@ -1493,7 +1493,7 @@ var away;
 
                     this._potentialFound = true;
 
-                    this._context.setCulling(renderable.materialOwner.material.bothSides ? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
+                    this._context.setCulling(renderable.materialOwner.material.bothSides ? away.stagegl.ContextGLTriangleFace.NONE : away.stagegl.ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
 
                     this._interactives[this._interactiveId++] = renderable;
 
@@ -1503,8 +1503,8 @@ var away;
 
                     matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
                     matrix.append(viewProjection);
-                    this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
-                    this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
+                    this._context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
+                    this._context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
                     this._stageGL.activateBuffer(0, renderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA), away.base.TriangleSubGeometry.POSITION_FORMAT);
                     this._context.drawTriangles(this._stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 
@@ -1548,15 +1548,9 @@ var away;
                 vertexCode = "add vt0, va0, vc5 			\n" + "mul vt0, vt0, vc6 			\n" + "mov v0, vt0				\n" + "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
                 fragmentCode = "mov oc, v0"; // write identifier
 
-                //away.Debug.throwPIR( 'ShaderPicker' , 'initTriangleProgram' , 'Dependency: AGALMiniAssembler')
-                var vertCompiler = new aglsl.AGLSLCompiler();
-                var fragCompiler = new aglsl.AGLSLCompiler();
-
-                var vertString = vertCompiler.compile(away.gl.ContextGLProgramType.VERTEX, vertexCode);
-                var fragString = fragCompiler.compile(away.gl.ContextGLProgramType.FRAGMENT, fragmentCode);
-
-                this._triangleProgram.upload(vertString, fragString);
-                //this._triangleProgram.upload(new AGALMiniAssembler().assemble(ContextGLProgramType.VERTEX, vertexCode), new AGALMiniAssembler().assemble(ContextGLProgramType.FRAGMENT, fragmentCode));
+                var vertexByteCode = (new aglsl.assembler.AGALMiniAssembler().assemble("part vertex 1\n" + vertexCode + "endpart"))['vertex'].data;
+                var fragmentByteCode = (new aglsl.assembler.AGALMiniAssembler().assemble("part fragment 1\n" + fragmentCode + "endpart"))['fragment'].data;
+                this._triangleProgram.upload(vertexByteCode, fragmentByteCode);
             };
 
             /**
@@ -1594,10 +1588,10 @@ var away;
                 this._boundOffsetScale[2] = offsZ = -bounds.z;
 
                 this._context.setProgram(this._triangleProgram);
-                this._context.clear(0, 0, 0, 0, 1, 0, away.gl.ContextGLClearMask.DEPTH);
+                this._context.clear(0, 0, 0, 0, 1, 0, away.stagegl.ContextGLClearMask.DEPTH);
                 this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
-                this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
-                this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
+                this._context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
+                this._context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
 
                 this._stageGL.activateBuffer(0, this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA), away.base.TriangleSubGeometry.POSITION_FORMAT);
                 this._context.drawTriangles(this._stageGL.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
@@ -2222,7 +2216,7 @@ var away;
                 if ((target || !this._shareContext) && !this._depthPrepass)
                     this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
 
-                this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.ALWAYS);
+                this._pContext.setDepthTest(false, away.stagegl.ContextGLCompareMode.ALWAYS);
 
                 this._pStageGL.scissorRect = scissorRect;
 
@@ -2233,7 +2227,7 @@ var away;
                 this.pDraw(entityCollector, target);
 
                 //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-                //this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL); //oopsie
+                //this._pContext.setDepthTest(false, away.stagegl.ContextGLCompareMode.LESS_EQUAL); //oopsie
                 if (!this._shareContext) {
                     if (this._snapshotRequired && this._snapshotBitmapData) {
                         this._pContext.drawToBitmapData(this._snapshotBitmapData);
@@ -2508,8 +2502,8 @@ var away;
                 this._pStageGL.setRenderTarget(target, true, 0);
                 this._pContext.clear(1, 1, 1, 1, 1, 0);
 
-                this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
-                this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
+                this._pContext.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
+                this._pContext.setDepthTest(true, away.stagegl.ContextGLCompareMode.LESS);
 
                 var head = this._pOpaqueRenderableHead;
 
@@ -2527,7 +2521,7 @@ var away;
                 this._activeMaterial = null;
 
                 //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-                this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL);
+                this._pContext.setDepthTest(false, away.stagegl.ContextGLCompareMode.LESS_EQUAL);
 
                 this._pStageGL.scissorRect = null;
             };
@@ -2571,9 +2565,9 @@ var away;
             DepthRenderer.prototype.pDraw = function (entityCollector, target) {
                 this.pCollectRenderables(entityCollector);
 
-                this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+                this._pContext.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
 
-                this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
+                this._pContext.setDepthTest(true, away.stagegl.ContextGLCompareMode.LESS);
 
                 this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
 
@@ -2652,9 +2646,10 @@ var away;
             * @param antiAlias The amount of anti-aliasing to use.
             * @param renderMode The render mode to use.
             */
-            function DefaultRenderer(forceSoftware, profile) {
+            function DefaultRenderer(forceSoftware, profile, mode) {
                 if (typeof forceSoftware === "undefined") { forceSoftware = false; }
                 if (typeof profile === "undefined") { profile = "baseline"; }
+                if (typeof mode === "undefined") { mode = "auto"; }
                 _super.call(this);
                 this._skyboxProjection = new away.geom.Matrix3D();
 
@@ -2662,10 +2657,7 @@ var away;
                 this._pDistanceRenderer = new render.DepthRenderer(false, true);
 
                 if (this._pStageGL == null)
-                    this.stageGL = away.managers.StageGLManager.getInstance().getFreeStageGL(this._forceSoftware, this._profile);
-
-                this._forceSoftware = forceSoftware;
-                this._profile = profile;
+                    this.stageGL = away.managers.StageGLManager.getInstance().getFreeStageGL(forceSoftware, profile, mode);
 
                 this._pRttBufferManager = away.managers.RTTBufferManager.getInstance(this._pStageGL);
 
@@ -2846,7 +2838,7 @@ var away;
                 if (!target)
                     this.pCollectRenderables(entityCollector);
 
-                this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+                this._pContext.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
 
                 if (entityCollector.skyBox) {
                     if (this._activeMaterial)
@@ -2854,18 +2846,18 @@ var away;
 
                     this._activeMaterial = null;
 
-                    this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.ALWAYS);
+                    this._pContext.setDepthTest(false, away.stagegl.ContextGLCompareMode.ALWAYS);
                     this.drawSkybox(entityCollector);
                 }
 
-                this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS_EQUAL);
+                this._pContext.setDepthTest(true, away.stagegl.ContextGLCompareMode.LESS_EQUAL);
 
                 var which = target ? DefaultRenderer.SCREEN_PASSES : DefaultRenderer.ALL_PASSES;
 
                 this.drawRenderables(this._pOpaqueRenderableHead, entityCollector, which);
                 this.drawRenderables(this._pBlendedRenderableHead, entityCollector, which);
 
-                this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL);
+                this._pContext.setDepthTest(false, away.stagegl.ContextGLCompareMode.LESS_EQUAL);
 
                 if (this._activeMaterial)
                     this._activeMaterial.iDeactivate(this._pStageGL);
@@ -3187,8 +3179,8 @@ var away;
                 len = this._tasks.length;
 
                 if (len > 1) {
-                    context.setVertexBufferAt(0, vertexBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
-                    context.setVertexBufferAt(1, vertexBuffer, 2, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
+                    context.setVertexBufferAt(0, vertexBuffer, 0, away.stagegl.ContextGLVertexBufferFormat.FLOAT_2);
+                    context.setVertexBufferAt(1, vertexBuffer, 2, away.stagegl.ContextGLVertexBufferFormat.FLOAT_2);
                 }
 
                 for (i = 0; i < len; ++i) {
@@ -3198,8 +3190,8 @@ var away;
                     if (!task.target) {
                         stageGL.scissorRect = null;
                         vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
-                        context.setVertexBufferAt(0, vertexBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
-                        context.setVertexBufferAt(1, vertexBuffer, 2, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
+                        context.setVertexBufferAt(0, vertexBuffer, 0, away.stagegl.ContextGLVertexBufferFormat.FLOAT_2);
+                        context.setVertexBufferAt(1, vertexBuffer, 2, away.stagegl.ContextGLVertexBufferFormat.FLOAT_2);
                     }
 
                     context.setTextureAt(0, task.getMainInputTexture(stageGL));
@@ -3208,7 +3200,7 @@ var away;
 
                     task.activate(stageGL, camera, depthTexture);
 
-                    context.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+                    context.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
                     context.drawTriangles(indexBuffer, 0, 2);
 
                     task.deactivate(stageGL);
@@ -3426,18 +3418,9 @@ var away;
 
                 this._program3D = stage.contextGL.createProgram();
 
-                //away.Debug.log( 'Filder3DTaskBase' , 'pUpdateProgram' , 'Program.upload / AGAL <> GLSL implementation' );
-                // TODO: imeplement AGAL <> GLSL
-                //this._program3D.upload(new AGALMiniAssembler(Debug.active).assemble(ContextGLProgramType.VERTEX, getVertexCode()),new AGALMiniAssembler(Debug.active).assemble(ContextGLProgramType.FRAGMENT, getFragmentCode()));
-                //new AGALMiniAssembler(Debug.active).assemble(ContextGLProgramType.VERTEX, getVertexCode()),
-                //new AGALMiniAssembler(Debug.active).assemble(ContextGLProgramType.FRAGMENT, getFragmentCode()));
-                var vertCompiler = new aglsl.AGLSLCompiler();
-                var fragCompiler = new aglsl.AGLSLCompiler();
-
-                var vertString = vertCompiler.compile(away.gl.ContextGLProgramType.VERTEX, this.pGetVertexCode());
-                var fragString = fragCompiler.compile(away.gl.ContextGLProgramType.FRAGMENT, this.pGetFragmentCode());
-
-                this._program3D.upload(vertString, fragString);
+                var vertexByteCode = (new aglsl.assembler.AGALMiniAssembler().assemble("part vertex 1\n" + this.pGetVertexCode() + "endpart"))['vertex'].data;
+                var fragmentByteCode = (new aglsl.assembler.AGALMiniAssembler().assemble("part fragment 1\n" + this.pGetFragmentCode() + "endpart"))['fragment'].data;
+                this._program3D.upload(vertexByteCode, fragmentByteCode);
                 this._program3DInvalid = false;
             };
 
@@ -3457,7 +3440,7 @@ var away;
                     this._mainInputTexture.dispose();
                 }
 
-                this._mainInputTexture = stage.contextGL.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, away.gl.ContextGLTextureFormat.BGRA, true);
+                this._mainInputTexture = stage.contextGL.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, away.stagegl.ContextGLTextureFormat.BGRA, true);
 
                 this._textureDimensionsInvalid = false;
             };
@@ -4817,9 +4800,9 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        var ContextGLBlendFactor = away.gl.ContextGLBlendFactor;
-        var ContextGLCompareMode = away.gl.ContextGLCompareMode;
-        var ContextGLTriangleFace = away.gl.ContextGLTriangleFace;
+        var ContextGLBlendFactor = away.stagegl.ContextGLBlendFactor;
+        var ContextGLCompareMode = away.stagegl.ContextGLCompareMode;
+        var ContextGLTriangleFace = away.stagegl.ContextGLTriangleFace;
 
         var Event = away.events.Event;
 
@@ -6053,8 +6036,8 @@ var away;
                     aset.method.iSetRenderState(aset.data, renderable, stageGL, camera);
                 }
 
-                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 0, this._pVertexConstantData, this._pNumUsedVertexConstants);
-                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._pNumUsedFragmentConstants);
+                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 0, this._pVertexConstantData, this._pNumUsedVertexConstants);
+                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._pNumUsedFragmentConstants);
 
                 stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
                 context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
@@ -6664,7 +6647,7 @@ var away;
                     var format;
 
                     switch (this._alphaMask.format) {
-                        case away.gl.ContextGLTextureFormat.COMPRESSED:
+                        case away.stagegl.ContextGLTextureFormat.COMPRESSED:
                             format = "dxt1,";
                             break;
 
@@ -6696,7 +6679,7 @@ var away;
 
                 matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
                 matrix.append(viewProjection);
-                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
+                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
 
                 stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
                 context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
@@ -6712,9 +6695,9 @@ var away;
 
                 if (this._alphaThreshold > 0) {
                     this._alphaMask.activateTextureForStage(0, stageGL);
-                    context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._data, 3);
+                    context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._data, 3);
                 } else {
-                    context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._data, 2);
+                    context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._data, 2);
                 }
             };
             return DepthMapPass;
@@ -6833,7 +6816,7 @@ var away;
                     var format;
 
                     switch (this._alphaMask.format) {
-                        case away.gl.ContextGLTextureFormat.COMPRESSED:
+                        case away.stagegl.ContextGLTextureFormat.COMPRESSED:
                             format = "dxt1,";
                             break;
 
@@ -6867,9 +6850,9 @@ var away;
 
                 var sceneTransform = renderable.sourceEntity.getRenderSceneTransform(camera);
 
-                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 5, sceneTransform, true);
+                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 5, sceneTransform, true);
 
-                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
+                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
 
                 if (this._alphaThreshold > 0)
                     stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(SubGeometry.SECONDARY_UV_DATA), SubGeometry.SECONDARY_UV_FORMAT);
@@ -6879,7 +6862,7 @@ var away;
                 matrix.copyFrom(sceneTransform);
                 matrix.append(viewProjection);
 
-                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
+                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
 
                 stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
                 context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
@@ -6904,9 +6887,9 @@ var away;
 
                 if (this._alphaThreshold > 0) {
                     this._alphaMask.activateTextureForStage(0, stageGL);
-                    context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
+                    context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
                 } else {
-                    context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);
+                    context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);
                 }
             };
             return DistanceMapPass;
@@ -7716,8 +7699,8 @@ var away;
 
                 stageGL.setRenderTarget(this._textures[rId], true);
                 context.clear(1.0, 1.0, 1.0);
-                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
-                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
+                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
+                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
 
                 stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
                 stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.NORMAL_DATA), renderable.getVertexOffset(SubGeometry.NORMAL_DATA), SubGeometry.NORMAL_FORMAT);
@@ -7734,7 +7717,7 @@ var away;
                 // never scale
                 _super.prototype.iActivate.call(this, stageGL, camera);
 
-                stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
+                stageGL.contextGL.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
             };
             return SingleObjectDepthPass;
         })(materials.MaterialPassBase);
@@ -7787,7 +7770,7 @@ var away;
                 var context = stageGL.contextGL;
                 this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
                 this._calcMatrix.append(camera.inverseSceneTransform);
-                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
+                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
 
                 stageGL.activateBuffer(0, renderable.getVertexData(away.base.LineSubGeometry.START_POSITION_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.START_POSITION_DATA), away.base.LineSubGeometry.POSITION_FORMAT);
                 stageGL.activateBuffer(1, renderable.getVertexData(away.base.LineSubGeometry.END_POSITION_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.END_POSITION_DATA), away.base.LineSubGeometry.POSITION_FORMAT);
@@ -7812,12 +7795,12 @@ var away;
                 // value to convert distance from camera to model length per pixel width
                 this._constants[2] = camera.projection.near;
 
-                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
-                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
-                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 7, this._constants, 1);
+                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
+                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
+                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 7, this._constants, 1);
 
                 // projection matrix
-                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
+                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
             };
 
             /**
@@ -7886,7 +7869,7 @@ var away;
             SkyboxPass.prototype.iGetFragmentCode = function (animationCode) {
                 var format;
                 switch (this._cubeTexture.format) {
-                    case away.gl.ContextGLTextureFormat.COMPRESSED:
+                    case away.stagegl.ContextGLTextureFormat.COMPRESSED:
                         format = "dxt1,";
                         break;
                     case "compressedAlpha":
@@ -7914,8 +7897,8 @@ var away;
                 this._vertexData[1] = pos.y;
                 this._vertexData[2] = pos.z;
                 this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.projection.far / Math.sqrt(3);
-                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, viewProjection, true);
-                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
+                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, viewProjection, true);
+                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
 
                 stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
                 context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
@@ -7927,8 +7910,8 @@ var away;
             SkyboxPass.prototype.iActivate = function (stageGL, camera) {
                 _super.prototype.iActivate.call(this, stageGL, camera);
                 var context = stageGL.contextGL;
-                context.setSamplerStateAt(0, away.gl.ContextGLWrapMode.CLAMP, away.gl.ContextGLTextureFilter.LINEAR, this._cubeTexture.hasMipmaps ? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
-                context.setDepthTest(false, away.gl.ContextGLCompareMode.LESS);
+                context.setSamplerStateAt(0, away.stagegl.ContextGLWrapMode.CLAMP, away.stagegl.ContextGLTextureFilter.LINEAR, this._cubeTexture.hasMipmaps ? away.stagegl.ContextGLMipFilter.MIPLINEAR : away.stagegl.ContextGLMipFilter.MIPNONE);
+                context.setDepthTest(false, away.stagegl.ContextGLCompareMode.LESS);
                 this._cubeTexture.activateTextureForStage(0, stageGL);
             };
             return SkyboxPass;
@@ -8218,7 +8201,7 @@ var away;
             */
             ShadingMethodBase.prototype.getFormatStringForTexture = function (texture) {
                 switch (texture.format) {
-                    case away.gl.ContextGLTextureFormat.COMPRESSED:
+                    case away.stagegl.ContextGLTextureFormat.COMPRESSED:
                         return "dxt1,";
                         break;
                     case "compressedAlpha":
@@ -8903,7 +8886,7 @@ var away;
             */
             AmbientBasicMethod.prototype.iActivate = function (vo, stageGL) {
                 if (this._useTexture) {
-                    stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.gl.ContextGLWrapMode.REPEAT : away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.gl.ContextGLTextureFilter.LINEAR : away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
+                    stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.stagegl.ContextGLWrapMode.REPEAT : away.stagegl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.stagegl.ContextGLTextureFilter.LINEAR : away.stagegl.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.stagegl.ContextGLMipFilter.MIPLINEAR : away.stagegl.ContextGLMipFilter.MIPNONE);
 
                     this._texture.activateTextureForStage(vo.texturesIndex, stageGL);
                 }
@@ -9355,7 +9338,7 @@ var away;
             */
             DiffuseBasicMethod.prototype.iActivate = function (vo, stageGL) {
                 if (this._pUseTexture) {
-                    stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.gl.ContextGLWrapMode.REPEAT : away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.gl.ContextGLTextureFilter.LINEAR : away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
+                    stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.stagegl.ContextGLWrapMode.REPEAT : away.stagegl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.stagegl.ContextGLTextureFilter.LINEAR : away.stagegl.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.stagegl.ContextGLMipFilter.MIPLINEAR : away.stagegl.ContextGLMipFilter.MIPNONE);
 
                     this._texture.activateTextureForStage(vo.texturesIndex, stageGL);
 
@@ -10815,7 +10798,6 @@ var away;
             * @inheritDoc
             */
             EffectEnvMapMethod.prototype.iActivate = function (vo, stageGL) {
-                var context = stageGL.contextGL;
                 vo.fragmentData[vo.fragmentConstantsIndex] = this._alpha;
 
                 this._cubeTexture.activateTextureForStage(vo.texturesIndex, stageGL);
@@ -11776,7 +11758,7 @@ var away;
             */
             NormalBasicMethod.prototype.iActivate = function (vo, stageGL) {
                 if (vo.texturesIndex >= 0) {
-                    stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.gl.ContextGLWrapMode.REPEAT : away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.gl.ContextGLTextureFilter.LINEAR : away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
+                    stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.stagegl.ContextGLWrapMode.REPEAT : away.stagegl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.stagegl.ContextGLTextureFilter.LINEAR : away.stagegl.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.stagegl.ContextGLMipFilter.MIPLINEAR : away.stagegl.ContextGLMipFilter.MIPNONE);
                     this._texture.activateTextureForStage(vo.texturesIndex, stageGL);
                 }
             };
@@ -13708,7 +13690,7 @@ var away;
                     return;
 
                 if (this._pUseTexture) {
-                    stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.gl.ContextGLWrapMode.REPEAT : away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.gl.ContextGLTextureFilter.LINEAR : away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
+                    stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.stagegl.ContextGLWrapMode.REPEAT : away.stagegl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.stagegl.ContextGLTextureFilter.LINEAR : away.stagegl.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.stagegl.ContextGLMipFilter.MIPLINEAR : away.stagegl.ContextGLMipFilter.MIPNONE);
                     this._texture.activateTextureForStage(vo.texturesIndex, stageGL);
                 }
 
@@ -17013,7 +16995,7 @@ var away;
     (function (materials) {
         var BlendMode = away.base.BlendMode;
 
-        var ContextGLCompareMode = away.gl.ContextGLCompareMode;
+        var ContextGLCompareMode = away.stagegl.ContextGLCompareMode;
         var Event = away.events.Event;
 
         var AssetType = away.library.AssetType;
@@ -17172,7 +17154,7 @@ var away;
                 /**
                 * The depth compare mode used to render the renderables using this material.
                 *
-                * @see away.gl.ContextGLCompareMode
+                * @see away.stagegl.ContextGLCompareMode
                 */
                 get: function () {
                     return this._pDepthCompareMode;
@@ -18743,7 +18725,7 @@ var away;
             */
             MultiPassMaterialBase.prototype.iActivatePass = function (index, stageGL, camera) {
                 if (index == 0)
-                    stageGL.contextGL.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+                    stageGL.contextGL.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
 
                 _super.prototype.iActivatePass.call(this, index, stageGL, camera);
             };
@@ -18754,7 +18736,7 @@ var away;
             MultiPassMaterialBase.prototype.iDeactivate = function (stageGL) {
                 _super.prototype.iDeactivate.call(this, stageGL);
 
-                stageGL.contextGL.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+                stageGL.contextGL.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
             };
 
             /**
@@ -18819,7 +18801,7 @@ var away;
                     for (var i = firstAdditiveIndex; i < this._nonCasterLightPasses.length; ++i) {
                         this._nonCasterLightPasses[i].forceSeparateMVP = forceSeparateMVP;
                         this._nonCasterLightPasses[i].setBlendMode(away.base.BlendMode.ADD);
-                        this._nonCasterLightPasses[i].depthCompareMode = away.gl.ContextGLCompareMode.LESS_EQUAL;
+                        this._nonCasterLightPasses[i].depthCompareMode = away.stagegl.ContextGLCompareMode.LESS_EQUAL;
                     }
                 }
 
@@ -18827,7 +18809,7 @@ var away;
                     // there are light passes, so this should be blended in
                     if (this._pEffectsPass) {
                         this._pEffectsPass.iIgnoreLights = true;
-                        this._pEffectsPass.depthCompareMode = away.gl.ContextGLCompareMode.LESS_EQUAL;
+                        this._pEffectsPass.depthCompareMode = away.stagegl.ContextGLCompareMode.LESS_EQUAL;
                         this._pEffectsPass.setBlendMode(away.base.BlendMode.LAYER);
                         this._pEffectsPass.forceSeparateMVP = forceSeparateMVP;
                     }
@@ -23680,7 +23662,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
 
         /**
@@ -23741,7 +23723,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
 
         /**
         * ...
@@ -23887,7 +23869,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
 
         var Vector3D = away.geom.Vector3D;
 
@@ -24051,7 +24033,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
 
         var MathConsts = away.geom.MathConsts;
@@ -24292,7 +24274,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
 
         var Vector3D = away.geom.Vector3D;
 
@@ -24367,7 +24349,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
         var Matrix3D = away.geom.Matrix3D;
         var Vector3D = away.geom.Vector3D;
 
@@ -24499,7 +24481,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
 
         /**
@@ -24568,7 +24550,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
 
         /**
         * ...
@@ -24662,7 +24644,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
 
         var Matrix3D = away.geom.Matrix3D;
 
@@ -24718,7 +24700,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
 
         /**
@@ -24804,7 +24786,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
 
         /**
@@ -25085,7 +25067,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
 
         /**
         * ...
@@ -25185,7 +25167,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
 
         /**
         * ...
@@ -25240,7 +25222,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.stagegl.ContextGLVertexBufferFormat;
 
         /**
         * ...
@@ -27394,7 +27376,7 @@ var away;
 var away;
 (function (away) {
     (function (animators) {
-        var ContextGLProgramType = away.gl.ContextGLProgramType;
+        var ContextGLProgramType = away.stagegl.ContextGLProgramType;
 
         /**
         * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
@@ -27544,7 +27526,7 @@ var away;
 
         var AnimationStateEvent = away.events.AnimationStateEvent;
 
-        var ContextGLProgramType = away.gl.ContextGLProgramType;
+        var ContextGLProgramType = away.stagegl.ContextGLProgramType;
 
         /**
         * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects
@@ -28578,7 +28560,7 @@ var away;
                 var i;
                 var len = this._numPoses;
 
-                stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+                stageGL.contextGL.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
                 if (this._blendMode == animators.VertexAnimationMode.ABSOLUTE)
                     i = 1;
@@ -28596,7 +28578,7 @@ var away;
             };
 
             VertexAnimator.prototype.setNullPose = function (stageGL, renderable, vertexConstantOffset /*int*/ , vertexStreamOffset /*int*/ ) {
-                stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+                stageGL.contextGL.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
                 if (this._blendMode == animators.VertexAnimationMode.ABSOLUTE) {
                     var len = this._numPoses;

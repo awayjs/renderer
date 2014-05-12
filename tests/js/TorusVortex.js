@@ -1,17 +1,17 @@
-///<reference path="../../../build/away3d.next.d.ts" />
-//<reference path="../../../src/Away3D.ts" />
+///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 var demos;
 (function (demos) {
     (function (object3d) {
         var BlendMode = away.base.BlendMode;
-        var Scene = away.containers.Scene;
+
         var View = away.containers.View;
-        var Mesh = away.entities.Mesh;
+
         var Vector3D = away.geom.Vector3D;
         var TextureMaterial = away.materials.TextureMaterial;
         var URLLoader = away.net.URLLoader;
         var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
         var URLRequest = away.net.URLRequest;
+        var ParserUtils = away.parsers.ParserUtils;
         var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
         var PrimitiveCubePrefab = away.prefabs.PrimitiveCubePrefab;
         var PerspectiveProjection = away.projections.PerspectiveProjection;
@@ -23,7 +23,7 @@ var demos;
             function TorusVortex() {
                 away.Debug.THROW_ERRORS = false;
 
-                this._view = new View(new DefaultRenderer());
+                this._view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
 
                 this._view.backgroundColor = 0x000000;
                 this._view.camera.x = 130;
@@ -53,7 +53,7 @@ var demos;
             TorusVortex.prototype.imageCompleteHandler = function (event) {
                 var _this = this;
                 var imageLoader = event.target;
-                this._image = away.parsers.ParserUtils.blobToImage(imageLoader.data);
+                this._image = ParserUtils.blobToImage(imageLoader.data);
                 this._image.onload = function (event) {
                     return _this.onLoadComplete(event);
                 };

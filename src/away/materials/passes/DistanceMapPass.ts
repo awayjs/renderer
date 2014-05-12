@@ -119,7 +119,7 @@ module away.materials
 				var format:string;
 
 				switch (this._alphaMask.format) {
-					case away.gl.ContextGLTextureFormat.COMPRESSED:
+					case away.stagegl.ContextGLTextureFormat.COMPRESSED:
 						format = "dxt1,";
 						break;
 
@@ -144,7 +144,7 @@ module away.materials
 		 */
 		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
-			var context:away.gl.ContextGL = stageGL.contextGL;
+			var context:away.stagegl.IContext = stageGL.contextGL;
 			var pos:away.geom.Vector3D = camera.scenePosition;
 
 			this._vertexData[0] = pos.x;
@@ -154,9 +154,9 @@ module away.materials
 
 			var sceneTransform:away.geom.Matrix3D = renderable.sourceEntity.getRenderSceneTransform(camera);
 
-			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 5, sceneTransform, true);
+			context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 5, sceneTransform, true);
 
-			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
+			context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
 
 			if (this._alphaThreshold > 0)
 				stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(SubGeometry.SECONDARY_UV_DATA), SubGeometry.SECONDARY_UV_FORMAT);
@@ -167,7 +167,7 @@ module away.materials
 			matrix.copyFrom(sceneTransform);
 			matrix.append(viewProjection);
 
-			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
+			context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
 
 			stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
 			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
@@ -178,7 +178,7 @@ module away.materials
 		 */
 		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
-			var context:away.gl.ContextGL = stageGL.contextGL;
+			var context:away.stagegl.IContext = stageGL.contextGL;
 			super.iActivate(stageGL, camera);
 
 			var f:number = camera.projection.far;
@@ -192,9 +192,9 @@ module away.materials
 
 			if (this._alphaThreshold > 0) {
 				this._alphaMask.activateTextureForStage(0, stageGL);
-				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
+				context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
 			} else {
-				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);
+				context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);
 			}
 		}
 	}

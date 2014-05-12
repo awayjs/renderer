@@ -1,5 +1,4 @@
-///<reference path="../../../build/Away3D.next.d.ts" />
-//<reference path="../../../src/Away3D.ts" />
+///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 
 module demos.object3d
 {
@@ -43,7 +42,7 @@ module demos.object3d
 
             this.meshes = new Array<Mesh>();
             this.light = new PointLight();
-            this.view = new View(new DefaultRenderer());
+            this.view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
             this.pointLight = new PointLight();
             this.lightPicker = new StaticLightPicker([this.pointLight])
 

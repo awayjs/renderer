@@ -5,6 +5,8 @@
  */
 module away.pick
 {
+	import ByteArray						= away.utils.ByteArray;
+
 	/**
 	 * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
 	 * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
@@ -22,11 +24,11 @@ module away.pick
 		private _blendedRenderableHead:away.pool.RenderableBase;
 
 		private _stageGL:away.base.StageGL;
-		private _context:away.gl.ContextGL;
+		private _context:away.stagegl.IContext;
 		private _onlyMouseEnabled:boolean = true;
 
-		private _objectProgram:away.gl.Program;
-		private _triangleProgram:away.gl.Program;
+		private _objectProgram:away.stagegl.IProgram;
+		private _triangleProgram:away.stagegl.IProgram;
 		private _bitmapData:away.base.BitmapData;
 		private _viewportData:number[];
 		private _boundOffsetScale:number[];
@@ -167,7 +169,7 @@ module away.pick
 		/**
 		 * @inheritDoc
 		 */
-		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase)
+		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.stagegl.ITextureBase)
 		{
 
 			var camera:away.entities.Camera = entityCollector.camera;
@@ -180,10 +182,10 @@ module away.pick
 			if (!this._objectProgram)
 				this.initObjectProgram();
 
-			this._context.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
-			this._context.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
+			this._context.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
+			this._context.setDepthTest(true, away.stagegl.ContextGLCompareMode.LESS);
 			this._context.setProgram(this._objectProgram);
-			this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
+			this._context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
 			//this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
 			//this.drawRenderables(entityCollector.blendedRenderableHead, camera);
 			//TODO: reimplement ShaderPicker inheriting from RendererBase
@@ -208,7 +210,7 @@ module away.pick
 
 				this._potentialFound = true;
 
-				this._context.setCulling((<away.materials.MaterialBase> renderable.materialOwner.material).bothSides? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
+				this._context.setCulling((<away.materials.MaterialBase> renderable.materialOwner.material).bothSides? away.stagegl.ContextGLTriangleFace.NONE : away.stagegl.ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
 
 				this._interactives[this._interactiveId++] = renderable;
 				// color code so that reading from bitmapdata will contain the correct value
@@ -217,8 +219,8 @@ module away.pick
 
 				matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
 				matrix.append(viewProjection);
-				this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
-				this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
+				this._context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
+				this._context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
 				this._stageGL.activateBuffer(0, renderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA), away.base.TriangleSubGeometry.POSITION_FORMAT);
 				this._context.drawTriangles(this._stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 
@@ -267,18 +269,9 @@ module away.pick
 			vertexCode = "add vt0, va0, vc5 			\n" + "mul vt0, vt0, vc6 			\n" + "mov v0, vt0				\n" + "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
 			fragmentCode = "mov oc, v0"; // write identifier
 
-			//away.Debug.throwPIR( 'ShaderPicker' , 'initTriangleProgram' , 'Dependency: AGALMiniAssembler')
-
-
-			var vertCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
-			var fragCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
-
-			var vertString:string = vertCompiler.compile(away.gl.ContextGLProgramType.VERTEX, vertexCode);
-			var fragString:string = fragCompiler.compile(away.gl.ContextGLProgramType.FRAGMENT, fragmentCode);
-
-			this._triangleProgram.upload(vertString, fragString);
-
-			//this._triangleProgram.upload(new AGALMiniAssembler().assemble(ContextGLProgramType.VERTEX, vertexCode), new AGALMiniAssembler().assemble(ContextGLProgramType.FRAGMENT, fragmentCode));
+			var vertexByteCode:ByteArray = (new aglsl.assembler.AGALMiniAssembler().assemble("part vertex 1\n" + vertexCode + "endpart"))['vertex'].data;
+			var fragmentByteCode:ByteArray = (new aglsl.assembler.AGALMiniAssembler().assemble("part fragment 1\n" + fragmentCode + "endpart"))['fragment'].data;
+			this._triangleProgram.upload(vertexByteCode, fragmentByteCode);
 		}
 
 		/**
@@ -318,10 +311,10 @@ module away.pick
 			this._boundOffsetScale[2] = offsZ = -bounds.z;
 
 			this._context.setProgram(this._triangleProgram);
-			this._context.clear(0, 0, 0, 0, 1, 0, away.gl.ContextGLClearMask.DEPTH);
+			this._context.clear(0, 0, 0, 0, 1, 0, away.stagegl.ContextGLClearMask.DEPTH);
 			this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
-			this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
-			this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
+			this._context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
+			this._context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
 
 			this._stageGL.activateBuffer(0, this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA), away.base.TriangleSubGeometry.POSITION_FORMAT);
 			this._context.drawTriangles(this._stageGL.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);

@@ -1,4 +1,4 @@
-///<reference path="../../build/Away3D.next.d.ts" />
+///<reference path="../../build/stagegl-renderer.next.d.ts" />
 //<reference path="../../src/Away3D.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];

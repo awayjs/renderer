@@ -1039,7 +1039,6 @@ var away;
                 this.position = 0;
                 this.length = 0;
                 this._mode = "";
-                this.Base64Key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
             }
             ByteArrayBase.prototype.writeByte = function (b) {
                 throw "Virtual method";
@@ -1150,10 +1149,19 @@ var away;
                 this.position = oldpos;
             };
 
-            ByteArrayBase.prototype.internalGetBase64String = function (count, getUnsignedByteFunc, self) {
+            ByteArrayBase.prototype.readBase64String = function (count) {
+                if (count == undefined || count > this.length - this.position)
+                    count = this.length - this.position;
+                if (!(count > 0))
+                    return "";
+
+                return ByteArrayBase.internalGetBase64String(count, this.readUnsignedByte, this);
+            };
+
+            ByteArrayBase.internalGetBase64String = function (count, getUnsignedByteFunc, self) {
                 var r = "";
                 var b0, b1, b2, enc1, enc2, enc3, enc4;
-                var base64Key = this.Base64Key;
+                var base64Key = ByteArrayBase.Base64Key;
                 while (count >= 3) {
                     b0 = getUnsignedByteFunc.apply(self);
                     b1 = getUnsignedByteFunc.apply(self);
@@ -1182,6 +1190,7 @@ var away;
                 }
                 return r;
             };
+            ByteArrayBase.Base64Key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
             return ByteArrayBase;
         })();
         utils.ByteArrayBase = ByteArrayBase;
@@ -1942,60 +1951,62 @@ var away;
         var CSS = (function () {
             function CSS() {
             }
-            CSS.setCanvasSize = function (canvas, width, height) {
-                canvas.style.width = width + "px";
-                canvas.style.height = height + "px";
-                canvas.width = width;
-                canvas.height = height;
+            CSS.setElementSize = function (element, width, height) {
+                element.style.width = width + "px";
+                element.style.height = height + "px";
+                element["width"] = width;
+                element["height"] = height;
             };
 
-            CSS.setCanvasWidth = function (canvas, width) {
-                canvas.style.width = width + "px";
-                canvas.width = width;
+            CSS.setElementWidth = function (element, width) {
+                element.style.width = width + "px";
+                element["width"] = width;
             };
 
-            CSS.setCanvasHeight = function (canvas, height) {
-                canvas.style.height = height + "px";
-                canvas.height = height;
+            CSS.setElementHeight = function (element, height) {
+                element.style.height = height + "px";
+                element["height"] = height;
             };
 
-            CSS.setCanvasX = function (canvas, x) {
-                canvas.style.position = 'absolute';
-                canvas.style.left = x + "px";
+            CSS.setElementX = function (element, x) {
+                element.style.position = 'absolute';
+                element.style.left = x + "px";
             };
 
-            CSS.setCanvasY = function (canvas, y) {
-                canvas.style.position = 'absolute';
-                canvas.style.top = y + "px";
+            CSS.setElementY = function (element, y) {
+                element.style.position = 'absolute';
+                element.style.top = y + "px";
             };
 
-            CSS.getCanvasVisibility = function (canvas) {
-                return canvas.style.visibility == 'visible';
+            CSS.getElementVisibility = function (element) {
+                return element.style.visibility == 'visible';
             };
 
-            CSS.setCanvasVisibility = function (canvas, visible) {
+            CSS.setElementVisibility = function (element, visible) {
                 if (visible) {
-                    canvas.style.visibility = 'visible';
+                    element.style.visibility = 'visible';
                 } else {
-                    canvas.style.visibility = 'hidden';
+                    element.style.visibility = 'hidden';
                 }
             };
 
-            CSS.setCanvasAlpha = function (canvas, alpha) {
-                var context = canvas.getContext("2d");
-                context.globalAlpha = alpha;
+            CSS.setElementAlpha = function (element, alpha) {
+                if (element instanceof HTMLCanvasElement) {
+                    var context = element.getContext("2d");
+                    context.globalAlpha = alpha;
+                }
             };
 
-            CSS.setCanvasPosition = function (canvas, x, y, absolute) {
+            CSS.setElementPosition = function (element, x, y, absolute) {
                 if (typeof absolute === "undefined") { absolute = false; }
                 if (absolute) {
-                    canvas.style.position = "absolute";
+                    element.style.position = "absolute";
                 } else {
-                    canvas.style.position = "relative";
+                    element.style.position = "relative";
                 }
 
-                canvas.style.left = x + "px";
-                canvas.style.top = y + "px";
+                element.style.left = x + "px";
+                element.style.top = y + "px";
             };
             return CSS;
         })();

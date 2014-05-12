@@ -84,7 +84,7 @@ module away.animators
 		{
 			var uID:number = pass._iUniqueId;
 			var index:number /*uint*/ = this._streamIndices[uID];
-			var context:away.gl.ContextGL = stageGL.contextGL;
+			var context:away.stagegl.IContext = stageGL.contextGL;
 			context.setVertexBufferAt(index, null);
 			if (this._uploadNormals)
 				context.setVertexBufferAt(index + 1, null);

@@ -1,4 +1,4 @@
-///<reference path="../../build/Away3D.next.d.ts" />
+///<reference path="../../build/stagegl-renderer.next.d.ts" />
 //<reference path="../../src/Away3D.ts" />
 
 class RotatingBluePlane extends away.events.EventDispatcher

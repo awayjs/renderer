@@ -1,4 +1,4 @@
-///<reference path="../../../build/Away3D.next.d.ts" />
+///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 var tests;
 (function (tests) {
     (function (library) {

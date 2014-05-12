@@ -4,7 +4,7 @@ module away.animators
 {
 	import RenderableBase					= away.pool.RenderableBase;
 	import Camera							= away.entities.Camera;
-	import ContextGLVertexBufferFormat		= away.gl.ContextGLVertexBufferFormat
+	import ContextGLVertexBufferFormat		= away.stagegl.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
 	import StageGL							= away.base.StageGL;
 	

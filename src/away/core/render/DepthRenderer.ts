@@ -51,8 +51,8 @@ module away.render
 			this._pStageGL.setRenderTarget(target, true, 0);
 			this._pContext.clear(1, 1, 1, 1, 1, 0);
 
-			this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
-			this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
+			this._pContext.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
+			this._pContext.setDepthTest(true, away.stagegl.ContextGLCompareMode.LESS);
 
 			var head:away.pool.RenderableBase = this._pOpaqueRenderableHead;
 
@@ -70,7 +70,7 @@ module away.render
 			this._activeMaterial = null;
 
 			//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-			this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL);
+			this._pContext.setDepthTest(false, away.stagegl.ContextGLCompareMode.LESS_EQUAL);
 
 			this._pStageGL.scissorRect = null;
 
@@ -121,9 +121,9 @@ module away.render
 		{
 			this.pCollectRenderables(entityCollector);
 
-			this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+			this._pContext.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
 
-			this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
+			this._pContext.setDepthTest(true, away.stagegl.ContextGLCompareMode.LESS);
 
 			this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
 

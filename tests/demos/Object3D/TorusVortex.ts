@@ -1,5 +1,4 @@
-///<reference path="../../../build/away3d.next.d.ts" />
-//<reference path="../../../src/Away3D.ts" />
+///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 
 module demos.object3d
 {
@@ -37,7 +36,7 @@ module demos.object3d
 		{
 			away.Debug.THROW_ERRORS = false;
 			
-			this._view = new View(new DefaultRenderer());
+			this._view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
 			
 			this._view.backgroundColor = 0x000000;
 			this._view.camera.x = 130;

@@ -2,9 +2,9 @@
 
 module away.animators
 {
-	import ContextGL = away.gl.ContextGL;
-	import StageGL = away.base.StageGL;
-	import MaterialPassBase = away.materials.MaterialPassBase;
+	import IContext					= away.stagegl.IContext;
+	import StageGL					= away.base.StageGL;
+	import MaterialPassBase			= away.materials.MaterialPassBase;
 
 	/**
 	 * The animation data set used by skeleton-based animators, containing skeleton animation data.
@@ -88,7 +88,7 @@ module away.animators
 		public deactivate(stageGL:StageGL, pass:MaterialPassBase)
 		{
 			var streamOffset:number /*uint*/ = pass.numUsedStreams;
-			var context:ContextGL = stageGL.contextGL;
+			var context:IContext = stageGL.contextGL;
 			context.setVertexBufferAt(streamOffset, null);
 			context.setVertexBufferAt(streamOffset + 1, null);
 		}

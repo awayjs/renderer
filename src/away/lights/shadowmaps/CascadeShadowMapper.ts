@@ -9,7 +9,7 @@ module away.lights
 	import Matrix3DUtils			= away.geom.Matrix3DUtils;
 	import DepthRenderer			= away.render.DepthRenderer;
 	
-	import TextureBase				= away.gl.TextureBase;
+	import ITextureBase				= away.stagegl.ITextureBase;
 //	import Event					= away.events.Event;
 	import EventDispatcher			= away.events.EventDispatcher;
 	import IEventDispatcher			= away.events.IEventDispatcher;

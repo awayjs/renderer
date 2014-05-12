@@ -229,7 +229,7 @@ module away.materials
 		private getFormatStringForTexture(texture:away.textures.TextureProxyBase):string
 		{
 			switch (texture.format) {
-				case away.gl.ContextGLTextureFormat.COMPRESSED:
+				case away.stagegl.ContextGLTextureFormat.COMPRESSED:
 					return "dxt1,";
 					break;
 				case "compressedAlpha":

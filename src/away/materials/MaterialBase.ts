@@ -3,8 +3,8 @@
 module away.materials
 {
 	import BlendMode					= away.base.BlendMode;
-	import ContextGL					= away.gl.ContextGL;
-	import ContextGLCompareMode			= away.gl.ContextGLCompareMode;
+	import IContext						= away.stagegl.IContext;
+	import ContextGLCompareMode			= away.stagegl.ContextGLCompareMode;
 	import Event						= away.events.Event;
 	import Matrix3D						= away.geom.Matrix3D;
 	import AssetType					= away.library.AssetType;
@@ -213,7 +213,7 @@ module away.materials
 		/**
 		 * The depth compare mode used to render the renderables using this material.
 		 *
-		 * @see away.gl.ContextGLCompareMode
+		 * @see away.stagegl.ContextGLCompareMode
 		 */
 
 		public get depthCompareMode():string
@@ -585,7 +585,7 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iUpdateMaterial(context:ContextGL)
+		public iUpdateMaterial(context:IContext)
 		{
 			//throw new away.errors.AbstractMethodError();
 		}

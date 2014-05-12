@@ -429,7 +429,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iUpdateMaterial(context:away.gl.ContextGL)
+		public iUpdateMaterial(context:away.stagegl.IContext)
 		{
 			var passesInvalid:boolean;
 
@@ -519,7 +519,7 @@ module away.materials
 		public iActivatePass(index:number, stageGL:StageGL, camera:Camera)
 		{
 			if (index == 0)
-				stageGL.contextGL.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+				stageGL.contextGL.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
 
 			super.iActivatePass(index, stageGL, camera);
 		}
@@ -531,7 +531,7 @@ module away.materials
 		{
 			super.iDeactivate(stageGL);
 
-			stageGL.contextGL.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+			stageGL.contextGL.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
 		}
 
 		/**
@@ -599,7 +599,7 @@ module away.materials
 				for (var i:number = firstAdditiveIndex; i < this._nonCasterLightPasses.length; ++i) {
 					this._nonCasterLightPasses[i].forceSeparateMVP = forceSeparateMVP;
 					this._nonCasterLightPasses[i].setBlendMode(away.base.BlendMode.ADD);
-					this._nonCasterLightPasses[i].depthCompareMode = away.gl.ContextGLCompareMode.LESS_EQUAL;
+					this._nonCasterLightPasses[i].depthCompareMode = away.stagegl.ContextGLCompareMode.LESS_EQUAL;
 				}
 			}
 
@@ -608,7 +608,7 @@ module away.materials
 				// there are light passes, so this should be blended in
 				if (this._pEffectsPass) {
 					this._pEffectsPass.iIgnoreLights = true;
-					this._pEffectsPass.depthCompareMode = away.gl.ContextGLCompareMode.LESS_EQUAL;
+					this._pEffectsPass.depthCompareMode = away.stagegl.ContextGLCompareMode.LESS_EQUAL;
 					this._pEffectsPass.setBlendMode(away.base.BlendMode.LAYER);
 					this._pEffectsPass.forceSeparateMVP = forceSeparateMVP;
 				}

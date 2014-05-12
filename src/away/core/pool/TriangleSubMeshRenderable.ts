@@ -75,16 +75,16 @@ module away.pool
 
 			switch(subGeometry.jointsPerVertex) {
 				case 1:
-					this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_1;
+					this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.stagegl.ContextGLVertexBufferFormat.FLOAT_1;
 					break;
 				case 2:
-					this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_2;
+					this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.stagegl.ContextGLVertexBufferFormat.FLOAT_2;
 					break;
 				case 3:
-					this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_3;
+					this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.stagegl.ContextGLVertexBufferFormat.FLOAT_3;
 					break;
 				case 4:
-					this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.gl.ContextGLVertexBufferFormat.FLOAT_4;
+					this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = away.stagegl.ContextGLVertexBufferFormat.FLOAT_4;
 					break;
 				default:
 			}

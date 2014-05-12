@@ -439,7 +439,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iUpdateMaterial(context:away.gl.ContextGL)
+		public iUpdateMaterial(context:away.stagegl.IContext)
 		{
 			if (this._pScreenPass._iPassesDirty) {
 

@@ -115,25 +115,6 @@ var aglsl;
 ///<reference path="../away/_definitions.ts" />
 var aglsl;
 (function (aglsl) {
-    var ContextGL = (function () {
-        function ContextGL() {
-            this.enableErrorChecking = false;
-            this.resources = [];
-            this.driverInfo = "Call getter function instead";
-        }
-        ContextGL.maxvertexconstants = 128;
-        ContextGL.maxfragconstants = 28;
-        ContextGL.maxtemp = 8;
-        ContextGL.maxstreams = 8;
-        ContextGL.maxtextures = 8;
-        ContextGL.defaultsampler = new aglsl.Sampler();
-        return ContextGL;
-    })();
-    aglsl.ContextGL = ContextGL;
-})(aglsl || (aglsl = {}));
-///<reference path="../away/_definitions.ts" />
-var aglsl;
-(function (aglsl) {
     var Mapping = (function () {
         function Mapping() {
         }
@@ -943,7 +924,7 @@ var aglsl;
                     }
                 }
             } else {
-                header += "uniform vec4 " + tag + "carrr[" + aglsl.ContextGL.maxvertexconstants + "];\n"; // use max const count instead
+                header += "uniform vec4 " + tag + "carrr[" + away.stagegl.ContextStage3D.maxvertexconstants + "];\n"; // use max const count instead
             }
 
             for (var i = 0; i < desc.regread[0x2].length || i < desc.regwrite[0x2].length; i++) {
@@ -1161,231 +1142,27 @@ var aglsl;
     })();
     aglsl.AGLSLParser = AGLSLParser;
 })(aglsl || (aglsl = {}));
-///<reference path="../away/_definitions.ts" />
-var aglsl;
-(function (aglsl) {
-    var AGLSLCompiler = (function () {
-        function AGLSLCompiler() {
-        }
-        AGLSLCompiler.prototype.compile = function (programType, source) {
-            var agalMiniAssembler = new aglsl.assembler.AGALMiniAssembler();
-            var tokenizer = new aglsl.AGALTokenizer();
-
-            var data;
-            var concatSource;
-            switch (programType) {
-                case "vertex":
-                    concatSource = "part vertex 1\n" + source + "endpart";
-                    agalMiniAssembler.assemble(concatSource);
-                    data = agalMiniAssembler.r['vertex'].data;
-                    break;
-                case "fragment":
-                    concatSource = "part fragment 1\n" + source + "endpart";
-                    agalMiniAssembler.assemble(concatSource);
-                    data = agalMiniAssembler.r['fragment'].data;
-                    break;
-                default:
-                    throw "Unknown ContextGLProgramType";
-            }
-
-            var description = tokenizer.decribeAGALByteArray(data);
-
-            var parser = new aglsl.AGLSLParser();
-            this.glsl = parser.parse(description);
-
-            return this.glsl;
-        };
-        return AGLSLCompiler;
-    })();
-    aglsl.AGLSLCompiler = AGLSLCompiler;
-})(aglsl || (aglsl = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (gl) {
+    (function (stagegl) {
         var ContextGLClearMask = (function () {
             function ContextGLClearMask() {
             }
-            ContextGLClearMask.COLOR = 8 << 11;
-            ContextGLClearMask.DEPTH = 8 << 5;
-            ContextGLClearMask.STENCIL = 8 << 7;
+            ContextGLClearMask.COLOR = 1;
+            ContextGLClearMask.DEPTH = 2;
+            ContextGLClearMask.STENCIL = 4;
             ContextGLClearMask.ALL = ContextGLClearMask.COLOR | ContextGLClearMask.DEPTH | ContextGLClearMask.STENCIL;
             return ContextGLClearMask;
         })();
-        gl.ContextGLClearMask = ContextGLClearMask;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (_gl) {
-        var VertexBuffer = (function () {
-            function VertexBuffer(gl, numVertices, data32PerVertex) {
-                this._gl = gl;
-                this._buffer = this._gl.createBuffer();
-                this._numVertices = numVertices;
-                this._data32PerVertex = data32PerVertex;
-            }
-            VertexBuffer.prototype.uploadFromArray = function (vertices, startVertex, numVertices) {
-                this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._buffer);
-
-                //console.log( "** WARNING upload not fully implemented, startVertex & numVertices not considered." );
-                // TODO add offsets , startVertex, numVertices * this._data32PerVertex
-                this._gl.bufferData(this._gl.ARRAY_BUFFER, new Float32Array(vertices), this._gl.STATIC_DRAW);
-            };
-
-            Object.defineProperty(VertexBuffer.prototype, "numVertices", {
-                get: function () {
-                    return this._numVertices;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(VertexBuffer.prototype, "data32PerVertex", {
-                get: function () {
-                    return this._data32PerVertex;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(VertexBuffer.prototype, "glBuffer", {
-                get: function () {
-                    return this._buffer;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            VertexBuffer.prototype.dispose = function () {
-                this._gl.deleteBuffer(this._buffer);
-            };
-            return VertexBuffer;
-        })();
-        _gl.VertexBuffer = VertexBuffer;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (_gl) {
-        var IndexBuffer = (function () {
-            function IndexBuffer(gl, numIndices) {
-                this._gl = gl;
-                this._buffer = this._gl.createBuffer();
-                this._numIndices = numIndices;
-            }
-            IndexBuffer.prototype.uploadFromArray = function (data, startOffset, count) {
-                this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._buffer);
-
-                // TODO add index offsets
-                this._gl.bufferData(this._gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), this._gl.STATIC_DRAW);
-            };
-
-            IndexBuffer.prototype.dispose = function () {
-                this._gl.deleteBuffer(this._buffer);
-            };
-
-            Object.defineProperty(IndexBuffer.prototype, "numIndices", {
-                get: function () {
-                    return this._numIndices;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(IndexBuffer.prototype, "glBuffer", {
-                get: function () {
-                    return this._buffer;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return IndexBuffer;
-        })();
-        _gl.IndexBuffer = IndexBuffer;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (_gl) {
-        var Program = (function () {
-            function Program(gl) {
-                this._gl = gl;
-                this._program = this._gl.createProgram();
-            }
-            Program.prototype.upload = function (vertexProgram, fragmentProgram) {
-                this._vertexShader = this._gl.createShader(this._gl.VERTEX_SHADER);
-                this._fragmentShader = this._gl.createShader(this._gl.FRAGMENT_SHADER);
-
-                this._gl.shaderSource(this._vertexShader, vertexProgram);
-                this._gl.compileShader(this._vertexShader);
-
-                if (!this._gl.getShaderParameter(this._vertexShader, this._gl.COMPILE_STATUS)) {
-                    alert(this._gl.getShaderInfoLog(this._vertexShader));
-                    return null;
-                }
-
-                this._gl.shaderSource(this._fragmentShader, fragmentProgram);
-                this._gl.compileShader(this._fragmentShader);
-
-                if (!this._gl.getShaderParameter(this._fragmentShader, this._gl.COMPILE_STATUS)) {
-                    alert(this._gl.getShaderInfoLog(this._fragmentShader));
-                    return null;
-                }
-
-                this._gl.attachShader(this._program, this._vertexShader);
-                this._gl.attachShader(this._program, this._fragmentShader);
-                this._gl.linkProgram(this._program);
-
-                if (!this._gl.getProgramParameter(this._program, this._gl.LINK_STATUS)) {
-                    alert("Could not link the program."); //TODO throw errors
-                }
-            };
-
-            Program.prototype.dispose = function () {
-                this._gl.deleteProgram(this._program);
-            };
-
-            Program.prototype.focusProgram = function () {
-                this._gl.useProgram(this._program);
-            };
-
-            Object.defineProperty(Program.prototype, "glProgram", {
-                get: function () {
-                    return this._program;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return Program;
-        })();
-        _gl.Program = Program;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (gl) {
-        var SamplerState = (function () {
-            function SamplerState() {
-            }
-            return SamplerState;
-        })();
-        gl.SamplerState = SamplerState;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextGLClearMask = ContextGLClearMask;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
+    (function (stagegl) {
         var ContextGLTextureFormat = (function () {
             function ContextGLTextureFormat() {
             }
@@ -1396,201 +1173,14 @@ var away;
             ContextGLTextureFormat.COMPRESSED_ALPHA = "compressedAlpha";
             return ContextGLTextureFormat;
         })();
-        gl.ContextGLTextureFormat = ContextGLTextureFormat;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (_gl) {
-        var TextureBase = (function () {
-            function TextureBase(gl) {
-                this.textureType = "";
-                this._gl = gl;
-            }
-            TextureBase.prototype.dispose = function () {
-                throw "Abstract method must be overridden.";
-            };
-
-            Object.defineProperty(TextureBase.prototype, "glTexture", {
-                get: function () {
-                    throw new away.errors.AbstractMethodError();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return TextureBase;
-        })();
-        _gl.TextureBase = TextureBase;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var away;
-(function (away) {
-    (function (_gl) {
-        var Texture = (function (_super) {
-            __extends(Texture, _super);
-            function Texture(gl, width, height) {
-                _super.call(this, gl);
-                this.textureType = "texture2d";
-                this._width = width;
-                this._height = height;
-
-                this._glTexture = this._gl.createTexture();
-            }
-            Texture.prototype.dispose = function () {
-                this._gl.deleteTexture(this._glTexture);
-            };
-
-            Object.defineProperty(Texture.prototype, "width", {
-                get: function () {
-                    return this._width;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Texture.prototype, "height", {
-                get: function () {
-                    return this._height;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Texture.prototype, "frameBuffer", {
-                get: function () {
-                    return this._frameBuffer;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Texture.prototype.uploadFromData = function (data, miplevel) {
-                if (typeof miplevel === "undefined") { miplevel = 0; }
-                if (data instanceof away.base.BitmapData)
-                    data = data.imageData;
-
-                this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
-                this._gl.texImage2D(this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
-                this._gl.bindTexture(this._gl.TEXTURE_2D, null);
-            };
-
-            Texture.prototype.uploadCompressedTextureFromByteArray = function (data, byteArrayOffset /*uint*/ , async) {
-                if (typeof async === "undefined") { async = false; }
-                var ext = this._gl.getExtension("WEBKIT_WEBGL_compressed_texture_s3tc");
-                //this._gl.compressedTexImage2D(this._gl.TEXTURE_2D, 0, this)
-            };
-
-            Object.defineProperty(Texture.prototype, "glTexture", {
-                get: function () {
-                    return this._glTexture;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Texture.prototype.generateFromRenderBuffer = function () {
-                this._frameBuffer = this._gl.createFramebuffer();
-                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
-                this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
-                this._gl.texImage2D(this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._width, this._height, 0, this._gl.RGBA, this._gl.UNSIGNED_BYTE, null);
-
-                var renderBuffer = this._gl.createRenderbuffer();
-                this._gl.bindRenderbuffer(this._gl.RENDERBUFFER, renderBuffer);
-                this._gl.renderbufferStorage(this._gl.RENDERBUFFER, this._gl.DEPTH_COMPONENT16, this._width, this._height);
-
-                this._gl.framebufferTexture2D(this._gl.FRAMEBUFFER, this._gl.COLOR_ATTACHMENT0, this._gl.TEXTURE_2D, this._glTexture, 0);
-                this._gl.framebufferRenderbuffer(this._gl.FRAMEBUFFER, this._gl.DEPTH_ATTACHMENT, this._gl.RENDERBUFFER, renderBuffer);
-
-                this._gl.bindTexture(this._gl.TEXTURE_2D, null);
-                this._gl.bindRenderbuffer(this._gl.RENDERBUFFER, null);
-                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
-            };
-
-            Texture.prototype.generateMipmaps = function () {
-                //TODO: implement generating mipmaps
-                //this._gl.bindTexture( this._gl.TEXTURE_2D, this._glTexture );
-                //this._gl.generateMipmap(this._gl.TEXTURE_2D);
-                //this._gl.bindTexture( this._gl.TEXTURE_2D, null );
-            };
-            return Texture;
-        })(_gl.TextureBase);
-        _gl.Texture = Texture;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (_gl) {
-        var CubeTexture = (function (_super) {
-            __extends(CubeTexture, _super);
-            function CubeTexture(gl, size) {
-                _super.call(this, gl);
-                this._textureSelectorDictionary = new Array(6);
-                this.textureType = "textureCube";
-                this._size = size;
-                this._texture = this._gl.createTexture();
-
-                this._textureSelectorDictionary[0] = gl.TEXTURE_CUBE_MAP_POSITIVE_X;
-                this._textureSelectorDictionary[1] = gl.TEXTURE_CUBE_MAP_NEGATIVE_X;
-                this._textureSelectorDictionary[2] = gl.TEXTURE_CUBE_MAP_POSITIVE_Y;
-                this._textureSelectorDictionary[3] = gl.TEXTURE_CUBE_MAP_NEGATIVE_Y;
-                this._textureSelectorDictionary[4] = gl.TEXTURE_CUBE_MAP_POSITIVE_Z;
-                this._textureSelectorDictionary[5] = gl.TEXTURE_CUBE_MAP_NEGATIVE_Z;
-            }
-            CubeTexture.prototype.dispose = function () {
-                this._gl.deleteTexture(this._texture);
-            };
-
-            CubeTexture.prototype.uploadFromData = function (data, side, miplevel) {
-                if (typeof miplevel === "undefined") { miplevel = 0; }
-                if (data instanceof away.base.BitmapData)
-                    data = data.imageData;
-
-                this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
-                this._gl.texImage2D(this._textureSelectorDictionary[side], miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
-                this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
-            };
-
-            CubeTexture.prototype.uploadCompressedTextureFromByteArray = function (data, byteArrayOffset /*uint*/ , async) {
-                if (typeof async === "undefined") { async = false; }
-            };
-
-            Object.defineProperty(CubeTexture.prototype, "size", {
-                get: function () {
-                    return this._size;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CubeTexture.prototype, "glTexture", {
-                get: function () {
-                    return this._texture;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return CubeTexture;
-        })(_gl.TextureBase);
-        _gl.CubeTexture = CubeTexture;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextGLTextureFormat = ContextGLTextureFormat;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
+    (function (stagegl) {
         var ContextGLTriangleFace = (function () {
             function ContextGLTriangleFace() {
             }
@@ -1600,14 +1190,14 @@ var away;
             ContextGLTriangleFace.NONE = "none";
             return ContextGLTriangleFace;
         })();
-        gl.ContextGLTriangleFace = ContextGLTriangleFace;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextGLTriangleFace = ContextGLTriangleFace;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (gl) {
+    (function (stagegl) {
         var ContextGLVertexBufferFormat = (function () {
             function ContextGLVertexBufferFormat() {
             }
@@ -1618,14 +1208,14 @@ var away;
             ContextGLVertexBufferFormat.FLOAT_4 = "float4";
             return ContextGLVertexBufferFormat;
         })();
-        gl.ContextGLVertexBufferFormat = ContextGLVertexBufferFormat;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextGLVertexBufferFormat = ContextGLVertexBufferFormat;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (gl) {
+    (function (stagegl) {
         var ContextGLProgramType = (function () {
             function ContextGLProgramType() {
             }
@@ -1633,14 +1223,14 @@ var away;
             ContextGLProgramType.VERTEX = "vertex";
             return ContextGLProgramType;
         })();
-        gl.ContextGLProgramType = ContextGLProgramType;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextGLProgramType = ContextGLProgramType;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
+    (function (stagegl) {
         var ContextGLBlendFactor = (function () {
             function ContextGLBlendFactor() {
             }
@@ -1656,14 +1246,14 @@ var away;
             ContextGLBlendFactor.ZERO = "zero";
             return ContextGLBlendFactor;
         })();
-        gl.ContextGLBlendFactor = ContextGLBlendFactor;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextGLBlendFactor = ContextGLBlendFactor;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
+    (function (stagegl) {
         var ContextGLCompareMode = (function () {
             function ContextGLCompareMode() {
             }
@@ -1677,14 +1267,14 @@ var away;
             ContextGLCompareMode.NOT_EQUAL = "notEqual";
             return ContextGLCompareMode;
         })();
-        gl.ContextGLCompareMode = ContextGLCompareMode;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextGLCompareMode = ContextGLCompareMode;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
+    (function (stagegl) {
         var ContextGLMipFilter = (function () {
             function ContextGLMipFilter() {
             }
@@ -1693,14 +1283,31 @@ var away;
             ContextGLMipFilter.MIPNONE = "mipnone";
             return ContextGLMipFilter;
         })();
-        gl.ContextGLMipFilter = ContextGLMipFilter;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextGLMipFilter = ContextGLMipFilter;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var ContextGLMode = (function () {
+            function ContextGLMode() {
+            }
+            ContextGLMode.AUTO = "auto";
+            ContextGLMode.WEBGL = "webgl";
+            ContextGLMode.FLASH = "webgl";
+            ContextGLMode.NATIVE = "native";
+            return ContextGLMode;
+        })();
+        stagegl.ContextGLMode = ContextGLMode;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
+    (function (stagegl) {
         var ContextGLProfile = (function () {
             function ContextGLProfile() {
             }
@@ -1709,14 +1316,14 @@ var away;
             ContextGLProfile.BASELINE_EXTENDED = "baselineExtended";
             return ContextGLProfile;
         })();
-        gl.ContextGLProfile = ContextGLProfile;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextGLProfile = ContextGLProfile;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
+    (function (stagegl) {
         var ContextGLStencilAction = (function () {
             function ContextGLStencilAction() {
             }
@@ -1730,14 +1337,14 @@ var away;
             ContextGLStencilAction.ZERO = "zero";
             return ContextGLStencilAction;
         })();
-        gl.ContextGLStencilAction = ContextGLStencilAction;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextGLStencilAction = ContextGLStencilAction;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
-    (function (gl) {
+    (function (stagegl) {
         var ContextGLTextureFilter = (function () {
             function ContextGLTextureFilter() {
             }
@@ -1745,14 +1352,14 @@ var away;
             ContextGLTextureFilter.NEAREST = "nearest";
             return ContextGLTextureFilter;
         })();
-        gl.ContextGLTextureFilter = ContextGLTextureFilter;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextGLTextureFilter = ContextGLTextureFilter;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (gl) {
+    (function (stagegl) {
         var ContextGLWrapMode = (function () {
             function ContextGLWrapMode() {
             }
@@ -1760,16 +1367,399 @@ var away;
             ContextGLWrapMode.REPEAT = "repeat";
             return ContextGLWrapMode;
         })();
-        gl.ContextGLWrapMode = ContextGLWrapMode;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextGLWrapMode = ContextGLWrapMode;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (gl) {
-        var ContextGL = (function () {
-            function ContextGL(canvas) {
+    (function (stagegl) {
+        var ContextStage3D = (function () {
+            function ContextStage3D(container, callback) {
+                this._cmdStream = "";
+                this._resources = new Array();
+
+                var swfVersionStr = "11.0.0";
+
+                // To use express install, set to playerProductInstall.swf, otherwise the empty string.
+                var flashvars = {
+                    id: container.id
+                };
+
+                var params = {
+                    quality: "high",
+                    bgcolor: "#ffffff",
+                    allowscriptaccess: "sameDomain",
+                    allowfullscreen: "true",
+                    wmode: "direct"
+                };
+
+                this._errorCheckingEnabled = false;
+                this._iDriverInfo = "Unknown";
+
+                var attributes = {
+                    salign: "tl",
+                    id: container.id,
+                    name: container["name"]
+                };
+
+                this._oldCanvas = container.cloneNode(); // keep the old one to restore on dispose
+                this._oldParent = container.parentNode;
+
+                var context3dObj = this;
+                ContextStage3D.contexts[container.id] = this;
+
+                function callbackSWFObject(callbackInfo) {
+                    if (!callbackInfo.success)
+                        return;
+
+                    context3dObj._container = callbackInfo.ref;
+                    context3dObj._iCallback = callback;
+                }
+
+                swfobject.embedSWF("../libs/molehill_js_flashbridge.swf", container.id, String(container.width), String(container.height), swfVersionStr, "", flashvars, params, attributes, callbackSWFObject);
+            }
+            Object.defineProperty(ContextStage3D.prototype, "container", {
+                get: function () {
+                    return this._container;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ContextStage3D.prototype, "driverInfo", {
+                get: function () {
+                    return this._iDriverInfo;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ContextStage3D.prototype, "errorCheckingEnabled", {
+                get: function () {
+                    return this._errorCheckingEnabled;
+                },
+                set: function (value) {
+                    if (this._errorCheckingEnabled == value)
+                        return;
+
+                    this._errorCheckingEnabled = value;
+
+                    this.addStream(String.fromCharCode(away.stagegl.OpCodes.enableErrorChecking, value ? away.stagegl.OpCodes.trueValue : away.stagegl.OpCodes.falseValue));
+                    this.execute();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            ContextStage3D.prototype._iAddResource = function (resource) {
+                this._resources.push(resource);
+            };
+
+            ContextStage3D.prototype._iRemoveResource = function (resource) {
+                this._resources.splice(this._resources.indexOf(resource));
+            };
+
+            ContextStage3D.prototype.createTexture = function (width, height, format, optimizeForRenderToTexture, streamingLevels) {
+                if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
+                //TODO:streaming
+                return new stagegl.TextureFlash(this, width, height, format, optimizeForRenderToTexture);
+            };
+
+            ContextStage3D.prototype.createCubeTexture = function (size, format, optimizeForRenderToTexture, streamingLevels) {
+                if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
+                //TODO:streaming
+                return new stagegl.CubeTextureFlash(this, size, format, optimizeForRenderToTexture);
+            };
+
+            ContextStage3D.prototype.setTextureAt = function (sampler, texture) {
+                if (texture) {
+                    this.addStream(String.fromCharCode(away.stagegl.OpCodes.setTextureAt) + sampler + "," + texture.id + ",");
+                } else {
+                    this.addStream(String.fromCharCode(away.stagegl.OpCodes.clearTextureAt) + sampler.toString() + ",");
+                }
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.setSamplerStateAt = function (sampler, wrap, filter, mipfilter) {
+                //nothing to do here
+            };
+
+            ContextStage3D.prototype.setStencilActions = function (triangleFace, compareMode, actionOnBothPass, actionOnDepthFail, actionOnDepthPassStencilFail) {
+                if (typeof triangleFace === "undefined") { triangleFace = "frontAndBack"; }
+                if (typeof compareMode === "undefined") { compareMode = "always"; }
+                if (typeof actionOnBothPass === "undefined") { actionOnBothPass = "keep"; }
+                if (typeof actionOnDepthFail === "undefined") { actionOnDepthFail = "keep"; }
+                if (typeof actionOnDepthPassStencilFail === "undefined") { actionOnDepthPassStencilFail = "keep"; }
+                this.addStream(String.fromCharCode(away.stagegl.OpCodes.setStencilActions) + triangleFace + "$" + compareMode + "$" + actionOnBothPass + "$" + actionOnDepthFail + "$" + actionOnDepthPassStencilFail + "$");
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.setStencilReferenceValue = function (referenceValue, readMask, writeMask) {
+                if (typeof readMask === "undefined") { readMask = 255; }
+                if (typeof writeMask === "undefined") { writeMask = 255; }
+                this.addStream(String.fromCharCode(away.stagegl.OpCodes.setStencilReferenceValue, referenceValue + away.stagegl.OpCodes.intMask, readMask + away.stagegl.OpCodes.intMask, writeMask + away.stagegl.OpCodes.intMask));
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.setCulling = function (triangleFaceToCull, coordinateSystem) {
+                if (typeof coordinateSystem === "undefined") { coordinateSystem = "leftHanded"; }
+                //TODO implement coordinateSystem option
+                this.addStream(String.fromCharCode(away.stagegl.OpCodes.setCulling) + triangleFaceToCull + "$");
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
+                if (typeof firstIndex === "undefined") { firstIndex = 0; }
+                if (typeof numTriangles === "undefined") { numTriangles = -1; }
+                firstIndex = firstIndex || 0;
+                if (!numTriangles || numTriangles < 0)
+                    numTriangles = indexBuffer.numIndices / 3;
+
+                this.addStream(String.fromCharCode(away.stagegl.OpCodes.drawTriangles, indexBuffer.id + away.stagegl.OpCodes.intMask) + firstIndex + "," + numTriangles + ",");
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
+                //this._gl.uniformMatrix4fv(this._gl.getUniformLocation(this._currentProgram.glProgram, this._uniformLocationNameDictionary[programType]), !transposedMatrix, new Float32Array(matrix.rawData));
+                if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
+                //TODO remove special case for WebGL matrix calls?
+                var d = matrix.rawData;
+                if (transposedMatrix) {
+                    this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[4], d[8], d[12]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[1], d[5], d[9], d[13]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[2], d[6], d[10], d[14]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[3], d[7], d[11], d[15]], 1);
+                } else {
+                    this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[1], d[2], d[3]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[4], d[5], d[6], d[7]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[8], d[9], d[10], d[11]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[12], d[13], d[14], d[15]], 1);
+                }
+            };
+
+            ContextStage3D.prototype.setProgramConstantsFromArray = function (programType, firstRegister, data, numRegisters) {
+                if (typeof numRegisters === "undefined") { numRegisters = -1; }
+                var startIndex;
+                var target = (programType == stagegl.ContextGLProgramType.VERTEX) ? away.stagegl.OpCodes.trueValue : away.stagegl.OpCodes.falseValue;
+                for (var i = 0; i < numRegisters; i++) {
+                    startIndex = i * 4;
+                    this.addStream(String.fromCharCode(away.stagegl.OpCodes.setProgramConstant, target, (firstRegister + i) + away.stagegl.OpCodes.intMask) + data[startIndex] + "," + data[startIndex + 1] + "," + data[startIndex + 2] + "," + data[startIndex + 3] + ",");
+
+                    if (ContextStage3D.debug)
+                        this.execute();
+                }
+            };
+
+            ContextStage3D.prototype.setProgram = function (program) {
+                this.addStream(String.fromCharCode(away.stagegl.OpCodes.setProgram, program.id + away.stagegl.OpCodes.intMask));
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.present = function () {
+                this.addStream(String.fromCharCode(away.stagegl.OpCodes.present));
+                this.execute();
+            };
+
+            ContextStage3D.prototype.clear = function (red, green, blue, alpha, depth, stencil, mask) {
+                if (typeof red === "undefined") { red = 0; }
+                if (typeof green === "undefined") { green = 0; }
+                if (typeof blue === "undefined") { blue = 0; }
+                if (typeof alpha === "undefined") { alpha = 1; }
+                if (typeof depth === "undefined") { depth = 1; }
+                if (typeof stencil === "undefined") { stencil = 0; }
+                if (typeof mask === "undefined") { mask = stagegl.ContextGLClearMask.ALL; }
+                this.addStream(String.fromCharCode(away.stagegl.OpCodes.clear) + red + "," + green + "," + blue + "," + alpha + "," + depth + "," + stencil + "," + mask + ",");
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.createProgram = function () {
+                return new stagegl.ProgramFlash(this);
+            };
+
+            ContextStage3D.prototype.createVertexBuffer = function (numVertices, data32PerVertex) {
+                return new stagegl.VertexBufferFlash(this, numVertices, data32PerVertex);
+            };
+
+            ContextStage3D.prototype.createIndexBuffer = function (numIndices) {
+                return new stagegl.IndexBufferFlash(this, numIndices);
+            };
+
+            ContextStage3D.prototype.configureBackBuffer = function (width, height, antiAlias, enableDepthAndStencil) {
+                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = true; }
+                //TODO: add Anitalias setting
+                this.addStream(String.fromCharCode(away.stagegl.OpCodes.configureBackBuffer) + width + "," + height + ",");
+            };
+
+            ContextStage3D.prototype.drawToBitmapData = function (destination) {
+                //TODO
+            };
+
+            ContextStage3D.prototype.setVertexBufferAt = function (index, buffer, bufferOffset, format) {
+                if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
+                if (typeof format === "undefined") { format = null; }
+                if (buffer) {
+                    this.addStream(String.fromCharCode(away.stagegl.OpCodes.setVertexBufferAt, index + away.stagegl.OpCodes.intMask) + buffer.id + "," + bufferOffset + "," + format + "$");
+                } else {
+                    this.addStream(String.fromCharCode(away.stagegl.OpCodes.clearVertexBufferAt, index + away.stagegl.OpCodes.intMask));
+                }
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.setColorMask = function (red, green, blue, alpha) {
+                this.addStream(String.fromCharCode(away.stagegl.OpCodes.setColorMask, red ? away.stagegl.OpCodes.trueValue : away.stagegl.OpCodes.falseValue, green ? away.stagegl.OpCodes.trueValue : away.stagegl.OpCodes.falseValue, blue ? away.stagegl.OpCodes.trueValue : away.stagegl.OpCodes.falseValue, alpha ? away.stagegl.OpCodes.trueValue : away.stagegl.OpCodes.falseValue));
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.setBlendFactors = function (sourceFactor, destinationFactor) {
+                this.addStream(String.fromCharCode(away.stagegl.OpCodes.setBlendFactors) + sourceFactor + "$" + destinationFactor + "$");
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.setRenderToTexture = function (target, enableDepthAndStencil, antiAlias, surfaceSelector) {
+                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = false; }
+                if (typeof antiAlias === "undefined") { antiAlias = 0; }
+                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
+                if (target === null || target === undefined) {
+                    this.addStream(String.fromCharCode(away.stagegl.OpCodes.clearRenderToTexture));
+                } else {
+                    this.addStream(String.fromCharCode(away.stagegl.OpCodes.setRenderToTexture, enableDepthAndStencil ? away.stagegl.OpCodes.trueValue : away.stagegl.OpCodes.falseValue) + target.id + "," + (antiAlias || 0) + ",");
+                }
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.setRenderToBackBuffer = function () {
+                this.addStream(String.fromCharCode(away.stagegl.OpCodes.clearRenderToTexture));
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.setScissorRectangle = function (rectangle) {
+                if (rectangle) {
+                    this.addStream(String.fromCharCode(away.stagegl.OpCodes.setScissorRect) + rectangle.x + "," + rectangle.y + "," + rectangle.width + "," + rectangle.height + ",");
+                } else {
+                    this.addStream(String.fromCharCode(away.stagegl.OpCodes.clearScissorRect));
+                }
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.setDepthTest = function (depthMask, passCompareMode) {
+                this.addStream(String.fromCharCode(away.stagegl.OpCodes.setDepthTest, depthMask ? away.stagegl.OpCodes.trueValue : away.stagegl.OpCodes.falseValue) + passCompareMode + "$");
+
+                if (ContextStage3D.debug)
+                    this.execute();
+            };
+
+            ContextStage3D.prototype.dispose = function () {
+                if (this._container == null)
+                    return;
+
+                console.log("Context3D dispose, releasing " + this._resources.length + " resources.");
+
+                while (this._resources.length)
+                    this._resources[0].dispose();
+
+                if (this._container) {
+                    // encode command
+                    this.addStream(String.fromCharCode(away.stagegl.OpCodes.disposeContext));
+                    this.execute();
+                    swfobject.removeSWF(this._oldCanvas.id);
+                    if (this._oldCanvas && this._oldParent) {
+                        this._oldParent.appendChild(this._oldCanvas);
+                        this._oldParent = null;
+                    }
+                    this._container = null;
+                }
+
+                this._oldCanvas = null;
+            };
+
+            ContextStage3D.prototype.addStream = function (stream) {
+                this._cmdStream += stream;
+            };
+
+            ContextStage3D.prototype.execute = function () {
+                if (ContextStage3D.logStream)
+                    console.log(this._cmdStream);
+
+                var result = this._container["CallFunction"]("<invoke name=\"execStage3dOpStream\" returntype=\"javascript\"><arguments><string>" + this._cmdStream + "</string></arguments></invoke>");
+
+                if (Number(result) <= -3)
+                    throw "Exec stream failed";
+
+                this._cmdStream = "";
+
+                return Number(result);
+            };
+            ContextStage3D.contexts = new Object();
+            ContextStage3D.maxvertexconstants = 128;
+            ContextStage3D.maxfragconstants = 28;
+            ContextStage3D.maxtemp = 8;
+            ContextStage3D.maxstreams = 8;
+            ContextStage3D.maxtextures = 8;
+            ContextStage3D.defaultsampler = new aglsl.Sampler();
+
+            ContextStage3D.debug = false;
+            ContextStage3D.logStream = false;
+            return ContextStage3D;
+        })();
+        stagegl.ContextStage3D = ContextStage3D;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+
+/**
+* global function for flash callback
+*/
+function mountain_js_context_available(id, driverInfo) {
+    var ctx = away.stagegl.ContextStage3D.contexts[id];
+    if (ctx._iCallback) {
+        ctx._iDriverInfo = driverInfo;
+
+        // get out of the current JS stack frame and call back from flash player
+        var timeOutId = window.setTimeout(function () {
+            window.clearTimeout(timeOutId);
+            try  {
+                ctx._iCallback(ctx);
+            } catch (e) {
+                console.log("Callback failed during flash initialization with '" + e.toString() + "'");
+            }
+        }, 1);
+    }
+}
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var ContextWebGL = (function () {
+            function ContextWebGL(canvas) {
                 this._blendFactorDictionary = new Object();
                 this._depthTestDictionary = new Object();
                 this._textureIndexDictionary = new Array(8);
@@ -1784,6 +1774,8 @@ var away;
                 this._textureList = new Array();
                 this._programList = new Array();
                 this._samplerStates = new Array(8);
+                this._container = canvas;
+
                 try  {
                     this._gl = canvas.getContext("experimental-webgl", { premultipliedAlpha: false, alpha: false });
 
@@ -1796,26 +1788,26 @@ var away;
                 if (this._gl) {
                     //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_SUCCESS ) );
                     //setup shortcut dictionaries
-                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ONE] = this._gl.ONE;
-                    this._blendFactorDictionary[gl.ContextGLBlendFactor.DESTINATION_ALPHA] = this._gl.DST_ALPHA;
-                    this._blendFactorDictionary[gl.ContextGLBlendFactor.DESTINATION_COLOR] = this._gl.DST_COLOR;
-                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ONE] = this._gl.ONE;
-                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA] = this._gl.ONE_MINUS_DST_ALPHA;
-                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR] = this._gl.ONE_MINUS_DST_COLOR;
-                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA] = this._gl.ONE_MINUS_SRC_ALPHA;
-                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR] = this._gl.ONE_MINUS_SRC_COLOR;
-                    this._blendFactorDictionary[gl.ContextGLBlendFactor.SOURCE_ALPHA] = this._gl.SRC_ALPHA;
-                    this._blendFactorDictionary[gl.ContextGLBlendFactor.SOURCE_COLOR] = this._gl.SRC_COLOR;
-                    this._blendFactorDictionary[gl.ContextGLBlendFactor.ZERO] = this._gl.ZERO;
+                    this._blendFactorDictionary[stagegl.ContextGLBlendFactor.ONE] = this._gl.ONE;
+                    this._blendFactorDictionary[stagegl.ContextGLBlendFactor.DESTINATION_ALPHA] = this._gl.DST_ALPHA;
+                    this._blendFactorDictionary[stagegl.ContextGLBlendFactor.DESTINATION_COLOR] = this._gl.DST_COLOR;
+                    this._blendFactorDictionary[stagegl.ContextGLBlendFactor.ONE] = this._gl.ONE;
+                    this._blendFactorDictionary[stagegl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_ALPHA] = this._gl.ONE_MINUS_DST_ALPHA;
+                    this._blendFactorDictionary[stagegl.ContextGLBlendFactor.ONE_MINUS_DESTINATION_COLOR] = this._gl.ONE_MINUS_DST_COLOR;
+                    this._blendFactorDictionary[stagegl.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA] = this._gl.ONE_MINUS_SRC_ALPHA;
+                    this._blendFactorDictionary[stagegl.ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR] = this._gl.ONE_MINUS_SRC_COLOR;
+                    this._blendFactorDictionary[stagegl.ContextGLBlendFactor.SOURCE_ALPHA] = this._gl.SRC_ALPHA;
+                    this._blendFactorDictionary[stagegl.ContextGLBlendFactor.SOURCE_COLOR] = this._gl.SRC_COLOR;
+                    this._blendFactorDictionary[stagegl.ContextGLBlendFactor.ZERO] = this._gl.ZERO;
 
-                    this._depthTestDictionary[gl.ContextGLCompareMode.ALWAYS] = this._gl.ALWAYS;
-                    this._depthTestDictionary[gl.ContextGLCompareMode.EQUAL] = this._gl.EQUAL;
-                    this._depthTestDictionary[gl.ContextGLCompareMode.GREATER] = this._gl.GREATER;
-                    this._depthTestDictionary[gl.ContextGLCompareMode.GREATER_EQUAL] = this._gl.GEQUAL;
-                    this._depthTestDictionary[gl.ContextGLCompareMode.LESS] = this._gl.LESS;
-                    this._depthTestDictionary[gl.ContextGLCompareMode.LESS_EQUAL] = this._gl.LEQUAL;
-                    this._depthTestDictionary[gl.ContextGLCompareMode.NEVER] = this._gl.NEVER;
-                    this._depthTestDictionary[gl.ContextGLCompareMode.NOT_EQUAL] = this._gl.NOTEQUAL;
+                    this._depthTestDictionary[stagegl.ContextGLCompareMode.ALWAYS] = this._gl.ALWAYS;
+                    this._depthTestDictionary[stagegl.ContextGLCompareMode.EQUAL] = this._gl.EQUAL;
+                    this._depthTestDictionary[stagegl.ContextGLCompareMode.GREATER] = this._gl.GREATER;
+                    this._depthTestDictionary[stagegl.ContextGLCompareMode.GREATER_EQUAL] = this._gl.GEQUAL;
+                    this._depthTestDictionary[stagegl.ContextGLCompareMode.LESS] = this._gl.LESS;
+                    this._depthTestDictionary[stagegl.ContextGLCompareMode.LESS_EQUAL] = this._gl.LEQUAL;
+                    this._depthTestDictionary[stagegl.ContextGLCompareMode.NEVER] = this._gl.NEVER;
+                    this._depthTestDictionary[stagegl.ContextGLCompareMode.NOT_EQUAL] = this._gl.NOTEQUAL;
 
                     this._textureIndexDictionary[0] = this._gl.TEXTURE0;
                     this._textureIndexDictionary[1] = this._gl.TEXTURE1;
@@ -1829,65 +1821,81 @@ var away;
                     this._textureTypeDictionary["texture2d"] = this._gl.TEXTURE_2D;
                     this._textureTypeDictionary["textureCube"] = this._gl.TEXTURE_CUBE_MAP;
 
-                    this._wrapDictionary[gl.ContextGLWrapMode.REPEAT] = this._gl.REPEAT;
-                    this._wrapDictionary[gl.ContextGLWrapMode.CLAMP] = this._gl.CLAMP_TO_EDGE;
+                    this._wrapDictionary[stagegl.ContextGLWrapMode.REPEAT] = this._gl.REPEAT;
+                    this._wrapDictionary[stagegl.ContextGLWrapMode.CLAMP] = this._gl.CLAMP_TO_EDGE;
 
-                    this._filterDictionary[gl.ContextGLTextureFilter.LINEAR] = this._gl.LINEAR;
-                    this._filterDictionary[gl.ContextGLTextureFilter.NEAREST] = this._gl.NEAREST;
+                    this._filterDictionary[stagegl.ContextGLTextureFilter.LINEAR] = this._gl.LINEAR;
+                    this._filterDictionary[stagegl.ContextGLTextureFilter.NEAREST] = this._gl.NEAREST;
 
-                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.LINEAR] = new Object();
-                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.LINEAR][gl.ContextGLMipFilter.MIPNEAREST] = this._gl.LINEAR_MIPMAP_NEAREST;
-                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.LINEAR][gl.ContextGLMipFilter.MIPLINEAR] = this._gl.LINEAR_MIPMAP_LINEAR;
-                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.LINEAR][gl.ContextGLMipFilter.MIPNONE] = this._gl.LINEAR;
-                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.NEAREST] = new Object();
-                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.NEAREST][gl.ContextGLMipFilter.MIPNEAREST] = this._gl.NEAREST_MIPMAP_NEAREST;
-                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.NEAREST][gl.ContextGLMipFilter.MIPLINEAR] = this._gl.NEAREST_MIPMAP_LINEAR;
-                    this._mipmapFilterDictionary[gl.ContextGLTextureFilter.NEAREST][gl.ContextGLMipFilter.MIPNONE] = this._gl.NEAREST;
+                    this._mipmapFilterDictionary[stagegl.ContextGLTextureFilter.LINEAR] = new Object();
+                    this._mipmapFilterDictionary[stagegl.ContextGLTextureFilter.LINEAR][stagegl.ContextGLMipFilter.MIPNEAREST] = this._gl.LINEAR_MIPMAP_NEAREST;
+                    this._mipmapFilterDictionary[stagegl.ContextGLTextureFilter.LINEAR][stagegl.ContextGLMipFilter.MIPLINEAR] = this._gl.LINEAR_MIPMAP_LINEAR;
+                    this._mipmapFilterDictionary[stagegl.ContextGLTextureFilter.LINEAR][stagegl.ContextGLMipFilter.MIPNONE] = this._gl.LINEAR;
+                    this._mipmapFilterDictionary[stagegl.ContextGLTextureFilter.NEAREST] = new Object();
+                    this._mipmapFilterDictionary[stagegl.ContextGLTextureFilter.NEAREST][stagegl.ContextGLMipFilter.MIPNEAREST] = this._gl.NEAREST_MIPMAP_NEAREST;
+                    this._mipmapFilterDictionary[stagegl.ContextGLTextureFilter.NEAREST][stagegl.ContextGLMipFilter.MIPLINEAR] = this._gl.NEAREST_MIPMAP_LINEAR;
+                    this._mipmapFilterDictionary[stagegl.ContextGLTextureFilter.NEAREST][stagegl.ContextGLMipFilter.MIPNONE] = this._gl.NEAREST;
 
-                    this._uniformLocationNameDictionary[gl.ContextGLProgramType.VERTEX] = "vc";
-                    this._uniformLocationNameDictionary[gl.ContextGLProgramType.FRAGMENT] = "fc";
+                    this._uniformLocationNameDictionary[stagegl.ContextGLProgramType.VERTEX] = "vc";
+                    this._uniformLocationNameDictionary[stagegl.ContextGLProgramType.FRAGMENT] = "fc";
 
-                    this._vertexBufferDimensionDictionary[gl.ContextGLVertexBufferFormat.FLOAT_1] = 1;
-                    this._vertexBufferDimensionDictionary[gl.ContextGLVertexBufferFormat.FLOAT_2] = 2;
-                    this._vertexBufferDimensionDictionary[gl.ContextGLVertexBufferFormat.FLOAT_3] = 3;
-                    this._vertexBufferDimensionDictionary[gl.ContextGLVertexBufferFormat.FLOAT_4] = 4;
-                    this._vertexBufferDimensionDictionary[gl.ContextGLVertexBufferFormat.BYTES_4] = 4;
+                    this._vertexBufferDimensionDictionary[stagegl.ContextGLVertexBufferFormat.FLOAT_1] = 1;
+                    this._vertexBufferDimensionDictionary[stagegl.ContextGLVertexBufferFormat.FLOAT_2] = 2;
+                    this._vertexBufferDimensionDictionary[stagegl.ContextGLVertexBufferFormat.FLOAT_3] = 3;
+                    this._vertexBufferDimensionDictionary[stagegl.ContextGLVertexBufferFormat.FLOAT_4] = 4;
+                    this._vertexBufferDimensionDictionary[stagegl.ContextGLVertexBufferFormat.BYTES_4] = 4;
                 } else {
                     //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
                     alert("WebGL is not available.");
                 }
 
-                for (var i = 0; i < ContextGL.MAX_SAMPLERS; ++i) {
-                    this._samplerStates[i] = new gl.SamplerState();
+                for (var i = 0; i < ContextWebGL.MAX_SAMPLERS; ++i) {
+                    this._samplerStates[i] = new stagegl.SamplerState();
                     this._samplerStates[i].wrap = this._gl.REPEAT;
                     this._samplerStates[i].filter = this._gl.LINEAR;
                     this._samplerStates[i].mipfilter = this._gl.LINEAR;
                 }
             }
-            ContextGL.prototype.gl = function () {
+            Object.defineProperty(ContextWebGL.prototype, "container", {
+                get: function () {
+                    return this._container;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            ContextWebGL.prototype.gl = function () {
                 return this._gl;
             };
 
-            ContextGL.prototype.clear = function (red, green, blue, alpha, depth, stencil, mask) {
+            ContextWebGL.prototype.clear = function (red, green, blue, alpha, depth, stencil, mask) {
                 if (typeof red === "undefined") { red = 0; }
                 if (typeof green === "undefined") { green = 0; }
                 if (typeof blue === "undefined") { blue = 0; }
                 if (typeof alpha === "undefined") { alpha = 1; }
                 if (typeof depth === "undefined") { depth = 1; }
                 if (typeof stencil === "undefined") { stencil = 0; }
-                if (typeof mask === "undefined") { mask = gl.ContextGLClearMask.ALL; }
+                if (typeof mask === "undefined") { mask = stagegl.ContextGLClearMask.ALL; }
                 if (!this._drawing) {
                     this.updateBlendStatus();
                     this._drawing = true;
                 }
 
+                var glmask = 0;
+                if (mask & stagegl.ContextGLClearMask.COLOR)
+                    glmask |= this._gl.COLOR_BUFFER_BIT;
+                if (mask & stagegl.ContextGLClearMask.STENCIL)
+                    glmask |= this._gl.STENCIL_BUFFER_BIT;
+                if (mask & stagegl.ContextGLClearMask.DEPTH)
+                    glmask |= this._gl.DEPTH_BUFFER_BIT;
+
                 this._gl.clearColor(red, green, blue, alpha);
                 this._gl.clearDepth(depth);
                 this._gl.clearStencil(stencil);
-                this._gl.clear(mask);
+                this._gl.clear(glmask);
             };
 
-            ContextGL.prototype.configureBackBuffer = function (width, height, antiAlias, enableDepthAndStencil) {
+            ContextWebGL.prototype.configureBackBuffer = function (width, height, antiAlias, enableDepthAndStencil) {
                 if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = true; }
                 if (enableDepthAndStencil) {
                     this._gl.enable(this._gl.STENCIL_TEST);
@@ -1900,40 +1908,40 @@ var away;
                 this._gl.viewport(0, 0, width, height);
             };
 
-            ContextGL.prototype.createCubeTexture = function (size, format, optimizeForRenderToTexture, streamingLevels) {
+            ContextWebGL.prototype.createCubeTexture = function (size, format, optimizeForRenderToTexture, streamingLevels) {
                 if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
-                var texture = new gl.CubeTexture(this._gl, size);
+                var texture = new stagegl.CubeTextureWebGL(this._gl, size);
                 this._textureList.push(texture);
                 return texture;
             };
 
-            ContextGL.prototype.createIndexBuffer = function (numIndices) {
-                var indexBuffer = new gl.IndexBuffer(this._gl, numIndices);
+            ContextWebGL.prototype.createIndexBuffer = function (numIndices) {
+                var indexBuffer = new stagegl.IndexBufferWebGL(this._gl, numIndices);
                 this._indexBufferList.push(indexBuffer);
                 return indexBuffer;
             };
 
-            ContextGL.prototype.createProgram = function () {
-                var program = new gl.Program(this._gl);
+            ContextWebGL.prototype.createProgram = function () {
+                var program = new stagegl.ProgramWebGL(this._gl);
                 this._programList.push(program);
                 return program;
             };
 
-            ContextGL.prototype.createTexture = function (width, height, format, optimizeForRenderToTexture, streamingLevels) {
+            ContextWebGL.prototype.createTexture = function (width, height, format, optimizeForRenderToTexture, streamingLevels) {
                 if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
                 //TODO streaming
-                var texture = new gl.Texture(this._gl, width, height);
+                var texture = new stagegl.TextureWebGL(this._gl, width, height);
                 this._textureList.push(texture);
                 return texture;
             };
 
-            ContextGL.prototype.createVertexBuffer = function (numVertices, data32PerVertex) {
-                var vertexBuffer = new gl.VertexBuffer(this._gl, numVertices, data32PerVertex);
+            ContextWebGL.prototype.createVertexBuffer = function (numVertices, data32PerVertex) {
+                var vertexBuffer = new stagegl.VertexBufferWebGL(this._gl, numVertices, data32PerVertex);
                 this._vertexBufferList.push(vertexBuffer);
                 return vertexBuffer;
             };
 
-            ContextGL.prototype.dispose = function () {
+            ContextWebGL.prototype.dispose = function () {
                 var i;
                 for (i = 0; i < this._indexBufferList.length; ++i)
                     this._indexBufferList[i].dispose();
@@ -1959,7 +1967,7 @@ var away;
                 this._programList = null;
             };
 
-            ContextGL.prototype.drawToBitmapData = function (destination) {
+            ContextWebGL.prototype.drawToBitmapData = function (destination) {
                 var arrayBuffer = new ArrayBuffer(destination.width * destination.height * 4);
 
                 this._gl.readPixels(0, 0, destination.width, destination.height, this._gl.RGBA, this._gl.UNSIGNED_BYTE, new Uint8Array(arrayBuffer));
@@ -1970,7 +1978,7 @@ var away;
                 destination.setPixels(new away.geom.Rectangle(0, 0, destination.width, destination.height), byteArray);
             };
 
-            ContextGL.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
+            ContextWebGL.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
                 if (typeof firstIndex === "undefined") { firstIndex = 0; }
                 if (typeof numTriangles === "undefined") { numTriangles = -1; }
                 if (!this._drawing)
@@ -1980,11 +1988,11 @@ var away;
                 this._gl.drawElements(this._gl.TRIANGLES, (numTriangles == -1) ? indexBuffer.numIndices : numTriangles * 3, this._gl.UNSIGNED_SHORT, firstIndex);
             };
 
-            ContextGL.prototype.present = function () {
+            ContextWebGL.prototype.present = function () {
                 this._drawing = false;
             };
 
-            ContextGL.prototype.setBlendFactors = function (sourceFactor, destinationFactor) {
+            ContextWebGL.prototype.setBlendFactors = function (sourceFactor, destinationFactor) {
                 this._blendEnabled = true;
 
                 this._blendSourceFactor = this._blendFactorDictionary[sourceFactor];
@@ -1994,24 +2002,24 @@ var away;
                 this.updateBlendStatus();
             };
 
-            ContextGL.prototype.setColorMask = function (red, green, blue, alpha) {
+            ContextWebGL.prototype.setColorMask = function (red, green, blue, alpha) {
                 this._gl.colorMask(red, green, blue, alpha);
             };
 
-            ContextGL.prototype.setCulling = function (triangleFaceToCull, coordinateSystem) {
+            ContextWebGL.prototype.setCulling = function (triangleFaceToCull, coordinateSystem) {
                 if (typeof coordinateSystem === "undefined") { coordinateSystem = "leftHanded"; }
-                if (triangleFaceToCull == gl.ContextGLTriangleFace.NONE) {
+                if (triangleFaceToCull == stagegl.ContextGLTriangleFace.NONE) {
                     this._gl.disable(this._gl.CULL_FACE);
                 } else {
                     this._gl.enable(this._gl.CULL_FACE);
                     switch (triangleFaceToCull) {
-                        case gl.ContextGLTriangleFace.BACK:
+                        case stagegl.ContextGLTriangleFace.BACK:
                             this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.FRONT : this._gl.BACK);
                             break;
-                        case gl.ContextGLTriangleFace.FRONT:
+                        case stagegl.ContextGLTriangleFace.FRONT:
                             this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.BACK : this._gl.FRONT);
                             break;
-                        case gl.ContextGLTriangleFace.FRONT_AND_BACK:
+                        case stagegl.ContextGLTriangleFace.FRONT_AND_BACK:
                             this._gl.cullFace(this._gl.FRONT_AND_BACK);
                             break;
                         default:
@@ -2021,24 +2029,37 @@ var away;
             };
 
             // TODO ContextGLCompareMode
-            ContextGL.prototype.setDepthTest = function (depthMask, passCompareMode) {
+            ContextWebGL.prototype.setDepthTest = function (depthMask, passCompareMode) {
                 this._gl.depthFunc(this._depthTestDictionary[passCompareMode]);
 
                 this._gl.depthMask(depthMask);
             };
 
-            ContextGL.prototype.setProgram = function (program) {
+            ContextWebGL.prototype.setProgram = function (program) {
                 //TODO decide on construction/reference resposibilities
                 this._currentProgram = program;
                 program.focusProgram();
             };
 
-            ContextGL.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
+            ContextWebGL.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
+                //this._gl.uniformMatrix4fv(this._gl.getUniformLocation(this._currentProgram.glProgram, this._uniformLocationNameDictionary[programType]), !transposedMatrix, new Float32Array(matrix.rawData));
                 if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
-                this._gl.uniformMatrix4fv(this._gl.getUniformLocation(this._currentProgram.glProgram, this._uniformLocationNameDictionary[programType]), !transposedMatrix, new Float32Array(matrix.rawData));
+                //TODO remove special case for WebGL matrix calls?
+                var d = matrix.rawData;
+                if (transposedMatrix) {
+                    this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[4], d[8], d[12]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[1], d[5], d[9], d[13]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[2], d[6], d[10], d[14]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[3], d[7], d[11], d[15]], 1);
+                } else {
+                    this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[1], d[2], d[3]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[4], d[5], d[6], d[7]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[8], d[9], d[10], d[11]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[12], d[13], d[14], d[15]], 1);
+                }
             };
 
-            ContextGL.prototype.setProgramConstantsFromArray = function (programType, firstRegister, data, numRegisters) {
+            ContextWebGL.prototype.setProgramConstantsFromArray = function (programType, firstRegister, data, numRegisters) {
                 if (typeof numRegisters === "undefined") { numRegisters = -1; }
                 var locationName = this._uniformLocationNameDictionary[programType];
                 var startIndex;
@@ -2048,7 +2069,7 @@ var away;
                 }
             };
 
-            ContextGL.prototype.setScissorRectangle = function (rectangle) {
+            ContextWebGL.prototype.setScissorRectangle = function (rectangle) {
                 if (!rectangle) {
                     this._gl.disable(this._gl.SCISSOR_TEST);
                     return;
@@ -2058,7 +2079,7 @@ var away;
                 this._gl.scissor(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
             };
 
-            ContextGL.prototype.setTextureAt = function (sampler, texture) {
+            ContextWebGL.prototype.setTextureAt = function (sampler, texture) {
                 var samplerState = this._samplerStates[sampler];
 
                 if (this._activeTexture != sampler && (texture || samplerState.type)) {
@@ -2089,8 +2110,8 @@ var away;
                 this._gl.texParameteri(textureType, this._gl.TEXTURE_MIN_FILTER, samplerState.mipfilter);
             };
 
-            ContextGL.prototype.setSamplerStateAt = function (sampler, wrap, filter, mipfilter) {
-                if (0 <= sampler && sampler < ContextGL.MAX_SAMPLERS) {
+            ContextWebGL.prototype.setSamplerStateAt = function (sampler, wrap, filter, mipfilter) {
+                if (0 <= sampler && sampler < ContextWebGL.MAX_SAMPLERS) {
                     this._samplerStates[sampler].wrap = this._wrapDictionary[wrap];
                     this._samplerStates[sampler].filter = this._filterDictionary[filter];
                     this._samplerStates[sampler].mipfilter = this._mipmapFilterDictionary[filter][mipfilter];
@@ -2099,7 +2120,7 @@ var away;
                 }
             };
 
-            ContextGL.prototype.setVertexBufferAt = function (index, buffer, bufferOffset, format) {
+            ContextWebGL.prototype.setVertexBufferAt = function (index, buffer, bufferOffset, format) {
                 if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
                 if (typeof format === "undefined") { format = null; }
                 var location = this._currentProgram ? this._gl.getAttribLocation(this._currentProgram.glProgram, "va" + index) : -1;
@@ -2116,7 +2137,7 @@ var away;
                 this._gl.vertexAttribPointer(location, this._vertexBufferDimensionDictionary[format], this._gl.FLOAT, false, buffer.data32PerVertex * 4, bufferOffset * 4);
             };
 
-            ContextGL.prototype.setRenderToTexture = function (target, enableDepthAndStencil, antiAlias, surfaceSelector) {
+            ContextWebGL.prototype.setRenderToTexture = function (target, enableDepthAndStencil, antiAlias, surfaceSelector) {
                 if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = false; }
                 if (typeof antiAlias === "undefined") { antiAlias = 0; }
                 if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
@@ -2132,11 +2153,11 @@ var away;
                 this._gl.viewport(0, 0, texture.width, texture.height);
             };
 
-            ContextGL.prototype.setRenderToBackBuffer = function () {
+            ContextWebGL.prototype.setRenderToBackBuffer = function () {
                 this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
             };
 
-            ContextGL.prototype.updateBlendStatus = function () {
+            ContextWebGL.prototype.updateBlendStatus = function () {
                 if (this._blendEnabled) {
                     this._gl.enable(this._gl.BLEND);
                     this._gl.blendEquation(this._gl.FUNC_ADD);
@@ -2145,53 +2166,744 @@ var away;
                     this._gl.disable(this._gl.BLEND);
                 }
             };
-            ContextGL.MAX_SAMPLERS = 8;
+            ContextWebGL.MAX_SAMPLERS = 8;
 
-            ContextGL.modulo = 0;
-            return ContextGL;
+            ContextWebGL.modulo = 0;
+            return ContextWebGL;
         })();
-        gl.ContextGL = ContextGL;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+        stagegl.ContextWebGL = ContextWebGL;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    (function (gl) {
-        var AGLSLContextGL = (function (_super) {
-            __extends(AGLSLContextGL, _super);
-            function AGLSLContextGL(canvas) {
-                _super.call(this, canvas);
+    (function (stagegl) {
+        var ResourceBaseFlash = (function () {
+            function ResourceBaseFlash() {
             }
-            //@override
-            AGLSLContextGL.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
-                if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
-                //TODO remove special case for WebGL matrix calls?
-                var d = matrix.rawData;
-                if (transposedMatrix) {
-                    this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[4], d[8], d[12]], 1);
-                    this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[1], d[5], d[9], d[13]], 1);
-                    this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[2], d[6], d[10], d[14]], 1);
-                    this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[3], d[7], d[11], d[15]], 1);
-                } else {
-                    this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[1], d[2], d[3]], 1);
-                    this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[4], d[5], d[6], d[7]], 1);
-                    this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[8], d[9], d[10], d[11]], 1);
-                    this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[12], d[13], d[14], d[15]], 1);
+            Object.defineProperty(ResourceBaseFlash.prototype, "id", {
+                get: function () {
+                    return this._pId;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            ResourceBaseFlash.prototype.dispose = function () {
+            };
+            return ResourceBaseFlash;
+        })();
+        stagegl.ResourceBaseFlash = ResourceBaseFlash;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var TextureBaseWebGL = (function () {
+            function TextureBaseWebGL(gl) {
+                this.textureType = "";
+                this._gl = gl;
+            }
+            TextureBaseWebGL.prototype.dispose = function () {
+                throw "Abstract method must be overridden.";
+            };
+
+            Object.defineProperty(TextureBaseWebGL.prototype, "glTexture", {
+                get: function () {
+                    throw new away.errors.AbstractMethodError();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return TextureBaseWebGL;
+        })();
+        stagegl.TextureBaseWebGL = TextureBaseWebGL;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var away;
+(function (away) {
+    (function (stagegl) {
+        var ByteArrayBase = away.utils.ByteArrayBase;
+
+        var CubeTextureFlash = (function (_super) {
+            __extends(CubeTextureFlash, _super);
+            function CubeTextureFlash(context, size, format, forRTT, streaming) {
+                if (typeof streaming === "undefined") { streaming = false; }
+                _super.call(this);
+
+                this._context = context;
+                this._size = size;
+
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.initCubeTexture, (forRTT ? away.stagegl.OpCodes.trueValue : away.stagegl.OpCodes.falseValue)) + size + "," + streaming + "," + format + "$");
+                this._pId = this._context.execute();
+                this._context._iAddResource(this);
+            }
+            Object.defineProperty(CubeTextureFlash.prototype, "size", {
+                get: function () {
+                    return this._size;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            CubeTextureFlash.prototype.dispose = function () {
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.disposeCubeTexture) + this._pId.toString() + ",");
+                this._context.execute();
+                this._context._iRemoveResource(this);
+
+                this._context = null;
+            };
+
+            CubeTextureFlash.prototype.uploadFromData = function (data, side, miplevel) {
+                if (typeof miplevel === "undefined") { miplevel = 0; }
+                if (data instanceof away.base.BitmapData) {
+                    data = data.imageData.data;
+                } else if (data instanceof HTMLImageElement) {
+                    var can = document.createElement("canvas");
+                    var w = data.width;
+                    var h = data.height;
+                    can.width = w;
+                    can.height = h;
+                    var ctx = can.getContext("2d");
+                    ctx.drawImage(data, 0, 0);
+                    data = ctx.getImageData(0, 0, w, h).data;
+                }
+
+                var pos = 0;
+                var bytes = ByteArrayBase.internalGetBase64String(data.length, function () {
+                    return data[pos++];
+                }, null);
+
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.uploadBytesCubeTexture) + this._pId + "," + miplevel + "," + side + "," + (this.size >> miplevel) + "," + bytes + "%");
+                this._context.execute();
+            };
+
+            CubeTextureFlash.prototype.uploadCompressedTextureFromByteArray = function (data, byteArrayOffset /*uint*/ , async) {
+                if (typeof async === "undefined") { async = false; }
+            };
+            return CubeTextureFlash;
+        })(stagegl.ResourceBaseFlash);
+        stagegl.CubeTextureFlash = CubeTextureFlash;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var CubeTextureWebGL = (function (_super) {
+            __extends(CubeTextureWebGL, _super);
+            function CubeTextureWebGL(gl, size) {
+                _super.call(this, gl);
+                this._textureSelectorDictionary = new Array(6);
+                this.textureType = "textureCube";
+                this._size = size;
+                this._texture = this._gl.createTexture();
+
+                this._textureSelectorDictionary[0] = gl.TEXTURE_CUBE_MAP_POSITIVE_X;
+                this._textureSelectorDictionary[1] = gl.TEXTURE_CUBE_MAP_NEGATIVE_X;
+                this._textureSelectorDictionary[2] = gl.TEXTURE_CUBE_MAP_POSITIVE_Y;
+                this._textureSelectorDictionary[3] = gl.TEXTURE_CUBE_MAP_NEGATIVE_Y;
+                this._textureSelectorDictionary[4] = gl.TEXTURE_CUBE_MAP_POSITIVE_Z;
+                this._textureSelectorDictionary[5] = gl.TEXTURE_CUBE_MAP_NEGATIVE_Z;
+            }
+            CubeTextureWebGL.prototype.dispose = function () {
+                this._gl.deleteTexture(this._texture);
+            };
+
+            CubeTextureWebGL.prototype.uploadFromData = function (data, side, miplevel) {
+                if (typeof miplevel === "undefined") { miplevel = 0; }
+                if (data instanceof away.base.BitmapData)
+                    data = data.imageData;
+
+                this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
+                this._gl.texImage2D(this._textureSelectorDictionary[side], miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
+                this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
+            };
+
+            CubeTextureWebGL.prototype.uploadCompressedTextureFromByteArray = function (data, byteArrayOffset /*uint*/ , async) {
+                if (typeof async === "undefined") { async = false; }
+            };
+
+            Object.defineProperty(CubeTextureWebGL.prototype, "size", {
+                get: function () {
+                    return this._size;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CubeTextureWebGL.prototype, "glTexture", {
+                get: function () {
+                    return this._texture;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return CubeTextureWebGL;
+        })(stagegl.TextureBaseWebGL);
+        stagegl.CubeTextureWebGL = CubeTextureWebGL;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var IndexBufferFlash = (function (_super) {
+            __extends(IndexBufferFlash, _super);
+            function IndexBufferFlash(context, numIndices) {
+                _super.call(this);
+
+                this._context = context;
+                this._numIndices = numIndices;
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.initIndexBuffer, numIndices + away.stagegl.OpCodes.intMask));
+                this._pId = this._context.execute();
+                this._context._iAddResource(this);
+            }
+            IndexBufferFlash.prototype.uploadFromArray = function (data, startOffset, count) {
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.uploadArrayIndexBuffer, this._pId + away.stagegl.OpCodes.intMask) + data.join() + "#" + startOffset + "," + count + ",");
+                this._context.execute();
+            };
+
+            IndexBufferFlash.prototype.dispose = function () {
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.disposeIndexBuffer, this._pId + away.stagegl.OpCodes.intMask));
+                this._context.execute();
+                this._context._iRemoveResource(this);
+
+                this._context = null;
+            };
+
+            Object.defineProperty(IndexBufferFlash.prototype, "numIndices", {
+                get: function () {
+                    return this._numIndices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return IndexBufferFlash;
+        })(stagegl.ResourceBaseFlash);
+        stagegl.IndexBufferFlash = IndexBufferFlash;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var IndexBufferWebGL = (function () {
+            function IndexBufferWebGL(gl, numIndices) {
+                this._gl = gl;
+                this._buffer = this._gl.createBuffer();
+                this._numIndices = numIndices;
+            }
+            IndexBufferWebGL.prototype.uploadFromArray = function (data, startOffset, count) {
+                this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._buffer);
+
+                // TODO add index offsets
+                this._gl.bufferData(this._gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), this._gl.STATIC_DRAW);
+            };
+
+            IndexBufferWebGL.prototype.dispose = function () {
+                this._gl.deleteBuffer(this._buffer);
+            };
+
+            Object.defineProperty(IndexBufferWebGL.prototype, "numIndices", {
+                get: function () {
+                    return this._numIndices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IndexBufferWebGL.prototype, "glBuffer", {
+                get: function () {
+                    return this._buffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return IndexBufferWebGL;
+        })();
+        stagegl.IndexBufferWebGL = IndexBufferWebGL;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var OpCodes = (function () {
+            function OpCodes() {
+            }
+            OpCodes.trueValue = 32;
+            OpCodes.falseValue = 33;
+            OpCodes.intMask = 63;
+            OpCodes.drawTriangles = 41;
+            OpCodes.setProgramConstant = 42;
+            OpCodes.setProgram = 43;
+            OpCodes.present = 44;
+            OpCodes.clear = 45;
+            OpCodes.initProgram = 46;
+            OpCodes.initVertexBuffer = 47;
+            OpCodes.initIndexBuffer = 48;
+            OpCodes.configureBackBuffer = 49;
+            OpCodes.uploadArrayIndexBuffer = 50;
+            OpCodes.uploadArrayVertexBuffer = 51;
+            OpCodes.uploadAGALBytesProgram = 52;
+            OpCodes.setVertexBufferAt = 53;
+            OpCodes.uploadBytesIndexBuffer = 54;
+            OpCodes.uploadBytesVertexBuffer = 55;
+            OpCodes.setColorMask = 56;
+            OpCodes.setDepthTest = 57;
+            OpCodes.disposeProgram = 58;
+            OpCodes.disposeContext = 59;
+
+            OpCodes.disposeVertexBuffer = 61;
+
+            OpCodes.disposeIndexBuffer = 63;
+            OpCodes.initTexture = 64;
+            OpCodes.setTextureAt = 65;
+            OpCodes.uploadBytesTexture = 66;
+            OpCodes.disposeTexture = 67;
+            OpCodes.setCulling = 68;
+            OpCodes.setScissorRect = 69;
+            OpCodes.clearScissorRect = 70;
+            OpCodes.setBlendFactors = 71;
+            OpCodes.setRenderToTexture = 72;
+            OpCodes.clearTextureAt = 73;
+            OpCodes.clearVertexBufferAt = 74;
+            OpCodes.setStencilActions = 75;
+            OpCodes.setStencilReferenceValue = 76;
+            OpCodes.initCubeTexture = 77;
+            OpCodes.disposeCubeTexture = 78;
+            OpCodes.uploadBytesCubeTexture = 79;
+            OpCodes.clearRenderToTexture = 80;
+            OpCodes.enableErrorChecking = 81;
+            return OpCodes;
+        })();
+        stagegl.OpCodes = OpCodes;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var ProgramFlash = (function (_super) {
+            __extends(ProgramFlash, _super);
+            function ProgramFlash(context) {
+                _super.call(this);
+
+                this._context = context;
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.initProgram));
+                this._pId = this._context.execute();
+                this._context._iAddResource(this);
+            }
+            ProgramFlash.prototype.upload = function (vertexProgram, fragmentProgram) {
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.uploadAGALBytesProgram, this._pId + away.stagegl.OpCodes.intMask) + vertexProgram.readBase64String(vertexProgram.length) + "%" + fragmentProgram.readBase64String(fragmentProgram.length) + "%");
+
+                if (stagegl.ContextStage3D.debug)
+                    this._context.execute();
+            };
+
+            ProgramFlash.prototype.dispose = function () {
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.disposeProgram, this._pId + away.stagegl.OpCodes.intMask));
+                this._context.execute();
+                this._context._iRemoveResource(this);
+
+                this._context = null;
+            };
+            return ProgramFlash;
+        })(stagegl.ResourceBaseFlash);
+        stagegl.ProgramFlash = ProgramFlash;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var ProgramWebGL = (function () {
+            function ProgramWebGL(gl) {
+                this._gl = gl;
+                this._program = this._gl.createProgram();
+            }
+            ProgramWebGL.prototype.upload = function (vertexProgram, fragmentProgram) {
+                var vertexString = ProgramWebGL._aglslParser.parse(ProgramWebGL._tokenizer.decribeAGALByteArray(vertexProgram));
+                var fragmentString = ProgramWebGL._aglslParser.parse(ProgramWebGL._tokenizer.decribeAGALByteArray(fragmentProgram));
+
+                this._vertexShader = this._gl.createShader(this._gl.VERTEX_SHADER);
+                this._fragmentShader = this._gl.createShader(this._gl.FRAGMENT_SHADER);
+
+                this._gl.shaderSource(this._vertexShader, vertexString);
+                this._gl.compileShader(this._vertexShader);
+
+                if (!this._gl.getShaderParameter(this._vertexShader, this._gl.COMPILE_STATUS)) {
+                    alert(this._gl.getShaderInfoLog(this._vertexShader));
+                    return null;
+                }
+
+                this._gl.shaderSource(this._fragmentShader, fragmentString);
+                this._gl.compileShader(this._fragmentShader);
+
+                if (!this._gl.getShaderParameter(this._fragmentShader, this._gl.COMPILE_STATUS)) {
+                    alert(this._gl.getShaderInfoLog(this._fragmentShader));
+                    return null;
+                }
+
+                this._gl.attachShader(this._program, this._vertexShader);
+                this._gl.attachShader(this._program, this._fragmentShader);
+                this._gl.linkProgram(this._program);
+
+                if (!this._gl.getProgramParameter(this._program, this._gl.LINK_STATUS)) {
+                    alert("Could not link the program."); //TODO throw errors
                 }
             };
-            return AGLSLContextGL;
-        })(gl.ContextGL);
-        gl.AGLSLContextGL = AGLSLContextGL;
-    })(away.gl || (away.gl = {}));
-    var gl = away.gl;
+
+            ProgramWebGL.prototype.dispose = function () {
+                this._gl.deleteProgram(this._program);
+            };
+
+            ProgramWebGL.prototype.focusProgram = function () {
+                this._gl.useProgram(this._program);
+            };
+
+            Object.defineProperty(ProgramWebGL.prototype, "glProgram", {
+                get: function () {
+                    return this._program;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ProgramWebGL._tokenizer = new aglsl.AGALTokenizer();
+            ProgramWebGL._aglslParser = new aglsl.AGLSLParser();
+            return ProgramWebGL;
+        })();
+        stagegl.ProgramWebGL = ProgramWebGL;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var SamplerState = (function () {
+            function SamplerState() {
+            }
+            return SamplerState;
+        })();
+        stagegl.SamplerState = SamplerState;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var ByteArrayBase = away.utils.ByteArrayBase;
+
+        var TextureFlash = (function (_super) {
+            __extends(TextureFlash, _super);
+            function TextureFlash(context, width, height, format, forRTT, streaming) {
+                if (typeof streaming === "undefined") { streaming = false; }
+                _super.call(this);
+
+                this._context = context;
+                this._width = width;
+                this._height = height;
+
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.initTexture, (forRTT ? away.stagegl.OpCodes.trueValue : away.stagegl.OpCodes.falseValue)) + width + "," + height + "," + streaming + "," + format + "$");
+                this._pId = this._context.execute();
+                this._context._iAddResource(this);
+            }
+            Object.defineProperty(TextureFlash.prototype, "width", {
+                get: function () {
+                    return this._width;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextureFlash.prototype, "height", {
+                get: function () {
+                    return this._height;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            TextureFlash.prototype.dispose = function () {
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.disposeTexture) + this._pId.toString() + ",");
+                this._context.execute();
+                this._context._iRemoveResource(this);
+
+                this._context = null;
+            };
+
+            TextureFlash.prototype.uploadFromData = function (data, miplevel) {
+                if (typeof miplevel === "undefined") { miplevel = 0; }
+                if (data instanceof away.base.BitmapData) {
+                    data = data.imageData.data;
+                } else if (data instanceof HTMLImageElement) {
+                    var can = document.createElement("canvas");
+                    var w = data.width;
+                    var h = data.height;
+                    can.width = w;
+                    can.height = h;
+                    var ctx = can.getContext("2d");
+                    ctx.drawImage(data, 0, 0);
+                    data = ctx.getImageData(0, 0, w, h).data;
+                }
+
+                var pos = 0;
+                var bytes = ByteArrayBase.internalGetBase64String(data.length, function () {
+                    return data[pos++];
+                }, null);
+
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.uploadBytesTexture) + this._pId + "," + miplevel + "," + (this._width >> miplevel) + "," + (this._height >> miplevel) + "," + bytes + "%");
+                this._context.execute();
+            };
+            return TextureFlash;
+        })(stagegl.ResourceBaseFlash);
+        stagegl.TextureFlash = TextureFlash;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var TextureWebGL = (function (_super) {
+            __extends(TextureWebGL, _super);
+            function TextureWebGL(gl, width, height) {
+                _super.call(this, gl);
+                this.textureType = "texture2d";
+                this._width = width;
+                this._height = height;
+
+                this._glTexture = this._gl.createTexture();
+            }
+            TextureWebGL.prototype.dispose = function () {
+                this._gl.deleteTexture(this._glTexture);
+            };
+
+            Object.defineProperty(TextureWebGL.prototype, "width", {
+                get: function () {
+                    return this._width;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextureWebGL.prototype, "height", {
+                get: function () {
+                    return this._height;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextureWebGL.prototype, "frameBuffer", {
+                get: function () {
+                    if (!this._frameBuffer) {
+                        this._frameBuffer = this._gl.createFramebuffer();
+                        this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
+                        this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
+                        this._gl.texImage2D(this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._width, this._height, 0, this._gl.RGBA, this._gl.UNSIGNED_BYTE, null);
+
+                        var renderBuffer = this._gl.createRenderbuffer();
+                        this._gl.bindRenderbuffer(this._gl.RENDERBUFFER, renderBuffer);
+                        this._gl.renderbufferStorage(this._gl.RENDERBUFFER, this._gl.DEPTH_COMPONENT16, this._width, this._height);
+
+                        this._gl.framebufferTexture2D(this._gl.FRAMEBUFFER, this._gl.COLOR_ATTACHMENT0, this._gl.TEXTURE_2D, this._glTexture, 0);
+                        this._gl.framebufferRenderbuffer(this._gl.FRAMEBUFFER, this._gl.DEPTH_ATTACHMENT, this._gl.RENDERBUFFER, renderBuffer);
+
+                        this._gl.bindTexture(this._gl.TEXTURE_2D, null);
+                        this._gl.bindRenderbuffer(this._gl.RENDERBUFFER, null);
+                        this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
+                    }
+
+                    return this._frameBuffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            TextureWebGL.prototype.uploadFromData = function (data, miplevel) {
+                if (typeof miplevel === "undefined") { miplevel = 0; }
+                if (data instanceof away.base.BitmapData)
+                    data = data.imageData;
+
+                this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
+                this._gl.texImage2D(this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data);
+                this._gl.bindTexture(this._gl.TEXTURE_2D, null);
+            };
+
+            TextureWebGL.prototype.uploadCompressedTextureFromByteArray = function (data, byteArrayOffset /*uint*/ , async) {
+                if (typeof async === "undefined") { async = false; }
+                var ext = this._gl.getExtension("WEBKIT_WEBGL_compressed_texture_s3tc");
+                //this._gl.compressedTexImage2D(this._gl.TEXTURE_2D, 0, this)
+            };
+
+            Object.defineProperty(TextureWebGL.prototype, "glTexture", {
+                get: function () {
+                    return this._glTexture;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            TextureWebGL.prototype.generateMipmaps = function () {
+                //TODO: implement generating mipmaps
+                //this._gl.bindTexture( this._gl.TEXTURE_2D, this._glTexture );
+                //this._gl.generateMipmap(this._gl.TEXTURE_2D);
+                //this._gl.bindTexture( this._gl.TEXTURE_2D, null );
+            };
+            return TextureWebGL;
+        })(stagegl.TextureBaseWebGL);
+        stagegl.TextureWebGL = TextureWebGL;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var VertexBufferFlash = (function (_super) {
+            __extends(VertexBufferFlash, _super);
+            function VertexBufferFlash(context, numVertices, data32PerVertex) {
+                _super.call(this);
+
+                this._context = context;
+                this._numVertices = numVertices;
+                this._data32PerVertex = data32PerVertex;
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.initVertexBuffer, data32PerVertex + away.stagegl.OpCodes.intMask) + numVertices.toString() + ",");
+                this._pId = this._context.execute();
+                this._context._iAddResource(this);
+            }
+            VertexBufferFlash.prototype.uploadFromArray = function (data, startVertex, numVertices) {
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.uploadArrayVertexBuffer, this._pId + away.stagegl.OpCodes.intMask) + data.join() + "#" + [startVertex, numVertices].join() + ",");
+                this._context.execute();
+            };
+
+            Object.defineProperty(VertexBufferFlash.prototype, "numVertices", {
+                get: function () {
+                    return this._numVertices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VertexBufferFlash.prototype, "data32PerVertex", {
+                get: function () {
+                    return this._data32PerVertex;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            VertexBufferFlash.prototype.dispose = function () {
+                this._context.addStream(String.fromCharCode(away.stagegl.OpCodes.disposeVertexBuffer, this._pId + away.stagegl.OpCodes.intMask));
+                this._context.execute();
+                this._context._iRemoveResource(this);
+
+                this._context = null;
+            };
+            return VertexBufferFlash;
+        })(stagegl.ResourceBaseFlash);
+        stagegl.VertexBufferFlash = VertexBufferFlash;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var VertexBufferWebGL = (function () {
+            function VertexBufferWebGL(gl, numVertices, data32PerVertex) {
+                this._gl = gl;
+                this._buffer = this._gl.createBuffer();
+                this._numVertices = numVertices;
+                this._data32PerVertex = data32PerVertex;
+            }
+            VertexBufferWebGL.prototype.uploadFromArray = function (vertices, startVertex, numVertices) {
+                this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._buffer);
+
+                //console.log( "** WARNING upload not fully implemented, startVertex & numVertices not considered." );
+                // TODO add offsets , startVertex, numVertices * this._data32PerVertex
+                this._gl.bufferData(this._gl.ARRAY_BUFFER, new Float32Array(vertices), this._gl.STATIC_DRAW);
+            };
+
+            Object.defineProperty(VertexBufferWebGL.prototype, "numVertices", {
+                get: function () {
+                    return this._numVertices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VertexBufferWebGL.prototype, "data32PerVertex", {
+                get: function () {
+                    return this._data32PerVertex;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VertexBufferWebGL.prototype, "glBuffer", {
+                get: function () {
+                    return this._buffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            VertexBufferWebGL.prototype.dispose = function () {
+                this._gl.deleteBuffer(this._buffer);
+            };
+            return VertexBufferWebGL;
+        })();
+        stagegl.VertexBufferWebGL = VertexBufferWebGL;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
     (function (base) {
         /**
-        * StageGL provides a proxy class to handle the creation and attachment of the ContextGL
+        * StageGL provides a proxy class to handle the creation and attachment of the ContextWebGL
         * (and in turn the back buffer) it uses. StageGL should never be created directly,
         * but requested through StageGLManager.
         *
@@ -2202,7 +2914,7 @@ var away;
         */
         var StageGL = (function (_super) {
             __extends(StageGL, _super);
-            function StageGL(canvas, stageGLIndex, stageGLManager, forceSoftware, profile) {
+            function StageGL(container, stageGLIndex, stageGLManager, forceSoftware, profile) {
                 if (typeof forceSoftware === "undefined") { forceSoftware = false; }
                 if (typeof profile === "undefined") { profile = "baseline"; }
                 _super.call(this);
@@ -2221,7 +2933,7 @@ var away;
 
                 this._texturePool = new away.pool.TextureDataPool(this);
 
-                this._canvas = canvas;
+                this._container = container;
 
                 this._iStageGLIndex = stageGLIndex;
 
@@ -2231,64 +2943,64 @@ var away;
 
                 this._enableDepthAndStencil = true;
 
-                away.utils.CSS.setCanvasX(this._canvas, 0);
-                away.utils.CSS.setCanvasY(this._canvas, 0);
+                away.utils.CSS.setElementX(this._container, 0);
+                away.utils.CSS.setElementY(this._container, 0);
 
                 this.visible = true;
             }
             /**
-            * Requests a ContextGL object to attach to the managed gl canvas.
+            * Requests a ContextWebGL object to attach to the managed gl canvas.
             */
-            StageGL.prototype.requestContext = function (aglslContext, forceSoftware, profile) {
+            StageGL.prototype.requestContext = function (forceSoftware, profile, mode) {
                 // If forcing software, we can be certain that the
-                // returned ContextGL will be running software mode.
+                // returned ContextWebGL will be running software mode.
                 // If not, we can't be sure and should stick to the
                 // old value (will likely be same if re-requesting.)
-                if (typeof aglslContext === "undefined") { aglslContext = false; }
+                var _this = this;
                 if (typeof forceSoftware === "undefined") { forceSoftware = false; }
                 if (typeof profile === "undefined") { profile = "baseline"; }
+                if (typeof mode === "undefined") { mode = "auto"; }
                 if (this._usesSoftwareRendering != null)
                     this._usesSoftwareRendering = forceSoftware;
 
                 this._profile = profile;
 
                 try  {
-                    if (aglslContext)
-                        this._contextGL = new away.gl.AGLSLContextGL(this._canvas);
+                    if (mode == away.stagegl.ContextGLMode.FLASH)
+                        new away.stagegl.ContextStage3D(this._container, function (context) {
+                            return _this._callback(context);
+                        });
                     else
-                        this._contextGL = new away.gl.ContextGL(this._canvas);
+                        this._contextGL = new away.stagegl.ContextWebGL(this._container);
                 } catch (e) {
-                    this.dispatchEvent(new away.events.Event(away.events.Event.ERROR));
+                    try  {
+                        if (mode == away.stagegl.ContextGLMode.AUTO)
+                            new away.stagegl.ContextStage3D(this._container, function (context) {
+                                return _this._callback(context);
+                            });
+                        else
+                            this.dispatchEvent(new away.events.Event(away.events.Event.ERROR));
+                    } catch (e) {
+                        this.dispatchEvent(new away.events.Event(away.events.Event.ERROR));
+                    }
                 }
 
-                if (this._contextGL) {
-                    // Only configure back buffer if width and height have been set,
-                    // which they may not have been if View.render() has yet to be
-                    // invoked for the first time.
-                    if (this._width && this._height)
-                        this._contextGL.configureBackBuffer(this._width, this._height, this._antiAlias, this._enableDepthAndStencil);
-
-                    // Dispatch the appropriate event depending on whether context was
-                    // created for the first time or recreated after a device loss.
-                    this.dispatchEvent(new away.events.StageGLEvent(this._initialised ? away.events.StageGLEvent.CONTEXTGL_RECREATED : away.events.StageGLEvent.CONTEXTGL_CREATED));
-
-                    this._initialised = true;
-                }
+                if (this._contextGL)
+                    this._callback(this._contextGL);
             };
 
-
             Object.defineProperty(StageGL.prototype, "width", {
-                get: function () {
-                    return this._width;
-                },
                 /**
                 * The width of the gl canvas
                 */
+                get: function () {
+                    return this._width;
+                },
                 set: function (val) {
                     if (this._width == val)
                         return;
 
-                    away.utils.CSS.setCanvasWidth(this._canvas, val);
+                    away.utils.CSS.setElementWidth(this._container, val);
 
                     this._width = this._viewPort.width = val;
 
@@ -2302,17 +3014,17 @@ var away;
 
 
             Object.defineProperty(StageGL.prototype, "height", {
-                get: function () {
-                    return this._height;
-                },
                 /**
                 * The height of the gl canvas
                 */
+                get: function () {
+                    return this._height;
+                },
                 set: function (val) {
                     if (this._height == val)
                         return;
 
-                    away.utils.CSS.setCanvasHeight(this._canvas, val);
+                    away.utils.CSS.setElementHeight(this._container, val);
 
                     this._height = this._viewPort.height = val;
 
@@ -2326,17 +3038,17 @@ var away;
 
 
             Object.defineProperty(StageGL.prototype, "x", {
-                get: function () {
-                    return this._x;
-                },
                 /**
                 * The x position of the gl canvas
                 */
+                get: function () {
+                    return this._x;
+                },
                 set: function (val) {
                     if (this._x == val)
                         return;
 
-                    away.utils.CSS.setCanvasX(this._canvas, val);
+                    away.utils.CSS.setElementX(this._container, val);
 
                     this._x = this._viewPort.x = val;
 
@@ -2348,17 +3060,17 @@ var away;
 
 
             Object.defineProperty(StageGL.prototype, "y", {
-                get: function () {
-                    return this._y;
-                },
                 /**
                 * The y position of the gl canvas
                 */
+                get: function () {
+                    return this._y;
+                },
                 set: function (val) {
                     if (this._y == val)
                         return;
 
-                    away.utils.CSS.setCanvasY(this._canvas, val);
+                    away.utils.CSS.setElementY(this._container, val);
 
                     this._y = this._viewPort.y = val;
 
@@ -2369,20 +3081,21 @@ var away;
             });
 
 
+
             Object.defineProperty(StageGL.prototype, "visible", {
                 get: function () {
-                    return away.utils.CSS.getCanvasVisibility(this._canvas);
+                    return away.utils.CSS.getElementVisibility(this._container);
                 },
                 set: function (val) {
-                    away.utils.CSS.setCanvasVisibility(this._canvas, val);
+                    away.utils.CSS.setElementVisibility(this._container, val);
                 },
                 enumerable: true,
                 configurable: true
             });
 
-            Object.defineProperty(StageGL.prototype, "canvas", {
+            Object.defineProperty(StageGL.prototype, "container", {
                 get: function () {
-                    return this._canvas;
+                    return this._container;
                 },
                 enumerable: true,
                 configurable: true
@@ -2390,7 +3103,7 @@ var away;
 
             Object.defineProperty(StageGL.prototype, "contextGL", {
                 /**
-                * The ContextGL object associated with the given gl canvas object.
+                * The ContextWebGL object associated with the given gl canvas object.
                 */
                 get: function () {
                     return this._contextGL;
@@ -2440,7 +3153,7 @@ var away;
             });
 
             /**
-            * Disposes the StageGL object, freeing the ContextGL attached to the StageGL.
+            * Disposes the StageGL object, freeing the ContextWebGL attached to the StageGL.
             */
             StageGL.prototype.dispose = function () {
                 this._stageGLManager.iRemoveStageGL(this);
@@ -2519,17 +3232,8 @@ var away;
             StageGL.prototype.getRenderTexture = function (textureProxy) {
                 var textureData = this._texturePool.getItem(textureProxy);
 
-                if (!textureData.texture) {
-                    textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, true);
-                    textureData.invalid = true;
-                }
-
-                if (textureData.invalid) {
-                    textureData.invalid = false;
-
-                    // fake data, to complete texture for sampling
-                    textureData.texture.generateFromRenderBuffer();
-                }
+                if (!textureData.texture)
+                    textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.stagegl.ContextGLTextureFormat.BGRA, true);
 
                 return textureData.texture;
             };
@@ -2751,7 +3455,7 @@ var away;
                 var textureData = this._texturePool.getItem(textureProxy);
 
                 if (!textureData.texture) {
-                    textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.gl.ContextGLTextureFormat.BGRA, true);
+                    textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.stagegl.ContextGLTextureFormat.BGRA, true);
                     textureData.invalid = true;
                 }
 
@@ -2774,7 +3478,7 @@ var away;
                 var textureData = this._texturePool.getItem(textureProxy);
 
                 if (!textureData.texture) {
-                    textureData.texture = this._contextGL.createCubeTexture(textureProxy.size, away.gl.ContextGLTextureFormat.BGRA, false);
+                    textureData.texture = this._contextGL.createCubeTexture(textureProxy.size, away.stagegl.ContextGLTextureFormat.BGRA, false);
                     textureData.invalid = true;
                 }
 
@@ -2797,7 +3501,7 @@ var away;
 
             /**
             * Retrieves the VertexBuffer object that contains triangle indices.
-            * @param context The ContextGL for which we request the buffer
+            * @param context The ContextWebGL for which we request the buffer
             * @return The VertexBuffer object that contains triangle indices.
             */
             StageGL.prototype.getIndexBuffer = function (buffer) {
@@ -2805,12 +3509,12 @@ var away;
                     buffer.stageGLs[this._iStageGLIndex] = this;
 
                 if (!buffer.buffers[this._iStageGLIndex]) {
-                    buffer.buffers[this._iStageGLIndex] = this._contextGL.createIndexBuffer(buffer.data.length / 3);
+                    buffer.buffers[this._iStageGLIndex] = this._contextGL.createIndexBuffer(buffer.data.length);
                     buffer.invalid[this._iStageGLIndex] = true;
                 }
 
                 if (buffer.invalid[this._iStageGLIndex]) {
-                    buffer.buffers[this._iStageGLIndex].uploadFromArray(buffer.data, 0, buffer.data.length / 3);
+                    buffer.buffers[this._iStageGLIndex].uploadFromArray(buffer.data, 0, buffer.data.length);
                     buffer.invalid[this._iStageGLIndex] = false;
                 }
 
@@ -2846,7 +3550,7 @@ var away;
             }
             */
             /**
-            * Frees the ContextGL associated with this StageGLProxy.
+            * Frees the ContextWebGL associated with this StageGLProxy.
             */
             StageGL.prototype.freeContextGL = function () {
                 if (this._contextGL) {
@@ -2902,7 +3606,25 @@ var away;
                 if (!this._contextGL)
                     return;
 
-                this._contextGL.clear(0, 0, 0, 1, 1, 0, away.gl.ContextGLClearMask.DEPTH);
+                this._contextGL.clear(0, 0, 0, 1, 1, 0, away.stagegl.ContextGLClearMask.DEPTH);
+            };
+
+            StageGL.prototype._callback = function (context) {
+                this._contextGL = context;
+
+                this._container = this._contextGL.container;
+
+                // Only configure back buffer if width and height have been set,
+                // which they may not have been if View.render() has yet to be
+                // invoked for the first time.
+                if (this._width && this._height)
+                    this._contextGL.configureBackBuffer(this._width, this._height, this._antiAlias, this._enableDepthAndStencil);
+
+                // Dispatch the appropriate event depending on whether context was
+                // created for the first time or recreated after a device loss.
+                this.dispatchEvent(new away.events.StageGLEvent(this._initialised ? away.events.StageGLEvent.CONTEXTGL_RECREATED : away.events.StageGLEvent.CONTEXTGL_CREATED));
+
+                this._initialised = true;
             };
             return StageGL;
         })(away.events.EventDispatcher);
@@ -3437,49 +4159,10 @@ var away;
 
                     program = this._stageGL.contextGL.createProgram();
 
-                    //away.Debug.throwPIR( 'AGALProgramCache' , 'setProgram' , 'Dependency: AGALMiniAssembler.assemble');
-                    //TODO: implement AGAL <> GLSL
-                    //var vertexByteCode:ByteArray = new AGALMiniAssembler(Debug.active).assemble(ContextGLProgramType.VERTEX, vertexCode);
-                    //var fragmentByteCode:ByteArray = new AGALMiniAssembler(Debug.active).assemble(ContextGLProgramType.FRAGMENT, fragmentCode);
-                    //program.upload(vertexByteCode, fragmentByteCode);
-                    /*
-                    var vertexByteCode  : ByteArray = new AGLSLCompiler().assemble( ContextGLProgramType.VERTEX , vertexCode );
-                    var fragmentByteCode: ByteArray = new AGLSLCompiler().assemble( ContextGLProgramType.FRAGMENT , fragmentCode );
-                    
-                    program.uploadGLSL(vertexByteCode, fragmentByteCode);
-                    
-                    */
-                    var vertCompiler = new aglsl.AGLSLCompiler();
-                    var fragCompiler = new aglsl.AGLSLCompiler();
+                    var vertexByteCode = (new aglsl.assembler.AGALMiniAssembler().assemble("part vertex 1\n" + vertexCode + "endpart"))['vertex'].data;
+                    var fragmentByteCode = (new aglsl.assembler.AGALMiniAssembler().assemble("part fragment 1\n" + fragmentCode + "endpart"))['fragment'].data;
+                    program.upload(vertexByteCode, fragmentByteCode);
 
-                    var vertString = vertCompiler.compile(away.gl.ContextGLProgramType.VERTEX, vertexCode);
-                    var fragString = fragCompiler.compile(away.gl.ContextGLProgramType.FRAGMENT, fragmentCode);
-
-                    console.log('===GLSL=========================================================');
-                    console.log('vertString');
-                    console.log(vertString);
-                    console.log('fragString');
-                    console.log(fragString);
-
-                    console.log('===AGAL=========================================================');
-                    console.log('vertexCode');
-                    console.log(vertexCode);
-                    console.log('fragmentCode');
-                    console.log(fragmentCode);
-
-                    program.upload(vertString, fragString);
-
-                    /*
-                    
-                    var vertCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
-                    var fragCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
-                    
-                    var vertString : string = vertCompiler.compile( away.gl.ContextGLProgramType.VERTEX, this.pGetVertexCode() );
-                    var fragString : string = fragCompiler.compile( away.gl.ContextGLProgramType.FRAGMENT, this.pGetFragmentCode() );
-                    
-                    this._program3D.upload( vertString , fragString );
-                    
-                    */
                     this._program3Ds[key] = program;
                 }
 
@@ -3859,9 +4542,10 @@ var away;
             * @param profile The compatibility profile, an enumeration of ContextGLProfile
             * @return The StageGL for the given index.
             */
-            StageGLManager.prototype.getStageGLAt = function (index, forceSoftware, profile) {
+            StageGLManager.prototype.getStageGLAt = function (index, forceSoftware, profile, mode) {
                 if (typeof forceSoftware === "undefined") { forceSoftware = false; }
                 if (typeof profile === "undefined") { profile = "baseline"; }
+                if (typeof mode === "undefined") { mode = "auto"; }
                 if (index < 0 || index >= StageGLManager.STAGEGL_MAX_QUANTITY)
                     throw new away.errors.ArgumentError("Index is out of bounds [0.." + StageGLManager.STAGEGL_MAX_QUANTITY + "]");
 
@@ -3869,9 +4553,11 @@ var away;
                     StageGLManager._numStageGLs++;
 
                     var canvas = document.createElement("canvas");
+                    canvas.id = "stagegl" + index;
+                    document.body.appendChild(canvas);
                     var stageGL = this._stageGLs[index] = new StageGL(canvas, index, this, forceSoftware, profile);
                     stageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextCreatedDelegate);
-                    stageGL.requestContext(true, forceSoftware, profile);
+                    stageGL.requestContext(forceSoftware, profile, mode);
                 }
 
                 return stageGL;
@@ -3896,15 +4582,16 @@ var away;
             * @param profile The compatibility profile, an enumeration of ContextGLProfile
             * @return The allocated stageGL
             */
-            StageGLManager.prototype.getFreeStageGL = function (forceSoftware, profile) {
+            StageGLManager.prototype.getFreeStageGL = function (forceSoftware, profile, mode) {
                 if (typeof forceSoftware === "undefined") { forceSoftware = false; }
                 if (typeof profile === "undefined") { profile = "baseline"; }
+                if (typeof mode === "undefined") { mode = "auto"; }
                 var i = 0;
                 var len = this._stageGLs.length;
 
                 while (i < len) {
                     if (!this._stageGLs[i])
-                        return this.getStageGLAt(i, forceSoftware, profile);
+                        return this.getStageGLAt(i, forceSoftware, profile, mode);
 
                     ++i;
                 }
@@ -3960,8 +4647,8 @@ var away;
             });
 
             StageGLManager.prototype.onContextCreated = function (e) {
-                var stageGL = e.target;
-                document.body.appendChild(stageGL.canvas);
+                //var stageGL:StageGL = <StageGL> e.target;
+                //document.body.appendChild(stageGL.canvas)
             };
             StageGLManager.STAGEGL_MAX_QUANTITY = 8;
 
@@ -3993,6 +4680,7 @@ var StageGLManagerSingletonEnforcer = (function () {
 *********************************************************************************************************************************************************************************************************/
 ///<reference path="../../libs/ref/js.d.ts"/>
 ///<reference path="../../libs/awayjs-core.next.d.ts"/>
+///<reference path="../../libs/swfobject.d.ts"/>
 ///<reference path="../aglsl/Sampler.ts"/>
 ///<reference path="../aglsl/Token.ts"/>
 ///<reference path="../aglsl/Header.ts"/>
@@ -4000,7 +4688,6 @@ var StageGLManagerSingletonEnforcer = (function () {
 ///<reference path="../aglsl/Header.ts"/>
 ///<reference path="../aglsl/Description.ts"/>
 ///<reference path="../aglsl/Destination.ts"/>
-///<reference path="../aglsl/ContextGL.ts"/>
 ///<reference path="../aglsl/Mapping.ts"/>
 ///<reference path="../aglsl/assembler/OpCode.ts"/>
 ///<reference path="../aglsl/assembler/OpcodeMap.ts"/>
@@ -4010,28 +4697,42 @@ var StageGLManagerSingletonEnforcer = (function () {
 ///<reference path="../aglsl/assembler/AGALMiniAssembler.ts"/>
 ///<reference path="../aglsl/AGALTokenizer.ts"/>
 ///<reference path="../aglsl/Parser.ts"/>
-///<reference path="../aglsl/AGLSLCompiler.ts"/>
-///<reference path="core/gl/ContextGLClearMask.ts"/>
-///<reference path="core/gl/VertexBuffer.ts"/>
-///<reference path="core/gl/IndexBuffer.ts"/>
-///<reference path="core/gl/Program.ts"/>
-///<reference path="core/gl/SamplerState.ts"/>
-///<reference path="core/gl/ContextGLTextureFormat.ts"/>
-///<reference path="core/gl/TextureBase.ts"/>
-///<reference path="core/gl/Texture.ts" />
-///<reference path="core/gl/CubeTexture.ts" />
-///<reference path="core/gl/ContextGLTriangleFace.ts"/>
-///<reference path="core/gl/ContextGLVertexBufferFormat.ts"/>
-///<reference path="core/gl/ContextGLProgramType.ts"/>
-///<reference path="core/gl/ContextGLBlendFactor.ts"/>
-///<reference path="core/gl/ContextGLCompareMode.ts"/>
-///<reference path="core/gl/ContextGLMipFilter.ts"/>
-///<reference path="core/gl/ContextGLProfile.ts"/>
-///<reference path="core/gl/ContextGLStencilAction.ts"/>
-///<reference path="core/gl/ContextGLTextureFilter.ts"/>
-///<reference path="core/gl/ContextGLWrapMode.ts"/>
-///<reference path="core/gl/ContextGL.ts" />
-///<reference path="core/gl/AGLSLContextGL.ts" />
+///<reference path="core/stagegl/ContextGLClearMask.ts"/>
+///<reference path="core/stagegl/ContextGLTextureFormat.ts"/>
+///<reference path="core/stagegl/ContextGLTriangleFace.ts"/>
+///<reference path="core/stagegl/ContextGLVertexBufferFormat.ts"/>
+///<reference path="core/stagegl/ContextGLProgramType.ts"/>
+///<reference path="core/stagegl/ContextGLBlendFactor.ts"/>
+///<reference path="core/stagegl/ContextGLCompareMode.ts"/>
+///<reference path="core/stagegl/ContextGLMipFilter.ts"/>
+///<reference path="core/stagegl/ContextGLMode.ts"/>
+///<reference path="core/stagegl/ContextGLProfile.ts"/>
+///<reference path="core/stagegl/ContextGLStencilAction.ts"/>
+///<reference path="core/stagegl/ContextGLTextureFilter.ts"/>
+///<reference path="core/stagegl/ContextGLWrapMode.ts"/>
+///<reference path="core/stagegl/ContextStage3D.ts" />
+///<reference path="core/stagegl/ContextWebGL.ts" />
+///<reference path="core/stagegl/ResourceBaseFlash.ts"/>
+///<reference path="core/stagegl/TextureBaseWebGL.ts"/>
+///<reference path="core/stagegl/CubeTextureFlash.ts" />
+///<reference path="core/stagegl/CubeTextureWebGL.ts" />
+///<reference path="core/stagegl/IContext.ts" />
+///<reference path="core/stagegl/ICubeTexture.ts" />
+///<reference path="core/stagegl/IIndexBuffer.ts"/>
+///<reference path="core/stagegl/IndexBufferFlash.ts"/>
+///<reference path="core/stagegl/IndexBufferWebGL.ts"/>
+///<reference path="core/stagegl/IProgram.ts"/>
+///<reference path="core/stagegl/ITexture.ts" />
+///<reference path="core/stagegl/ITextureBase.ts"/>
+///<reference path="core/stagegl/IVertexBuffer.ts"/>
+///<reference path="core/stagegl/OpCodes.ts"/>
+///<reference path="core/stagegl/ProgramFlash.ts"/>
+///<reference path="core/stagegl/ProgramWebGL.ts"/>
+///<reference path="core/stagegl/SamplerState.ts"/>
+///<reference path="core/stagegl/TextureFlash.ts" />
+///<reference path="core/stagegl/TextureWebGL.ts" />
+///<reference path="core/stagegl/VertexBufferFlash.ts"/>
+///<reference path="core/stagegl/VertexBufferWebGL.ts"/>
 ///<reference path="core/base/StageGL.ts" />
 ///<reference path="core/pool/IndexData.ts" />
 ///<reference path="core/pool/IndexDataPool.ts" />

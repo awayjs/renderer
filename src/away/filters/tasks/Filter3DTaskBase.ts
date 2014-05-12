@@ -2,10 +2,12 @@
 
 module away.filters
 {
+	import StageGL					 		= away.base.StageGL;
+	import ByteArray						= away.utils.ByteArray;
 
 	export class Filter3DTaskBase
 	{
-		private _mainInputTexture:away.gl.Texture;
+		private _mainInputTexture:away.stagegl.ITexture;
 
 		private _scaledTextureWidth:number = -1;
 		private _scaledTextureHeight:number = -1;
@@ -13,8 +15,8 @@ module away.filters
 		private _textureHeight:number = -1;
 		private _textureDimensionsInvalid:boolean = true;
 		private _program3DInvalid:boolean = true;
-		private _program3D:away.gl.Program;
-		private _target:away.gl.Texture;
+		private _program3D:away.stagegl.IProgram;
+		private _target:away.stagegl.ITexture;
 		private _requireDepthRender:boolean;
 		private _textureScale:number = 0;
 
@@ -51,14 +53,14 @@ module away.filters
 
 		}
 
-		public get target():away.gl.Texture
+		public get target():away.stagegl.ITexture
 		{
 
 			return this._target;
 
 		}
 
-		public set target(value:away.gl.Texture)
+		public set target(value:away.stagegl.ITexture)
 		{
 
 			this._target = value;
@@ -109,7 +111,7 @@ module away.filters
 
 		}
 
-		public getMainInputTexture(stage:away.base.StageGL):away.gl.Texture
+		public getMainInputTexture(stage:StageGL):away.stagegl.ITexture
 		{
 
 			if (this._textureDimensionsInvalid) {
@@ -145,7 +147,7 @@ module away.filters
 			this._program3DInvalid = true;
 		}
 
-		public pUpdateProgram(stage:away.base.StageGL)
+		public pUpdateProgram(stage:StageGL)
 		{
 			if (this._program3D) {
 
@@ -155,21 +157,9 @@ module away.filters
 
 			this._program3D = stage.contextGL.createProgram();
 
-			//away.Debug.log( 'Filder3DTaskBase' , 'pUpdateProgram' , 'Program.upload / AGAL <> GLSL implementation' );
-
-			// TODO: imeplement AGAL <> GLSL
-			//this._program3D.upload(new AGALMiniAssembler(Debug.active).assemble(ContextGLProgramType.VERTEX, getVertexCode()),new AGALMiniAssembler(Debug.active).assemble(ContextGLProgramType.FRAGMENT, getFragmentCode()));
-
-			//new AGALMiniAssembler(Debug.active).assemble(ContextGLProgramType.VERTEX, getVertexCode()),
-			//new AGALMiniAssembler(Debug.active).assemble(ContextGLProgramType.FRAGMENT, getFragmentCode()));
-
-			var vertCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
-			var fragCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
-
-			var vertString:string = vertCompiler.compile(away.gl.ContextGLProgramType.VERTEX, this.pGetVertexCode());
-			var fragString:string = fragCompiler.compile(away.gl.ContextGLProgramType.FRAGMENT, this.pGetFragmentCode());
-
-			this._program3D.upload(vertString, fragString);
+			var vertexByteCode:ByteArray = (new aglsl.assembler.AGALMiniAssembler().assemble("part vertex 1\n" + this.pGetVertexCode() + "endpart"))['vertex'].data;
+			var fragmentByteCode:ByteArray = (new aglsl.assembler.AGALMiniAssembler().assemble("part fragment 1\n" + this.pGetFragmentCode() + "endpart"))['fragment'].data;
+			this._program3D.upload(vertexByteCode, fragmentByteCode);
 			this._program3DInvalid = false;
 		}
 
@@ -191,7 +181,7 @@ module away.filters
 
 		}
 
-		public pUpdateTextures(stage:away.base.StageGL)
+		public pUpdateTextures(stage:StageGL)
 		{
 
 			if (this._mainInputTexture) {
@@ -201,13 +191,13 @@ module away.filters
 			}
 
 
-			this._mainInputTexture = stage.contextGL.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, away.gl.ContextGLTextureFormat.BGRA, true);
+			this._mainInputTexture = stage.contextGL.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, away.stagegl.ContextGLTextureFormat.BGRA, true);
 
 			this._textureDimensionsInvalid = false;
 
 		}
 
-		public getProgram(stageGL:away.base.StageGL):away.gl.Program
+		public getProgram(stageGL:StageGL):away.stagegl.IProgram
 		{
 			if (this._program3DInvalid) {
 
@@ -218,11 +208,11 @@ module away.filters
 			return this._program3D;
 		}
 
-		public activate(stageGL:away.base.StageGL, camera:away.entities.Camera, depthTexture:away.gl.Texture)
+		public activate(stageGL:StageGL, camera:away.entities.Camera, depthTexture:away.stagegl.ITexture)
 		{
 		}
 
-		public deactivate(stageGL:away.base.StageGL)
+		public deactivate(stageGL:StageGL)
 		{
 		}
 

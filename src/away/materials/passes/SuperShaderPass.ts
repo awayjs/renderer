@@ -433,7 +433,7 @@ module away.materials
 			var len:number = lightProbes.length;
 			var addDiff:boolean = this.usesProbesForDiffuse();
 			var addSpec:boolean = <boolean> (this._pMethodSetup._iSpecularMethod && this.usesProbesForSpecular());
-			var context:away.gl.ContextGL = stageGL.contextGL;
+			var context:away.stagegl.IContext = stageGL.contextGL;
 
 			if (!(addDiff || addSpec)) {
 

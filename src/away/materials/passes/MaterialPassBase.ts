@@ -2,11 +2,11 @@
 
 module away.materials
 {
-	import ContextGL					= away.gl.ContextGL;
-	import ContextGLBlendFactor			= away.gl.ContextGLBlendFactor;
-	import ContextGLCompareMode			= away.gl.ContextGLCompareMode;
-	import ContextGLTriangleFace		= away.gl.ContextGLTriangleFace;
-	import Program						= away.gl.Program;
+	import IContext						= away.stagegl.IContext;
+	import ContextGLBlendFactor			= away.stagegl.ContextGLBlendFactor;
+	import ContextGLCompareMode			= away.stagegl.ContextGLCompareMode;
+	import ContextGLTriangleFace		= away.stagegl.ContextGLTriangleFace;
+	import IProgram						= away.stagegl.IProgram;
 	import TextureProxyBase				= away.textures.TextureProxyBase;
 	import Event						= away.events.Event;
 	import Rectangle					= away.geom.Rectangle;
@@ -31,9 +31,9 @@ module away.materials
 		public _pMaterial:MaterialBase;
 		private _animationSet:away.animators.AnimationSetBase;
 
-		public _iPrograms:Program[] = new Array<Program>(8) //Vector.<Program> = new Vector.<Program>(8);
+		public _iPrograms:IProgram[] = new Array<IProgram>(8) //Vector.<Program> = new Vector.<Program>(8);
 		public _iProgramids:Array<number> = new Array<number>(-1, -1, -1, -1, -1, -1, -1, -1);//Vector.<int> = Vector.<int>([-1, -1, -1, -1, -1, -1, -1, -1]);
-		private _contextGLs:ContextGL[] = new Array<ContextGL>(8);//Vector.<ContextGL> = new Vector.<ContextGL>(8);
+		private _contextGLs:IContext[] = new Array<IContext>(8);//Vector.<ContextGL> = new Vector.<ContextGL>(8);
 
 		// agal props. these NEED to be set by subclasses!
 		// todo: can we perhaps figure these out manually by checking read operations in the bytecode, so other sources can be safely updated?
@@ -429,7 +429,7 @@ module away.materials
 		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
 			var contextIndex:number = stageGL._iStageGLIndex;//_stageGLIndex;
-			var context:ContextGL = stageGL.contextGL;
+			var context:IContext = stageGL.contextGL;
 
 			context.setDepthTest(( this._writeDepth && !this._pEnableBlending ), this._depthCompareMode);
 

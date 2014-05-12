@@ -700,7 +700,7 @@ declare module away.pick {
         /**
         * @inheritDoc
         */
-        public pDraw(entityCollector: traverse.EntityCollector, target: gl.TextureBase): void;
+        public pDraw(entityCollector: traverse.EntityCollector, target: stagegl.ITextureBase): void;
         /**
         * Draw a list of renderables.
         * @param renderables The renderables to draw.
@@ -764,7 +764,7 @@ declare module away.render {
         private _skyboxRenderablePool;
         private _triangleSubMeshRenderablePool;
         private _lineSubMeshRenderablePool;
-        public _pContext: gl.ContextGL;
+        public _pContext: stagegl.IContext;
         public _pStageGL: base.StageGL;
         public _pCamera: entities.Camera;
         public _iEntryPoint: geom.Vector3D;
@@ -997,8 +997,6 @@ declare module away.render {
         private _skyboxProjection;
         public _pFilter3DRenderer: Filter3DRenderer;
         public _pDepthRender: textures.TextureProxyBase;
-        private _forceSoftware;
-        private _profile;
         private _antiAlias;
         public antiAlias : number;
         /**
@@ -1016,7 +1014,7 @@ declare module away.render {
         * @param antiAlias The amount of anti-aliasing to use.
         * @param renderMode The render mode to use.
         */
-        constructor(forceSoftware?: boolean, profile?: string);
+        constructor(forceSoftware?: boolean, profile?: string, mode?: string);
         public render(entityCollector: traverse.ICollector): void;
         public pExecuteRender(entityCollector: traverse.EntityCollector, target?: textures.TextureProxyBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
         private updateLights(entityCollector);
@@ -1076,10 +1074,10 @@ declare module away.render {
         constructor(stageGL: base.StageGL);
         private onRTTResize(event);
         public requireDepthRender : boolean;
-        public getMainInputTexture(stageGL: base.StageGL): gl.Texture;
+        public getMainInputTexture(stageGL: base.StageGL): stagegl.ITexture;
         public filters : filters.Filter3DBase[];
         private updateFilterTasks(stageGL);
-        public render(stageGL: base.StageGL, camera: entities.Camera, depthTexture: gl.Texture): void;
+        public render(stageGL: base.StageGL, camera: entities.Camera, depthTexture: stagegl.ITexture): void;
         private updateFilterSizes();
         public dispose(): void;
     }
@@ -1116,18 +1114,18 @@ declare module away.filters {
         * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
         */
         public textureScale : number;
-        public target : gl.Texture;
+        public target : stagegl.ITexture;
         public textureWidth : number;
         public textureHeight : number;
-        public getMainInputTexture(stage: base.StageGL): gl.Texture;
+        public getMainInputTexture(stage: base.StageGL): stagegl.ITexture;
         public dispose(): void;
         public pInvalidateProgram(): void;
         public pUpdateProgram(stage: base.StageGL): void;
         public pGetVertexCode(): string;
         public pGetFragmentCode(): string;
         public pUpdateTextures(stage: base.StageGL): void;
-        public getProgram(stageGL: base.StageGL): gl.Program;
-        public activate(stageGL: base.StageGL, camera: entities.Camera, depthTexture: gl.Texture): void;
+        public getProgram(stageGL: base.StageGL): stagegl.IProgram;
+        public activate(stageGL: base.StageGL, camera: entities.Camera, depthTexture: stagegl.ITexture): void;
         public deactivate(stageGL: base.StageGL): void;
         public requireDepthRender : boolean;
     }
@@ -1142,10 +1140,10 @@ declare module away.filters {
         public requireDepthRender : boolean;
         public pAddTask(filter: Filter3DTaskBase): void;
         public tasks : Filter3DTaskBase[];
-        public getMainInputTexture(stageGL: base.StageGL): gl.Texture;
+        public getMainInputTexture(stageGL: base.StageGL): stagegl.ITexture;
         public textureWidth : number;
         public textureHeight : number;
-        public setRenderTargets(mainTarget: gl.Texture, stageGL: base.StageGL): void;
+        public setRenderTargets(mainTarget: stagegl.ITexture, stageGL: base.StageGL): void;
         public dispose(): void;
         public update(stage: base.StageGL, camera: entities.Camera): void;
     }
@@ -1362,7 +1360,7 @@ declare module away.materials {
         public _iUniqueId: number;
         public _pMaterial: MaterialBase;
         private _animationSet;
-        public _iPrograms: gl.Program[];
+        public _iPrograms: stagegl.IProgram[];
         public _iProgramids: number[];
         private _contextGLs;
         public _pNumUsedStreams: number;
@@ -5613,7 +5611,7 @@ declare module away.materials {
         /**
         * The depth compare mode used to render the renderables using this material.
         *
-        * @see away.gl.ContextGLCompareMode
+        * @see away.stagegl.ContextGLCompareMode
         */
         public depthCompareMode : string;
         public setDepthCompareMode(value: string): void;
@@ -5768,7 +5766,7 @@ declare module away.materials {
         *
         * @private
         */
-        public iUpdateMaterial(context: gl.ContextGL): void;
+        public iUpdateMaterial(context: stagegl.IContext): void;
         /**
         * Deactivates the last pass of the material.
         *
@@ -5967,7 +5965,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iUpdateMaterial(context: gl.ContextGL): void;
+        public iUpdateMaterial(context: stagegl.IContext): void;
         /**
         * @inheritDoc
         */
@@ -6135,7 +6133,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iUpdateMaterial(context: gl.ContextGL): void;
+        public iUpdateMaterial(context: stagegl.IContext): void;
         /**
         * Adds a compiled pass that renders to the screen.
         * @param pass The pass to be added.
@@ -6484,8 +6482,8 @@ declare module away.animators {
     class AnimationSubGeometry {
         static SUBGEOM_ID_COUNT: number;
         public _pVertexData: number[];
-        public _pVertexBuffer: gl.VertexBuffer[];
-        public _pBufferContext: gl.ContextGL[];
+        public _pVertexBuffer: stagegl.IVertexBuffer[];
+        public _pBufferContext: stagegl.IContext[];
         public _pBufferDirty: boolean[];
         private _numVertices;
         private _totalLenOfOneVertex;

@@ -39,7 +39,7 @@ module away.filters
 
 		}
 
-		public getMainInputTexture(stageGL:away.base.StageGL):away.gl.Texture
+		public getMainInputTexture(stageGL:away.base.StageGL):away.stagegl.ITexture
 		{
 
 			return this._tasks[0].getMainInputTexture(stageGL);
@@ -83,7 +83,7 @@ module away.filters
 		}
 
 		// link up the filters correctly with the next filter
-		public setRenderTargets(mainTarget:away.gl.Texture, stageGL:away.base.StageGL)
+		public setRenderTargets(mainTarget:away.stagegl.ITexture, stageGL:away.base.StageGL)
 		{
 
 			this._tasks[this._tasks.length - 1].target = mainTarget;

@@ -7,8 +7,8 @@ module away.animators
 	import StageGL							= away.base.StageGL;
 	import Camera							= away.entities.Camera;
 	import Vector3D							= away.geom.Vector3D;
-	import ContextGLProgramType				= away.gl.ContextGLProgramType;
-	import ContextGLVertexBufferFormat		= away.gl.ContextGLVertexBufferFormat;
+	import ContextGLProgramType				= away.stagegl.ContextGLProgramType;
+	import ContextGLVertexBufferFormat		= away.stagegl.ContextGLVertexBufferFormat;
 	import MaterialPassBase					= away.materials.MaterialPassBase;
 	import RenderableBase					= away.pool.RenderableBase;
 	

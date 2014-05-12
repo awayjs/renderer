@@ -27,9 +27,6 @@ module away.render
 
 		public _pDepthRender:away.textures.TextureProxyBase;
 
-
-		private _forceSoftware:boolean;
-		private _profile:string;
 		private _antiAlias:number;
 
 		public get antiAlias():number
@@ -100,7 +97,7 @@ module away.render
 		 * @param antiAlias The amount of anti-aliasing to use.
 		 * @param renderMode The render mode to use.
 		 */
-		constructor(forceSoftware:boolean = false, profile:string = "baseline")
+		constructor(forceSoftware:boolean = false, profile:string = "baseline", mode = "auto")
 		{
 			super();
 
@@ -108,10 +105,7 @@ module away.render
 			this._pDistanceRenderer = new DepthRenderer(false, true);
 
 			if (this._pStageGL == null)
-				this.stageGL = away.managers.StageGLManager.getInstance().getFreeStageGL(this._forceSoftware, this._profile);
-
-			this._forceSoftware = forceSoftware;
-			this._profile = profile;
+				this.stageGL = away.managers.StageGLManager.getInstance().getFreeStageGL(forceSoftware, profile, mode);
 
 			this._pRttBufferManager = away.managers.RTTBufferManager.getInstance(this._pStageGL);
 
@@ -228,7 +222,7 @@ module away.render
 			if (!target)
 				this.pCollectRenderables(entityCollector);
 
-			this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+			this._pContext.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
 
 			if (entityCollector.skyBox) {
 				if (this._activeMaterial)
@@ -236,19 +230,19 @@ module away.render
 
 				this._activeMaterial = null;
 
-				this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.ALWAYS);
+				this._pContext.setDepthTest(false, away.stagegl.ContextGLCompareMode.ALWAYS);
 				this.drawSkybox(entityCollector);
 
 			}
 
-			this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS_EQUAL);
+			this._pContext.setDepthTest(true, away.stagegl.ContextGLCompareMode.LESS_EQUAL);
 
 			var which:number = target? DefaultRenderer.SCREEN_PASSES : DefaultRenderer.ALL_PASSES;
 
 			this.drawRenderables(this._pOpaqueRenderableHead, entityCollector, which);
 			this.drawRenderables(this._pBlendedRenderableHead, entityCollector, which);
 
-			this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL);
+			this._pContext.setDepthTest(false, away.stagegl.ContextGLCompareMode.LESS_EQUAL);
 
 			if (this._activeMaterial)
 				this._activeMaterial.iDeactivate(this._pStageGL);
@@ -434,7 +428,7 @@ module away.render
 		/**
 		 *
 		 */
-		private initDepthTexture(context:away.gl.ContextGL):void
+		private initDepthTexture(context:away.stagegl.IContext):void
 		{
 			this._pDepthTextureInvalid = false;
 

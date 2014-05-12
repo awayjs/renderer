@@ -1,4 +1,4 @@
-///<reference path="../../../build/Away3D.next.d.ts" />
+///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 //<reference path="../../../src/Away3D.ts" />
 
 module tests.primitives
@@ -38,7 +38,7 @@ module tests.primitives
             away.Debug.LOG_PI_ERRORS    = false;
             away.Debug.THROW_ERRORS     = false;
 
-            this.view                   = new View( new DefaultRenderer());
+            this.view                   = new View( new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
             this.raf                    = new RequestAnimationFrame(this.render, this);
 
             this.light = new DirectionalLight();

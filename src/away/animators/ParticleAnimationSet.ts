@@ -2,10 +2,10 @@
 
 module away.animators
 {
-	import SubGeometryBase			= away.base.SubGeometryBase;
+	import SubGeometryBase		= away.base.SubGeometryBase;
 	import ParticleGeometry		= away.base.ParticleGeometry;
-	import ISubMesh		= away.base.ISubMesh;
-	import ContextGL			= away.gl.ContextGL;
+	import ISubMesh				= away.base.ISubMesh;
+	import IContext				= away.stagegl.IContext;
 	import Mesh					= away.entities.Mesh;
 	import StageGL				= away.base.StageGL;
 	import MaterialPassBase		= away.materials.MaterialPassBase;
@@ -133,7 +133,7 @@ module away.animators
 		 */
 		public deactivate(stageGL:StageGL, pass:MaterialPassBase)
 		{
-			var context:ContextGL = stageGL.contextGL;
+			var context:IContext = stageGL.contextGL;
 			var offset:number /*int*/ = this._iAnimationRegisterCache.vertexAttributesOffset;
 			var used:number /*int*/ = this._iAnimationRegisterCache.numUsedStreams;
 			for (var i:number /*int*/ = offset; i < used; i++)

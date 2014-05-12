@@ -13,7 +13,7 @@ module away.render
 		private _filters:Array<away.filters.Filter3DBase>;
 		private _tasks:Array<away.filters.Filter3DTaskBase>;
 		private _filterTasksInvalid:boolean;
-		private _mainInputTexture:away.gl.Texture;
+		private _mainInputTexture:away.stagegl.ITexture;
 		private _requireDepthRender:boolean;
 		private _rttManager:away.managers.RTTBufferManager;
 		private _stageGL:away.base.StageGL;
@@ -40,7 +40,7 @@ module away.render
 			return this._requireDepthRender;
 		}
 
-		public getMainInputTexture(stageGL:away.base.StageGL):away.gl.Texture
+		public getMainInputTexture(stageGL:away.base.StageGL):away.stagegl.ITexture
 		{
 			if (this._filterTasksInvalid) {
 
@@ -125,16 +125,16 @@ module away.render
 
 		}
 
-		public render(stageGL:away.base.StageGL, camera:away.entities.Camera, depthTexture:away.gl.Texture)
+		public render(stageGL:away.base.StageGL, camera:away.entities.Camera, depthTexture:away.stagegl.ITexture)
 		{
 			var len:number;
 			var i:number;
 			var task:away.filters.Filter3DTaskBase;
-			var context:away.gl.ContextGL = stageGL.contextGL;
+			var context:away.stagegl.IContext = stageGL.contextGL;
 
-			var indexBuffer:away.gl.IndexBuffer = this._rttManager.indexBuffer;
+			var indexBuffer:away.stagegl.IIndexBuffer = this._rttManager.indexBuffer;
 
-			var vertexBuffer:away.gl.VertexBuffer = this._rttManager.renderToTextureVertexBuffer;
+			var vertexBuffer:away.stagegl.IVertexBuffer = this._rttManager.renderToTextureVertexBuffer;
 
 			if (!this._filters) {
 				return;
@@ -157,8 +157,8 @@ module away.render
 			len = this._tasks.length;
 
 			if (len > 1) {
-				context.setVertexBufferAt(0, vertexBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
-				context.setVertexBufferAt(1, vertexBuffer, 2, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
+				context.setVertexBufferAt(0, vertexBuffer, 0, away.stagegl.ContextGLVertexBufferFormat.FLOAT_2);
+				context.setVertexBufferAt(1, vertexBuffer, 2, away.stagegl.ContextGLVertexBufferFormat.FLOAT_2);
 			}
 
 			for (i = 0; i < len; ++i) {
@@ -171,8 +171,8 @@ module away.render
 
 					stageGL.scissorRect = null;
 					vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
-					context.setVertexBufferAt(0, vertexBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
-					context.setVertexBufferAt(1, vertexBuffer, 2, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
+					context.setVertexBufferAt(0, vertexBuffer, 0, away.stagegl.ContextGLVertexBufferFormat.FLOAT_2);
+					context.setVertexBufferAt(1, vertexBuffer, 2, away.stagegl.ContextGLVertexBufferFormat.FLOAT_2);
 
 				}
 
@@ -182,7 +182,7 @@ module away.render
 
 				task.activate(stageGL, camera, depthTexture);
 
-				context.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+				context.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
 				context.drawTriangles(indexBuffer, 0, 2);
 
 				task.deactivate(stageGL);

@@ -18,7 +18,7 @@ module away.render
 		private _triangleSubMeshRenderablePool:away.pool.RenderablePool;
 		private _lineSubMeshRenderablePool:away.pool.RenderablePool;
 
-		public _pContext:away.gl.ContextGL;
+		public _pContext:away.stagegl.IContext;
 		public _pStageGL:away.base.StageGL;
 
 		public _pCamera:away.entities.Camera;
@@ -381,7 +381,7 @@ module away.render
 
 			// generate mip maps on target (if target exists) //TODO
 			//if (target)
-			//	(<away.gl.Texture>target).generateMipmaps();
+			//	(<away.stagegl.Texture>target).generateMipmaps();
 
 			// clear buffers
 			for (var i:number = 0; i < 8; ++i) {
@@ -430,7 +430,7 @@ module away.render
 			if ((target || !this._shareContext) && !this._depthPrepass)
 				this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
 
-			this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.ALWAYS);
+			this._pContext.setDepthTest(false, away.stagegl.ContextGLCompareMode.ALWAYS);
 
 			this._pStageGL.scissorRect = scissorRect;
 
@@ -442,7 +442,7 @@ module away.render
 			this.pDraw(entityCollector, target);
 
 			//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-			//this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL); //oopsie
+			//this._pContext.setDepthTest(false, away.stagegl.ContextGLCompareMode.LESS_EQUAL); //oopsie
 
 			if (!this._shareContext) {
 				if (this._snapshotRequired && this._snapshotBitmapData) {

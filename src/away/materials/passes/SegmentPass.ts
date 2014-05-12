@@ -112,10 +112,10 @@ module away.materials
 		 */
 		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
-			var context:away.gl.ContextGL = stageGL.contextGL;
+			var context:away.stagegl.IContext = stageGL.contextGL;
 			this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
 			this._calcMatrix.append(camera.inverseSceneTransform);
-			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
+			context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
 
 			stageGL.activateBuffer(0, renderable.getVertexData(away.base.LineSubGeometry.START_POSITION_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.START_POSITION_DATA), away.base.LineSubGeometry.POSITION_FORMAT);
 			stageGL.activateBuffer(1, renderable.getVertexData(away.base.LineSubGeometry.END_POSITION_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.END_POSITION_DATA), away.base.LineSubGeometry.POSITION_FORMAT);
@@ -130,7 +130,7 @@ module away.materials
 		 */
 		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
-			var context:away.gl.ContextGL = stageGL.contextGL;
+			var context:away.stagegl.IContext = stageGL.contextGL;
 			super.iActivate(stageGL, camera);
 
 			if (stageGL.scissorRect)
@@ -141,12 +141,12 @@ module away.materials
 			// value to convert distance from camera to model length per pixel width
 			this._constants[2] = camera.projection.near;
 
-			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
-			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
-			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 7, this._constants, 1);
+			context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
+			context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
+			context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 7, this._constants, 1);
 
 			// projection matrix
-			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
+			context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
 		}
 
 		/**
@@ -154,7 +154,7 @@ module away.materials
 		 */
 		public pDeactivate(stageGL:away.base.StageGL)
 		{
-			var context:away.gl.ContextGL = stageGL.contextGL;
+			var context:away.stagegl.IContext = stageGL.contextGL;
 			context.setVertexBufferAt(0, null);
 			context.setVertexBufferAt(1, null);
 			context.setVertexBufferAt(2, null);

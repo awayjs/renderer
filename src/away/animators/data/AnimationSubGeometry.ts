@@ -3,8 +3,8 @@
 module away.animators
 {
 	import StageGL					= away.base.StageGL;
-	import ContextGL				= away.gl.ContextGL;
-	import VertexBuffer				= away.gl.VertexBuffer;
+	import IContext					= away.stagegl.IContext;
+	import IVertexBuffer			= away.stagegl.IVertexBuffer;
 	
 	/**
 	 * ...
@@ -15,8 +15,8 @@ module away.animators
 
 		public _pVertexData:number[];
 		
-		public _pVertexBuffer:VertexBuffer[] = new Array<VertexBuffer>(8);
-		public _pBufferContext:ContextGL[] = new Array<ContextGL>(8);
+		public _pVertexBuffer:IVertexBuffer[] = new Array<IVertexBuffer>(8);
+		public _pBufferContext:IContext[] = new Array<IContext>(8);
 		public _pBufferDirty:boolean[] = new Array<boolean>(8);
 		
 		private _numVertices:number /*uint*/;
@@ -55,9 +55,9 @@ module away.animators
 		public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stageGL:away.base.StageGL, format:string)
 		{
 			var contextIndex:number /*int*/ = stageGL.stageGLIndex;
-			var context:ContextGL = stageGL.contextGL;
+			var context:IContext = stageGL.contextGL;
 			
-			var buffer:VertexBuffer = this._pVertexBuffer[contextIndex];
+			var buffer:IVertexBuffer = this._pVertexBuffer[contextIndex];
 			if (!buffer || this._pBufferContext[contextIndex] != context) {
 				buffer = this._pVertexBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, this._totalLenOfOneVertex);
 				this._pBufferContext[contextIndex] = context;
@@ -73,7 +73,7 @@ module away.animators
 		public dispose()
 		{
 			while (this._pVertexBuffer.length) {
-				var vertexBuffer:VertexBuffer = this._pVertexBuffer.pop()
+				var vertexBuffer:IVertexBuffer = this._pVertexBuffer.pop()
 				
 				if (vertexBuffer)
 					vertexBuffer.dispose();
