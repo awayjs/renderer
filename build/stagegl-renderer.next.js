@@ -358,6 +358,9 @@ var away;
             * @internal
             */
             RenderableBase.prototype._iFillIndexData = function (indexOffset) {
+                if (this._geometryDirty)
+                    this._updateGeometry();
+
                 this._indexData = away.pool.IndexDataPool.getItem(this._subGeometry, this._level, indexOffset);
 
                 this._numTriangles = this._indexData.data.length / 3;
@@ -368,8 +371,8 @@ var away;
                 if (indexOffset < this._subGeometry.indices.length) {
                     if (!this._overflow)
                         this._overflow = this._pGetOverflowRenderable(this._pool, this.materialOwner, indexOffset, this._level + 1);
-                    else
-                        this._overflow._iFillIndexData(indexOffset);
+
+                    this._overflow._iFillIndexData(indexOffset);
                 } else if (this._overflow) {
                     this._overflow.dispose();
                     this._overflow = null;
