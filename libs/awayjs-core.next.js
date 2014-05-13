@@ -20809,7 +20809,7 @@ var away;
 
                 var len = this._children.length;
                 for (var i = 0; i < len; ++i)
-                    this._children[i++].pInvalidateSceneTransform();
+                    this._children[i].pInvalidateSceneTransform();
             };
 
             /**
