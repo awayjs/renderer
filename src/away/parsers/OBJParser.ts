@@ -6,11 +6,8 @@ module away.parsers
 	import Mesh								= away.entities.Mesh;
 	import DefaultMaterialManager			= away.materials.DefaultMaterialManager;
 	import BasicSpecularMethod				= away.materials.SpecularBasicMethod;
-	import ColorMaterial					= away.materials.ColorMaterial;
-	import ColorMultiPassMaterial			= away.materials.ColorMultiPassMaterial;
-	import MaterialBase						= away.materials.MaterialBase;
-	import TextureMaterial					= away.materials.TextureMaterial;
-	import TextureMultiPassMaterial			= away.materials.TextureMultiPassMaterial;
+	import TriangleMaterial					= away.materials.TriangleMaterial;
+	import TriangleMaterialMode				= away.materials.TriangleMaterialMode;
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 	
 	/**
@@ -306,7 +303,7 @@ module away.parsers
 
 				var m:number;
 				var sm:number;
-				var bmMaterial:MaterialBase;
+				var bmMaterial:TriangleMaterial;
 
 				for (var g:number = 0; g < numGroups; ++g) {
 					geometry = new away.base.Geometry();
@@ -322,10 +319,12 @@ module away.parsers
 					// Finalize and force type-based name
 					this._pFinalizeAsset(<away.library.IAsset> geometry);//, "");
 
-					if (this.materialMode < 2)
-						bmMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture()); else
-						bmMaterial = new TextureMultiPassMaterial(DefaultMaterialManager.getDefaultTexture());
-					//bmMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
+					bmMaterial = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
+
+					//check for multipass
+					if (this.materialMode >= 2)
+						bmMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
+
 					mesh = new Mesh(geometry, bmMaterial);
 
 					if (this._objects[objIndex].name) {
@@ -744,12 +743,12 @@ module away.parsers
 					if (alpha == 0)
 						console.log("Warning: an alpha value of 0 was found in mtl color tag (Tr or d) ref:" + this._lastMtlID + ", mesh(es) using it will be invisible!");
 
-					var cm:MaterialBase;
+					var cm:TriangleMaterial;
 
 					if (this.materialMode < 2) {
-						cm = new ColorMaterial(diffuseColor);
+						cm = new TriangleMaterial(diffuseColor);
 
-						var colorMat:ColorMaterial = <ColorMaterial> cm;
+						var colorMat:TriangleMaterial = <TriangleMaterial> cm;
 
 						colorMat.alpha = alpha;
 						colorMat.ambientColor = ambientColor;
@@ -761,9 +760,10 @@ module away.parsers
 						}
 
 					} else {
-						cm = new ColorMultiPassMaterial(diffuseColor);
+						cm = new TriangleMaterial(diffuseColor);
+						cm.materialMode = TriangleMaterialMode.MULTI_PASS;
 
-						var colorMultiMat:ColorMultiPassMaterial = <ColorMultiPassMaterial> cm;
+						var colorMultiMat:TriangleMaterial = <TriangleMaterial> cm;
 
 
 						colorMultiMat.ambientColor = ambientColor;
@@ -844,7 +844,7 @@ module away.parsers
 		{
 			var decomposeID;
 			var mesh:Mesh;
-			var mat:MaterialBase;
+			var tm:TriangleMaterial;
 			var j:number;
 			var specularData:SpecularData;
 
@@ -861,9 +861,7 @@ module away.parsers
 
 					} else if (lm.texture) {
 						if (this.materialMode < 2) { // if materialMode is 0 or 1, we create a SinglePass
-							mat = <TextureMaterial > mesh.material;
-
-							var tm:TextureMaterial = <TextureMaterial> mat;
+							tm = <TriangleMaterial > mesh.material;
 
 							tm.texture = lm.texture;
 							tm.ambientColor = lm.ambientColor;
@@ -894,29 +892,28 @@ module away.parsers
 								}
 							}
 						} else { //if materialMode==2 this is a MultiPassTexture					
-							mat = <TextureMultiPassMaterial>mesh.material;
+							tm = <TriangleMaterial> mesh.material;
+							tm.materialMode = TriangleMaterialMode.MULTI_PASS;
 
-							var tmMult:TextureMultiPassMaterial = <TextureMultiPassMaterial> mat;
-
-							tmMult.texture = lm.texture;
-							tmMult.ambientColor = lm.ambientColor;
-							tmMult.repeat = true;
+							tm.texture = lm.texture;
+							tm.ambientColor = lm.ambientColor;
+							tm.repeat = true;
 
 							if (lm.specularMethod) {
 								// By setting the specularMethod property to null before assigning
 								// the actual method instance, we avoid having the properties of
 								// the new method being overridden with the settings from the old
 								// one, which is default behavior of the setter.
-								tmMult.specularMethod = null;
-								tmMult.specularMethod = lm.specularMethod;
+								tm.specularMethod = null;
+								tm.specularMethod = lm.specularMethod;
 							} else if (this._materialSpecularData) {
 								for (j = 0; j < this._materialSpecularData.length; ++j) {
 									specularData = this._materialSpecularData[j];
 
 									if (specularData.materialID == lm.materialID) {
-										tmMult.specularMethod = null; // Prevent property overwrite (see above)
-										tmMult.specularMethod = specularData.basicSpecularMethod;
-										tmMult.ambientColor = specularData.ambientColor;
+										tm.specularMethod = null; // Prevent property overwrite (see above)
+										tm.specularMethod = specularData.basicSpecularMethod;
+										tm.ambientColor = specularData.ambientColor;
 
 										break;
 
@@ -932,8 +929,8 @@ module away.parsers
 				}
 			}
 
-			if (lm.cm || mat)
-				this._pFinalizeAsset(lm.cm || mat);
+			if (lm.cm || tm)
+				this._pFinalizeAsset(lm.cm || tm);
 		}
 
 		private applyMaterials()

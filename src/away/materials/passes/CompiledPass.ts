@@ -99,7 +99,6 @@ module away.materials
 				this.iInvalidateShaderProgram(true);
 
 			this._enableLightFallOff = value;
-
 		}
 
 		/**
@@ -183,7 +182,6 @@ module away.materials
 		 */
 		private initConstantData()
 		{
-
 			this._pVertexConstantData.length = this._pNumUsedVertexConstants*4;
 			this._pFragmentConstantData.length = this._pNumUsedFragmentConstants*4;
 
@@ -306,17 +304,6 @@ module away.materials
 		}
 
 		/**
-		 * @inheritDoc
-		 */
-		public set mipmap(value:boolean)
-		{
-			if (this._pMipmap == value)
-				return;
-
-			super.setMipMap(value);
-		}
-
-		/**
 		 * The normal map to modulate the direction of the surface for each texel. The default normal method expects
 		 * tangent-space normal maps, but others could expect object-space maps.
 		 */
@@ -333,7 +320,6 @@ module away.materials
 		/**
 		 * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
 		 */
-
 		public get normalMethod():NormalBasicMethod
 		{
 			return this._pMethodSetup.normalMethod;
@@ -347,7 +333,6 @@ module away.materials
 		/**
 		 * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
 		 */
-
 		public get ambientMethod():AmbientBasicMethod
 		{
 			return this._pMethodSetup.ambientMethod;
@@ -361,7 +346,6 @@ module away.materials
 		/**
 		 * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
 		 */
-
 		public get shadowMethod():ShadowMapMethodBase
 		{
 			return this._pMethodSetup.shadowMethod;
@@ -388,7 +372,6 @@ module away.materials
 		/**
 		 * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
 		 */
-
 		public get specularMethod():SpecularBasicMethod
 		{
 			return this._pMethodSetup.specularMethod;
@@ -428,18 +411,12 @@ module away.materials
 			var oldPasses:MaterialPassBase[] = this._iPasses;//:Vector.<MaterialPassBase> = _passes;
 			this._iPasses = new Array<MaterialPassBase>();//= new Vector.<MaterialPassBase>();
 
-			if (this._pMethodSetup) {
-
+			if (this._pMethodSetup)
 				this.pAddPassesFromMethods();//this.addPassesFromMethods();
 
-			}
-
-
 			if (!oldPasses || this._iPasses.length != oldPasses.length) {
-
 				this._iPassesDirty = true;
 				return;
-
 			}
 
 			for (var i:number = 0; i < this._iPasses.length; ++i) {
@@ -561,7 +538,7 @@ module away.materials
 		 */
 		public pUpdateProbes(stageGL:StageGL)
 		{
-
+			// up to subclasses to optionally implement
 		}
 
 		/**
@@ -632,8 +609,6 @@ module away.materials
 			if (this._tangentBufferIndex >= 0)
 				stageGL.activateBuffer(this._tangentBufferIndex, renderable.getVertexData(SubGeometry.TANGENT_DATA), renderable.getVertexOffset(SubGeometry.TANGENT_DATA), SubGeometry.TANGENT_FORMAT);
 
-
-
 			if (this._animateUVs) {
 				var uvTransform:Matrix = renderable.materialOwner.uvTransform.matrix;
 
@@ -679,7 +654,6 @@ module away.materials
 
 				matrix3D.copyRawDataTo(this._pVertexConstantData, 0, true);
 				//this._pVertexConstantData = matrix3D.copyRawDataTo( 0, true);
-
 			}
 
 			if (this._sceneNormalMatrixIndex >= 0) {

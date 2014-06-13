@@ -6,6 +6,9 @@ module away.parsers
 	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
 	import VertexAnimationSet				= away.animators.VertexAnimationSet;
 	import VertexClipNode					= away.animators.VertexClipNode;
+	import DefaultMaterialManager			= away.materials.DefaultMaterialManager;
+	import TriangleMaterial					= away.materials.TriangleMaterial;
+	import TriangleMaterialMode				= away.materials.TriangleMaterialMode;
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 	import Texture2DBase					= away.textures.Texture2DBase
 	import ByteArray						= away.utils.ByteArray;
@@ -105,12 +108,12 @@ module away.parsers
 				return;
 
 			var asset:Texture2DBase = <Texture2DBase> resourceDependency.assets[0];
+
 			if (asset) {
-				var material:away.materials.MaterialBase;
-				if (this.materialMode < 2)
-					material = new away.materials.TextureMaterial(asset);
-				else
-					material = new away.materials.TextureMultiPassMaterial(asset);
+				var material:TriangleMaterial = new TriangleMaterial(asset);
+
+				if (this.materialMode >= 2)
+					material.materialMode = TriangleMaterialMode.MULTI_PASS;
 
 				//add to the content property
 				(<away.containers.DisplayObjectContainer> this._pContent).addChild(this._mesh);
@@ -130,10 +133,12 @@ module away.parsers
 		public _iResolveDependencyFailure(resourceDependency:ResourceDependency):void
 		{
 			// apply system default
-			if (this.materialMode < 2)
-				this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial();
-			else
-				this._mesh.material = new away.materials.TextureMultiPassMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+			if (this.materialMode < 2) {
+				this._mesh.material = DefaultMaterialManager.getDefaultMaterial();
+			} else {
+				this._mesh.material = new TriangleMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+				(<TriangleMaterial> this._mesh.material).materialMode = TriangleMaterialMode.MULTI_PASS;
+			}
 
 			//add to the content property
 			(<away.containers.DisplayObjectContainer> this._pContent).addChild(this._mesh);
@@ -169,10 +174,12 @@ module away.parsers
 					// for this file format) and return it using this._pFinalizeAsset()
 					this._geometry = new Geometry();
 					this._mesh = new away.entities.Mesh(this._geometry, null);
-					if (this.materialMode < 2)
-						this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial();
-					else
-						this._mesh.material = new away.materials.TextureMultiPassMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+					if (this.materialMode < 2) {
+						this._mesh.material = DefaultMaterialManager.getDefaultMaterial();
+					} else {
+						this._mesh.material = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
+						(<TriangleMaterial> this._mesh.material).materialMode = TriangleMaterialMode.MULTI_PASS;
+					}
 
 					//_geometry.animation = new VertexAnimation(2, VertexAnimationMode.ABSOLUTE);
 					//_animator = new VertexAnimator(VertexAnimationState(_mesh.animationState));

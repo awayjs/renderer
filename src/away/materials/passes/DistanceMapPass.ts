@@ -78,7 +78,9 @@ module away.materials
 			//TODO: AGAL<> GLSL
 
 			var code:string;
-			code = "m44 op, vt0, vc0		\n" + "m44 vt1, vt0, vc5		\n" + "sub v0, vt1, vc9		\n";
+			code = "m44 op, vt0, vc0\n" +
+				   "m44 vt1, vt0, vc5\n" +
+				   "sub v0, vt1, vc9\n";
 
 			if (this._alphaThreshold > 0) {
 
@@ -112,7 +114,10 @@ module away.materials
 			//TODO: AGAL<> GLSL
 
 			// squared distance to view
-			code = "dp3 ft2.z, v0.xyz, v0.xyz	\n" + "mul ft0, fc0, ft2.z	\n" + "frc ft0, ft0			\n" + "mul ft1, ft0.yzww, fc1	\n";
+			code = "dp3 ft2.z, v0.xyz, v0.xyz\n" +
+				   "mul ft0, fc0, ft2.z	\n" +
+				   "frc ft0, ft0\n" +
+				   "mul ft1, ft0.yzww, fc1\n";
 
 			if (this._alphaThreshold > 0) {
 

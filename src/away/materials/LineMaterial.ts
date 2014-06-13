@@ -4,16 +4,16 @@ module away.materials
 {
 
 	/**
-	 * SegmentMaterial is a material exclusively used to render wireframe objects
+	 * LineMaterial is a material exclusively used to render wireframe objects
 	 *
 	 * @see away3d.entities.Lines
 	 */
-	export class SegmentMaterial extends MaterialBase
+	export class LineMaterial extends MaterialBase
 	{
 		private _screenPass:SegmentPass;
 
 		/**
-		 * Creates a new SegmentMaterial object.
+		 * Creates a new LineMaterial object.
 		 *
 		 * @param thickness The thickness of the wireframe lines.
 		 */

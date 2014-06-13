@@ -3,14 +3,9 @@
 module away.parsers
 {
 	import SubGeometry						= away.base.TriangleSubGeometry;
-	import ColorMaterial					= away.materials.ColorMaterial;
-	import ColorMultiPassMaterial			= away.materials.ColorMultiPassMaterial;
 	import DefaultMaterialManager			= away.materials.DefaultMaterialManager;
-	import MultiPassMaterialBase			= away.materials.MultiPassMaterialBase;
-	import SinglePassMaterialBase			= away.materials.SinglePassMaterialBase;
-	import TextureMaterial					= away.materials.TextureMaterial;
-	import TextureMultiPassMaterial			= away.materials.TextureMultiPassMaterial;
-	import MaterialBase						= away.materials.MaterialBase;
+	import TriangleMaterial					= away.materials.TriangleMaterial;
+	import TriangleMaterialMode				= away.materials.TriangleMaterialMode;
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 	import Texture2DBase					= away.textures.Texture2DBase;
 	import ByteArray						= away.utils.ByteArray;
@@ -718,20 +713,18 @@ module away.parsers
 
 		private finalizeCurrentMaterial():void
 		{
-			var mat:MaterialBase;
-			if (this.materialMode < 2) {
-				if (this._cur_mat.colorMap)
-					mat = new TextureMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture()); else
-					mat = new ColorMaterial(this._cur_mat.diffuseColor);
-				(<SinglePassMaterialBase> mat).ambientColor = this._cur_mat.ambientColor;
-				(<SinglePassMaterialBase> mat).specularColor = this._cur_mat.specularColor;
-			} else {
-				if (this._cur_mat.colorMap)
-					mat = new TextureMultiPassMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture()); else
-					mat = new ColorMultiPassMaterial(this._cur_mat.diffuseColor);
-				(<MultiPassMaterialBase> mat).ambientColor = this._cur_mat.ambientColor;
-				(<MultiPassMaterialBase> mat).specularColor = this._cur_mat.specularColor;
-			}
+			var mat:TriangleMaterial;
+
+			if (this._cur_mat.colorMap)
+				mat = new TriangleMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture());
+			else
+				mat = new TriangleMaterial(this._cur_mat.diffuseColor);
+
+			mat.ambientColor = this._cur_mat.ambientColor;
+			mat.specularColor = this._cur_mat.specularColor;
+
+			if (this.materialMode >= 2)
+				mat.materialMode = TriangleMaterialMode.MULTI_PASS
 
 			mat.bothSides = this._cur_mat.twoSided;
 

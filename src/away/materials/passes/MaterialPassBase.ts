@@ -97,7 +97,6 @@ module away.materials
 		 */
 		constructor(renderToTexture:boolean = false)
 		{
-
 			super();
 
 			this._onLightsChangeDelegate = Delegate.create(this, this.onLightsChange);
@@ -145,23 +144,12 @@ module away.materials
 
 		public set mipmap(value:boolean)
 		{
-
-			this.setMipMap(value);
-
-		}
-
-		public setMipMap(value:boolean):void
-		{
-
-			if (this._pMipmap == value) {
-
+			if (this._pMipmap == value)
 				return;
 
-			}
-
 			this._pMipmap = value;
-			this.iInvalidateShaderProgram();
 
+			this.iInvalidateShaderProgram();
 		}
 
 		/**
@@ -174,13 +162,11 @@ module away.materials
 
 		public set smooth(value:boolean)
 		{
-			if (this._pSmooth == value) {
-
+			if (this._pSmooth == value)
 				return;
 
-			}
-
 			this._pSmooth = value;
+
 			this.iInvalidateShaderProgram();
 		}
 
@@ -194,13 +180,11 @@ module away.materials
 
 		public set repeat(value:boolean)
 		{
-			if (this._pRepeat == value) {
-
+			if (this._pRepeat == value)
 				return;
 
-			}
-
 			this._pRepeat = value;
+
 			this.iInvalidateShaderProgram();
 		}
 
@@ -267,15 +251,10 @@ module away.materials
 			if (this._pLightPicker)
 				this._pLightPicker.removeEventListener(Event.CHANGE, this._onLightsChangeDelegate);
 
-
 			for (var i:number = 0; i < 8; ++i) {
-
 				if (this._iPrograms[i]) {
-
-					//away.Debug.throwPIR( 'MaterialPassBase' , 'dispose' , 'required dependency: AGALProgramCache');
 					away.managers.AGALProgramCache.getInstanceFromIndex(i).freeProgram(this._iProgramids[i]);
 					this._iPrograms[i] = null;
-
 				}
 			}
 		}
@@ -433,11 +412,8 @@ module away.materials
 
 			context.setDepthTest(( this._writeDepth && !this._pEnableBlending ), this._depthCompareMode);
 
-			if (this._pEnableBlending) {
-
+			if (this._pEnableBlending)
 				context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
-
-			}
 
 			if (this._contextGLs[contextIndex] != context || !this._iPrograms[contextIndex]) {
 
@@ -451,28 +427,16 @@ module away.materials
 			var prevUsed:number = MaterialPassBase._previousUsedStreams[contextIndex];
 			var i:number;
 
-			for (i = this._pNumUsedStreams; i < prevUsed; ++i) {
-
+			for (i = this._pNumUsedStreams; i < prevUsed; ++i)
 				context.setVertexBufferAt(i, null);
-
-			}
-
 
 			prevUsed = MaterialPassBase._previousUsedTexs[contextIndex];
 
-			for (i = this._pNumUsedTextures; i < prevUsed; ++i) {
-
+			for (i = this._pNumUsedTextures; i < prevUsed; ++i)
 				context.setTextureAt(i, null);
 
-			}
-
-
-			if (this._animationSet && !this._animationSet.usesCPU) {
-
+			if (this._animationSet && !this._animationSet.usesCPU)
 				this._animationSet.activate(stageGL, this);
-
-			}
-
 
 			context.setProgram(this._iPrograms[contextIndex]);
 
@@ -499,19 +463,13 @@ module away.materials
 			MaterialPassBase._previousUsedStreams[index] = this._pNumUsedStreams;
 			MaterialPassBase._previousUsedTexs[index] = this._pNumUsedTextures;
 
-			if (this._animationSet && !this._animationSet.usesCPU) {
-
+			if (this._animationSet && !this._animationSet.usesCPU)
 				this._animationSet.deactivate(stageGL, this);
 
-			}
-
-
 			if (this._renderToTexture) {
-
 				// kindly restore state
 				stageGL.setRenderTarget(this._oldTarget, this._oldDepthStencil, this._oldSurface);
 				stageGL.scissorRect = this._oldRect;
-
 			}
 
 			stageGL.contextGL.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
@@ -524,19 +482,11 @@ module away.materials
 		 */
 		public iInvalidateShaderProgram(updateMaterial:boolean = true)
 		{
-			for (var i:number = 0; i < 8; ++i) {
-
+			for (var i:number = 0; i < 8; ++i)
 				this._iPrograms[i] = null;
 
-			}
-
-
-			if (this._pMaterial && updateMaterial) {
-
+			if (this._pMaterial && updateMaterial)
 				this._pMaterial.iInvalidatePasses(this);
-
-			}
-
 		}
 
 		/**
@@ -589,7 +539,6 @@ module away.materials
 			 */
 
 			away.managers.AGALProgramCache.getInstance(stageGL).setProgram(this._iProgramids, this._iPrograms, vertexCode, fragmentCode);
-
 		}
 
 		/**
@@ -605,19 +554,13 @@ module away.materials
 
 		public set lightPicker(value:LightPickerBase)
 		{
-			if (this._pLightPicker) {
-
+			if (this._pLightPicker)
 				this._pLightPicker.removeEventListener(Event.CHANGE, this._onLightsChangeDelegate);
-
-			}
 
 			this._pLightPicker = value;
 
-			if (this._pLightPicker) {
-
+			if (this._pLightPicker)
 				this._pLightPicker.addEventListener(Event.CHANGE, this._onLightsChangeDelegate);
-
-			}
 
 			this.pUpdateLights();
 
@@ -629,7 +572,6 @@ module away.materials
 		private onLightsChange(event:Event)
 		{
 			this.pUpdateLights();
-
 		}
 
 		/**

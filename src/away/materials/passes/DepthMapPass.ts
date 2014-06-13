@@ -76,12 +76,14 @@ module away.materials
 
 			//TODO: AGAL <> GLSL conversion
 
-			code = "m44 vt1, vt0, vc0		\n" + "mov op, vt1	\n";
+			code = "m44 vt1, vt0, vc0\n" +
+				   "mov op, vt1\n";
 
 			if (this._alphaThreshold > 0) {
 				this._pNumUsedTextures = 1;
 				this._pNumUsedStreams = 2;
-				code += "mov v0, vt1\n" + "mov v1, va1\n";
+				code += "mov v0, vt1\n" +
+					    "mov v1, va1\n";
 			} else {
 				this._pNumUsedTextures = 0;
 				this._pNumUsedStreams = 1;
@@ -106,8 +108,10 @@ module away.materials
 
 			// TODO: AGAL<>GLSL
 
-			var codeF:string = "div ft2, v0, v0.w		\n" + //"sub ft2.z, fc0.x, ft2.z\n" +    //invert
-				"mul ft0, fc0, ft2.z	\n" + "frc ft0, ft0			\n" + "mul ft1, ft0.yzww, fc1	\n";
+			var codeF:string = "div ft2, v0, v0.w\n" + //"sub ft2.z, fc0.x, ft2.z\n" +    //invert
+							   "mul ft0, fc0, ft2.z\n" +
+							   "frc ft0, ft0\n" +
+							   "mul ft1, ft0.yzww, fc1\n";
 
 			//codeF += "mov ft1.w, fc1.w	\n" +
 			//    "mov ft0.w, fc0.x	\n";

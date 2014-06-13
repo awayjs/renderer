@@ -315,7 +315,7 @@ module away.render
 			while (renderable) {
 				this._activeMaterial = renderable.material;
 
-				this._activeMaterial.iUpdateMaterial(this._pContext);
+				this._activeMaterial.iUpdateMaterial();
 
 				numPasses = this._activeMaterial._iNumPasses;
 

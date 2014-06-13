@@ -139,14 +139,10 @@
 
 ///<reference path="materials/LightSources.ts"/>
 ///<reference path="materials/MaterialBase.ts"/>
-///<reference path="materials/SinglePassMaterialBase.ts"/>
-///<reference path="materials/MultiPassMaterialBase.ts"/>
-///<reference path="materials/TextureMultiPassMaterial.ts"/>
-///<reference path="materials/ColorMultiPassMaterial.ts"/>
-///<reference path="materials/TextureMaterial.ts"/>
-///<reference path="materials/ColorMaterial.ts"/>
+///<reference path="materials/TriangleMaterial.ts"/>
+///<reference path="materials/TriangleMaterialMode.ts"/>
 ///<reference path="materials/compilation/LightingShaderCompiler.ts"/>
-///<reference path="materials/SegmentMaterial.ts"/>
+///<reference path="materials/LineMaterial.ts"/>
 ///<reference path="materials/SkyboxMaterial.ts"/>
 
 ///<reference path="utils/PerspectiveMatrix3D.ts"/>

@@ -4,23 +4,23 @@ module away.materials
 {
 	export class DefaultMaterialManager
 	{
-		private static _defaultTextureBitmapData:away.base.BitmapData;
-		private static _defaultTextureMaterial:TextureMaterial;
-		private static _defaultSegmentMaterial:SegmentMaterial;
+		private static _defaultBitmapData:away.base.BitmapData;
+		private static _defaultTriangleMaterial:TriangleMaterial;
+		private static _defaultLineMaterial:LineMaterial;
 		private static _defaultTexture:away.textures.BitmapTexture;
 
 		public static getDefaultMaterial(materialOwner:away.base.IMaterialOwner = null):MaterialBase
 		{
 			if (materialOwner != null && materialOwner.assetType == away.library.AssetType.LINE_SUB_MESH) {
-				if (!DefaultMaterialManager._defaultSegmentMaterial)
-					DefaultMaterialManager.createDefaultSegmentMaterial();
+				if (!DefaultMaterialManager._defaultLineMaterial)
+					DefaultMaterialManager.createDefaultLineMaterial();
 
-				return DefaultMaterialManager._defaultSegmentMaterial;
+				return DefaultMaterialManager._defaultLineMaterial;
 			} else {
-				if (!DefaultMaterialManager._defaultTextureMaterial)
-					DefaultMaterialManager.createDefaultTextureMaterial();
+				if (!DefaultMaterialManager._defaultTriangleMaterial)
+					DefaultMaterialManager.createDefaultTriangleMaterial();
 
-				return DefaultMaterialManager._defaultTextureMaterial;
+				return DefaultMaterialManager._defaultTriangleMaterial;
 			}
 		}
 
@@ -34,8 +34,8 @@ module away.materials
 
 		private static createDefaultTexture()
 		{
-			DefaultMaterialManager._defaultTextureBitmapData = DefaultMaterialManager.createCheckeredBitmapData();
-			DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture(DefaultMaterialManager._defaultTextureBitmapData, true);
+			DefaultMaterialManager._defaultBitmapData = DefaultMaterialManager.createCheckeredBitmapData();
+			DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture(DefaultMaterialManager._defaultBitmapData, true);
 			DefaultMaterialManager._defaultTexture.name = "defaultTexture";
 		}
 
@@ -56,21 +56,21 @@ module away.materials
 			return b;
 		}
 
-		private static createDefaultTextureMaterial()
+		private static createDefaultTriangleMaterial()
 		{
 			if (!DefaultMaterialManager._defaultTexture)
 				DefaultMaterialManager.createDefaultTexture();
 
-			DefaultMaterialManager._defaultTextureMaterial = new TextureMaterial(DefaultMaterialManager._defaultTexture);
-			DefaultMaterialManager._defaultTextureMaterial.mipmap = false;
-			DefaultMaterialManager._defaultTextureMaterial.smooth = false;
-			DefaultMaterialManager._defaultTextureMaterial.name = "defaultTextureMaterial";
+			DefaultMaterialManager._defaultTriangleMaterial = new TriangleMaterial(DefaultMaterialManager._defaultTexture);
+			DefaultMaterialManager._defaultTriangleMaterial.mipmap = false;
+			DefaultMaterialManager._defaultTriangleMaterial.smooth = false;
+			DefaultMaterialManager._defaultTriangleMaterial.name = "defaultTriangleMaterial";
 		}
 
-		private static createDefaultSegmentMaterial()
+		private static createDefaultLineMaterial()
 		{
-			DefaultMaterialManager._defaultSegmentMaterial = new SegmentMaterial();
-			DefaultMaterialManager._defaultSegmentMaterial.name = "defaultSegmentMaterial";
+			DefaultMaterialManager._defaultLineMaterial = new LineMaterial();
+			DefaultMaterialManager._defaultLineMaterial.name = "defaultSegmentMaterial";
 		}
 	}
 }

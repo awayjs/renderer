@@ -2,6 +2,7 @@
 
 module away.parsers
 {
+	import AssetLoader						= away.library.AssetLoader;
 
 	export class Parsers
 	{
@@ -36,9 +37,9 @@ module away.parsers
 		 * <li>Images (.jpg, .png)</li>
 		 * </ul>
 		 *
-		 * @see away3d.loading.AssetLibrary.enableParser
+		 * @see away.library.AssetLibrary.enableParser
 		 */
-		public static ALL_BUNDLED:Array<Object> = Array<Object>(away.parsers.AWDParser, away.parsers.Max3DSParser, away.parsers.MD2Parser, away.parsers.OBJParser);
+		public static ALL_BUNDLED:Array<Object> = Array<Object>(AWDParser, Max3DSParser, MD2Parser, OBJParser);
 
 		/**
 		 * Short-hand function to enable all bundled parsers for auto-detection. In practice,
@@ -47,11 +48,11 @@ module away.parsers
 		 *
 		 * See notes about file size in the documentation for the ALL_BUNDLED constant.
 		 *
-		 * @see away.parsers.parsers.Parsers.ALL_BUNDLED
+		 * @see away.parsers.Parsers.ALL_BUNDLED
 		 */
 		public static enableAllBundled():void
 		{
-			away.net.AssetLoader.enableParsers(this.ALL_BUNDLED);
+			AssetLoader.enableParsers(Parsers.ALL_BUNDLED);
 		}
 	}
 }

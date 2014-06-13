@@ -3,8 +3,6 @@
 module away.materials
 {
 	import BlendMode					= away.base.BlendMode;
-	import IContext						= away.stagegl.IContext;
-	import ContextGLCompareMode			= away.stagegl.ContextGLCompareMode;
 	import Event						= away.events.Event;
 	import Matrix3D						= away.geom.Matrix3D;
 	import AssetType					= away.library.AssetType;
@@ -28,7 +26,7 @@ module away.materials
 	 * pass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space
 	 * subsurface scattering, or rendering a depth map for specialized self-shadowing).
 	 *
-	 * Away3D provides default materials trough SinglePassMaterialBase and MultiPassMaterialBase, which use modular
+	 * Away3D provides default materials trough SinglePassMaterialBase and TriangleMaterial, which use modular
 	 * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
 	 * shaders, or entire new material frameworks.
 	 */
@@ -72,6 +70,7 @@ module away.materials
 
 		private _bothSides:boolean = false; // update
 		private _animationSet:AnimationSetBase;
+		public _pScreenPassesInvalid:boolean = true;
 
 		/**
 		 * A list of material owners, renderables or custom Entities.
@@ -89,19 +88,21 @@ module away.materials
 		private _smooth:boolean = true;
 		private _repeat:boolean = false; // Update
 
+
 		public _pDepthPass:DepthMapPass;
 		public _pDistancePass:DistanceMapPass;
 		public _pLightPicker:LightPickerBase;
 
 		private _distanceBasedDepthRender:boolean;
-		public _pDepthCompareMode:string = ContextGLCompareMode.LESS_EQUAL;
 
 		public _pHeight:number = 1;
 		public _pWidth:number = 1;
+		public _pRequiresBlending:boolean = false;
 
 		private _onPassChangeDelegate:Function;
 		private _onDepthPassChangeDelegate:Function;
 		private _onDistancePassChangeDelegate:Function;
+		private _onLightChangeDelegate:Function;
 
 		/**
 		 * Creates a new MaterialBase object.
@@ -125,6 +126,8 @@ module away.materials
 			this._pDistancePass.addEventListener(Event.CHANGE, this._onDistancePassChangeDelegate);
 
 			this.alphaPremultiplied = false; //TODO: work out why this is different for WebGL
+
+			this._onLightChangeDelegate = Delegate.create(this, this.onLightsChange);
 		}
 
 		/**
@@ -156,19 +159,18 @@ module away.materials
 
 		public set lightPicker(value:LightPickerBase)
 		{
-			this.setLightPicker(value);
-		}
+			if (this._pLightPicker == value)
+				return;
 
-		public setLightPicker(value:LightPickerBase)
-		{
-			if (value != this._pLightPicker) {
+			if (this._pLightPicker)
+				this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
 
-				this._pLightPicker = value;
-				var len:number = this._passes.length;
+			this._pLightPicker = value;
 
-				for (var i:number = 0; i < len; ++i)
-					this._passes[i].lightPicker = this._pLightPicker;
-			}
+			if (this._pLightPicker)
+				this._pLightPicker.addEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
+
+			this.pInvalidateScreenPasses();
 		}
 
 		/**
@@ -181,13 +183,9 @@ module away.materials
 
 		public set mipmap(value:boolean)
 		{
+			if (this._pMipmap == value)
+				return;
 
-			this.setMipMap(value);
-
-		}
-
-		public setMipMap(value:boolean)
-		{
 			this._pMipmap = value;
 
 			for (var i:number = 0; i < this._numPasses; ++i)
@@ -208,27 +206,6 @@ module away.materials
 
 			for (var i:number = 0; i < this._numPasses; ++i)
 				this._passes[i].smooth = value;
-		}
-
-		/**
-		 * The depth compare mode used to render the renderables using this material.
-		 *
-		 * @see away.stagegl.ContextGLCompareMode
-		 */
-
-		public get depthCompareMode():string
-		{
-			return this._pDepthCompareMode;
-		}
-
-		public set depthCompareMode(value:string)
-		{
-			this.setDepthCompareMode(value);
-		}
-
-		public setDepthCompareMode(value:string)
-		{
-			this._pDepthCompareMode = value;
 		}
 
 		/**
@@ -299,22 +276,17 @@ module away.materials
 		 */
 		public get blendMode():string
 		{
-			return this.getBlendMode();
-		}
-
-		public getBlendMode():string
-		{
 			return this._pBlendMode;
 		}
 
 		public set blendMode(value:string)
 		{
-			this.setBlendMode(value);
-		}
+			if (this._pBlendMode == value)
+				return;
 
-		public setBlendMode(value:string)
-		{
 			this._pBlendMode = value;
+
+			this.pInvalidateScreenPasses();
 		}
 
 		/**
@@ -340,7 +312,7 @@ module away.materials
 		 */
 		public get requiresBlending():boolean
 		{
-			return this.getRequiresBlending();
+			return this._pRequiresBlending;
 		}
 
 		/**
@@ -349,11 +321,6 @@ module away.materials
 		public get width():number
 		{
 			return this._pWidth;
-		}
-
-		public getRequiresBlending():boolean
-		{
-			return this._pBlendMode != away.base.BlendMode.NORMAL;
 		}
 
 		/**
@@ -440,7 +407,6 @@ module away.materials
 			}
 		}
 
-		//*/
 		/**
 		 * Indicates whether or not the pass with the given index renders to texture or not.
 		 * @param index The index of the pass.
@@ -448,7 +414,6 @@ module away.materials
 		 *
 		 * @internal
 		 */
-
 		public iPassRendersToTexture(index:number):boolean
 		{
 			return this._passes[index].renderToTexture;
@@ -462,7 +427,6 @@ module away.materials
 		 * @param camera The camera from which the scene is viewed.
 		 * @private
 		 */
-
 		public iActivatePass(index:number, stageGL:StageGL, camera:Camera) // ARCANE
 		{
 			this._passes[index].iActivate(stageGL, camera);
@@ -475,7 +439,6 @@ module away.materials
 		 *
 		 * @internal
 		 */
-
 		public iDeactivatePass(index:number, stageGL:StageGL) // ARCANE
 		{
 			this._passes[index].iDeactivate(stageGL);
@@ -585,9 +548,8 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iUpdateMaterial(context:IContext)
+		public iUpdateMaterial()
 		{
-			//throw new away.errors.AbstractMethodError();
 		}
 
 		/**
@@ -704,6 +666,24 @@ module away.materials
 			this.iInvalidatePasses(null);
 		}
 
+
+		/**
+		 * Adds any additional passes on which the given pass is dependent.
+		 * @param pass The pass that my need additional passes.
+		 */
+		public pAddChildPassesFor(pass:CompiledPass)
+		{
+			if (!pass)
+				return;
+
+			if (pass._iPasses) {
+				var len:number = pass._iPasses.length;
+
+				for (var i:number = 0; i < len; ++i)
+					this.pAddPass(pass._iPasses[i]);
+			}
+		}
+
 		/**
 		 * Listener for when a pass's shader code changes. It recalculates the render order id.
 		 */
@@ -763,9 +743,24 @@ module away.materials
 				if (ids[j] != -1) {
 					this._iDepthPassId += ids[j];
 					j = len;
-
 				}
 			}
+		}
+
+		/**
+		 * Flags that the screen passes have become invalid.
+		 */
+		public pInvalidateScreenPasses()
+		{
+			this._pScreenPassesInvalid = true;
+		}
+
+		/**
+		 * Called when the light picker's configuration changed.
+		 */
+		private onLightsChange(event:away.events.Event)
+		{
+			this.pInvalidateScreenPasses();
 		}
 	}
 }
