@@ -1,16 +1,33 @@
 ///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 //<reference path="../../../src/Away3D.ts" />
 
-module tests.entities {
+module tests.entities
+{
+	import AlignmentMode			= away.base.AlignmentMode;
+	import OrientationMode			= away.base.OrientationMode;
+	import View						= away.containers.View;
+	import HoverController			= away.controllers.HoverController;
+	import Billboard				= away.entities.Billboard;
+	import LoaderEvent				= away.events.LoaderEvent;
+	import Vector3D					= away.geom.Vector3D;
+	import AssetLibrary				= away.library.AssetLibrary;
+	import IAsset					= away.library.IAsset;
+	import TriangleMaterial			= away.materials.TriangleMaterial;
+	import URLLoader				= away.net.URLLoader;
+	import URLRequest				= away.net.URLRequest;
+	import DefaultRenderer			= away.render.DefaultRenderer;
+	import Texture2DBase			= away.textures.Texture2DBase;
+	import Delegate					= away.utils.Delegate;
+	import RequestAnimationFrame	= away.utils.RequestAnimationFrame;
 
-	export class BillboardTest //extends away.events.EventDispatcher
+	export class BillboardTest
 	{
 		//engine variables
-		private _view:away.containers.View;
-		private _cameraController:away.controllers.HoverController;
+		private _view:View;
+		private _cameraController:HoverController;
 
 		//navigation variables
-		private _timer:away.utils.RequestAnimationFrame;
+		private _timer:RequestAnimationFrame;
 		private _time:number = 0;
 		private _move:boolean = false;
 		private _lastPanAngle:number;
@@ -41,13 +58,13 @@ module tests.entities {
 		 */
 		private initEngine():void
 		{
-			this._view = new away.containers.View(new away.render.DefaultRenderer());
+			this._view = new View(new DefaultRenderer());
 
 			//setup the camera for optimal shadow rendering
 			this._view.camera.projection.far = 2100;
 
 			//setup controller to be used on the camera
-			this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 1000, 10);
+			this._cameraController = new HoverController(this._view.camera, null, 45, 20, 1000, 10);
 		}
 
 		/**
@@ -55,25 +72,25 @@ module tests.entities {
 		 */
 		private initListeners():void
 		{
-			window.onresize = (event) => this.onResize(event);
-			document.onmousedown = (event) => this.onMouseDown(event);
-			document.onmouseup = (event) => this.onMouseUp(event);
-			document.onmousemove = (event) => this.onMouseMove(event);
+			document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
+			document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
+			document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
+
+			window.onresize  = (event:UIEvent) => this.onResize(event);
 
 			this.onResize();
 
 			this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
 			this._timer.start();
-
 		}
 
 		/**
 		 * start loading our texture
 		 */
-		private loadTexture() : void
+		private loadTexture():void
 		{
-			away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
-			away.library.AssetLibrary.load(new away.net.URLRequest("assets/130909wall_big.png"));
+			AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+			AssetLibrary.load(new URLRequest("assets/130909wall_big.png"));
 		}
 
 		/**
@@ -84,52 +101,49 @@ module tests.entities {
 			this._time += dt;
 
 			this._view.render();
-
 		}
 
 		/**
 		 * Listener function for resource complete event on asset library
 		 */
-		private onResourceComplete (event:away.events.LoaderEvent)
+		private onResourceComplete(event:LoaderEvent)
 		{
-			var assets:away.library.IAsset[] = event.assets;
+			var assets:Array<IAsset> = event.assets;
 			var length:number = assets.length;
 
-			for ( var c : number = 0 ; c < length ; c ++ )
-			{
-				var asset:away.library.IAsset = assets[c];
-				switch (event.url)
-				{
+			for (var c:number = 0; c < length; c ++) {
+				var asset:IAsset = assets[c];
+
+				switch (event.url) {
 
 					case "assets/130909wall_big.png" :
 
-						var material : away.materials.TextureMaterial = new away.materials.TextureMaterial();
-							material.texture = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+						var material:TriangleMaterial = new TriangleMaterial();
+							material.texture = <Texture2DBase> AssetLibrary.getAsset(asset.name);
 
-						var s : away.entities.Billboard;
-							s           = new away.entities.Billboard(material);
-							s.pivot = new away.geom.Vector3D(150, 150, 0);
+						var s:Billboard;
+							s = new Billboard(material);
+							s.pivot = new Vector3D(150, 150, 0);
 							s.width = 300;
 							s.height = 300;
 							//s.rotationX = 45;
-						s.orientationMode = away.base.OrientationMode.CAMERA_PLANE;
-						s.alignmentMode = away.base.AlignmentMode.PIVOT_POINT;
+						s.orientationMode = OrientationMode.CAMERA_PLANE;
+						s.alignmentMode = AlignmentMode.PIVOT_POINT;
 
-						this._view.scene.addChild( s );
+						this._view.scene.addChild(s);
 
-						for ( var c : number = 0 ; c < 100 ; c ++ )
-						{
-							var size : number = this.getRandom( 5 , 50 );
-							s = new away.entities.Billboard( material );
-							s.pivot = new away.geom.Vector3D(size/2, size/2, 0);
+						for ( var c:number = 0; c < 100; c ++ ) {
+							var size:number = this.getRandom(5 , 50);
+							s = new Billboard(material);
+							s.pivot = new Vector3D(size/2, size/2, 0);
 							s.width = size;
 							s.height = size;
 							s.orientationMode = away.base.OrientationMode.CAMERA_PLANE;
 							s.alignmentMode = away.base.AlignmentMode.PIVOT_POINT;
-								s.x =  this.getRandom( -400 , 400 );
-								s.y =  this.getRandom( -400 , 400 );
-								s.z =  this.getRandom( -400 , 400 );
-							this._view.scene.addChild( s );
+								s.x =  this.getRandom(-400 , 400);
+								s.y =  this.getRandom(-400 , 400);
+								s.z =  this.getRandom(-400 , 400);
+							this._view.scene.addChild(s);
 						}
 
 						this._timer.start();
@@ -141,7 +155,7 @@ module tests.entities {
 		/**
 		 * Mouse down listener for navigation
 		 */
-		private onMouseDown(event):void
+		private onMouseDown(event:MouseEvent):void
 		{
 			this._lastPanAngle = this._cameraController.panAngle;
 			this._lastTiltAngle = this._cameraController.tiltAngle;
@@ -153,11 +167,11 @@ module tests.entities {
 		/**
 		 * Mouse up listener for navigation
 		 */
-		private onMouseUp(event):void
+		private onMouseUp(event:MouseEvent):void
 		{
 			this._move = false;
 		}
-		private onMouseMove(event)
+		private onMouseMove(event:MouseEvent)
 		{
 			if (this._move) {
 				this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
@@ -168,21 +182,20 @@ module tests.entities {
 		/**
 		 * stage listener for resize events
 		 */
-		private onResize(event = null):void
+		private onResize(event:UIEvent = null):void
 		{
-			this._view.y         = 0;
-			this._view.x         = 0;
-			this._view.width     = window.innerWidth;
-			this._view.height    = window.innerHeight;
+			this._view.y = 0;
+			this._view.x = 0;
+			this._view.width = window.innerWidth;
+			this._view.height = window.innerHeight;
 		}
 
 		/**
 		 * Util function - getRandom Number
 		 */
-		private getRandom(min : number , max : number )  : number
+		private getRandom(min:number, max:number):number
 		{
-			return Math.random() * (max - min) + min;
+			return Math.random()*(max - min) + min;
 		}
 	}
-
 }

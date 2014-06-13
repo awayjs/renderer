@@ -6,7 +6,7 @@ module tests.entities
 	import Billboard				= away.entities.Billboard;
 	import Vector3D					= away.geom.Vector3D;
 	import AssetLibrary				= away.library.AssetLibrary;
-	import TextureMaterial			= away.materials.TextureMaterial;
+	import TriangleMaterial			= away.materials.TriangleMaterial;
 	import ImageTexture				= away.textures.ImageTexture;
 	import URLLoader				= away.net.URLLoader;
 	import URLRequest				= away.net.URLRequest;
@@ -27,7 +27,7 @@ module tests.entities
 		private _lastMouseY:number;
 
 		private _imageTexture:ImageTexture;
-		private _bitmapMaterial:TextureMaterial;
+		private _bitmapMaterial:TriangleMaterial;
 		private _billboards:Array<Billboard> = new Array<Billboard>();
 
 		constructor()
@@ -62,7 +62,7 @@ module tests.entities
 			this._projection.originY = 0;
 
 			//create a bitmap material
-			this._bitmapMaterial = new away.materials.TextureMaterial(this._imageTexture);
+			this._bitmapMaterial = new TriangleMaterial(this._imageTexture);
 
 			var billboard:Billboard;
 			var numHBillboards:number = 2;

@@ -6,7 +6,6 @@ module tests.base
 	import View							= away.containers.View;
 	import Mesh							= away.entities.Mesh;
 	import PointLight					= away.lights.PointLight;
-	import ColorMaterial				= away.materials.ColorMaterial;
 	import PrimitiveTorusPrefab			= away.prefabs.PrimitiveTorusPrefab;
 	import PerspectiveProjection		= away.projections.PerspectiveProjection;
 	import DefaultRenderer				= away.render.DefaultRenderer;

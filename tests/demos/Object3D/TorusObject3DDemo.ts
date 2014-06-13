@@ -9,7 +9,7 @@ module demos.object3d
 	import URLLoader					= away.net.URLLoader;
 	import URLRequest					= away.net.URLRequest;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import TextureMaterial				= away.materials.TextureMaterial;
+	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import PrimitiveTorusPrefab			= away.prefabs.PrimitiveTorusPrefab;
 	import DefaultRenderer				= away.render.DefaultRenderer;
 	import ImageTexture					= away.textures.ImageTexture;
@@ -106,7 +106,7 @@ module demos.object3d
 
 		private onImageLoadComplete(event:Event)
 		{
-			var matTx: TextureMaterial = new TextureMaterial(new ImageTexture(this._image, false), true, true, false);
+			var matTx: TriangleMaterial = new TriangleMaterial(new ImageTexture(this._image, false), true, true, false);
 			matTx.lightPicker =  this.lightPicker;
 
 			for (var c:number = 0; c < this.meshes.length; c ++)

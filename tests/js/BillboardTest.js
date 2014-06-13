@@ -3,6 +3,20 @@
 var tests;
 (function (tests) {
     (function (entities) {
+        var AlignmentMode = away.base.AlignmentMode;
+        var OrientationMode = away.base.OrientationMode;
+        var View = away.containers.View;
+        var HoverController = away.controllers.HoverController;
+        var Billboard = away.entities.Billboard;
+        var LoaderEvent = away.events.LoaderEvent;
+        var Vector3D = away.geom.Vector3D;
+        var AssetLibrary = away.library.AssetLibrary;
+
+        var TriangleMaterial = away.materials.TriangleMaterial;
+
+        var URLRequest = away.net.URLRequest;
+        var DefaultRenderer = away.render.DefaultRenderer;
+
         var BillboardTest = (function () {
             /**
             * Constructor
@@ -25,13 +39,13 @@ var tests;
             * Initialise the engine
             */
             BillboardTest.prototype.initEngine = function () {
-                this._view = new away.containers.View(new away.render.DefaultRenderer());
+                this._view = new View(new DefaultRenderer());
 
                 //setup the camera for optimal shadow rendering
                 this._view.camera.projection.far = 2100;
 
                 //setup controller to be used on the camera
-                this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 1000, 10);
+                this._cameraController = new HoverController(this._view.camera, null, 45, 20, 1000, 10);
             };
 
             /**
@@ -39,9 +53,6 @@ var tests;
             */
             BillboardTest.prototype.initListeners = function () {
                 var _this = this;
-                window.onresize = function (event) {
-                    return _this.onResize(event);
-                };
                 document.onmousedown = function (event) {
                     return _this.onMouseDown(event);
                 };
@@ -50,6 +61,10 @@ var tests;
                 };
                 document.onmousemove = function (event) {
                     return _this.onMouseMove(event);
+                };
+
+                window.onresize = function (event) {
+                    return _this.onResize(event);
                 };
 
                 this.onResize();
@@ -62,8 +77,11 @@ var tests;
             * start loading our texture
             */
             BillboardTest.prototype.loadTexture = function () {
-                away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
-                away.library.AssetLibrary.load(new away.net.URLRequest("assets/130909wall_big.png"));
+                var _this = this;
+                AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                    return _this.onResourceComplete(event);
+                });
+                AssetLibrary.load(new URLRequest("assets/130909wall_big.png"));
             };
 
             /**
@@ -84,27 +102,28 @@ var tests;
 
                 for (var c = 0; c < length; c++) {
                     var asset = assets[c];
+
                     switch (event.url) {
                         case "assets/130909wall_big.png":
-                            var material = new away.materials.TextureMaterial();
-                            material.texture = away.library.AssetLibrary.getAsset(asset.name);
+                            var material = new TriangleMaterial();
+                            material.texture = AssetLibrary.getAsset(asset.name);
 
                             var s;
-                            s = new away.entities.Billboard(material);
-                            s.pivot = new away.geom.Vector3D(150, 150, 0);
+                            s = new Billboard(material);
+                            s.pivot = new Vector3D(150, 150, 0);
                             s.width = 300;
                             s.height = 300;
 
                             //s.rotationX = 45;
-                            s.orientationMode = away.base.OrientationMode.CAMERA_PLANE;
-                            s.alignmentMode = away.base.AlignmentMode.PIVOT_POINT;
+                            s.orientationMode = OrientationMode.CAMERA_PLANE;
+                            s.alignmentMode = AlignmentMode.PIVOT_POINT;
 
                             this._view.scene.addChild(s);
 
                             for (var c = 0; c < 100; c++) {
                                 var size = this.getRandom(5, 50);
-                                s = new away.entities.Billboard(material);
-                                s.pivot = new away.geom.Vector3D(size / 2, size / 2, 0);
+                                s = new Billboard(material);
+                                s.pivot = new Vector3D(size / 2, size / 2, 0);
                                 s.width = size;
                                 s.height = size;
                                 s.orientationMode = away.base.OrientationMode.CAMERA_PLANE;

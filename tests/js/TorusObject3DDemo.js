@@ -8,7 +8,7 @@ var demos;
         var URLLoader = away.net.URLLoader;
         var URLRequest = away.net.URLRequest;
         var StaticLightPicker = away.materials.StaticLightPicker;
-        var TextureMaterial = away.materials.TextureMaterial;
+        var TriangleMaterial = away.materials.TriangleMaterial;
         var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
         var DefaultRenderer = away.render.DefaultRenderer;
         var ImageTexture = away.textures.ImageTexture;
@@ -92,7 +92,7 @@ var demos;
             };
 
             TorusObject3DDemo.prototype.onImageLoadComplete = function (event) {
-                var matTx = new TextureMaterial(new ImageTexture(this._image, false), true, true, false);
+                var matTx = new TriangleMaterial(new ImageTexture(this._image, false), true, true, false);
                 matTx.lightPicker = this.lightPicker;
 
                 for (var c = 0; c < this.meshes.length; c++)

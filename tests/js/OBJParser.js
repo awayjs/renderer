@@ -7205,7 +7205,7 @@ var away;
         * LightingPass is a shader pass that uses shader methods to compile a complete program. It only includes the lighting
         * methods. It's used by multipass materials to accumulate lighting passes.
         *
-        * @see away3d.materials.MultiPassMaterialBase
+        * @see away3d.materials.TriangleMaterial
         */
         var LightingPass = (function (_super) {
             __extends(LightingPass, _super);
@@ -17332,7 +17332,7 @@ var away;
         * pass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space
         * subsurface scattering, or rendering a depth map for specialized self-shadowing).
         *
-        * Away3D provides default materials trough SinglePassMaterialBase and MultiPassMaterialBase, which use modular
+        * Away3D provides default materials trough SinglePassMaterialBase and TriangleMaterial, which use modular
         * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
         * shaders, or entire new material frameworks.
         */
@@ -18512,13 +18512,13 @@ var away;
         var StageGL = away.base.StageGL;
 
         /**
-        * MultiPassMaterialBase forms an abstract base class for the default multi-pass materials provided by Away3D,
+        * TriangleMaterial forms an abstract base class for the default multi-pass materials provided by Away3D,
         * using material methods to define their appearance.
         */
         var MultiPassMaterialBase = (function (_super) {
             __extends(MultiPassMaterialBase, _super);
             /**
-            * Creates a new MultiPassMaterialBase object.
+            * Creates a new TriangleMaterial object.
             */
             function MultiPassMaterialBase() {
                 _super.call(this);
@@ -19390,7 +19390,7 @@ var away;
                     this._pEffectsPass.animateUVs = this._animateUVs;
             };
             return TextureMultiPassMaterial;
-        })(away.materials.MultiPassMaterialBase);
+        })(away.materials.TriangleMaterial);
         materials.TextureMultiPassMaterial = TextureMultiPassMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -19429,7 +19429,7 @@ var away;
             });
 
             return ColorMultiPassMaterial;
-        })(away.materials.MultiPassMaterialBase);
+        })(away.materials.TriangleMaterial);
         materials.ColorMultiPassMaterial = ColorMultiPassMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -20106,14 +20106,14 @@ var away;
 (function (away) {
     (function (materials) {
         /**
-        * SegmentMaterial is a material exclusively used to render wireframe objects
+        * LineMaterial is a material exclusively used to render wireframe objects
         *
         * @see away3d.entities.Lines
         */
         var SegmentMaterial = (function (_super) {
             __extends(SegmentMaterial, _super);
             /**
-            * Creates a new SegmentMaterial object.
+            * Creates a new LineMaterial object.
             *
             * @param thickness The thickness of the wireframe lines.
             */
@@ -32034,7 +32034,7 @@ var away;
         var SpecularFresnelMethod = away.materials.SpecularFresnelMethod;
         var ShadowHardMethod = away.materials.ShadowHardMethod;
         var SpecularPhongMethod = away.materials.SpecularPhongMethod;
-        var MultiPassMaterialBase = away.materials.MultiPassMaterialBase;
+        var MultiPassMaterialBase = away.materials.TriangleMaterial;
         var ShadowNearMethod = away.materials.ShadowNearMethod;
         var ShadowMethodBase = away.materials.ShadowMethodBase;
         var SinglePassMaterialBase = away.materials.SinglePassMaterialBase;
@@ -34547,7 +34547,7 @@ var away;
         var ColorMaterial = away.materials.ColorMaterial;
         var ColorMultiPassMaterial = away.materials.ColorMultiPassMaterial;
         var DefaultMaterialManager = away.materials.DefaultMaterialManager;
-        var MultiPassMaterialBase = away.materials.MultiPassMaterialBase;
+        var MultiPassMaterialBase = away.materials.TriangleMaterial;
         var SinglePassMaterialBase = away.materials.SinglePassMaterialBase;
         var TextureMaterial = away.materials.TextureMaterial;
         var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;

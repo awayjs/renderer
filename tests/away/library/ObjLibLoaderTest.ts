@@ -1,121 +1,86 @@
 ///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 //<reference path="../../../src/Away3D.ts" />
 
-module tests.library {
+module tests.library
+{
+	import View							= away.containers.View;
+	import Mesh							= away.entities.Mesh;
+	import AssetEvent					= away.events.AssetEvent;
+	import LoaderEvent					= away.events.LoaderEvent;
+	import Vector3D						= away.geom.Vector3D;
+	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetLoader					= away.library.AssetLoader;
+	import AssetLoaderToken				= away.library.AssetLoaderToken;
+	import AssetType					= away.library.AssetType;
+	import IAsset						= away.library.IAsset;
+	import URLRequest					= away.net.URLRequest;
+	import OBJParser					= away.parsers.OBJParser;
+	import DefaultRenderer				= away.render.DefaultRenderer;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
-    export class ObjLibLoaderTest //extends away.events.EventDispatcher
+    export class ObjLibLoaderTest
     {
-
-        private height : number = 0;
-
-        private token   : away.net.AssetLoaderToken;
-        private view    : away.containers.View;
-        private raf     : away.utils.RequestAnimationFrame;
-        private mesh    : away.entities.Mesh;
+		private _view:View;
+		private _token:AssetLoaderToken;
+		private _timer:RequestAnimationFrame;
+        private _t800:Mesh;
 
         constructor()
         {
+			away.Debug.LOG_PI_ERRORS = true;
+			away.Debug.THROW_ERRORS = false;
 
-            away.Debug.LOG_PI_ERRORS    = false;
-            away.Debug.THROW_ERRORS     = false;
+			AssetLibrary.enableParser(OBJParser) ;
 
+			this._token = AssetLibrary.load(new URLRequest('assets/t800.obj'));
+			this._token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+			this._token.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
 
-            this.view                  = new away.containers.View(new away.render.DefaultRenderer());
-            this.raf                    = new away.utils.RequestAnimationFrame( this.render , this );
+			this._view = new View(new DefaultRenderer());
+			this._timer = new RequestAnimationFrame(this.render, this);
 
-            away.library.AssetLibrary.enableParser( away.parsers.OBJParser ) ;
+			window.onresize = (event:UIEvent) => this.resize(event);
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/t800.obj') );
-            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , away.utils.Delegate.create(this, this.onAssetComplete) );
-
+			this._timer.start();
+			this.resize();
         }
 
-        private render()
-        {
+		private resize(event:UIEvent = null)
+		{
+			this._view.y = 0;
+			this._view.x = 0;
+			this._view.width = window.innerWidth;
+			this._view.height = window.innerHeight;
+		}
 
-            console.log( 'render');
-            //*
-            if( this.mesh )
-            {
-                this.mesh.rotationY += 1;
-            }
+		private render(dt:number) //animate based on dt for firefox
+		{
+			if (this._t800)
+				this._t800.rotationY += 1;
 
-            this.view.render();
-            //*/
+			this._view.render();
+		}
+
+		public onAssetComplete(event:AssetEvent)
+		{
+			console.log('------------------------------------------------------------------------------');
+			console.log('away.events.AssetEvent.ASSET_COMPLETE', AssetLibrary.getAsset(event.asset.name));
+			console.log('------------------------------------------------------------------------------');
+		}
+
+		public onResourceComplete(event:LoaderEvent)
+		{
+            console.log('------------------------------------------------------------------------------');
+            console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', event);
+            console.log('------------------------------------------------------------------------------');
+
+            console.log(AssetLibrary.getAsset('Mesh_g0'));
+
+            this._t800 = <Mesh> AssetLibrary.getAsset('Mesh_g0');
+            this._t800.y = -200;
+            this._t800.transform.scale = new Vector3D(4, 4, 4);
+
+			this._view.scene.addChild(this._t800);
         }
-
-        public onAssetComplete ( e : away.events.AssetEvent )
-        {
-
-            console.log( '------------------------------------------------------------------------------');
-            console.log( 'away.events.AssetEvent.ASSET_COMPLETE' , e.asset.name , away.library.AssetLibrary.getAsset(e.asset.name) );
-            console.log( '------------------------------------------------------------------------------');
-
-
-
-            /*
-            this.mesh = <away.entities.Mesh> away.library.AssetLibrary.getAsset(e.asset.name);
-
-            this.view.scene.addChild( this.mesh );
-
-            //this.render();
-
-            document.onmousedown = () => this.render();
-              */
-            //this.raf.start();
-
-            /*
-            var htmlImageElementTexture : away.textures.HTMLImageElementTexture = <away.textures.HTMLImageElementTexture> away.library.AssetLibrary.getAsset(e.asset.name);
-
-            document.body.appendChild( htmlImageElementTexture.htmlImageElement );
-
-            htmlImageElementTexture.htmlImageElement.style.position = 'absolute';
-            htmlImageElementTexture.htmlImageElement.style.top = this.height + 'px';
-
-
-            this.height += ( htmlImageElementTexture.htmlImageElement.height + 10 ) ;
-            */
-
-        }
-        public onResourceComplete ( e : away.events.LoaderEvent )
-        {
-
-            var loader : away.net.AssetLoader = <away.net.AssetLoader> e.target;
-
-            console.log( '------------------------------------------------------------------------------');
-            console.log( 'away.events.LoaderEvent.RESOURCE_COMPLETE' , e  );
-            console.log( '------------------------------------------------------------------------------');
-
-            console.log( away.library.AssetLibrary.getAsset( 'Mesh_g0' ) ) ;
-
-            this.mesh = <away.entities.Mesh> away.library.AssetLibrary.getAsset( 'Mesh_g0' );
-            this.mesh.y = -200;
-            this.mesh.transform.scale = new away.geom.Vector3D( 4, 4, 4 );
-
-            this.view.scene.addChild( this.mesh );
-
-            document.onmousedown = () => this.render();
-            window.onresize = () => this.resize();
-
-
-            this.raf.start();
-
-            this.resize();
-
-        }
-
-        public resize()
-        {
-            this.view.y         = 0;
-            this.view.x         = 0;
-
-            this.view.width     = window.innerWidth;
-            this.view.height    = window.innerHeight;
-
-
-        }
-
     }
-
 }

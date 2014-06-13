@@ -34,7 +34,7 @@ module tests.controllers
 			this._mesh = <Mesh> this._cube.getNewObject();
             this._view.scene.addChild(this._mesh);
 
-            this._hoverControl = new away.controllers.HoverController(this._view.camera, this._mesh, 150, 10);
+            this._hoverControl = new HoverController(this._view.camera, this._mesh, 150, 10);
 
 			window.onresize  = (event:UIEvent) => this.onResize(event);
 

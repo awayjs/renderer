@@ -8,7 +8,7 @@ module tests.primitives
 	import Vector3D						= away.geom.Vector3D;
 	import DirectionalLight				= away.lights.DirectionalLight;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import TextureMaterial				= away.materials.TextureMaterial;
+	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import DefaultMaterialManager		= away.materials.DefaultMaterialManager;
 	import PrimitivePrefabBase			= away.prefabs.PrimitivePrefabBase;
 	import PrimitiveTorusPrefab			= away.prefabs.PrimitiveTorusPrefab;
@@ -75,7 +75,7 @@ module tests.primitives
         {
 
             var primitives:Array<PrimitivePrefabBase> = new Array<PrimitivePrefabBase>();
-			var material:TextureMaterial = <TextureMaterial> DefaultMaterialManager.getDefaultMaterial();
+			var material:TriangleMaterial = <TriangleMaterial> DefaultMaterialManager.getDefaultMaterial();
 			material.lightPicker = this.staticLightPicker;
 
             primitives.push( new PrimitiveTorusPrefab());

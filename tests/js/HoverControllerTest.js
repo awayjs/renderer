@@ -5,7 +5,7 @@ var tests;
     (function (controllers) {
         var View = away.containers.View;
         var HoverController = away.controllers.HoverController;
-        var Mesh = away.entities.Mesh;
+
         var PrimitiveCubePrefab = away.prefabs.PrimitiveCubePrefab;
         var DefaultRenderer = away.render.DefaultRenderer;
         var RequestAnimationFrame = away.utils.RequestAnimationFrame;
@@ -21,7 +21,7 @@ var tests;
                 this._mesh = this._cube.getNewObject();
                 this._view.scene.addChild(this._mesh);
 
-                this._hoverControl = new away.controllers.HoverController(this._view.camera, this._mesh, 150, 10);
+                this._hoverControl = new HoverController(this._view.camera, this._mesh, 150, 10);
 
                 window.onresize = function (event) {
                     return _this.onResize(event);

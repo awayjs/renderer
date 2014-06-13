@@ -4,34 +4,27 @@ var demos;
 (function (demos) {
     (function (parsers) {
         var DisplayObjectContainer = away.containers.DisplayObjectContainer;
-        var Scene = away.containers.Scene;
+
         var View = away.containers.View;
-        var Mesh = away.entities.Mesh;
+
         var LoaderEvent = away.events.LoaderEvent;
         var Vector3D = away.geom.Vector3D;
         var AssetLibrary = away.library.AssetLibrary;
+
         var AssetType = away.library.AssetType;
 
         var DirectionalLight = away.lights.DirectionalLight;
-        var ColorMaterial = away.materials.ColorMaterial;
+        var TriangleMaterial = away.materials.TriangleMaterial;
         var StaticLightPicker = away.materials.StaticLightPicker;
-        var TextureMaterial = away.materials.TextureMaterial;
-        var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
-        var AssetLoader = away.net.AssetLoader;
-        var AssetLoaderToken = away.net.AssetLoaderToken;
-        var URLLoader = away.net.URLLoader;
-        var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
         var URLRequest = away.net.URLRequest;
         var OBJParser = away.parsers.OBJParser;
-        var PerspectiveProjection = away.projections.PerspectiveProjection;
         var DefaultRenderer = away.render.DefaultRenderer;
-        var ImageTexture = away.textures.ImageTexture;
+
         var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
         var ObjChiefTestDay = (function () {
             function ObjChiefTestDay() {
                 var _this = this;
-                this.height = 0;
                 this.meshes = new Array();
                 this.spartan = new DisplayObjectContainer();
                 this.spartanFlag = false;
@@ -130,10 +123,10 @@ var demos;
                             break;
                         case AssetType.TEXTURE:
                             if (event.url == 'assets/masterchief_base.png') {
-                                this.mat = new TextureMaterial(d, true, true, false);
+                                this.mat = new TriangleMaterial(d, true, true, false);
                                 this.mat.lightPicker = new StaticLightPicker([this.light]);
                             } else if (event.url == 'assets/stone_tx.jpg') {
-                                this.terrainMaterial = new TextureMaterial(d, true, true, false);
+                                this.terrainMaterial = new TriangleMaterial(d, true, true, false);
                                 this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
                             }
 

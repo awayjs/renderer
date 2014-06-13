@@ -5,19 +5,17 @@ var tests;
     (function (display) {
         var BitmapData = away.base.BitmapData;
         var View = away.containers.View;
-        var HoverController = away.controllers.HoverController;
-        var Mesh = away.entities.Mesh;
+
         var LoaderEvent = away.events.LoaderEvent;
         var AssetLibrary = away.library.AssetLibrary;
         var AssetType = away.library.AssetType;
 
-        var TextureMaterial = away.materials.TextureMaterial;
-        var AssetLoader = away.net.AssetLoader;
-        var AssetLoaderToken = away.net.AssetLoaderToken;
+        var TriangleMaterial = away.materials.TriangleMaterial;
+
         var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
         var DefaultRenderer = away.render.DefaultRenderer;
         var BitmapTexture = away.textures.BitmapTexture;
-        var ImageTexture = away.textures.ImageTexture;
+
         var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
         var BitmapDataReflectionTest = (function () {
@@ -71,11 +69,11 @@ var tests;
 
                             var bmpTX = new BitmapTexture(bitmapClone, false);
 
-                            var material = new TextureMaterial(bmpTX);
+                            var material = new TriangleMaterial(bmpTX);
                             material.bothSides = true;
                             material.alphaBlending = true;
 
-                            var material2 = new TextureMaterial(tx);
+                            var material2 = new TriangleMaterial(tx);
                             material2.bothSides = true;
                             material2.alphaBlending = true;
 

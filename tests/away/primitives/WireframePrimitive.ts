@@ -8,7 +8,6 @@ module tests.primitives
 	import Vector3D						= away.geom.Vector3D;
 	import DirectionalLight				= away.lights.DirectionalLight;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import TextureMaterial				= away.materials.TextureMaterial;
 	import DefaultMaterialManager		= away.materials.DefaultMaterialManager;
 	import PrimitivePrefabBase			= away.prefabs.PrimitivePrefabBase;
 	import PrimitivePolygonPrefab		= away.prefabs.PrimitivePolygonPrefab;

@@ -2,16 +2,13 @@
 var tests;
 (function (tests) {
     (function (entities) {
-        var View = away.containers.View;
         var Billboard = away.entities.Billboard;
-        var Vector3D = away.geom.Vector3D;
+
         var AssetLibrary = away.library.AssetLibrary;
-        var TextureMaterial = away.materials.TextureMaterial;
-        var ImageTexture = away.textures.ImageTexture;
-        var URLLoader = away.net.URLLoader;
+        var TriangleMaterial = away.materials.TriangleMaterial;
+
         var URLRequest = away.net.URLRequest;
         var Delegate = away.utils.Delegate;
-        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
         var LayoutTest = (function () {
             function LayoutTest() {
@@ -45,7 +42,7 @@ var tests;
                 this._projection.originY = 0;
 
                 //create a bitmap material
-                this._bitmapMaterial = new away.materials.TextureMaterial(this._imageTexture);
+                this._bitmapMaterial = new TriangleMaterial(this._imageTexture);
 
                 var billboard;
                 var numHBillboards = 2;

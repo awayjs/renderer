@@ -1,33 +1,26 @@
 ///<reference path="../../../build/stagegl-renderer.next.d.ts" />
-//<reference path="../../../src/Away3D.ts" />
 var demos;
 (function (demos) {
     (function (materials) {
-        var BlendMode = away.base.BlendMode;
-        var Scene = away.containers.Scene;
         var View = away.containers.View;
-        var Mesh = away.entities.Mesh;
+
         var LoaderEvent = away.events.LoaderEvent;
         var Vector3D = away.geom.Vector3D;
         var AssetLibrary = away.library.AssetLibrary;
+
         var AssetType = away.library.AssetType;
         var DirectionalLight = away.lights.DirectionalLight;
-        var ColorMaterial = away.materials.ColorMaterial;
         var StaticLightPicker = away.materials.StaticLightPicker;
-        var TextureMaterial = away.materials.TextureMaterial;
-        var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
-        var AssetLoader = away.net.AssetLoader;
-        var AssetLoaderToken = away.net.AssetLoaderToken;
-        var URLLoader = away.net.URLLoader;
-        var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
+        var TriangleMaterial = away.materials.TriangleMaterial;
+
         var URLRequest = away.net.URLRequest;
         var OBJParser = away.parsers.OBJParser;
         var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
         var PrimitiveCubePrefab = away.prefabs.PrimitiveCubePrefab;
         var PrimitiveCapsulePrefab = away.prefabs.PrimitiveCapsulePrefab;
-        var PerspectiveProjection = away.projections.PerspectiveProjection;
+
         var DefaultRenderer = away.render.DefaultRenderer;
-        var ImageTexture = away.textures.ImageTexture;
+
         var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
         var MaterialAlphaTest = (function () {
@@ -142,7 +135,7 @@ var demos;
                             this.staticLightPicker = new StaticLightPicker([this.light, this.lightB]);
 
                             // Material for loaded mesh
-                            this.loadedMeshMaterial = new TextureMaterial(tx, true, true, false);
+                            this.loadedMeshMaterial = new TriangleMaterial(tx, true, true, false);
                             this.loadedMeshMaterial.lightPicker = this.staticLightPicker;
                             this.loadedMeshMaterial.alpha = 1;
                             this.loadedMeshMaterial.bothSides = true;
@@ -154,7 +147,7 @@ var demos;
                             var torus = new PrimitiveTorusPrefab(150, 50, 64, 64);
 
                             // Torus Texture Material
-                            this.torusTextureMaterial = new TextureMaterial(tx, true, true, false);
+                            this.torusTextureMaterial = new TriangleMaterial(tx, true, true, false);
                             this.torusTextureMaterial.lightPicker = this.staticLightPicker;
                             this.torusTextureMaterial.bothSides = true;
                             this.torusTextureMaterial.alpha = .8;
@@ -171,7 +164,7 @@ var demos;
                             var cube = new PrimitiveCubePrefab(300, 300, 300, 20, 20, 20);
 
                             // Torus Color Material
-                            this.cubeColorMaterial = new ColorMaterial(0x0090ff);
+                            this.cubeColorMaterial = new TriangleMaterial(0x0090ff);
                             this.cubeColorMaterial.lightPicker = this.staticLightPicker;
                             this.cubeColorMaterial.alpha = .8;
                             this.cubeColorMaterial.bothSides = true;
@@ -185,7 +178,7 @@ var demos;
                             this.meshes.push(cubeMesh);
                             this.view.scene.addChild(cubeMesh);
 
-                            this.capsuleColorMaterial = new away.materials.ColorMaterial(0x00ffff);
+                            this.capsuleColorMaterial = new TriangleMaterial(0x00ffff);
                             this.capsuleColorMaterial.lightPicker = this.staticLightPicker;
 
                             var capsule = new PrimitiveCapsulePrefab(100, 200);

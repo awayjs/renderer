@@ -7,7 +7,7 @@ var demos;
         var View = away.containers.View;
 
         var Vector3D = away.geom.Vector3D;
-        var TextureMaterial = away.materials.TextureMaterial;
+        var TriangleMaterial = away.materials.TriangleMaterial;
         var URLLoader = away.net.URLLoader;
         var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
         var URLRequest = away.net.URLRequest;
@@ -61,7 +61,7 @@ var demos;
 
             TorusVortex.prototype.onLoadComplete = function (event) {
                 var _this = this;
-                var matTx = new TextureMaterial(new ImageTexture(this._image, false), true, true, false);
+                var matTx = new TriangleMaterial(new ImageTexture(this._image, false), true, true, false);
 
                 matTx.blendMode = BlendMode.ADD;
                 matTx.bothSides = true;

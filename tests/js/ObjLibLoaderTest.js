@@ -3,93 +3,77 @@
 var tests;
 (function (tests) {
     (function (library) {
+        var View = away.containers.View;
+
+        var AssetEvent = away.events.AssetEvent;
+        var LoaderEvent = away.events.LoaderEvent;
+        var Vector3D = away.geom.Vector3D;
+        var AssetLibrary = away.library.AssetLibrary;
+
+        var URLRequest = away.net.URLRequest;
+        var OBJParser = away.parsers.OBJParser;
+        var DefaultRenderer = away.render.DefaultRenderer;
+        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+
         var ObjLibLoaderTest = (function () {
             function ObjLibLoaderTest() {
-                this.height = 0;
-                away.Debug.LOG_PI_ERRORS = false;
+                var _this = this;
+                away.Debug.LOG_PI_ERRORS = true;
                 away.Debug.THROW_ERRORS = false;
 
-                this.view = new away.containers.View(new away.render.DefaultRenderer());
-                this.raf = new away.utils.RequestAnimationFrame(this.render, this);
+                AssetLibrary.enableParser(OBJParser);
 
-                away.library.AssetLibrary.enableParser(away.parsers.OBJParser);
+                this._token = AssetLibrary.load(new URLRequest('assets/t800.obj'));
+                this._token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                    return _this.onResourceComplete(event);
+                });
+                this._token.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) {
+                    return _this.onAssetComplete(event);
+                });
 
-                this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/t800.obj'));
-                this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
-                this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
-            }
-            ObjLibLoaderTest.prototype.render = function () {
-                console.log('render');
+                this._view = new View(new DefaultRenderer());
+                this._timer = new RequestAnimationFrame(this.render, this);
 
-                //*
-                if (this.mesh) {
-                    this.mesh.rotationY += 1;
-                }
-
-                this.view.render();
-                //*/
-            };
-
-            ObjLibLoaderTest.prototype.onAssetComplete = function (e) {
-                console.log('------------------------------------------------------------------------------');
-                console.log('away.events.AssetEvent.ASSET_COMPLETE', e.asset.name, away.library.AssetLibrary.getAsset(e.asset.name));
-                console.log('------------------------------------------------------------------------------');
-                /*
-                this.mesh = <away.entities.Mesh> away.library.AssetLibrary.getAsset(e.asset.name);
-                
-                this.view.scene.addChild( this.mesh );
-                
-                //this.render();
-                
-                document.onmousedown = () => this.render();
-                */
-                //this.raf.start();
-                /*
-                var htmlImageElementTexture : away.textures.HTMLImageElementTexture = <away.textures.HTMLImageElementTexture> away.library.AssetLibrary.getAsset(e.asset.name);
-                
-                document.body.appendChild( htmlImageElementTexture.htmlImageElement );
-                
-                htmlImageElementTexture.htmlImageElement.style.position = 'absolute';
-                htmlImageElementTexture.htmlImageElement.style.top = this.height + 'px';
-                
-                
-                this.height += ( htmlImageElementTexture.htmlImageElement.height + 10 ) ;
-                */
-            };
-            ObjLibLoaderTest.prototype.onResourceComplete = function (e) {
-                var _this = this;
-                var loader = e.target;
-
-                console.log('------------------------------------------------------------------------------');
-                console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', e);
-                console.log('------------------------------------------------------------------------------');
-
-                console.log(away.library.AssetLibrary.getAsset('Mesh_g0'));
-
-                this.mesh = away.library.AssetLibrary.getAsset('Mesh_g0');
-                this.mesh.y = -200;
-                this.mesh.transform.scale = new away.geom.Vector3D(4, 4, 4);
-
-                this.view.scene.addChild(this.mesh);
-
-                document.onmousedown = function () {
-                    return _this.render();
-                };
-                window.onresize = function () {
-                    return _this.resize();
+                window.onresize = function (event) {
+                    return _this.resize(event);
                 };
 
-                this.raf.start();
-
+                this._timer.start();
                 this.resize();
+            }
+            ObjLibLoaderTest.prototype.resize = function (event) {
+                if (typeof event === "undefined") { event = null; }
+                this._view.y = 0;
+                this._view.x = 0;
+                this._view.width = window.innerWidth;
+                this._view.height = window.innerHeight;
             };
 
-            ObjLibLoaderTest.prototype.resize = function () {
-                this.view.y = 0;
-                this.view.x = 0;
+            ObjLibLoaderTest.prototype.render = function (dt) {
+                if (this._t800)
+                    this._t800.rotationY += 1;
 
-                this.view.width = window.innerWidth;
-                this.view.height = window.innerHeight;
+                this._view.render();
+            };
+
+            ObjLibLoaderTest.prototype.onAssetComplete = function (event) {
+                console.log('------------------------------------------------------------------------------');
+                console.log('away.events.AssetEvent.ASSET_COMPLETE', AssetLibrary.getAsset(event.asset.name));
+                console.log('------------------------------------------------------------------------------');
+            };
+
+            ObjLibLoaderTest.prototype.onResourceComplete = function (event) {
+                console.log('------------------------------------------------------------------------------');
+                console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', event);
+                console.log('------------------------------------------------------------------------------');
+
+                console.log(AssetLibrary.getAsset('Mesh_g0'));
+
+                this._t800 = AssetLibrary.getAsset('Mesh_g0');
+                this._t800.y = -200;
+                this._t800.transform.scale = new Vector3D(4, 4, 4);
+
+                this._view.scene.addChild(this._t800);
             };
             return ObjLibLoaderTest;
         })();

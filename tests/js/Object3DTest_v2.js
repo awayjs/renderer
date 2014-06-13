@@ -4,11 +4,10 @@ var tests;
 (function (tests) {
     (function (base) {
         var View = away.containers.View;
-        var Mesh = away.entities.Mesh;
+
         var PointLight = away.lights.PointLight;
-        var ColorMaterial = away.materials.ColorMaterial;
         var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
-        var PerspectiveProjection = away.projections.PerspectiveProjection;
+
         var DefaultRenderer = away.render.DefaultRenderer;
         var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 

@@ -3,26 +3,48 @@
 var tests;
 (function (tests) {
     (function (library) {
+        var View = away.containers.View;
+
+        var AssetEvent = away.events.AssetEvent;
+        var LoaderEvent = away.events.LoaderEvent;
+        var Vector3D = away.geom.Vector3D;
+        var AssetLibrary = away.library.AssetLibrary;
+
+        var AssetType = away.library.AssetType;
+
+        var URLRequest = away.net.URLRequest;
+        var AWDParser = away.parsers.AWDParser;
+        var DefaultRenderer = away.render.DefaultRenderer;
+        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+
         var AWDParserTest = (function () {
             function AWDParserTest() {
                 var _this = this;
                 away.Debug.LOG_PI_ERRORS = true;
                 away.Debug.THROW_ERRORS = false;
 
-                away.library.AssetLibrary.enableParser(away.parsers.AWDParser);
+                AssetLibrary.enableParser(AWDParser);
 
-                this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd'));
-                this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
-                this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
+                this._token = AssetLibrary.load(new URLRequest('assets/suzanne.awd'));
+                this._token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                    return _this.onResourceComplete(event);
+                });
+                this._token.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) {
+                    return _this.onAssetComplete(event);
+                });
 
-                this._view = new away.containers.View(new away.render.DefaultRenderer());
-                this._timer = new away.utils.RequestAnimationFrame(this.render, this);
+                this._view = new View(new DefaultRenderer());
+                this._timer = new RequestAnimationFrame(this.render, this);
 
-                window.onresize = function () {
-                    return _this.resize();
+                window.onresize = function (event) {
+                    return _this.resize(event);
                 };
+
+                this._timer.start();
+                this.resize();
             }
-            AWDParserTest.prototype.resize = function () {
+            AWDParserTest.prototype.resize = function (event) {
+                if (typeof event === "undefined") { event = null; }
                 this._view.y = 0;
                 this._view.x = 0;
                 this._view.width = window.innerWidth;
@@ -30,50 +52,43 @@ var tests;
             };
 
             AWDParserTest.prototype.render = function (dt) {
-                if (this._suzane) {
-                    this._suzane.rotationY += 1;
-                }
+                if (this._suzanne)
+                    this._suzanne.rotationY += 1;
 
                 this._view.render();
                 this._view.camera.z = -2000;
             };
 
-            AWDParserTest.prototype.onAssetComplete = function (e) {
+            AWDParserTest.prototype.onAssetComplete = function (event) {
                 console.log('------------------------------------------------------------------------------');
-                console.log('away.events.AssetEvent.ASSET_COMPLETE', away.library.AssetLibrary.getAsset(e.asset.name));
+                console.log('away.events.AssetEvent.ASSET_COMPLETE', AssetLibrary.getAsset(event.asset.name));
                 console.log('------------------------------------------------------------------------------');
             };
 
-            AWDParserTest.prototype.onResourceComplete = function (e) {
+            AWDParserTest.prototype.onResourceComplete = function (event) {
                 console.log('------------------------------------------------------------------------------');
-                console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', e);
+                console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', event);
                 console.log('------------------------------------------------------------------------------');
 
-                var loader = e.target;
+                var loader = event.target;
                 var numAssets = loader.baseDependency.assets.length;
 
                 for (var i = 0; i < numAssets; ++i) {
                     var asset = loader.baseDependency.assets[i];
 
                     switch (asset.assetType) {
-                        case away.library.AssetType.MESH:
-                            var mesh = asset;
+                        case AssetType.MESH:
+                            this._suzanne = asset;
+                            this._suzanne.transform.scale = new Vector3D(600, 600, 600);
 
-                            mesh.transform.scale = new away.geom.Vector3D(600, 600, 600);
-
-                            this._suzane = mesh;
-
-                            this._view.scene.addChild(mesh);
-                            this._timer.start();
-
-                            this.resize();
+                            this._view.scene.addChild(this._suzanne);
 
                             break;
 
-                        case away.library.AssetType.GEOMETRY:
+                        case AssetType.GEOMETRY:
                             break;
 
-                        case away.library.AssetType.MATERIAL:
+                        case AssetType.MATERIAL:
                             break;
                     }
                 }

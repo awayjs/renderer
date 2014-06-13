@@ -1,112 +1,104 @@
 ///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 //<reference path="../../../src/Away3D.ts" />
 
-module tests.library {
+module tests.library
+{
+	import View							= away.containers.View;
+	import Mesh							= away.entities.Mesh;
+	import AssetEvent					= away.events.AssetEvent;
+	import LoaderEvent					= away.events.LoaderEvent;
+	import Vector3D						= away.geom.Vector3D;
+	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetLoader					= away.library.AssetLoader;
+	import AssetLoaderToken				= away.library.AssetLoaderToken;
+	import AssetType					= away.library.AssetType;
+	import IAsset						= away.library.IAsset;
+	import URLRequest					= away.net.URLRequest;
+	import AWDParser					= away.parsers.AWDParser;
+	import DefaultRenderer				= away.render.DefaultRenderer;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
-    export class AWDParserTest //extends away.events.EventDispatcher
+    export class AWDParserTest
     {
 
-        private _view    : away.containers.View;
-        private token   : away.net.AssetLoaderToken;
-        private _timer   : away.utils.RequestAnimationFrame;
-        private _suzane : away.entities.Mesh;
+        private _view:View;
+        private _token:AssetLoaderToken;
+        private _timer:RequestAnimationFrame;
+        private _suzanne:Mesh;
 
         constructor()
         {
-
-
-
             away.Debug.LOG_PI_ERRORS = true;
             away.Debug.THROW_ERRORS = false;
 
-            away.library.AssetLibrary.enableParser( away.parsers.AWDParser ) ;
+            AssetLibrary.enableParser(AWDParser) ;
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd') );
-            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , away.utils.Delegate.create(this, this.onAssetComplete) );
+            this._token = AssetLibrary.load(new URLRequest('assets/suzanne.awd'));
+            this._token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+            this._token.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
 
-            this._view = new away.containers.View(new away.render.DefaultRenderer());
-            this._timer = new away.utils.RequestAnimationFrame( this.render, this );
+            this._view = new View(new DefaultRenderer());
+            this._timer = new RequestAnimationFrame(this.render, this);
 
-            window.onresize = () => this.resize();
+            window.onresize = (event:UIEvent) => this.resize(event);
 
+			this._timer.start();
+			this.resize();
         }
 
-        private resize( )
+        private resize(event:UIEvent = null)
         {
-            this._view.y         = 0;
-            this._view.x         = 0;
-            this._view.width     = window.innerWidth;
-            this._view.height    = window.innerHeight;
+            this._view.y = 0;
+            this._view.x = 0;
+            this._view.width = window.innerWidth;
+            this._view.height = window.innerHeight;
         }
 
-        private render( dt : number ) //animate based on dt for firefox
+        private render(dt:number) //animate based on dt for firefox
         {
-
-            if ( this._suzane )
-            {
-
-                this._suzane.rotationY += 1;
-
-            }
+            if (this._suzanne)
+                this._suzanne.rotationY += 1;
 
             this._view.render();
             this._view.camera.z = -2000;
         }
 
-        public onAssetComplete ( e : away.events.AssetEvent )
+        public onAssetComplete(event:AssetEvent)
         {
-
-            console.log( '------------------------------------------------------------------------------');
-            console.log( 'away.events.AssetEvent.ASSET_COMPLETE' , away.library.AssetLibrary.getAsset(e.asset.name) );
-            console.log( '------------------------------------------------------------------------------');
-
+            console.log('------------------------------------------------------------------------------');
+            console.log('away.events.AssetEvent.ASSET_COMPLETE', AssetLibrary.getAsset(event.asset.name));
+            console.log('------------------------------------------------------------------------------');
         }
 
-        public onResourceComplete ( e : away.events.LoaderEvent )
+        public onResourceComplete(event:LoaderEvent)
         {
+            console.log('------------------------------------------------------------------------------');
+            console.log('away.events.LoaderEvent.RESOURCE_COMPLETE' , event);
+            console.log('------------------------------------------------------------------------------');
 
-            console.log( '------------------------------------------------------------------------------');
-            console.log( 'away.events.LoaderEvent.RESOURCE_COMPLETE' , e  );
-            console.log( '------------------------------------------------------------------------------');
+            var loader:AssetLoader = <AssetLoader> event.target;
+            var numAssets:number = loader.baseDependency.assets.length;
 
-            var loader			: away.net.AssetLoader   	= <away.net.AssetLoader> e.target;
-            var numAssets		: number 						= loader.baseDependency.assets.length;
+            for(var i:number = 0; i < numAssets; ++i) {
+                var asset:IAsset = loader.baseDependency.assets[i];
 
-            for( var i : number = 0; i < numAssets; ++i )
-            {
-                var asset: away.library.IAsset = loader.baseDependency.assets[ i ];
+                switch (asset.assetType) {
+                    case AssetType.MESH:
 
-                switch ( asset.assetType )
-                {
-                    case away.library.AssetType.MESH:
+						this._suzanne = <Mesh> asset;
+						this._suzanne.transform.scale = new Vector3D(600, 600, 600);
 
-                        var mesh : away.entities.Mesh = <away.entities.Mesh> asset;
-
-                            mesh.transform.scale = new away.geom.Vector3D(600, 600, 600 );
-
-                        this._suzane = mesh;
-
-                        this._view.scene.addChild( mesh );
-                        this._timer.start();
-
-                        this.resize();
+                        this._view.scene.addChild(this._suzanne);
 
                         break;
 
-                    case away.library.AssetType.GEOMETRY:
+                    case AssetType.GEOMETRY:
                         break;
 
-                    case away.library.AssetType.MATERIAL:
+                    case AssetType.MATERIAL:
                         break;
-
                 }
-
             }
-
-
         }
-
     }
-
 }

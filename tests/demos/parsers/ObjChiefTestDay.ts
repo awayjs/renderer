@@ -10,15 +10,13 @@ module demos.parsers
 	import LoaderEvent					= away.events.LoaderEvent;
 	import Vector3D						= away.geom.Vector3D;
 	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetLoader					= away.library.AssetLoader;
+	import AssetLoaderToken				= away.library.AssetLoaderToken;
 	import AssetType					= away.library.AssetType;
 	import IAsset						= away.library.IAsset;
 	import DirectionalLight				= away.lights.DirectionalLight;
-	import ColorMaterial				= away.materials.ColorMaterial;
+	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import TextureMaterial				= away.materials.TextureMaterial;
-	import TextureMultiPassMaterial		= away.materials.TextureMultiPassMaterial;
-	import AssetLoader					= away.net.AssetLoader;
-	import AssetLoaderToken				= away.net.AssetLoaderToken;
 	import URLRequest					= away.net.URLRequest;
 	import OBJParser					= away.parsers.OBJParser;
 	import DefaultRenderer				= away.render.DefaultRenderer;
@@ -27,21 +25,21 @@ module demos.parsers
 	
     export class ObjChiefTestDay
     {
-
-        private height:number = 0;
-
         private token:AssetLoaderToken;
         private view:View;
         private raf:RequestAnimationFrame;
         private meshes:Array<Mesh> = new Array<Mesh>();
-        private mat:TextureMaterial;
+        private mat:TriangleMaterial;
 
-        private terrainMaterial:TextureMaterial;
+        private terrainMaterial:TriangleMaterial;
 
         private light:DirectionalLight;
 
         private spartan:DisplayObjectContainer = new DisplayObjectContainer();
         private terrain:Mesh;
+
+		private spartanFlag:boolean = false;
+		private terrainObjFlag:boolean = false;
 
         constructor()
 		{
@@ -97,17 +95,14 @@ module demos.parsers
             this.view.render();
         }
 
-        private spartanFlag    :boolean = false;
-        private terrainObjFlag :boolean = false;
-
         public onResourceComplete (event:LoaderEvent)
         {
             var loader:AssetLoader = <AssetLoader> event.target;
             var l:number = loader.baseDependency.assets.length;
 
-            console.log( '------------------------------------------------------------------------------');
-            console.log( 'away.events.LoaderEvent.RESOURCE_COMPLETE' , event , l , loader );
-            console.log( '------------------------------------------------------------------------------');
+            console.log('------------------------------------------------------------------------------');
+            console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', event, l, loader);
+            console.log('------------------------------------------------------------------------------');
 
             var loader:AssetLoader = <AssetLoader> event.target;
             var l:number = loader.baseDependency.assets.length;
@@ -136,10 +131,10 @@ module demos.parsers
                         break;
                     case AssetType.TEXTURE :
                         if (event.url == 'assets/masterchief_base.png' ) {
-                            this.mat = new TextureMaterial( <ImageTexture> d, true, true, false );
+                            this.mat = new TriangleMaterial( <ImageTexture> d, true, true, false );
                             this.mat.lightPicker = new StaticLightPicker([this.light]);
                         } else if (event.url == 'assets/stone_tx.jpg') {
-                            this.terrainMaterial = new TextureMaterial(<ImageTexture> d, true, true, false);
+                            this.terrainMaterial = new TriangleMaterial(<ImageTexture> d, true, true, false);
                             this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
                         }
 

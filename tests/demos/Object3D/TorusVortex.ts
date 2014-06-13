@@ -7,7 +7,7 @@ module demos.object3d
 	import View							= away.containers.View;
 	import Mesh							= away.entities.Mesh;
 	import Vector3D						= away.geom.Vector3D;
-	import TextureMaterial				= away.materials.TextureMaterial;
+	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import URLLoader					= away.net.URLLoader;
 	import URLLoaderDataFormat			= away.net.URLLoaderDataFormat;
 	import URLRequest					= away.net.URLRequest;
@@ -71,7 +71,7 @@ module demos.object3d
 
 		private onLoadComplete(event)
 		{
-			var matTx:TextureMaterial = new TextureMaterial(new ImageTexture(this._image, false), true, true, false);
+			var matTx:TriangleMaterial = new TriangleMaterial(new ImageTexture(this._image, false), true, true, false);
 
             matTx.blendMode = BlendMode.ADD;
 			matTx.bothSides = true;

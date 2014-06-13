@@ -10,7 +10,7 @@ module tests.display
 	import AssetLibrary					= away.library.AssetLibrary;
 	import AssetType					= away.library.AssetType;
 	import IAsset						= away.library.IAsset;
-	import TextureMaterial				= away.materials.TextureMaterial;
+	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import AssetLoader					= away.net.AssetLoader;
 	import AssetLoaderToken				= away.net.AssetLoaderToken;
 	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
@@ -76,11 +76,11 @@ module tests.display
 
 						var bmpTX:BitmapTexture = new BitmapTexture(bitmapClone, false);// Note: MipMaps are not yet supported - so image wont apear if false is not specified...
 
-						var material:TextureMaterial = new TextureMaterial(bmpTX);
+						var material:TriangleMaterial = new TriangleMaterial(bmpTX);
 							material.bothSides = true;
 							material.alphaBlending = true;
 
-						var material2:TextureMaterial = new TextureMaterial(tx);
+						var material2:TriangleMaterial = new TriangleMaterial(tx);
 							material2.bothSides = true;
 							material2.alphaBlending = true;
 

@@ -2,15 +2,15 @@
 //<reference path="../../../src/Away3D.ts" />
 var tests;
 (function (tests) {
-    (function (primitives) {
+    (function (_primitives) {
         var View = away.containers.View;
-        var Mesh = away.entities.Mesh;
+
         var Vector3D = away.geom.Vector3D;
         var DirectionalLight = away.lights.DirectionalLight;
         var StaticLightPicker = away.materials.StaticLightPicker;
-        var TextureMaterial = away.materials.TextureMaterial;
+
         var DefaultMaterialManager = away.materials.DefaultMaterialManager;
-        var PrimitivePrefabBase = away.prefabs.PrimitivePrefabBase;
+
         var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
         var PrimitiveSpherePrefab = away.prefabs.PrimitiveSpherePrefab;
         var PrimitiveCapsulePrefab = away.prefabs.PrimitiveCapsulePrefab;
@@ -112,7 +112,7 @@ var tests;
             };
             return PrimitivesTest;
         })();
-        primitives.PrimitivesTest = PrimitivesTest;
+        _primitives.PrimitivesTest = PrimitivesTest;
     })(tests.primitives || (tests.primitives = {}));
     var primitives = tests.primitives;
 })(tests || (tests = {}));

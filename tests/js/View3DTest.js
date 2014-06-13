@@ -4,12 +4,11 @@ var tests;
 (function (tests) {
     (function (containers) {
         var View = away.containers.View;
-        var Mesh = away.entities.Mesh;
+
         var PointLight = away.lights.PointLight;
-        var ColorMaterial = away.materials.ColorMaterial;
+        var TriangleMaterial = away.materials.TriangleMaterial;
         var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
         var DefaultRenderer = away.render.DefaultRenderer;
-        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
         var View3DTest = (function () {
             function View3DTest() {
@@ -26,7 +25,7 @@ var tests;
 
                 var l = 10;
                 var radius = 1000;
-                var matB = new ColorMaterial();
+                var matB = new TriangleMaterial();
 
                 this.torus.material = matB;
 
