@@ -45,8 +45,10 @@ module away.materials
 		{
 			if (this._includeCasters == value)
 				return;
+
 			this._includeCasters = value;
-			this.iInvalidateShaderProgram();//invalidateShaderProgram();
+
+			this.iInvalidateShaderProgram();
 		}
 
 		/**
@@ -54,32 +56,21 @@ module away.materials
 		 */
 		public get colorTransform():away.geom.ColorTransform
 		{
-
-
 			return this._pMethodSetup._iColorTransformMethod? this._pMethodSetup._iColorTransformMethod.colorTransform : null;
 		}
 
 		public set colorTransform(value:away.geom.ColorTransform)
 		{
 			if (value) {
-
 				//colorTransformMethod ||= new away.geom.ColorTransform();
-				if (this.colorTransformMethod == null) {
-
-
+				if (this.colorTransformMethod == null)
 					this.colorTransformMethod = new EffectColorTransformMethod();
-
-				}
 
 				this._pMethodSetup._iColorTransformMethod.colorTransform = value;
 
 			} else if (!value) {
-
-				if (this._pMethodSetup._iColorTransformMethod) {
-
+				if (this._pMethodSetup._iColorTransformMethod)
 					this.colorTransformMethod = null;
-
-				}
 
 				this.colorTransformMethod = this._pMethodSetup._iColorTransformMethod = null;
 			}
@@ -90,7 +81,6 @@ module away.materials
 		 */
 		public get colorTransformMethod():EffectColorTransformMethod
 		{
-
 			return this._pMethodSetup._iColorTransformMethod;
 		}
 
@@ -162,7 +152,6 @@ module away.materials
 		 */
 		public pUpdateLights()
 		{
-
 			if (this._pLightPicker && !this._ignoreLights) {
 
 				this._pNumPointLights = this._pLightPicker.numPointLights;
@@ -203,7 +192,6 @@ module away.materials
 
 			}
 
-
 			if (this._pCameraPositionIndex >= 0) {
 
 				var pos:away.geom.Vector3D = camera.scenePosition;
@@ -211,7 +199,6 @@ module away.materials
 				this._pVertexConstantData[this._pCameraPositionIndex] = pos.x;
 				this._pVertexConstantData[this._pCameraPositionIndex + 1] = pos.y;
 				this._pVertexConstantData[this._pCameraPositionIndex + 2] = pos.z;
-
 			}
 		}
 
@@ -222,11 +209,8 @@ module away.materials
 		{
 			super.iDeactivate(stageGL);
 
-			if (this._pMethodSetup._iColorTransformMethod) {
-
+			if (this._pMethodSetup._iColorTransformMethod)
 				this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stageGL);
-
-			}
 
 			var aset:MethodVOSet;
 			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;
@@ -236,7 +220,6 @@ module away.materials
 				aset = methods[i];
 				aset.method.iDeactivate(aset.data, stageGL);
 			}
-
 		}
 
 		/**
@@ -246,20 +229,13 @@ module away.materials
 		{
 			super.pAddPassesFromMethods();
 
-			if (this._pMethodSetup._iColorTransformMethod) {
-
+			if (this._pMethodSetup._iColorTransformMethod)
 				this.pAddPasses(this._pMethodSetup._iColorTransformMethod.passes);
 
-			}
 			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;
 
-			for (var i:number = 0; i < methods.length; ++i) {
-
+			for (var i:number = 0; i < methods.length; ++i)
 				this.pAddPasses(methods[i].method.passes);
-
-			}
-
-
 		}
 
 		/**
@@ -267,7 +243,6 @@ module away.materials
 		 */
 		private usesProbesForSpecular():boolean
 		{
-
 			return this._pNumLightProbes > 0 && (this._pSpecularLightSources & LightSources.PROBES) != 0;
 		}
 
@@ -276,9 +251,7 @@ module away.materials
 		 */
 		private usesProbesForDiffuse():boolean
 		{
-
 			return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & LightSources.PROBES) != 0;
-
 		}
 
 		/**
@@ -286,25 +259,16 @@ module away.materials
 		 */
 		public pUpdateMethodConstants()
 		{
-
 			super.pUpdateMethodConstants();
 
-			if (this._pMethodSetup._iColorTransformMethod) {
-
+			if (this._pMethodSetup._iColorTransformMethod)
 				this._pMethodSetup._iColorTransformMethod.iInitConstants(this._pMethodSetup._iColorTransformMethodVO);
-
-			}
 
 			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
 
-			for (var i:number = 0; i < len; ++i) {
-
+			for (var i:number = 0; i < len; ++i)
 				methods[i].method.iInitConstants(methods[i].data);
-
-			}
-
-
 		}
 
 		/**
@@ -312,7 +276,6 @@ module away.materials
 		 */
 		public pUpdateLightConstants()
 		{
-
 			// first dirs, then points
 			var dirLight:away.lights.DirectionalLight;
 
@@ -366,12 +329,8 @@ module away.materials
 			if (this._pNumDirectionalLights > total) {
 				i = k + (this._pNumDirectionalLights - total)*12;
 
-				while (k < i) {
-
+				while (k < i)
 					this._pFragmentConstantData[k++] = 0;
-
-				}
-
 			}
 
 			total = 0;
@@ -411,14 +370,9 @@ module away.materials
 
 				i = k + (total - this._pNumPointLights )*12;
 
-				for (; k < i; ++k) {
-
+				for (; k < i; ++k)
 					this._pFragmentConstantData[k] = 0;
-
-				}
-
 			}
-
 		}
 
 		/**
@@ -426,7 +380,6 @@ module away.materials
 		 */
 		public pUpdateProbes(stageGL:away.base.StageGL)
 		{
-
 			var probe:away.lights.LightProbe;
 			var lightProbes:away.lights.LightProbe[] = this._pLightPicker.lightProbes;
 			var weights:Array<number> = this._pLightPicker.lightProbeWeights;
@@ -435,37 +388,23 @@ module away.materials
 			var addSpec:boolean = <boolean> (this._pMethodSetup._iSpecularMethod && this.usesProbesForSpecular());
 			var context:away.stagegl.IContext = stageGL.contextGL;
 
-			if (!(addDiff || addSpec)) {
-
+			if (!(addDiff || addSpec))
 				return;
 
-			}
-
 			for (var i:number = 0; i < len; ++i) {
-
 				probe = lightProbes[i];
 
-				//away.Debug.throwPIR( 'SuperShaderPass' , 'pUpdateProbes' , 'context.setGLSLTextureAt - Parameters not matching');
-
-				if (addDiff) {
-
+				if (addDiff)
 					probe.diffuseMap.activateTextureForStage(this._pLightProbeSpecularIndices[i], stageGL);//<------ TODO: implement
 
-				}
-
-				if (addSpec) {
-
+				if (addSpec)
 					probe.specularMap.activateTextureForStage(this._pLightProbeSpecularIndices[i], stageGL);//<------ TODO: implement
-
-				}
-
 			}
 
 			this._pFragmentConstantData[this._pProbeWeightsIndex] = weights[0];
 			this._pFragmentConstantData[this._pProbeWeightsIndex + 1] = weights[1];
 			this._pFragmentConstantData[this._pProbeWeightsIndex + 2] = weights[2];
 			this._pFragmentConstantData[this._pProbeWeightsIndex + 3] = weights[3];
-
 		}
 
 		/**

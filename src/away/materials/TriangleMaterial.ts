@@ -56,12 +56,12 @@ module away.materials
 			if (textureColor instanceof away.textures.Texture2DBase) {
 				this.texture = <away.textures.Texture2DBase> textureColor;
 
-				this.smooth = smoothAlpha? true : false;
+				this.smooth = (smoothAlpha == null)? true : false;
 				this.repeat = repeat;
 				this.mipmap = mipmap;
 			} else {
 				this.color = textureColor? Number(textureColor) : 0xCCCCCC;
-				this.alpha = smoothAlpha? Number(smoothAlpha) : 1;
+				this.alpha = (smoothAlpha == null)? 1 : Number(smoothAlpha);
 			}
 		}
 
@@ -304,7 +304,8 @@ module away.materials
 			if (this._ambientMethod == value)
 				return;
 
-			value.copyFrom(this._ambientMethod);
+			if (value && this._ambientMethod)
+				value.copyFrom(this._ambientMethod);
 
 			this._ambientMethod = value;
 
@@ -345,7 +346,8 @@ module away.materials
 			if (this._diffuseMethod == value)
 				return;
 
-			value.copyFrom(this._diffuseMethod);
+			if (value && this._diffuseMethod)
+				value.copyFrom(this._diffuseMethod);
 
 			this._diffuseMethod = value;
 
@@ -365,7 +367,8 @@ module away.materials
 			if (this._specularMethod == value)
 				return;
 
-			value.copyFrom(this._specularMethod);
+			if (value && this._specularMethod)
+				value.copyFrom(this._specularMethod);
 
 			this._specularMethod = value;
 
@@ -385,7 +388,8 @@ module away.materials
 			if (this._normalMethod == value)
 				return;
 
-			value.copyFrom(this._normalMethod);
+			if (value && this._normalMethod)
+				value.copyFrom(this._normalMethod);
 
 			this._normalMethod = value;
 
@@ -761,6 +765,7 @@ module away.materials
 				this._screenPass.iIgnoreLights = false;
 				this._screenPass.depthCompareMode = this._depthCompareMode;
 				this._screenPass.preserveAlpha = this._pRequiresBlending;
+				this._screenPass.colorTransform = this._colorTransform;
 				this._screenPass.setBlendMode((this._pBlendMode == away.base.BlendMode.NORMAL && this._pRequiresBlending)? away.base.BlendMode.LAYER : this._pBlendMode);
 				this._screenPass.forceSeparateMVP = false;
 			}
@@ -834,6 +839,9 @@ module away.materials
 
 		private removeNonCasterLightPasses()
 		{
+			if (!this._nonCasterLightPasses)
+				return;
+
 			for (var i:number = 0; i < this._nonCasterLightPasses.length; ++i) {
 				this.pRemovePass(this._nonCasterLightPasses[i]);
 				this._nonCasterLightPasses[i].dispose();
@@ -875,6 +883,7 @@ module away.materials
 				this._screenPass.diffuseMethod = this._diffuseMethod;
 				this._screenPass.specularMethod = this._specularMethod;
 				this._screenPass.normalMethod = this._normalMethod;
+				this._screenPass.shadowMethod = this._shadowMethod;
 			} else if (this._materialMode == TriangleMaterialMode.MULTI_PASS) {
 				if (this.numLights == 0) {
 					this._screenPass.diffuseMethod = this._diffuseMethod;

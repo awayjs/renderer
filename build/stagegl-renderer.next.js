@@ -6132,8 +6132,10 @@ var away;
                 set: function (value) {
                     if (this._includeCasters == value)
                         return;
+
                     this._includeCasters = value;
-                    this.iInvalidateShaderProgram(); //invalidateShaderProgram();
+
+                    this.iInvalidateShaderProgram();
                 },
                 enumerable: true,
                 configurable: true
@@ -6150,15 +6152,13 @@ var away;
                 set: function (value) {
                     if (value) {
                         //colorTransformMethod ||= new away.geom.ColorTransform();
-                        if (this.colorTransformMethod == null) {
+                        if (this.colorTransformMethod == null)
                             this.colorTransformMethod = new materials.EffectColorTransformMethod();
-                        }
 
                         this._pMethodSetup._iColorTransformMethod.colorTransform = value;
                     } else if (!value) {
-                        if (this._pMethodSetup._iColorTransformMethod) {
+                        if (this._pMethodSetup._iColorTransformMethod)
                             this.colorTransformMethod = null;
-                        }
 
                         this.colorTransformMethod = this._pMethodSetup._iColorTransformMethod = null;
                     }
@@ -6293,9 +6293,8 @@ var away;
             SuperShaderPass.prototype.iDeactivate = function (stageGL) {
                 _super.prototype.iDeactivate.call(this, stageGL);
 
-                if (this._pMethodSetup._iColorTransformMethod) {
+                if (this._pMethodSetup._iColorTransformMethod)
                     this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stageGL);
-                }
 
                 var aset;
                 var methods = this._pMethodSetup._iMethods;
@@ -6313,14 +6312,13 @@ var away;
             SuperShaderPass.prototype.pAddPassesFromMethods = function () {
                 _super.prototype.pAddPassesFromMethods.call(this);
 
-                if (this._pMethodSetup._iColorTransformMethod) {
+                if (this._pMethodSetup._iColorTransformMethod)
                     this.pAddPasses(this._pMethodSetup._iColorTransformMethod.passes);
-                }
+
                 var methods = this._pMethodSetup._iMethods;
 
-                for (var i = 0; i < methods.length; ++i) {
+                for (var i = 0; i < methods.length; ++i)
                     this.pAddPasses(methods[i].method.passes);
-                }
             };
 
             /**
@@ -6343,16 +6341,14 @@ var away;
             SuperShaderPass.prototype.pUpdateMethodConstants = function () {
                 _super.prototype.pUpdateMethodConstants.call(this);
 
-                if (this._pMethodSetup._iColorTransformMethod) {
+                if (this._pMethodSetup._iColorTransformMethod)
                     this._pMethodSetup._iColorTransformMethod.iInitConstants(this._pMethodSetup._iColorTransformMethodVO);
-                }
 
                 var methods = this._pMethodSetup._iMethods;
                 var len = methods.length;
 
-                for (var i = 0; i < len; ++i) {
+                for (var i = 0; i < len; ++i)
                     methods[i].method.iInitConstants(methods[i].data);
-                }
             };
 
             /**
@@ -6410,9 +6406,8 @@ var away;
                 if (this._pNumDirectionalLights > total) {
                     i = k + (this._pNumDirectionalLights - total) * 12;
 
-                    while (k < i) {
+                    while (k < i)
                         this._pFragmentConstantData[k++] = 0;
-                    }
                 }
 
                 total = 0;
@@ -6450,9 +6445,8 @@ var away;
                 if (this._pNumPointLights > total) {
                     i = k + (total - this._pNumPointLights) * 12;
 
-                    for (; k < i; ++k) {
+                    for (; k < i; ++k)
                         this._pFragmentConstantData[k] = 0;
-                    }
                 }
             };
 
@@ -6468,21 +6462,17 @@ var away;
                 var addSpec = (this._pMethodSetup._iSpecularMethod && this.usesProbesForSpecular());
                 var context = stageGL.contextGL;
 
-                if (!(addDiff || addSpec)) {
+                if (!(addDiff || addSpec))
                     return;
-                }
 
                 for (var i = 0; i < len; ++i) {
                     probe = lightProbes[i];
 
-                    //away.Debug.throwPIR( 'SuperShaderPass' , 'pUpdateProbes' , 'context.setGLSLTextureAt - Parameters not matching');
-                    if (addDiff) {
+                    if (addDiff)
                         probe.diffuseMap.activateTextureForStage(this._pLightProbeSpecularIndices[i], stageGL); //<------ TODO: implement
-                    }
 
-                    if (addSpec) {
+                    if (addSpec)
                         probe.specularMap.activateTextureForStage(this._pLightProbeSpecularIndices[i], stageGL); //<------ TODO: implement
-                    }
                 }
 
                 this._pFragmentConstantData[this._pProbeWeightsIndex] = weights[0];
@@ -17695,12 +17685,12 @@ var away;
                 if (textureColor instanceof away.textures.Texture2DBase) {
                     this.texture = textureColor;
 
-                    this.smooth = smoothAlpha ? true : false;
+                    this.smooth = (smoothAlpha == null) ? true : false;
                     this.repeat = repeat;
                     this.mipmap = mipmap;
                 } else {
                     this.color = textureColor ? Number(textureColor) : 0xCCCCCC;
-                    this.alpha = smoothAlpha ? Number(smoothAlpha) : 1;
+                    this.alpha = (smoothAlpha == null) ? 1 : Number(smoothAlpha);
                 }
             }
             Object.defineProperty(TriangleMaterial.prototype, "materialMode", {
@@ -17961,7 +17951,8 @@ var away;
                     if (this._ambientMethod == value)
                         return;
 
-                    value.copyFrom(this._ambientMethod);
+                    if (value && this._ambientMethod)
+                        value.copyFrom(this._ambientMethod);
 
                     this._ambientMethod = value;
 
@@ -18006,7 +17997,8 @@ var away;
                     if (this._diffuseMethod == value)
                         return;
 
-                    value.copyFrom(this._diffuseMethod);
+                    if (value && this._diffuseMethod)
+                        value.copyFrom(this._diffuseMethod);
 
                     this._diffuseMethod = value;
 
@@ -18028,7 +18020,8 @@ var away;
                     if (this._specularMethod == value)
                         return;
 
-                    value.copyFrom(this._specularMethod);
+                    if (value && this._specularMethod)
+                        value.copyFrom(this._specularMethod);
 
                     this._specularMethod = value;
 
@@ -18050,7 +18043,8 @@ var away;
                     if (this._normalMethod == value)
                         return;
 
-                    value.copyFrom(this._normalMethod);
+                    if (value && this._normalMethod)
+                        value.copyFrom(this._normalMethod);
 
                     this._normalMethod = value;
 
@@ -18433,6 +18427,7 @@ var away;
                     this._screenPass.iIgnoreLights = false;
                     this._screenPass.depthCompareMode = this._depthCompareMode;
                     this._screenPass.preserveAlpha = this._pRequiresBlending;
+                    this._screenPass.colorTransform = this._colorTransform;
                     this._screenPass.setBlendMode((this._pBlendMode == away.base.BlendMode.NORMAL && this._pRequiresBlending) ? away.base.BlendMode.LAYER : this._pBlendMode);
                     this._screenPass.forceSeparateMVP = false;
                 }
@@ -18501,6 +18496,9 @@ var away;
             };
 
             TriangleMaterial.prototype.removeNonCasterLightPasses = function () {
+                if (!this._nonCasterLightPasses)
+                    return;
+
                 for (var i = 0; i < this._nonCasterLightPasses.length; ++i) {
                     this.pRemovePass(this._nonCasterLightPasses[i]);
                     this._nonCasterLightPasses[i].dispose();
@@ -18540,6 +18538,7 @@ var away;
                     this._screenPass.diffuseMethod = this._diffuseMethod;
                     this._screenPass.specularMethod = this._specularMethod;
                     this._screenPass.normalMethod = this._normalMethod;
+                    this._screenPass.shadowMethod = this._shadowMethod;
                 } else if (this._materialMode == materials.TriangleMaterialMode.MULTI_PASS) {
                     if (this.numLights == 0) {
                         this._screenPass.diffuseMethod = this._diffuseMethod;
