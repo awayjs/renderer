@@ -2930,7 +2930,7 @@ var away;
                 while (renderable) {
                     this._activeMaterial = renderable.material;
 
-                    this._activeMaterial.iUpdateMaterial(this._pContext);
+                    this._activeMaterial.iUpdateMaterial();
 
                     numPasses = this._activeMaterial._iNumPasses;
 
@@ -3244,15 +3244,15 @@ var away;
             DefaultMaterialManager.getDefaultMaterial = function (materialOwner) {
                 if (typeof materialOwner === "undefined") { materialOwner = null; }
                 if (materialOwner != null && materialOwner.assetType == away.library.AssetType.LINE_SUB_MESH) {
-                    if (!DefaultMaterialManager._defaultSegmentMaterial)
-                        DefaultMaterialManager.createDefaultSegmentMaterial();
+                    if (!DefaultMaterialManager._defaultLineMaterial)
+                        DefaultMaterialManager.createDefaultLineMaterial();
 
-                    return DefaultMaterialManager._defaultSegmentMaterial;
+                    return DefaultMaterialManager._defaultLineMaterial;
                 } else {
-                    if (!DefaultMaterialManager._defaultTextureMaterial)
-                        DefaultMaterialManager.createDefaultTextureMaterial();
+                    if (!DefaultMaterialManager._defaultTriangleMaterial)
+                        DefaultMaterialManager.createDefaultTriangleMaterial();
 
-                    return DefaultMaterialManager._defaultTextureMaterial;
+                    return DefaultMaterialManager._defaultTriangleMaterial;
                 }
             };
 
@@ -3265,8 +3265,8 @@ var away;
             };
 
             DefaultMaterialManager.createDefaultTexture = function () {
-                DefaultMaterialManager._defaultTextureBitmapData = DefaultMaterialManager.createCheckeredBitmapData();
-                DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture(DefaultMaterialManager._defaultTextureBitmapData, true);
+                DefaultMaterialManager._defaultBitmapData = DefaultMaterialManager.createCheckeredBitmapData();
+                DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture(DefaultMaterialManager._defaultBitmapData, true);
                 DefaultMaterialManager._defaultTexture.name = "defaultTexture";
             };
 
@@ -3286,19 +3286,19 @@ var away;
                 return b;
             };
 
-            DefaultMaterialManager.createDefaultTextureMaterial = function () {
+            DefaultMaterialManager.createDefaultTriangleMaterial = function () {
                 if (!DefaultMaterialManager._defaultTexture)
                     DefaultMaterialManager.createDefaultTexture();
 
-                DefaultMaterialManager._defaultTextureMaterial = new materials.TextureMaterial(DefaultMaterialManager._defaultTexture);
-                DefaultMaterialManager._defaultTextureMaterial.mipmap = false;
-                DefaultMaterialManager._defaultTextureMaterial.smooth = false;
-                DefaultMaterialManager._defaultTextureMaterial.name = "defaultTextureMaterial";
+                DefaultMaterialManager._defaultTriangleMaterial = new materials.TriangleMaterial(DefaultMaterialManager._defaultTexture);
+                DefaultMaterialManager._defaultTriangleMaterial.mipmap = false;
+                DefaultMaterialManager._defaultTriangleMaterial.smooth = false;
+                DefaultMaterialManager._defaultTriangleMaterial.name = "defaultTriangleMaterial";
             };
 
-            DefaultMaterialManager.createDefaultSegmentMaterial = function () {
-                DefaultMaterialManager._defaultSegmentMaterial = new materials.SegmentMaterial();
-                DefaultMaterialManager._defaultSegmentMaterial.name = "defaultSegmentMaterial";
+            DefaultMaterialManager.createDefaultLineMaterial = function () {
+                DefaultMaterialManager._defaultLineMaterial = new materials.LineMaterial();
+                DefaultMaterialManager._defaultLineMaterial.name = "defaultSegmentMaterial";
             };
             return DefaultMaterialManager;
         })();
@@ -4891,21 +4891,17 @@ var away;
                     return this._pMipmap;
                 },
                 set: function (value) {
-                    this.setMipMap(value);
+                    if (this._pMipmap == value)
+                        return;
+
+                    this._pMipmap = value;
+
+                    this.iInvalidateShaderProgram();
                 },
                 enumerable: true,
                 configurable: true
             });
 
-
-            MaterialPassBase.prototype.setMipMap = function (value) {
-                if (this._pMipmap == value) {
-                    return;
-                }
-
-                this._pMipmap = value;
-                this.iInvalidateShaderProgram();
-            };
 
             Object.defineProperty(MaterialPassBase.prototype, "smooth", {
                 /**
@@ -4915,11 +4911,11 @@ var away;
                     return this._pSmooth;
                 },
                 set: function (value) {
-                    if (this._pSmooth == value) {
+                    if (this._pSmooth == value)
                         return;
-                    }
 
                     this._pSmooth = value;
+
                     this.iInvalidateShaderProgram();
                 },
                 enumerable: true,
@@ -4935,11 +4931,11 @@ var away;
                     return this._pRepeat;
                 },
                 set: function (value) {
-                    if (this._pRepeat == value) {
+                    if (this._pRepeat == value)
                         return;
-                    }
 
                     this._pRepeat = value;
+
                     this.iInvalidateShaderProgram();
                 },
                 enumerable: true,
@@ -5020,7 +5016,6 @@ var away;
 
                 for (var i = 0; i < 8; ++i) {
                     if (this._iPrograms[i]) {
-                        //away.Debug.throwPIR( 'MaterialPassBase' , 'dispose' , 'required dependency: AGALProgramCache');
                         away.managers.AGALProgramCache.getInstanceFromIndex(i).freeProgram(this._iProgramids[i]);
                         this._iPrograms[i] = null;
                     }
@@ -5184,9 +5179,8 @@ var away;
 
                 context.setDepthTest((this._writeDepth && !this._pEnableBlending), this._depthCompareMode);
 
-                if (this._pEnableBlending) {
+                if (this._pEnableBlending)
                     context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
-                }
 
                 if (this._contextGLs[contextIndex] != context || !this._iPrograms[contextIndex]) {
                     this._contextGLs[contextIndex] = context;
@@ -5198,19 +5192,16 @@ var away;
                 var prevUsed = MaterialPassBase._previousUsedStreams[contextIndex];
                 var i;
 
-                for (i = this._pNumUsedStreams; i < prevUsed; ++i) {
+                for (i = this._pNumUsedStreams; i < prevUsed; ++i)
                     context.setVertexBufferAt(i, null);
-                }
 
                 prevUsed = MaterialPassBase._previousUsedTexs[contextIndex];
 
-                for (i = this._pNumUsedTextures; i < prevUsed; ++i) {
+                for (i = this._pNumUsedTextures; i < prevUsed; ++i)
                     context.setTextureAt(i, null);
-                }
 
-                if (this._animationSet && !this._animationSet.usesCPU) {
+                if (this._animationSet && !this._animationSet.usesCPU)
                     this._animationSet.activate(stageGL, this);
-                }
 
                 context.setProgram(this._iPrograms[contextIndex]);
 
@@ -5235,9 +5226,8 @@ var away;
                 MaterialPassBase._previousUsedStreams[index] = this._pNumUsedStreams;
                 MaterialPassBase._previousUsedTexs[index] = this._pNumUsedTextures;
 
-                if (this._animationSet && !this._animationSet.usesCPU) {
+                if (this._animationSet && !this._animationSet.usesCPU)
                     this._animationSet.deactivate(stageGL, this);
-                }
 
                 if (this._renderToTexture) {
                     // kindly restore state
@@ -5255,13 +5245,11 @@ var away;
             */
             MaterialPassBase.prototype.iInvalidateShaderProgram = function (updateMaterial) {
                 if (typeof updateMaterial === "undefined") { updateMaterial = true; }
-                for (var i = 0; i < 8; ++i) {
+                for (var i = 0; i < 8; ++i)
                     this._iPrograms[i] = null;
-                }
 
-                if (this._pMaterial && updateMaterial) {
+                if (this._pMaterial && updateMaterial)
                     this._pMaterial.iInvalidatePasses(this);
-                }
             };
 
             /**
@@ -5321,15 +5309,13 @@ var away;
                     return this._pLightPicker;
                 },
                 set: function (value) {
-                    if (this._pLightPicker) {
+                    if (this._pLightPicker)
                         this._pLightPicker.removeEventListener(Event.CHANGE, this._onLightsChangeDelegate);
-                    }
 
                     this._pLightPicker = value;
 
-                    if (this._pLightPicker) {
+                    if (this._pLightPicker)
                         this._pLightPicker.addEventListener(Event.CHANGE, this._onLightsChangeDelegate);
-                    }
 
                     this.pUpdateLights();
                 },
@@ -5647,20 +5633,6 @@ var away;
             });
 
 
-            Object.defineProperty(CompiledPass.prototype, "mipmap", {
-                /**
-                * @inheritDoc
-                */
-                set: function (value) {
-                    if (this._pMipmap == value)
-                        return;
-
-                    _super.prototype.setMipMap.call(this, value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
             Object.defineProperty(CompiledPass.prototype, "normalMap", {
                 /**
                 * The normal map to modulate the direction of the surface for each texel. The default normal method expects
@@ -5779,9 +5751,8 @@ var away;
                 var oldPasses = this._iPasses;
                 this._iPasses = new Array(); //= new Vector.<MaterialPassBase>();
 
-                if (this._pMethodSetup) {
+                if (this._pMethodSetup)
                     this.pAddPassesFromMethods(); //this.addPassesFromMethods();
-                }
 
                 if (!oldPasses || this._iPasses.length != oldPasses.length) {
                     this._iPassesDirty = true;
@@ -5899,6 +5870,7 @@ var away;
             * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
             */
             CompiledPass.prototype.pUpdateProbes = function (stageGL) {
+                // up to subclasses to optionally implement
             };
 
             /**
@@ -6614,7 +6586,7 @@ var away;
 
                 // project
                 //TODO: AGAL <> GLSL conversion
-                code = "m44 vt1, vt0, vc0		\n" + "mov op, vt1	\n";
+                code = "m44 vt1, vt0, vc0\n" + "mov op, vt1\n";
 
                 if (this._alphaThreshold > 0) {
                     this._pNumUsedTextures = 1;
@@ -6642,7 +6614,7 @@ var away;
                     filter = this._pMipmap ? "nearest,mipnearest" : "nearest";
 
                 // TODO: AGAL<>GLSL
-                var codeF = "div ft2, v0, v0.w		\n" + "mul ft0, fc0, ft2.z	\n" + "frc ft0, ft0			\n" + "mul ft1, ft0.yzww, fc1	\n";
+                var codeF = "div ft2, v0, v0.w\n" + "mul ft0, fc0, ft2.z\n" + "frc ft0, ft0\n" + "mul ft1, ft0.yzww, fc1\n";
 
                 //codeF += "mov ft1.w, fc1.w	\n" +
                 //    "mov ft0.w, fc0.x	\n";
@@ -6783,7 +6755,7 @@ var away;
             DistanceMapPass.prototype.iGetVertexCode = function () {
                 //TODO: AGAL<> GLSL
                 var code;
-                code = "m44 op, vt0, vc0		\n" + "m44 vt1, vt0, vc5		\n" + "sub v0, vt1, vc9		\n";
+                code = "m44 op, vt0, vc0\n" + "m44 vt1, vt0, vc5\n" + "sub v0, vt1, vc9\n";
 
                 if (this._alphaThreshold > 0) {
                     code += "mov v1, va1\n";
@@ -6813,7 +6785,7 @@ var away;
 
                 //TODO: AGAL<> GLSL
                 // squared distance to view
-                code = "dp3 ft2.z, v0.xyz, v0.xyz	\n" + "mul ft0, fc0, ft2.z	\n" + "frc ft0, ft0			\n" + "mul ft1, ft0.yzww, fc1	\n";
+                code = "dp3 ft2.z, v0.xyz, v0.xyz\n" + "mul ft0, fc0, ft2.z	\n" + "frc ft0, ft0\n" + "mul ft1, ft0.yzww, fc1\n";
 
                 if (this._alphaThreshold > 0) {
                     var format;
@@ -8462,15 +8434,12 @@ var away;
                     if (this._iNormalMethod)
                         this._iNormalMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 
-                    if (value) {
-                        if (this._iNormalMethod)
-                            value.copyFrom(this._iNormalMethod);
-
-                        this._iNormalMethodVO = value.iCreateMethodVO();
-                        value.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-                    }
-
                     this._iNormalMethod = value;
+
+                    if (value) {
+                        value.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
+                        this._iNormalMethodVO = value.iCreateMethodVO();
+                    }
 
                     if (value)
                         this.iInvalidateShaderProgram();
@@ -8491,15 +8460,12 @@ var away;
                     if (this._iAmbientMethod)
                         this._iAmbientMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 
-                    if (value) {
-                        if (this._iAmbientMethod)
-                            value.copyFrom(this._iAmbientMethod);
+                    this._iAmbientMethod = value;
 
+                    if (value) {
                         value.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
                         this._iAmbientMethodVO = value.iCreateMethodVO();
                     }
-
-                    this._iAmbientMethod = value;
 
                     if (value)
                         this.iInvalidateShaderProgram();
@@ -8522,9 +8488,9 @@ var away;
 
                     this._iShadowMethod = value;
 
-                    if (this._iShadowMethod) {
-                        this._iShadowMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-                        this._iShadowMethodVO = this._iShadowMethod.iCreateMethodVO();
+                    if (value) {
+                        value.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
+                        this._iShadowMethodVO = value.iCreateMethodVO();
                     } else {
                         this._iShadowMethodVO = null;
                     }
@@ -8547,16 +8513,12 @@ var away;
                     if (this._iDiffuseMethod)
                         this._iDiffuseMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 
+                    this._iDiffuseMethod = value;
+
                     if (value) {
-                        if (this._iDiffuseMethod)
-                            value.copyFrom(this._iDiffuseMethod);
-
                         value.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-
                         this._iDiffuseMethodVO = value.iCreateMethodVO();
                     }
-
-                    this._iDiffuseMethod = value;
 
                     if (value)
                         this.iInvalidateShaderProgram();
@@ -8574,19 +8536,14 @@ var away;
                     return this._iSpecularMethod;
                 },
                 set: function (value) {
-                    if (this._iSpecularMethod) {
+                    if (this._iSpecularMethod)
                         this._iSpecularMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-
-                        if (value)
-                            value.copyFrom(this._iSpecularMethod);
-                    }
 
                     this._iSpecularMethod = value;
 
-                    if (this._iSpecularMethod) {
-                        this._iSpecularMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-
-                        this._iSpecularMethodVO = this._iSpecularMethod.iCreateMethodVO();
+                    if (value) {
+                        value.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
+                        this._iSpecularMethodVO = value.iCreateMethodVO();
                     } else {
                         this._iSpecularMethodVO = null;
                     }
@@ -16997,8 +16954,6 @@ var away;
 (function (away) {
     (function (materials) {
         var BlendMode = away.base.BlendMode;
-
-        var ContextGLCompareMode = away.stagegl.ContextGLCompareMode;
         var Event = away.events.Event;
 
         var AssetType = away.library.AssetType;
@@ -17014,7 +16969,7 @@ var away;
         * pass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space
         * subsurface scattering, or rendering a depth map for specialized self-shadowing).
         *
-        * Away3D provides default materials trough SinglePassMaterialBase and MultiPassMaterialBase, which use modular
+        * Away3D provides default materials trough SinglePassMaterialBase and TriangleMaterial, which use modular
         * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
         * shaders, or entire new material frameworks.
         */
@@ -17038,14 +16993,15 @@ var away;
                 */
                 this._iRenderOrderId = 0;
                 this._bothSides = false;
+                this._pScreenPassesInvalid = true;
                 this._pBlendMode = BlendMode.NORMAL;
                 this._numPasses = 0;
                 this._pMipmap = false;
                 this._smooth = true;
                 this._repeat = false;
-                this._pDepthCompareMode = ContextGLCompareMode.LESS_EQUAL;
                 this._pHeight = 1;
                 this._pWidth = 1;
+                this._pRequiresBlending = false;
 
                 this._iMaterialId = Number(this.id);
 
@@ -17062,6 +17018,8 @@ var away;
                 this._pDistancePass.addEventListener(Event.CHANGE, this._onDistancePassChangeDelegate);
 
                 this.alphaPremultiplied = false; //TODO: work out why this is different for WebGL
+
+                this._onLightChangeDelegate = Delegate.create(this, this.onLightsChange);
             }
             Object.defineProperty(MaterialBase.prototype, "assetType", {
                 /**
@@ -17096,22 +17054,23 @@ var away;
                     return this._pLightPicker;
                 },
                 set: function (value) {
-                    this.setLightPicker(value);
+                    if (this._pLightPicker == value)
+                        return;
+
+                    if (this._pLightPicker)
+                        this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
+
+                    this._pLightPicker = value;
+
+                    if (this._pLightPicker)
+                        this._pLightPicker.addEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
+
+                    this.pInvalidateScreenPasses();
                 },
                 enumerable: true,
                 configurable: true
             });
 
-
-            MaterialBase.prototype.setLightPicker = function (value) {
-                if (value != this._pLightPicker) {
-                    this._pLightPicker = value;
-                    var len = this._passes.length;
-
-                    for (var i = 0; i < len; ++i)
-                        this._passes[i].lightPicker = this._pLightPicker;
-                }
-            };
 
             Object.defineProperty(MaterialBase.prototype, "mipmap", {
                 /**
@@ -17121,19 +17080,18 @@ var away;
                     return this._pMipmap;
                 },
                 set: function (value) {
-                    this.setMipMap(value);
+                    if (this._pMipmap == value)
+                        return;
+
+                    this._pMipmap = value;
+
+                    for (var i = 0; i < this._numPasses; ++i)
+                        this._passes[i].mipmap = value;
                 },
                 enumerable: true,
                 configurable: true
             });
 
-
-            MaterialBase.prototype.setMipMap = function (value) {
-                this._pMipmap = value;
-
-                for (var i = 0; i < this._numPasses; ++i)
-                    this._passes[i].mipmap = value;
-            };
 
             Object.defineProperty(MaterialBase.prototype, "smooth", {
                 /**
@@ -17152,27 +17110,6 @@ var away;
                 configurable: true
             });
 
-
-            Object.defineProperty(MaterialBase.prototype, "depthCompareMode", {
-                /**
-                * The depth compare mode used to render the renderables using this material.
-                *
-                * @see away.stagegl.ContextGLCompareMode
-                */
-                get: function () {
-                    return this._pDepthCompareMode;
-                },
-                set: function (value) {
-                    this.setDepthCompareMode(value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            MaterialBase.prototype.setDepthCompareMode = function (value) {
-                this._pDepthCompareMode = value;
-            };
 
             Object.defineProperty(MaterialBase.prototype, "repeat", {
                 /**
@@ -17243,23 +17180,20 @@ var away;
                 * </ul>
                 */
                 get: function () {
-                    return this.getBlendMode();
+                    return this._pBlendMode;
                 },
                 set: function (value) {
-                    this.setBlendMode(value);
+                    if (this._pBlendMode == value)
+                        return;
+
+                    this._pBlendMode = value;
+
+                    this.pInvalidateScreenPasses();
                 },
                 enumerable: true,
                 configurable: true
             });
 
-            MaterialBase.prototype.getBlendMode = function () {
-                return this._pBlendMode;
-            };
-
-
-            MaterialBase.prototype.setBlendMode = function (value) {
-                this._pBlendMode = value;
-            };
 
             Object.defineProperty(MaterialBase.prototype, "alphaPremultiplied", {
                 /**
@@ -17286,7 +17220,7 @@ var away;
                 * Indicates whether or not the material requires alpha blending during rendering.
                 */
                 get: function () {
-                    return this.getRequiresBlending();
+                    return this._pRequiresBlending;
                 },
                 enumerable: true,
                 configurable: true
@@ -17302,10 +17236,6 @@ var away;
                 enumerable: true,
                 configurable: true
             });
-
-            MaterialBase.prototype.getRequiresBlending = function () {
-                return this._pBlendMode != away.base.BlendMode.NORMAL;
-            };
 
             Object.defineProperty(MaterialBase.prototype, "_iNumPasses", {
                 /**
@@ -17389,7 +17319,6 @@ var away;
                 }
             };
 
-            //*/
             /**
             * Indicates whether or not the pass with the given index renders to texture or not.
             * @param index The index of the pass.
@@ -17526,8 +17455,7 @@ var away;
             *
             * @private
             */
-            MaterialBase.prototype.iUpdateMaterial = function (context) {
-                //throw new away.errors.AbstractMethodError();
+            MaterialBase.prototype.iUpdateMaterial = function () {
             };
 
             /**
@@ -17638,6 +17566,22 @@ var away;
             };
 
             /**
+            * Adds any additional passes on which the given pass is dependent.
+            * @param pass The pass that my need additional passes.
+            */
+            MaterialBase.prototype.pAddChildPassesFor = function (pass) {
+                if (!pass)
+                    return;
+
+                if (pass._iPasses) {
+                    var len = pass._iPasses.length;
+
+                    for (var i = 0; i < len; ++i)
+                        this.pAddPass(pass._iPasses[i]);
+                }
+            };
+
+            /**
             * Listener for when a pass's shader code changes. It recalculates the render order id.
             */
             MaterialBase.prototype.onPassChange = function (event) {
@@ -17695,6 +17639,20 @@ var away;
                     }
                 }
             };
+
+            /**
+            * Flags that the screen passes have become invalid.
+            */
+            MaterialBase.prototype.pInvalidateScreenPasses = function () {
+                this._pScreenPassesInvalid = true;
+            };
+
+            /**
+            * Called when the light picker's configuration changed.
+            */
+            MaterialBase.prototype.onLightsChange = function (event) {
+                this.pInvalidateScreenPasses();
+            };
             return MaterialBase;
         })(away.library.NamedAssetBase);
         materials.MaterialBase = MaterialBase;
@@ -17705,502 +17663,23 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
+        var ContextGLCompareMode = away.stagegl.ContextGLCompareMode;
+
         /**
-        * SinglePassMaterialBase forms an abstract base class for the default single-pass materials provided by Away3D,
+        * TriangleMaterial forms an abstract base class for the default shaded materials provided by StageGL,
         * using material methods to define their appearance.
         */
-        var SinglePassMaterialBase = (function (_super) {
-            __extends(SinglePassMaterialBase, _super);
-            /**
-            * Creates a new SinglePassMaterialBase object.
-            */
-            function SinglePassMaterialBase() {
+        var TriangleMaterial = (function (_super) {
+            __extends(TriangleMaterial, _super);
+            function TriangleMaterial(textureColor, smoothAlpha, repeat, mipmap) {
+                if (typeof textureColor === "undefined") { textureColor = null; }
+                if (typeof smoothAlpha === "undefined") { smoothAlpha = null; }
+                if (typeof repeat === "undefined") { repeat = false; }
+                if (typeof mipmap === "undefined") { mipmap = false; }
                 _super.call(this);
+                this._animateUVs = false;
                 this._alphaBlending = false;
-
-                this.pAddPass(this._pScreenPass = new materials.SuperShaderPass(this));
-            }
-            Object.defineProperty(SinglePassMaterialBase.prototype, "enableLightFallOff", {
-                /**
-                * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
-                * compatibility for constrained mode.
-                */
-                get: function () {
-                    return this._pScreenPass.enableLightFallOff;
-                },
-                set: function (value) {
-                    this._pScreenPass.enableLightFallOff = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "alphaThreshold", {
-                /**
-                * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
-                * invisible or entirely opaque, often used with textures for foliage, etc.
-                * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
-                */
-                get: function () {
-                    return this._pScreenPass.diffuseMethod.alphaThreshold;
-                },
-                set: function (value) {
-                    this._pScreenPass.diffuseMethod.alphaThreshold = value;
-
-                    this._pDepthPass.alphaThreshold = value;
-                    this._pDistancePass.alphaThreshold = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "blendMode", {
-                /**
-                * @inheritDoc
-                */
-                set: function (value) {
-                    _super.prototype.setBlendMode.call(this, value);
-                    this._pScreenPass.setBlendMode((this._pBlendMode == away.base.BlendMode.NORMAL) && this.requiresBlending ? away.base.BlendMode.LAYER : this._pBlendMode);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "depthCompareMode", {
-                /**
-                * @inheritDoc
-                */
-                set: function (value) {
-                    this._pDepthCompareMode = value;
-                    this._pScreenPass.depthCompareMode = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * @inheritDoc
-            */
-            SinglePassMaterialBase.prototype.iActivateForDepth = function (stageGL, camera, distanceBased) {
-                if (typeof distanceBased === "undefined") { distanceBased = false; }
-                if (distanceBased) {
-                    this._pDistancePass.alphaMask = this._pScreenPass.diffuseMethod.texture;
-                } else {
-                    this._pDepthPass.alphaMask = this._pScreenPass.diffuseMethod.texture;
-                }
-
-                _super.prototype.iActivateForDepth.call(this, stageGL, camera, distanceBased);
-            };
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "specularLightSources", {
-                /**
-                * Define which light source types to use for specular reflections. This allows choosing between regular lights
-                * and/or light probes for specular reflections.
-                *
-                * @see away3d.materials.LightSources
-                */
-                get: function () {
-                    return this._pScreenPass.specularLightSources;
-                },
-                set: function (value) {
-                    this._pScreenPass.specularLightSources = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "diffuseLightSources", {
-                /**
-                * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
-                * and/or light probes for diffuse reflections.
-                *
-                * @see away3d.materials.LightSources
-                */
-                get: function () {
-                    return this._pScreenPass.diffuseLightSources;
-                },
-                set: function (value) {
-                    this._pScreenPass.diffuseLightSources = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "requiresBlending", {
-                /**
-                * @inheritDoc
-                */
-                get: function () {
-                    return this.getRequiresBlending();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            SinglePassMaterialBase.prototype.getRequiresBlending = function () {
-                var ct = this._pScreenPass.colorTransform;
-
-                if (ct) {
-                    return (this._pBlendMode != away.base.BlendMode.NORMAL) || this._alphaBlending || (ct.alphaMultiplier < 1);
-                }
-                return (this._pBlendMode != away.base.BlendMode.NORMAL) || this._alphaBlending;
-                //return super.getRequiresBlending() || this._alphaBlending || ( this._pScreenPass.colorTransform && this._pScreenPass.colorTransform.alphaMultiplier < 1);
-            };
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "colorTransform", {
-                /**
-                * The ColorTransform object to transform the colour of the material with. Defaults to null.
-                */
-                get: function () {
-                    return this._pScreenPass.colorTransform;
-                },
-                set: function (value) {
-                    this.setColorTransform(value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            SinglePassMaterialBase.prototype.setColorTransform = function (value) {
-                this._pScreenPass.colorTransform = value;
-            };
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "ambientMethod", {
-                /**
-                * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
-                */
-                get: function () {
-                    return this._pScreenPass.ambientMethod;
-                },
-                set: function (value) {
-                    this._pScreenPass.ambientMethod = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "shadowMethod", {
-                /**
-                * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
-                */
-                get: function () {
-                    return this._pScreenPass.shadowMethod;
-                },
-                set: function (value) {
-                    this._pScreenPass.shadowMethod = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "diffuseMethod", {
-                /**
-                * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
-                */
-                get: function () {
-                    return this._pScreenPass.diffuseMethod;
-                },
-                set: function (value) {
-                    this._pScreenPass.diffuseMethod = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "normalMethod", {
-                /**
-                * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
-                */
-                get: function () {
-                    return this._pScreenPass.normalMethod;
-                },
-                set: function (value) {
-                    this._pScreenPass.normalMethod = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "specularMethod", {
-                /**
-                * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
-                */
-                get: function () {
-                    return this._pScreenPass.specularMethod;
-                },
-                set: function (value) {
-                    this._pScreenPass.specularMethod = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            /**
-            * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
-            * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
-            * methods added prior.
-            */
-            SinglePassMaterialBase.prototype.addMethod = function (method) {
-                this._pScreenPass.addMethod(method);
-            };
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "numMethods", {
-                /**
-                * The number of "effect" methods added to the material.
-                */
-                get: function () {
-                    return this._pScreenPass.numMethods;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Queries whether a given effect method was added to the material.
-            *
-            * @param method The method to be queried.
-            * @return true if the method was added to the material, false otherwise.
-            */
-            SinglePassMaterialBase.prototype.hasMethod = function (method) {
-                return this._pScreenPass.hasMethod(method);
-            };
-
-            /**
-            * Returns the method added at the given index.
-            * @param index The index of the method to retrieve.
-            * @return The method at the given index.
-            */
-            SinglePassMaterialBase.prototype.getMethodAt = function (index) {
-                return this._pScreenPass.getMethodAt(index);
-            };
-
-            /**
-            * Adds an effect method at the specified index amongst the methods already added to the material. Effect
-            * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
-            * etc. The method will be applied to the result of the methods with a lower index.
-            */
-            SinglePassMaterialBase.prototype.addMethodAt = function (method, index) {
-                this._pScreenPass.addMethodAt(method, index);
-            };
-
-            /**
-            * Removes an effect method from the material.
-            * @param method The method to be removed.
-            */
-            SinglePassMaterialBase.prototype.removeMethod = function (method) {
-                this._pScreenPass.removeMethod(method);
-            };
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "mipmap", {
-                /**
-                * @inheritDoc
-                */
-                set: function (value) {
-                    if (this._pMipmap == value)
-                        return;
-
-                    this.setMipMap(value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "normalMap", {
-                /**
-                * The normal map to modulate the direction of the surface for each texel. The default normal method expects
-                * tangent-space normal maps, but others could expect object-space maps.
-                */
-                get: function () {
-                    return this._pScreenPass.normalMap;
-                },
-                set: function (value) {
-                    this._pScreenPass.normalMap = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "specularMap", {
-                /**
-                * A specular map that defines the strength of specular reflections for each texel in the red channel,
-                * and the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set
-                * specular and gloss maps from grayscale images, but correctly authored images are preferred.
-                */
-                get: function () {
-                    return this._pScreenPass.specularMethod.texture;
-                },
-                set: function (value) {
-                    if (this._pScreenPass.specularMethod) {
-                        this._pScreenPass.specularMethod.texture = value;
-                    } else {
-                        throw new away.errors.Error("No specular method was set to assign the specularGlossMap to");
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "gloss", {
-                /**
-                * The glossiness of the material (sharpness of the specular highlight).
-                */
-                get: function () {
-                    return this._pScreenPass.specularMethod ? this._pScreenPass.specularMethod.gloss : 0;
-                },
-                set: function (value) {
-                    if (this._pScreenPass.specularMethod)
-                        this._pScreenPass.specularMethod.gloss = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "ambient", {
-                /**
-                * The strength of the ambient reflection.
-                */
-                get: function () {
-                    return this._pScreenPass.ambientMethod.ambient;
-                },
-                set: function (value) {
-                    this._pScreenPass.ambientMethod.ambient = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "specular", {
-                /**
-                * The overall strength of the specular reflection.
-                */
-                get: function () {
-                    return this._pScreenPass.specularMethod ? this._pScreenPass.specularMethod.specular : 0;
-                },
-                set: function (value) {
-                    if (this._pScreenPass.specularMethod)
-                        this._pScreenPass.specularMethod.specular = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "ambientColor", {
-                /**
-                * The colour of the ambient reflection.
-                */
-                get: function () {
-                    return this._pScreenPass.ambientMethod.ambientColor;
-                },
-                set: function (value) {
-                    this._pScreenPass.ambientMethod.ambientColor = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "specularColor", {
-                /**
-                * The colour of the specular reflection.
-                */
-                get: function () {
-                    return this._pScreenPass.specularMethod.specularColor;
-                },
-                set: function (value) {
-                    this._pScreenPass.specularMethod.specularColor = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "alphaBlending", {
-                /**
-                * Indicates whether or not the material has transparency. If binary transparency is sufficient, for
-                * example when using textures of foliage, consider using alphaThreshold instead.
-                */
-                get: function () {
-                    return this._alphaBlending;
-                },
-                set: function (value) {
-                    this._alphaBlending = value;
-                    this._pScreenPass.setBlendMode(this.getBlendMode() == away.base.BlendMode.NORMAL && this.requiresBlending ? away.base.BlendMode.LAYER : this.getBlendMode());
-                    this._pScreenPass.preserveAlpha = this.requiresBlending;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            /**
-            * @inheritDoc
-            */
-            SinglePassMaterialBase.prototype.iUpdateMaterial = function (context) {
-                if (this._pScreenPass._iPassesDirty) {
-                    this.pClearPasses();
-
-                    if (this._pScreenPass._iPasses) {
-                        var len = this._pScreenPass._iPasses.length;
-
-                        for (var i = 0; i < len; ++i) {
-                            this.pAddPass(this._pScreenPass._iPasses[i]);
-                        }
-                    }
-
-                    this.pAddPass(this._pScreenPass);
-                    this._pScreenPass._iPassesDirty = false;
-                }
-            };
-
-            Object.defineProperty(SinglePassMaterialBase.prototype, "lightPicker", {
-                /**
-                * @inheritDoc
-                */
-                set: function (value) {
-                    _super.prototype.setLightPicker.call(this, value);
-                    this._pScreenPass.lightPicker = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return SinglePassMaterialBase;
-        })(materials.MaterialBase);
-        materials.SinglePassMaterialBase = SinglePassMaterialBase;
-    })(away.materials || (away.materials = {}));
-    var materials = away.materials;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (materials) {
-        var Delegate = away.utils.Delegate;
-
-        /**
-        * MultiPassMaterialBase forms an abstract base class for the default multi-pass materials provided by Away3D,
-        * using material methods to define their appearance.
-        */
-        var MultiPassMaterialBase = (function (_super) {
-            __extends(MultiPassMaterialBase, _super);
-            /**
-            * Creates a new MultiPassMaterialBase object.
-            */
-            function MultiPassMaterialBase() {
-                _super.call(this);
+                this._alpha = 1;
                 this._alphaThreshold = 0;
                 this._specularLightSources = 0x01;
                 this._diffuseLightSources = 0x03;
@@ -18208,12 +17687,176 @@ var away;
                 this._diffuseMethod = new materials.DiffuseBasicMethod();
                 this._normalMethod = new materials.NormalBasicMethod();
                 this._specularMethod = new materials.SpecularBasicMethod();
-                this._screenPassesInvalid = true;
                 this._enableLightFallOff = true;
+                this._depthCompareMode = ContextGLCompareMode.LESS_EQUAL;
 
-                this._onLightChangeDelegate = Delegate.create(this, this.onLightsChange);
+                this._materialMode = materials.TriangleMaterialMode.SINGLE_PASS;
+
+                if (textureColor instanceof away.textures.Texture2DBase) {
+                    this.texture = textureColor;
+
+                    this.smooth = smoothAlpha ? true : false;
+                    this.repeat = repeat;
+                    this.mipmap = mipmap;
+                } else {
+                    this.color = textureColor ? Number(textureColor) : 0xCCCCCC;
+                    this.alpha = smoothAlpha ? Number(smoothAlpha) : 1;
+                }
             }
-            Object.defineProperty(MultiPassMaterialBase.prototype, "enableLightFallOff", {
+            Object.defineProperty(TriangleMaterial.prototype, "materialMode", {
+                get: function () {
+                    return this._materialMode;
+                },
+                set: function (value) {
+                    if (this._materialMode == value)
+                        return;
+
+                    this._materialMode = value;
+
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleMaterial.prototype, "animateUVs", {
+                /**
+                * Specifies whether or not the UV coordinates should be animated using a transformation matrix.
+                */
+                get: function () {
+                    return this._animateUVs;
+                },
+                set: function (value) {
+                    this._animateUVs = value;
+
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleMaterial.prototype, "depthCompareMode", {
+                /**
+                * The depth compare mode used to render the renderables using this material.
+                *
+                * @see away.stagegl.ContextGLCompareMode
+                */
+                get: function () {
+                    return this._depthCompareMode;
+                },
+                set: function (value) {
+                    if (this._depthCompareMode == value)
+                        return;
+
+                    this._depthCompareMode = value;
+
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleMaterial.prototype, "alpha", {
+                /**
+                * The alpha of the surface.
+                */
+                get: function () {
+                    return this._alpha;
+                },
+                set: function (value) {
+                    if (value > 1)
+                        value = 1;
+                    else if (value < 0)
+                        value = 0;
+
+                    if (this._alpha == value)
+                        return;
+
+                    this._alpha = value;
+
+                    if (this._colorTransform == null)
+                        this._colorTransform = new away.geom.ColorTransform();
+
+                    this._colorTransform.alphaMultiplier = value;
+
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleMaterial.prototype, "colorTransform", {
+                /**
+                * The ColorTransform object to transform the colour of the material with. Defaults to null.
+                */
+                get: function () {
+                    return this._screenPass.colorTransform;
+                },
+                set: function (value) {
+                    this._screenPass.colorTransform = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleMaterial.prototype, "color", {
+                /**
+                * The diffuse reflectivity color of the surface.
+                */
+                get: function () {
+                    return this._diffuseMethod.diffuseColor;
+                },
+                set: function (value) {
+                    this._diffuseMethod.diffuseColor = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleMaterial.prototype, "texture", {
+                /**
+                * The texture object to use for the albedo colour.
+                */
+                get: function () {
+                    return this._diffuseMethod.texture;
+                },
+                set: function (value) {
+                    this._diffuseMethod.texture = value;
+
+                    if (value) {
+                        this._pHeight = value.height;
+                        this._pWidth = value.width;
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleMaterial.prototype, "ambientTexture", {
+                /**
+                * The texture object to use for the ambient colour.
+                */
+                get: function () {
+                    return this.ambientMethod.texture;
+                },
+                set: function (value) {
+                    this._ambientMethod.texture = value;
+
+                    this._diffuseMethod.iUseAmbientTexture = (value != null);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TriangleMaterial.prototype, "enableLightFallOff", {
                 /**
                 * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
                 * compatibility for constrained mode.
@@ -18222,17 +17865,19 @@ var away;
                     return this._enableLightFallOff;
                 },
                 set: function (value) {
-                    if (this._enableLightFallOff != value)
-                        this.pInvalidateScreenPasses();
+                    if (this._enableLightFallOff == value)
+                        return;
 
                     this._enableLightFallOff = value;
+
+                    this.pInvalidateScreenPasses();
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "alphaThreshold", {
+            Object.defineProperty(TriangleMaterial.prototype, "alphaThreshold", {
                 /**
                 * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
                 * invisible or entirely opaque, often used with textures for foliage, etc.
@@ -18242,7 +17887,11 @@ var away;
                     return this._alphaThreshold;
                 },
                 set: function (value) {
+                    if (this._alphaThreshold == value)
+                        return;
+
                     this._alphaThreshold = value;
+
                     this._diffuseMethod.alphaThreshold = value;
                     this._pDepthPass.alphaThreshold = value;
                     this._pDistancePass.alphaThreshold = value;
@@ -18252,34 +17901,10 @@ var away;
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "depthCompareMode", {
-                /**
-                * @inheritDoc
-                */
-                set: function (value) {
-                    _super.prototype.setDepthCompareMode.call(this, value);
-                    this.pInvalidateScreenPasses();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(MultiPassMaterialBase.prototype, "blendMode", {
-                /**
-                * @inheritDoc
-                */
-                set: function (value) {
-                    _super.prototype.setBlendMode.call(this, value);
-                    this.pInvalidateScreenPasses();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
             /**
             * @inheritDoc
             */
-            MultiPassMaterialBase.prototype.iActivateForDepth = function (stageGL, camera, distanceBased) {
+            TriangleMaterial.prototype.iActivateForDepth = function (stageGL, camera, distanceBased) {
                 if (typeof distanceBased === "undefined") { distanceBased = false; }
                 if (distanceBased)
                     this._pDistancePass.alphaMask = this._diffuseMethod.texture;
@@ -18289,7 +17914,7 @@ var away;
                 _super.prototype.iActivateForDepth.call(this, stageGL, camera, distanceBased);
             };
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "specularLightSources", {
+            Object.defineProperty(TriangleMaterial.prototype, "specularLightSources", {
                 /**
                 * Define which light source types to use for specular reflections. This allows choosing between regular lights
                 * and/or light probes for specular reflections.
@@ -18307,7 +17932,7 @@ var away;
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "diffuseLightSources", {
+            Object.defineProperty(TriangleMaterial.prototype, "diffuseLightSources", {
                 /**
                 * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
                 * and/or light probes for diffuse reflections.
@@ -18325,37 +17950,7 @@ var away;
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "lightPicker", {
-                /**
-                * @inheritDoc
-                */
-                set: function (value) {
-                    if (this._pLightPicker)
-                        this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
-
-                    _super.prototype.setLightPicker.call(this, value);
-
-                    if (this._pLightPicker)
-                        this._pLightPicker.addEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
-
-                    this.pInvalidateScreenPasses();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(MultiPassMaterialBase.prototype, "requiresBlending", {
-                /**
-                * @inheritDoc
-                */
-                get: function () {
-                    return false;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(MultiPassMaterialBase.prototype, "ambientMethod", {
+            Object.defineProperty(TriangleMaterial.prototype, "ambientMethod", {
                 /**
                 * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
                 */
@@ -18363,8 +17958,13 @@ var away;
                     return this._ambientMethod;
                 },
                 set: function (value) {
+                    if (this._ambientMethod == value)
+                        return;
+
                     value.copyFrom(this._ambientMethod);
+
                     this._ambientMethod = value;
+
                     this.pInvalidateScreenPasses();
                 },
                 enumerable: true,
@@ -18372,7 +17972,7 @@ var away;
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "shadowMethod", {
+            Object.defineProperty(TriangleMaterial.prototype, "shadowMethod", {
                 /**
                 * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
                 */
@@ -18380,10 +17980,14 @@ var away;
                     return this._shadowMethod;
                 },
                 set: function (value) {
+                    if (this._shadowMethod == value)
+                        return;
+
                     if (value && this._shadowMethod)
                         value.copyFrom(this._shadowMethod);
 
                     this._shadowMethod = value;
+
                     this.pInvalidateScreenPasses();
                 },
                 enumerable: true,
@@ -18391,7 +17995,7 @@ var away;
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "diffuseMethod", {
+            Object.defineProperty(TriangleMaterial.prototype, "diffuseMethod", {
                 /**
                 * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
                 */
@@ -18399,8 +18003,13 @@ var away;
                     return this._diffuseMethod;
                 },
                 set: function (value) {
+                    if (this._diffuseMethod == value)
+                        return;
+
                     value.copyFrom(this._diffuseMethod);
+
                     this._diffuseMethod = value;
+
                     this.pInvalidateScreenPasses();
                 },
                 enumerable: true,
@@ -18408,7 +18017,7 @@ var away;
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "specularMethod", {
+            Object.defineProperty(TriangleMaterial.prototype, "specularMethod", {
                 /**
                 * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
                 */
@@ -18416,10 +18025,13 @@ var away;
                     return this._specularMethod;
                 },
                 set: function (value) {
-                    if (value && this._specularMethod)
-                        value.copyFrom(this._specularMethod);
+                    if (this._specularMethod == value)
+                        return;
+
+                    value.copyFrom(this._specularMethod);
 
                     this._specularMethod = value;
+
                     this.pInvalidateScreenPasses();
                 },
                 enumerable: true,
@@ -18427,7 +18039,7 @@ var away;
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "normalMethod", {
+            Object.defineProperty(TriangleMaterial.prototype, "normalMethod", {
                 /**
                 * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
                 */
@@ -18435,8 +18047,13 @@ var away;
                     return this._normalMethod;
                 },
                 set: function (value) {
+                    if (this._normalMethod == value)
+                        return;
+
                     value.copyFrom(this._normalMethod);
+
                     this._normalMethod = value;
+
                     this.pInvalidateScreenPasses();
                 },
                 enumerable: true,
@@ -18449,20 +18066,21 @@ var away;
             * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
             * methods added prior.
             */
-            MultiPassMaterialBase.prototype.addMethod = function (method) {
-                if (this._pEffectsPass == null)
-                    this._pEffectsPass = new materials.SuperShaderPass(this);
+            TriangleMaterial.prototype.addEffectMethod = function (method) {
+                if (this._screenPass == null)
+                    this._screenPass = new materials.SuperShaderPass(this);
 
-                this._pEffectsPass.addMethod(method);
+                this._screenPass.addMethod(method);
+
                 this.pInvalidateScreenPasses();
             };
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "numMethods", {
+            Object.defineProperty(TriangleMaterial.prototype, "numEffectMethods", {
                 /**
                 * The number of "effect" methods added to the material.
                 */
                 get: function () {
-                    return this._pEffectsPass ? this._pEffectsPass.numMethods : 0;
+                    return this._screenPass ? this._screenPass.numMethods : 0;
                 },
                 enumerable: true,
                 configurable: true
@@ -18474,8 +18092,8 @@ var away;
             * @param method The method to be queried.
             * @return true if the method was added to the material, false otherwise.
             */
-            MultiPassMaterialBase.prototype.hasMethod = function (method) {
-                return this._pEffectsPass ? this._pEffectsPass.hasMethod(method) : false;
+            TriangleMaterial.prototype.hasEffectMethod = function (method) {
+                return this._screenPass ? this._screenPass.hasMethod(method) : false;
             };
 
             /**
@@ -18483,8 +18101,11 @@ var away;
             * @param index The index of the method to retrieve.
             * @return The method at the given index.
             */
-            MultiPassMaterialBase.prototype.getMethodAt = function (index) {
-                return this._pEffectsPass.getMethodAt(index);
+            TriangleMaterial.prototype.getEffectMethodAt = function (index) {
+                if (this._screenPass == null)
+                    return null;
+
+                return this._screenPass.getMethodAt(index);
             };
 
             /**
@@ -18492,11 +18113,12 @@ var away;
             * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
             * etc. The method will be applied to the result of the methods with a lower index.
             */
-            MultiPassMaterialBase.prototype.addMethodAt = function (method, index) {
-                if (this._pEffectsPass == null)
-                    this._pEffectsPass = new materials.SuperShaderPass(this);
+            TriangleMaterial.prototype.addEffectMethodAt = function (method, index) {
+                if (this._screenPass == null)
+                    this._screenPass = new materials.SuperShaderPass(this);
 
-                this._pEffectsPass.addMethodAt(method, index);
+                this._screenPass.addMethodAt(method, index);
+
                 this.pInvalidateScreenPasses();
             };
 
@@ -18504,32 +18126,18 @@ var away;
             * Removes an effect method from the material.
             * @param method The method to be removed.
             */
-            MultiPassMaterialBase.prototype.removeMethod = function (method) {
-                if (this._pEffectsPass)
+            TriangleMaterial.prototype.removeEffectMethod = function (method) {
+                if (this._screenPass == null)
                     return;
 
-                this._pEffectsPass.removeMethod(method);
+                this._screenPass.removeMethod(method);
 
                 // reconsider
-                if (this._pEffectsPass.numMethods == 0)
+                if (this._screenPass.numMethods == 0)
                     this.pInvalidateScreenPasses();
             };
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "mipmap", {
-                /**
-                * @inheritDoc
-                */
-                set: function (value) {
-                    if (this._pMipmap == value)
-                        return;
-
-                    _super.prototype.setMipMap.call(this, value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(MultiPassMaterialBase.prototype, "normalMap", {
+            Object.defineProperty(TriangleMaterial.prototype, "normalMap", {
                 /**
                 * The normal map to modulate the direction of the surface for each texel. The default normal method expects
                 * tangent-space normal maps, but others could expect object-space maps.
@@ -18545,7 +18153,7 @@ var away;
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "specularMap", {
+            Object.defineProperty(TriangleMaterial.prototype, "specularMap", {
                 /**
                 * A specular map that defines the strength of specular reflections for each texel in the red channel,
                 * and the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set
@@ -18555,33 +18163,29 @@ var away;
                     return this._specularMethod.texture;
                 },
                 set: function (value) {
-                    if (this._specularMethod)
-                        this._specularMethod.texture = value;
-                    else
-                        throw new Error("No specular method was set to assign the specularGlossMap to");
+                    this._specularMethod.texture = value;
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "gloss", {
+            Object.defineProperty(TriangleMaterial.prototype, "gloss", {
                 /**
                 * The glossiness of the material (sharpness of the specular highlight).
                 */
                 get: function () {
-                    return this._specularMethod ? this._specularMethod.gloss : 0;
+                    return this._specularMethod.gloss;
                 },
                 set: function (value) {
-                    if (this._specularMethod)
-                        this._specularMethod.gloss = value;
+                    this._specularMethod.gloss = value;
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "ambient", {
+            Object.defineProperty(TriangleMaterial.prototype, "ambient", {
                 /**
                 * The strength of the ambient reflection.
                 */
@@ -18596,23 +18200,22 @@ var away;
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "specular", {
+            Object.defineProperty(TriangleMaterial.prototype, "specular", {
                 /**
                 * The overall strength of the specular reflection.
                 */
                 get: function () {
-                    return this._specularMethod ? this._specularMethod.specular : 0;
+                    return this._specularMethod.specular;
                 },
                 set: function (value) {
-                    if (this._specularMethod)
-                        this._specularMethod.specular = value;
+                    this._specularMethod.specular = value;
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "ambientColor", {
+            Object.defineProperty(TriangleMaterial.prototype, "ambientColor", {
                 /**
                 * The colour of the ambient reflection.
                 */
@@ -18627,7 +18230,7 @@ var away;
             });
 
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "specularColor", {
+            Object.defineProperty(TriangleMaterial.prototype, "specularColor", {
                 /**
                 * The colour of the specular reflection.
                 */
@@ -18642,13 +18245,34 @@ var away;
             });
 
 
+            Object.defineProperty(TriangleMaterial.prototype, "alphaBlending", {
+                /**
+                * Indicates whether or not the material has transparency. If binary transparency is sufficient, for
+                * example when using textures of foliage, consider using alphaThreshold instead.
+                */
+                get: function () {
+                    return this._alphaBlending;
+                },
+                set: function (value) {
+                    if (this._alphaBlending == value)
+                        return;
+
+                    this._alphaBlending = value;
+
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             /**
             * @inheritDoc
             */
-            MultiPassMaterialBase.prototype.iUpdateMaterial = function (context) {
+            TriangleMaterial.prototype.iUpdateMaterial = function () {
                 var passesInvalid;
 
-                if (this._screenPassesInvalid) {
+                if (this._pScreenPassesInvalid) {
                     this.pUpdateScreenPasses();
                     passesInvalid = true;
                 }
@@ -18656,24 +18280,25 @@ var away;
                 if (passesInvalid || this.isAnyScreenPassInvalid()) {
                     this.pClearPasses();
 
-                    this.addChildPassesFor(this._casterLightPass);
+                    if (this._materialMode == materials.TriangleMaterialMode.MULTI_PASS) {
+                        this.pAddChildPassesFor(this._casterLightPass);
 
-                    if (this._nonCasterLightPasses) {
-                        for (var i = 0; i < this._nonCasterLightPasses.length; ++i)
-                            this.addChildPassesFor(this._nonCasterLightPasses[i]);
+                        if (this._nonCasterLightPasses)
+                            for (var i = 0; i < this._nonCasterLightPasses.length; ++i)
+                                this.pAddChildPassesFor(this._nonCasterLightPasses[i]);
                     }
 
-                    this.addChildPassesFor(this._pEffectsPass);
+                    this.pAddChildPassesFor(this._screenPass);
 
-                    this.addScreenPass(this._casterLightPass);
+                    if (this._materialMode == materials.TriangleMaterialMode.MULTI_PASS) {
+                        this.addScreenPass(this._casterLightPass);
 
-                    if (this._nonCasterLightPasses) {
-                        for (i = 0; i < this._nonCasterLightPasses.length; ++i) {
-                            this.addScreenPass(this._nonCasterLightPasses[i]);
-                        }
+                        if (this._nonCasterLightPasses)
+                            for (i = 0; i < this._nonCasterLightPasses.length; ++i)
+                                this.addScreenPass(this._nonCasterLightPasses[i]);
                     }
 
-                    this.addScreenPass(this._pEffectsPass);
+                    this.addScreenPass(this._screenPass);
                 }
             };
 
@@ -18681,7 +18306,7 @@ var away;
             * Adds a compiled pass that renders to the screen.
             * @param pass The pass to be added.
             */
-            MultiPassMaterialBase.prototype.addScreenPass = function (pass) {
+            TriangleMaterial.prototype.addScreenPass = function (pass) {
                 if (pass) {
                     this.pAddPass(pass);
                     pass._iPassesDirty = false;
@@ -18692,41 +18317,22 @@ var away;
             * Tests if any pass that renders to the screen is invalid. This would trigger a new setup of the multiple passes.
             * @return
             */
-            MultiPassMaterialBase.prototype.isAnyScreenPassInvalid = function () {
-                if ((this._casterLightPass && this._casterLightPass._iPassesDirty) || (this._pEffectsPass && this._pEffectsPass._iPassesDirty))
+            TriangleMaterial.prototype.isAnyScreenPassInvalid = function () {
+                if ((this._casterLightPass && this._casterLightPass._iPassesDirty) || (this._screenPass && this._screenPass._iPassesDirty))
                     return true;
 
-                if (this._nonCasterLightPasses) {
-                    for (var i = 0; i < this._nonCasterLightPasses.length; ++i) {
+                if (this._nonCasterLightPasses)
+                    for (var i = 0; i < this._nonCasterLightPasses.length; ++i)
                         if (this._nonCasterLightPasses[i]._iPassesDirty)
                             return true;
-                    }
-                }
 
                 return false;
             };
 
             /**
-            * Adds any additional passes on which the given pass is dependent.
-            * @param pass The pass that my need additional passes.
-            */
-            MultiPassMaterialBase.prototype.addChildPassesFor = function (pass) {
-                if (!pass)
-                    return;
-
-                if (pass._iPasses) {
-                    var len = pass._iPasses.length;
-
-                    for (var i = 0; i < len; ++i) {
-                        this.pAddPass(pass._iPasses[i]);
-                    }
-                }
-            };
-
-            /**
             * @inheritDoc
             */
-            MultiPassMaterialBase.prototype.iActivatePass = function (index, stageGL, camera) {
+            TriangleMaterial.prototype.iActivatePass = function (index, stageGL, camera) {
                 if (index == 0)
                     stageGL.contextGL.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
 
@@ -18736,7 +18342,7 @@ var away;
             /**
             * @inheritDoc
             */
-            MultiPassMaterialBase.prototype.iDeactivate = function (stageGL) {
+            TriangleMaterial.prototype.iDeactivate = function (stageGL) {
                 _super.prototype.iDeactivate.call(this, stageGL);
 
                 stageGL.contextGL.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
@@ -18745,47 +18351,48 @@ var away;
             /**
             * Updates screen passes when they were found to be invalid.
             */
-            MultiPassMaterialBase.prototype.pUpdateScreenPasses = function () {
+            TriangleMaterial.prototype.pUpdateScreenPasses = function () {
                 this.initPasses();
+
                 this.setBlendAndCompareModes();
 
-                this._screenPassesInvalid = false;
+                this._pScreenPassesInvalid = false;
             };
 
             /**
             * Initializes all the passes and their dependent passes.
             */
-            MultiPassMaterialBase.prototype.initPasses = function () {
-                // let the effects pass handle everything if there are no lights,
-                // or when there are effect methods applied after shading.
-                if (this.numLights == 0 || this.numMethods > 0)
+            TriangleMaterial.prototype.initPasses = function () {
+                // let the effects pass handle everything if there are no lights, when there are effect methods applied
+                // after shading, or when the material mode is single pass.
+                if (this.numLights == 0 || this.numEffectMethods > 0 || this._materialMode == materials.TriangleMaterialMode.SINGLE_PASS)
                     this.initEffectsPass();
-                else if (this._pEffectsPass && this.numMethods == 0)
+                else if (this._screenPass)
                     this.removeEffectsPass();
 
                 // only use a caster light pass if shadows need to be rendered
-                if (this._shadowMethod)
+                if (this._shadowMethod && this._materialMode == materials.TriangleMaterialMode.MULTI_PASS)
                     this.initCasterLightPass();
-                else
+                else if (this._casterLightPass)
                     this.removeCasterLightPass();
 
                 // only use non caster light passes if there are lights that don't cast
-                if (this.numNonCasters > 0)
+                if (this.numNonCasters > 0 && this._materialMode == materials.TriangleMaterialMode.MULTI_PASS)
                     this.initNonCasterLightPasses();
-                else
+                else if (this._nonCasterLightPasses)
                     this.removeNonCasterLightPasses();
             };
 
             /**
             * Sets up the various blending modes for all screen passes, based on whether or not there are previous passes.
             */
-            MultiPassMaterialBase.prototype.setBlendAndCompareModes = function () {
-                var forceSeparateMVP = (this._casterLightPass || this._pEffectsPass);
+            TriangleMaterial.prototype.setBlendAndCompareModes = function () {
+                var forceSeparateMVP = (this._casterLightPass || this._screenPass);
 
                 // caster light pass is always first if it exists, hence it uses normal blending
                 if (this._casterLightPass) {
                     this._casterLightPass.setBlendMode(away.base.BlendMode.NORMAL);
-                    this._casterLightPass.depthCompareMode = this._pDepthCompareMode;
+                    this._casterLightPass.depthCompareMode = this._depthCompareMode;
                     this._casterLightPass.forceSeparateMVP = forceSeparateMVP;
                 }
 
@@ -18797,7 +18404,7 @@ var away;
                     if (!this._casterLightPass) {
                         this._nonCasterLightPasses[0].forceSeparateMVP = forceSeparateMVP;
                         this._nonCasterLightPasses[0].setBlendMode(away.base.BlendMode.NORMAL);
-                        this._nonCasterLightPasses[0].depthCompareMode = this._pDepthCompareMode;
+                        this._nonCasterLightPasses[0].depthCompareMode = this._depthCompareMode;
                         firstAdditiveIndex = 1;
                     }
 
@@ -18809,35 +18416,34 @@ var away;
                 }
 
                 if (this._casterLightPass || this._nonCasterLightPasses) {
+                    //cannot be blended by blendmode property if multipass enabled
+                    this._pRequiresBlending = false;
+
                     // there are light passes, so this should be blended in
-                    if (this._pEffectsPass) {
-                        this._pEffectsPass.iIgnoreLights = true;
-                        this._pEffectsPass.depthCompareMode = away.stagegl.ContextGLCompareMode.LESS_EQUAL;
-                        this._pEffectsPass.setBlendMode(away.base.BlendMode.LAYER);
-                        this._pEffectsPass.forceSeparateMVP = forceSeparateMVP;
+                    if (this._screenPass) {
+                        this._screenPass.iIgnoreLights = true;
+                        this._screenPass.depthCompareMode = away.stagegl.ContextGLCompareMode.LESS_EQUAL;
+                        this._screenPass.setBlendMode(away.base.BlendMode.LAYER);
+                        this._screenPass.forceSeparateMVP = forceSeparateMVP;
                     }
-                } else if (this._pEffectsPass) {
+                } else if (this._screenPass) {
+                    this._pRequiresBlending = (this._pBlendMode != away.base.BlendMode.NORMAL || this._alphaBlending || (this._colorTransform && this._colorTransform.alphaMultiplier < 1));
+
                     // effects pass is the only pass, so it should just blend normally
-                    this._pEffectsPass.iIgnoreLights = false;
-                    this._pEffectsPass.depthCompareMode = this._pDepthCompareMode;
-
-                    this.depthCompareMode;
-
-                    this._pEffectsPass.setBlendMode(away.base.BlendMode.NORMAL);
-                    this._pEffectsPass.forceSeparateMVP = false;
+                    this._screenPass.iIgnoreLights = false;
+                    this._screenPass.depthCompareMode = this._depthCompareMode;
+                    this._screenPass.preserveAlpha = this._pRequiresBlending;
+                    this._screenPass.setBlendMode((this._pBlendMode == away.base.BlendMode.NORMAL && this._pRequiresBlending) ? away.base.BlendMode.LAYER : this._pBlendMode);
+                    this._screenPass.forceSeparateMVP = false;
                 }
             };
 
-            MultiPassMaterialBase.prototype.initCasterLightPass = function () {
+            TriangleMaterial.prototype.initCasterLightPass = function () {
                 if (this._casterLightPass == null)
                     this._casterLightPass = new materials.ShadowCasterPass(this);
 
-                this._casterLightPass.diffuseMethod = null;
-                this._casterLightPass.ambientMethod = null;
-                this._casterLightPass.normalMethod = null;
-                this._casterLightPass.specularMethod = null;
-                this._casterLightPass.shadowMethod = null;
                 this._casterLightPass.enableLightFallOff = this._enableLightFallOff;
+                this._casterLightPass.animateUVs = this._animateUVs;
                 this._casterLightPass.lightPicker = new materials.StaticLightPicker([this._shadowMethod.castingLight]);
                 this._casterLightPass.shadowMethod = this._shadowMethod;
                 this._casterLightPass.diffuseMethod = this._diffuseMethod;
@@ -18848,16 +18454,13 @@ var away;
                 this._casterLightPass.specularLightSources = this._specularLightSources;
             };
 
-            MultiPassMaterialBase.prototype.removeCasterLightPass = function () {
-                if (!this._casterLightPass)
-                    return;
-
+            TriangleMaterial.prototype.removeCasterLightPass = function () {
                 this._casterLightPass.dispose();
                 this.pRemovePass(this._casterLightPass);
                 this._casterLightPass = null;
             };
 
-            MultiPassMaterialBase.prototype.initNonCasterLightPasses = function () {
+            TriangleMaterial.prototype.initNonCasterLightPasses = function () {
                 this.removeNonCasterLightPasses();
                 var pass;
                 var numDirLights = this._pLightPicker.numDirectionalLights;
@@ -18877,14 +18480,11 @@ var away;
                 while (dirLightOffset < numDirLights || pointLightOffset < numPointLights || probeOffset < numLightProbes) {
                     pass = new materials.LightingPass(this);
                     pass.enableLightFallOff = this._enableLightFallOff;
+                    pass.animateUVs = this._animateUVs;
                     pass.includeCasters = this._shadowMethod == null;
                     pass.directionalLightsOffset = dirLightOffset;
                     pass.pointLightsOffset = pointLightOffset;
                     pass.lightProbesOffset = probeOffset;
-                    pass.diffuseMethod = null;
-                    pass.ambientMethod = null;
-                    pass.normalMethod = null;
-                    pass.specularMethod = null;
                     pass.lightPicker = this._pLightPicker;
                     pass.diffuseMethod = this._diffuseMethod;
                     pass.ambientMethod = this._ambientMethod;
@@ -18900,49 +18500,61 @@ var away;
                 }
             };
 
-            MultiPassMaterialBase.prototype.removeNonCasterLightPasses = function () {
-                if (!this._nonCasterLightPasses)
-                    return;
-
+            TriangleMaterial.prototype.removeNonCasterLightPasses = function () {
                 for (var i = 0; i < this._nonCasterLightPasses.length; ++i) {
                     this.pRemovePass(this._nonCasterLightPasses[i]);
                     this._nonCasterLightPasses[i].dispose();
                 }
+
                 this._nonCasterLightPasses = null;
             };
 
-            MultiPassMaterialBase.prototype.removeEffectsPass = function () {
-                if (this._pEffectsPass.diffuseMethod != this._diffuseMethod)
-                    this._pEffectsPass.diffuseMethod.dispose();
+            TriangleMaterial.prototype.removeEffectsPass = function () {
+                if (this._screenPass.ambientMethod != this._ambientMethod)
+                    this._screenPass.ambientMethod.dispose();
 
-                this.pRemovePass(this._pEffectsPass);
-                this._pEffectsPass.dispose();
-                this._pEffectsPass = null;
+                if (this._screenPass.diffuseMethod != this._diffuseMethod)
+                    this._screenPass.diffuseMethod.dispose();
+
+                if (this._screenPass.specularMethod != this._specularMethod)
+                    this._screenPass.specularMethod.dispose();
+
+                if (this._screenPass.normalMethod != this._normalMethod)
+                    this._screenPass.normalMethod.dispose();
+
+                this.pRemovePass(this._screenPass);
+
+                this._screenPass.dispose();
+                this._screenPass = null;
             };
 
-            MultiPassMaterialBase.prototype.initEffectsPass = function () {
-                if (this._pEffectsPass == null)
-                    this._pEffectsPass = new materials.SuperShaderPass(this);
+            TriangleMaterial.prototype.initEffectsPass = function () {
+                if (this._screenPass == null)
+                    this._screenPass = new materials.SuperShaderPass(this);
 
-                this._pEffectsPass.enableLightFallOff = this._enableLightFallOff;
-                if (this.numLights == 0) {
-                    this._pEffectsPass.diffuseMethod = null;
-                    this._pEffectsPass.diffuseMethod = this._diffuseMethod;
-                } else {
-                    this._pEffectsPass.diffuseMethod = null;
-                    this._pEffectsPass.diffuseMethod = new materials.DiffuseBasicMethod();
-                    this._pEffectsPass.diffuseMethod.diffuseColor = 0x000000;
-                    this._pEffectsPass.diffuseMethod.diffuseAlpha = 0;
+                this._screenPass.enableLightFallOff = this._enableLightFallOff;
+                this._screenPass.animateUVs = this._animateUVs;
+
+                if (this._materialMode == materials.TriangleMaterialMode.SINGLE_PASS) {
+                    this._screenPass.ambientMethod = this._ambientMethod;
+                    this._screenPass.diffuseMethod = this._diffuseMethod;
+                    this._screenPass.specularMethod = this._specularMethod;
+                    this._screenPass.normalMethod = this._normalMethod;
+                } else if (this._materialMode == materials.TriangleMaterialMode.MULTI_PASS) {
+                    if (this.numLights == 0) {
+                        this._screenPass.diffuseMethod = this._diffuseMethod;
+                    } else {
+                        this._screenPass.diffuseMethod = new materials.DiffuseBasicMethod();
+                        this._screenPass.diffuseMethod.diffuseColor = 0x000000;
+                        this._screenPass.diffuseMethod.diffuseAlpha = 0;
+                    }
+
+                    this._screenPass.preserveAlpha = false;
+                    this._screenPass.normalMethod = this._normalMethod;
                 }
-
-                this._pEffectsPass.preserveAlpha = false;
-                this._pEffectsPass.normalMethod = null;
-                this._pEffectsPass.normalMethod = this._normalMethod;
-
-                return this._pEffectsPass;
             };
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "numLights", {
+            Object.defineProperty(TriangleMaterial.prototype, "numLights", {
                 /**
                 * The maximum total number of lights provided by the light picker.
                 */
@@ -18953,7 +18565,7 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(MultiPassMaterialBase.prototype, "numNonCasters", {
+            Object.defineProperty(TriangleMaterial.prototype, "numNonCasters", {
                 /**
                 * The amount of lights that don't cast shadows.
                 */
@@ -18963,351 +18575,28 @@ var away;
                 enumerable: true,
                 configurable: true
             });
-
-            /**
-            * Flags that the screen passes have become invalid.
-            */
-            MultiPassMaterialBase.prototype.pInvalidateScreenPasses = function () {
-                this._screenPassesInvalid = true;
-            };
-
-            /**
-            * Called when the light picker's configuration changed.
-            */
-            MultiPassMaterialBase.prototype.onLightsChange = function (event) {
-                this.pInvalidateScreenPasses();
-            };
-            return MultiPassMaterialBase;
+            return TriangleMaterial;
         })(materials.MaterialBase);
-        materials.MultiPassMaterialBase = MultiPassMaterialBase;
+        materials.TriangleMaterial = TriangleMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
+    /**
+    *
+    */
     (function (materials) {
-        /**
-        * TextureMultiPassMaterial is a multi-pass material that uses a texture to define the surface's diffuse reflection colour (albedo).
-        */
-        var TextureMultiPassMaterial = (function (_super) {
-            __extends(TextureMultiPassMaterial, _super);
-            /**
-            * Creates a new TextureMultiPassMaterial.
-            * @param texture The texture used for the material's albedo color.
-            * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
-            * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
-            * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
-            */
-            function TextureMultiPassMaterial(texture, smooth, repeat, mipmap) {
-                if (typeof texture === "undefined") { texture = null; }
-                if (typeof smooth === "undefined") { smooth = true; }
-                if (typeof repeat === "undefined") { repeat = false; }
-                if (typeof mipmap === "undefined") { mipmap = false; }
-                _super.call(this);
-                this._animateUVs = false;
-                this.texture = texture;
-                this.smooth = smooth;
-                this.repeat = repeat;
-                this.mipmap = mipmap;
+        var TriangleMaterialMode = (function () {
+            function TriangleMaterialMode() {
             }
-            Object.defineProperty(TextureMultiPassMaterial.prototype, "animateUVs", {
-                /**
-                * Specifies whether or not the UV coordinates should be animated using a transformation matrix.
-                */
-                get: function () {
-                    return this._animateUVs;
-                },
-                set: function (value) {
-                    this._animateUVs = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
+            TriangleMaterialMode.SINGLE_PASS = "singlePass";
 
-
-            Object.defineProperty(TextureMultiPassMaterial.prototype, "texture", {
-                /**
-                * The texture object to use for the albedo colour.
-                */
-                get: function () {
-                    return this.diffuseMethod.texture;
-                },
-                set: function (value) {
-                    this.diffuseMethod.texture = value;
-
-                    if (value) {
-                        this._pHeight = value.height;
-                        this._pWidth = value.width;
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(TextureMultiPassMaterial.prototype, "ambientTexture", {
-                /**
-                * The texture object to use for the ambient colour.
-                */
-                get: function () {
-                    return this.ambientMethod.texture;
-                },
-                set: function (value) {
-                    this.ambientMethod.texture = value;
-                    this.diffuseMethod.iUseAmbientTexture = (value != null);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            TextureMultiPassMaterial.prototype.pUpdateScreenPasses = function () {
-                _super.prototype.pUpdateScreenPasses.call(this);
-
-                if (this._pEffectsPass)
-                    this._pEffectsPass.animateUVs = this._animateUVs;
-            };
-            return TextureMultiPassMaterial;
-        })(materials.MultiPassMaterialBase);
-        materials.TextureMultiPassMaterial = TextureMultiPassMaterial;
-    })(away.materials || (away.materials = {}));
-    var materials = away.materials;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (materials) {
-        /**
-        * ColorMultiPassMaterial is a multi-pass material that uses a flat color as the surface's diffuse reflection value.
-        */
-        var ColorMultiPassMaterial = (function (_super) {
-            __extends(ColorMultiPassMaterial, _super);
-            /**
-            * Creates a new ColorMultiPassMaterial object.
-            *
-            * @param color The material's diffuse surface color.
-            */
-            function ColorMultiPassMaterial(color) {
-                if (typeof color === "undefined") { color = 0xcccccc; }
-                _super.call(this);
-                this.color = color;
-            }
-            Object.defineProperty(ColorMultiPassMaterial.prototype, "color", {
-                /**
-                * The diffuse reflectivity color of the surface.
-                */
-                get: function () {
-                    return this.diffuseMethod.diffuseColor;
-                },
-                set: function (value) {
-                    this.diffuseMethod.diffuseColor = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            return ColorMultiPassMaterial;
-        })(materials.MultiPassMaterialBase);
-        materials.ColorMultiPassMaterial = ColorMultiPassMaterial;
-    })(away.materials || (away.materials = {}));
-    var materials = away.materials;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (materials) {
-        //import away3d.*;
-        //import away3d.textures.*;
-        //import flash.display.*;
-        //import flash.geom.*;
-        //use namespace arcane;
-        /**
-        * TextureMaterial is a single-pass material that uses a texture to define the surface's diffuse reflection colour (albedo).
-        */
-        var TextureMaterial = (function (_super) {
-            __extends(TextureMaterial, _super);
-            /**
-            * Creates a new TextureMaterial.
-            * @param texture The texture used for the material's albedo color.
-            * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
-            * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
-            * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
-            */
-            function TextureMaterial(texture, smooth, repeat, mipmap) {
-                if (typeof texture === "undefined") { texture = null; }
-                if (typeof smooth === "undefined") { smooth = true; }
-                if (typeof repeat === "undefined") { repeat = false; }
-                if (typeof mipmap === "undefined") { mipmap = false; }
-                _super.call(this);
-
-                this.texture = texture;
-
-                this.smooth = smooth;
-                this.repeat = repeat;
-                this.mipmap = mipmap;
-            }
-            Object.defineProperty(TextureMaterial.prototype, "animateUVs", {
-                /**
-                * Specifies whether or not the UV coordinates should be animated using IRenderable's uvTransform matrix.
-                *
-                * @see IRenderable.uvTransform
-                */
-                get: function () {
-                    return this._pScreenPass.animateUVs;
-                },
-                set: function (value) {
-                    this._pScreenPass.animateUVs = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(TextureMaterial.prototype, "alpha", {
-                /**
-                * The alpha of the surface.
-                */
-                get: function () {
-                    return this._pScreenPass.colorTransform ? this._pScreenPass.colorTransform.alphaMultiplier : 1;
-                },
-                set: function (value) {
-                    if (value > 1)
-                        value = 1;
-                    else if (value < 0)
-                        value = 0;
-
-                    if (this.colorTransform == null) {
-                        //colorTransform ||= new ColorTransform();
-                        this.colorTransform = new away.geom.ColorTransform();
-                    }
-
-                    this.colorTransform.alphaMultiplier = value;
-
-                    this._pScreenPass.preserveAlpha = this.getRequiresBlending();
-
-                    this._pScreenPass.setBlendMode(this.getBlendMode() == away.base.BlendMode.NORMAL && this.getRequiresBlending() ? away.base.BlendMode.LAYER : this.getBlendMode());
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(TextureMaterial.prototype, "texture", {
-                /**
-                * The texture object to use for the albedo colour.
-                */
-                get: function () {
-                    return this._pScreenPass.diffuseMethod.texture;
-                },
-                set: function (value) {
-                    this._pScreenPass.diffuseMethod.texture = value;
-
-                    if (value) {
-                        this._pHeight = value.height;
-                        this._pWidth = value.width;
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(TextureMaterial.prototype, "ambientTexture", {
-                /**
-                * The texture object to use for the ambient colour.
-                */
-                get: function () {
-                    return this._pScreenPass.ambientMethod.texture;
-                },
-                set: function (value) {
-                    this._pScreenPass.ambientMethod.texture = value;
-                    this._pScreenPass.diffuseMethod.iUseAmbientTexture = !(value == null); // Boolean( value ) //<-------- TODO: Check this works as expected
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            return TextureMaterial;
-        })(materials.SinglePassMaterialBase);
-        materials.TextureMaterial = TextureMaterial;
-    })(away.materials || (away.materials = {}));
-    var materials = away.materials;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (materials) {
-        /**
-        * ColorMaterial is a single-pass material that uses a flat color as the surface's diffuse reflection value.
-        */
-        var ColorMaterial = (function (_super) {
-            __extends(ColorMaterial, _super);
-            /**
-            * Creates a new ColorMaterial object.
-            * @param color The material's diffuse surface color.
-            * @param alpha The material's surface alpha.
-            */
-            function ColorMaterial(color, alpha) {
-                if (typeof color === "undefined") { color = 0xcccccc; }
-                if (typeof alpha === "undefined") { alpha = 1; }
-                _super.call(this);
-                this._diffuseAlpha = 1;
-
-                this.color = color;
-                this.alpha = alpha;
-            }
-            Object.defineProperty(ColorMaterial.prototype, "alpha", {
-                /**
-                * The alpha of the surface.
-                */
-                get: function () {
-                    return this._pScreenPass.diffuseMethod.diffuseAlpha;
-                },
-                set: function (value) {
-                    if (value > 1) {
-                        value = 1;
-                    } else if (value < 0) {
-                        value = 0;
-                    }
-
-                    this._pScreenPass.diffuseMethod.diffuseAlpha = this._diffuseAlpha = value;
-                    this._pScreenPass.preserveAlpha = this.requiresBlending;
-                    this._pScreenPass.setBlendMode(this.getBlendMode() == away.base.BlendMode.NORMAL && this.requiresBlending ? away.base.BlendMode.LAYER : this.getBlendMode());
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(ColorMaterial.prototype, "color", {
-                /**
-                * The diffuse reflectivity color of the surface.
-                */
-                get: function () {
-                    return this._pScreenPass.diffuseMethod.diffuseColor;
-                },
-                set: function (value) {
-                    this._pScreenPass.diffuseMethod.diffuseColor = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(ColorMaterial.prototype, "requiresBlending", {
-                /**
-                * @inheritDoc
-                */
-                get: function () {
-                    return this.getRequiresBlending() || this._diffuseAlpha < 1;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return ColorMaterial;
-        })(materials.SinglePassMaterialBase);
-        materials.ColorMaterial = ColorMaterial;
+            TriangleMaterialMode.MULTI_PASS = "multiPass";
+            return TriangleMaterialMode;
+        })();
+        materials.TriangleMaterialMode = TriangleMaterialMode;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
@@ -19785,18 +19074,18 @@ var away;
 (function (away) {
     (function (materials) {
         /**
-        * SegmentMaterial is a material exclusively used to render wireframe objects
+        * LineMaterial is a material exclusively used to render wireframe objects
         *
         * @see away3d.entities.Lines
         */
-        var SegmentMaterial = (function (_super) {
-            __extends(SegmentMaterial, _super);
+        var LineMaterial = (function (_super) {
+            __extends(LineMaterial, _super);
             /**
-            * Creates a new SegmentMaterial object.
+            * Creates a new LineMaterial object.
             *
             * @param thickness The thickness of the wireframe lines.
             */
-            function SegmentMaterial(thickness) {
+            function LineMaterial(thickness) {
                 if (typeof thickness === "undefined") { thickness = 1.25; }
                 _super.call(this);
 
@@ -19804,9 +19093,9 @@ var away;
                 this.pAddPass(this._screenPass = new materials.SegmentPass(thickness));
                 this._screenPass.material = this;
             }
-            return SegmentMaterial;
+            return LineMaterial;
         })(materials.MaterialBase);
-        materials.SegmentMaterial = SegmentMaterial;
+        materials.LineMaterial = LineMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
@@ -28623,11 +27912,8 @@ var away;
         var Mesh = away.entities.Mesh;
         var DefaultMaterialManager = away.materials.DefaultMaterialManager;
         var BasicSpecularMethod = away.materials.SpecularBasicMethod;
-        var ColorMaterial = away.materials.ColorMaterial;
-        var ColorMultiPassMaterial = away.materials.ColorMultiPassMaterial;
-
-        var TextureMaterial = away.materials.TextureMaterial;
-        var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
+        var TriangleMaterial = away.materials.TriangleMaterial;
+        var TriangleMaterialMode = away.materials.TriangleMaterialMode;
         var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
 
         /**
@@ -28896,12 +28182,12 @@ var away;
                         // Finalize and force type-based name
                         this._pFinalizeAsset(geometry); //, "");
 
-                        if (this.materialMode < 2)
-                            bmMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
-                        else
-                            bmMaterial = new TextureMultiPassMaterial(DefaultMaterialManager.getDefaultTexture());
+                        bmMaterial = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
 
-                        //bmMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
+                        //check for multipass
+                        if (this.materialMode >= 2)
+                            bmMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
+
                         mesh = new Mesh(geometry, bmMaterial);
 
                         if (this._objects[objIndex].name) {
@@ -29285,7 +28571,7 @@ var away;
                         var cm;
 
                         if (this.materialMode < 2) {
-                            cm = new ColorMaterial(diffuseColor);
+                            cm = new TriangleMaterial(diffuseColor);
 
                             var colorMat = cm;
 
@@ -29298,7 +28584,8 @@ var away;
                                 colorMat.specular = specular;
                             }
                         } else {
-                            cm = new ColorMultiPassMaterial(diffuseColor);
+                            cm = new TriangleMaterial(diffuseColor);
+                            cm.materialMode = TriangleMaterialMode.MULTI_PASS;
 
                             var colorMultiMat = cm;
 
@@ -29375,7 +28662,7 @@ var away;
             OBJParser.prototype.applyMaterial = function (lm) {
                 var decomposeID;
                 var mesh;
-                var mat;
+                var tm;
                 var j;
                 var specularData;
 
@@ -29390,9 +28677,7 @@ var away;
                             mesh.material = lm.cm;
                         } else if (lm.texture) {
                             if (this.materialMode < 2) {
-                                mat = mesh.material;
-
-                                var tm = mat;
+                                tm = mesh.material;
 
                                 tm.texture = lm.texture;
                                 tm.ambientColor = lm.ambientColor;
@@ -29420,29 +28705,28 @@ var away;
                                     }
                                 }
                             } else {
-                                mat = mesh.material;
+                                tm = mesh.material;
+                                tm.materialMode = TriangleMaterialMode.MULTI_PASS;
 
-                                var tmMult = mat;
-
-                                tmMult.texture = lm.texture;
-                                tmMult.ambientColor = lm.ambientColor;
-                                tmMult.repeat = true;
+                                tm.texture = lm.texture;
+                                tm.ambientColor = lm.ambientColor;
+                                tm.repeat = true;
 
                                 if (lm.specularMethod) {
                                     // By setting the specularMethod property to null before assigning
                                     // the actual method instance, we avoid having the properties of
                                     // the new method being overridden with the settings from the old
                                     // one, which is default behavior of the setter.
-                                    tmMult.specularMethod = null;
-                                    tmMult.specularMethod = lm.specularMethod;
+                                    tm.specularMethod = null;
+                                    tm.specularMethod = lm.specularMethod;
                                 } else if (this._materialSpecularData) {
                                     for (j = 0; j < this._materialSpecularData.length; ++j) {
                                         specularData = this._materialSpecularData[j];
 
                                         if (specularData.materialID == lm.materialID) {
-                                            tmMult.specularMethod = null; // Prevent property overwrite (see above)
-                                            tmMult.specularMethod = specularData.basicSpecularMethod;
-                                            tmMult.ambientColor = specularData.ambientColor;
+                                            tm.specularMethod = null; // Prevent property overwrite (see above)
+                                            tm.specularMethod = specularData.basicSpecularMethod;
+                                            tm.ambientColor = specularData.ambientColor;
 
                                             break;
                                         }
@@ -29457,8 +28741,8 @@ var away;
                     }
                 }
 
-                if (lm.cm || mat)
-                    this._pFinalizeAsset(lm.cm || mat);
+                if (lm.cm || tm)
+                    this._pFinalizeAsset(lm.cm || tm);
             };
 
             OBJParser.prototype.applyMaterials = function () {
@@ -29697,19 +28981,47 @@ var away;
         var Geometry = away.base.Geometry;
         var BlendMode = away.base.BlendMode;
         var Mesh = away.entities.Mesh;
+        var ColorTransform = away.geom.ColorTransform;
         var Matrix3D = away.geom.Matrix3D;
         var AssetType = away.library.AssetType;
-        var TextureMaterial = away.materials.TextureMaterial;
+        var AmbientEnvMapMethod = away.materials.AmbientEnvMapMethod;
+        var DefaultMaterialManager = away.materials.DefaultMaterialManager;
+        var DiffuseDepthMethod = away.materials.DiffuseDepthMethod;
+        var DiffuseCelMethod = away.materials.DiffuseCelMethod;
+        var DiffuseSubSurfaceMethod = away.materials.DiffuseSubSurfaceMethod;
+        var DiffuseGradientMethod = away.materials.DiffuseGradientMethod;
+        var DiffuseLightMapMethod = away.materials.DiffuseLightMapMethod;
+        var DiffuseWrapMethod = away.materials.DiffuseWrapMethod;
+        var EffectAlphaMaskMethod = away.materials.EffectAlphaMaskMethod;
+        var EffectColorMatrixMethod = away.materials.EffectColorMatrixMethod;
+        var EffectColorTransformMethod = away.materials.EffectColorTransformMethod;
+        var EffectEnvMapMethod = away.materials.EffectEnvMapMethod;
+        var EffectFogMethod = away.materials.EffectFogMethod;
+        var EffectFresnelEnvMapMethod = away.materials.EffectFresnelEnvMapMethod;
+        var EffectLightMapMethod = away.materials.EffectLightMapMethod;
+
+        var EffectRimLightMethod = away.materials.EffectRimLightMethod;
+
+        var NormalSimpleWaterMethod = away.materials.NormalSimpleWaterMethod;
+        var TriangleMaterial = away.materials.TriangleMaterial;
+        var TriangleMaterialMode = away.materials.TriangleMaterialMode;
         var ShadowDitheredMethod = away.materials.ShadowDitheredMethod;
         var ShadowFilteredMethod = away.materials.ShadowFilteredMethod;
         var SkyboxMaterial = away.materials.SkyboxMaterial;
         var SpecularFresnelMethod = away.materials.SpecularFresnelMethod;
         var ShadowHardMethod = away.materials.ShadowHardMethod;
+        var SpecularAnisotropicMethod = away.materials.SpecularAnisotropicMethod;
+        var SpecularCelMethod = away.materials.SpecularCelMethod;
         var SpecularPhongMethod = away.materials.SpecularPhongMethod;
-
         var ShadowNearMethod = away.materials.ShadowNearMethod;
 
         var ShadowSoftMethod = away.materials.ShadowSoftMethod;
+        var StaticLightPicker = away.materials.StaticLightPicker;
+        var BitmapCubeTexture = away.textures.BitmapCubeTexture;
+
+        var ImageCubeTexture = away.textures.ImageCubeTexture;
+        var ImageTexture = away.textures.ImageTexture;
+
         var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
 
         /**
@@ -29837,7 +29149,7 @@ var away;
                             var posZ = this._cubeTextures[4];
                             var negZ = this._cubeTextures[5];
 
-                            asset = new away.textures.ImageCubeTexture(posX, negX, posY, negY, posZ, negZ);
+                            asset = new ImageCubeTexture(posX, negX, posY, negY, posZ, negZ);
                             block = this._blocks[ressourceID];
                             block.data = asset; // Store finished asset
 
@@ -30743,7 +30055,7 @@ var away;
                     return;
                 }
 
-                var lightPick = new away.materials.StaticLightPicker(lightsArray);
+                var lightPick = new StaticLightPicker(lightsArray);
                 lightPick.name = name;
 
                 this.parseUserAttributes();
@@ -30792,41 +30104,34 @@ var away;
                     debugString += "Parsed a ColorMaterial(SinglePass): Name = '" + name + "' | ";
                     var color;
                     color = props.get(1, 0xcccccc);
-                    if (this.materialMode < 2)
-                        mat = new away.materials.ColorMaterial(color, props.get(10, 1.0));
-                    else
-                        mat = new away.materials.ColorMultiPassMaterial(color);
+                    if (this.materialMode < 2) {
+                        mat = new TriangleMaterial(color, props.get(10, 1.0));
+                    } else {
+                        mat = new TriangleMaterial(color);
+                        mat.materialMode = TriangleMaterialMode.MULTI_PASS;
+                    }
                 } else if (type === 2) {
                     var tex_addr = props.get(2, 0);
 
                     returnedArray = this.getAssetByID(tex_addr, [AssetType.TEXTURE]);
-                    if ((!returnedArray[0]) && (tex_addr > 0)) {
+
+                    if ((!returnedArray[0]) && (tex_addr > 0))
                         this._blocks[blockID].addError("Could not find the DiffsueTexture (ID = " + tex_addr + " ) for this Material");
-                    }
+
+                    mat = new TriangleMaterial(returnedArray[1]);
 
                     if (this.materialMode < 2) {
-                        mat = new TextureMaterial(returnedArray[1]);
-
-                        var txMaterial = mat;
-
-                        txMaterial.alphaBlending = props.get(11, false);
-                        txMaterial.alpha = props.get(10, 1.0);
-                        debugString += "Parsed a TextureMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + mat.name;
+                        mat.alphaBlending = props.get(11, false);
+                        mat.alpha = props.get(10, 1.0);
+                        debugString += "Parsed a TriangleMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + mat.name;
                     } else {
-                        mat = new away.materials.TextureMultiPassMaterial(returnedArray[1]);
-                        debugString += "Parsed a TextureMaterial(MultipAss): Name = '" + name + "' | Texture-Name = " + mat.name;
+                        mat.materialMode = TriangleMaterialMode.MULTI_PASS;
+                        debugString += "Parsed a TriangleMaterial(MultiPass): Name = '" + name + "' | Texture-Name = " + mat.name;
                     }
                 }
 
                 mat.extra = attributes;
-                if (this.materialMode < 2) {
-                    var spmb = mat;
-                    spmb.alphaThreshold = props.get(12, 0.0);
-                } else {
-                    var mpmb = mat;
-                    mpmb.alphaThreshold = props.get(12, 0.0);
-                }
-
+                mat.alphaThreshold = props.get(12, 0.0);
                 mat.repeat = props.get(13, false);
                 this._pFinalizeAsset(mat, name);
                 this._blocks[blockID].data = mat;
@@ -30855,21 +30160,21 @@ var away;
                     return;
                 }
 
-                if (this.materialMode == 1) {
+                if (this.materialMode == 1)
                     spezialType = 0;
-                } else if (this.materialMode == 2) {
+                else if (this.materialMode == 2)
                     spezialType = 1;
-                }
 
                 if (spezialType < 2) {
                     if (type == 1) {
                         var color = props.get(1, 0xcccccc);
 
                         if (spezialType == 1) {
-                            mat = new away.materials.ColorMultiPassMaterial(color);
+                            mat = new TriangleMaterial(color);
+                            mat.materialMode = TriangleMaterialMode.MULTI_PASS;
                             debugString += "Parsed a ColorMaterial(MultiPass): Name = '" + name + "' | ";
                         } else {
-                            mat = new away.materials.ColorMaterial(color, props.get(10, 1.0));
+                            mat = new TriangleMaterial(color, props.get(10, 1.0));
                             mat.alphaBlending = props.get(11, false);
                             debugString += "Parsed a ColorMaterial(SinglePass): Name = '" + name + "' | ";
                         }
@@ -30877,9 +30182,9 @@ var away;
                         var tex_addr = props.get(2, 0);
                         returnedArray = this.getAssetByID(tex_addr, [AssetType.TEXTURE]);
 
-                        if ((!returnedArray[0]) && (tex_addr > 0)) {
-                            this._blocks[blockID].addError("Could not find the DiffuseTexture (ID = " + tex_addr + " ) for this TextureMaterial");
-                        }
+                        if ((!returnedArray[0]) && (tex_addr > 0))
+                            this._blocks[blockID].addError("Could not find the DiffuseTexture (ID = " + tex_addr + " ) for this TriangleMaterial");
+
                         var texture = returnedArray[1];
                         var ambientTexture;
                         var ambientTex_addr = props.get(17, 0);
@@ -30887,32 +30192,28 @@ var away;
                         returnedArray = this.getAssetByID(ambientTex_addr, [AssetType.TEXTURE]);
 
                         if ((!returnedArray[0]) && (ambientTex_addr != 0)) {
-                            this._blocks[blockID].addError("Could not find the AmbientTexture (ID = " + ambientTex_addr + " ) for this TextureMaterial");
+                            this._blocks[blockID].addError("Could not find the AmbientTexture (ID = " + ambientTex_addr + " ) for this TriangleMaterial");
                         }
 
-                        if (returnedArray[0]) {
+                        if (returnedArray[0])
                             ambientTexture = returnedArray[1];
-                        }
+
+                        mat = new TriangleMaterial(texture);
 
                         if (spezialType == 1) {
-                            mat = new away.materials.TextureMultiPassMaterial(texture);
-                            debugString += "Parsed a TextureMaterial(MultiPass): Name = '" + name + "' | Texture-Name = " + texture.name;
+                            mat.materialMode = TriangleMaterialMode.MULTI_PASS;
 
-                            if (ambientTexture) {
-                                mat.ambientTexture = ambientTexture;
-                                debugString += " | AmbientTexture-Name = " + ambientTexture.name;
-                            }
+                            debugString += "Parsed a TriangleMaterial(MultiPass): Name = '" + name + "' | Texture-Name = " + texture.name;
                         } else {
-                            mat = new TextureMaterial(texture);
-                            debugString += "Parsed a TextureMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + texture.name;
-
-                            if (ambientTexture) {
-                                mat.ambientTexture = ambientTexture;
-                                debugString += " | AmbientTexture-Name = " + ambientTexture.name;
-                            }
-
                             mat.alpha = props.get(10, 1.0);
                             mat.alphaBlending = props.get(11, false);
+
+                            debugString += "Parsed a TriangleMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + texture.name;
+                        }
+
+                        if (ambientTexture) {
+                            mat.ambientTexture = ambientTexture;
+                            debugString += " | AmbientTexture-Name = " + ambientTexture.name;
                         }
                     }
 
@@ -30921,7 +30222,7 @@ var away;
                     returnedArray = this.getAssetByID(normalTex_addr, [AssetType.TEXTURE]);
 
                     if ((!returnedArray[0]) && (normalTex_addr != 0)) {
-                        this._blocks[blockID].addError("Could not find the NormalTexture (ID = " + normalTex_addr + " ) for this TextureMaterial");
+                        this._blocks[blockID].addError("Could not find the NormalTexture (ID = " + normalTex_addr + " ) for this TriangleMaterial");
                     }
 
                     if (returnedArray[0]) {
@@ -30933,7 +30234,7 @@ var away;
                     returnedArray = this.getAssetByID(specTex_addr, [AssetType.TEXTURE]);
 
                     if ((!returnedArray[0]) && (specTex_addr != 0)) {
-                        this._blocks[blockID].addError("Could not find the SpecularTexture (ID = " + specTex_addr + " ) for this TextureMaterial");
+                        this._blocks[blockID].addError("Could not find the SpecularTexture (ID = " + specTex_addr + " ) for this TriangleMaterial");
                     }
                     if (returnedArray[0]) {
                         specTexture = returnedArray[1];
@@ -30944,7 +30245,7 @@ var away;
                     returnedArray = this.getAssetByID(lightPickerAddr, [AssetType.LIGHT_PICKER]);
 
                     if ((!returnedArray[0]) && (lightPickerAddr)) {
-                        this._blocks[blockID].addError("Could not find the LightPicker (ID = " + lightPickerAddr + " ) for this TextureMaterial");
+                        this._blocks[blockID].addError("Could not find the LightPicker (ID = " + lightPickerAddr + " ) for this TriangleMaterial");
                     } else {
                         mat.lightPicker = returnedArray[1];
                         //debugString+=" | Lightpicker-Name = "+LightPickerBase(returnedArray[1]).name;
@@ -30957,35 +30258,18 @@ var away;
                     mat.blendMode = this.blendModeDic[props.get(9, 0)];
                     mat.repeat = props.get(13, false);
 
-                    if (spezialType == 0) {
-                        if (normalTexture) {
-                            mat.normalMap = normalTexture;
-                        }
-                        if (specTexture) {
-                            mat.specularMap = specTexture;
-                        }
+                    if (normalTexture)
+                        mat.normalMap = normalTexture;
 
-                        mat.alphaThreshold = props.get(12, 0.0);
-                        mat.ambient = props.get(15, 1.0);
-                        mat.ambientColor = props.get(16, 0xffffff);
-                        mat.specular = props.get(18, 1.0);
-                        mat.gloss = props.get(19, 50);
-                        mat.specularColor = props.get(20, 0xffffff);
-                    } else {
-                        if (normalTexture) {
-                            mat.normalMap = normalTexture;
-                        }
-                        if (specTexture) {
-                            mat.specularMap = specTexture;
-                        }
+                    if (specTexture)
+                        mat.specularMap = specTexture;
 
-                        mat.alphaThreshold = props.get(12, 0.0);
-                        mat.ambient = props.get(15, 1.0);
-                        mat.ambientColor = props.get(16, 0xffffff);
-                        mat.specular = props.get(18, 1.0);
-                        mat.gloss = props.get(19, 50);
-                        mat.specularColor = props.get(20, 0xffffff);
-                    }
+                    mat.alphaThreshold = props.get(12, 0.0);
+                    mat.ambient = props.get(15, 1.0);
+                    mat.ambientColor = props.get(16, 0xffffff);
+                    mat.specular = props.get(18, 1.0);
+                    mat.gloss = props.get(19, 50);
+                    mat.specularColor = props.get(20, 0xffffff);
 
                     var methods_parsed = 0;
                     var targetID;
@@ -31004,12 +30288,7 @@ var away;
                                 if (!returnedArray[0]) {
                                     this._blocks[blockID].addError("Could not find the EffectMethod (ID = " + targetID + " ) for this Material");
                                 } else {
-                                    if (spezialType == 0) {
-                                        mat.addMethod(returnedArray[1]);
-                                    }
-                                    if (spezialType == 1) {
-                                        mat.addMethod(returnedArray[1]);
-                                    }
+                                    mat.addEffectMethod(returnedArray[1]);
 
                                     debugString += " | EffectMethod-Name = " + returnedArray[1].name;
                                 }
@@ -31023,39 +30302,90 @@ var away;
                                 if (!returnedArray[0]) {
                                     this._blocks[blockID].addError("Could not find the ShadowMethod (ID = " + targetID + " ) for this Material");
                                 } else {
-                                    if (spezialType == 0) {
-                                        mat.shadowMethod = returnedArray[1];
-                                    }
-
-                                    if (spezialType == 1) {
-                                        mat.shadowMethod = returnedArray[1];
-                                    }
-
+                                    mat.shadowMethod = returnedArray[1];
                                     debugString += " | ShadowMethod-Name = " + returnedArray[1].name;
                                 }
 
                                 break;
 
-                            case 102:
-                                if (spezialType == 0)
-                                    mat.specularMethod = new SpecularPhongMethod();
-                                if (spezialType == 1)
-                                    mat.specularMethod = new SpecularPhongMethod();
-                                debugString += " | SpecularPhongMethod";
+                            case 1:
+                                targetID = props.get(1, 0);
+                                returnedArray = this.getAssetByID(targetID, [AssetType.TEXTURE], "CubeTexture");
+                                if (!returnedArray[0])
+                                    this._blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this EnvMapAmbientMethodMaterial");
+                                mat.ambientMethod = new AmbientEnvMapMethod(returnedArray[1]);
+                                debugString += " | AmbientEnvMapMethod | EnvMap-Name =" + returnedArray[1].name;
                                 break;
 
+                            case 51:
+                                mat.diffuseMethod = new DiffuseDepthMethod();
+                                debugString += " | DiffuseDepthMethod";
+                                break;
+                            case 52:
+                                targetID = props.get(1, 0);
+                                returnedArray = this.getAssetByID(targetID, [AssetType.TEXTURE]);
+                                if (!returnedArray[0])
+                                    this._blocks[blockID].addError("Could not find the GradientDiffuseTexture (ID = " + targetID + " ) for this GradientDiffuseMethod");
+                                mat.diffuseMethod = new DiffuseGradientMethod(returnedArray[1]);
+                                debugString += " | DiffuseGradientMethod | GradientDiffuseTexture-Name =" + returnedArray[1].name;
+                                break;
+                            case 53:
+                                mat.diffuseMethod = new DiffuseWrapMethod(props.get(101, 5));
+                                debugString += " | DiffuseWrapMethod";
+                                break;
+                            case 54:
+                                targetID = props.get(1, 0);
+                                returnedArray = this.getAssetByID(targetID, [AssetType.TEXTURE]);
+                                if (!returnedArray[0])
+                                    this._blocks[blockID].addError("Could not find the LightMap (ID = " + targetID + " ) for this LightMapDiffuseMethod");
+                                mat.diffuseMethod = new DiffuseLightMapMethod(returnedArray[1], this.blendModeDic[props.get(401, 10)], false, mat.diffuseMethod);
+                                debugString += " | DiffuseLightMapMethod | LightMapTexture-Name =" + returnedArray[1].name;
+                                break;
+                            case 55:
+                                mat.diffuseMethod = new DiffuseCelMethod(props.get(401, 3), mat.diffuseMethod);
+                                mat.diffuseMethod.smoothness = props.get(101, 0.1);
+                                debugString += " | DiffuseCelMethod";
+                                break;
+                            case 56:
+                                mat.diffuseMethod = new DiffuseSubSurfaceMethod(); //depthMapSize and depthMapOffset ?
+                                mat.diffuseMethod.scattering = props.get(101, 0.2);
+                                mat.diffuseMethod.translucency = props.get(102, 1);
+                                mat.diffuseMethod.scatterColor = props.get(601, 0xffffff);
+                                debugString += " | DiffuseSubSurfaceMethod";
+                                break;
+
+                            case 101:
+                                mat.specularMethod = new SpecularAnisotropicMethod();
+                                debugString += " | SpecularAnisotropicMethod";
+                                break;
+                            case 102:
+                                mat.specularMethod = new SpecularPhongMethod();
+                                debugString += " | SpecularPhongMethod";
+                                break;
+                            case 103:
+                                mat.specularMethod = new SpecularCelMethod(props.get(101, 0.5), mat.specularMethod);
+                                mat.specularMethod.smoothness = props.get(102, 0.1);
+                                debugString += " | SpecularCelMethod";
+                                break;
                             case 104:
-                                if (spezialType == 0) {
-                                    mat.specularMethod = new SpecularFresnelMethod(props.get(701, true), mat.specularMethod);
-                                    mat.specularMethod.fresnelPower = props.get(101, 5);
-                                    mat.specularMethod.normalReflectance = props.get(102, 0.1);
-                                }
-                                if (spezialType == 1) {
-                                    mat.specularMethod = new SpecularFresnelMethod(props.get(701, true), mat.specularMethod);
-                                    mat.specularMethod.fresnelPower = props.get(101, 5);
-                                    mat.specularMethod.normalReflectance = props.get(102, 0.1);
-                                }
+                                mat.specularMethod = new SpecularFresnelMethod(props.get(701, true), mat.specularMethod);
+                                mat.specularMethod.fresnelPower = props.get(101, 5);
+                                mat.specularMethod.normalReflectance = props.get(102, 0.1);
                                 debugString += " | SpecularFresnelMethod";
+                                break;
+                            case 151:
+                                break;
+                            case 152:
+                                targetID = props.get(1, 0);
+                                returnedArray = this.getAssetByID(targetID, [AssetType.TEXTURE]);
+                                if (!returnedArray[0])
+                                    this._blocks[blockID].addError("Could not find the SecoundNormalMap (ID = " + targetID + " ) for this SimpleWaterNormalMethod");
+                                if (!mat.normalMap)
+                                    this._blocks[blockID].addError("Could not find a normal Map on this Material to use with this SimpleWaterNormalMethod");
+
+                                mat.normalMap = returnedArray[1];
+                                mat.normalMethod = new NormalSimpleWaterMethod(mat.normalMap, returnedArray[1]);
+                                debugString += " | NormalSimpleWaterMethod | Second-NormalTexture-Name = " + returnedArray[1].name;
                                 break;
                         }
                         this.parseUserAttributes();
@@ -31652,6 +30982,14 @@ var away;
                 var returnedArray;
 
                 switch (methodType) {
+                    case 401:
+                        effectMethodReturn = new EffectColorMatrixMethod(props.get(101, new Array(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)));
+                        break;
+                    case 402:
+                        effectMethodReturn = new EffectColorTransformMethod();
+                        var offCol = props.get(601, 0x00000000);
+                        effectMethodReturn.colorTransform = new ColorTransform(props.get(102, 1), props.get(103, 1), props.get(104, 1), props.get(101, 1), ((offCol >> 16) & 0xFF), ((offCol >> 8) & 0xFF), (offCol & 0xFF), ((offCol >> 24) & 0xFF));
+                        break;
                     case 403:
                         targetID = props.get(1, 0);
                         console.log('ENV MAP', targetID);
@@ -31659,15 +30997,44 @@ var away;
                         returnedArray = this.getAssetByID(targetID, [AssetType.TEXTURE], "CubeTexture");
                         if (!returnedArray[0])
                             this._blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this EnvMapMethod");
-                        effectMethodReturn = new away.materials.EffectEnvMapMethod(returnedArray[1], props.get(101, 1));
+                        effectMethodReturn = new EffectEnvMapMethod(returnedArray[1], props.get(101, 1));
                         targetID = props.get(2, 0);
                         if (targetID > 0) {
                             returnedArray = this.getAssetByID(targetID, [AssetType.TEXTURE]);
                             if (!returnedArray[0])
                                 this._blocks[blockID].addError("Could not find the Mask-texture (ID = " + targetID + " ) for this EnvMapMethod");
                             // Todo: test mask with EnvMapMethod
-                            //(<away.materials.EnvMapMethod> effectMethodReturn).mask = <away.textures.Texture2DBase> returnedArray[1];
+                            //(<EnvMapMethod> effectMethodReturn).mask = <Texture2DBase> returnedArray[1];
                         }
+                        break;
+                    case 404:
+                        targetID = props.get(1, 0);
+                        returnedArray = this.getAssetByID(targetID, [AssetType.TEXTURE]);
+                        if (!returnedArray[0])
+                            this._blocks[blockID].addError("Could not find the LightMap (ID = " + targetID + " ) for this LightMapMethod");
+                        effectMethodReturn = new EffectLightMapMethod(returnedArray[1], this.blendModeDic[props.get(401, 10)]); //usesecondaryUV not set
+                        break;
+
+                    case 406:
+                        effectMethodReturn = new EffectRimLightMethod(props.get(601, 0xffffff), props.get(101, 0.4), props.get(101, 2)); //blendMode
+                        break;
+                    case 407:
+                        targetID = props.get(1, 0);
+                        returnedArray = this.getAssetByID(targetID, [AssetType.TEXTURE]);
+                        if (!returnedArray[0])
+                            this._blocks[blockID].addError("Could not find the Alpha-texture (ID = " + targetID + " ) for this AlphaMaskMethod");
+                        effectMethodReturn = new EffectAlphaMaskMethod(returnedArray[1], props.get(701, false));
+                        break;
+
+                    case 410:
+                        targetID = props.get(1, 0);
+                        returnedArray = this.getAssetByID(targetID, [AssetType.TEXTURE], "CubeTexture");
+                        if (!returnedArray[0])
+                            this._blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this FresnelEnvMapMethod");
+                        effectMethodReturn = new EffectFresnelEnvMapMethod(returnedArray[1], props.get(101, 1));
+                        break;
+                    case 411:
+                        effectMethodReturn = new EffectFogMethod(props.get(101, 0), props.get(102, 1000), props.get(601, 0x808080));
                         break;
                 }
                 this.parseUserAttributes();
@@ -31979,14 +31346,14 @@ var away;
                                 if (iasset.assetType == assetTypesToGet[typeCnt]) {
                                     //if the right assetType was found
                                     if ((assetTypesToGet[typeCnt] == AssetType.TEXTURE) && (extraTypeInfo == "CubeTexture")) {
-                                        if (this._blocks[assetID].data instanceof away.textures.ImageCubeTexture) {
+                                        if (this._blocks[assetID].data instanceof ImageCubeTexture) {
                                             returnArray.push(true);
                                             returnArray.push(this._blocks[assetID].data);
                                             return returnArray;
                                         }
                                     }
                                     if ((assetTypesToGet[typeCnt] == AssetType.TEXTURE) && (extraTypeInfo == "SingleTexture")) {
-                                        if (this._blocks[assetID].data instanceof away.textures.ImageTexture) {
+                                        if (this._blocks[assetID].data instanceof ImageTexture) {
                                             returnArray.push(true);
                                             returnArray.push(this._blocks[assetID].data);
                                             return returnArray;
@@ -32039,23 +31406,23 @@ var away;
 
             AWDParser.prototype.getDefaultMaterial = function () {
                 if (!this._defaultBitmapMaterial)
-                    this._defaultBitmapMaterial = away.materials.DefaultMaterialManager.getDefaultMaterial();
+                    this._defaultBitmapMaterial = DefaultMaterialManager.getDefaultMaterial();
 
                 return this._defaultBitmapMaterial;
             };
 
             AWDParser.prototype.getDefaultTexture = function () {
                 if (!this._defaultTexture)
-                    this._defaultTexture = away.materials.DefaultMaterialManager.getDefaultTexture();
+                    this._defaultTexture = DefaultMaterialManager.getDefaultTexture();
 
                 return this._defaultTexture;
             };
 
             AWDParser.prototype.getDefaultCubeTexture = function () {
                 if (!this._defaultCubeTexture) {
-                    var defaultBitmap = away.materials.DefaultMaterialManager.createCheckeredBitmapData();
+                    var defaultBitmap = DefaultMaterialManager.createCheckeredBitmapData();
 
-                    this._defaultCubeTexture = new away.textures.BitmapCubeTexture(defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap);
+                    this._defaultCubeTexture = new BitmapCubeTexture(defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap);
                     this._defaultCubeTexture.name = "defaultCubeTexture";
                 }
 
@@ -32216,13 +31583,9 @@ var away;
 (function (away) {
     (function (parsers) {
         var SubGeometry = away.base.TriangleSubGeometry;
-        var ColorMaterial = away.materials.ColorMaterial;
-        var ColorMultiPassMaterial = away.materials.ColorMultiPassMaterial;
         var DefaultMaterialManager = away.materials.DefaultMaterialManager;
-
-        var TextureMaterial = away.materials.TextureMaterial;
-        var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
-
+        var TriangleMaterial = away.materials.TriangleMaterial;
+        var TriangleMaterialMode = away.materials.TriangleMaterialMode;
         var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
 
         /**
@@ -32886,21 +32249,17 @@ var away;
 
             Max3DSParser.prototype.finalizeCurrentMaterial = function () {
                 var mat;
-                if (this.materialMode < 2) {
-                    if (this._cur_mat.colorMap)
-                        mat = new TextureMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture());
-                    else
-                        mat = new ColorMaterial(this._cur_mat.diffuseColor);
-                    mat.ambientColor = this._cur_mat.ambientColor;
-                    mat.specularColor = this._cur_mat.specularColor;
-                } else {
-                    if (this._cur_mat.colorMap)
-                        mat = new TextureMultiPassMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture());
-                    else
-                        mat = new ColorMultiPassMaterial(this._cur_mat.diffuseColor);
-                    mat.ambientColor = this._cur_mat.ambientColor;
-                    mat.specularColor = this._cur_mat.specularColor;
-                }
+
+                if (this._cur_mat.colorMap)
+                    mat = new TriangleMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture());
+                else
+                    mat = new TriangleMaterial(this._cur_mat.diffuseColor);
+
+                mat.ambientColor = this._cur_mat.ambientColor;
+                mat.specularColor = this._cur_mat.specularColor;
+
+                if (this.materialMode >= 2)
+                    mat.materialMode = TriangleMaterialMode.MULTI_PASS;
 
                 mat.bothSides = this._cur_mat.twoSided;
 
@@ -33026,6 +32385,9 @@ var away;
         var TriangleSubGeometry = away.base.TriangleSubGeometry;
         var VertexAnimationSet = away.animators.VertexAnimationSet;
         var VertexClipNode = away.animators.VertexClipNode;
+        var DefaultMaterialManager = away.materials.DefaultMaterialManager;
+        var TriangleMaterial = away.materials.TriangleMaterial;
+        var TriangleMaterialMode = away.materials.TriangleMaterialMode;
         var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
 
         /**
@@ -33077,12 +32439,12 @@ var away;
                     return;
 
                 var asset = resourceDependency.assets[0];
+
                 if (asset) {
-                    var material;
-                    if (this.materialMode < 2)
-                        material = new away.materials.TextureMaterial(asset);
-                    else
-                        material = new away.materials.TextureMultiPassMaterial(asset);
+                    var material = new TriangleMaterial(asset);
+
+                    if (this.materialMode >= 2)
+                        material.materialMode = TriangleMaterialMode.MULTI_PASS;
 
                     //add to the content property
                     this._pContent.addChild(this._mesh);
@@ -33101,10 +32463,12 @@ var away;
             */
             MD2Parser.prototype._iResolveDependencyFailure = function (resourceDependency) {
                 // apply system default
-                if (this.materialMode < 2)
-                    this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial();
-                else
-                    this._mesh.material = new away.materials.TextureMultiPassMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+                if (this.materialMode < 2) {
+                    this._mesh.material = DefaultMaterialManager.getDefaultMaterial();
+                } else {
+                    this._mesh.material = new TriangleMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+                    this._mesh.material.materialMode = TriangleMaterialMode.MULTI_PASS;
+                }
 
                 //add to the content property
                 this._pContent.addChild(this._mesh);
@@ -33137,10 +32501,12 @@ var away;
                         // for this file format) and return it using this._pFinalizeAsset()
                         this._geometry = new Geometry();
                         this._mesh = new away.entities.Mesh(this._geometry, null);
-                        if (this.materialMode < 2)
-                            this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial();
-                        else
-                            this._mesh.material = new away.materials.TextureMultiPassMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+                        if (this.materialMode < 2) {
+                            this._mesh.material = DefaultMaterialManager.getDefaultMaterial();
+                        } else {
+                            this._mesh.material = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
+                            this._mesh.material.materialMode = TriangleMaterialMode.MULTI_PASS;
+                        }
 
                         //_geometry.animation = new VertexAnimation(2, VertexAnimationMode.ABSOLUTE);
                         //_animator = new VertexAnimator(VertexAnimationState(_mesh.animationState));
@@ -34689,6 +34055,8 @@ var MeshData = (function () {
 var away;
 (function (away) {
     (function (parsers) {
+        var AssetLoader = away.library.AssetLoader;
+
         var Parsers = (function () {
             function Parsers() {
             }
@@ -34699,12 +34067,12 @@ var away;
             *
             * See notes about file size in the documentation for the ALL_BUNDLED constant.
             *
-            * @see away.parsers.parsers.Parsers.ALL_BUNDLED
+            * @see away.parsers.Parsers.ALL_BUNDLED
             */
             Parsers.enableAllBundled = function () {
-                away.net.AssetLoader.enableParsers(this.ALL_BUNDLED);
+                AssetLoader.enableParsers(Parsers.ALL_BUNDLED);
             };
-            Parsers.ALL_BUNDLED = Array(away.parsers.AWDParser, away.parsers.Max3DSParser, away.parsers.MD2Parser, away.parsers.OBJParser);
+            Parsers.ALL_BUNDLED = Array(parsers.AWDParser, parsers.Max3DSParser, parsers.MD2Parser, parsers.OBJParser);
             return Parsers;
         })();
         parsers.Parsers = Parsers;
@@ -35433,14 +34801,10 @@ var away;
 ///<reference path="materials/compilation/SuperShaderCompiler.ts"/>
 ///<reference path="materials/LightSources.ts"/>
 ///<reference path="materials/MaterialBase.ts"/>
-///<reference path="materials/SinglePassMaterialBase.ts"/>
-///<reference path="materials/MultiPassMaterialBase.ts"/>
-///<reference path="materials/TextureMultiPassMaterial.ts"/>
-///<reference path="materials/ColorMultiPassMaterial.ts"/>
-///<reference path="materials/TextureMaterial.ts"/>
-///<reference path="materials/ColorMaterial.ts"/>
+///<reference path="materials/TriangleMaterial.ts"/>
+///<reference path="materials/TriangleMaterialMode.ts"/>
 ///<reference path="materials/compilation/LightingShaderCompiler.ts"/>
-///<reference path="materials/SegmentMaterial.ts"/>
+///<reference path="materials/LineMaterial.ts"/>
 ///<reference path="materials/SkyboxMaterial.ts"/>
 ///<reference path="utils/PerspectiveMatrix3D.ts"/>
 ///<reference path="animators/data/AnimationRegisterCache.ts"/>

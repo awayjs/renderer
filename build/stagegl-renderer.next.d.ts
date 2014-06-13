@@ -1084,16 +1084,16 @@ declare module away.render {
 }
 declare module away.materials {
     class DefaultMaterialManager {
-        private static _defaultTextureBitmapData;
-        private static _defaultTextureMaterial;
-        private static _defaultSegmentMaterial;
+        private static _defaultBitmapData;
+        private static _defaultTriangleMaterial;
+        private static _defaultLineMaterial;
         private static _defaultTexture;
         static getDefaultMaterial(materialOwner?: base.IMaterialOwner): MaterialBase;
         static getDefaultTexture(materialOwner?: base.IMaterialOwner): textures.BitmapTexture;
         private static createDefaultTexture();
         static createCheckeredBitmapData(): base.BitmapData;
-        private static createDefaultTextureMaterial();
-        private static createDefaultSegmentMaterial();
+        private static createDefaultTriangleMaterial();
+        private static createDefaultLineMaterial();
     }
 }
 declare module away.filters {
@@ -1414,7 +1414,6 @@ declare module away.materials {
         * Defines whether any used textures should use mipmapping.
         */
         public mipmap : boolean;
-        public setMipMap(value: boolean): void;
         /**
         * Defines whether smoothing should be applied to any used textures.
         */
@@ -1659,10 +1658,6 @@ declare module away.materials {
         * Indicate whether UV coordinates need to be animated using the renderable's transformUV matrix.
         */
         public animateUVs : boolean;
-        /**
-        * @inheritDoc
-        */
-        public mipmap : boolean;
         /**
         * The normal map to modulate the direction of the surface for each texel. The default normal method expects
         * tangent-space normal maps, but others could expect object-space maps.
@@ -5521,7 +5516,7 @@ declare module away.materials {
     * pass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space
     * subsurface scattering, or rendering a depth map for specialized self-shadowing).
     *
-    * Away3D provides default materials trough SinglePassMaterialBase and MultiPassMaterialBase, which use modular
+    * Away3D provides default materials trough SinglePassMaterialBase and TriangleMaterial, which use modular
     * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
     * shaders, or entire new material frameworks.
     */
@@ -5558,6 +5553,7 @@ declare module away.materials {
         public _iDepthPassId: number;
         private _bothSides;
         private _animationSet;
+        public _pScreenPassesInvalid: boolean;
         /**
         * A list of material owners, renderables or custom Entities.
         */
@@ -5573,12 +5569,13 @@ declare module away.materials {
         public _pDistancePass: DistanceMapPass;
         public _pLightPicker: LightPickerBase;
         private _distanceBasedDepthRender;
-        public _pDepthCompareMode: string;
         public _pHeight: number;
         public _pWidth: number;
+        public _pRequiresBlending: boolean;
         private _onPassChangeDelegate;
         private _onDepthPassChangeDelegate;
         private _onDistancePassChangeDelegate;
+        private _onLightChangeDelegate;
         /**
         * Creates a new MaterialBase object.
         */
@@ -5598,23 +5595,14 @@ declare module away.materials {
         * @see StaticLightPicker
         */
         public lightPicker : LightPickerBase;
-        public setLightPicker(value: LightPickerBase): void;
         /**
         * Indicates whether or not any used textures should use mipmapping. Defaults to true.
         */
         public mipmap : boolean;
-        public setMipMap(value: boolean): void;
         /**
         * Indicates whether or not any used textures should use smoothing.
         */
         public smooth : boolean;
-        /**
-        * The depth compare mode used to render the renderables using this material.
-        *
-        * @see away.stagegl.ContextGLCompareMode
-        */
-        public depthCompareMode : string;
-        public setDepthCompareMode(value: string): void;
         /**
         * Indicates whether or not any used textures should be tiled. If set to false, texture samples are clamped to
         * the texture's borders when the uv coordinates are outside the [0, 1] interval.
@@ -5640,8 +5628,6 @@ declare module away.materials {
         * </ul>
         */
         public blendMode : string;
-        public getBlendMode(): string;
-        public setBlendMode(value: string): void;
         /**
         * Indicates whether visible textures (or other pixels) used by this material have
         * already been premultiplied. Toggle this if you are seeing black halos around your
@@ -5656,7 +5642,6 @@ declare module away.materials {
         *
         */
         public width : number;
-        public getRequiresBlending(): boolean;
         /**
         * The amount of passes used by the material.
         *
@@ -5766,7 +5751,7 @@ declare module away.materials {
         *
         * @private
         */
-        public iUpdateMaterial(context: stagegl.IContext): void;
+        public iUpdateMaterial(): void;
         /**
         * Deactivates the last pass of the material.
         *
@@ -5796,6 +5781,11 @@ declare module away.materials {
         */
         public pAddPass(pass: MaterialPassBase): void;
         /**
+        * Adds any additional passes on which the given pass is dependent.
+        * @param pass The pass that my need additional passes.
+        */
+        public pAddChildPassesFor(pass: CompiledPass): void;
+        /**
         * Listener for when a pass's shader code changes. It recalculates the render order id.
         */
         private onPassChange(event);
@@ -5807,20 +5797,81 @@ declare module away.materials {
         * Listener for when the depth pass's shader code changes. It recalculates the depth pass id.
         */
         private onDepthPassChange(event);
+        /**
+        * Flags that the screen passes have become invalid.
+        */
+        public pInvalidateScreenPasses(): void;
+        /**
+        * Called when the light picker's configuration changed.
+        */
+        private onLightsChange(event);
     }
 }
 declare module away.materials {
     /**
-    * SinglePassMaterialBase forms an abstract base class for the default single-pass materials provided by Away3D,
+    * TriangleMaterial forms an abstract base class for the default shaded materials provided by StageGL,
     * using material methods to define their appearance.
     */
-    class SinglePassMaterialBase extends MaterialBase {
-        public _pScreenPass: SuperShaderPass;
+    class TriangleMaterial extends MaterialBase {
+        private _animateUVs;
         private _alphaBlending;
+        private _alpha;
+        private _colorTransform;
+        private _materialMode;
+        private _casterLightPass;
+        private _nonCasterLightPasses;
+        private _screenPass;
+        private _alphaThreshold;
+        private _specularLightSources;
+        private _diffuseLightSources;
+        private _ambientMethod;
+        private _shadowMethod;
+        private _diffuseMethod;
+        private _normalMethod;
+        private _specularMethod;
+        private _enableLightFallOff;
+        private _depthCompareMode;
         /**
-        * Creates a new SinglePassMaterialBase object.
+        * Creates a new TriangleMaterial object.
+        *
+        * @param texture The texture used for the material's albedo color.
+        * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
+        * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
+        * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
         */
-        constructor();
+        constructor(texture?: textures.Texture2DBase, smooth?: boolean, repeat?: boolean, mipmap?: boolean);
+        constructor(color?: number, alpha?: number);
+        public materialMode : string;
+        /**
+        * Specifies whether or not the UV coordinates should be animated using a transformation matrix.
+        */
+        public animateUVs : boolean;
+        /**
+        * The depth compare mode used to render the renderables using this material.
+        *
+        * @see away.stagegl.ContextGLCompareMode
+        */
+        public depthCompareMode : string;
+        /**
+        * The alpha of the surface.
+        */
+        public alpha : number;
+        /**
+        * The ColorTransform object to transform the colour of the material with. Defaults to null.
+        */
+        public colorTransform : geom.ColorTransform;
+        /**
+        * The diffuse reflectivity color of the surface.
+        */
+        public color : number;
+        /**
+        * The texture object to use for the albedo colour.
+        */
+        public texture : textures.Texture2DBase;
+        /**
+        * The texture object to use for the ambient colour.
+        */
+        public ambientTexture : textures.Texture2DBase;
         /**
         * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
         * compatibility for constrained mode.
@@ -5832,14 +5883,6 @@ declare module away.materials {
         * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
         */
         public alphaThreshold : number;
-        /**
-        * @inheritDoc
-        */
-        public blendMode : string;
-        /**
-        * @inheritDoc
-        */
-        public depthCompareMode : string;
         /**
         * @inheritDoc
         */
@@ -5859,16 +5902,6 @@ declare module away.materials {
         */
         public diffuseLightSources : number;
         /**
-        * @inheritDoc
-        */
-        public requiresBlending : boolean;
-        public getRequiresBlending(): boolean;
-        /**
-        * The ColorTransform object to transform the colour of the material with. Defaults to null.
-        */
-        public colorTransform : geom.ColorTransform;
-        public setColorTransform(value: geom.ColorTransform): void;
-        /**
         * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
         */
         public ambientMethod : AmbientBasicMethod;
@@ -5881,51 +5914,47 @@ declare module away.materials {
         */
         public diffuseMethod : DiffuseBasicMethod;
         /**
-        * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
-        */
-        public normalMethod : NormalBasicMethod;
-        /**
         * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
         */
         public specularMethod : SpecularBasicMethod;
+        /**
+        * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
+        */
+        public normalMethod : NormalBasicMethod;
         /**
         * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
         * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
         * methods added prior.
         */
-        public addMethod(method: EffectMethodBase): void;
+        public addEffectMethod(method: EffectMethodBase): void;
         /**
         * The number of "effect" methods added to the material.
         */
-        public numMethods : number;
+        public numEffectMethods : number;
         /**
         * Queries whether a given effect method was added to the material.
         *
         * @param method The method to be queried.
         * @return true if the method was added to the material, false otherwise.
         */
-        public hasMethod(method: EffectMethodBase): boolean;
+        public hasEffectMethod(method: EffectMethodBase): boolean;
         /**
         * Returns the method added at the given index.
         * @param index The index of the method to retrieve.
         * @return The method at the given index.
         */
-        public getMethodAt(index: number): EffectMethodBase;
+        public getEffectMethodAt(index: number): EffectMethodBase;
         /**
         * Adds an effect method at the specified index amongst the methods already added to the material. Effect
         * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
         * etc. The method will be applied to the result of the methods with a lower index.
         */
-        public addMethodAt(method: EffectMethodBase, index: number): void;
+        public addEffectMethodAt(method: EffectMethodBase, index: number): void;
         /**
         * Removes an effect method from the material.
         * @param method The method to be removed.
         */
-        public removeMethod(method: EffectMethodBase): void;
-        /**
-        * @inheritDoc
-        */
-        public mipmap : boolean;
+        public removeEffectMethod(method: EffectMethodBase): void;
         /**
         * The normal map to modulate the direction of the surface for each texel. The default normal method expects
         * tangent-space normal maps, but others could expect object-space maps.
@@ -5965,175 +5994,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iUpdateMaterial(context: stagegl.IContext): void;
-        /**
-        * @inheritDoc
-        */
-        public lightPicker : LightPickerBase;
-    }
-}
-declare module away.materials {
-    /**
-    * MultiPassMaterialBase forms an abstract base class for the default multi-pass materials provided by Away3D,
-    * using material methods to define their appearance.
-    */
-    class MultiPassMaterialBase extends MaterialBase {
-        private _casterLightPass;
-        private _nonCasterLightPasses;
-        public _pEffectsPass: SuperShaderPass;
-        private _alphaThreshold;
-        private _specularLightSources;
-        private _diffuseLightSources;
-        private _ambientMethod;
-        private _shadowMethod;
-        private _diffuseMethod;
-        private _normalMethod;
-        private _specularMethod;
-        private _screenPassesInvalid;
-        private _enableLightFallOff;
-        private _onLightChangeDelegate;
-        /**
-        * Creates a new MultiPassMaterialBase object.
-        */
-        constructor();
-        /**
-        * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
-        * compatibility for constrained mode.
-        */
-        public enableLightFallOff : boolean;
-        /**
-        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
-        * invisible or entirely opaque, often used with textures for foliage, etc.
-        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
-        */
-        public alphaThreshold : number;
-        /**
-        * @inheritDoc
-        */
-        public depthCompareMode : string;
-        /**
-        * @inheritDoc
-        */
-        public blendMode : string;
-        /**
-        * @inheritDoc
-        */
-        public iActivateForDepth(stageGL: base.StageGL, camera: entities.Camera, distanceBased?: boolean): void;
-        /**
-        * Define which light source types to use for specular reflections. This allows choosing between regular lights
-        * and/or light probes for specular reflections.
-        *
-        * @see away3d.materials.LightSources
-        */
-        public specularLightSources : number;
-        /**
-        * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
-        * and/or light probes for diffuse reflections.
-        *
-        * @see away3d.materials.LightSources
-        */
-        public diffuseLightSources : number;
-        /**
-        * @inheritDoc
-        */
-        public lightPicker : LightPickerBase;
-        /**
-        * @inheritDoc
-        */
-        public requiresBlending : boolean;
-        /**
-        * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
-        */
-        public ambientMethod : AmbientBasicMethod;
-        /**
-        * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
-        */
-        public shadowMethod : ShadowMapMethodBase;
-        /**
-        * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
-        */
-        public diffuseMethod : DiffuseBasicMethod;
-        /**
-        * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
-        */
-        public specularMethod : SpecularBasicMethod;
-        /**
-        * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
-        */
-        public normalMethod : NormalBasicMethod;
-        /**
-        * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
-        * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
-        * methods added prior.
-        */
-        public addMethod(method: EffectMethodBase): void;
-        /**
-        * The number of "effect" methods added to the material.
-        */
-        public numMethods : number;
-        /**
-        * Queries whether a given effect method was added to the material.
-        *
-        * @param method The method to be queried.
-        * @return true if the method was added to the material, false otherwise.
-        */
-        public hasMethod(method: EffectMethodBase): boolean;
-        /**
-        * Returns the method added at the given index.
-        * @param index The index of the method to retrieve.
-        * @return The method at the given index.
-        */
-        public getMethodAt(index: number): EffectMethodBase;
-        /**
-        * Adds an effect method at the specified index amongst the methods already added to the material. Effect
-        * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
-        * etc. The method will be applied to the result of the methods with a lower index.
-        */
-        public addMethodAt(method: EffectMethodBase, index: number): void;
-        /**
-        * Removes an effect method from the material.
-        * @param method The method to be removed.
-        */
-        public removeMethod(method: EffectMethodBase): void;
-        /**
-        * @inheritDoc
-        */
-        public mipmap : boolean;
-        /**
-        * The normal map to modulate the direction of the surface for each texel. The default normal method expects
-        * tangent-space normal maps, but others could expect object-space maps.
-        */
-        public normalMap : textures.Texture2DBase;
-        /**
-        * A specular map that defines the strength of specular reflections for each texel in the red channel,
-        * and the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set
-        * specular and gloss maps from grayscale images, but correctly authored images are preferred.
-        */
-        public specularMap : textures.Texture2DBase;
-        /**
-        * The glossiness of the material (sharpness of the specular highlight).
-        */
-        public gloss : number;
-        /**
-        * The strength of the ambient reflection.
-        */
-        public ambient : number;
-        /**
-        * The overall strength of the specular reflection.
-        */
-        public specular : number;
-        /**
-        * The colour of the ambient reflection.
-        */
-        public ambientColor : number;
-        /**
-        * The colour of the specular reflection.
-        */
-        public specularColor : number;
-        /**
-        * @inheritDoc
-        */
-        public iUpdateMaterial(context: stagegl.IContext): void;
+        public iUpdateMaterial(): void;
         /**
         * Adds a compiled pass that renders to the screen.
         * @param pass The pass to be added.
@@ -6144,11 +6005,6 @@ declare module away.materials {
         * @return
         */
         private isAnyScreenPassInvalid();
-        /**
-        * Adds any additional passes on which the given pass is dependent.
-        * @param pass The pass that my need additional passes.
-        */
-        private addChildPassesFor(pass);
         /**
         * @inheritDoc
         */
@@ -6183,119 +6039,21 @@ declare module away.materials {
         * The amount of lights that don't cast shadows.
         */
         private numNonCasters;
-        /**
-        * Flags that the screen passes have become invalid.
-        */
-        public pInvalidateScreenPasses(): void;
-        /**
-        * Called when the light picker's configuration changed.
-        */
-        private onLightsChange(event);
     }
 }
+/**
+*
+*/
 declare module away.materials {
-    /**
-    * TextureMultiPassMaterial is a multi-pass material that uses a texture to define the surface's diffuse reflection colour (albedo).
-    */
-    class TextureMultiPassMaterial extends MultiPassMaterialBase {
-        private _animateUVs;
+    class TriangleMaterialMode {
         /**
-        * Creates a new TextureMultiPassMaterial.
-        * @param texture The texture used for the material's albedo color.
-        * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
-        * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
-        * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
-        */
-        constructor(texture?: textures.Texture2DBase, smooth?: boolean, repeat?: boolean, mipmap?: boolean);
-        /**
-        * Specifies whether or not the UV coordinates should be animated using a transformation matrix.
-        */
-        public animateUVs : boolean;
-        /**
-        * The texture object to use for the albedo colour.
-        */
-        public texture : textures.Texture2DBase;
-        /**
-        * The texture object to use for the ambient colour.
-        */
-        public ambientTexture : textures.Texture2DBase;
-        public pUpdateScreenPasses(): void;
-    }
-}
-declare module away.materials {
-    /**
-    * ColorMultiPassMaterial is a multi-pass material that uses a flat color as the surface's diffuse reflection value.
-    */
-    class ColorMultiPassMaterial extends MultiPassMaterialBase {
-        /**
-        * Creates a new ColorMultiPassMaterial object.
         *
-        * @param color The material's diffuse surface color.
         */
-        constructor(color?: number);
+        static SINGLE_PASS: string;
         /**
-        * The diffuse reflectivity color of the surface.
-        */
-        public color : number;
-    }
-}
-declare module away.materials {
-    /**
-    * TextureMaterial is a single-pass material that uses a texture to define the surface's diffuse reflection colour (albedo).
-    */
-    class TextureMaterial extends SinglePassMaterialBase {
-        /**
-        * Creates a new TextureMaterial.
-        * @param texture The texture used for the material's albedo color.
-        * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
-        * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
-        * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
-        */
-        constructor(texture?: textures.Texture2DBase, smooth?: boolean, repeat?: boolean, mipmap?: boolean);
-        /**
-        * Specifies whether or not the UV coordinates should be animated using IRenderable's uvTransform matrix.
         *
-        * @see IRenderable.uvTransform
         */
-        public animateUVs : boolean;
-        /**
-        * The alpha of the surface.
-        */
-        public alpha : number;
-        /**
-        * The texture object to use for the albedo colour.
-        */
-        public texture : textures.Texture2DBase;
-        /**
-        * The texture object to use for the ambient colour.
-        */
-        public ambientTexture : textures.Texture2DBase;
-    }
-}
-declare module away.materials {
-    /**
-    * ColorMaterial is a single-pass material that uses a flat color as the surface's diffuse reflection value.
-    */
-    class ColorMaterial extends SinglePassMaterialBase {
-        private _diffuseAlpha;
-        /**
-        * Creates a new ColorMaterial object.
-        * @param color The material's diffuse surface color.
-        * @param alpha The material's surface alpha.
-        */
-        constructor(color?: number, alpha?: number);
-        /**
-        * The alpha of the surface.
-        */
-        public alpha : number;
-        /**
-        * The diffuse reflectivity color of the surface.
-        */
-        public color : number;
-        /**
-        * @inheritDoc
-        */
-        public requiresBlending : boolean;
+        static MULTI_PASS: string;
     }
 }
 declare module away.materials {
@@ -6379,14 +6137,14 @@ declare module away.materials {
 }
 declare module away.materials {
     /**
-    * SegmentMaterial is a material exclusively used to render wireframe objects
+    * LineMaterial is a material exclusively used to render wireframe objects
     *
     * @see away3d.entities.Lines
     */
-    class SegmentMaterial extends MaterialBase {
+    class LineMaterial extends MaterialBase {
         private _screenPass;
         /**
-        * Creates a new SegmentMaterial object.
+        * Creates a new LineMaterial object.
         *
         * @param thickness The thickness of the wireframe lines.
         */
@@ -10331,7 +10089,7 @@ declare module away.parsers {
         * <li>Images (.jpg, .png)</li>
         * </ul>
         *
-        * @see away3d.loading.AssetLibrary.enableParser
+        * @see away.library.AssetLibrary.enableParser
         */
         static ALL_BUNDLED: Object[];
         /**
@@ -10341,7 +10099,7 @@ declare module away.parsers {
         *
         * See notes about file size in the documentation for the ALL_BUNDLED constant.
         *
-        * @see away.parsers.parsers.Parsers.ALL_BUNDLED
+        * @see away.parsers.Parsers.ALL_BUNDLED
         */
         static enableAllBundled(): void;
     }
