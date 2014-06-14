@@ -4,15 +4,14 @@ module away.materials
 {
 	import StageGL									= away.base.StageGL;
 	import SubGeometry								= away.base.TriangleSubGeometry;
+	import Camera									= away.entities.Camera;
+	import AbstractMethodError						= away.errors.AbstractMethodError;
+	import ShadingMethodEvent						= away.events.ShadingMethodEvent;
 	import Matrix									= away.geom.Matrix;
 	import Matrix3D									= away.geom.Matrix3D;
 	import Matrix3DUtils							= away.geom.Matrix3DUtils;
-	import Texture2DBase							= away.textures.Texture2DBase;
-	import Delegate									= away.utils.Delegate;
-
 	import RenderableBase							= away.pool.RenderableBase;
-	import Camera									= away.entities.Camera;
-	import ShadingMethodEvent						= away.events.ShadingMethodEvent;
+	import Texture2DBase							= away.textures.Texture2DBase;
 
 	/**
 	 * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
@@ -67,7 +66,7 @@ module away.materials
 
 		private _forceSeparateMVP:boolean = false;
 
-		private _onShaderInvalidatedDelegate:Function;
+		private _onShaderInvalidatedDelegate:(event:ShadingMethodEvent) => void;
 
 		/**
 		 * Creates a new CompiledPass object.
@@ -79,7 +78,7 @@ module away.materials
 
 			this._pMaterial = material;
 
-			this._onShaderInvalidatedDelegate = Delegate.create(this, this.onShaderInvalidated);
+			this._onShaderInvalidatedDelegate = (event:ShadingMethodEvent) => this.onShaderInvalidated(event);
 
 			this.init();
 		}
@@ -158,10 +157,10 @@ module away.materials
 		{
 			this.iInitCompiler(profile);
 
-			this.pUpdateShaderProperties();//this.updateShaderProperties();
+			this.pUpdateShaderProperties();
 			this.initConstantData();
 
-			this.pCleanUp();//this.cleanUp();
+			this.pCleanUp();
 		}
 
 		/**
@@ -225,7 +224,7 @@ module away.materials
 		 */
 		public pCreateCompiler(profile:string):ShaderCompiler
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 		}
 
 		/**
@@ -283,8 +282,8 @@ module away.materials
 				return;
 
 			this._preserveAlpha = value;
-			this.iInvalidateShaderProgram();
 
+			this.iInvalidateShaderProgram();
 		}
 
 		/**
@@ -398,6 +397,7 @@ module away.materials
 		public dispose()
 		{
 			super.dispose();
+
 			this._pMethodSetup.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 			this._pMethodSetup.dispose();
 			this._pMethodSetup = null;
@@ -408,11 +408,11 @@ module away.materials
 		 */
 		public iInvalidateShaderProgram(updateMaterial:boolean = true)
 		{
-			var oldPasses:MaterialPassBase[] = this._iPasses;//:Vector.<MaterialPassBase> = _passes;
-			this._iPasses = new Array<MaterialPassBase>();//= new Vector.<MaterialPassBase>();
+			var oldPasses:MaterialPassBase[] = this._iPasses;
+			this._iPasses = new Array<MaterialPassBase>();
 
 			if (this._pMethodSetup)
-				this.pAddPassesFromMethods();//this.addPassesFromMethods();
+				this.pAddPassesFromMethods();
 
 			if (!oldPasses || this._iPasses.length != oldPasses.length) {
 				this._iPassesDirty = true;
@@ -455,7 +455,7 @@ module away.materials
 		 *
 		 * @param passes The passes to add.
 		 */
-		public pAddPasses(passes:MaterialPassBase[]) //Vector.<MaterialPassBase>)
+		public pAddPasses(passes:Array<MaterialPassBase>)
 		{
 			if (!passes)
 				return;
@@ -546,7 +546,7 @@ module away.materials
 		 */
 		private onShaderInvalidated(event:ShadingMethodEvent)
 		{
-			this.iInvalidateShaderProgram();//invalidateShaderProgram();
+			this.iInvalidateShaderProgram();
 		}
 
 		/**
@@ -562,7 +562,6 @@ module away.materials
 		 */
 		public iGetFragmentCode(animatorCode:string):string
 		{
-			//TODO: AGAL <> GLSL conversion
 			return this._fragmentLightCode + animatorCode + this._framentPostLightCode;
 		}
 
@@ -596,6 +595,7 @@ module away.materials
 		{
 			var i:number;
 			var context:away.stagegl.IContext = stageGL.contextGL;
+
 			if (this._uvBufferIndex >= 0)
 				stageGL.activateBuffer(this._uvBufferIndex, renderable.getVertexData(SubGeometry.UV_DATA), renderable.getVertexOffset(SubGeometry.UV_DATA), SubGeometry.UV_FORMAT);
 
@@ -638,14 +638,8 @@ module away.materials
 				this.pUpdateProbes(stageGL);
 
 			if (this._sceneMatrixIndex >= 0) {
-
 				renderable.sourceEntity.getRenderSceneTransform(camera).copyRawDataTo(this._pVertexConstantData, this._sceneMatrixIndex, true);
 				viewProjection.copyRawDataTo(this._pVertexConstantData, 0, true);
-
-				//this._pVertexConstantData = renderable.getRenderSceneTransform(camera).copyRawDataTo( this._sceneMatrixIndex, true);
-				//this._pVertexConstantData = viewProjection.copyRawDataTo( 0, true);
-
-
 			} else {
 				var matrix3D:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
 
@@ -653,13 +647,10 @@ module away.materials
 				matrix3D.append(viewProjection);
 
 				matrix3D.copyRawDataTo(this._pVertexConstantData, 0, true);
-				//this._pVertexConstantData = matrix3D.copyRawDataTo( 0, true);
 			}
 
-			if (this._sceneNormalMatrixIndex >= 0) {
+			if (this._sceneNormalMatrixIndex >= 0)
 				renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
-				//this._pVertexConstantData = renderable.inverseSceneTransform.copyRawDataTo(this._sceneNormalMatrixIndex, false);
-			}
 
 			if (this._usesNormals)
 				this._pMethodSetup._iNormalMethod.iSetRenderState(this._pMethodSetup._iNormalMethodVO, renderable, stageGL, camera);
@@ -686,7 +677,6 @@ module away.materials
 
 			for (i = 0; i < len; ++i) {
 				var aset:MethodVOSet = methods[i];
-
 				aset.method.iSetRenderState(aset.data, renderable, stageGL, camera);
 			}
 

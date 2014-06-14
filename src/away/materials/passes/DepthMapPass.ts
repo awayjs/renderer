@@ -2,7 +2,16 @@
 
 module away.materials
 {
-	import SubGeometry								= away.base.TriangleSubGeometry;
+	import TriangleSubGeometry						= away.base.TriangleSubGeometry;
+	import StageGL									= away.base.StageGL;
+	import Camera									= away.entities.Camera;
+	import Matrix3D									= away.geom.Matrix3D;
+	import Matrix3DUtils							= away.geom.Matrix3DUtils;
+	import RenderableBase							= away.pool.RenderableBase;
+	import ContextGLProgramType						= away.stagegl.ContextGLProgramType;
+	import ContextGLTextureFormat					= away.stagegl.ContextGLTextureFormat;
+	import IContext									= away.stagegl.IContext;
+	import Texture2DBase							= away.textures.Texture2DBase;
 
 	/**
 	 * DepthMapPass is a pass that writes depth values to a depth map as a 32-bit value exploded over the 4 texture channels.
@@ -12,7 +21,7 @@ module away.materials
 	{
 		private _data:Array<number>;
 		private _alphaThreshold:number = 0;
-		private _alphaMask:away.textures.Texture2DBase;
+		private _alphaMask:Texture2DBase;
 
 		/**
 		 * Creates a new DepthMapPass object.
@@ -56,12 +65,12 @@ module away.materials
 		 * A texture providing alpha data to be able to prevent semi-transparent pixels to write to the alpha mask.
 		 * Usually the diffuse texture when alphaThreshold is used.
 		 */
-		public get alphaMask():away.textures.Texture2DBase
+		public get alphaMask():Texture2DBase
 		{
 			return this._alphaMask;
 		}
 
-		public set alphaMask(value:away.textures.Texture2DBase)
+		public set alphaMask(value:Texture2DBase)
 		{
 			this._alphaMask = value;
 		}
@@ -106,8 +115,6 @@ module away.materials
 			else
 				filter = this._pMipmap? "nearest,mipnearest" : "nearest";
 
-			// TODO: AGAL<>GLSL
-
 			var codeF:string = "div ft2, v0, v0.w\n" + //"sub ft2.z, fc0.x, ft2.z\n" +    //invert
 							   "mul ft0, fc0, ft2.z\n" +
 							   "frc ft0, ft0\n" +
@@ -121,7 +128,7 @@ module away.materials
 				var format:string;
 
 				switch (this._alphaMask.format) {
-					case away.stagegl.ContextGLTextureFormat.COMPRESSED:
+					case ContextGLTextureFormat.COMPRESSED:
 						format = "dxt1,";
 						break;
 
@@ -144,38 +151,36 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
 		{
 			if (this._alphaThreshold > 0)
-				stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.UV_DATA), renderable.getVertexOffset(SubGeometry.UV_DATA), SubGeometry.UV_FORMAT);
+				stageGL.activateBuffer(1, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
 
-
-			var context:away.stagegl.IContext = stageGL.contextGL;
-			var matrix:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
+			var context:IContext = stageGL.contextGL;
+			var matrix:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
 
 			matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
 			matrix.append(viewProjection);
-			context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
+			context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
 
-			stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA),  renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+			stageGL.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA),  renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
-
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iActivate(stageGL:StageGL, camera:Camera)
 		{
-			var context:away.stagegl.IContext = stageGL.contextGL;
+			var context:IContext = stageGL.contextGL;
 
 			super.iActivate(stageGL, camera);
 
 			if (this._alphaThreshold > 0) {
 				this._alphaMask.activateTextureForStage(0, stageGL);
-				context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._data, 3);
+				context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 3);
 			} else {
-				context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._data, 2);
+				context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 2);
 			}
 		}
 	}

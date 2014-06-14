@@ -2,16 +2,25 @@
 
 module away.materials
 {
+	import AnimationRegisterCache		= away.animators.AnimationRegisterCache;
+	import AnimationSetBase				= away.animators.AnimationSetBase;
+	import AnimatorBase					= away.animators.AnimatorBase;
+	import StageGL						= away.base.StageGL;
+	import BlendMode					= away.base.BlendMode;
+	import Camera						= away.entities.Camera;
+	import AbstractMethodError			= away.errors.AbstractMethodError;
+	import ArgumentError				= away.errors.ArgumentError;
+	import Event						= away.events.Event;
+	import Rectangle					= away.geom.Rectangle;
+	import Matrix3D						= away.geom.Matrix3D;
+	import AGALProgramCache				= away.managers.AGALProgramCache;
+	import RenderableBase				= away.pool.RenderableBase;
 	import IContext						= away.stagegl.IContext;
 	import ContextGLBlendFactor			= away.stagegl.ContextGLBlendFactor;
 	import ContextGLCompareMode			= away.stagegl.ContextGLCompareMode;
 	import ContextGLTriangleFace		= away.stagegl.ContextGLTriangleFace;
 	import IProgram						= away.stagegl.IProgram;
 	import TextureProxyBase				= away.textures.TextureProxyBase;
-	import Event						= away.events.Event;
-	import Rectangle					= away.geom.Rectangle;
-	import StageGL						= away.base.StageGL;
-	import Delegate						= away.utils.Delegate;
 
 	/**
 	 * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
@@ -26,14 +35,14 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public _iUniqueId:number;//Arcane
+		public _iUniqueId:number;
 
 		public _pMaterial:MaterialBase;
-		private _animationSet:away.animators.AnimationSetBase;
+		private _animationSet:AnimationSetBase;
 
-		public _iPrograms:IProgram[] = new Array<IProgram>(8) //Vector.<Program> = new Vector.<Program>(8);
-		public _iProgramids:Array<number> = new Array<number>(-1, -1, -1, -1, -1, -1, -1, -1);//Vector.<int> = Vector.<int>([-1, -1, -1, -1, -1, -1, -1, -1]);
-		private _contextGLs:IContext[] = new Array<IContext>(8);//Vector.<ContextGL> = new Vector.<ContextGL>(8);
+		public _iPrograms:Array<IProgram> = new Array<IProgram>(8);
+		public _iProgramids:Array<number> = new Array<number>(-1, -1, -1, -1, -1, -1, -1, -1);
+		private _contextGLs:Array<IContext> = new Array<IContext>(8);
 
 		// agal props. these NEED to be set by subclasses!
 		// todo: can we perhaps figure these out manually by checking read operations in the bytecode, so other sources can be safely updated?
@@ -67,8 +76,8 @@ module away.materials
 		public _pShadedTarget:string = "ft0";
 
 		// keep track of previously rendered usage for faster cleanup of old vertex buffer streams and textures
-		private static _previousUsedStreams:Array<number> = new Array<number>(0, 0, 0, 0, 0, 0, 0, 0);//Vector.<int> = Vector.<int>([0, 0, 0, 0, 0, 0, 0, 0]);
-		private static _previousUsedTexs:Array<number> = new Array<number>(0, 0, 0, 0, 0, 0, 0, 0);//Vector.<int> = Vector.<int>([0, 0, 0, 0, 0, 0, 0, 0]);
+		private static _previousUsedStreams:Array<number> = new Array<number>(0, 0, 0, 0, 0, 0, 0, 0);
+		private static _previousUsedTexs:Array<number> = new Array<number>(0, 0, 0, 0, 0, 0, 0, 0);
 		private _defaultCulling:string = ContextGLTriangleFace.BACK;
 
 		private _renderToTexture:boolean;
@@ -86,9 +95,9 @@ module away.materials
 		public _pUVSource:string;
 
 		private _writeDepth:boolean = true;
-		private _onLightsChangeDelegate:Function;
+		private _onLightsChangeDelegate:(event:Event) => void;
 
-		public animationRegisterCache:away.animators.AnimationRegisterCache;
+		public animationRegisterCache:AnimationRegisterCache;
 
 		/**
 		 * Creates a new MaterialPassBase object.
@@ -99,7 +108,7 @@ module away.materials
 		{
 			super();
 
-			this._onLightsChangeDelegate = Delegate.create(this, this.onLightsChange);
+			this._onLightsChangeDelegate = (event:Event) => this.onLightsChange(event);
 
 			this._renderToTexture = renderToTexture;
 			this._pNumUsedStreams = 1;
@@ -204,7 +213,7 @@ module away.materials
 		/**
 		 * The depth compare mode used to render the renderables using this material.
 		 *
-		 * @see flash.displayGL.ContextGLCompareMode
+		 * @see away.stagegl.ContextGLCompareMode
 		 */
 		public get depthCompareMode():string
 		{
@@ -219,12 +228,12 @@ module away.materials
 		/**
 		 * Returns the animation data set adding animations to the material.
 		 */
-		public get animationSet():away.animators.AnimationSetBase
+		public get animationSet():AnimationSetBase
 		{
 			return this._animationSet;
 		}
 
-		public set animationSet(value:away.animators.AnimationSetBase)
+		public set animationSet(value:AnimationSetBase)
 		{
 			if (this._animationSet == value)
 				return;
@@ -288,13 +297,16 @@ module away.materials
 			return this._pNumUsedFragmentConstants;
 		}
 
+		/**
+		 * Indicates whether the pass requires any fragment animation code.
+		 */
 		public get needFragmentAnimation():boolean
 		{
 			return this._pNeedFragmentAnimation;
 		}
 
 		/**
-		 * Indicates whether the pass requires any UV animatin code.
+		 * Indicates whether the pass requires any UV animation code.
 		 */
 		public get needUVAnimation():boolean
 		{
@@ -306,9 +318,9 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iUpdateAnimationState(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iUpdateAnimationState(renderable:RenderableBase, stageGL:StageGL, camera:Camera)
 		{
-			(<away.animators.AnimatorBase> renderable.materialOwner.animator).setRenderState(stageGL, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
+			(<AnimatorBase> renderable.materialOwner.animator).setRenderState(stageGL, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
 		}
 
 		/**
@@ -316,9 +328,9 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 		}
 
 		/**
@@ -326,7 +338,7 @@ module away.materials
 		 */
 		public iGetVertexCode():string
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 		}
 
 		/**
@@ -334,7 +346,7 @@ module away.materials
 		 */
 		public iGetFragmentCode(fragmentAnimatorCode:string):string
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 		}
 
 		/**
@@ -351,7 +363,7 @@ module away.materials
 		{
 			switch (value) {
 
-				case away.base.BlendMode.NORMAL:
+				case BlendMode.NORMAL:
 
 					this._blendFactorSource = ContextGLBlendFactor.ONE;
 					this._blendFactorDest = ContextGLBlendFactor.ZERO;
@@ -359,7 +371,7 @@ module away.materials
 
 					break;
 
-				case away.base.BlendMode.LAYER:
+				case BlendMode.LAYER:
 
 					this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
 					this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
@@ -367,7 +379,7 @@ module away.materials
 
 					break;
 
-				case away.base.BlendMode.MULTIPLY:
+				case BlendMode.MULTIPLY:
 
 					this._blendFactorSource = ContextGLBlendFactor.ZERO;
 					this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
@@ -375,7 +387,7 @@ module away.materials
 
 					break;
 
-				case away.base.BlendMode.ADD:
+				case BlendMode.ADD:
 
 					this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
 					this._blendFactorDest = ContextGLBlendFactor.ONE;
@@ -383,7 +395,7 @@ module away.materials
 
 					break;
 
-				case away.base.BlendMode.ALPHA:
+				case BlendMode.ALPHA:
 
 					this._blendFactorSource = ContextGLBlendFactor.ZERO;
 					this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
@@ -393,7 +405,7 @@ module away.materials
 
 				default:
 
-					throw new away.errors.ArgumentError("Unsupported blend mode!");
+					throw new ArgumentError("Unsupported blend mode!");
 
 			}
 		}
@@ -405,9 +417,9 @@ module away.materials
 		 * @param camera The camera from which the scene is viewed.
 		 * @private
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iActivate(stageGL:StageGL, camera:Camera)
 		{
-			var contextIndex:number = stageGL._iStageGLIndex;//_stageGLIndex;
+			var contextIndex:number = stageGL._iStageGLIndex;
 			var context:IContext = stageGL.contextGL;
 
 			context.setDepthTest(( this._writeDepth && !this._pEnableBlending ), this._depthCompareMode);
@@ -456,10 +468,9 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iDeactivate(stageGL:away.base.StageGL)
+		public iDeactivate(stageGL:StageGL)
 		{
-
-			var index:number = stageGL._iStageGLIndex;//_stageGLIndex;
+			var index:number = stageGL._iStageGLIndex;
 			MaterialPassBase._previousUsedStreams[index] = this._pNumUsedStreams;
 			MaterialPassBase._previousUsedTexs[index] = this._pNumUsedTextures;
 
@@ -528,17 +539,15 @@ module away.materials
 
 			var fragmentCode:string = this.iGetFragmentCode(fragmentAnimatorCode);
 
-			/*
-			 if (this.Debug.active) {
-			 trace("Compiling AGAL Code:");
-			 trace("--------------------");
-			 trace(vertexCode);
-			 trace("--------------------");
-			 trace(fragmentCode);
-			 }
-			 */
+			if (Debug.ENABLE_LOG) {
+				Debug.log("Compiling AGAL Code:");
+				Debug.log("--------------------");
+				Debug.log(vertexCode);
+				Debug.log("--------------------");
+				Debug.log(fragmentCode);
+			}
 
-			away.managers.AGALProgramCache.getInstance(stageGL).setProgram(this._iProgramids, this._iPrograms, vertexCode, fragmentCode);
+			AGALProgramCache.getInstance(stageGL).setProgram(this._iProgramids, this._iPrograms, vertexCode, fragmentCode);
 		}
 
 		/**
@@ -563,7 +572,6 @@ module away.materials
 				this._pLightPicker.addEventListener(Event.CHANGE, this._onLightsChangeDelegate);
 
 			this.pUpdateLights();
-
 		}
 
 		/**
@@ -594,7 +602,11 @@ module away.materials
 
 		public set alphaPremultiplied(value:boolean)
 		{
+			if (this._pAlphaPremultiplied == value)
+				return;
+
 			this._pAlphaPremultiplied = value;
+
 			this.iInvalidateShaderProgram(false);
 		}
 	}

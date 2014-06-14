@@ -2,7 +2,13 @@
 
 module away.materials
 {
-	import SubGeometry								= away.base.TriangleSubGeometry;
+	import TriangleSubGeometry						= away.base.TriangleSubGeometry;
+	import StageGL									= away.base.StageGL;
+	import Matrix3D									= away.geom.Matrix3D;
+	import RenderableBase							= away.pool.RenderableBase;
+	import ContextGLProgramType						= away.stagegl.ContextGLProgramType;
+	import IContext									= away.stagegl.IContext;
+	import RenderTexture							= away.textures.RenderTexture;
 
 	/**
 	 * The SingleObjectDepthPass provides a material pass that renders a single object to a depth map from the point
@@ -45,7 +51,7 @@ module away.materials
 		{
 			if (this._textures) {
 				for (var key in this._textures) {
-					var texture:away.textures.RenderTexture = this._textures[key];
+					var texture:RenderTexture = this._textures[key];
 					texture.dispose();
 				}
 				this._textures = null;
@@ -59,7 +65,7 @@ module away.materials
 		{
 			if (this._textures) {
 				for (var key in this._textures) {
-					var texture:away.textures.RenderTexture = this._textures[key];
+					var texture:RenderTexture = this._textures[key];
 					texture.dispose();
 				}
 			}
@@ -112,7 +118,7 @@ module away.materials
 		 * @param stage3DProxy The Stage3DProxy object currently used for rendering.
 		 * @return A list of depth map textures for all supported lights.
 		 */
-		public _iGetDepthMap(renderable:away.pool.RenderableBase):away.textures.RenderTexture
+		public _iGetDepthMap(renderable:RenderableBase):RenderTexture
 		{
 			return this._textures[renderable.materialOwner.id];
 		}
@@ -122,7 +128,7 @@ module away.materials
 		 * @param renderable The renderable for which to retrieve the projection maps.
 		 * @return A list of projection maps for all supported lights.
 		 */
-		public _iGetProjection(renderable:away.pool.RenderableBase):away.geom.Matrix3D
+		public _iGetProjection(renderable:RenderableBase):Matrix3D
 		{
 			return this._projections[renderable.materialOwner.id];
 		}
@@ -130,20 +136,20 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:RenderableBase, stageGL:StageGL, camera:away.entities.Camera, viewProjection:Matrix3D)
 		{
-			var matrix:away.geom.Matrix3D;
-			var context:away.stagegl.IContext = stageGL.contextGL;
+			var matrix:Matrix3D;
+			var context:IContext = stageGL.contextGL;
 			var len:number /*uint*/;
 			var light:away.lights.LightBase;
 			var lights:Array<away.lights.LightBase> = this._pLightPicker.allPickedLights;
 			var rId:number = renderable.materialOwner.id;
 
 			if (!this._textures[rId])
-				this._textures[rId] = new away.textures.RenderTexture(this._textureSize, this._textureSize);
+				this._textures[rId] = new RenderTexture(this._textureSize, this._textureSize);
 			
 			if (!this._projections[rId])
-				this._projections[rId] = new away.geom.Matrix3D();
+				this._projections[rId] = new Matrix3D();
 			
 			len = lights.length;
 			// local position = enough
@@ -153,18 +159,18 @@ module away.materials
 
 			stageGL.setRenderTarget(this._textures[rId], true);
 			context.clear(1.0, 1.0, 1.0);
-			context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
-			context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
+			context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
+			context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
 
-			stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
-			stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.NORMAL_DATA), renderable.getVertexOffset(SubGeometry.NORMAL_DATA), SubGeometry.NORMAL_FORMAT);
+			stageGL.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+			stageGL.activateBuffer(1, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iActivate(stageGL:StageGL, camera:away.entities.Camera)
 		{
 			if (this._projectionTexturesInvalid)
 				this.updateProjectionTextures();
@@ -172,7 +178,7 @@ module away.materials
 			// never scale
 			super.iActivate(stageGL, camera);
 
-			stageGL.contextGL.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
+			stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
 		}
 	}
 }

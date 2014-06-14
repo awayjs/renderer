@@ -1,9 +1,7 @@
 ///<reference path="../../_definitions.ts"/>
+
 module away.materials
 {
-	//import away3d.materials.LightSources;
-	//import away3d.materials.methods.MethodVO;
-
 	/**
 	 * MethodDependencyCounter keeps track of the number of dependencies for "named registers" used across methods.
 	 * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
@@ -64,59 +62,35 @@ module away.materials
 		 */
 		public includeMethodVO(methodVO:MethodVO)
 		{
-			if (methodVO.needsProjection) {
-
+			if (methodVO.needsProjection)
 				++this._projectionDependencies;
-
-			}
 
 			if (methodVO.needsGlobalVertexPos) {
 
 				++this._globalPosDependencies;
 
-				if (methodVO.needsGlobalFragmentPos) {
-
+				if (methodVO.needsGlobalFragmentPos)
 					this._usesGlobalPosFragment = true;
 
-				}
-
 			} else if (methodVO.needsGlobalFragmentPos) {
-
 				++this._globalPosDependencies;
 				this._usesGlobalPosFragment = true;
-
 			}
 
-			if (methodVO.needsNormals) {
-
+			if (methodVO.needsNormals)
 				++this._normalDependencies;
 
-			}
-
-			if (methodVO.needsTangents) {
-
+			if (methodVO.needsTangents)
 				++this._tangentDependencies;
 
-			}
-
-			if (methodVO.needsView) {
-
+			if (methodVO.needsView)
 				++this._viewDirDependencies;
 
-			}
-
-			if (methodVO.needsUV) {
-
+			if (methodVO.needsUV)
 				++this._uvDependencies;
 
-			}
-
-			if (methodVO.needsSecondaryUV) {
-
+			if (methodVO.needsSecondaryUV)
 				++this._secondaryUVDependencies;
-
-			}
-
 		}
 
 		/**
@@ -189,22 +163,14 @@ module away.materials
 		 */
 		public addWorldSpaceDependencies(fragmentLights:boolean)
 		{
-			if (this._viewDirDependencies > 0) {
-
+			if (this._viewDirDependencies > 0)
 				++this._globalPosDependencies;
-
-			}
-
 
 			if (this._numPointLights > 0 && (this._lightSourceMask & LightSources.LIGHTS)) {
 				++this._globalPosDependencies;
 
-				if (fragmentLights) {
-
+				if (fragmentLights)
 					this._usesGlobalPosFragment = true;
-
-				}
-
 			}
 		}
 	}

@@ -2,11 +2,12 @@
 
 module away.materials
 {
-	import Delegate						= away.utils.Delegate;
-
-	import Camera						= away.entities.Camera;
 	import StageGL						= away.base.StageGL;
+	import Camera						= away.entities.Camera;
+	import ColorTransform				= away.geom.ColorTransform;
+	import ContextGLBlendFactor			= away.stagegl.ContextGLBlendFactor;
 	import ContextGLCompareMode			= away.stagegl.ContextGLCompareMode;
+	import Texture2DBase				= away.textures.Texture2DBase;
 
 	/**
 	 * TriangleMaterial forms an abstract base class for the default shaded materials provided by StageGL,
@@ -17,7 +18,7 @@ module away.materials
 		private _animateUVs:boolean = false;
 		private _alphaBlending:boolean = false;
 		private _alpha:number = 1;
-		private _colorTransform:away.geom.ColorTransform;
+		private _colorTransform:ColorTransform;
 		private _materialMode:string;
 		private _casterLightPass:ShadowCasterPass;
 		private _nonCasterLightPasses:Array<LightingPass>;
@@ -45,7 +46,7 @@ module away.materials
 		 * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
 		 * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
 		 */
-		constructor(texture?:away.textures.Texture2DBase, smooth?:boolean, repeat?:boolean, mipmap?:boolean);
+		constructor(texture?:Texture2DBase, smooth?:boolean, repeat?:boolean, mipmap?:boolean);
 		constructor(color?:number, alpha?:number);
 		constructor(textureColor:any = null, smoothAlpha:any = null, repeat:boolean = false, mipmap:boolean = false)
 		{
@@ -53,8 +54,8 @@ module away.materials
 
 			this._materialMode = TriangleMaterialMode.SINGLE_PASS;
 
-			if (textureColor instanceof away.textures.Texture2DBase) {
-				this.texture = <away.textures.Texture2DBase> textureColor;
+			if (textureColor instanceof Texture2DBase) {
+				this.texture = <Texture2DBase> textureColor;
 
 				this.smooth = (smoothAlpha == null)? true : false;
 				this.repeat = repeat;
@@ -139,7 +140,7 @@ module away.materials
 			this._alpha = value;
 
 			if (this._colorTransform == null)
-				this._colorTransform = new away.geom.ColorTransform();
+				this._colorTransform = new ColorTransform();
 
 			this._colorTransform.alphaMultiplier = value;
 
@@ -149,12 +150,12 @@ module away.materials
 		/**
 		 * The ColorTransform object to transform the colour of the material with. Defaults to null.
 		 */
-		public get colorTransform():away.geom.ColorTransform
+		public get colorTransform():ColorTransform
 		{
 			return this._screenPass.colorTransform;
 		}
 
-		public set colorTransform(value:away.geom.ColorTransform)
+		public set colorTransform(value:ColorTransform)
 		{
 			this._screenPass.colorTransform = value;
 		}
@@ -175,12 +176,12 @@ module away.materials
 		/**
 		 * The texture object to use for the albedo colour.
 		 */
-		public get texture():away.textures.Texture2DBase
+		public get texture():Texture2DBase
 		{
 			return this._diffuseMethod.texture;
 		}
 
-		public set texture(value:away.textures.Texture2DBase)
+		public set texture(value:Texture2DBase)
 		{
 			this._diffuseMethod.texture = value;
 
@@ -193,12 +194,12 @@ module away.materials
 		/**
 		 * The texture object to use for the ambient colour.
 		 */
-		public get ambientTexture():away.textures.Texture2DBase
+		public get ambientTexture():Texture2DBase
 		{
 			return this.ambientMethod.texture;
 		}
 
-		public set ambientTexture(value:away.textures.Texture2DBase)
+		public set ambientTexture(value:Texture2DBase)
 		{
 			this._ambientMethod.texture = value;
 
@@ -478,12 +479,12 @@ module away.materials
 		 * The normal map to modulate the direction of the surface for each texel. The default normal method expects
 		 * tangent-space normal maps, but others could expect object-space maps.
 		 */
-		public get normalMap():away.textures.Texture2DBase
+		public get normalMap():Texture2DBase
 		{
 			return this._normalMethod.normalMap;
 		}
 
-		public set normalMap(value:away.textures.Texture2DBase)
+		public set normalMap(value:Texture2DBase)
 		{
 			this._normalMethod.normalMap = value;
 		}
@@ -493,12 +494,12 @@ module away.materials
 		 * and the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set
 		 * specular and gloss maps from grayscale images, but correctly authored images are preferred.
 		 */
-		public get specularMap():away.textures.Texture2DBase
+		public get specularMap():Texture2DBase
 		{
 			return this._specularMethod.texture;
 		}
 
-		public set specularMap(value:away.textures.Texture2DBase)
+		public set specularMap(value:Texture2DBase)
 		{
 			this._specularMethod.texture = value;
 		}
@@ -661,7 +662,7 @@ module away.materials
 		public iActivatePass(index:number, stageGL:StageGL, camera:Camera)
 		{
 			if (index == 0)
-				stageGL.contextGL.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
+				stageGL.contextGL.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 
 			super.iActivatePass(index, stageGL, camera);
 		}
@@ -673,7 +674,7 @@ module away.materials
 		{
 			super.iDeactivate(stageGL);
 
-			stageGL.contextGL.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
+			stageGL.contextGL.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 		}
 
 		/**
@@ -743,7 +744,7 @@ module away.materials
 				for (var i:number = firstAdditiveIndex; i < this._nonCasterLightPasses.length; ++i) {
 					this._nonCasterLightPasses[i].forceSeparateMVP = forceSeparateMVP;
 					this._nonCasterLightPasses[i].setBlendMode(away.base.BlendMode.ADD);
-					this._nonCasterLightPasses[i].depthCompareMode = away.stagegl.ContextGLCompareMode.LESS_EQUAL;
+					this._nonCasterLightPasses[i].depthCompareMode = ContextGLCompareMode.LESS_EQUAL;
 				}
 			}
 
@@ -754,7 +755,7 @@ module away.materials
 				// there are light passes, so this should be blended in
 				if (this._screenPass) {
 					this._screenPass.iIgnoreLights = true;
-					this._screenPass.depthCompareMode = away.stagegl.ContextGLCompareMode.LESS_EQUAL;
+					this._screenPass.depthCompareMode = ContextGLCompareMode.LESS_EQUAL;
 					this._screenPass.setBlendMode(away.base.BlendMode.LAYER);
 					this._screenPass.forceSeparateMVP = forceSeparateMVP;
 				}

@@ -1429,7 +1429,7 @@ declare module away.materials {
         /**
         * The depth compare mode used to render the renderables using this material.
         *
-        * @see flash.displayGL.ContextGLCompareMode
+        * @see away.stagegl.ContextGLCompareMode
         */
         public depthCompareMode : string;
         /**
@@ -1458,9 +1458,12 @@ declare module away.materials {
         * The amount of used fragment constants in the fragment code. Used by the animation code generation to know from which index on registers are available.
         */
         public numUsedFragmentConstants : number;
+        /**
+        * Indicates whether the pass requires any fragment animation code.
+        */
         public needFragmentAnimation : boolean;
         /**
-        * Indicates whether the pass requires any UV animatin code.
+        * Indicates whether the pass requires any UV animation code.
         */
         public needUVAnimation : boolean;
         /**
@@ -1782,7 +1785,7 @@ declare module away.materials {
     * SuperShaderPass is a shader pass that uses shader methods to compile a complete program. It includes all methods
     * associated with a material.
     *
-    * @see away3d.materials.methods.ShadingMethodBase
+    * @see away.materials.ShadingMethodBase
     */
     class SuperShaderPass extends CompiledPass {
         private _includeCasters;
@@ -1974,9 +1977,9 @@ declare module away.materials {
 declare module away.materials {
     /**
     * LightingPass is a shader pass that uses shader methods to compile a complete program. It only includes the lighting
-    * methods. It's used by multipass materials to accumulate lighting passes.
+    * methods. It's used by multipass triangle materials to accumulate lighting passes.
     *
-    * @see away3d.materials.MultiPassMaterialBase
+    * @see away.materials.TriangleMaterial
     */
     class LightingPass extends CompiledPass {
         private _includeCasters;
@@ -4998,7 +5001,7 @@ declare module away.materials {
     * or single components (x, y, z, w) of a single register.
     * It is used by ShaderRegisterCache to track usages of individual register types.
     *
-    * @see away3d.materials.compilation.ShaderRegisterCache
+    * @see away.materials.ShaderRegisterCache
     */
     class RegisterPool {
         private static _regPool;
@@ -5062,7 +5065,7 @@ declare module away.materials {
     * ShaderCompiler is an abstract base class for shader compilers that use modular shader methods to assemble a
     * material. Concrete subclasses are used by the default materials.
     *
-    * @see away3d.materials.methods.ShadingMethodBase
+    * @see away.materials.ShadingMethodBase
     */
     class ShaderCompiler {
         public _pSharedRegisters: ShaderRegisterData;
@@ -5141,6 +5144,7 @@ declare module away.materials {
         public forceSeperateMVP : boolean;
         /**
         * Initialized the register cache.
+        *
         * @param profile The compatibility profile of the renderer.
         */
         private initRegisterCache(profile);
@@ -5295,14 +5299,14 @@ declare module away.materials {
         * Define which light source types to use for specular reflections. This allows choosing between regular lights
         * and/or light probes for specular reflections.
         *
-        * @see away3d.materials.LightSources
+        * @see away.materials.LightSources
         */
         public specularLightSources : number;
         /**
         * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
         * and/or light probes for diffuse reflections.
         *
-        * @see away3d.materials.LightSources
+        * @see away.materials.LightSources
         */
         public diffuseLightSources : number;
         /**
@@ -5485,10 +5489,10 @@ declare module away.materials {
     * want to use light probes for diffuse global lighting, but want specular reflections from
     * traditional light sources without those affecting the diffuse light.
     *
-    * @see away3d.materials.ColorMaterial.diffuseLightSources
-    * @see away3d.materials.ColorMaterial.specularLightSources
-    * @see away3d.materials.TextureMaterial.diffuseLightSources
-    * @see away3d.materials.TextureMaterial.specularLightSources
+    * @see away.materials.ColorMaterial.diffuseLightSources
+    * @see away.materials.ColorMaterial.specularLightSources
+    * @see away.materials.TextureMaterial.diffuseLightSources
+    * @see away.materials.TextureMaterial.specularLightSources
     */
     class LightSources {
         /**
@@ -6139,7 +6143,7 @@ declare module away.materials {
     /**
     * LineMaterial is a material exclusively used to render wireframe objects
     *
-    * @see away3d.entities.Lines
+    * @see away.entities.Lines
     */
     class LineMaterial extends MaterialBase {
         private _screenPass;

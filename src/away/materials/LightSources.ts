@@ -7,10 +7,10 @@ module away.materials
 	 * want to use light probes for diffuse global lighting, but want specular reflections from
 	 * traditional light sources without those affecting the diffuse light.
 	 *
-	 * @see away3d.materials.ColorMaterial.diffuseLightSources
-	 * @see away3d.materials.ColorMaterial.specularLightSources
-	 * @see away3d.materials.TextureMaterial.diffuseLightSources
-	 * @see away3d.materials.TextureMaterial.specularLightSources
+	 * @see away.materials.ColorMaterial.diffuseLightSources
+	 * @see away.materials.ColorMaterial.specularLightSources
+	 * @see away.materials.TextureMaterial.diffuseLightSources
+	 * @see away.materials.TextureMaterial.specularLightSources
 	 */
 	export class LightSources
 	{

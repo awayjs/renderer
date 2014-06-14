@@ -1,7 +1,16 @@
 ﻿///<reference path="../../_definitions.ts"/>
 module away.materials
 {
-	import SubGeometry								= away.base.TriangleSubGeometry;
+	import TriangleSubGeometry						= away.base.TriangleSubGeometry;
+	import StageGL									= away.base.StageGL;
+	import Camera									= away.entities.Camera;
+	import Matrix3D									= away.geom.Matrix3D;
+	import Matrix3DUtils							= away.geom.Matrix3DUtils;
+	import RenderableBase							= away.pool.RenderableBase;
+	import ContextGLProgramType						= away.stagegl.ContextGLProgramType;
+	import ContextGLTextureFormat					= away.stagegl.ContextGLTextureFormat;
+	import IContext									= away.stagegl.IContext;
+	import Texture2DBase							= away.textures.Texture2DBase;
 
 	/**
 	 * DistanceMapPass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
@@ -12,7 +21,7 @@ module away.materials
 		private _fragmentData:Array<number>;
 		private _vertexData:Array<number>;
 		private _alphaThreshold:number;
-		private _alphaMask:away.textures.Texture2DBase;
+		private _alphaMask:Texture2DBase;
 
 		/**
 		 * Creates a new DistanceMapPass object.
@@ -59,12 +68,12 @@ module away.materials
 		 * A texture providing alpha data to be able to prevent semi-transparent pixels to write to the alpha mask.
 		 * Usually the diffuse texture when alphaThreshold is used.
 		 */
-		public get alphaMask():away.textures.Texture2DBase
+		public get alphaMask():Texture2DBase
 		{
 			return this._alphaMask;
 		}
 
-		public set alphaMask(value:away.textures.Texture2DBase)
+		public set alphaMask(value:Texture2DBase)
 		{
 			this._alphaMask = value;
 		}
@@ -124,7 +133,7 @@ module away.materials
 				var format:string;
 
 				switch (this._alphaMask.format) {
-					case away.stagegl.ContextGLTextureFormat.COMPRESSED:
+					case ContextGLTextureFormat.COMPRESSED:
 						format = "dxt1,";
 						break;
 
@@ -147,43 +156,43 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
 		{
-			var context:away.stagegl.IContext = stageGL.contextGL;
-			var pos:away.geom.Vector3D = camera.scenePosition;
+			var context:IContext = stageGL.contextGL;
+			var pos:Vector3D = camera.scenePosition;
 
 			this._vertexData[0] = pos.x;
 			this._vertexData[1] = pos.y;
 			this._vertexData[2] = pos.z;
 			this._vertexData[3] = 1;
 
-			var sceneTransform:away.geom.Matrix3D = renderable.sourceEntity.getRenderSceneTransform(camera);
+			var sceneTransform:Matrix3D = renderable.sourceEntity.getRenderSceneTransform(camera);
 
-			context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 5, sceneTransform, true);
+			context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 5, sceneTransform, true);
 
-			context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
+			context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
 
 			if (this._alphaThreshold > 0)
-				stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(SubGeometry.SECONDARY_UV_DATA), SubGeometry.SECONDARY_UV_FORMAT);
+				stageGL.activateBuffer(1, renderable.getVertexData(TriangleSubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.SECONDARY_UV_DATA), TriangleSubGeometry.SECONDARY_UV_FORMAT);
 
 
-			var matrix:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
+			var matrix:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
 
 			matrix.copyFrom(sceneTransform);
 			matrix.append(viewProjection);
 
-			context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
+			context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
 
-			stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+			stageGL.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iActivate(stageGL:StageGL, camera:Camera)
 		{
-			var context:away.stagegl.IContext = stageGL.contextGL;
+			var context:IContext = stageGL.contextGL;
 			super.iActivate(stageGL, camera);
 
 			var f:number = camera.projection.far;
@@ -197,9 +206,9 @@ module away.materials
 
 			if (this._alphaThreshold > 0) {
 				this._alphaMask.activateTextureForStage(0, stageGL);
-				context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
+				context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
 			} else {
-				context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);
+				context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);
 			}
 		}
 	}

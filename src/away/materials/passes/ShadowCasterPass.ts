@@ -10,7 +10,6 @@ module away.materials
 	 *
 	 * @see away3d.materials.methods.ShadingMethodBase
 	 */
-
 	export class ShadowCasterPass extends CompiledPass
 	{
 		private _tangentSpace:boolean;
@@ -46,10 +45,8 @@ module away.materials
 			var numDirectionalLights:number = 0;
 
 			if (this._pLightPicker) {
-
 				numPointLights = this._pLightPicker.numCastingPointLights > 0? 1 : 0;
 				numDirectionalLights = this._pLightPicker.numCastingDirectionalLights > 0? 1 : 0;
-
 			} else {
 				numPointLights = 0;
 				numDirectionalLights = 0;
@@ -57,9 +54,8 @@ module away.materials
 
 			this._pNumLightProbes = 0;
 
-			if (numPointLights + numDirectionalLights > 1) {
+			if (numPointLights + numDirectionalLights > 1)
 				throw new Error("Must have exactly one light!");
-			}
 
 			if (numPointLights != this._pNumPointLights || numDirectionalLights != this._pNumDirectionalLights) {
 				this._pNumPointLights = numPointLights;
@@ -75,9 +71,7 @@ module away.materials
 		{
 			super.pUpdateShaderProperties();
 
-			var c:LightingShaderCompiler = <LightingShaderCompiler> this._pCompiler;
-			this._tangentSpace = c.tangentSpace;
-
+			this._tangentSpace = (<LightingShaderCompiler> this._pCompiler).tangentSpace;
 		}
 
 		/**
@@ -87,9 +81,7 @@ module away.materials
 		{
 			super.pUpdateRegisterIndices();
 
-			var c:LightingShaderCompiler = <LightingShaderCompiler> this._pCompiler;
-
-			this._lightVertexConstantIndex = c.lightVertexConstantIndex;
+			this._lightVertexConstantIndex = (<LightingShaderCompiler> this._pCompiler).lightVertexConstantIndex;
 
 		}
 

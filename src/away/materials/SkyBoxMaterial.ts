@@ -1,8 +1,8 @@
 ///<reference path="../_definitions.ts"/>
 
-
 module away.materials
 {
+	import CubeTextureBase				= away.textures.CubeTextureBase;
 
 	/**
 	 * SkyboxMaterial is a material exclusively used to render skyboxes
@@ -11,14 +11,14 @@ module away.materials
 	 */
 	export class SkyboxMaterial extends MaterialBase
 	{
-		private _cubeMap:away.textures.CubeTextureBase;
+		private _cubeMap:CubeTextureBase;
 		private _skyboxPass:SkyboxPass;
 
 		/**
 		 * Creates a new SkyboxMaterial object.
 		 * @param cubeMap The CubeMap to use as the skybox.
 		 */
-		constructor(cubeMap:away.textures.CubeTextureBase, smooth:boolean = true, repeat:boolean = false, mipmap:boolean = false)
+		constructor(cubeMap:CubeTextureBase, smooth:boolean = true, repeat:boolean = false, mipmap:boolean = false)
 		{
 
 			super();
@@ -31,12 +31,12 @@ module away.materials
 		/**
 		 * The cube texture to use as the skybox.
 		 */
-		public get cubeMap():away.textures.CubeTextureBase
+		public get cubeMap():CubeTextureBase
 		{
 			return this._cubeMap;
 		}
 
-		public set cubeMap(value:away.textures.CubeTextureBase)
+		public set cubeMap(value:CubeTextureBase)
 		{
 			if (value && this._cubeMap && (value.hasMipmaps != this._cubeMap.hasMipmaps || value.format != this._cubeMap.format))
 				this.iInvalidatePasses(null);

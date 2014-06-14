@@ -4803,13 +4803,17 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
+        var BlendMode = away.base.BlendMode;
+
+        var AbstractMethodError = away.errors.AbstractMethodError;
+        var ArgumentError = away.errors.ArgumentError;
+        var Event = away.events.Event;
+
+        var AGALProgramCache = away.managers.AGALProgramCache;
+
         var ContextGLBlendFactor = away.stagegl.ContextGLBlendFactor;
         var ContextGLCompareMode = away.stagegl.ContextGLCompareMode;
         var ContextGLTriangleFace = away.stagegl.ContextGLTriangleFace;
-
-        var Event = away.events.Event;
-
-        var Delegate = away.utils.Delegate;
 
         /**
         * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
@@ -4824,6 +4828,7 @@ var away;
             */
             function MaterialPassBase(renderToTexture) {
                 if (typeof renderToTexture === "undefined") { renderToTexture = false; }
+                var _this = this;
                 _super.call(this);
                 this._iPrograms = new Array(8);
                 this._iProgramids = new Array(-1, -1, -1, -1, -1, -1, -1, -1);
@@ -4845,7 +4850,9 @@ var away;
                 this._pAlphaPremultiplied = false;
                 this._writeDepth = true;
 
-                this._onLightsChangeDelegate = Delegate.create(this, this.onLightsChange);
+                this._onLightsChangeDelegate = function (event) {
+                    return _this.onLightsChange(event);
+                };
 
                 this._renderToTexture = renderToTexture;
                 this._pNumUsedStreams = 1;
@@ -4962,7 +4969,7 @@ var away;
                 /**
                 * The depth compare mode used to render the renderables using this material.
                 *
-                * @see flash.displayGL.ContextGLCompareMode
+                * @see away.stagegl.ContextGLCompareMode
                 */
                 get: function () {
                     return this._depthCompareMode;
@@ -5064,6 +5071,9 @@ var away;
             });
 
             Object.defineProperty(MaterialPassBase.prototype, "needFragmentAnimation", {
+                /**
+                * Indicates whether the pass requires any fragment animation code.
+                */
                 get: function () {
                     return this._pNeedFragmentAnimation;
                 },
@@ -5073,7 +5083,7 @@ var away;
 
             Object.defineProperty(MaterialPassBase.prototype, "needUVAnimation", {
                 /**
-                * Indicates whether the pass requires any UV animatin code.
+                * Indicates whether the pass requires any UV animation code.
                 */
                 get: function () {
                     return this._pNeedUVAnimation;
@@ -5097,21 +5107,21 @@ var away;
             * @private
             */
             MaterialPassBase.prototype.iRender = function (renderable, stageGL, camera, viewProjection) {
-                throw new away.errors.AbstractMethodError();
+                throw new AbstractMethodError();
             };
 
             /**
             * Returns the vertex AGAL code for the material.
             */
             MaterialPassBase.prototype.iGetVertexCode = function () {
-                throw new away.errors.AbstractMethodError();
+                throw new AbstractMethodError();
             };
 
             /**
             * Returns the fragment AGAL code for the material.
             */
             MaterialPassBase.prototype.iGetFragmentCode = function (fragmentAnimatorCode) {
-                throw new away.errors.AbstractMethodError();
+                throw new AbstractMethodError();
             };
 
             /**
@@ -5126,35 +5136,35 @@ var away;
             */
             MaterialPassBase.prototype.setBlendMode = function (value) {
                 switch (value) {
-                    case away.base.BlendMode.NORMAL:
+                    case BlendMode.NORMAL:
                         this._blendFactorSource = ContextGLBlendFactor.ONE;
                         this._blendFactorDest = ContextGLBlendFactor.ZERO;
                         this._pEnableBlending = false;
 
                         break;
 
-                    case away.base.BlendMode.LAYER:
+                    case BlendMode.LAYER:
                         this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
                         this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
                         this._pEnableBlending = true;
 
                         break;
 
-                    case away.base.BlendMode.MULTIPLY:
+                    case BlendMode.MULTIPLY:
                         this._blendFactorSource = ContextGLBlendFactor.ZERO;
                         this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
                         this._pEnableBlending = true;
 
                         break;
 
-                    case away.base.BlendMode.ADD:
+                    case BlendMode.ADD:
                         this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
                         this._blendFactorDest = ContextGLBlendFactor.ONE;
                         this._pEnableBlending = true;
 
                         break;
 
-                    case away.base.BlendMode.ALPHA:
+                    case BlendMode.ALPHA:
                         this._blendFactorSource = ContextGLBlendFactor.ZERO;
                         this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
                         this._pEnableBlending = true;
@@ -5162,7 +5172,7 @@ var away;
                         break;
 
                     default:
-                        throw new away.errors.ArgumentError("Unsupported blend mode!");
+                        throw new ArgumentError("Unsupported blend mode!");
                 }
             };
 
@@ -5286,16 +5296,15 @@ var away;
 
                 var fragmentCode = this.iGetFragmentCode(fragmentAnimatorCode);
 
-                /*
-                if (this.Debug.active) {
-                trace("Compiling AGAL Code:");
-                trace("--------------------");
-                trace(vertexCode);
-                trace("--------------------");
-                trace(fragmentCode);
+                if (away.Debug.ENABLE_LOG) {
+                    away.Debug.log("Compiling AGAL Code:");
+                    away.Debug.log("--------------------");
+                    away.Debug.log(vertexCode);
+                    away.Debug.log("--------------------");
+                    away.Debug.log(fragmentCode);
                 }
-                */
-                away.managers.AGALProgramCache.getInstance(stageGL).setProgram(this._iProgramids, this._iPrograms, vertexCode, fragmentCode);
+
+                AGALProgramCache.getInstance(stageGL).setProgram(this._iProgramids, this._iPrograms, vertexCode, fragmentCode);
             };
 
             Object.defineProperty(MaterialPassBase.prototype, "lightPicker", {
@@ -5347,7 +5356,11 @@ var away;
                     return this._pAlphaPremultiplied;
                 },
                 set: function (value) {
+                    if (this._pAlphaPremultiplied == value)
+                        return;
+
                     this._pAlphaPremultiplied = value;
+
                     this.iInvalidateShaderProgram(false);
                 },
                 enumerable: true,
@@ -5370,11 +5383,10 @@ var away;
     (function (materials) {
         var SubGeometry = away.base.TriangleSubGeometry;
 
-        var Matrix3DUtils = away.geom.Matrix3DUtils;
-
-        var Delegate = away.utils.Delegate;
-
+        var AbstractMethodError = away.errors.AbstractMethodError;
         var ShadingMethodEvent = away.events.ShadingMethodEvent;
+
+        var Matrix3DUtils = away.geom.Matrix3DUtils;
 
         /**
         * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
@@ -5387,6 +5399,7 @@ var away;
             * @param material The material to which this pass belongs.
             */
             function CompiledPass(material) {
+                var _this = this;
                 _super.call(this);
                 this._pSpecularLightSources = 0x01;
                 this._pDiffuseLightSources = 0x03;
@@ -5402,7 +5415,9 @@ var away;
 
                 this._pMaterial = material;
 
-                this._onShaderInvalidatedDelegate = Delegate.create(this, this.onShaderInvalidated);
+                this._onShaderInvalidatedDelegate = function (event) {
+                    return _this.onShaderInvalidated(event);
+                };
 
                 this.init();
             }
@@ -5491,10 +5506,10 @@ var away;
             CompiledPass.prototype.reset = function (profile) {
                 this.iInitCompiler(profile);
 
-                this.pUpdateShaderProperties(); //this.updateShaderProperties();
+                this.pUpdateShaderProperties();
                 this.initConstantData();
 
-                this.pCleanUp(); //this.cleanUp();
+                this.pCleanUp();
             };
 
             /**
@@ -5554,7 +5569,7 @@ var away;
             * @param profile The compatibility profile used by the renderer.
             */
             CompiledPass.prototype.pCreateCompiler = function (profile) {
-                throw new away.errors.AbstractMethodError();
+                throw new AbstractMethodError();
             };
 
             /**
@@ -5608,6 +5623,7 @@ var away;
                         return;
 
                     this._preserveAlpha = value;
+
                     this.iInvalidateShaderProgram();
                 },
                 enumerable: true,
@@ -5738,6 +5754,7 @@ var away;
             */
             CompiledPass.prototype.dispose = function () {
                 _super.prototype.dispose.call(this);
+
                 this._pMethodSetup.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
                 this._pMethodSetup.dispose();
                 this._pMethodSetup = null;
@@ -5749,10 +5766,10 @@ var away;
             CompiledPass.prototype.iInvalidateShaderProgram = function (updateMaterial) {
                 if (typeof updateMaterial === "undefined") { updateMaterial = true; }
                 var oldPasses = this._iPasses;
-                this._iPasses = new Array(); //= new Vector.<MaterialPassBase>();
+                this._iPasses = new Array();
 
                 if (this._pMethodSetup)
-                    this.pAddPassesFromMethods(); //this.addPassesFromMethods();
+                    this.pAddPassesFromMethods();
 
                 if (!oldPasses || this._iPasses.length != oldPasses.length) {
                     this._iPassesDirty = true;
@@ -5877,7 +5894,7 @@ var away;
             * Called when any method's shader code is invalidated.
             */
             CompiledPass.prototype.onShaderInvalidated = function (event) {
-                this.iInvalidateShaderProgram(); //invalidateShaderProgram();
+                this.iInvalidateShaderProgram();
             };
 
             /**
@@ -5891,7 +5908,6 @@ var away;
             * @inheritDoc
             */
             CompiledPass.prototype.iGetFragmentCode = function (animatorCode) {
-                //TODO: AGAL <> GLSL conversion
                 return this._fragmentLightCode + animatorCode + this._framentPostLightCode;
             };
 
@@ -5922,6 +5938,7 @@ var away;
             CompiledPass.prototype.iRender = function (renderable, stageGL, camera, viewProjection) {
                 var i;
                 var context = stageGL.contextGL;
+
                 if (this._uvBufferIndex >= 0)
                     stageGL.activateBuffer(this._uvBufferIndex, renderable.getVertexData(SubGeometry.UV_DATA), renderable.getVertexOffset(SubGeometry.UV_DATA), SubGeometry.UV_FORMAT);
 
@@ -5965,8 +5982,6 @@ var away;
                 if (this._sceneMatrixIndex >= 0) {
                     renderable.sourceEntity.getRenderSceneTransform(camera).copyRawDataTo(this._pVertexConstantData, this._sceneMatrixIndex, true);
                     viewProjection.copyRawDataTo(this._pVertexConstantData, 0, true);
-                    //this._pVertexConstantData = renderable.getRenderSceneTransform(camera).copyRawDataTo( this._sceneMatrixIndex, true);
-                    //this._pVertexConstantData = viewProjection.copyRawDataTo( 0, true);
                 } else {
                     var matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
 
@@ -5974,13 +5989,10 @@ var away;
                     matrix3D.append(viewProjection);
 
                     matrix3D.copyRawDataTo(this._pVertexConstantData, 0, true);
-                    //this._pVertexConstantData = matrix3D.copyRawDataTo( 0, true);
                 }
 
-                if (this._sceneNormalMatrixIndex >= 0) {
+                if (this._sceneNormalMatrixIndex >= 0)
                     renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
-                    //this._pVertexConstantData = renderable.inverseSceneTransform.copyRawDataTo(this._sceneNormalMatrixIndex, false);
-                }
 
                 if (this._usesNormals)
                     this._pMethodSetup._iNormalMethod.iSetRenderState(this._pMethodSetup._iNormalMethodVO, renderable, stageGL, camera);
@@ -6007,7 +6019,6 @@ var away;
 
                 for (i = 0; i < len; ++i) {
                     var aset = methods[i];
-
                     aset.method.iSetRenderState(aset.data, renderable, stageGL, camera);
                 }
 
@@ -6101,7 +6112,7 @@ var away;
         * SuperShaderPass is a shader pass that uses shader methods to compile a complete program. It includes all methods
         * associated with a material.
         *
-        * @see away3d.materials.methods.ShadingMethodBase
+        * @see away.materials.ShadingMethodBase
         */
         var SuperShaderPass = (function (_super) {
             __extends(SuperShaderPass, _super);
@@ -6113,6 +6124,7 @@ var away;
             function SuperShaderPass(material) {
                 _super.call(this, material);
                 this._includeCasters = true;
+
                 this._pNeedFragmentAnimation = true;
             }
             /**
@@ -6151,7 +6163,6 @@ var away;
                 },
                 set: function (value) {
                     if (value) {
-                        //colorTransformMethod ||= new away.geom.ColorTransform();
                         if (this.colorTransformMethod == null)
                             this.colorTransformMethod = new materials.EffectColorTransformMethod();
 
@@ -6258,7 +6269,7 @@ var away;
                     this._pNumLightProbes = 0;
                 }
 
-                this.iInvalidateShaderProgram(); //invalidateShaderProgram();
+                this.iInvalidateShaderProgram();
             };
 
             /**
@@ -6460,7 +6471,6 @@ var away;
                 var len = lightProbes.length;
                 var addDiff = this.usesProbesForDiffuse();
                 var addSpec = (this._pMethodSetup._iSpecularMethod && this.usesProbesForSpecular());
-                var context = stageGL.contextGL;
 
                 if (!(addDiff || addSpec))
                     return;
@@ -6506,7 +6516,12 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        var SubGeometry = away.base.TriangleSubGeometry;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+
+        var Matrix3DUtils = away.geom.Matrix3DUtils;
+
+        var ContextGLProgramType = away.stagegl.ContextGLProgramType;
+        var ContextGLTextureFormat = away.stagegl.ContextGLTextureFormat;
 
         /**
         * DepthMapPass is a pass that writes depth values to a depth map as a 32-bit value exploded over the 4 texture channels.
@@ -6603,7 +6618,6 @@ var away;
                 else
                     filter = this._pMipmap ? "nearest,mipnearest" : "nearest";
 
-                // TODO: AGAL<>GLSL
                 var codeF = "div ft2, v0, v0.w\n" + "mul ft0, fc0, ft2.z\n" + "frc ft0, ft0\n" + "mul ft1, ft0.yzww, fc1\n";
 
                 //codeF += "mov ft1.w, fc1.w	\n" +
@@ -6612,7 +6626,7 @@ var away;
                     var format;
 
                     switch (this._alphaMask.format) {
-                        case away.stagegl.ContextGLTextureFormat.COMPRESSED:
+                        case ContextGLTextureFormat.COMPRESSED:
                             format = "dxt1,";
                             break;
 
@@ -6637,16 +6651,16 @@ var away;
             */
             DepthMapPass.prototype.iRender = function (renderable, stageGL, camera, viewProjection) {
                 if (this._alphaThreshold > 0)
-                    stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.UV_DATA), renderable.getVertexOffset(SubGeometry.UV_DATA), SubGeometry.UV_FORMAT);
+                    stageGL.activateBuffer(1, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
 
                 var context = stageGL.contextGL;
-                var matrix = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
+                var matrix = Matrix3DUtils.CALCULATION_MATRIX;
 
                 matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
                 matrix.append(viewProjection);
-                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
+                context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
 
-                stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+                stageGL.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
                 context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
             };
 
@@ -6660,9 +6674,9 @@ var away;
 
                 if (this._alphaThreshold > 0) {
                     this._alphaMask.activateTextureForStage(0, stageGL);
-                    context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._data, 3);
+                    context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 3);
                 } else {
-                    context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._data, 2);
+                    context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 2);
                 }
             };
             return DepthMapPass;
@@ -6675,7 +6689,12 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
-        var SubGeometry = away.base.TriangleSubGeometry;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+
+        var Matrix3DUtils = away.geom.Matrix3DUtils;
+
+        var ContextGLProgramType = away.stagegl.ContextGLProgramType;
+        var ContextGLTextureFormat = away.stagegl.ContextGLTextureFormat;
 
         /**
         * DistanceMapPass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
@@ -6781,7 +6800,7 @@ var away;
                     var format;
 
                     switch (this._alphaMask.format) {
-                        case away.stagegl.ContextGLTextureFormat.COMPRESSED:
+                        case ContextGLTextureFormat.COMPRESSED:
                             format = "dxt1,";
                             break;
 
@@ -6815,21 +6834,21 @@ var away;
 
                 var sceneTransform = renderable.sourceEntity.getRenderSceneTransform(camera);
 
-                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 5, sceneTransform, true);
+                context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 5, sceneTransform, true);
 
-                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
+                context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
 
                 if (this._alphaThreshold > 0)
-                    stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(SubGeometry.SECONDARY_UV_DATA), SubGeometry.SECONDARY_UV_FORMAT);
+                    stageGL.activateBuffer(1, renderable.getVertexData(TriangleSubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.SECONDARY_UV_DATA), TriangleSubGeometry.SECONDARY_UV_FORMAT);
 
-                var matrix = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
+                var matrix = Matrix3DUtils.CALCULATION_MATRIX;
 
                 matrix.copyFrom(sceneTransform);
                 matrix.append(viewProjection);
 
-                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
+                context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
 
-                stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+                stageGL.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
                 context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
             };
 
@@ -6852,9 +6871,9 @@ var away;
 
                 if (this._alphaThreshold > 0) {
                     this._alphaMask.activateTextureForStage(0, stageGL);
-                    context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
+                    context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
                 } else {
-                    context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);
+                    context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);
                 }
             };
             return DistanceMapPass;
@@ -6867,26 +6886,11 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        //import away3d.arcane;
-        //import away3d.cameras.Camera;
-        //import away3d.core.base.IRenderable;
-        //import away3d.base.StageGL;
-        //import away3d.lights.DirectionalLight;
-        //import away3d.lights.LightProbe;
-        //import away3d.lights.PointLight;
-        //import away3d.materials.LightSources;
-        //import away3d.materials.MaterialBase;
-        //import away3d.materials.compilation.LightingShaderCompiler;
-        //import away3d.materials.compilation.ShaderCompiler;
-        //import flash.displayGL.ContextGL;
-        //import flash.geom.Matrix3D;
-        //import flash.geom.Vector3D;
-        //use namespace arcane;
         /**
         * LightingPass is a shader pass that uses shader methods to compile a complete program. It only includes the lighting
-        * methods. It's used by multipass materials to accumulate lighting passes.
+        * methods. It's used by multipass triangle materials to accumulate lighting passes.
         *
-        * @see away3d.materials.MultiPassMaterialBase
+        * @see away.materials.TriangleMaterial
         */
         var LightingPass = (function (_super) {
             __extends(LightingPass, _super);
@@ -6967,7 +6971,9 @@ var away;
                 set: function (value) {
                     if (this._includeCasters == value)
                         return;
+
                     this._includeCasters = value;
+
                     this.iInvalidateShaderProgram();
                 },
                 enumerable: true,
@@ -7045,8 +7051,7 @@ var away;
             LightingPass.prototype.pUpdateShaderProperties = function () {
                 _super.prototype.pUpdateShaderProperties.call(this);
 
-                var compilerV = this._pCompiler;
-                this._tangentSpace = compilerV.tangentSpace;
+                this._tangentSpace = this._pCompiler.tangentSpace;
             };
 
             /**
@@ -7055,8 +7060,7 @@ var away;
             LightingPass.prototype.pUpdateRegisterIndices = function () {
                 _super.prototype.pUpdateRegisterIndices.call(this);
 
-                var compilerV = this._pCompiler;
-                this._lightVertexConstantIndex = compilerV.lightVertexConstantIndex;
+                this._lightVertexConstantIndex = this._pCompiler.lightVertexConstantIndex;
             };
 
             /**
@@ -7139,7 +7143,9 @@ var away;
                 for (; cast < numLightTypes; ++cast) {
                     if (cast)
                         dirLights = this._pLightPicker.castingDirectionalLights;
+
                     len = dirLights.length;
+
                     if (len > this._pNumDirectionalLights)
                         len = this._pNumDirectionalLights;
 
@@ -7189,9 +7195,8 @@ var away;
                 if (this._pNumDirectionalLights > total) {
                     i = k + (this._pNumDirectionalLights - total) * 12;
 
-                    while (k < i) {
+                    while (k < i)
                         this._pFragmentConstantData[k++] = 0;
-                    }
                 }
 
                 total = 0;
@@ -7208,9 +7213,8 @@ var away;
                 }
 
                 for (; cast < numLightTypes; ++cast) {
-                    if (cast) {
+                    if (cast)
                         pointLights = this._pLightPicker.castingPointLights;
-                    }
 
                     len = pointLights.length;
 
@@ -7235,6 +7239,7 @@ var away;
                             this._pVertexConstantData[l++] = dirPos.y;
                             this._pVertexConstantData[l++] = dirPos.z;
                         }
+
                         this._pVertexConstantData[l++] = 1;
 
                         this._pFragmentConstantData[k++] = pointLight._iDiffuseR;
@@ -7260,9 +7265,9 @@ var away;
                 // more directional supported than currently picked, need to clamp all to 0
                 if (this._pNumPointLights > total) {
                     i = k + (total - this._pNumPointLights) * 12;
-                    for (; k < i; ++k) {
+
+                    for (; k < i; ++k)
                         this._pFragmentConstantData[k] = 0;
-                    }
                 }
             };
 
@@ -7280,9 +7285,8 @@ var away;
                 if (!(addDiff || addSpec))
                     return;
 
-                if (len > this._pNumLightProbes) {
+                if (len > this._pNumLightProbes)
                     len = this._pNumLightProbes;
-                }
 
                 for (var i = 0; i < len; ++i) {
                     probe = lightProbes[this._lightProbesOffset + i];
@@ -7350,9 +7354,8 @@ var away;
 
                 this._pNumLightProbes = 0;
 
-                if (numPointLights + numDirectionalLights > 1) {
+                if (numPointLights + numDirectionalLights > 1)
                     throw new Error("Must have exactly one light!");
-                }
 
                 if (numPointLights != this._pNumPointLights || numDirectionalLights != this._pNumDirectionalLights) {
                     this._pNumPointLights = numPointLights;
@@ -7367,8 +7370,7 @@ var away;
             ShadowCasterPass.prototype.pUpdateShaderProperties = function () {
                 _super.prototype.pUpdateShaderProperties.call(this);
 
-                var c = this._pCompiler;
-                this._tangentSpace = c.tangentSpace;
+                this._tangentSpace = this._pCompiler.tangentSpace;
             };
 
             /**
@@ -7377,9 +7379,7 @@ var away;
             ShadowCasterPass.prototype.pUpdateRegisterIndices = function () {
                 _super.prototype.pUpdateRegisterIndices.call(this);
 
-                var c = this._pCompiler;
-
-                this._lightVertexConstantIndex = c.lightVertexConstantIndex;
+                this._lightVertexConstantIndex = this._pCompiler.lightVertexConstantIndex;
             };
 
             /**
@@ -7530,7 +7530,13 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        var SubGeometry = away.base.TriangleSubGeometry;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+
+        var Matrix3D = away.geom.Matrix3D;
+
+        var ContextGLProgramType = away.stagegl.ContextGLProgramType;
+
+        var RenderTexture = away.textures.RenderTexture;
 
         /**
         * The SingleObjectDepthPass provides a material pass that renders a single object to a depth map from the point
@@ -7650,10 +7656,10 @@ var away;
                 var rId = renderable.materialOwner.id;
 
                 if (!this._textures[rId])
-                    this._textures[rId] = new away.textures.RenderTexture(this._textureSize, this._textureSize);
+                    this._textures[rId] = new RenderTexture(this._textureSize, this._textureSize);
 
                 if (!this._projections[rId])
-                    this._projections[rId] = new away.geom.Matrix3D();
+                    this._projections[rId] = new Matrix3D();
 
                 len = lights.length;
 
@@ -7664,11 +7670,11 @@ var away;
 
                 stageGL.setRenderTarget(this._textures[rId], true);
                 context.clear(1.0, 1.0, 1.0);
-                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
-                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
+                context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
+                context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
 
-                stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
-                stageGL.activateBuffer(1, renderable.getVertexData(SubGeometry.NORMAL_DATA), renderable.getVertexOffset(SubGeometry.NORMAL_DATA), SubGeometry.NORMAL_FORMAT);
+                stageGL.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+                stageGL.activateBuffer(1, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
                 context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
             };
 
@@ -7682,7 +7688,7 @@ var away;
                 // never scale
                 _super.prototype.iActivate.call(this, stageGL, camera);
 
-                stageGL.contextGL.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
+                stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
             };
             return SingleObjectDepthPass;
         })(materials.MaterialPassBase);
@@ -7694,6 +7700,12 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
+        var LineSubGeometry = away.base.LineSubGeometry;
+
+        var Matrix3D = away.geom.Matrix3D;
+
+        var ContextGLProgramType = away.stagegl.ContextGLProgramType;
+
         /**
         * SegmentPass is a material pass that draws wireframe segments.
         */
@@ -7708,7 +7720,7 @@ var away;
                 _super.call(this);
                 this._constants = new Array(0, 0, 0, 0);
 
-                this._calcMatrix = new away.geom.Matrix3D();
+                this._calcMatrix = new Matrix3D();
 
                 this._thickness = thickness;
                 this._constants[1] = 1 / 255;
@@ -7735,12 +7747,13 @@ var away;
                 var context = stageGL.contextGL;
                 this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
                 this._calcMatrix.append(camera.inverseSceneTransform);
-                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
 
-                stageGL.activateBuffer(0, renderable.getVertexData(away.base.LineSubGeometry.START_POSITION_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.START_POSITION_DATA), away.base.LineSubGeometry.POSITION_FORMAT);
-                stageGL.activateBuffer(1, renderable.getVertexData(away.base.LineSubGeometry.END_POSITION_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.END_POSITION_DATA), away.base.LineSubGeometry.POSITION_FORMAT);
-                stageGL.activateBuffer(2, renderable.getVertexData(away.base.LineSubGeometry.THICKNESS_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.THICKNESS_DATA), away.base.LineSubGeometry.THICKNESS_FORMAT);
-                stageGL.activateBuffer(3, renderable.getVertexData(away.base.LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.COLOR_DATA), away.base.LineSubGeometry.COLOR_FORMAT);
+                context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
+
+                stageGL.activateBuffer(0, renderable.getVertexData(LineSubGeometry.START_POSITION_DATA), renderable.getVertexOffset(LineSubGeometry.START_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
+                stageGL.activateBuffer(1, renderable.getVertexData(LineSubGeometry.END_POSITION_DATA), renderable.getVertexOffset(LineSubGeometry.END_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
+                stageGL.activateBuffer(2, renderable.getVertexData(LineSubGeometry.THICKNESS_DATA), renderable.getVertexOffset(LineSubGeometry.THICKNESS_DATA), LineSubGeometry.THICKNESS_FORMAT);
+                stageGL.activateBuffer(3, renderable.getVertexData(LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(LineSubGeometry.COLOR_DATA), LineSubGeometry.COLOR_FORMAT);
 
                 context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
             };
@@ -7752,20 +7765,17 @@ var away;
                 var context = stageGL.contextGL;
                 _super.prototype.iActivate.call(this, stageGL, camera);
 
-                if (stageGL.scissorRect)
-                    this._constants[0] = this._thickness / Math.min(stageGL.scissorRect.width, stageGL.scissorRect.height);
-                else
-                    this._constants[0] = this._thickness / Math.min(stageGL.width, stageGL.height);
+                this._constants[0] = this._thickness / ((stageGL.scissorRect) ? Math.min(stageGL.scissorRect.width, stageGL.scissorRect.height) : Math.min(stageGL.width, stageGL.height));
 
                 // value to convert distance from camera to model length per pixel width
                 this._constants[2] = camera.projection.near;
 
-                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
-                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
-                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 7, this._constants, 1);
+                context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
+                context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
+                context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 7, this._constants, 1);
 
                 // projection matrix
-                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
+                context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
             };
 
             /**
@@ -7790,7 +7800,14 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        var SubGeometry = away.base.TriangleSubGeometry;
+        var TriangleSubGeometry = away.base.TriangleSubGeometry;
+
+        var ContextGLCompareMode = away.stagegl.ContextGLCompareMode;
+        var ContextGLMipFilter = away.stagegl.ContextGLMipFilter;
+        var ContextGLProgramType = away.stagegl.ContextGLProgramType;
+        var ContextGLTextureFilter = away.stagegl.ContextGLTextureFilter;
+        var ContextGLTextureFormat = away.stagegl.ContextGLTextureFormat;
+        var ContextGLWrapMode = away.stagegl.ContextGLWrapMode;
 
         /**
         * SkyboxPass provides a material pass exclusively used to render sky boxes from a cube texture.
@@ -7802,6 +7819,7 @@ var away;
             */
             function SkyboxPass() {
                 _super.call(this);
+
                 this.mipmap = false;
                 this._pNumUsedTextures = 1;
                 this._vertexData = new Array(0, 0, 0, 0, 1, 1, 1, 1);
@@ -7834,7 +7852,7 @@ var away;
             SkyboxPass.prototype.iGetFragmentCode = function (animationCode) {
                 var format;
                 switch (this._cubeTexture.format) {
-                    case away.stagegl.ContextGLTextureFormat.COMPRESSED:
+                    case ContextGLTextureFormat.COMPRESSED:
                         format = "dxt1,";
                         break;
                     case "compressedAlpha":
@@ -7846,9 +7864,9 @@ var away;
 
                 var mip = ",mipnone";
 
-                if (this._cubeTexture.hasMipmaps) {
+                if (this._cubeTexture.hasMipmaps)
                     mip = ",miplinear";
-                }
+
                 return "tex ft0, v0, fs0 <cube," + format + "linear,clamp" + mip + ">\n" + "mov oc, ft0\n";
             };
 
@@ -7862,10 +7880,10 @@ var away;
                 this._vertexData[1] = pos.y;
                 this._vertexData[2] = pos.z;
                 this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.projection.far / Math.sqrt(3);
-                context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, viewProjection, true);
-                context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
+                context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, viewProjection, true);
+                context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
 
-                stageGL.activateBuffer(0, renderable.getVertexData(SubGeometry.POSITION_DATA), renderable.getVertexOffset(SubGeometry.POSITION_DATA), SubGeometry.POSITION_FORMAT);
+                stageGL.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
                 context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
             };
 
@@ -7875,8 +7893,8 @@ var away;
             SkyboxPass.prototype.iActivate = function (stageGL, camera) {
                 _super.prototype.iActivate.call(this, stageGL, camera);
                 var context = stageGL.contextGL;
-                context.setSamplerStateAt(0, away.stagegl.ContextGLWrapMode.CLAMP, away.stagegl.ContextGLTextureFilter.LINEAR, this._cubeTexture.hasMipmaps ? away.stagegl.ContextGLMipFilter.MIPLINEAR : away.stagegl.ContextGLMipFilter.MIPNONE);
-                context.setDepthTest(false, away.stagegl.ContextGLCompareMode.LESS);
+                context.setSamplerStateAt(0, ContextGLWrapMode.CLAMP, ContextGLTextureFilter.LINEAR, this._cubeTexture.hasMipmaps ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
+                context.setDepthTest(false, ContextGLCompareMode.LESS);
                 this._cubeTexture.activateTextureForStage(0, stageGL);
             };
             return SkyboxPass;
@@ -14727,7 +14745,6 @@ var away;
             * Resets all registers.
             */
             ShaderRegisterCache.prototype.reset = function () {
-                //TODO: AGAL <> GLSL Conversion
                 this._fragmentTempCache = new materials.RegisterPool("ft", 8, false);
                 this._vertexTempCache = new materials.RegisterPool("vt", 8, false);
                 this._varyingCache = new materials.RegisterPool("v", 8);
@@ -15035,13 +15052,11 @@ var away;
 
                 this._toStr = this._regName;
 
-                if (this._index >= 0) {
+                if (this._index >= 0)
                     this._toStr += this._index;
-                }
 
-                if (component > -1) {
+                if (component > -1)
                     this._toStr += "." + ShaderRegisterElement.COMPONENTS[component];
-                }
             }
             /**
             * Converts the register or the components AGAL string representation.
@@ -15094,12 +15109,10 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
-        //import away3d.materials.LightSources;
-        //import away3d.materials.methods.MethodVO;
         /**
         * MethodDependencyCounter keeps track of the number of dependencies for "named registers" used across methods.
         * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
@@ -15144,40 +15157,33 @@ var away;
             * @param methodVO the MethodVO object for which to include dependencies.
             */
             MethodDependencyCounter.prototype.includeMethodVO = function (methodVO) {
-                if (methodVO.needsProjection) {
+                if (methodVO.needsProjection)
                     ++this._projectionDependencies;
-                }
 
                 if (methodVO.needsGlobalVertexPos) {
                     ++this._globalPosDependencies;
 
-                    if (methodVO.needsGlobalFragmentPos) {
+                    if (methodVO.needsGlobalFragmentPos)
                         this._usesGlobalPosFragment = true;
-                    }
                 } else if (methodVO.needsGlobalFragmentPos) {
                     ++this._globalPosDependencies;
                     this._usesGlobalPosFragment = true;
                 }
 
-                if (methodVO.needsNormals) {
+                if (methodVO.needsNormals)
                     ++this._normalDependencies;
-                }
 
-                if (methodVO.needsTangents) {
+                if (methodVO.needsTangents)
                     ++this._tangentDependencies;
-                }
 
-                if (methodVO.needsView) {
+                if (methodVO.needsView)
                     ++this._viewDirDependencies;
-                }
 
-                if (methodVO.needsUV) {
+                if (methodVO.needsUV)
                     ++this._uvDependencies;
-                }
 
-                if (methodVO.needsSecondaryUV) {
+                if (methodVO.needsSecondaryUV)
                     ++this._secondaryUVDependencies;
-                }
             };
 
             Object.defineProperty(MethodDependencyCounter.prototype, "tangentDependencies", {
@@ -15273,16 +15279,14 @@ var away;
             * Adds any external world space dependencies, used to force world space calculations.
             */
             MethodDependencyCounter.prototype.addWorldSpaceDependencies = function (fragmentLights) {
-                if (this._viewDirDependencies > 0) {
+                if (this._viewDirDependencies > 0)
                     ++this._globalPosDependencies;
-                }
 
                 if (this._numPointLights > 0 && (this._lightSourceMask & materials.LightSources.LIGHTS)) {
                     ++this._globalPosDependencies;
 
-                    if (fragmentLights) {
+                    if (fragmentLights)
                         this._usesGlobalPosFragment = true;
-                    }
                 }
             };
             return MethodDependencyCounter;
@@ -15295,14 +15299,13 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        //import flash.utils.Dictionary;
         /**
         * RegisterPool is used by the shader compilation process to keep track of which registers of a certain type are
         * currently used and should not be allowed to be written to. Either entire registers can be requested and locked,
         * or single components (x, y, z, w) of a single register.
         * It is used by ShaderRegisterCache to track usages of individual register types.
         *
-        * @see away3d.materials.compilation.ShaderRegisterCache
+        * @see away.materials.ShaderRegisterCache
         */
         var RegisterPool = (function () {
             /**
@@ -15339,7 +15342,6 @@ var away;
             */
             RegisterPool.prototype.requestFreeRegComponent = function () {
                 for (var i = 0; i < this._regCount; ++i) {
-                    //away.Debug.log( 'RegisterPool' , 'requestFreeRegComponent' , this._regCount , 'this._usedVectorCount:' + this._usedVectorCount[i] );
                     if (this._usedVectorCount[i] > 0)
                         continue;
 
@@ -15413,15 +15415,13 @@ var away;
                 this._vectorRegisters = RegisterPool._regPool[hash];
                 this._registerComponents = RegisterPool._regCompsPool[hash];
 
-                this._usedVectorCount = this._initArray(Array(regCount), 0); //new Vector.<uint>(regCount, true);
+                this._usedVectorCount = this._initArray(Array(regCount), 0);
 
-                this._usedSingleCount = new Array(4); //this._usedSingleCount = new Vector.<Vector.<uint>>(4, true);
-                this._usedSingleCount[0] = this._initArray(new Array(regCount), 0); //new Array<number>(regCount ) ;//, true);
-                this._usedSingleCount[1] = this._initArray(new Array(regCount), 0); //new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
-                this._usedSingleCount[2] = this._initArray(new Array(regCount), 0); //new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
-                this._usedSingleCount[3] = this._initArray(new Array(regCount), 0); //new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
-                //console.log( 'this._usedVectorCount: ' , this._usedVectorCount );
-                //console.log( 'this._usedSingleCount: ' , this._usedSingleCount );
+                this._usedSingleCount = new Array(4);
+                this._usedSingleCount[0] = this._initArray(new Array(regCount), 0);
+                this._usedSingleCount[1] = this._initArray(new Array(regCount), 0);
+                this._usedSingleCount[2] = this._initArray(new Array(regCount), 0);
+                this._usedSingleCount[3] = this._initArray(new Array(regCount), 0);
             };
 
             RegisterPool._initPool = function (regName, regCount) {
@@ -15448,8 +15448,6 @@ var away;
                         registerComponents[j][i] = new materials.ShaderRegisterElement(regName, i, j);
                 }
 
-                //console.log ( 'RegisterPool._regCompsPool[hash] : ' , RegisterPool._regCompsPool[hash]  );
-                //console.log ( 'RegisterPool._regPool[hash] : ' , RegisterPool._regPool[hash]  );
                 return hash;
             };
 
@@ -15491,7 +15489,7 @@ var away;
         * ShaderCompiler is an abstract base class for shader compilers that use modular shader methods to assemble a
         * material. Concrete subclasses are used by the default materials.
         *
-        * @see away3d.materials.methods.ShadingMethodBase
+        * @see away.materials.ShadingMethodBase
         */
         var ShaderCompiler = (function () {
             /**
@@ -15516,6 +15514,7 @@ var away;
                 this._pSharedRegisters = new materials.ShaderRegisterData();
                 this._pDependencyCounter = new materials.MethodDependencyCounter();
                 this._pProfile = profile;
+
                 this.initRegisterCache(profile);
             }
             Object.defineProperty(ShaderCompiler.prototype, "enableLightFallOff", {
@@ -15586,6 +15585,7 @@ var away;
 
             /**
             * Initialized the register cache.
+            *
             * @param profile The compatibility profile of the renderer.
             */
             ShaderCompiler.prototype.initRegisterCache = function (profile) {
@@ -15684,8 +15684,8 @@ var away;
                 this.pInitRegisterIndices();
                 this.pInitLightData();
 
-                this._pAnimatableAttributes = new Array("va0"); //Vector.<String>(["va0"]);
-                this._pAnimationTargetRegisters = new Array("vt0"); //Vector.<String>(["vt0"]);
+                this._pAnimatableAttributes = new Array("va0");
+                this._pAnimationTargetRegisters = new Array("vt0");
                 this._pVertexCode = "";
                 this._pFragmentCode = "";
 
@@ -15774,7 +15774,6 @@ var away;
                     var uvTransform2 = this._pRegisterCache.getFreeVertexConstant();
                     this._uvTransformIndex = uvTransform1.index * 4;
 
-                    // TODO: AGAL <> GLSL
                     this._pVertexCode += "dp4 " + varying + ".x, " + uvAttributeReg + ", " + uvTransform1 + "\n" + "dp4 " + varying + ".y, " + uvAttributeReg + ", " + uvTransform2 + "\n" + "mov " + varying + ".zw, " + uvAttributeReg + ".zw \n";
                 } else {
                     this._uvTransformIndex = -1;
@@ -15788,7 +15787,6 @@ var away;
             * Provide the secondary UV coordinates.
             */
             ShaderCompiler.prototype.compileSecondaryUVCode = function () {
-                // TODO: AGAL <> GLSL
                 var uvAttributeReg = this._pRegisterCache.getFreeVertexAttribute();
                 this._secondaryUVBufferIndex = uvAttributeReg.index;
                 this._pSharedRegisters.secondaryUVVarying = this._pRegisterCache.getFreeVarying();
@@ -15799,7 +15797,6 @@ var away;
             * Compile the world-space position.
             */
             ShaderCompiler.prototype.pCompileGlobalPositionCode = function () {
-                // TODO: AGAL <> GLSL
                 this._pSharedRegisters.globalPositionVertex = this._pRegisterCache.getFreeVertexVectorTemp();
                 this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.globalPositionVertex, this._pDependencyCounter.globalPosDependencies);
                 var positionMatrixReg = this._pRegisterCache.getFreeVertexConstant();
@@ -15823,10 +15820,8 @@ var away;
                 var pos = (this._pDependencyCounter.globalPosDependencies > 0 || this._forceSeperateMVP) ? this._pSharedRegisters.globalPositionVertex.toString() : this._pAnimationTargetRegisters[0];
                 var code;
 
-                // TODO: AGAL <> GLSL
                 if (this._pDependencyCounter.projectionDependencies > 0) {
                     this._pSharedRegisters.projectionFragment = this._pRegisterCache.getFreeVarying();
-
                     code = "m44 vt5, " + pos + ", vc0		\n" + "mov " + this._pSharedRegisters.projectionFragment + ", vt5\n" + "mov op, vt5\n";
                 } else {
                     code = "m44 op, " + pos + ", vc0		\n";
@@ -15839,7 +15834,6 @@ var away;
             * Assign the final output colour the the output register.
             */
             ShaderCompiler.prototype.compileFragmentOutput = function () {
-                // TODO: AGAL <> GLSL
                 this._pFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
                 this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
             };
@@ -15891,9 +15885,6 @@ var away;
             ShaderCompiler.prototype.pCalculateDependencies = function () {
                 this._pDependencyCounter.reset();
 
-                var methods = this._pMethodSetup._iMethods;
-                var len;
-
                 this.setupAndCountMethodDependencies(this._pMethodSetup._iDiffuseMethod, this._pMethodSetup._iDiffuseMethodVO);
 
                 if (this._pMethodSetup._iShadowMethod)
@@ -15907,7 +15898,8 @@ var away;
                 if (this._pMethodSetup._iColorTransformMethod)
                     this.setupAndCountMethodDependencies(this._pMethodSetup._iColorTransformMethod, this._pMethodSetup._iColorTransformMethodVO);
 
-                len = methods.length;
+                var methods = this._pMethodSetup._iMethods;
+                var len = methods.length;
 
                 for (var i = 0; i < len; ++i)
                     this.setupAndCountMethodDependencies(methods[i].method, methods[i].data);
@@ -15977,12 +15969,10 @@ var away;
                     this._pMethodSetup._iColorTransformMethod.iSharedRegisters = this._pSharedRegisters;
 
                 var methods = this._pMethodSetup._iMethods;
-
                 var len = methods.length;
 
-                for (var i = 0; i < len; ++i) {
+                for (var i = 0; i < len; ++i)
                     methods[i].method.iSharedRegisters = this._pSharedRegisters;
-                }
             };
 
             Object.defineProperty(ShaderCompiler.prototype, "numUsedVertexConstants", {
@@ -16090,12 +16080,10 @@ var away;
                     this._pMethodSetup._iColorTransformMethod.iCleanCompilationData();
 
                 var methods = this._pMethodSetup._iMethods;
-
                 var len = methods.length;
 
-                for (var i = 0; i < len; ++i) {
+                for (var i = 0; i < len; ++i)
                     methods[i].method.iCleanCompilationData();
-                }
             };
 
             Object.defineProperty(ShaderCompiler.prototype, "specularLightSources", {
@@ -16103,7 +16091,7 @@ var away;
                 * Define which light source types to use for specular reflections. This allows choosing between regular lights
                 * and/or light probes for specular reflections.
                 *
-                * @see away3d.materials.LightSources
+                * @see away.materials.LightSources
                 */
                 get: function () {
                     return this._specularLightSources;
@@ -16121,7 +16109,7 @@ var away;
                 * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
                 * and/or light probes for diffuse reflections.
                 *
-                * @see away3d.materials.LightSources
+                * @see away.materials.LightSources
                 */
                 get: function () {
                     return this._diffuseLightSources;
@@ -16427,7 +16415,6 @@ var away;
                 var data;
                 var alphaReg;
 
-                // TODO: AGAL <> GLSL
                 if (this._preserveAlpha) {
                     alphaReg = this._pRegisterCache.getFreeFragmentSingleTemp();
                     this._pRegisterCache.addFragmentTempUsages(alphaReg, 1);
@@ -16454,7 +16441,6 @@ var away;
 
                 if (this._preserveAlpha) {
                     this._pFragmentCode += "mov " + this._pSharedRegisters.shadedTarget + ".w, " + alphaReg + "\n";
-
                     this._pRegisterCache.removeFragmentTempUsage(alphaReg);
                 }
 
@@ -16495,7 +16481,6 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
-        //import away3d.arcane;
         /**
         * SuperShaderCompiler is a compiler that generates shaders that perform both lighting and "effects" through methods.
         * This is used by the single-pass materials.
@@ -16515,8 +16500,8 @@ var away;
             SuperShaderCompiler.prototype.pInitLightData = function () {
                 _super.prototype.pInitLightData.call(this);
 
-                this._pointLightRegisters = new Array(this._pNumPointLights * 3); //Vector.<ShaderRegisterElement>(_numPointLights*3, true);
-                this._dirLightRegisters = new Array(this._pNumDirectionalLights * 3); //Vector.<ShaderRegisterElement>(_numDirectionalLights*3, true);
+                this._pointLightRegisters = new Array(this._pNumPointLights * 3);
+                this._dirLightRegisters = new Array(this._pNumDirectionalLights * 3);
             };
 
             /**
@@ -16524,6 +16509,7 @@ var away;
             */
             SuperShaderCompiler.prototype.pCalculateDependencies = function () {
                 _super.prototype.pCalculateDependencies.call(this);
+
                 this._pDependencyCounter.addWorldSpaceDependencies(true);
             };
 
@@ -16557,8 +16543,6 @@ var away;
                     this.compileTangentVertexCode(normalMatrix);
                     this.compileTangentNormalMapFragmentCode();
                 } else {
-                    // TODO: AGAL <> GLSL
-                    //*
                     this._pVertexCode += "m33 " + this._pSharedRegisters.normalVarying + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" + "mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.animatedNormal + ".w	\n";
 
                     this._pFragmentCode += "nrm " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalVarying + "\n" + "mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w		\n";
@@ -16570,7 +16554,6 @@ var away;
 
                         this._pVertexCode += "mov " + this._pSharedRegisters.tangentVarying + ", " + this._pSharedRegisters.tangentInput + "\n";
                     }
-                    //*/
                 }
 
                 this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.animatedNormal);
@@ -16610,12 +16593,7 @@ var away;
                 this._pSharedRegisters.bitangentVarying = this._pRegisterCache.getFreeVarying();
                 var temp = this._pRegisterCache.getFreeVertexVectorTemp();
 
-                //TODO: AGAL <> GLSL
-                this._pVertexCode += "m33 " + temp + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + matrix[0] + "\n" + "nrm " + this._pSharedRegisters.animatedNormal + ".xyz, " + temp + "\n";
-
-                this._pVertexCode += "m33 " + temp + ".xyz, " + this._pSharedRegisters.animatedTangent + ", " + matrix[0] + "\n" + "nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + temp + "\n";
-
-                this._pVertexCode += "mov " + this._pSharedRegisters.tangentVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".x  \n" + "mov " + this._pSharedRegisters.tangentVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".x  \n" + "mov " + this._pSharedRegisters.tangentVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".y  \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".y  \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" + "mov " + this._pSharedRegisters.normalVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".z  \n" + "mov " + this._pSharedRegisters.normalVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".z  \n" + "mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" + "crs " + temp + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + this._pSharedRegisters.tangentVarying + ".y, " + temp + ".x    \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".y, " + temp + ".y  \n" + "mov " + this._pSharedRegisters.normalVarying + ".y, " + temp + ".z    \n";
+                this._pVertexCode += "m33 " + temp + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + matrix[0] + "\n" + "nrm " + this._pSharedRegisters.animatedNormal + ".xyz, " + temp + "\n" + "m33 " + temp + ".xyz, " + this._pSharedRegisters.animatedTangent + ", " + matrix[0] + "\n" + "nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + temp + "\n" + "mov " + this._pSharedRegisters.tangentVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".x  \n" + "mov " + this._pSharedRegisters.tangentVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".x  \n" + "mov " + this._pSharedRegisters.tangentVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".y  \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".y  \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" + "mov " + this._pSharedRegisters.normalVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".z  \n" + "mov " + this._pSharedRegisters.normalVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".z  \n" + "mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" + "crs " + temp + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + this._pSharedRegisters.tangentVarying + ".y, " + temp + ".x    \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".y, " + temp + ".y  \n" + "mov " + this._pSharedRegisters.normalVarying + ".y, " + temp + ".z    \n";
 
                 this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.animatedTangent);
             };
@@ -16635,25 +16613,21 @@ var away;
                 n = this._pRegisterCache.getFreeFragmentVectorTemp();
                 this._pRegisterCache.addFragmentTempUsages(n, 1);
 
-                //TODO: AGAL <> GLSL
                 this._pFragmentCode += "nrm " + t + ".xyz, " + this._pSharedRegisters.tangentVarying + "\n" + "mov " + t + ".w, " + this._pSharedRegisters.tangentVarying + ".w	\n" + "nrm " + b + ".xyz, " + this._pSharedRegisters.bitangentVarying + "\n" + "nrm " + n + ".xyz, " + this._pSharedRegisters.normalVarying + "\n";
 
                 var temp = this._pRegisterCache.getFreeFragmentVectorTemp();
 
                 this._pRegisterCache.addFragmentTempUsages(temp, 1);
 
-                //TODO: AGAL <> GLSL
-                this._pFragmentCode += this._pMethodSetup._iNormalMethod.iGetFragmentCode(this._pMethodSetup._iNormalMethodVO, this._pRegisterCache, temp) + "m33 " + this._pSharedRegisters.normalFragment + ".xyz, " + temp + ", " + t + "	\n" + "mov " + this._pSharedRegisters.normalFragment + ".w,   " + this._pSharedRegisters.normalVarying + ".w			\n";
+                this._pFragmentCode += this._pMethodSetup._iNormalMethod.iGetFragmentCode(this._pMethodSetup._iNormalMethodVO, this._pRegisterCache, temp) + "m33 " + this._pSharedRegisters.normalFragment + ".xyz, " + temp + ", " + t + "	\n" + "mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w	\n";
 
                 this._pRegisterCache.removeFragmentTempUsage(temp);
 
-                if (this._pMethodSetup._iNormalMethodVO.needsView) {
+                if (this._pMethodSetup._iNormalMethodVO.needsView)
                     this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
-                }
 
-                if (this._pMethodSetup._iNormalMethodVO.needsGlobalVertexPos || this._pMethodSetup._iNormalMethodVO.needsGlobalFragmentPos) {
+                if (this._pMethodSetup._iNormalMethodVO.needsGlobalVertexPos || this._pMethodSetup._iNormalMethodVO.needsGlobalFragmentPos)
                     this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.globalPositionVertex);
-                }
 
                 this._pRegisterCache.removeFragmentTempUsage(b);
                 this._pRegisterCache.removeFragmentTempUsage(t);
@@ -16672,7 +16646,6 @@ var away;
 
                 this._pCameraPositionIndex = cameraPositionReg.index * 4;
 
-                //TODO: AGAL <> GLSL
                 this._pVertexCode += "sub " + this._pSharedRegisters.viewDirVarying + ", " + cameraPositionReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
                 this._pFragmentCode += "nrm " + this._pSharedRegisters.viewDirFragment + ".xyz, " + this._pSharedRegisters.viewDirVarying + "\n" + "mov " + this._pSharedRegisters.viewDirFragment + ".w,   " + this._pSharedRegisters.viewDirVarying + ".w 		\n";
 
@@ -16702,21 +16675,18 @@ var away;
                     this.compilePointLightCode();
                 }
 
-                if (this.pUsesProbes()) {
+                if (this.pUsesProbes())
                     this.compileLightProbeCode();
-                }
 
                 // only need to create and reserve _shadedTargetReg here, no earlier?
                 this._pVertexCode += this._pMethodSetup._iAmbientMethod.iGetVertexCode(this._pMethodSetup._iAmbientMethodVO, this._pRegisterCache);
                 this._pFragmentCode += this._pMethodSetup._iAmbientMethod.iGetFragmentCode(this._pMethodSetup._iAmbientMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
 
-                if (this._pMethodSetup._iAmbientMethodVO.needsNormals) {
+                if (this._pMethodSetup._iAmbientMethodVO.needsNormals)
                     this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
-                }
 
-                if (this._pMethodSetup._iAmbientMethodVO.needsView) {
+                if (this._pMethodSetup._iAmbientMethodVO.needsView)
                     this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
-                }
 
                 if (this._pMethodSetup._iShadowMethod) {
                     this._pVertexCode += this._pMethodSetup._iShadowMethod.iGetVertexCode(this._pMethodSetup._iShadowMethodVO, this._pRegisterCache);
@@ -16737,30 +16707,25 @@ var away;
                 this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentPostLightingCode(this._pMethodSetup._iDiffuseMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
 
                 if (this._pAlphaPremultiplied) {
-                    //TODO: AGAL <> GLSL
                     this._pFragmentCode += "add " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".z\n" + "div " + this._pSharedRegisters.shadedTarget + ".xyz, " + this._pSharedRegisters.shadedTarget + ", " + this._pSharedRegisters.shadedTarget + ".w\n" + "sub " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".z\n" + "sat " + this._pSharedRegisters.shadedTarget + ".xyz, " + this._pSharedRegisters.shadedTarget + "\n";
                 }
 
                 // resolve other dependencies as well?
-                if (this._pMethodSetup._iDiffuseMethodVO.needsNormals) {
+                if (this._pMethodSetup._iDiffuseMethodVO.needsNormals)
                     this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
-                }
 
-                if (this._pMethodSetup._iDiffuseMethodVO.needsView) {
+                if (this._pMethodSetup._iDiffuseMethodVO.needsView)
                     this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
-                }
 
                 if (this._usingSpecularMethod) {
                     this._pMethodSetup._iSpecularMethod.iShadowRegister = shadowReg;
                     this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentPostLightingCode(this._pMethodSetup._iSpecularMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
 
-                    if (this._pMethodSetup._iSpecularMethodVO.needsNormals) {
+                    if (this._pMethodSetup._iSpecularMethodVO.needsNormals)
                         this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
-                    }
 
-                    if (this._pMethodSetup._iSpecularMethodVO.needsView) {
+                    if (this._pMethodSetup._iSpecularMethodVO.needsView)
                         this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
-                    }
                 }
             };
 
@@ -16776,9 +16741,8 @@ var away;
                 for (i = 0; i < len; ++i) {
                     this._dirLightRegisters[i] = this._pRegisterCache.getFreeFragmentConstant();
 
-                    if (this._pLightFragmentConstantIndex == -1) {
+                    if (this._pLightFragmentConstantIndex == -1)
                         this._pLightFragmentConstantIndex = this._dirLightRegisters[i].index * 4;
-                    }
                 }
 
                 len = this._pointLightRegisters.length;
@@ -16786,9 +16750,8 @@ var away;
                 for (i = 0; i < len; ++i) {
                     this._pointLightRegisters[i] = this._pRegisterCache.getFreeFragmentConstant();
 
-                    if (this._pLightFragmentConstantIndex == -1) {
+                    if (this._pLightFragmentConstantIndex == -1)
                         this._pLightFragmentConstantIndex = this._pointLightRegisters[i].index * 4;
-                    }
                 }
             };
 
@@ -16800,24 +16763,19 @@ var away;
                 var addSpec = this._usingSpecularMethod && this.pUsesLightsForSpecular();
                 var addDiff = this.pUsesLightsForDiffuse();
 
-                if (!(addSpec || addDiff)) {
+                if (!(addSpec || addDiff))
                     return;
-                }
 
                 for (var i = 0; i < this._pNumDirectionalLights; ++i) {
                     lightDirReg = this._dirLightRegisters[regIndex++];
-
                     diffuseColorReg = this._dirLightRegisters[regIndex++];
-
                     specularColorReg = this._dirLightRegisters[regIndex++];
 
-                    if (addDiff) {
+                    if (addDiff)
                         this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentCodePerLight(this._pMethodSetup._iDiffuseMethodVO, lightDirReg, diffuseColorReg, this._pRegisterCache);
-                    }
 
-                    if (addSpec) {
+                    if (addSpec)
                         this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentCodePerLight(this._pMethodSetup._iSpecularMethodVO, lightDirReg, specularColorReg, this._pRegisterCache);
-                    }
                 }
             };
 
@@ -16827,13 +16785,12 @@ var away;
                 var lightPosReg;
                 var lightDirReg;
                 var regIndex = 0;
-                var addSpec = this._usingSpecularMethod && this.pUsesLightsForSpecular();
 
+                var addSpec = this._usingSpecularMethod && this.pUsesLightsForSpecular();
                 var addDiff = this.pUsesLightsForDiffuse();
 
-                if (!(addSpec || addDiff)) {
+                if (!(addSpec || addDiff))
                     return;
-                }
 
                 for (var i = 0; i < this._pNumPointLights; ++i) {
                     lightPosReg = this._pointLightRegisters[regIndex++];
@@ -16845,17 +16802,14 @@ var away;
                     // calculate attenuation
                     this._pFragmentCode += "sub " + lightDirReg + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVarying + "\n" + "dp3 " + lightDirReg + ".w, " + lightDirReg + ", " + lightDirReg + "\n" + "sub " + lightDirReg + ".w, " + lightDirReg + ".w, " + diffuseColorReg + ".w\n" + "mul " + lightDirReg + ".w, " + lightDirReg + ".w, " + specularColorReg + ".w\n" + "sat " + lightDirReg + ".w, " + lightDirReg + ".w\n" + "sub " + lightDirReg + ".w, " + lightPosReg + ".w, " + lightDirReg + ".w\n" + "nrm " + lightDirReg + ".xyz, " + lightDirReg + "\n";
 
-                    if (this._pLightFragmentConstantIndex == -1) {
+                    if (this._pLightFragmentConstantIndex == -1)
                         this._pLightFragmentConstantIndex = lightPosReg.index * 4;
-                    }
 
-                    if (addDiff) {
+                    if (addDiff)
                         this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentCodePerLight(this._pMethodSetup._iDiffuseMethodVO, lightDirReg, diffuseColorReg, this._pRegisterCache);
-                    }
 
-                    if (addSpec) {
+                    if (addSpec)
                         this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentCodePerLight(this._pMethodSetup._iSpecularMethodVO, lightDirReg, specularColorReg, this._pRegisterCache);
-                    }
 
                     this._pRegisterCache.removeFragmentTempUsage(lightDirReg);
                 }
@@ -16870,23 +16824,20 @@ var away;
                 var addSpec = this._usingSpecularMethod && this.pUsesProbesForSpecular();
                 var addDiff = this.pUsesProbesForDiffuse();
 
-                if (!(addSpec || addDiff)) {
+                if (!(addSpec || addDiff))
                     return;
-                }
 
-                if (addDiff) {
-                    this._pLightProbeDiffuseIndices = new Array(); //Vector.<uint>();
-                }
+                if (addDiff)
+                    this._pLightProbeDiffuseIndices = new Array();
 
-                if (addSpec) {
-                    this._pLightProbeSpecularIndices = new Array(); //Vector.<uint>();
-                }
+                if (addSpec)
+                    this._pLightProbeSpecularIndices = new Array();
 
                 for (i = 0; i < this._pNumProbeRegisters; ++i) {
                     weightRegisters[i] = this._pRegisterCache.getFreeFragmentConstant();
-                    if (i == 0) {
+
+                    if (i == 0)
                         this._pProbeWeightsIndex = weightRegisters[i].index * 4;
-                    }
                 }
 
                 for (i = 0; i < this._pNumLightProbes; ++i) {
@@ -16920,10 +16871,10 @@ var away;
         * want to use light probes for diffuse global lighting, but want specular reflections from
         * traditional light sources without those affecting the diffuse light.
         *
-        * @see away3d.materials.ColorMaterial.diffuseLightSources
-        * @see away3d.materials.ColorMaterial.specularLightSources
-        * @see away3d.materials.TextureMaterial.diffuseLightSources
-        * @see away3d.materials.TextureMaterial.specularLightSources
+        * @see away.materials.ColorMaterial.diffuseLightSources
+        * @see away.materials.ColorMaterial.specularLightSources
+        * @see away.materials.TextureMaterial.diffuseLightSources
+        * @see away.materials.TextureMaterial.specularLightSources
         */
         var LightSources = (function () {
             function LightSources() {
@@ -16944,11 +16895,10 @@ var away;
 (function (away) {
     (function (materials) {
         var BlendMode = away.base.BlendMode;
+
         var Event = away.events.Event;
 
         var AssetType = away.library.AssetType;
-        var Delegate = away.utils.Delegate;
-
         var DepthMapPass = away.materials.DepthMapPass;
         var DistanceMapPass = away.materials.DistanceMapPass;
 
@@ -16969,6 +16919,7 @@ var away;
             * Creates a new MaterialBase object.
             */
             function MaterialBase() {
+                var _this = this;
                 _super.call(this);
                 /**
                 * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
@@ -17000,16 +16951,24 @@ var away;
                 this._pDepthPass = new DepthMapPass();
                 this._pDistancePass = new DistanceMapPass();
 
-                this._onPassChangeDelegate = Delegate.create(this, this.onPassChange);
-                this._onDepthPassChangeDelegate = Delegate.create(this, this.onDepthPassChange);
-                this._onDistancePassChangeDelegate = Delegate.create(this, this.onDistancePassChange);
+                this._onPassChangeDelegate = function (event) {
+                    return _this.onPassChange(event);
+                };
+                this._onDepthPassChangeDelegate = function (event) {
+                    return _this.onDepthPassChange(event);
+                };
+                this._onDistancePassChangeDelegate = function (event) {
+                    return _this.onDistancePassChange(event);
+                };
 
                 this._pDepthPass.addEventListener(Event.CHANGE, this._onDepthPassChangeDelegate);
                 this._pDistancePass.addEventListener(Event.CHANGE, this._onDistancePassChangeDelegate);
 
                 this.alphaPremultiplied = false; //TODO: work out why this is different for WebGL
 
-                this._onLightChangeDelegate = Delegate.create(this, this.onLightsChange);
+                this._onLightChangeDelegate = function (event) {
+                    return _this.onLightsChange(event);
+                };
             }
             Object.defineProperty(MaterialBase.prototype, "assetType", {
                 /**
@@ -17048,12 +17007,12 @@ var away;
                         return;
 
                     if (this._pLightPicker)
-                        this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
+                        this._pLightPicker.removeEventListener(Event.CHANGE, this._onLightChangeDelegate);
 
                     this._pLightPicker = value;
 
                     if (this._pLightPicker)
-                        this._pLightPicker.addEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
+                        this._pLightPicker.addEventListener(Event.CHANGE, this._onLightChangeDelegate);
 
                     this.pInvalidateScreenPasses();
                 },
@@ -17653,7 +17612,10 @@ var away;
 var away;
 (function (away) {
     (function (materials) {
+        var ColorTransform = away.geom.ColorTransform;
+        var ContextGLBlendFactor = away.stagegl.ContextGLBlendFactor;
         var ContextGLCompareMode = away.stagegl.ContextGLCompareMode;
+        var Texture2DBase = away.textures.Texture2DBase;
 
         /**
         * TriangleMaterial forms an abstract base class for the default shaded materials provided by StageGL,
@@ -17682,7 +17644,7 @@ var away;
 
                 this._materialMode = materials.TriangleMaterialMode.SINGLE_PASS;
 
-                if (textureColor instanceof away.textures.Texture2DBase) {
+                if (textureColor instanceof Texture2DBase) {
                     this.texture = textureColor;
 
                     this.smooth = (smoothAlpha == null) ? true : false;
@@ -17768,7 +17730,7 @@ var away;
                     this._alpha = value;
 
                     if (this._colorTransform == null)
-                        this._colorTransform = new away.geom.ColorTransform();
+                        this._colorTransform = new ColorTransform();
 
                     this._colorTransform.alphaMultiplier = value;
 
@@ -18328,7 +18290,7 @@ var away;
             */
             TriangleMaterial.prototype.iActivatePass = function (index, stageGL, camera) {
                 if (index == 0)
-                    stageGL.contextGL.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
+                    stageGL.contextGL.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 
                 _super.prototype.iActivatePass.call(this, index, stageGL, camera);
             };
@@ -18339,7 +18301,7 @@ var away;
             TriangleMaterial.prototype.iDeactivate = function (stageGL) {
                 _super.prototype.iDeactivate.call(this, stageGL);
 
-                stageGL.contextGL.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
+                stageGL.contextGL.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
             };
 
             /**
@@ -18405,7 +18367,7 @@ var away;
                     for (var i = firstAdditiveIndex; i < this._nonCasterLightPasses.length; ++i) {
                         this._nonCasterLightPasses[i].forceSeparateMVP = forceSeparateMVP;
                         this._nonCasterLightPasses[i].setBlendMode(away.base.BlendMode.ADD);
-                        this._nonCasterLightPasses[i].depthCompareMode = away.stagegl.ContextGLCompareMode.LESS_EQUAL;
+                        this._nonCasterLightPasses[i].depthCompareMode = ContextGLCompareMode.LESS_EQUAL;
                     }
                 }
 
@@ -18416,7 +18378,7 @@ var away;
                     // there are light passes, so this should be blended in
                     if (this._screenPass) {
                         this._screenPass.iIgnoreLights = true;
-                        this._screenPass.depthCompareMode = away.stagegl.ContextGLCompareMode.LESS_EQUAL;
+                        this._screenPass.depthCompareMode = ContextGLCompareMode.LESS_EQUAL;
                         this._screenPass.setBlendMode(away.base.BlendMode.LAYER);
                         this._screenPass.forceSeparateMVP = forceSeparateMVP;
                     }
@@ -18609,7 +18571,6 @@ var away;
         */
         var LightingShaderCompiler = (function (_super) {
             __extends(LightingShaderCompiler, _super);
-            //use namespace arcane;
             /**
             * Create a new LightingShaderCompiler object.
             * @param profile The compatibility profile of the renderer.
@@ -18754,13 +18715,11 @@ var away;
 
                 this._pFragmentCode += this._pMethodSetup._iNormalMethod.iGetFragmentCode(this._pMethodSetup._iNormalMethodVO, this._pRegisterCache, this._pSharedRegisters.normalFragment);
 
-                if (this._pMethodSetup._iNormalMethodVO.needsView) {
+                if (this._pMethodSetup._iNormalMethodVO.needsView)
                     this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
-                }
 
-                if (this._pMethodSetup._iNormalMethodVO.needsGlobalFragmentPos || this._pMethodSetup._iNormalMethodVO.needsGlobalVertexPos) {
+                if (this._pMethodSetup._iNormalMethodVO.needsGlobalFragmentPos || this._pMethodSetup._iNormalMethodVO.needsGlobalVertexPos)
                     this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.globalPositionVertex);
-                }
             };
 
             /**
@@ -18818,23 +18777,21 @@ var away;
                 this._pVertexCode += this._pMethodSetup._iAmbientMethod.iGetVertexCode(this._pMethodSetup._iAmbientMethodVO, this._pRegisterCache);
                 this._pFragmentCode += this._pMethodSetup._iAmbientMethod.iGetFragmentCode(this._pMethodSetup._iAmbientMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
 
-                if (this._pMethodSetup._iAmbientMethodVO.needsNormals) {
+                if (this._pMethodSetup._iAmbientMethodVO.needsNormals)
                     this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
-                }
 
-                if (this._pMethodSetup._iAmbientMethodVO.needsView) {
+                if (this._pMethodSetup._iAmbientMethodVO.needsView)
                     this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
-                }
 
                 this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentPostLightingCode(this._pMethodSetup._iDiffuseMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
 
-                if (this._pAlphaPremultiplied) {
+                if (this._pAlphaPremultiplied)
                     this._pFragmentCode += "add " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".z\n" + "div " + this._pSharedRegisters.shadedTarget + ".xyz, " + this._pSharedRegisters.shadedTarget + ", " + this._pSharedRegisters.shadedTarget + ".w\n" + "sub " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".z\n" + "sat " + this._pSharedRegisters.shadedTarget + ".xyz, " + this._pSharedRegisters.shadedTarget + "\n";
-                }
 
                 // resolve other dependencies as well?
                 if (this._pMethodSetup._iDiffuseMethodVO.needsNormals)
                     this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
+
                 if (this._pMethodSetup._iDiffuseMethodVO.needsView)
                     this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
 
@@ -18847,9 +18804,8 @@ var away;
                         this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
                 }
 
-                if (this._pMethodSetup._iShadowMethod) {
+                if (this._pMethodSetup._iShadowMethod)
                     this._pRegisterCache.removeFragmentTempUsage(this._shadowRegister);
-                }
             };
 
             /**
@@ -18880,9 +18836,8 @@ var away;
                     for (i = 0; i < len; ++i) {
                         this._dirLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
 
-                        if (this._lightVertexConstantIndex == -1) {
+                        if (this._lightVertexConstantIndex == -1)
                             this._lightVertexConstantIndex = this._dirLightVertexConstants[i].index * 4;
-                        }
                     }
                 }
 
@@ -18890,27 +18845,25 @@ var away;
                 for (i = 0; i < len; ++i) {
                     this._pointLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
 
-                    if (this._lightVertexConstantIndex == -1) {
+                    if (this._lightVertexConstantIndex == -1)
                         this._lightVertexConstantIndex = this._pointLightVertexConstants[i].index * 4;
-                    }
                 }
 
                 len = this._dirLightFragmentConstants.length;
                 for (i = 0; i < len; ++i) {
                     this._dirLightFragmentConstants[i] = this._pRegisterCache.getFreeFragmentConstant();
 
-                    if (this._pLightFragmentConstantIndex == -1) {
+                    if (this._pLightFragmentConstantIndex == -1)
                         this._pLightFragmentConstantIndex = this._dirLightFragmentConstants[i].index * 4;
-                    }
                 }
 
                 len = this._pointLightFragmentConstants.length;
 
                 for (i = 0; i < len; ++i) {
                     this._pointLightFragmentConstants[i] = this._pRegisterCache.getFreeFragmentConstant();
-                    if (this._pLightFragmentConstantIndex == -1) {
+
+                    if (this._pLightFragmentConstantIndex == -1)
                         this._pLightFragmentConstantIndex = this._pointLightFragmentConstants[i].index * 4;
-                    }
                 }
             };
 
@@ -18947,13 +18900,12 @@ var away;
 
                     diffuseColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
                     specularColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
-                    if (addDiff) {
-                        this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentCodePerLight(this._pMethodSetup._iDiffuseMethodVO, lightDirReg, diffuseColorReg, this._pRegisterCache);
-                    }
 
-                    if (addSpec) {
+                    if (addDiff)
+                        this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentCodePerLight(this._pMethodSetup._iDiffuseMethodVO, lightDirReg, diffuseColorReg, this._pRegisterCache);
+
+                    if (addSpec)
                         this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentCodePerLight(this._pMethodSetup._iSpecularMethodVO, lightDirReg, specularColorReg, this._pRegisterCache);
-                    }
 
                     if (this.tangentSpace)
                         this._pRegisterCache.removeVertexTempUsage(lightDirReg);
@@ -18973,9 +18925,8 @@ var away;
                 var addSpec = this._usingSpecularMethod && this.pUsesLightsForSpecular();
                 var addDiff = this.pUsesLightsForDiffuse();
 
-                if (!(addSpec || addDiff)) {
+                if (!(addSpec || addDiff))
                     return;
-                }
 
                 for (var i = 0; i < this._pNumPointLights; ++i) {
                     lightPosReg = this._pointLightVertexConstants[vertexRegIndex++];
@@ -18986,6 +18937,7 @@ var away;
                     this._pRegisterCache.addFragmentTempUsages(lightDirReg, 1);
 
                     var lightVarying = this._pRegisterCache.getFreeVarying();
+
                     if (this.tangentSpace) {
                         var temp = this._pRegisterCache.getFreeVertexVectorTemp();
                         this._pVertexCode += "sub " + temp + ", " + lightPosReg + ", " + this._pSharedRegisters.localPosition + "\n" + "m33 " + lightVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + lightVarying + ".w, " + this._pSharedRegisters.localPosition + ".w\n";
@@ -19000,17 +18952,14 @@ var away;
                         this._pFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" + "mov " + lightDirReg + ".w, " + lightVarying + ".w\n";
                     }
 
-                    if (this._pLightFragmentConstantIndex == -1) {
+                    if (this._pLightFragmentConstantIndex == -1)
                         this._pLightFragmentConstantIndex = lightPosReg.index * 4;
-                    }
 
-                    if (addDiff) {
+                    if (addDiff)
                         this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentCodePerLight(this._pMethodSetup._iDiffuseMethodVO, lightDirReg, diffuseColorReg, this._pRegisterCache);
-                    }
 
-                    if (addSpec) {
+                    if (addSpec)
                         this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentCodePerLight(this._pMethodSetup._iSpecularMethodVO, lightDirReg, specularColorReg, this._pRegisterCache);
-                    }
 
                     this._pRegisterCache.removeFragmentTempUsage(lightDirReg);
                 }
@@ -19028,22 +18977,20 @@ var away;
                 var addSpec = this._usingSpecularMethod && this.pUsesProbesForSpecular();
                 var addDiff = this.pUsesProbesForDiffuse();
 
-                if (!(addSpec || addDiff)) {
+                if (!(addSpec || addDiff))
                     return;
-                }
 
-                if (addDiff) {
+                if (addDiff)
                     this._pLightProbeDiffuseIndices = new Array();
-                }
-                if (addSpec) {
+
+                if (addSpec)
                     this._pLightProbeSpecularIndices = new Array();
-                }
 
                 for (i = 0; i < this._pNumProbeRegisters; ++i) {
                     weightRegisters[i] = this._pRegisterCache.getFreeFragmentConstant();
-                    if (i == 0) {
+
+                    if (i == 0)
                         this._pProbeWeightsIndex = weightRegisters[i].index * 4;
-                    }
                 }
 
                 for (i = 0; i < this._pNumLightProbes; ++i) {
@@ -19075,7 +19022,7 @@ var away;
         /**
         * LineMaterial is a material exclusively used to render wireframe objects
         *
-        * @see away3d.entities.Lines
+        * @see away.entities.Lines
         */
         var LineMaterial = (function (_super) {
             __extends(LineMaterial, _super);

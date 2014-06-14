@@ -2,29 +2,20 @@
 
 module away.materials
 {
-	//import away3d.arcane;
-	//import away3d.cameras.Camera;
-	//import away3d.core.base.IRenderable;
-	//import away3d.base.StageGL;
-	//import away3d.lights.DirectionalLight;
-	//import away3d.lights.LightProbe;
-	//import away3d.lights.PointLight;
-	//import away3d.materials.LightSources;
-	//import away3d.materials.MaterialBase;
-	//import away3d.materials.compilation.LightingShaderCompiler;
-	//import away3d.materials.compilation.ShaderCompiler;
-
-	//import flash.displayGL.ContextGL;
-	//import flash.geom.Matrix3D;
-	//import flash.geom.Vector3D;
-
-	//use namespace arcane;
+	import StageGL									= away.base.StageGL;
+	import Camera									= away.entities.Camera;
+	import Vector3D									= away.geom.Vector3D;
+	import Matrix3D									= away.geom.Matrix3D;
+	import DirectionalLight							= away.lights.DirectionalLight;
+	import LightProbe								= away.lights.LightProbe;
+	import PointLight								= away.lights.PointLight;
+	import RenderableBase							= away.pool.RenderableBase;
 
 	/**
 	 * LightingPass is a shader pass that uses shader methods to compile a complete program. It only includes the lighting
-	 * methods. It's used by multipass materials to accumulate lighting passes.
+	 * methods. It's used by multipass triangle materials to accumulate lighting passes.
 	 *
-	 * @see away3d.materials.MultiPassMaterialBase
+	 * @see away.materials.TriangleMaterial
 	 */
 
 	export class LightingPass extends CompiledPass
@@ -112,7 +103,9 @@ module away.materials
 		{
 			if (this._includeCasters == value)
 				return;
+
 			this._includeCasters = value;
+
 			this.iInvalidateShaderProgram();
 		}
 
@@ -193,8 +186,7 @@ module away.materials
 		{
 			super.pUpdateShaderProperties();
 
-			var compilerV:LightingShaderCompiler = <LightingShaderCompiler> this._pCompiler;
-			this._tangentSpace = compilerV.tangentSpace;
+			this._tangentSpace = (<LightingShaderCompiler> this._pCompiler).tangentSpace;
 
 		}
 
@@ -205,20 +197,19 @@ module away.materials
 		{
 			super.pUpdateRegisterIndices();
 
-			var compilerV:LightingShaderCompiler = <LightingShaderCompiler> this._pCompiler;
-			this._lightVertexConstantIndex = compilerV.lightVertexConstantIndex;
+			this._lightVertexConstantIndex = (<LightingShaderCompiler> this._pCompiler).lightVertexConstantIndex;
 
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
 		{
 			renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
 
 			if (this._tangentSpace && this._pCameraPositionIndex >= 0) {
-				var pos:away.geom.Vector3D = camera.scenePosition;
+				var pos:Vector3D = camera.scenePosition;
 				var x:number = pos.x;
 				var y:number = pos.y;
 				var z:number = pos.z;
@@ -234,12 +225,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iActivate(stageGL:StageGL, camera:Camera)
 		{
 			super.iActivate(stageGL, camera);
 
 			if (!this._tangentSpace && this._pCameraPositionIndex >= 0) {
-				var pos:away.geom.Vector3D = camera.scenePosition;
+				var pos:Vector3D = camera.scenePosition;
 
 				this._pVertexConstantData[this._pCameraPositionIndex] = pos.x;
 				this._pVertexConstantData[this._pCameraPositionIndex + 1] = pos.y;
@@ -268,12 +259,12 @@ module away.materials
 		 */
 		public pUpdateLightConstants()
 		{
-			var dirLight:away.lights.DirectionalLight;
-			var pointLight:away.lights.PointLight;
+			var dirLight:DirectionalLight;
+			var pointLight:PointLight;
 			var i:number = 0;
 			var k:number = 0;
 			var len:number;
-			var dirPos:away.geom.Vector3D;
+			var dirPos:Vector3D;
 			var total:number = 0;
 			var numLightTypes:number = this._includeCasters? 2 : 1;
 			var l:number;
@@ -283,7 +274,7 @@ module away.materials
 			k = this._pLightFragmentConstantIndex;
 
 			var cast:number = 0;
-			var dirLights:Array<away.lights.DirectionalLight> = this._pLightPicker.directionalLights;
+			var dirLights:Array<DirectionalLight> = this._pLightPicker.directionalLights;
 			offset = this._directionalLightsOffset;
 			len = this._pLightPicker.directionalLights.length;
 
@@ -295,7 +286,9 @@ module away.materials
 			for (; cast < numLightTypes; ++cast) {
 				if (cast)
 					dirLights = this._pLightPicker.castingDirectionalLights;
+
 				len = dirLights.length;
+
 				if (len > this._pNumDirectionalLights)
 					len = this._pNumDirectionalLights;
 
@@ -345,15 +338,13 @@ module away.materials
 			if (this._pNumDirectionalLights > total) {
 				i = k + (this._pNumDirectionalLights - total)*12;
 
-				while (k < i) {
+				while (k < i)
 					this._pFragmentConstantData[k++] = 0;
-				}
-
 			}
 
 			total = 0;
 
-			var pointLights:Array<away.lights.PointLight> = this._pLightPicker.pointLights;
+			var pointLights:Array<PointLight> = this._pLightPicker.pointLights;
 			offset = this._pointLightsOffset;
 			len = this._pLightPicker.pointLights.length;
 
@@ -365,9 +356,8 @@ module away.materials
 			}
 
 			for (; cast < numLightTypes; ++cast) {
-				if (cast) {
+				if (cast)
 					pointLights = this._pLightPicker.castingPointLights;
-				}
 
 				len = pointLights.length;
 
@@ -388,12 +378,11 @@ module away.materials
 						this._pVertexConstantData[l++] = this._inverseSceneMatrix[1]*x + this._inverseSceneMatrix[5]*y + this._inverseSceneMatrix[9]*z + this._inverseSceneMatrix[13];
 						this._pVertexConstantData[l++] = this._inverseSceneMatrix[2]*x + this._inverseSceneMatrix[6]*y + this._inverseSceneMatrix[10]*z + this._inverseSceneMatrix[14];
 					} else {
-
 						this._pVertexConstantData[l++] = dirPos.x;
 						this._pVertexConstantData[l++] = dirPos.y;
 						this._pVertexConstantData[l++] = dirPos.z;
-
 					}
+
 					this._pVertexConstantData[l++] = 1;
 
 					this._pFragmentConstantData[k++] = pointLight._iDiffuseR;
@@ -419,20 +408,19 @@ module away.materials
 			// more directional supported than currently picked, need to clamp all to 0
 			if (this._pNumPointLights > total) {
 				i = k + (total - this._pNumPointLights)*12;
-				for (; k < i; ++k) {
-					this._pFragmentConstantData[k] = 0;
 
-				}
+				for (; k < i; ++k)
+					this._pFragmentConstantData[k] = 0;
 			}
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public pUpdateProbes(stageGL:away.base.StageGL)
+		public pUpdateProbes(stageGL:StageGL)
 		{
-			var probe:away.lights.LightProbe;
-			var lightProbes:Array<away.lights.LightProbe> = this._pLightPicker.lightProbes;
+			var probe:LightProbe;
+			var lightProbes:Array<LightProbe> = this._pLightPicker.lightProbes;
 			var weights:Array<number> = this._pLightPicker.lightProbeWeights;
 			var len:number = lightProbes.length - this._lightProbesOffset;
 			var addDiff:boolean = this.usesProbesForDiffuse();
@@ -441,9 +429,8 @@ module away.materials
 			if (!(addDiff || addSpec))
 				return;
 
-			if (len > this._pNumLightProbes) {
+			if (len > this._pNumLightProbes)
 				len = this._pNumLightProbes;
-			}
 
 			for (var i:number = 0; i < len; ++i) {
 				probe = lightProbes[ this._lightProbesOffset + i];

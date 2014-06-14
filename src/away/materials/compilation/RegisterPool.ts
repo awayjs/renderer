@@ -2,26 +2,24 @@
 
 module away.materials
 {
-	//import flash.utils.Dictionary;
-
 	/**
 	 * RegisterPool is used by the shader compilation process to keep track of which registers of a certain type are
 	 * currently used and should not be allowed to be written to. Either entire registers can be requested and locked,
 	 * or single components (x, y, z, w) of a single register.
 	 * It is used by ShaderRegisterCache to track usages of individual register types.
 	 *
-	 * @see away3d.materials.compilation.ShaderRegisterCache
+	 * @see away.materials.ShaderRegisterCache
 	 */
 	export class RegisterPool
 	{
-		private static _regPool:Object = new Object();//= new Dictionary();
-		private static _regCompsPool:Object = new Object();//new Dictionary();
+		private static _regPool:Object = new Object();
+		private static _regCompsPool:Object = new Object();
 
-		private _vectorRegisters:ShaderRegisterElement[];//Vector.<ShaderRegisterElement>;
+		private _vectorRegisters:Array<ShaderRegisterElement>;
 		private _registerComponents;
 
 		private _regName:string;
-		private _usedSingleCount:Array<Array<number>>;//Vector.<Vector.<uint>>;
+		private _usedSingleCount:Array<Array<number>>;
 		private _usedVectorCount:Array<number> /*uint*/;
 		private _regCount:number;
 
@@ -47,13 +45,11 @@ module away.materials
 		public requestFreeVectorReg():ShaderRegisterElement
 		{
 			for (var i:number = 0; i < this._regCount; ++i) {
-
 				if (!this.isRegisterUsed(i)) {
 					if (this._persistent)
 						this._usedVectorCount[i]++;
 
 					return this._vectorRegisters[i];
-
 				}
 			}
 
@@ -65,13 +61,7 @@ module away.materials
 		 */
 		public requestFreeRegComponent():ShaderRegisterElement
 		{
-
-			//away.Debug.log( 'RegisterPool' , 'requestFreeRegComponent' , this._regCount);
-
 			for (var i:number = 0; i < this._regCount; ++i) {
-
-				//away.Debug.log( 'RegisterPool' , 'requestFreeRegComponent' , this._regCount , 'this._usedVectorCount:' + this._usedVectorCount[i] );
-
 				if (this._usedVectorCount[i] > 0)
 					continue;
 
@@ -145,23 +135,18 @@ module away.materials
 		 */
 		private initRegisters(regName:string, regCount:number)
 		{
-
 			var hash:string = RegisterPool._initPool(regName, regCount);
 
 			this._vectorRegisters = RegisterPool._regPool[hash];
 			this._registerComponents = RegisterPool._regCompsPool[hash];
 
-			this._usedVectorCount = this._initArray(Array<number>(regCount), 0);//new Vector.<uint>(regCount, true);
+			this._usedVectorCount = this._initArray(Array<number>(regCount), 0);
 
-			this._usedSingleCount = new Array<Array<number>>(4); //this._usedSingleCount = new Vector.<Vector.<uint>>(4, true);
-			this._usedSingleCount[0] = this._initArray(new Array<number>(regCount), 0);//new Array<number>(regCount ) ;//, true);
-			this._usedSingleCount[1] = this._initArray(new Array<number>(regCount), 0);//new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
-			this._usedSingleCount[2] = this._initArray(new Array<number>(regCount), 0);//new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
-			this._usedSingleCount[3] = this._initArray(new Array<number>(regCount), 0);//new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
-
-			//console.log( 'this._usedVectorCount: ' , this._usedVectorCount );
-			//console.log( 'this._usedSingleCount: ' , this._usedSingleCount );
-
+			this._usedSingleCount = new Array<Array<number>>(4);
+			this._usedSingleCount[0] = this._initArray(new Array<number>(regCount), 0);
+			this._usedSingleCount[1] = this._initArray(new Array<number>(regCount), 0);
+			this._usedSingleCount[2] = this._initArray(new Array<number>(regCount), 0);
+			this._usedSingleCount[3] = this._initArray(new Array<number>(regCount), 0);
 		}
 
 		private static _initPool(regName:string, regCount:number):string
@@ -171,7 +156,7 @@ module away.materials
 			if (RegisterPool._regPool[hash] != undefined)
 				return hash;
 
-			var vectorRegisters:ShaderRegisterElement[] = new Array<ShaderRegisterElement>(regCount);///Vector.<ShaderRegisterElement> = new Vector.<ShaderRegisterElement>(regCount, true);
+			var vectorRegisters:ShaderRegisterElement[] = new Array<ShaderRegisterElement>(regCount);
 			RegisterPool._regPool[hash] = vectorRegisters;
 
 			var registerComponents = [
@@ -189,9 +174,6 @@ module away.materials
 				for (var j:number = 0; j < 4; ++j)
 					registerComponents[j][i] = new ShaderRegisterElement(regName, i, j);
 			}
-
-			//console.log ( 'RegisterPool._regCompsPool[hash] : ' , RegisterPool._regCompsPool[hash]  );
-			//console.log ( 'RegisterPool._regPool[hash] : ' , RegisterPool._regPool[hash]  );
 
 			return hash;
 		}
@@ -221,9 +203,6 @@ module away.materials
 				a[c] = val;
 
 			return a;
-
 		}
-
 	}
-
 }

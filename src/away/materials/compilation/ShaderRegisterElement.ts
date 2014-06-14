@@ -2,7 +2,6 @@
 
 module away.materials
 {
-
 	/**
 	 * A single register element (an entire register or a single register's component) used by the RegisterPool.
 	 */
@@ -30,18 +29,11 @@ module away.materials
 
 			this._toStr = this._regName;
 
-			if (this._index >= 0) {
-
+			if (this._index >= 0)
 				this._toStr += this._index;
 
-			}
-
-			if (component > -1) {
-
+			if (component > -1)
 				this._toStr += "." + ShaderRegisterElement.COMPONENTS[component];
-
-			}
-
 		}
 
 		/**

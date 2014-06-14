@@ -2,7 +2,6 @@
 
 module away.materials
 {
-
 	/**
 	 * ShaderRegister Cache provides the usage management system for all registers during shading compilation.
 	 */
@@ -36,9 +35,7 @@ module away.materials
 		 */
 		constructor(profile:string)
 		{
-
 			this._profile = profile;
-
 		}
 
 		/**
@@ -46,9 +43,6 @@ module away.materials
 		 */
 		public reset()
 		{
-
-			//TODO: AGAL <> GLSL Conversion
-
 			this._fragmentTempCache = new RegisterPool("ft", 8, false);
 			this._vertexTempCache = new RegisterPool("vt", 8, false);
 			this._varyingCache = new RegisterPool("v", 8);
@@ -77,7 +71,6 @@ module away.materials
 
 			for (i = 0; i < this._fragmentConstantOffset; ++i)
 				this.getFreeFragmentConstant();
-
 		}
 
 		/**
@@ -85,7 +78,6 @@ module away.materials
 		 */
 		public dispose()
 		{
-
 			this._fragmentTempCache.dispose();
 			this._vertexTempCache.dispose();
 			this._varyingCache.dispose();
@@ -99,7 +91,6 @@ module away.materials
 			this._vertexAttributesCache = null;
 			this._fragmentOutputRegister = null;
 			this._vertexOutputRegister = null;
-
 		}
 
 		/**
@@ -175,7 +166,6 @@ module away.materials
 		{
 			++this._numUsedFragmentConstants;
 			return this._fragmentConstantsCache.requestFreeVectorReg();
-
 		}
 
 		/**

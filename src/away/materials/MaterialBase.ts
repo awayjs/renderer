@@ -2,17 +2,15 @@
 
 module away.materials
 {
+	import AnimationSetBase				= away.animators.AnimationSetBase;
+	import AnimatorBase					= away.animators.AnimatorBase;
 	import BlendMode					= away.base.BlendMode;
+	import IMaterialOwner				= away.base.IMaterialOwner;
+	import StageGL						= away.base.StageGL;
+	import Camera						= away.entities.Camera;
 	import Event						= away.events.Event;
 	import Matrix3D						= away.geom.Matrix3D;
 	import AssetType					= away.library.AssetType;
-	import Delegate						= away.utils.Delegate;
-
-	import AnimationSetBase				= away.animators.AnimationSetBase;
-	import AnimatorBase					= away.animators.AnimatorBase;
-	import IMaterialOwner				= away.base.IMaterialOwner;
-	import Camera						= away.entities.Camera;
-	import StageGL						= away.base.StageGL;
 	import DepthMapPass					= away.materials.DepthMapPass;
 	import DistanceMapPass				= away.materials.DistanceMapPass;
 	import MaterialPassBase				= away.materials.MaterialPassBase;
@@ -99,10 +97,10 @@ module away.materials
 		public _pWidth:number = 1;
 		public _pRequiresBlending:boolean = false;
 
-		private _onPassChangeDelegate:Function;
-		private _onDepthPassChangeDelegate:Function;
-		private _onDistancePassChangeDelegate:Function;
-		private _onLightChangeDelegate:Function;
+		private _onPassChangeDelegate:(event:Event) => void;
+		private _onDepthPassChangeDelegate:(event:Event) => void;
+		private _onDistancePassChangeDelegate:(event:Event) => void;
+		private _onLightChangeDelegate:(event:Event) => void;
 
 		/**
 		 * Creates a new MaterialBase object.
@@ -118,16 +116,16 @@ module away.materials
 			this._pDepthPass = new DepthMapPass();
 			this._pDistancePass = new DistanceMapPass();
 
-			this._onPassChangeDelegate = Delegate.create(this, this.onPassChange);
-			this._onDepthPassChangeDelegate = Delegate.create(this, this.onDepthPassChange);
-			this._onDistancePassChangeDelegate = Delegate.create(this, this.onDistancePassChange);
+			this._onPassChangeDelegate = (event:Event) => this.onPassChange(event);
+			this._onDepthPassChangeDelegate = (event:Event) => this.onDepthPassChange(event);
+			this._onDistancePassChangeDelegate = (event:Event) => this.onDistancePassChange(event);
 
 			this._pDepthPass.addEventListener(Event.CHANGE, this._onDepthPassChangeDelegate);
 			this._pDistancePass.addEventListener(Event.CHANGE, this._onDistancePassChangeDelegate);
 
 			this.alphaPremultiplied = false; //TODO: work out why this is different for WebGL
 
-			this._onLightChangeDelegate = Delegate.create(this, this.onLightsChange);
+			this._onLightChangeDelegate = (event:Event) => this.onLightsChange(event);
 		}
 
 		/**
@@ -163,12 +161,12 @@ module away.materials
 				return;
 
 			if (this._pLightPicker)
-				this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
+				this._pLightPicker.removeEventListener(Event.CHANGE, this._onLightChangeDelegate);
 
 			this._pLightPicker = value;
 
 			if (this._pLightPicker)
-				this._pLightPicker.addEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
+				this._pLightPicker.addEventListener(Event.CHANGE, this._onLightChangeDelegate);
 
 			this.pInvalidateScreenPasses();
 		}
@@ -571,7 +569,7 @@ module away.materials
 		 */
 		public iInvalidatePasses(triggerPass:MaterialPassBase)
 		{
-			var owner:away.base.IMaterialOwner;
+			var owner:IMaterialOwner;
 			var animator:AnimatorBase;
 
 			var l:number;
@@ -758,7 +756,7 @@ module away.materials
 		/**
 		 * Called when the light picker's configuration changed.
 		 */
-		private onLightsChange(event:away.events.Event)
+		private onLightsChange(event:Event)
 		{
 			this.pInvalidateScreenPasses();
 		}

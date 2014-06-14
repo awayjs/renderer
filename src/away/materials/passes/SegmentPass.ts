@@ -2,6 +2,13 @@
 
 module away.materials
 {
+	import LineSubGeometry							= away.base.LineSubGeometry;
+	import StageGL									= away.base.StageGL;
+	import Camera									= away.entities.Camera;
+	import Matrix3D									= away.geom.Matrix3D;
+	import RenderableBase							= away.pool.RenderableBase;
+	import ContextGLProgramType						= away.stagegl.ContextGLProgramType;
+	import IContext									= away.stagegl.IContext;
 
 	/**
 	 * SegmentPass is a material pass that draws wireframe segments.
@@ -11,8 +18,8 @@ module away.materials
 		public static pONE_VECTOR:Array<number> = Array<number>(1, 1, 1, 1);
 		public static pFRONT_VECTOR:Array<number> = Array<number>(0, 0, -1, 0);
 
-		private _constants:Array<number> = new Array<number>(0, 0, 0, 0);//private _constants:Array<number> = new Array<number>(4);
-		private _calcMatrix:away.geom.Matrix3D;
+		private _constants:Array<number> = new Array<number>(0, 0, 0, 0);
+		private _calcMatrix:Matrix3D;
 		private _thickness:number;
 
 		/**
@@ -22,14 +29,12 @@ module away.materials
 		 */
 		constructor(thickness:number)
 		{
-
 			super();
 
-			this._calcMatrix = new away.geom.Matrix3D();
+			this._calcMatrix = new Matrix3D();
 
 			this._thickness = thickness;
 			this._constants[1] = 1/255;
-
 		}
 
 		/**
@@ -110,17 +115,18 @@ module away.materials
 		 * @inheritDoc
 		 * todo: keep maps in dictionary per renderable
 		 */
-		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
 		{
-			var context:away.stagegl.IContext = stageGL.contextGL;
+			var context:IContext = stageGL.contextGL;
 			this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
 			this._calcMatrix.append(camera.inverseSceneTransform);
-			context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
 
-			stageGL.activateBuffer(0, renderable.getVertexData(away.base.LineSubGeometry.START_POSITION_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.START_POSITION_DATA), away.base.LineSubGeometry.POSITION_FORMAT);
-			stageGL.activateBuffer(1, renderable.getVertexData(away.base.LineSubGeometry.END_POSITION_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.END_POSITION_DATA), away.base.LineSubGeometry.POSITION_FORMAT);
-			stageGL.activateBuffer(2, renderable.getVertexData(away.base.LineSubGeometry.THICKNESS_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.THICKNESS_DATA), away.base.LineSubGeometry.THICKNESS_FORMAT);
-			stageGL.activateBuffer(3, renderable.getVertexData(away.base.LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(away.base.LineSubGeometry.COLOR_DATA), away.base.LineSubGeometry.COLOR_FORMAT);
+			context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
+
+			stageGL.activateBuffer(0, renderable.getVertexData(LineSubGeometry.START_POSITION_DATA), renderable.getVertexOffset(LineSubGeometry.START_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
+			stageGL.activateBuffer(1, renderable.getVertexData(LineSubGeometry.END_POSITION_DATA), renderable.getVertexOffset(LineSubGeometry.END_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
+			stageGL.activateBuffer(2, renderable.getVertexData(LineSubGeometry.THICKNESS_DATA), renderable.getVertexOffset(LineSubGeometry.THICKNESS_DATA), LineSubGeometry.THICKNESS_FORMAT);
+			stageGL.activateBuffer(3, renderable.getVertexData(LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(LineSubGeometry.COLOR_DATA), LineSubGeometry.COLOR_FORMAT);
 
 			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 		}
@@ -128,33 +134,30 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iActivate(stageGL:StageGL, camera:Camera)
 		{
-			var context:away.stagegl.IContext = stageGL.contextGL;
+			var context:IContext = stageGL.contextGL;
 			super.iActivate(stageGL, camera);
 
-			if (stageGL.scissorRect)
-				this._constants[0] = this._thickness/Math.min(stageGL.scissorRect.width, stageGL.scissorRect.height);
-			else
-				this._constants[0] = this._thickness/Math.min(stageGL.width, stageGL.height);
+			this._constants[0] = this._thickness/((stageGL.scissorRect)? Math.min(stageGL.scissorRect.width, stageGL.scissorRect.height) : Math.min(stageGL.width, stageGL.height));
 
 			// value to convert distance from camera to model length per pixel width
 			this._constants[2] = camera.projection.near;
 
-			context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
-			context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
-			context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 7, this._constants, 1);
+			context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
+			context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
+			context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 7, this._constants, 1);
 
 			// projection matrix
-			context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
+			context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public pDeactivate(stageGL:away.base.StageGL)
+		public pDeactivate(stageGL:StageGL)
 		{
-			var context:away.stagegl.IContext = stageGL.contextGL;
+			var context:IContext = stageGL.contextGL;
 			context.setVertexBufferAt(0, null);
 			context.setVertexBufferAt(1, null);
 			context.setVertexBufferAt(2, null);

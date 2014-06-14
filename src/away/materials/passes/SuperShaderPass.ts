@@ -2,12 +2,18 @@
 
 module away.materials
 {
-
+	import StageGL									= away.base.StageGL;
+	import ColorTransform							= away.geom.ColorTransform;
+	import Vector3D									= away.geom.Vector3D;
+	import DirectionalLight							= away.lights.DirectionalLight;
+	import LightProbe								= away.lights.LightProbe;
+	import PointLight								= away.lights.PointLight;
+	
 	/**
 	 * SuperShaderPass is a shader pass that uses shader methods to compile a complete program. It includes all methods
 	 * associated with a material.
 	 *
-	 * @see away3d.materials.methods.ShadingMethodBase
+	 * @see away.materials.ShadingMethodBase
 	 */
 	export class SuperShaderPass extends CompiledPass
 	{
@@ -22,6 +28,7 @@ module away.materials
 		constructor(material:MaterialBase)
 		{
 			super(material);
+			
 			this._pNeedFragmentAnimation = true;
 		}
 
@@ -54,15 +61,14 @@ module away.materials
 		/**
 		 * The ColorTransform object to transform the colour of the material with. Defaults to null.
 		 */
-		public get colorTransform():away.geom.ColorTransform
+		public get colorTransform():ColorTransform
 		{
 			return this._pMethodSetup._iColorTransformMethod? this._pMethodSetup._iColorTransformMethod.colorTransform : null;
 		}
 
-		public set colorTransform(value:away.geom.ColorTransform)
+		public set colorTransform(value:ColorTransform)
 		{
 			if (value) {
-				//colorTransformMethod ||= new away.geom.ColorTransform();
 				if (this.colorTransformMethod == null)
 					this.colorTransformMethod = new EffectColorTransformMethod();
 
@@ -169,32 +175,29 @@ module away.materials
 				this._pNumLightProbes = 0;
 			}
 
-			this.iInvalidateShaderProgram();//invalidateShaderProgram();
+			this.iInvalidateShaderProgram();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iActivate(stageGL:StageGL, camera:away.entities.Camera)
 		{
 			super.iActivate(stageGL, camera);
 
 			if (this._pMethodSetup._iColorTransformMethod)
 				this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stageGL);
 
-			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;
+			var methods:Array<MethodVOSet> = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
 
 			for (var i:number = 0; i < len; ++i) {
-
 				var aset:MethodVOSet = methods[i];
 				aset.method.iActivate(aset.data, stageGL);
-
 			}
 
 			if (this._pCameraPositionIndex >= 0) {
-
-				var pos:away.geom.Vector3D = camera.scenePosition;
+				var pos:Vector3D = camera.scenePosition;
 
 				this._pVertexConstantData[this._pCameraPositionIndex] = pos.x;
 				this._pVertexConstantData[this._pCameraPositionIndex + 1] = pos.y;
@@ -205,7 +208,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(stageGL:away.base.StageGL)
+		public iDeactivate(stageGL:StageGL)
 		{
 			super.iDeactivate(stageGL);
 
@@ -213,7 +216,7 @@ module away.materials
 				this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stageGL);
 
 			var aset:MethodVOSet;
-			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;
+			var methods:Array<MethodVOSet> = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
 
 			for (var i:number = 0; i < len; ++i) {
@@ -232,7 +235,7 @@ module away.materials
 			if (this._pMethodSetup._iColorTransformMethod)
 				this.pAddPasses(this._pMethodSetup._iColorTransformMethod.passes);
 
-			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;
+			var methods:Array<MethodVOSet> = this._pMethodSetup._iMethods;
 
 			for (var i:number = 0; i < methods.length; ++i)
 				this.pAddPasses(methods[i].method.passes);
@@ -264,7 +267,7 @@ module away.materials
 			if (this._pMethodSetup._iColorTransformMethod)
 				this._pMethodSetup._iColorTransformMethod.iInitConstants(this._pMethodSetup._iColorTransformMethodVO);
 
-			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;
+			var methods:Array<MethodVOSet> = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
 
 			for (var i:number = 0; i < len; ++i)
@@ -277,15 +280,15 @@ module away.materials
 		public pUpdateLightConstants()
 		{
 			// first dirs, then points
-			var dirLight:away.lights.DirectionalLight;
+			var dirLight:DirectionalLight;
 
-			var pointLight:away.lights.PointLight;
+			var pointLight:PointLight;
 
 			var i:number, k:number;
 
 			var len:number;
 
-			var dirPos:away.geom.Vector3D;
+			var dirPos:Vector3D;
 
 			var total:number = 0;
 
@@ -295,7 +298,7 @@ module away.materials
 
 			for (var cast:number = 0; cast < numLightTypes; ++cast) {
 
-				var dirLights:away.lights.DirectionalLight[] = cast? this._pLightPicker.castingDirectionalLights : this._pLightPicker.directionalLights;
+				var dirLights:Array<DirectionalLight> = cast? this._pLightPicker.castingDirectionalLights : this._pLightPicker.directionalLights;
 				len = dirLights.length;
 				total += len;
 
@@ -336,7 +339,7 @@ module away.materials
 			total = 0;
 			for (cast = 0; cast < numLightTypes; ++cast) {
 
-				var pointLights:away.lights.PointLight[] = cast? this._pLightPicker.castingPointLights : this._pLightPicker.pointLights;
+				var pointLights:Array<PointLight> = cast? this._pLightPicker.castingPointLights : this._pLightPicker.pointLights;
 
 				len = pointLights.length;
 
@@ -378,15 +381,14 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pUpdateProbes(stageGL:away.base.StageGL)
+		public pUpdateProbes(stageGL:StageGL)
 		{
-			var probe:away.lights.LightProbe;
-			var lightProbes:away.lights.LightProbe[] = this._pLightPicker.lightProbes;
+			var probe:LightProbe;
+			var lightProbes:Array<LightProbe> = this._pLightPicker.lightProbes;
 			var weights:Array<number> = this._pLightPicker.lightProbeWeights;
 			var len:number = lightProbes.length;
 			var addDiff:boolean = this.usesProbesForDiffuse();
 			var addSpec:boolean = <boolean> (this._pMethodSetup._iSpecularMethod && this.usesProbesForSpecular());
-			var context:away.stagegl.IContext = stageGL.contextGL;
 
 			if (!(addDiff || addSpec))
 				return;
