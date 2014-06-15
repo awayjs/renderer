@@ -2,11 +2,18 @@
 
 module away.lights
 {
-	export class CubeMapShadowMapper extends away.lights.ShadowMapperBase
+	import Scene					= away.containers.Scene;
+	import Camera					= away.entities.Camera;
+	import PerspectiveProjection	= away.projections.PerspectiveProjection;
+	import DepthRenderer			= away.render.DepthRenderer;
+	import RenderTexture			= away.textures.RenderTexture;
+	import TextureProxyBase			= away.textures.TextureProxyBase;
+	
+	
+	export class CubeMapShadowMapper extends ShadowMapperBase
 	{
-
-		private _depthCameras:Array<away.entities.Camera>;
-		private _projections:Array<away.projections.PerspectiveProjection>;
+		private _depthCameras:Array<Camera>;
+		private _projections:Array<PerspectiveProjection>;
 		private _needsRender:Array<boolean>;
 
 		constructor()
@@ -14,14 +21,15 @@ module away.lights
 			super();
 
 			this._pDepthMapSize = 512;
-			this._needsRender = [];
+			this._needsRender = new Array();
 			this.initCameras();
 		}
 
 		private initCameras()
 		{
-			this._depthCameras = [];
-			this._projections = [];
+			this._depthCameras = new Array();
+			this._projections = new Array();
+			
 			// posX, negX, posY, negY, posZ, negZ
 			this.addCamera(0, 90, 0);
 			this.addCamera(0, -90, 0);
@@ -33,13 +41,13 @@ module away.lights
 
 		private addCamera(rotationX:number, rotationY:number, rotationZ:number)
 		{
-			var cam:away.entities.Camera = new away.entities.Camera();
+			var cam:Camera = new Camera();
 			cam.rotationX = rotationX;
 			cam.rotationY = rotationY;
 			cam.rotationZ = rotationZ;
 			cam.projection.near = .01;
 
-			var projection:away.projections.PerspectiveProjection = <away.projections.PerspectiveProjection> cam.projection;
+			var projection:PerspectiveProjection = <PerspectiveProjection> cam.projection;
 			projection.fieldOfView = 90;
 			this._projections.push(projection);
 			cam.projection._iAspectRatio = 1;
@@ -47,18 +55,18 @@ module away.lights
 		}
 
 		//@override
-		public pCreateDepthTexture():away.textures.TextureProxyBase
+		public pCreateDepthTexture():TextureProxyBase
 		{
 			throw new away.errors.PartialImplementationError();
 			/*
-			 return new away.textures.RenderCubeTexture( this._depthMapSize );
+			 return new RenderCubeTexture( this._depthMapSize );
 			 */
 		}
 
 		//@override
-		public pUpdateDepthProjection(viewCamera:away.entities.Camera)
+		public pUpdateDepthProjection(viewCamera:Camera)
 		{
-			var light:away.lights.PointLight = <away.lights.PointLight>(this._pLight);
+			var light:PointLight = <PointLight>(this._pLight);
 			var maxDistance:number = light._pFallOff;
 			var pos:away.geom.Vector3D = this._pLight.scenePosition;
 
@@ -71,7 +79,7 @@ module away.lights
 		}
 
 		//@override
-		public pDrawDepthMap(target:away.textures.RenderTexture, scene:away.containers.Scene, renderer:away.render.DepthRenderer)
+		public pDrawDepthMap(target:RenderTexture, scene:Scene, renderer:DepthRenderer)
 		{
 			for (var i:number = 0; i < 6; ++i) {
 				if (this._needsRender[i]) {
@@ -82,6 +90,5 @@ module away.lights
 				}
 			}
 		}
-
 	}
 }

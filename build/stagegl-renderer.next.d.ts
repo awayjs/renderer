@@ -5437,6 +5437,7 @@ declare module away.materials {
         public _dirLightRegisters: ShaderRegisterElement[];
         /**
         * Creates a new SuperShaderCompiler object.
+        *
         * @param profile The compatibility profile used by the renderer.
         */
         constructor(profile: string);

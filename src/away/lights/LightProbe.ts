@@ -2,12 +2,23 @@
 
 module away.lights
 {
-	export class LightProbe extends away.lights.LightBase implements away.entities.IEntity
+	import BoundingVolumeBase		= away.bounds.BoundingVolumeBase;
+	import NullBounds				= away.bounds.NullBounds;
+	import Camera					= away.entities.Camera;
+	import IEntity					= away.entities.IEntity;
+	import Matrix3D					= away.geom.Matrix3D;
+	import Vector3D					= away.geom.Vector3D;
+	import EntityNode				= away.partition.EntityNode;
+	import LightProbeNode			= away.partition.LightProbeNode;
+	import IRenderer				= away.render.IRenderer;
+	import CubeTextureBase			= away.textures.CubeTextureBase;
+	
+	export class LightProbe extends LightBase implements away.entities.IEntity
 	{
-		private _diffuseMap:away.textures.CubeTextureBase;
-		private _specularMap:away.textures.CubeTextureBase;
+		private _diffuseMap:CubeTextureBase;
+		private _specularMap:CubeTextureBase;
 
-		constructor(diffuseMap:away.textures.CubeTextureBase, specularMap:away.textures.CubeTextureBase = null)
+		constructor(diffuseMap:CubeTextureBase, specularMap:CubeTextureBase = null)
 		{
 			super();
 
@@ -17,22 +28,22 @@ module away.lights
 			this._specularMap = specularMap;
 		}
 
-		public get diffuseMap():away.textures.CubeTextureBase
+		public get diffuseMap():CubeTextureBase
 		{
 			return this._diffuseMap;
 		}
 
-		public set diffuseMap(value:away.textures.CubeTextureBase)
+		public set diffuseMap(value:CubeTextureBase)
 		{
 			this._diffuseMap = value;
 		}
 
-		public get specularMap():away.textures.CubeTextureBase
+		public get specularMap():CubeTextureBase
 		{
 			return this._specularMap;
 		}
 
-		public set specularMap(value:away.textures.CubeTextureBase)
+		public set specularMap(value:CubeTextureBase)
 		{
 			this._specularMap = value;
 		}
@@ -40,9 +51,9 @@ module away.lights
 		/**
 		 * @protected
 		 */
-		public pCreateEntityPartitionNode():away.partition.EntityNode
+		public pCreateEntityPartitionNode():EntityNode
 		{
-			return new away.partition.LightProbeNode(this);
+			return new LightProbeNode(this);
 		}
 
 		//@override
@@ -52,18 +63,18 @@ module away.lights
 		}
 
 		//@override
-		public pGetDefaultBoundingVolume():away.bounds.BoundingVolumeBase
+		public pGetDefaultBoundingVolume():BoundingVolumeBase
 		{
-			return new away.bounds.NullBounds();
+			return new NullBounds();
 		}
 
 		//@override
-		public iGetObjectProjectionMatrix(entity:away.entities.IEntity, camera:away.entities.Camera, target:away.geom.Matrix3D = null):away.geom.Matrix3D
+		public iGetObjectProjectionMatrix(entity:IEntity, camera:Camera, target:Matrix3D = null):Matrix3D
 		{
 			throw new away.errors.Error("Object projection matrices are not supported for LightProbe objects!");
 		}
 
-		public _iCollectRenderables(renderer:away.render.IRenderer)
+		public _iCollectRenderables(renderer:IRenderer)
 		{
 			//nothing to do here
 		}

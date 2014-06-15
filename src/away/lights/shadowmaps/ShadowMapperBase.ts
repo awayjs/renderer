@@ -2,12 +2,22 @@
 
 module away.lights
 {
+	import StageGL					= away.base.StageGL;
+	import Scene					= away.containers.Scene;
+	import Camera					= away.entities.Camera;
+	import AbstractMethodError		= away.errors.AbstractMethodError;
+	import DepthRenderer			= away.render.DepthRenderer;
+	import EntityCollector			= away.traverse.EntityCollector;
+	import ShadowCasterCollector	= away.traverse.ShadowCasterCollector;
+	import RenderTexture			= away.textures.RenderTexture;
+	import TextureProxyBase			= away.textures.TextureProxyBase;
+	
 	export class ShadowMapperBase
 	{
 
-		public _pCasterCollector:away.traverse.ShadowCasterCollector;
+		public _pCasterCollector:ShadowCasterCollector;
 
-		private _depthMap:away.textures.TextureProxyBase;
+		private _depthMap:TextureProxyBase;
 		public _pDepthMapSize:number = 2048;
 		public _pLight:LightBase;
 		private _explicitDepthMap:boolean;
@@ -21,7 +31,7 @@ module away.lights
 
 		public pCreateCasterCollector()
 		{
-			return new away.traverse.ShadowCasterCollector();
+			return new ShadowCasterCollector();
 		}
 
 		public get autoUpdateShadows():boolean
@@ -39,7 +49,7 @@ module away.lights
 			this._iShadowsInvalid = true;
 		}
 
-		public iSetDepthMap(depthMap:away.textures.TextureProxyBase)
+		public iSetDepthMap(depthMap:TextureProxyBase)
 		{
 			if (this._depthMap == depthMap)
 				return;
@@ -57,17 +67,17 @@ module away.lights
 			}
 		}
 
-		public get light():away.lights.LightBase
+		public get light():LightBase
 		{
 			return this._pLight;
 		}
 
-		public set light(value:away.lights.LightBase)
+		public set light(value:LightBase)
 		{
 			this._pLight = value;
 		}
 
-		public get depthMap():away.textures.TextureProxyBase
+		public get depthMap():TextureProxyBase
 		{
 			if (!this._depthMap)
 				this._depthMap = this.pCreateDepthTexture();
@@ -98,12 +108,12 @@ module away.lights
 			this._depthMap = null;
 		}
 
-		public pCreateDepthTexture():away.textures.TextureProxyBase
+		public pCreateDepthTexture():TextureProxyBase
 		{
-			return new away.textures.RenderTexture(this._pDepthMapSize, this._pDepthMapSize);
+			return new RenderTexture(this._pDepthMapSize, this._pDepthMapSize);
 		}
 
-		public iRenderDepthMap(stageGL:away.base.StageGL, entityCollector:away.traverse.EntityCollector, renderer:away.render.DepthRenderer)
+		public iRenderDepthMap(stageGL:StageGL, entityCollector:EntityCollector, renderer:DepthRenderer)
 		{
 			this._iShadowsInvalid = false;
 
@@ -115,14 +125,14 @@ module away.lights
 			this.pDrawDepthMap(this._depthMap, entityCollector.scene, renderer);
 		}
 
-		public pUpdateDepthProjection(viewCamera:away.entities.Camera)
+		public pUpdateDepthProjection(viewCamera:Camera)
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 		}
 
-		public pDrawDepthMap(target:away.textures.TextureProxyBase, scene:away.containers.Scene, renderer:away.render.DepthRenderer)
+		public pDrawDepthMap(target:TextureProxyBase, scene:Scene, renderer:DepthRenderer)
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 		}
 
 		public _pSetDepthMapSize(value)

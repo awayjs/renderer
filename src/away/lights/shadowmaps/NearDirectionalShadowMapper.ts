@@ -2,7 +2,7 @@
 
 module away.lights
 {
-	import Camera = away.entities.Camera;
+	import Camera					= away.entities.Camera;
 
 	export class NearDirectionalShadowMapper extends DirectionalShadowMapper
 	{

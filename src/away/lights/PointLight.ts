@@ -2,7 +2,18 @@
 
 module away.lights
 {
-	export class PointLight extends away.lights.LightBase implements away.entities.IEntity
+	import BoundingSphere			= away.bounds.BoundingSphere;
+	import BoundingVolumeBase		= away.bounds.BoundingVolumeBase;
+	import Camera					= away.entities.Camera;
+	import IEntity					= away.entities.IEntity;
+	import Box						= away.geom.Box;
+	import Matrix3D					= away.geom.Matrix3D;
+	import Vector3D					= away.geom.Vector3D;
+	import EntityNode				= away.partition.EntityNode;
+	import PointLightNode			= away.partition.PointLightNode;
+	import IRenderer				= away.render.IRenderer;
+	
+	export class PointLight extends LightBase implements away.entities.IEntity
 	{
 		public _pRadius:number = 90000;
 		public _pFallOff:number = 100000;
@@ -17,9 +28,9 @@ module away.lights
 			this._pFallOffFactor = 1/(this._pFallOff*this._pFallOff - this._pRadius*this._pRadius);
 		}
 
-		public pCreateShadowMapper():away.lights.ShadowMapperBase
+		public pCreateShadowMapper():ShadowMapperBase
 		{
-			return new away.lights.CubeMapShadowMapper();
+			return new CubeMapShadowMapper();
 		}
 
 		public get radius():number
@@ -67,27 +78,27 @@ module away.lights
 		/**
 		 * @protected
 		 */
-		public pCreateEntityPartitionNode():away.partition.EntityNode
+		public pCreateEntityPartitionNode():EntityNode
 		{
-			return new away.partition.PointLightNode(this);
+			return new PointLightNode(this);
 		}
 
 		public pUpdateBounds()
 		{
-			this._pBounds.fromSphere(new away.geom.Vector3D(), this._pFallOff);
+			this._pBounds.fromSphere(new Vector3D(), this._pFallOff);
 			this._pBoundsInvalid = false;
 		}
 
-		public pGetDefaultBoundingVolume():away.bounds.BoundingVolumeBase
+		public pGetDefaultBoundingVolume():BoundingVolumeBase
 		{
-			return new away.bounds.BoundingSphere();
+			return new BoundingSphere();
 		}
 
-		public iGetObjectProjectionMatrix(entity:away.entities.IEntity, camera:away.entities.Camera, target:away.geom.Matrix3D = null):away.geom.Matrix3D
+		public iGetObjectProjectionMatrix(entity:IEntity, camera:Camera, target:Matrix3D = null):Matrix3D
 		{
 			var raw:number[] = new Array<number>(16);
-			var bounds:away.bounds.BoundingVolumeBase = entity.bounds;
-			var m:away.geom.Matrix3D = new away.geom.Matrix3D();
+			var bounds:BoundingVolumeBase = entity.bounds;
+			var m:Matrix3D = new Matrix3D();
 
 			// todo: do not use lookAt on Light
 			m.copyFrom(entity.getRenderSceneTransform(camera));
@@ -97,9 +108,9 @@ module away.lights
 			m.copyFrom(entity.getRenderSceneTransform(camera));
 			m.append(this.inverseSceneTransform);
 
-			var box:away.geom.Box = bounds.aabb;
-			var v1:away.geom.Vector3D = m.deltaTransformVector(new away.geom.Vector3D(box.left, box.bottom, box.front));
-			var v2:away.geom.Vector3D = m.deltaTransformVector(new away.geom.Vector3D(box.right, box.top, box.back));
+			var box:Box = bounds.aabb;
+			var v1:Vector3D = m.deltaTransformVector(new Vector3D(box.left, box.bottom, box.front));
+			var v2:Vector3D = m.deltaTransformVector(new Vector3D(box.right, box.top, box.back));
 			var d1:number = v1.x*v1.x + v1.y*v1.y + v1.z*v1.z;
 			var d2:number = v2.x*v2.x + v2.y*v2.y + v2.z*v2.z;
 			var d:number = Math.sqrt(d1 > d2? d1 : d2);
@@ -117,7 +128,7 @@ module away.lights
 			raw[14] = -zMin*raw[10];
 
 			if (!target)
-				target = new away.geom.Matrix3D();
+				target = new Matrix3D();
 
 			target.copyRawDataFrom(raw);
 			target.prepend(m);
@@ -125,7 +136,7 @@ module away.lights
 			return target;
 		}
 
-		public _iCollectRenderables(renderer:away.render.IRenderer)
+		public _iCollectRenderables(renderer:IRenderer)
 		{
 			//nothing to do here
 		}

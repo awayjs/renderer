@@ -370,7 +370,7 @@ module away.materials
 		 *
 		 * @internal
 		 */
-		public iDeactivateForDepth(stageGL:away.base.StageGL)
+		public iDeactivateForDepth(stageGL:StageGL)
 		{
 			if (this._distanceBasedDepthRender)
 				this._pDistancePass.iDeactivate(stageGL);
@@ -389,7 +389,7 @@ module away.materials
 		 *
 		 * @internal
 		 */
-		public iRenderDepth(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D) // ARCANE
+		public iRenderDepth(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
 		{
 			if (this._distanceBasedDepthRender) {
 				if (renderable.materialOwner.animator)
@@ -453,7 +453,7 @@ module away.materials
 		 *
 		 * @internal
 		 */
-		public iRenderPass(index:number, renderable:RenderableBase, stageGL:StageGL, entityCollector:away.traverse.ICollector, viewProjection:Matrix3D)
+		public iRenderPass(index:number, renderable:RenderableBase, stageGL:StageGL, entityCollector:ICollector, viewProjection:Matrix3D)
 		{
 			if (this._pLightPicker)
 				this._pLightPicker.collectLights(renderable, entityCollector);
@@ -479,7 +479,7 @@ module away.materials
 		 *
 		 * @internal
 		 */
-		public iAddOwner(owner:away.base.IMaterialOwner)
+		public iAddOwner(owner:IMaterialOwner)
 		{
 			this._owners.push(owner);
 
@@ -515,7 +515,7 @@ module away.materials
 		 *
 		 * @internal
 		 */
-		public iRemoveOwner(owner:away.base.IMaterialOwner)
+		public iRemoveOwner(owner:IMaterialOwner)
 		{
 			this._owners.splice(this._owners.indexOf(owner), 1);
 
@@ -688,7 +688,7 @@ module away.materials
 		private onPassChange(event:Event)
 		{
 			var mult:number = 1;
-			var ids:Array<number>;////Vector.<int>;
+			var ids:Array<number>;
 			var len:number;
 
 			this._iRenderOrderId = 0;

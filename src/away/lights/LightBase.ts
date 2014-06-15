@@ -2,6 +2,13 @@
 
 module away.lights
 {
+	import Camera					= away.entities.Camera;
+	import IEntity					= away.entities.IEntity;
+	import AbstractMethodError		= away.errors.AbstractMethodError;
+	import LightEvent				= away.events.LightEvent;
+	import Matrix3D					= away.geom.Matrix3D;
+	import AssetType				= away.library.AssetType;
+
 	export class LightBase extends away.containers.DisplayObjectContainer
 	{
 		private _color:number = 0xffffff;
@@ -27,7 +34,7 @@ module away.lights
 
 		private _castsShadows:boolean = false;
 
-		private _shadowMapper:away.lights.ShadowMapperBase;
+		private _shadowMapper:ShadowMapperBase;
 
 		constructor()
 		{
@@ -56,12 +63,12 @@ module away.lights
 				this._shadowMapper = null;
 			}
 			//*/
-			this.dispatchEvent(new away.events.LightEvent(away.events.LightEvent.CASTS_SHADOW_CHANGE));
+			this.dispatchEvent(new LightEvent(LightEvent.CASTS_SHADOW_CHANGE));
 		}
 
-		public pCreateShadowMapper():away.lights.ShadowMapperBase
+		public pCreateShadowMapper():ShadowMapperBase
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 		}
 
 		public get specular():number
@@ -103,6 +110,7 @@ module away.lights
 			this._colorR = ((this._color >> 16) & 0xff)/0xff;
 			this._colorG = ((this._color >> 8) & 0xff)/0xff;
 			this._colorB = (this._color & 0xff)/0xff;
+
 			this.updateDiffuse();
 			this.updateSpecular();
 		}
@@ -141,15 +149,15 @@ module away.lights
 			this._iAmbientB = (this._ambientColor & 0xff)/0xff*this._ambient;
 		}
 
-		public iGetObjectProjectionMatrix(entity:away.entities.IEntity, camera:away.entities.Camera, target:away.geom.Matrix3D = null):away.geom.Matrix3D
+		public iGetObjectProjectionMatrix(entity:IEntity, camera:Camera, target:Matrix3D = null):Matrix3D
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 		}
 
 		//@override
 		public get assetType():string
 		{
-			return away.library.AssetType.LIGHT;
+			return AssetType.LIGHT;
 		}
 
 		private updateSpecular()
@@ -166,12 +174,12 @@ module away.lights
 			this._iDiffuseB = this._colorB*this._diffuse;
 		}
 
-		public get shadowMapper():away.lights.ShadowMapperBase
+		public get shadowMapper():ShadowMapperBase
 		{
 			return this._shadowMapper;
 		}
 
-		public set shadowMapper(value:away.lights.ShadowMapperBase)
+		public set shadowMapper(value:ShadowMapperBase)
 		{
 			this._shadowMapper = value;
 			this._shadowMapper.light = this;

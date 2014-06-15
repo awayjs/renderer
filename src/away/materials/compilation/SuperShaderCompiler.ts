@@ -8,11 +8,12 @@ module away.materials
 	 */
 	export class SuperShaderCompiler extends ShaderCompiler
 	{
-		public _pointLightRegisters:Array<ShaderRegisterElement>;//Vector.<ShaderRegisterElement>;
-		public _dirLightRegisters:Array<ShaderRegisterElement>;//Vector.<ShaderRegisterElement>;
+		public _pointLightRegisters:Array<ShaderRegisterElement>;
+		public _dirLightRegisters:Array<ShaderRegisterElement>;
 
 		/**
 		 * Creates a new SuperShaderCompiler object.
+		 *
 		 * @param profile The compatibility profile used by the renderer.
 		 */
 		constructor(profile:string)
@@ -72,7 +73,6 @@ module away.materials
 				// tangent stream required
 				this.compileTangentVertexCode(normalMatrix);
 				this.compileTangentNormalMapFragmentCode();
-
 			} else {
 				this._pVertexCode += "m33 " + this._pSharedRegisters.normalVarying + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" + "mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.animatedNormal + ".w	\n";
 

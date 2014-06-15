@@ -157,7 +157,7 @@ module away.materials
 		{
 			this.iInitCompiler(profile);
 
-			this.pUpdateShaderProperties();
+			this.pUpdateShaderProperties();//this.updateShaderProperties();
 			this.initConstantData();
 
 			this.pCleanUp();

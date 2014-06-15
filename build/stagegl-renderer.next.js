@@ -3566,6 +3566,11 @@ var away;
 var away;
 (function (away) {
     (function (lights) {
+        var AbstractMethodError = away.errors.AbstractMethodError;
+        var LightEvent = away.events.LightEvent;
+
+        var AssetType = away.library.AssetType;
+
         var LightBase = (function (_super) {
             __extends(LightBase, _super);
             function LightBase() {
@@ -3610,7 +3615,7 @@ var away;
                     }
 
                     //*/
-                    this.dispatchEvent(new away.events.LightEvent(away.events.LightEvent.CASTS_SHADOW_CHANGE));
+                    this.dispatchEvent(new LightEvent(LightEvent.CASTS_SHADOW_CHANGE));
                 },
                 enumerable: true,
                 configurable: true
@@ -3618,7 +3623,7 @@ var away;
 
 
             LightBase.prototype.pCreateShadowMapper = function () {
-                throw new away.errors.AbstractMethodError();
+                throw new AbstractMethodError();
             };
 
             Object.defineProperty(LightBase.prototype, "specular", {
@@ -3709,13 +3714,13 @@ var away;
 
             LightBase.prototype.iGetObjectProjectionMatrix = function (entity, camera, target) {
                 if (typeof target === "undefined") { target = null; }
-                throw new away.errors.AbstractMethodError();
+                throw new AbstractMethodError();
             };
 
             Object.defineProperty(LightBase.prototype, "assetType", {
                 //@override
                 get: function () {
-                    return away.library.AssetType.LIGHT;
+                    return AssetType.LIGHT;
                 },
                 enumerable: true,
                 configurable: true
@@ -3755,6 +3760,10 @@ var away;
 var away;
 (function (away) {
     (function (lights) {
+        var NullBounds = away.bounds.NullBounds;
+
+        var LightProbeNode = away.partition.LightProbeNode;
+
         var LightProbe = (function (_super) {
             __extends(LightProbe, _super);
             function LightProbe(diffuseMap, specularMap) {
@@ -3794,7 +3803,7 @@ var away;
             * @protected
             */
             LightProbe.prototype.pCreateEntityPartitionNode = function () {
-                return new away.partition.LightProbeNode(this);
+                return new LightProbeNode(this);
             };
 
             //@override
@@ -3804,7 +3813,7 @@ var away;
 
             //@override
             LightProbe.prototype.pGetDefaultBoundingVolume = function () {
-                return new away.bounds.NullBounds();
+                return new NullBounds();
             };
 
             //@override
@@ -3817,7 +3826,7 @@ var away;
                 //nothing to do here
             };
             return LightProbe;
-        })(away.lights.LightBase);
+        })(lights.LightBase);
         lights.LightProbe = LightProbe;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
@@ -3826,6 +3835,13 @@ var away;
 var away;
 (function (away) {
     (function (lights) {
+        var BoundingSphere = away.bounds.BoundingSphere;
+
+        var Matrix3D = away.geom.Matrix3D;
+        var Vector3D = away.geom.Vector3D;
+
+        var PointLightNode = away.partition.PointLightNode;
+
         var PointLight = (function (_super) {
             __extends(PointLight, _super);
             function PointLight() {
@@ -3838,7 +3854,7 @@ var away;
                 this._pFallOffFactor = 1 / (this._pFallOff * this._pFallOff - this._pRadius * this._pRadius);
             }
             PointLight.prototype.pCreateShadowMapper = function () {
-                return new away.lights.CubeMapShadowMapper();
+                return new lights.CubeMapShadowMapper();
             };
 
             Object.defineProperty(PointLight.prototype, "radius", {
@@ -3890,23 +3906,23 @@ var away;
             * @protected
             */
             PointLight.prototype.pCreateEntityPartitionNode = function () {
-                return new away.partition.PointLightNode(this);
+                return new PointLightNode(this);
             };
 
             PointLight.prototype.pUpdateBounds = function () {
-                this._pBounds.fromSphere(new away.geom.Vector3D(), this._pFallOff);
+                this._pBounds.fromSphere(new Vector3D(), this._pFallOff);
                 this._pBoundsInvalid = false;
             };
 
             PointLight.prototype.pGetDefaultBoundingVolume = function () {
-                return new away.bounds.BoundingSphere();
+                return new BoundingSphere();
             };
 
             PointLight.prototype.iGetObjectProjectionMatrix = function (entity, camera, target) {
                 if (typeof target === "undefined") { target = null; }
                 var raw = new Array(16);
                 var bounds = entity.bounds;
-                var m = new away.geom.Matrix3D();
+                var m = new Matrix3D();
 
                 // todo: do not use lookAt on Light
                 m.copyFrom(entity.getRenderSceneTransform(camera));
@@ -3917,8 +3933,8 @@ var away;
                 m.append(this.inverseSceneTransform);
 
                 var box = bounds.aabb;
-                var v1 = m.deltaTransformVector(new away.geom.Vector3D(box.left, box.bottom, box.front));
-                var v2 = m.deltaTransformVector(new away.geom.Vector3D(box.right, box.top, box.back));
+                var v1 = m.deltaTransformVector(new Vector3D(box.left, box.bottom, box.front));
+                var v2 = m.deltaTransformVector(new Vector3D(box.right, box.top, box.back));
                 var d1 = v1.x * v1.x + v1.y * v1.y + v1.z * v1.z;
                 var d2 = v2.x * v2.x + v2.y * v2.y + v2.z * v2.z;
                 var d = Math.sqrt(d1 > d2 ? d1 : d2);
@@ -3936,7 +3952,7 @@ var away;
                 raw[14] = -zMin * raw[10];
 
                 if (!target)
-                    target = new away.geom.Matrix3D();
+                    target = new Matrix3D();
 
                 target.copyRawDataFrom(raw);
                 target.prepend(m);
@@ -3948,7 +3964,7 @@ var away;
                 //nothing to do here
             };
             return PointLight;
-        })(away.lights.LightBase);
+        })(lights.LightBase);
         lights.PointLight = PointLight;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
@@ -3957,6 +3973,12 @@ var away;
 var away;
 (function (away) {
     (function (lights) {
+        var NullBounds = away.bounds.NullBounds;
+
+        var Matrix3D = away.geom.Matrix3D;
+        var Vector3D = away.geom.Vector3D;
+        var DirectionalLightNode = away.partition.DirectionalLightNode;
+
         var DirectionalLight = (function (_super) {
             __extends(DirectionalLight, _super);
             function DirectionalLight(xDir, yDir, zDir) {
@@ -3967,9 +3989,9 @@ var away;
 
                 this._pIsEntity = true;
 
-                this.direction = new away.geom.Vector3D(xDir, yDir, zDir);
+                this.direction = new Vector3D(xDir, yDir, zDir);
 
-                this._sceneDirection = new away.geom.Vector3D();
+                this._sceneDirection = new Vector3D();
             }
             Object.defineProperty(DirectionalLight.prototype, "sceneDirection", {
                 get: function () {
@@ -3990,7 +4012,7 @@ var away;
                     this._direction = value;
 
                     if (!this._tmpLookAt)
-                        this._tmpLookAt = new away.geom.Vector3D();
+                        this._tmpLookAt = new Vector3D();
 
                     this._tmpLookAt.x = this.x + this._direction.x;
                     this._tmpLookAt.y = this.y + this._direction.y;
@@ -4005,7 +4027,7 @@ var away;
 
             //@override
             DirectionalLight.prototype.pGetDefaultBoundingVolume = function () {
-                return new away.bounds.NullBounds();
+                return new NullBounds();
             };
 
             //@override
@@ -4021,14 +4043,14 @@ var away;
 
             //@override
             DirectionalLight.prototype.pCreateShadowMapper = function () {
-                return new away.lights.DirectionalShadowMapper();
+                return new lights.DirectionalShadowMapper();
             };
 
             /**
             * @protected
             */
             DirectionalLight.prototype.pCreateEntityPartitionNode = function () {
-                return new away.partition.DirectionalLightNode(this);
+                return new DirectionalLightNode(this);
             };
 
             //override
@@ -4036,7 +4058,7 @@ var away;
                 if (typeof target === "undefined") { target = null; }
                 var raw = new Array();
                 var bounds = entity.bounds;
-                var m = new away.geom.Matrix3D();
+                var m = new Matrix3D();
 
                 m.copyFrom(entity.getRenderSceneTransform(camera));
                 m.append(this.inverseSceneTransform);
@@ -4089,7 +4111,7 @@ var away;
                 raw[15] = 1;
 
                 if (!target)
-                    target = new away.geom.Matrix3D();
+                    target = new Matrix3D();
 
                 target.copyRawDataFrom(raw);
                 target.prepend(m);
@@ -4101,7 +4123,7 @@ var away;
                 //nothing to do here
             };
             return DirectionalLight;
-        })(away.lights.LightBase);
+        })(lights.LightBase);
         lights.DirectionalLight = DirectionalLight;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
@@ -4110,6 +4132,11 @@ var away;
 var away;
 (function (away) {
     (function (lights) {
+        var AbstractMethodError = away.errors.AbstractMethodError;
+
+        var ShadowCasterCollector = away.traverse.ShadowCasterCollector;
+        var RenderTexture = away.textures.RenderTexture;
+
         var ShadowMapperBase = (function () {
             function ShadowMapperBase() {
                 this._pDepthMapSize = 2048;
@@ -4117,7 +4144,7 @@ var away;
                 this._pCasterCollector = this.pCreateCasterCollector();
             }
             ShadowMapperBase.prototype.pCreateCasterCollector = function () {
-                return new away.traverse.ShadowCasterCollector();
+                return new ShadowCasterCollector();
             };
 
             Object.defineProperty(ShadowMapperBase.prototype, "autoUpdateShadows", {
@@ -4201,7 +4228,7 @@ var away;
             };
 
             ShadowMapperBase.prototype.pCreateDepthTexture = function () {
-                return new away.textures.RenderTexture(this._pDepthMapSize, this._pDepthMapSize);
+                return new RenderTexture(this._pDepthMapSize, this._pDepthMapSize);
             };
 
             ShadowMapperBase.prototype.iRenderDepthMap = function (stageGL, entityCollector, renderer) {
@@ -4216,11 +4243,11 @@ var away;
             };
 
             ShadowMapperBase.prototype.pUpdateDepthProjection = function (viewCamera) {
-                throw new away.errors.AbstractMethodError();
+                throw new AbstractMethodError();
             };
 
             ShadowMapperBase.prototype.pDrawDepthMap = function (target, scene, renderer) {
-                throw new away.errors.AbstractMethodError();
+                throw new AbstractMethodError();
             };
 
             ShadowMapperBase.prototype._pSetDepthMapSize = function (value) {
@@ -4243,18 +4270,20 @@ var away;
 var away;
 (function (away) {
     (function (lights) {
+        var Camera = away.entities.Camera;
+
         var CubeMapShadowMapper = (function (_super) {
             __extends(CubeMapShadowMapper, _super);
             function CubeMapShadowMapper() {
                 _super.call(this);
 
                 this._pDepthMapSize = 512;
-                this._needsRender = [];
+                this._needsRender = new Array();
                 this.initCameras();
             }
             CubeMapShadowMapper.prototype.initCameras = function () {
-                this._depthCameras = [];
-                this._projections = [];
+                this._depthCameras = new Array();
+                this._projections = new Array();
 
                 // posX, negX, posY, negY, posZ, negZ
                 this.addCamera(0, 90, 0);
@@ -4266,7 +4295,7 @@ var away;
             };
 
             CubeMapShadowMapper.prototype.addCamera = function (rotationX, rotationY, rotationZ) {
-                var cam = new away.entities.Camera();
+                var cam = new Camera();
                 cam.rotationX = rotationX;
                 cam.rotationY = rotationY;
                 cam.rotationZ = rotationZ;
@@ -4283,7 +4312,7 @@ var away;
             CubeMapShadowMapper.prototype.pCreateDepthTexture = function () {
                 throw new away.errors.PartialImplementationError();
                 /*
-                return new away.textures.RenderCubeTexture( this._depthMapSize );
+                return new RenderCubeTexture( this._depthMapSize );
                 */
             };
 
@@ -4312,7 +4341,7 @@ var away;
                 }
             };
             return CubeMapShadowMapper;
-        })(away.lights.ShadowMapperBase);
+        })(lights.ShadowMapperBase);
         lights.CubeMapShadowMapper = CubeMapShadowMapper;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
@@ -4321,6 +4350,11 @@ var away;
 var away;
 (function (away) {
     (function (lights) {
+        var Camera = away.entities.Camera;
+        var Matrix3D = away.geom.Matrix3D;
+
+        var FreeMatrixProjection = away.projections.FreeMatrixProjection;
+
         var DirectionalShadowMapper = (function (_super) {
             __extends(DirectionalShadowMapper, _super);
             function DirectionalShadowMapper() {
@@ -4328,10 +4362,10 @@ var away;
                 this._pLightOffset = 10000;
                 this._pSnap = 64;
                 this._pCullPlanes = [];
-                this._pOverallDepthProjection = new away.projections.FreeMatrixProjection();
-                this._pOverallDepthCamera = new away.entities.Camera(this._pOverallDepthProjection);
+                this._pOverallDepthProjection = new FreeMatrixProjection();
+                this._pOverallDepthCamera = new Camera(this._pOverallDepthProjection);
                 this._pLocalFrustum = [];
-                this._pMatrix = new away.geom.Matrix3D();
+                this._pMatrix = new Matrix3D();
             }
             Object.defineProperty(DirectionalShadowMapper.prototype, "snap", {
                 get: function () {
@@ -4496,7 +4530,7 @@ var away;
                 matrix.copyRawDataFrom(raw);
             };
             return DirectionalShadowMapper;
-        })(away.lights.ShadowMapperBase);
+        })(lights.ShadowMapperBase);
         lights.DirectionalShadowMapper = DirectionalShadowMapper;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
@@ -4505,14 +4539,12 @@ var away;
 (function (away) {
     (function (lights) {
         var Camera = away.entities.Camera;
-        var FreeMatrixProjection = away.projections.FreeMatrixProjection;
-
-        var Matrix3DUtils = away.geom.Matrix3DUtils;
-
-        //	import Event					= away.events.Event;
+        var Event = away.events.Event;
         var EventDispatcher = away.events.EventDispatcher;
 
+        var Matrix3DUtils = away.geom.Matrix3DUtils;
         var Rectangle = away.geom.Rectangle;
+        var FreeMatrixProjection = away.projections.FreeMatrixProjection;
 
         var CascadeShadowMapper = (function (_super) {
             __extends(CascadeShadowMapper, _super);
@@ -4587,12 +4619,14 @@ var away;
                 set: function (value /*int*/ ) {
                     if (value == this._numCascades)
                         return;
+
                     if (value < 1 || value > 4)
                         throw new Error("numCascades must be an integer between 1 and 4");
+
                     this._numCascades = value;
                     this.invalidateScissorRects();
                     this.init();
-                    this.dispatchEvent(new away.events.Event(away.events.Event.CHANGE));
+                    this.dispatchEvent(new Event(Event.CHANGE));
                 },
                 enumerable: true,
                 configurable: true
@@ -5506,7 +5540,7 @@ var away;
             CompiledPass.prototype.reset = function (profile) {
                 this.iInitCompiler(profile);
 
-                this.pUpdateShaderProperties();
+                this.pUpdateShaderProperties(); //this.updateShaderProperties();
                 this.initConstantData();
 
                 this.pCleanUp();
@@ -16489,6 +16523,7 @@ var away;
             __extends(SuperShaderCompiler, _super);
             /**
             * Creates a new SuperShaderCompiler object.
+            *
             * @param profile The compatibility profile used by the renderer.
             */
             function SuperShaderCompiler(profile) {

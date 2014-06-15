@@ -2,11 +2,21 @@
 
 module away.lights
 {
-	export class DirectionalLight extends away.lights.LightBase implements away.entities.IEntity
+	import BoundingVolumeBase		= away.bounds.BoundingVolumeBase;
+	import NullBounds				= away.bounds.NullBounds;
+	import Camera					= away.entities.Camera;
+	import IEntity					= away.entities.IEntity;
+	import Matrix3D					= away.geom.Matrix3D;
+	import Vector3D					= away.geom.Vector3D;
+	import DirectionalLightNode		= away.partition.DirectionalLightNode;
+	import EntityNode				= away.partition.EntityNode;
+	import IRenderer				= away.render.IRenderer;
+
+	export class DirectionalLight extends LightBase implements away.entities.IEntity
 	{
-		private _direction:away.geom.Vector3D;
-		private _tmpLookAt:away.geom.Vector3D;
-		private _sceneDirection:away.geom.Vector3D;
+		private _direction:Vector3D;
+		private _tmpLookAt:Vector3D;
+		private _sceneDirection:Vector3D;
 		private _projAABBPoints:Array<number>;
 
 		constructor(xDir:number = 0, yDir:number = -1, zDir:number = 1)
@@ -15,12 +25,12 @@ module away.lights
 
 			this._pIsEntity = true;
 
-			this.direction = new away.geom.Vector3D(xDir, yDir, zDir);
+			this.direction = new Vector3D(xDir, yDir, zDir);
 
-			this._sceneDirection = new away.geom.Vector3D();
+			this._sceneDirection = new Vector3D();
 		}
 
-		public get sceneDirection():away.geom.Vector3D
+		public get sceneDirection():Vector3D
 		{
 			if (this._pSceneTransformDirty)
 				this.pUpdateSceneTransform();
@@ -28,17 +38,17 @@ module away.lights
 			return this._sceneDirection;
 		}
 
-		public get direction():away.geom.Vector3D
+		public get direction():Vector3D
 		{
 			return this._direction;
 		}
 
-		public set direction(value:away.geom.Vector3D)
+		public set direction(value:Vector3D)
 		{
 			this._direction = value;
 
 			if (!this._tmpLookAt)
-				this._tmpLookAt = new away.geom.Vector3D();
+				this._tmpLookAt = new Vector3D();
 
 			this._tmpLookAt.x = this.x + this._direction.x;
 			this._tmpLookAt.y = this.y + this._direction.y;
@@ -48,9 +58,9 @@ module away.lights
 		}
 
 		//@override
-		public pGetDefaultBoundingVolume():away.bounds.BoundingVolumeBase
+		public pGetDefaultBoundingVolume():BoundingVolumeBase
 		{
-			return new away.bounds.NullBounds();
+			return new NullBounds();
 		}
 
 		//@override
@@ -67,25 +77,25 @@ module away.lights
 		}
 
 		//@override
-		public pCreateShadowMapper():away.lights.ShadowMapperBase
+		public pCreateShadowMapper():ShadowMapperBase
 		{
-			return new away.lights.DirectionalShadowMapper();
+			return new DirectionalShadowMapper();
 		}
 
 		/**
 		 * @protected
 		 */
-		public pCreateEntityPartitionNode():away.partition.EntityNode
+		public pCreateEntityPartitionNode():EntityNode
 		{
-			return new away.partition.DirectionalLightNode(this);
+			return new DirectionalLightNode(this);
 		}
 
 		//override
-		public iGetObjectProjectionMatrix(entity:away.entities.IEntity, camera:away.entities.Camera, target:away.geom.Matrix3D = null):away.geom.Matrix3D
+		public iGetObjectProjectionMatrix(entity:IEntity, camera:Camera, target:Matrix3D = null):Matrix3D
 		{
 			var raw:Array<number> = new Array<number>();
-			var bounds:away.bounds.BoundingVolumeBase = entity.bounds;
-			var m:away.geom.Matrix3D = new away.geom.Matrix3D();
+			var bounds:BoundingVolumeBase = entity.bounds;
+			var m:Matrix3D = new Matrix3D();
 
 			m.copyFrom(entity.getRenderSceneTransform(camera));
 			m.append(this.inverseSceneTransform);
@@ -138,7 +148,7 @@ module away.lights
 			raw[15] = 1;
 
 			if (!target)
-				target = new away.geom.Matrix3D();
+				target = new Matrix3D();
 
 			target.copyRawDataFrom(raw);
 			target.prepend(m);
@@ -146,7 +156,7 @@ module away.lights
 			return target;
 		}
 
-		public _iCollectRenderables(renderer:away.render.IRenderer)
+		public _iCollectRenderables(renderer:IRenderer)
 		{
 			//nothing to do here
 		}

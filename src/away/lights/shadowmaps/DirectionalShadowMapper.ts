@@ -2,18 +2,28 @@
 
 module away.lights
 {
-	export class DirectionalShadowMapper extends away.lights.ShadowMapperBase
+	import Scene					= away.containers.Scene;
+	import Camera					= away.entities.Camera;
+	import Matrix3D					= away.geom.Matrix3D;
+	import Plane3D					= away.geom.Plane3D;
+	import Vector3D					= away.geom.Vector3D;
+	import FreeMatrixProjection		= away.projections.FreeMatrixProjection;
+	import DepthRenderer			= away.render.DepthRenderer;
+	import RenderTexture			= away.textures.RenderTexture;
+	import TextureProxyBase			= away.textures.TextureProxyBase;
+	
+	export class DirectionalShadowMapper extends ShadowMapperBase
 	{
 
-		public _pOverallDepthCamera:away.entities.Camera;
+		public _pOverallDepthCamera:Camera;
 		public _pLocalFrustum:Array<number>;
 
 		public _pLightOffset:number = 10000;
-		public _pMatrix:away.geom.Matrix3D;
-		public _pOverallDepthProjection:away.projections.FreeMatrixProjection;
+		public _pMatrix:Matrix3D;
+		public _pOverallDepthProjection:FreeMatrixProjection;
 		public _pSnap:number = 64;
 
-		public _pCullPlanes:away.geom.Plane3D[];
+		public _pCullPlanes:Array<Plane3D>;
 		public _pMinZ:number;
 		public _pMaxZ:number;
 
@@ -21,10 +31,10 @@ module away.lights
 		{
 			super();
 			this._pCullPlanes = [];
-			this._pOverallDepthProjection = new away.projections.FreeMatrixProjection();
-			this._pOverallDepthCamera = new away.entities.Camera(this._pOverallDepthProjection);
+			this._pOverallDepthProjection = new FreeMatrixProjection();
+			this._pOverallDepthCamera = new Camera(this._pOverallDepthProjection);
 			this._pLocalFrustum = [];
-			this._pMatrix = new away.geom.Matrix3D();
+			this._pMatrix = new Matrix3D();
 		}
 
 		public get snap():number
@@ -48,7 +58,7 @@ module away.lights
 		}
 
 		//@arcane
-		public get iDepthProjection():away.geom.Matrix3D
+		public get iDepthProjection():Matrix3D
 		{
 			return this._pOverallDepthCamera.viewProjection;
 		}
@@ -60,7 +70,7 @@ module away.lights
 		}
 
 		//@override
-		public pDrawDepthMap(target:away.textures.TextureProxyBase, scene:away.containers.Scene, renderer:away.render.DepthRenderer)
+		public pDrawDepthMap(target:TextureProxyBase, scene:Scene, renderer:DepthRenderer)
 		{
 			this._pCasterCollector.camera = this._pOverallDepthCamera;
 			this._pCasterCollector.cullPlanes = this._pCullPlanes;
@@ -70,10 +80,10 @@ module away.lights
 		}
 
 		//@protected
-		public pUpdateCullPlanes(viewCamera:away.entities.Camera)
+		public pUpdateCullPlanes(viewCamera:Camera)
 		{
-			var lightFrustumPlanes:away.geom.Plane3D[] = this._pOverallDepthCamera.frustumPlanes;
-			var viewFrustumPlanes:away.geom.Plane3D[] = viewCamera.frustumPlanes;
+			var lightFrustumPlanes:Array<Plane3D> = this._pOverallDepthCamera.frustumPlanes;
+			var viewFrustumPlanes:Array<Plane3D> = viewCamera.frustumPlanes;
 			this._pCullPlanes.length = 4;
 
 			this._pCullPlanes[0] = lightFrustumPlanes[0];
@@ -81,14 +91,14 @@ module away.lights
 			this._pCullPlanes[2] = lightFrustumPlanes[2];
 			this._pCullPlanes[3] = lightFrustumPlanes[3];
 
-			var light:away.lights.DirectionalLight = <away.lights.DirectionalLight> this._pLight;
-			var dir:away.geom.Vector3D = light.sceneDirection;
+			var light:DirectionalLight = <DirectionalLight> this._pLight;
+			var dir:Vector3D = light.sceneDirection;
 			var dirX:number = dir.x;
 			var dirY:number = dir.y;
 			var dirZ:number = dir.z;
 			var j:number = 4;
 			for (var i:number = 0; i < 6; ++i) {
-				var plane:away.geom.Plane3D = viewFrustumPlanes[i];
+				var plane:Plane3D = viewFrustumPlanes[i];
 				if (plane.a*dirX + plane.b*dirY + plane.c*dirZ < 0) {
 					this._pCullPlanes[j++] = plane;
 				}
@@ -96,23 +106,23 @@ module away.lights
 		}
 
 		//@override
-		public pUpdateDepthProjection(viewCamera:away.entities.Camera)
+		public pUpdateDepthProjection(viewCamera:Camera)
 		{
 			this.pUpdateProjectionFromFrustumCorners(viewCamera, viewCamera.projection.frustumCorners, this._pMatrix);
 			this._pOverallDepthProjection.matrix = this._pMatrix;
 			this.pUpdateCullPlanes(viewCamera);
 		}
 
-		public pUpdateProjectionFromFrustumCorners(viewCamera:away.entities.Camera, corners:Array<number>, matrix:away.geom.Matrix3D)
+		public pUpdateProjectionFromFrustumCorners(viewCamera:Camera, corners:Array<number>, matrix:Matrix3D)
 		{
 			var raw:Array<number> = new Array<number>();
-			var dir:away.geom.Vector3D;
+			var dir:Vector3D;
 			var x:number, y:number, z:number;
 			var minX:number, minY:number;
 			var maxX:number, maxY:number;
 			var i:number;
 
-			var light:away.lights.DirectionalLight = <away.lights.DirectionalLight> this._pLight;
+			var light:DirectionalLight = <DirectionalLight> this._pLight;
 			dir = light.sceneDirection;
 			this._pOverallDepthCamera.transform.matrix3D = this._pLight.sceneTransform;
 			x = Math.floor((viewCamera.x - dir.x*this._pLightOffset)/this._pSnap)*this._pSnap;

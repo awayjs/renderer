@@ -2,19 +2,18 @@
 
 module away.lights
 {
-	import Camera					= away.entities.Camera;
-	import FreeMatrixProjection		= away.projections.FreeMatrixProjection;
-	import IProjection				= away.projections.IProjection;
 	import Scene					= away.containers.Scene;
-	import Matrix3DUtils			= away.geom.Matrix3DUtils;
-	import DepthRenderer			= away.render.DepthRenderer;
-	
-	import ITextureBase				= away.stagegl.ITextureBase;
-//	import Event					= away.events.Event;
+	import Camera					= away.entities.Camera;
+	import Event					= away.events.Event;
 	import EventDispatcher			= away.events.EventDispatcher;
 	import IEventDispatcher			= away.events.IEventDispatcher;
 	import Matrix3D					= away.geom.Matrix3D;
+	import Matrix3DUtils			= away.geom.Matrix3DUtils;
 	import Rectangle				= away.geom.Rectangle;
+	import FreeMatrixProjection		= away.projections.FreeMatrixProjection;
+	import IProjection				= away.projections.IProjection;
+	import DepthRenderer			= away.render.DepthRenderer;
+	import ITextureBase				= away.stagegl.ITextureBase;
 	
 	export class CascadeShadowMapper extends DirectionalShadowMapper implements away.events.IEventDispatcher
 	{
@@ -111,12 +110,14 @@ module away.lights
 		{
 			if (value == this._numCascades)
 				return;
+
 			if (value < 1 || value > 4)
 				throw new Error("numCascades must be an integer between 1 and 4");
+
 			this._numCascades = value;
 			this.invalidateScissorRects();
 			this.init();
-			this.dispatchEvent(new away.events.Event(away.events.Event.CHANGE));
+			this.dispatchEvent(new Event(Event.CHANGE));
 		}
 		
 		public pDrawDepthMap(target:away.textures.RenderTexture, scene:Scene, renderer:DepthRenderer)
@@ -255,7 +256,7 @@ module away.lights
 			this._changeDispatcher.removeEventListener(type, listener);
 		}
 		
-		public dispatchEvent(event:away.events.Event)
+		public dispatchEvent(event:Event)
 		{
 			return this._changeDispatcher.dispatchEvent(event);
 		}
