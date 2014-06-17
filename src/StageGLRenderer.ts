@@ -5,18 +5,11 @@ away.Debug.LOG_PI_ERRORS = false;
 
 module away
 {
-
 	export class StageGLRenderer extends away.events.EventDispatcher
 	{
-
 		constructor()
 		{
-
 			super();
-
 		}
 	}
-
 }
-
-

@@ -4870,6 +4870,7 @@ declare module away.materials {
         public _component: number;
         /**
         * Creates a new ShaderRegisterElement object.
+        *
         * @param regName The name of the register.
         * @param index The index of the register.
         * @param component The register's component, if not the entire register is represented.

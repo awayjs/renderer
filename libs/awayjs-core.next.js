@@ -2026,11 +2026,10 @@ var away;
 
         Debug.throwPIROnKeyWordOnly = function (str, enable) {
             if (typeof enable === "undefined") { enable = true; }
-            if (!enable) {
+            if (!enable)
                 away.Debug.keyword = null;
-            } else {
+            else
                 away.Debug.keyword = str;
-            }
         };
 
         Debug.throwPIR = function (clss, fnc, msg) {
@@ -2040,9 +2039,8 @@ var away;
                 if (away.Debug.keyword) {
                     var e = clss + fnc + msg;
 
-                    if (e.indexOf(away.Debug.keyword) == -1) {
+                    if (e.indexOf(away.Debug.keyword) == -1)
                         return;
-                    }
                 }
 
                 throw new away.errors.PartialImplementationError(clss + '.' + fnc + ': ' + msg);
@@ -2051,9 +2049,8 @@ var away;
 
         Debug.logPIR = function (clss, fnc, msg) {
             if (typeof msg === "undefined") { msg = ''; }
-            if (Debug.LOG_PI_ERRORS) {
+            if (Debug.LOG_PI_ERRORS)
                 console.log(clss + '.' + fnc + ': ' + msg);
-            }
         };
 
         Debug.log = function () {
@@ -2061,9 +2058,8 @@ var away;
             for (var _i = 0; _i < (arguments.length - 0); _i++) {
                 args[_i] = arguments[_i + 0];
             }
-            if (Debug.ENABLE_LOG) {
-                console.log.apply(console, arguments);
-            }
+            if (Debug.ENABLE_LOG)
+                console.log(args);
         };
         Debug.THROW_ERRORS = true;
         Debug.ENABLE_LOG = true;

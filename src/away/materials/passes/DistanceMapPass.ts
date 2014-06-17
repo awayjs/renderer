@@ -6,6 +6,7 @@ module away.materials
 	import Camera									= away.entities.Camera;
 	import Matrix3D									= away.geom.Matrix3D;
 	import Matrix3DUtils							= away.geom.Matrix3DUtils;
+	import Vector3D									= away.geom.Vector3D;
 	import RenderableBase							= away.pool.RenderableBase;
 	import ContextGLProgramType						= away.stagegl.ContextGLProgramType;
 	import ContextGLTextureFormat					= away.stagegl.ContextGLTextureFormat;

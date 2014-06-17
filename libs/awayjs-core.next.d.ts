@@ -14692,3 +14692,6 @@ declare module away {
         constructor();
     }
 }
+declare module "awayjs-core" {
+    export = away;
+}

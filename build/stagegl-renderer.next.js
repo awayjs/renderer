@@ -3667,6 +3667,7 @@ var away;
                     this._colorR = ((this._color >> 16) & 0xff) / 0xff;
                     this._colorG = ((this._color >> 8) & 0xff) / 0xff;
                     this._colorB = (this._color & 0xff) / 0xff;
+
                     this.updateDiffuse();
                     this.updateSpecular();
                 },
@@ -15074,6 +15075,7 @@ var away;
         var ShaderRegisterElement = (function () {
             /**
             * Creates a new ShaderRegisterElement object.
+            *
             * @param regName The name of the register.
             * @param index The index of the register.
             * @param component The register's component, if not the entire register is represented.
