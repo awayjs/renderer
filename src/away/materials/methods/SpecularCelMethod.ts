@@ -54,9 +54,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:away.base.Stage)
 		{
-			super.iActivate(vo, stageGL);
+			super.iActivate(vo, stage);
 			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
 			var data:Array<number> = vo.fragmentData;
 			data[index] = this._smoothness;

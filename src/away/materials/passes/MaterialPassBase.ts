@@ -5,7 +5,7 @@ module away.materials
 	import AnimationRegisterCache		= away.animators.AnimationRegisterCache;
 	import AnimationSetBase				= away.animators.AnimationSetBase;
 	import AnimatorBase					= away.animators.AnimatorBase;
-	import StageGL						= away.base.StageGL;
+	import Stage						= away.base.Stage;
 	import BlendMode					= away.base.BlendMode;
 	import Camera						= away.entities.Camera;
 	import AbstractMethodError			= away.errors.AbstractMethodError;
@@ -15,7 +15,7 @@ module away.materials
 	import Matrix3D						= away.geom.Matrix3D;
 	import AGALProgramCache				= away.managers.AGALProgramCache;
 	import RenderableBase				= away.pool.RenderableBase;
-	import IContext						= away.stagegl.IContext;
+	import IContextStageGL				= away.stagegl.IContextStageGL;
 	import ContextGLBlendFactor			= away.stagegl.ContextGLBlendFactor;
 	import ContextGLCompareMode			= away.stagegl.ContextGLCompareMode;
 	import ContextGLTriangleFace		= away.stagegl.ContextGLTriangleFace;
@@ -26,10 +26,12 @@ module away.materials
 	 * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
 	 * a render call per required renderable.
 	 */
-	export class MaterialPassBase extends away.events.EventDispatcher
+	export class MaterialPassBase extends away.events.EventDispatcher implements IMaterialPass
 	{
 		public static MATERIALPASS_ID_COUNT:number = 0;
 
+		public _iPasses:Array<IMaterialPass>;
+		
 		/**
 		 * An id for this material pass, used to identify material passes when using animation sets.
 		 *
@@ -37,12 +39,12 @@ module away.materials
 		 */
 		public _iUniqueId:number;
 
-		public _pMaterial:MaterialBase;
+		private _material:MaterialBase;
 		private _animationSet:AnimationSetBase;
 
 		public _iPrograms:Array<IProgram> = new Array<IProgram>(8);
 		public _iProgramids:Array<number> = new Array<number>(-1, -1, -1, -1, -1, -1, -1, -1);
-		private _contextGLs:Array<IContext> = new Array<IContext>(8);
+		private _contextGLs:Array<IContextStageGL> = new Array<IContextStageGL>(8);
 
 		// agal props. these NEED to be set by subclasses!
 		// todo: can we perhaps figure these out manually by checking read operations in the bytecode, so other sources can be safely updated?
@@ -101,16 +103,13 @@ module away.materials
 
 		/**
 		 * Creates a new MaterialPassBase object.
-		 *
-		 * @param renderToTexture Indicates whether this pass is a render-to-texture pass.
 		 */
-		constructor(renderToTexture:boolean = false)
+		constructor()
 		{
 			super();
 
 			this._onLightsChangeDelegate = (event:Event) => this.onLightsChange(event);
-
-			this._renderToTexture = renderToTexture;
+			
 			this._pNumUsedStreams = 1;
 			this._pNumUsedVertexConstants = 5;
 
@@ -122,12 +121,12 @@ module away.materials
 		 */
 		public get material():MaterialBase
 		{
-			return this._pMaterial;
+			return this._material;
 		}
 
 		public set material(value:MaterialBase)
 		{
-			this._pMaterial = value;
+			this._material = value;
 		}
 
 		/**
@@ -318,9 +317,9 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iUpdateAnimationState(renderable:RenderableBase, stageGL:StageGL, camera:Camera)
+		public iUpdateAnimationState(renderable:RenderableBase, stage:Stage, camera:Camera)
 		{
-			(<AnimatorBase> renderable.materialOwner.animator).setRenderState(stageGL, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
+			(<AnimatorBase> renderable.materialOwner.animator).setRenderState(stage, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
 		}
 
 		/**
@@ -328,7 +327,7 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iRender(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
+		public iRender(renderable:RenderableBase, stage:Stage, camera:Camera, viewProjection:Matrix3D)
 		{
 			throw new AbstractMethodError();
 		}
@@ -413,14 +412,14 @@ module away.materials
 		/**
 		 * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
 		 * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
-		 * @param stageGL The StageGL object which is currently used for rendering.
+		 * @param stage The Stage object which is currently used for rendering.
 		 * @param camera The camera from which the scene is viewed.
 		 * @private
 		 */
-		public iActivate(stageGL:StageGL, camera:Camera)
+		public iActivate(stage:Stage, camera:Camera)
 		{
-			var contextIndex:number = stageGL._iStageGLIndex;
-			var context:IContext = stageGL.contextGL;
+			var contextIndex:number = stage._iStageIndex;
+			var context:IContextStageGL = <IContextStageGL> stage.context;
 
 			context.setDepthTest(( this._writeDepth && !this._pEnableBlending ), this._depthCompareMode);
 
@@ -431,7 +430,7 @@ module away.materials
 
 				this._contextGLs[contextIndex] = context;
 
-				this.iUpdateProgram(stageGL);
+				this.iUpdateProgram(stage);
 				this.dispatchEvent(new Event(Event.CHANGE));
 
 			}
@@ -448,42 +447,42 @@ module away.materials
 				context.setTextureAt(i, null);
 
 			if (this._animationSet && !this._animationSet.usesCPU)
-				this._animationSet.activate(stageGL, this);
+				this._animationSet.activate(stage, this);
 
 			context.setProgram(this._iPrograms[contextIndex]);
 
 			context.setCulling(this._pBothSides? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
 
 			if (this._renderToTexture) {
-				this._oldTarget = stageGL.renderTarget;
-				this._oldSurface = stageGL.renderSurfaceSelector;
-				this._oldDepthStencil = stageGL.enableDepthAndStencil;
-				this._oldRect = stageGL.scissorRect;
+				this._oldTarget = stage.renderTarget;
+				this._oldSurface = stage.renderSurfaceSelector;
+				this._oldDepthStencil = stage.enableDepthAndStencil;
+				this._oldRect = stage.scissorRect;
 			}
 		}
 
 		/**
 		 * Clears the render state for the pass. This needs to be called before activating another pass.
-		 * @param stageGL The StageGL used for rendering
+		 * @param stage The Stage used for rendering
 		 *
 		 * @private
 		 */
-		public iDeactivate(stageGL:StageGL)
+		public iDeactivate(stage:Stage)
 		{
-			var index:number = stageGL._iStageGLIndex;
+			var index:number = stage._iStageIndex;
 			MaterialPassBase._previousUsedStreams[index] = this._pNumUsedStreams;
 			MaterialPassBase._previousUsedTexs[index] = this._pNumUsedTextures;
 
 			if (this._animationSet && !this._animationSet.usesCPU)
-				this._animationSet.deactivate(stageGL, this);
+				this._animationSet.deactivate(stage, this);
 
 			if (this._renderToTexture) {
 				// kindly restore state
-				stageGL.setRenderTarget(this._oldTarget, this._oldDepthStencil, this._oldSurface);
-				stageGL.scissorRect = this._oldRect;
+				(<IContextStageGL> stage.context).setRenderTarget(this._oldTarget, this._oldDepthStencil, this._oldSurface);
+				stage.scissorRect = this._oldRect;
 			}
 
-			stageGL.contextGL.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
+			(<IContextStageGL> stage.context).setDepthTest(true, ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
 		}
 
 		/**
@@ -496,15 +495,15 @@ module away.materials
 			for (var i:number = 0; i < 8; ++i)
 				this._iPrograms[i] = null;
 
-			if (this._pMaterial && updateMaterial)
-				this._pMaterial.iInvalidatePasses(this);
+			if (this._material && updateMaterial)
+				this._material.iInvalidatePasses(this);
 		}
 
 		/**
 		 * Compiles the shader program.
 		 * @param polyOffsetReg An optional register that contains an amount by which to inflate the model (used in single object depth map rendering).
 		 */
-		public iUpdateProgram(stageGL:StageGL)
+		public iUpdateProgram(stage:Stage)
 		{
 			var animatorCode:string = "";
 			var UVAnimatorCode:string = "";
@@ -513,10 +512,10 @@ module away.materials
 
 			if (this._animationSet && !this._animationSet.usesCPU) {
 
-				animatorCode = this._animationSet.getAGALVertexCode(this, this._pAnimatableAttributes, this._pAnimationTargetRegisters, stageGL.profile);
+				animatorCode = this._animationSet.getAGALVertexCode(this, this._pAnimatableAttributes, this._pAnimationTargetRegisters, stage.profile);
 
 				if (this._pNeedFragmentAnimation)
-					fragmentAnimatorCode = this._animationSet.getAGALFragmentCode(this, this._pShadedTarget, stageGL.profile);
+					fragmentAnimatorCode = this._animationSet.getAGALFragmentCode(this, this._pShadedTarget, stage.profile);
 
 				if (this._pNeedUVAnimation)
 					UVAnimatorCode = this._animationSet.getAGALUVCode(this, this._pUVSource, this._pUVTarget);
@@ -547,7 +546,7 @@ module away.materials
 				Debug.log(fragmentCode);
 			}
 
-			AGALProgramCache.getInstance(stageGL).setProgram(this._iProgramids, this._iPrograms, vertexCode, fragmentCode);
+			AGALProgramCache.getInstance(stage).setProgram(this._iProgramids, this._iPrograms, vertexCode, fragmentCode);
 		}
 
 		/**

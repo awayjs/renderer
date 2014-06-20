@@ -2,6 +2,9 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import LightBase								= away.base.LightBase;
+
 	/**
 	 * ShadowHardMethod provides the cheapest shadow map method by using a single tap without any filtering.
 	 */
@@ -10,7 +13,7 @@ module away.materials
 		/**
 		 * Creates a new ShadowHardMethod object.
 		 */
-		constructor(castingLight:away.lights.LightBase)
+		constructor(castingLight:LightBase)
 		{
 			super(castingLight);
 		}
@@ -22,10 +25,10 @@ module away.materials
 		{
 			var depthMapRegister:ShaderRegisterElement = regCache.getFreeTextureReg();
 			var decReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
+
 			// needs to be reserved anyway. DO NOT REMOVE
 			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			// TODO not used
-			dataReg = dataReg;
+
 			var depthCol:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
 			var code:string = "";
 
@@ -77,7 +80,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivateForCascade(vo:MethodVO, stage:Stage)
 		{
 		}
 	}

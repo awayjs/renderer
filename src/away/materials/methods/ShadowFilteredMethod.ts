@@ -2,6 +2,8 @@
 
 module away.materials
 {
+	import DirectionalLight							= away.entities.DirectionalLight;
+
 	/**
 	 * ShadowFilteredMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
 	 * results of neighbouring pixels.
@@ -13,7 +15,7 @@ module away.materials
 		 *
 		 * @param castingLight The light casting the shadow
 		 */
-		constructor(castingLight:away.lights.DirectionalLight)
+		constructor(castingLight:DirectionalLight)
 		{
 			super(castingLight);
 		}
@@ -85,7 +87,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivateForCascade(vo:MethodVO, stage:away.base.Stage)
 		{
 			var size:number /*int*/ = this.castingLight.shadowMapper.depthMapSize;
 			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;

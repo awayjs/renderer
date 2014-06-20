@@ -7,7 +7,7 @@ module away.animators
 	import ContextGLVertexBufferFormat		= away.stagegl.ContextGLVertexBufferFormat
 	import ColorTransform					= away.geom.ColorTransform;
 	import Vector3D							= away.geom.Vector3D;
-	import StageGL							= away.base.StageGL;
+	import Stage							= away.base.Stage;
 	
 	export class ParticleInitialColorState extends ParticleStateBase
 	{
@@ -46,7 +46,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+		public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{
 			// TODO: not used
 			renderable = renderable;
@@ -56,11 +56,11 @@ module away.animators
 				if (this._particleInitialColorNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
 					var dataOffset:number /*uint*/ = this._particleInitialColorNode._iDataOffset;
 					if (this._usesMultiplier) {
-						animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorNode.MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+						animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorNode.MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 						dataOffset += 4;
 					}
 					if (this._usesOffset)
-						animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorNode.OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+						animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorNode.OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 				} else {
 					if (this._usesMultiplier)
 						animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorNode.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);

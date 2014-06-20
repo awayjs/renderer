@@ -6,13 +6,13 @@ module away.animators
 	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
 	import SubMesh							= away.base.TriangleSubMesh;
 	import Geometry							= away.base.Geometry;
-	import StageGL							= away.base.StageGL;
+	import Stage							= away.base.Stage;
 	import Mesh								= away.entities.Mesh;
 	import VertexDataPool					= away.pool.VertexDataPool;
-	import MaterialPassBase					= away.materials.MaterialPassBase;
+	import IMaterialPass					= away.materials.IMaterialPass;
 	import RenderableBase					= away.pool.RenderableBase;
 	import TriangleSubMeshRenderable		= away.pool.TriangleSubMeshRenderable;
-
+	import IContextStageGL					= away.stagegl.IContextStageGL;
 
 	/**
 	 * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
@@ -120,13 +120,13 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGL:StageGL, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:away.entities.Camera)
+		public setRenderState(stage:Stage, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:away.entities.Camera)
 		{
 			// todo: add code for when running on cpu
 
 			// if no poses defined, set temp data
 			if (!this._poses.length) {
-				this.setNullPose(stageGL, renderable, vertexConstantOffset, vertexStreamOffset);
+				this.setNullPose(stage, renderable, vertexConstantOffset, vertexStreamOffset);
 				return;
 			}
 
@@ -136,7 +136,7 @@ module away.animators
 			var i:number /*uint*/;
 			var len:number /*uint*/ = this._numPoses;
 
-			stageGL.contextGL.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+			(<IContextStageGL> stage.context).setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
 			if (this._blendMode == VertexAnimationMode.ABSOLUTE)
 				i = 1;
@@ -146,24 +146,24 @@ module away.animators
 			for (; i < len; ++i) {
 				subGeom = this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
 
-				stageGL.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.POSITION_DATA), subGeom.getOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+				(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.POSITION_DATA), subGeom.getOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
 				if (this._vertexAnimationSet.useNormals)
-					stageGL.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.NORMAL_DATA), subGeom.getOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+					(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.NORMAL_DATA), subGeom.getOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 			}
 		}
 
-		private setNullPose(stageGL:StageGL, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+		private setNullPose(stage:Stage, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 		{
-			stageGL.contextGL.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+			(<IContextStageGL> stage.context).setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
 			if (this._blendMode == VertexAnimationMode.ABSOLUTE) {
 				var len:number /*uint*/ = this._numPoses;
 				for (var i:number /*uint*/ = 1; i < len; ++i) {
-					stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+					(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
 					if (this._vertexAnimationSet.useNormals)
-						stageGL.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+						(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 				}
 			}
 			// todo: set temp data for additive?
@@ -173,7 +173,7 @@ module away.animators
 		 * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
 		 * Needs to be called if gpu code is potentially required.
 		 */
-		public testGPUCompatibility(pass:MaterialPassBase)
+		public testGPUCompatibility(pass:IMaterialPass)
 		{
 		}
 

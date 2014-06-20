@@ -12,12 +12,12 @@ var demos;
 
         var AssetType = away.library.AssetType;
 
-        var DirectionalLight = away.lights.DirectionalLight;
+        var DirectionalLight = away.entities.DirectionalLight;
 
         var StaticLightPicker = away.materials.StaticLightPicker;
         var URLRequest = away.net.URLRequest;
         var AWDParser = away.parsers.AWDParser;
-
+        var DefaultRenderer = away.render.DefaultRenderer;
         var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
         var AWDSuzanne = (function () {
@@ -38,7 +38,7 @@ var demos;
                     return _this.onAssetComplete(event);
                 });
 
-                this._view = new View(new away.render.DefaultRenderer());
+                this._view = new View(new DefaultRenderer());
                 this._view.camera.projection.far = 6000;
                 this._timer = new RequestAnimationFrame(this.render, this);
 

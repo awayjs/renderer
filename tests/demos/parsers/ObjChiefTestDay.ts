@@ -14,7 +14,7 @@ module demos.parsers
 	import AssetLoaderToken				= away.library.AssetLoaderToken;
 	import AssetType					= away.library.AssetType;
 	import IAsset						= away.library.IAsset;
-	import DirectionalLight				= away.lights.DirectionalLight;
+	import DirectionalLight				= away.entities.DirectionalLight;
 	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import URLRequest					= away.net.URLRequest;

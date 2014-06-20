@@ -166,6 +166,233 @@ declare module aglsl {
         public sourcetostring(s: any, subline: any, dwm: any, isscalar: any, desc: any, tag: any): string;
     }
 }
+/**
+* @module away.base
+*/
+declare module away.pool {
+    /**
+    *
+    */
+    class IndexData {
+        private static LIMIT_VERTS;
+        private static LIMIT_INDICES;
+        private _dataDirty;
+        public invalid: boolean[];
+        public contexts: stagegl.ContextGLBase[];
+        public buffers: stagegl.IIndexBuffer[];
+        public data: number[];
+        public indexMappings: number[];
+        public originalIndices: number[];
+        public offset: number;
+        public level: number;
+        constructor(level: number);
+        public updateData(offset: number, indices: number[], numVertices: number): void;
+        public invalidateData(): void;
+        public dispose(): void;
+        /**
+        * @private
+        */
+        private disposeBuffers();
+        /**
+        * @private
+        */
+        private invalidateBuffers();
+        /**
+        *
+        * @param data
+        * @private
+        */
+        private setData(data);
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.pool {
+    /**
+    *
+    */
+    class IndexDataPool {
+        private static _pool;
+        constructor();
+        static getItem(subGeometry: base.SubGeometryBase, level: number, indexOffset: number): IndexData;
+        static disposeItem(id: number, level: number): void;
+        public disposeData(id: number): void;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    *
+    * @class away.pool.TextureDataBase
+    */
+    class TextureData implements ITextureData {
+        public context: stagegl.ContextGLBase;
+        public texture: stagegl.ITextureBase;
+        public textureProxy: textures.TextureProxyBase;
+        public invalid: boolean;
+        constructor(context: stagegl.ContextGLBase, textureProxy: textures.TextureProxyBase);
+        /**
+        *
+        */
+        public dispose(): void;
+        /**
+        *
+        */
+        public invalidate(): void;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    * @class away.pool.TextureDataPool
+    */
+    class TextureDataPool {
+        private _pool;
+        private _context;
+        /**
+        * //TODO
+        *
+        * @param textureDataClass
+        */
+        constructor(context: stagegl.ContextGLBase);
+        /**
+        * //TODO
+        *
+        * @param materialOwner
+        * @returns ITexture
+        */
+        public getItem(textureProxy: textures.TextureProxyBase): TextureData;
+        /**
+        * //TODO
+        *
+        * @param materialOwner
+        */
+        public disposeItem(textureProxy: textures.TextureProxyBase): void;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.pool {
+    /**
+    *
+    */
+    class VertexData {
+        private _onVerticesUpdatedDelegate;
+        private _subGeometry;
+        private _dataType;
+        private _dataDirty;
+        public invalid: boolean[];
+        public buffers: stagegl.IVertexBuffer[];
+        public contexts: stagegl.ContextGLBase[];
+        public data: number[];
+        public dataPerVertex: number;
+        constructor(subGeometry: base.SubGeometryBase, dataType: string);
+        public updateData(originalIndices?: number[], indexMappings?: number[]): void;
+        public dispose(): void;
+        /**
+        * @private
+        */
+        private disposeBuffers();
+        /**
+        * @private
+        */
+        private invalidateBuffers();
+        /**
+        *
+        * @param data
+        * @param dataPerVertex
+        * @private
+        */
+        private setData(data);
+        /**
+        * //TODO
+        *
+        * @param event
+        * @private
+        */
+        private _onVerticesUpdated(event);
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.pool {
+    /**
+    *
+    */
+    class VertexDataPool {
+        private static _pool;
+        constructor();
+        static getItem(subGeometry: base.SubGeometryBase, indexData: IndexData, dataType: string): VertexData;
+        static disposeItem(subGeometry: base.SubGeometryBase, level: number, dataType: string): void;
+        public disposeData(subGeometry: base.SubGeometryBase): void;
+    }
+}
+declare module away.stagegl {
+    /**
+    * Stage provides a proxy class to handle the creation and attachment of the Context
+    * (and in turn the back buffer) it uses. Stage should never be created directly,
+    * but requested through StageManager.
+    *
+    * @see away.managers.StageManager
+    *
+    */
+    class ContextGLBase implements display.IContext {
+        public _pContainer: HTMLElement;
+        private _texturePool;
+        private _width;
+        private _height;
+        public _iStageIndex: number;
+        private _antiAlias;
+        private _enableDepthAndStencil;
+        private _renderTarget;
+        private _renderSurfaceSelector;
+        public container : HTMLElement;
+        constructor();
+        public setRenderTarget(target: textures.TextureProxyBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
+        public getRenderTexture(textureProxy: textures.RenderTexture): ITextureBase;
+        /**
+        * Assigns an attribute stream
+        *
+        * @param index The attribute stream index for the vertex shader
+        * @param buffer
+        * @param offset
+        * @param stride
+        * @param format
+        */
+        public activateBuffer(index: number, buffer: pool.VertexData, offset: number, format: string): void;
+        public disposeVertexData(buffer: pool.VertexData): void;
+        public activateRenderTexture(index: number, textureProxy: textures.RenderTexture): void;
+        public activateTexture(index: number, textureProxy: textures.Texture2DBase): void;
+        public activateCubeTexture(index: number, textureProxy: textures.CubeTextureBase): void;
+        /**
+        * Retrieves the VertexBuffer object that contains triangle indices.
+        * @param context The ContextWeb for which we request the buffer
+        * @return The VertexBuffer object that contains triangle indices.
+        */
+        public getIndexBuffer(buffer: pool.IndexData): IIndexBuffer;
+        public disposeIndexData(buffer: pool.IndexData): void;
+        public clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): void;
+        public configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): void;
+        public createIndexBuffer(numIndices: number): IIndexBuffer;
+        public createVertexBuffer(numVertices: number, data32PerVertex: number): IVertexBuffer;
+        public createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): ITexture;
+        public createCubeTexture(size: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): ICubeTexture;
+        public dispose(): void;
+        public present(): void;
+        public setRenderToTexture(target: ITextureBase, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): void;
+        public setRenderToBackBuffer(): void;
+        public setScissorRectangle(rectangle: geom.Rectangle): void;
+        public setTextureAt(sampler: number, texture: ITextureBase): void;
+        public setVertexBufferAt(index: number, buffer: IVertexBuffer, bufferOffset?: number, format?: string): void;
+    }
+}
 declare module away.stagegl {
     class ContextGLClearMask {
         static COLOR: number;
@@ -240,14 +467,6 @@ declare module away.stagegl {
     }
 }
 declare module away.stagegl {
-    class ContextGLMode {
-        static AUTO: string;
-        static WEBGL: string;
-        static FLASH: string;
-        static NATIVE: string;
-    }
-}
-declare module away.stagegl {
     class ContextGLProfile {
         static BASELINE: string;
         static BASELINE_CONSTRAINED: string;
@@ -279,8 +498,7 @@ declare module away.stagegl {
     }
 }
 declare module away.stagegl {
-    class ContextStage3D implements IContext {
-        private _container;
+    class ContextStage3D extends ContextGLBase implements IContextStageGL {
         static contexts: Object;
         static maxvertexconstants: number;
         static maxfragconstants: number;
@@ -296,11 +514,11 @@ declare module away.stagegl {
         private _oldParent;
         static debug: boolean;
         static logStream: boolean;
-        public _iCallback: (context: IContext) => void;
+        public _iCallback: (context: IContextStageGL) => void;
         public container : HTMLElement;
         public driverInfo : any;
         public errorCheckingEnabled : boolean;
-        constructor(container: HTMLCanvasElement, callback: (context: IContext) => void);
+        constructor(container: HTMLCanvasElement, callback: (context: IContextStageGL) => void);
         public _iAddResource(resource: ResourceBaseFlash): void;
         public _iRemoveResource(resource: ResourceBaseFlash): void;
         public createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): TextureFlash;
@@ -338,8 +556,7 @@ declare module away.stagegl {
 */
 declare function mountain_js_context_available(id: any, driverInfo: any): void;
 declare module away.stagegl {
-    class ContextWebGL implements IContext {
-        private _container;
+    class ContextWebGL extends ContextGLBase implements IContextStageGL {
         private _blendFactorDictionary;
         private _depthTestDictionary;
         private _textureIndexDictionary;
@@ -437,8 +654,16 @@ declare module away.stagegl {
     }
 }
 declare module away.stagegl {
-    interface IContext {
-        container: HTMLElement;
+    interface IContextStageGL extends display.IContext {
+        setRenderTarget(target: textures.TextureProxyBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): any;
+        getRenderTexture(textureProxy: textures.RenderTexture): ITextureBase;
+        activateBuffer(index: number, buffer: pool.VertexData, offset: number, format: string): any;
+        disposeVertexData(buffer: pool.VertexData): any;
+        activateRenderTexture(index: number, textureProxy: textures.RenderTexture): any;
+        activateTexture(index: number, textureProxy: textures.Texture2DBase): any;
+        activateCubeTexture(index: number, textureProxy: textures.CubeTextureBase): any;
+        getIndexBuffer(buffer: pool.IndexData): IIndexBuffer;
+        disposeIndexData(buffer: pool.IndexData): any;
         clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): any;
         configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): any;
         createCubeTexture(size: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): ICubeTexture;
@@ -664,347 +889,18 @@ declare module away.stagegl {
         public dispose(): void;
     }
 }
-declare module away.base {
-    /**
-    * StageGL provides a proxy class to handle the creation and attachment of the ContextWebGL
-    * (and in turn the back buffer) it uses. StageGL should never be created directly,
-    * but requested through StageGLManager.
-    *
-    * @see away.managers.StageGLManager
-    *
-    * todo: consider moving all creation methods (createVertexBuffer etc) in here, so that disposal can occur here
-    * along with the context, instead of scattered throughout the framework
-    */
-    class StageGL extends events.EventDispatcher implements IStage {
-        private _texturePool;
-        private _contextGL;
-        private _container;
-        private _width;
-        private _height;
-        private _x;
-        private _y;
-        public _iStageGLIndex: number;
-        private _usesSoftwareRendering;
-        private _profile;
-        private _activeProgram;
-        private _stageGLManager;
-        private _antiAlias;
-        private _enableDepthAndStencil;
-        private _contextRequested;
-        private _renderTarget;
-        private _renderSurfaceSelector;
-        private _scissorRect;
-        private _color;
-        private _backBufferDirty;
-        private _viewPort;
-        private _enterFrame;
-        private _exitFrame;
-        private _viewportUpdated;
-        private _viewportDirty;
-        private _bufferClear;
-        private _initialised;
-        constructor(container: HTMLCanvasElement, stageGLIndex: number, stageGLManager: managers.StageGLManager, forceSoftware?: boolean, profile?: string);
-        /**
-        * Requests a ContextWebGL object to attach to the managed gl canvas.
-        */
-        public requestContext(forceSoftware?: boolean, profile?: string, mode?: string): void;
-        /**
-        * The width of the gl canvas
-        */
-        public width : number;
-        /**
-        * The height of the gl canvas
-        */
-        public height : number;
-        /**
-        * The x position of the gl canvas
-        */
-        public x : number;
-        /**
-        * The y position of the gl canvas
-        */
-        public y : number;
-        public visible : boolean;
-        public container : HTMLElement;
-        /**
-        * The ContextWebGL object associated with the given gl canvas object.
-        */
-        public contextGL : stagegl.IContext;
-        private notifyViewportUpdated();
-        private notifyEnterFrame();
-        private notifyExitFrame();
-        public profile : string;
-        /**
-        * Disposes the StageGL object, freeing the ContextWebGL attached to the StageGL.
-        */
-        public dispose(): void;
-        /**
-        * Configures the back buffer associated with the StageGL object.
-        * @param backBufferWidth The width of the backbuffer.
-        * @param backBufferHeight The height of the backbuffer.
-        * @param antiAlias The amount of anti-aliasing to use.
-        * @param enableDepthAndStencil Indicates whether the back buffer contains a depth and stencil buffer.
-        */
-        public configureBackBuffer(backBufferWidth: number, backBufferHeight: number, antiAlias: number, enableDepthAndStencil: boolean): void;
-        public enableDepthAndStencil : boolean;
-        public renderTarget : textures.TextureProxyBase;
-        public renderSurfaceSelector : number;
-        public setRenderTarget(target: textures.TextureProxyBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
-        public getRenderTexture(textureProxy: textures.RenderTexture): stagegl.ITextureBase;
-        public clear(): void;
-        public present(): void;
-        public addEventListener(type: string, listener: Function): void;
-        /**
-        * Removes a listener from the EventDispatcher object. Special case for enterframe and exitframe events - will switch StageGLProxy out of automatic render mode.
-        * If there is no matching listener registered with the EventDispatcher object, a call to this method has no effect.
-        *
-        * @param type The type of event.
-        * @param listener The listener object to remove.
-        * @param useCapture Specifies whether the listener was registered for the capture phase or the target and bubbling phases. If the listener was registered for both the capture phase and the target and bubbling phases, two calls to removeEventListener() are required to remove both, one call with useCapture() set to true, and another call with useCapture() set to false.
-        */
-        public removeEventListener(type: string, listener: Function): void;
-        public scissorRect : geom.Rectangle;
-        /**
-        * The index of the StageGL which is managed by this instance of StageGLProxy.
-        */
-        public stageGLIndex : number;
-        /**
-        * Indicates whether the StageGL managed by this proxy is running in software mode.
-        * Remember to wait for the CONTEXTGL_CREATED event before checking this property,
-        * as only then will it be guaranteed to be accurate.
-        */
-        public usesSoftwareRendering : boolean;
-        /**
-        * The antiAliasing of the StageGL.
-        */
-        public antiAlias : number;
-        /**
-        * A viewPort rectangle equivalent of the StageGL size and position.
-        */
-        public viewPort : geom.Rectangle;
-        /**
-        * The background color of the StageGL.
-        */
-        public color : number;
-        /**
-        * The freshly cleared state of the backbuffer before any rendering
-        */
-        public bufferClear : boolean;
-        /**
-        * Assigns an attribute stream
-        *
-        * @param index The attribute stream index for the vertex shader
-        * @param buffer
-        * @param offset
-        * @param stride
-        * @param format
-        */
-        public activateBuffer(index: number, buffer: pool.VertexData, offset: number, format: string): void;
-        public disposeVertexData(buffer: pool.VertexData): void;
-        public activateRenderTexture(index: number, textureProxy: textures.RenderTexture): void;
-        public activateTexture(index: number, textureProxy: textures.Texture2DBase): void;
-        public activateCubeTexture(index: number, textureProxy: textures.CubeTextureBase): void;
-        /**
-        * Retrieves the VertexBuffer object that contains triangle indices.
-        * @param context The ContextWebGL for which we request the buffer
-        * @return The VertexBuffer object that contains triangle indices.
-        */
-        public getIndexBuffer(buffer: pool.IndexData): stagegl.IIndexBuffer;
-        public disposeIndexData(buffer: pool.IndexData): void;
-        /**
-        * Frees the ContextWebGL associated with this StageGLProxy.
-        */
-        private freeContextGL();
-        /**
-        * The Enter_Frame handler for processing the proxy.ENTER_FRAME and proxy.EXIT_FRAME event handlers.
-        * Typically the proxy.ENTER_FRAME listener would render the layers for this StageGL instance.
-        */
-        private onEnterFrame(event);
-        public recoverFromDisposal(): boolean;
-        public clearDepthBuffer(): void;
-        private _callback(context);
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.pool {
-    /**
-    *
-    */
-    class IndexData {
-        private static LIMIT_VERTS;
-        private static LIMIT_INDICES;
-        private _dataDirty;
-        public invalid: boolean[];
-        public stageGLs: base.StageGL[];
-        public buffers: stagegl.IIndexBuffer[];
-        public data: number[];
-        public indexMappings: number[];
-        public originalIndices: number[];
-        public offset: number;
-        public level: number;
-        constructor(level: number);
-        public updateData(offset: number, indices: number[], numVertices: number): void;
-        public invalidateData(): void;
-        public dispose(): void;
-        /**
-        * @private
-        */
-        private disposeBuffers();
-        /**
-        * @private
-        */
-        private invalidateBuffers();
-        /**
-        *
-        * @param data
-        * @private
-        */
-        private setData(data);
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.pool {
-    /**
-    *
-    */
-    class IndexDataPool {
-        private static _pool;
-        constructor();
-        static getItem(subGeometry: base.SubGeometryBase, level: number, indexOffset: number): IndexData;
-        static disposeItem(id: number, level: number): void;
-        public disposeData(id: number): void;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    *
-    * @class away.pool.TextureDataBase
-    */
-    class TextureData implements ITextureData {
-        public stageGL: base.StageGL;
-        public texture: stagegl.ITextureBase;
-        public textureProxy: textures.TextureProxyBase;
-        public invalid: boolean;
-        constructor(stageGL: base.StageGL, textureProxy: textures.TextureProxyBase);
-        /**
-        *
-        */
-        public dispose(): void;
-        /**
-        *
-        */
-        public invalidate(): void;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * @class away.pool.TextureDataPool
-    */
-    class TextureDataPool {
-        private _pool;
-        private _stage;
-        /**
-        * //TODO
-        *
-        * @param textureDataClass
-        */
-        constructor(stage: base.StageGL);
-        /**
-        * //TODO
-        *
-        * @param materialOwner
-        * @returns ITexture
-        */
-        public getItem(textureProxy: textures.TextureProxyBase): TextureData;
-        /**
-        * //TODO
-        *
-        * @param materialOwner
-        */
-        public disposeItem(textureProxy: textures.TextureProxyBase): void;
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.pool {
-    /**
-    *
-    */
-    class VertexData {
-        private _onVerticesUpdatedDelegate;
-        private _subGeometry;
-        private _dataType;
-        private _dataDirty;
-        public invalid: boolean[];
-        public buffers: stagegl.IVertexBuffer[];
-        public stageGLs: base.StageGL[];
-        public data: number[];
-        public dataPerVertex: number;
-        constructor(subGeometry: base.SubGeometryBase, dataType: string);
-        public updateData(originalIndices?: number[], indexMappings?: number[]): void;
-        public dispose(): void;
-        /**
-        * @private
-        */
-        private disposeBuffers();
-        /**
-        * @private
-        */
-        private invalidateBuffers();
-        /**
-        *
-        * @param data
-        * @param dataPerVertex
-        * @private
-        */
-        private setData(data);
-        /**
-        * //TODO
-        *
-        * @param event
-        * @private
-        */
-        private _onVerticesUpdated(event);
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.pool {
-    /**
-    *
-    */
-    class VertexDataPool {
-        private static _pool;
-        constructor();
-        static getItem(subGeometry: base.SubGeometryBase, indexData: IndexData, dataType: string): VertexData;
-        static disposeItem(subGeometry: base.SubGeometryBase, level: number, dataType: string): void;
-        public disposeData(subGeometry: base.SubGeometryBase): void;
-    }
-}
 declare module away.managers {
     class AGALProgramCache {
         private static _instances;
-        private _stageGL;
+        private _stage;
         private _program3Ds;
         private _ids;
         private _usages;
         private _keys;
         private _onContextGLDisposedDelegate;
         private static _currentId;
-        constructor(stageGL: base.StageGL, agalProgramCacheSingletonEnforcer: AGALProgramCacheSingletonEnforcer);
-        static getInstance(stageGL: base.StageGL): AGALProgramCache;
+        constructor(stage: base.Stage, agalProgramCacheSingletonEnforcer: AGALProgramCacheSingletonEnforcer);
+        static getInstance(stage: base.Stage): AGALProgramCache;
         static getInstanceFromIndex(index: number): AGALProgramCache;
         private static onContextGLDisposed(event);
         public dispose(): void;
@@ -1022,7 +918,7 @@ declare module away.managers {
         private _renderToTextureVertexBuffer;
         private _renderToScreenVertexBuffer;
         private _indexBuffer;
-        private _stageGL;
+        private _stage;
         private _viewWidth;
         private _viewHeight;
         private _textureWidth;
@@ -1031,10 +927,10 @@ declare module away.managers {
         private _buffersInvalid;
         private _textureRatioX;
         private _textureRatioY;
-        constructor(se: SingletonEnforcer, stageGL: base.StageGL);
-        static getInstance(stageGL: base.StageGL): RTTBufferManager;
-        private static getRTTBufferManagerFromStageGL(stageGL);
-        private static deleteRTTBufferManager(stageGL);
+        constructor(se: SingletonEnforcer, stage: base.Stage);
+        static getInstance(stage: base.Stage): RTTBufferManager;
+        private static getRTTBufferManagerFromStage(stage);
+        private static deleteRTTBufferManager(stage);
         public textureRatioX : number;
         public textureRatioY : number;
         public viewWidth : number;
@@ -1050,77 +946,6 @@ declare module away.managers {
     }
 }
 declare class SingletonEnforcer {
-}
-declare module away.managers {
-    /**
-    * The StageGLManager class provides a multiton object that handles management for StageGL objects. StageGL objects
-    * should not be requested directly, but are exposed by a StageGLProxy.
-    *
-    * @see away.base.StageGL
-    */
-    class StageGLManager extends events.EventDispatcher {
-        private static STAGEGL_MAX_QUANTITY;
-        private _stageGLs;
-        private static _instance;
-        private static _numStageGLs;
-        private _onContextCreatedDelegate;
-        /**
-        * Creates a new StageGLManager class.
-        * @param stage The Stage object that contains the StageGL objects to be managed.
-        * @private
-        */
-        constructor(StageGLManagerSingletonEnforcer: StageGLManagerSingletonEnforcer);
-        /**
-        * Gets a StageGLManager instance for the given Stage object.
-        * @param stage The Stage object that contains the StageGL objects to be managed.
-        * @return The StageGLManager instance for the given Stage object.
-        */
-        static getInstance(): StageGLManager;
-        /**
-        * Requests the StageGL for the given index.
-        *
-        * @param index The index of the requested StageGL.
-        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
-        * @param profile The compatibility profile, an enumeration of ContextGLProfile
-        * @return The StageGL for the given index.
-        */
-        public getStageGLAt(index: number, forceSoftware?: boolean, profile?: string, mode?: string): base.StageGL;
-        /**
-        * Removes a StageGL from the manager.
-        * @param stageGL
-        * @private
-        */
-        public iRemoveStageGL(stageGL: base.StageGL): void;
-        /**
-        * Get the next available stageGL. An error is thrown if there are no StageGLProxies available
-        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
-        * @param profile The compatibility profile, an enumeration of ContextGLProfile
-        * @return The allocated stageGL
-        */
-        public getFreeStageGL(forceSoftware?: boolean, profile?: string, mode?: string): base.StageGL;
-        /**
-        * Checks if a new stageGL can be created and managed by the class.
-        * @return true if there is one slot free for a new stageGL
-        */
-        public hasFreeStageGL : boolean;
-        /**
-        * Returns the amount of stageGL objects that can be created and managed by the class
-        * @return the amount of free slots
-        */
-        public numSlotsFree : number;
-        /**
-        * Returns the amount of StageGL objects currently managed by the class.
-        * @return the amount of slots used
-        */
-        public numSlotsUsed : number;
-        /**
-        * The maximum amount of StageGL objects that can be managed by the class
-        */
-        public numSlotsTotal : number;
-        private onContextCreated(e);
-    }
-}
-declare class StageGLManagerSingletonEnforcer {
 }
 declare module away {
     class StageGLContext extends events.EventDispatcher {

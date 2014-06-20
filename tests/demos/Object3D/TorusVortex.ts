@@ -5,6 +5,7 @@ module demos.object3d
 	import BlendMode					= away.base.BlendMode;
 	import Scene						= away.containers.Scene;
 	import View							= away.containers.View;
+	import ContextMode					= away.display.ContextMode;
 	import Mesh							= away.entities.Mesh;
 	import Vector3D						= away.geom.Vector3D;
 	import TriangleMaterial				= away.materials.TriangleMaterial;
@@ -16,6 +17,7 @@ module demos.object3d
 	import PrimitiveCubePrefab			= away.prefabs.PrimitiveCubePrefab;
 	import PerspectiveProjection		= away.projections.PerspectiveProjection;
 	import DefaultRenderer				= away.render.DefaultRenderer;
+	import ContextGLProfile				= away.stagegl.ContextGLProfile;
 	import ImageTexture					= away.textures.ImageTexture;
 	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
@@ -30,13 +32,13 @@ module demos.object3d
 		
 		private _raf:RequestAnimationFrame;
 		private _image:HTMLImageElement;
-		private _cameraAxis:away.geom.Vector3D;
+		private _cameraAxis:Vector3D;
 		
 		constructor()
 		{
 			away.Debug.THROW_ERRORS = false;
 			
-			this._view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
+			this._view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE, ContextMode.FLASH));
 			
 			this._view.backgroundColor = 0x000000;
 			this._view.camera.x = 130;

@@ -2,12 +2,16 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import CubeTextureBase							= away.textures.CubeTextureBase;
+
 	/**
 	 * EffectRefractionEnvMapMethod provides a method to add refracted transparency based on cube maps.
 	 */
 	export class EffectRefractionEnvMapMethod extends EffectMethodBase
 	{
-		private _envMap:away.textures.CubeTextureBase;
+		private _envMap:CubeTextureBase;
 		
 		private _dispersionR:number = 0;
 		private _dispersionG:number = 0;
@@ -25,7 +29,7 @@ module away.materials
 		 * @param dispersionG The amount of chromatic dispersion of the green channel. Defaults to 0 (none).
 		 * @param dispersionB The amount of chromatic dispersion of the blue channel. Defaults to 0 (none).
 		 */
-		constructor(envMap:away.textures.CubeTextureBase, refractionIndex:number = .1, dispersionR:number = 0, dispersionG:number = 0, dispersionB:number = 0)
+		constructor(envMap:CubeTextureBase, refractionIndex:number = .1, dispersionR:number = 0, dispersionG:number = 0, dispersionB:number = 0)
 		{
 			super();
 			this._envMap = envMap;
@@ -60,12 +64,12 @@ module away.materials
 		/**
 		 * The cube environment map to use for the refraction.
 		 */
-		public get envMap():away.textures.CubeTextureBase
+		public get envMap():CubeTextureBase
 		{
 			return this._envMap;
 		}
 		
-		public set envMap(value:away.textures.CubeTextureBase)
+		public set envMap(value:CubeTextureBase)
 		{
 			this._envMap = value;
 		}
@@ -157,7 +161,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
 			var index:number /*int*/ = vo.fragmentConstantsIndex;
 			var data:Array<number> = vo.fragmentData;
@@ -170,7 +174,7 @@ module away.materials
 			}
 			data[index + 3] = this._alpha;
 
-			this._envMap.activateTextureForStage(vo.texturesIndex, stageGL);
+			(<IContextStageGL> stage.context).activateCubeTexture(vo.texturesIndex, this._envMap);
 		}
 
 		/**
@@ -224,7 +228,6 @@ module away.materials
 			
 			if (this._useDispersion) {
 				// GREEN
-				
 				code += "dp3 " + temp + ".x, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
 					"mul " + temp + ".w, " + temp + ".x, " + temp + ".x\n" +
 					"sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
@@ -240,12 +243,11 @@ module away.materials
 					"mul " + refractionDir + ", " + data + ".y, " + viewDirReg + "\n" +
 					"sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
 					"nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n";
-				//
+
 				code += this.pGetTexCubeSampleCode(vo, temp, cubeMapReg, this._envMap, refractionDir) +
 					"mov " + refractionColor + ".y, " + temp + ".y\n";
 				
 				// BLUE
-				
 				code += "dp3 " + temp + ".x, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
 					"mul " + temp + ".w, " + temp + ".x, " + temp + ".x\n" +
 					"sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
@@ -271,6 +273,7 @@ module away.materials
 			code += "sub " + refractionColor + ".xyz, " + refractionColor + ".xyz, " + targetReg + ".xyz\n" +
 				"mul " + refractionColor + ".xyz, " + refractionColor + ".xyz, " + data + ".w\n" +
 				"add " + targetReg + ".xyz, " + targetReg + ".xyz, " + refractionColor + ".xyz\n";
+
 			regCache.removeFragmentTempUsage(refractionColor);
 			
 			// restore

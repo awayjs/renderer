@@ -2,17 +2,22 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import CubeTextureBase							= away.textures.CubeTextureBase;
+	import Texture2DBase							= away.textures.Texture2DBase;
+
 	/**
 	 * EffectFresnelEnvMapMethod provides a method to add fresnel-based reflectivity to an object using cube maps, which gets
 	 * stronger as the viewing angle becomes more grazing.
 	 */
 	export class EffectFresnelEnvMapMethod extends EffectMethodBase
 	{
-		private _cubeTexture:away.textures.CubeTextureBase;
+		private _cubeTexture:CubeTextureBase;
 		private _fresnelPower:number = 5;
 		private _normalReflectance:number = 0;
 		private _alpha:number;
-		private _mask:away.textures.Texture2DBase;
+		private _mask:Texture2DBase;
 
 		/**
 		 * Creates a new <code>EffectFresnelEnvMapMethod</code> object.
@@ -20,7 +25,7 @@ module away.materials
 		 * @param envMap The environment map containing the reflected scene.
 		 * @param alpha The reflectivity of the material.
 		 */
-		constructor(envMap:away.textures.CubeTextureBase, alpha:number = 1)
+		constructor(envMap:CubeTextureBase, alpha:number = 1)
 		{
 			super();
 
@@ -49,12 +54,12 @@ module away.materials
 		/**
 		 * An optional texture to modulate the reflectivity of the surface.
 		 */
-		public get mask():away.textures.Texture2DBase
+		public get mask():Texture2DBase
 		{
 			return this._mask;
 		}
 		
-		public set mask(value:away.textures.Texture2DBase)
+		public set mask(value:Texture2DBase)
 		{
 			if (Boolean(value) != Boolean(this._mask) ||
 				(value && this._mask && (value.hasMipmaps != this._mask.hasMipmaps || value.format != this._mask.format))) {
@@ -79,12 +84,12 @@ module away.materials
 		/**
 		 * The cubic environment map containing the reflected scene.
 		 */
-		public get envMap():away.textures.CubeTextureBase
+		public get envMap():CubeTextureBase
 		{
 			return this._cubeTexture;
 		}
 		
-		public set envMap(value:away.textures.CubeTextureBase)
+		public set envMap(value:CubeTextureBase)
 		{
 			this._cubeTexture = value;
 		}
@@ -118,16 +123,18 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*int*/ = vo.fragmentConstantsIndex;
 			data[index] = this._alpha;
 			data[index + 1] = this._normalReflectance;
 			data[index + 2] = this._fresnelPower;
-			this._cubeTexture.activateTextureForStage(vo.texturesIndex, stageGL);
+
+			(<IContextStageGL> stage.context).activateCubeTexture(vo.texturesIndex, this._cubeTexture);
+
 			if (this._mask)
-				this._mask.activateTextureForStage(vo.texturesIndex + 1, stageGL);
+				(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex + 1, this._mask);
 		}
 
 		/**
@@ -149,37 +156,35 @@ module away.materials
 			var temp2:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
 			
 			// r = V - 2(V.N)*N
-			code += "dp3 " + temp + ".w, " + viewDirReg + ".xyz, " + normalReg + ".xyz		\n" +
-				"add " + temp + ".w, " + temp + ".w, " + temp + ".w											\n" +
-				"mul " + temp + ".xyz, " + normalReg + ".xyz, " + temp + ".w						\n" +
-				"sub " + temp + ".xyz, " + temp + ".xyz, " + viewDirReg + ".xyz					\n" +
-				this.pGetTexCubeSampleCode(vo, temp, cubeMapReg, this._cubeTexture, temp) +
-				"sub " + temp2 + ".w, " + temp + ".w, fc0.x									\n" +               	// -.5
-				"kil " + temp2 + ".w\n" +	// used for real time reflection mapping - if alpha is not 1 (mock texture) kil output
-				"sub " + temp + ", " + temp + ", " + targetReg + "											\n";
+			code += "dp3 " + temp + ".w, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
+					"add " + temp + ".w, " + temp + ".w, " + temp + ".w\n" +
+					"mul " + temp + ".xyz, " + normalReg + ".xyz, " + temp + ".w\n" +
+					"sub " + temp + ".xyz, " + temp + ".xyz, " + viewDirReg + ".xyz\n" +
+			this.pGetTexCubeSampleCode(vo, temp, cubeMapReg, this._cubeTexture, temp) +
+					"sub " + temp2 + ".w, " + temp + ".w, fc0.x\n" +               	// -.5
+					"kil " + temp2 + ".w\n" +	// used for real time reflection mapping - if alpha is not 1 (mock texture) kil output
+					"sub " + temp + ", " + temp + ", " + targetReg + "\n";
 			
 			// calculate fresnel term
-			code += "dp3 " + viewDirReg + ".w, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +   // dot(V, H)
-				"sub " + viewDirReg + ".w, " + dataRegister + ".w, " + viewDirReg + ".w\n" +             // base = 1-dot(V, H)
+			code += "dp3 " + viewDirReg + ".w, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +  // dot(V, H)
+					"sub " + viewDirReg + ".w, " + dataRegister + ".w, " + viewDirReg + ".w\n" +       // base = 1-dot(V, H)
+					"pow " + viewDirReg + ".w, " + viewDirReg + ".w, " + dataRegister + ".z\n" +       // exp = pow(base, 5)
+					"sub " + normalReg + ".w, " + dataRegister + ".w, " + viewDirReg + ".w\n" +        // 1 - exp
+					"mul " + normalReg + ".w, " + dataRegister + ".y, " + normalReg + ".w\n" +         // f0*(1 - exp)
+					"add " + viewDirReg + ".w, " + viewDirReg + ".w, " + normalReg + ".w\n" +          // exp + f0*(1 - exp)
 				
-				"pow " + viewDirReg + ".w, " + viewDirReg + ".w, " + dataRegister + ".z\n" +             // exp = pow(base, 5)
-				
-				"sub " + normalReg + ".w, " + dataRegister + ".w, " + viewDirReg + ".w\n" +             // 1 - exp
-				"mul " + normalReg + ".w, " + dataRegister + ".y, " + normalReg + ".w\n" +             // f0*(1 - exp)
-				"add " + viewDirReg + ".w, " + viewDirReg + ".w, " + normalReg + ".w\n" +          // exp + f0*(1 - exp)
-				
-				// total alpha
-				"mul " + viewDirReg + ".w, " + dataRegister + ".x, " + viewDirReg + ".w\n";
+					// total alpha
+					"mul " + viewDirReg + ".w, " + dataRegister + ".x, " + viewDirReg + ".w\n";
 			
 			if (this._mask) {
 				var maskReg:ShaderRegisterElement = regCache.getFreeTextureReg();
 				code += this.pGetTex2DSampleCode(vo, temp2, maskReg, this._mask, this._sharedRegisters.uvVarying) +
-					"mul " + viewDirReg + ".w, " + temp2 + ".x, " + viewDirReg + ".w\n";
+						"mul " + viewDirReg + ".w, " + temp2 + ".x, " + viewDirReg + ".w\n";
 			}
 			
 			// blend
-			code += "mul " + temp + ", " + temp + ", " + viewDirReg + ".w						\n" +
-				"add " + targetReg + ", " + targetReg + ", " + temp + "						\n";
+			code += "mul " + temp + ", " + temp + ", " + viewDirReg + ".w\n" +
+					"add " + targetReg + ", " + targetReg + ", " + temp + "\n";
 			
 			regCache.removeFragmentTempUsage(temp);
 			

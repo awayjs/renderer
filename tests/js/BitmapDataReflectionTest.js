@@ -8,10 +8,10 @@ var tests;
 
         var LoaderEvent = away.events.LoaderEvent;
         var AssetLibrary = away.library.AssetLibrary;
+
         var AssetType = away.library.AssetType;
 
         var TriangleMaterial = away.materials.TriangleMaterial;
-
         var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
         var DefaultRenderer = away.render.DefaultRenderer;
         var BitmapTexture = away.textures.BitmapTexture;

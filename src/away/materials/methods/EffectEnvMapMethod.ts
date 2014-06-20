@@ -2,22 +2,26 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import CubeTextureBase							= away.textures.CubeTextureBase;
+	import Texture2DBase							= away.textures.Texture2DBase;
 
 	/**
 	 * EffectEnvMapMethod provides a material method to perform reflection mapping using cube maps.
 	 */
 	export class EffectEnvMapMethod extends EffectMethodBase
 	{
-		private _cubeTexture:away.textures.CubeTextureBase;
+		private _cubeTexture:CubeTextureBase;
 		private _alpha:number;
-		private _mask:away.textures.Texture2DBase;
+		private _mask:Texture2DBase;
 
 		/**
 		 * Creates an EffectEnvMapMethod object.
 		 * @param envMap The environment map containing the reflected scene.
 		 * @param alpha The reflectivity of the surface.
 		 */
-		constructor(envMap:away.textures.CubeTextureBase, alpha:number = 1)
+		constructor(envMap:CubeTextureBase, alpha:number = 1)
 		{
 			super();
 			this._cubeTexture = envMap;
@@ -28,22 +32,15 @@ module away.materials
 		/**
 		 * An optional texture to modulate the reflectivity of the surface.
 		 */
-		public get mask():away.textures.Texture2DBase
+		public get mask():Texture2DBase
 		{
 			return this._mask;
 		}
 
-		public set mask(value:away.textures.Texture2DBase)
+		public set mask(value:Texture2DBase)
 		{
 			if (value != this._mask || (value && this._mask && (value.hasMipmaps != this._mask.hasMipmaps || value.format != this._mask.format)))
 				this.iInvalidateShaderProgram();
-
-			/*
-			 if (Boolean(value) != Boolean(_mask) ||
-			 (value && _mask && (value.hasMipmaps != _mask.hasMipmaps || value.format != _mask.format))) {
-			 iInvalidateShaderProgram();
-			 }
-			 */
 
 			this._mask = value;
 		}
@@ -61,12 +58,12 @@ module away.materials
 		/**
 		 * The cubic environment map containing the reflected scene.
 		 */
-		public get envMap():away.textures.CubeTextureBase
+		public get envMap():CubeTextureBase
 		{
 			return this._cubeTexture;
 		}
 
-		public set envMap(value:away.textures.CubeTextureBase)
+		public set envMap(value:CubeTextureBase)
 		{
 			this._cubeTexture = value;
 		}
@@ -94,13 +91,13 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:away.base.Stage)
 		{
 			vo.fragmentData[vo.fragmentConstantsIndex] = this._alpha;
 
-			this._cubeTexture.activateTextureForStage(vo.texturesIndex, stageGL);
+			(<IContextStageGL> stage.context).activateCubeTexture(vo.texturesIndex, this._cubeTexture);
 			if (this._mask)
-				this._mask.activateTextureForStage(vo.texturesIndex + 1, stageGL);
+				(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex + 1, this._mask);
 		}
 
 		/**
@@ -120,15 +117,20 @@ module away.materials
 			var temp2:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
 
 			// r = I - 2(I.N)*N
-			code += "dp3 " + temp + ".w, " + this._sharedRegisters.viewDirFragment + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz		\n" + "add " + temp + ".w, " + temp + ".w, " + temp + ".w											\n" + "mul " + temp + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz, " + temp + ".w						\n" + "sub " + temp + ".xyz, " + temp + ".xyz, " + this._sharedRegisters.viewDirFragment + ".xyz					\n" + this.pGetTexCubeSampleCode(vo, temp, cubeMapReg, this._cubeTexture, temp) + "sub " + temp2 + ".w, " + temp + ".w, fc0.x									\n" +               	// -.5
-				"kil " + temp2 + ".w\n" +	// used for real time reflection mapping - if alpha is not 1 (mock texture) kil output
-				"sub " + temp + ", " + temp + ", " + targetReg + "											\n";
+			code += "dp3 " + temp + ".w, " + this._sharedRegisters.viewDirFragment + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz\n" +
+					"add " + temp + ".w, " + temp + ".w, " + temp + ".w\n" +
+					"mul " + temp + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz, " + temp + ".w\n" +
+					"sub " + temp + ".xyz, " + temp + ".xyz, " + this._sharedRegisters.viewDirFragment + ".xyz\n" +
+			this.pGetTexCubeSampleCode(vo, temp, cubeMapReg, this._cubeTexture, temp) +
+					"sub " + temp2 + ".w, " + temp + ".w, fc0.x\n" + // -.5
+					"kil " + temp2 + ".w\n" +	// used for real time reflection mapping - if alpha is not 1 (mock texture) kil output
+					"sub " + temp + ", " + temp + ", " + targetReg + "\n";
 
-			if (this._mask) {
-				var maskReg:ShaderRegisterElement = regCache.getFreeTextureReg();
-				code += this.pGetTex2DSampleCode(vo, temp2, maskReg, this._mask, this._sharedRegisters.uvVarying) + "mul " + temp + ", " + temp2 + ", " + temp + "\n";
-			}
-			code += "mul " + temp + ", " + temp + ", " + dataRegister + ".x										\n" + "add " + targetReg + ", " + targetReg + ", " + temp + "										\n";
+			if (this._mask)
+				code += this.pGetTex2DSampleCode(vo, temp2, regCache.getFreeTextureReg(), this._mask, this._sharedRegisters.uvVarying) + "mul " + temp + ", " + temp2 + ", " + temp + "\n";
+
+			code += "mul " + temp + ", " + temp + ", " + dataRegister + ".x\n" +
+					"add " + targetReg + ", " + targetReg + ", " + temp + "\n";
 
 			regCache.removeFragmentTempUsage(temp);
 

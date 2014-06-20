@@ -2,14 +2,15 @@
 
 module away.materials
 {
-	import Camera							= away.entities.Camera;
-	import StageGL							= away.base.StageGL;
-	import ShadingMethodEvent				= away.events.ShadingMethodEvent;
-	import DirectionalLight					= away.lights.DirectionalLight;
-	import CascadeShadowMapper				= away.lights.CascadeShadowMapper;
-	import RenderableBase					= away.pool.RenderableBase;
-	
-	import Event							= away.events.Event;
+	import Stage									= away.base.Stage;
+	import Camera									= away.entities.Camera;
+	import DirectionalLight							= away.entities.DirectionalLight;
+	import Event									= away.events.Event;
+	import ShadingMethodEvent						= away.events.ShadingMethodEvent;
+	import CascadeShadowMapper						= away.materials.CascadeShadowMapper;
+	import RenderableBase							= away.pool.RenderableBase;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import Texture2DBase							= away.textures.Texture2DBase;
 
 	/**
 	 * ShadowCascadeMethod is a shadow map method to apply cascade shadow mapping on materials.
@@ -214,9 +215,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:away.base.Stage)
 		{
-			this._pCastingLight.shadowMapper.depthMap.activateTextureForStage(vo.texturesIndex, stageGL);
+			(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex, <Texture2DBase> this._pCastingLight.shadowMapper.depthMap)
 			
 			var vertexData:Array<number> = vo.vertexData;
 			var vertexIndex:number = vo.vertexConstantsIndex;
@@ -240,13 +241,13 @@ module away.materials
 			for (var i:number = 0; i < numCascades; ++i)
 				fragmentData[fragmentIndex + i] = nearPlaneDistances[i];
 			
-			this._baseMethod.iActivateForCascade(vo, stageGL);
+			this._baseMethod.iActivateForCascade(vo, stage);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iSetRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stage:away.base.Stage, camera:away.entities.Camera)
 		{
 		}
 

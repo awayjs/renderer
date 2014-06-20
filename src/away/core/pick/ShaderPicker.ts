@@ -5,6 +5,30 @@
  */
 module away.pick
 {
+	import BitmapData						= away.base.BitmapData;
+	import Stage							= away.base.Stage;
+	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
+	import Scene							= away.containers.Scene;
+	import View								= away.containers.View;
+	import Camera							= away.entities.Camera;
+	import IEntity							= away.entities.IEntity;
+	import Box								= away.geom.Box;
+	import Matrix3D							= away.geom.Matrix3D;
+	import Matrix3DUtils					= away.geom.Matrix3DUtils;
+	import Point							= away.geom.Point;
+	import Rectangle						= away.geom.Rectangle;
+	import Vector3D							= away.geom.Vector3D;
+	import RenderableBase					= away.pool.RenderableBase;
+	import DefaultRenderer					= away.render.DefaultRenderer;
+	import ContextGLBlendFactor				= away.stagegl.ContextGLBlendFactor;
+	import ContextGLClearMask				= away.stagegl.ContextGLClearMask;
+	import ContextGLCompareMode				= away.stagegl.ContextGLCompareMode;
+	import ContextGLProgramType				= away.stagegl.ContextGLProgramType;
+	import ContextGLTriangleFace			= away.stagegl.ContextGLTriangleFace;
+	import IContextStageGL					= away.stagegl.IContextStageGL;
+	import IProgram							= away.stagegl.IProgram;
+	import ITextureBase						= away.stagegl.ITextureBase;
+	import EntityCollector					= away.traverse.EntityCollector;
 	import ByteArray						= away.utils.ByteArray;
 
 	/**
@@ -20,39 +44,39 @@ module away.pick
 	 */
 	export class ShaderPicker implements IPicker
 	{
-		private _opaqueRenderableHead:away.pool.RenderableBase;
-		private _blendedRenderableHead:away.pool.RenderableBase;
+		private _opaqueRenderableHead:RenderableBase;
+		private _blendedRenderableHead:RenderableBase;
 
-		private _stageGL:away.base.StageGL;
-		private _context:away.stagegl.IContext;
+		private _stage:Stage;
+		private _context:IContextStageGL;
 		private _onlyMouseEnabled:boolean = true;
 
-		private _objectProgram:away.stagegl.IProgram;
-		private _triangleProgram:away.stagegl.IProgram;
-		private _bitmapData:away.base.BitmapData;
+		private _objectProgram:IProgram;
+		private _triangleProgram:IProgram;
+		private _bitmapData:BitmapData;
 		private _viewportData:number[];
 		private _boundOffsetScale:number[];
 		private _id:number[];
 
-		private _interactives:Array<away.pool.RenderableBase> = new Array<away.pool.RenderableBase>();
+		private _interactives:Array<RenderableBase> = new Array<RenderableBase>();
 		private _interactiveId:number;
 		private _hitColor:number;
 		private _projX:number;
 		private _projY:number;
 
-		private _hitRenderable:away.pool.RenderableBase;
-		private _hitEntity:away.entities.IEntity;
-		private _localHitPosition:away.geom.Vector3D = new away.geom.Vector3D();
-		private _hitUV:away.geom.Point = new away.geom.Point();
+		private _hitRenderable:RenderableBase;
+		private _hitEntity:IEntity;
+		private _localHitPosition:Vector3D = new Vector3D();
+		private _hitUV:Point = new Point();
 		private _faceIndex:number;
 		private _subGeometryIndex:number;
 
-		private _localHitNormal:away.geom.Vector3D = new away.geom.Vector3D();
+		private _localHitNormal:Vector3D = new Vector3D();
 
-		private _rayPos:away.geom.Vector3D = new away.geom.Vector3D();
-		private _rayDir:away.geom.Vector3D = new away.geom.Vector3D();
+		private _rayPos:Vector3D = new Vector3D();
+		private _rayDir:Vector3D = new Vector3D();
 		private _potentialFound:boolean;
-		private static MOUSE_SCISSOR_RECT:away.geom.Rectangle = new away.geom.Rectangle(0, 0, 1, 1);
+		private static MOUSE_SCISSOR_RECT:Rectangle = new Rectangle(0, 0, 1, 1);
 
 		private _shaderPickingDetails:boolean;
 
@@ -89,16 +113,16 @@ module away.pick
 		/**
 		 * @inheritDoc
 		 */
-		public getViewCollision(x:number, y:number, view:away.containers.View):PickingCollisionVO
+		public getViewCollision(x:number, y:number, view:View):PickingCollisionVO
 		{
-			var collector:away.traverse.EntityCollector = <away.traverse.EntityCollector> view.iEntityCollector;
+			var collector:EntityCollector = <EntityCollector> view.iEntityCollector;
 
-			this._stageGL = (<away.render.DefaultRenderer> view.renderer).stageGL;
+			this._stage = (<DefaultRenderer> view.renderer).stage;
 
-			if (!this._stageGL)
+			if (!this._stage)
 				return null;
 
-			this._context = this._stageGL.contextGL;
+			this._context = <IContextStageGL> this._stage.context;
 
 			this._viewportData[0] = view.width;
 			this._viewportData[1] = view.height;
@@ -121,7 +145,7 @@ module away.pick
 				return null;
 
 			if (!this._bitmapData)
-				this._bitmapData = new away.base.BitmapData(1, 1, false, 0);
+				this._bitmapData = new BitmapData(1, 1, false, 0);
 
 			this._context.drawToBitmapData(this._bitmapData);
 			this._hitColor = this._bitmapData.getPixel(0, 0);
@@ -161,7 +185,7 @@ module away.pick
 		/**
 		 * @inheritDoc
 		 */
-		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.containers.Scene):PickingCollisionVO
+		public getSceneCollision(position:Vector3D, direction:Vector3D, scene:Scene):PickingCollisionVO
 		{
 			return null;
 		}
@@ -169,23 +193,23 @@ module away.pick
 		/**
 		 * @inheritDoc
 		 */
-		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.stagegl.ITextureBase)
+		public pDraw(entityCollector:EntityCollector, target:ITextureBase)
 		{
 
-			var camera:away.entities.Camera = entityCollector.camera;
+			var camera:Camera = entityCollector.camera;
 
 			this._context.clear(0, 0, 0, 1);
-			this._stageGL.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
+			this._stage.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
 
 			this._interactives.length = this._interactiveId = 0;
 
 			if (!this._objectProgram)
 				this.initObjectProgram();
 
-			this._context.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
-			this._context.setDepthTest(true, away.stagegl.ContextGLCompareMode.LESS);
+			this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+			this._context.setDepthTest(true, ContextGLCompareMode.LESS);
 			this._context.setProgram(this._objectProgram);
-			this._context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
+			this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
 			//this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
 			//this.drawRenderables(entityCollector.blendedRenderableHead, camera);
 			//TODO: reimplement ShaderPicker inheriting from RendererBase
@@ -196,10 +220,10 @@ module away.pick
 		 * @param renderables The renderables to draw.
 		 * @param camera The camera for which to render.
 		 */
-		private drawRenderables(renderable:away.pool.RenderableBase, camera:away.entities.Camera)
+		private drawRenderables(renderable:RenderableBase, camera:Camera)
 		{
-			var matrix:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
-			var viewProjection:away.geom.Matrix3D = camera.viewProjection;
+			var matrix:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
+			var viewProjection:Matrix3D = camera.viewProjection;
 
 			while (renderable) {
 				// it's possible that the renderable was already removed from the scene
@@ -210,7 +234,7 @@ module away.pick
 
 				this._potentialFound = true;
 
-				this._context.setCulling((<away.materials.MaterialBase> renderable.materialOwner.material).bothSides? away.stagegl.ContextGLTriangleFace.NONE : away.stagegl.ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
+				this._context.setCulling((<away.materials.MaterialBase> renderable.materialOwner.material).bothSides? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
 
 				this._interactives[this._interactiveId++] = renderable;
 				// color code so that reading from bitmapdata will contain the correct value
@@ -219,17 +243,17 @@ module away.pick
 
 				matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
 				matrix.append(viewProjection);
-				this._context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, matrix, true);
-				this._context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
-				this._stageGL.activateBuffer(0, renderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA), away.base.TriangleSubGeometry.POSITION_FORMAT);
-				this._context.drawTriangles(this._stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+				this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
+				this._context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._id, 1);
+				this._context.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+				this._context.drawTriangles(this._context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 
 				renderable = renderable.next;
 			}
 
 		}
 
-		private updateRay(camera:away.entities.Camera)
+		private updateRay(camera:Camera)
 		{
 			this._rayPos = camera.scenePosition;
 
@@ -278,7 +302,7 @@ module away.pick
 		 * Gets more detailed information about the hir position, if required.
 		 * @param camera The camera used to view the hit object.
 		 */
-		private getHitDetails(camera:away.entities.Camera)
+		private getHitDetails(camera:Camera)
 		{
 			this.getApproximatePosition(camera);
 			this.getPreciseDetails(camera);
@@ -289,13 +313,13 @@ module away.pick
 		 *
 		 * @param camera The camera used to view the hit object.
 		 */
-		private getApproximatePosition(camera:away.entities.Camera)
+		private getApproximatePosition(camera:Camera)
 		{
-			var bounds:away.geom.Box = this._hitRenderable.sourceEntity.bounds.aabb;
+			var bounds:Box = this._hitRenderable.sourceEntity.bounds.aabb;
 			var col:number;
 			var scX:number, scY:number, scZ:number;
 			var offsX:number, offsY:number, offsZ:number;
-			var localViewProjection:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
+			var localViewProjection:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
 
 			localViewProjection.copyFrom(this._hitRenderable.sourceEntity.getRenderSceneTransform(camera));
 			localViewProjection.append(camera.viewProjection);
@@ -311,13 +335,13 @@ module away.pick
 			this._boundOffsetScale[2] = offsZ = -bounds.z;
 
 			this._context.setProgram(this._triangleProgram);
-			this._context.clear(0, 0, 0, 0, 1, 0, away.stagegl.ContextGLClearMask.DEPTH);
+			this._context.clear(0, 0, 0, 0, 1, 0, ContextGLClearMask.DEPTH);
 			this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
-			this._context.setProgramConstantsFromMatrix(away.stagegl.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
-			this._context.setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
+			this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, localViewProjection, true);
+			this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
 
-			this._stageGL.activateBuffer(0, this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA), away.base.TriangleSubGeometry.POSITION_FORMAT);
-			this._context.drawTriangles(this._stageGL.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
+			this._context.activateBuffer(0, this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+			this._context.drawTriangles(this._context.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
 
 			this._context.drawToBitmapData(this._bitmapData);
 
@@ -333,7 +357,7 @@ module away.pick
 		 * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
 		 * @param camera The camera used to view the hit object.
 		 */
-		private getPreciseDetails(camera:away.entities.Camera)
+		private getPreciseDetails(camera:Camera)
 		{
 			var len:number = indices.length;
 			var x1:number, y1:number, z1:number;
@@ -356,17 +380,17 @@ module away.pick
 			var nl:number;
 			var indices:Array<number> = this._hitRenderable.getIndexData().data;
 
-			var positions:Array<number> = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA).data;
-			var positionStride:number = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.POSITION_DATA).dataPerVertex;
-			var positionOffset:number = this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.POSITION_DATA);
+			var positions:Array<number> = this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA).data;
+			var positionStride:number = this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA).dataPerVertex;
+			var positionOffset:number = this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA);
 
-			var uvs:Array<number> = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.UV_DATA).data;
-			var uvStride:number = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.UV_DATA).dataPerVertex;
-			var uvOffset:number = this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.UV_DATA);
+			var uvs:Array<number> = this._hitRenderable.getVertexData(TriangleSubGeometry.UV_DATA).data;
+			var uvStride:number = this._hitRenderable.getVertexData(TriangleSubGeometry.UV_DATA).dataPerVertex;
+			var uvOffset:number = this._hitRenderable.getVertexOffset(TriangleSubGeometry.UV_DATA);
 
-			var normals:Array<number> = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.NORMAL_DATA).data;
-			var normalStride:number = this._hitRenderable.getVertexData(away.base.TriangleSubGeometry.NORMAL_DATA).dataPerVertex;
-			var normalOffset:number = this._hitRenderable.getVertexOffset(away.base.TriangleSubGeometry.NORMAL_DATA);
+			var normals:Array<number> = this._hitRenderable.getVertexData(TriangleSubGeometry.NORMAL_DATA).data;
+			var normalStride:number = this._hitRenderable.getVertexData(TriangleSubGeometry.NORMAL_DATA).dataPerVertex;
+			var normalOffset:number = this._hitRenderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA);
 
 			this.updateRay(camera);
 
@@ -485,13 +509,13 @@ module away.pick
 		 * @param pz The z-coordinate of a point on the face's plane (ie a face vertex)
 		 */
 
-		private getPrecisePosition(invSceneTransform:away.geom.Matrix3D, nx:number, ny:number, nz:number, px:number, py:number, pz:number)
+		private getPrecisePosition(invSceneTransform:Matrix3D, nx:number, ny:number, nz:number, px:number, py:number, pz:number)
 		{
 			// calculate screen ray and find exact intersection position with triangle
 			var rx:number, ry:number, rz:number;
 			var ox:number, oy:number, oz:number;
 			var t:number;
-			var raw:Array<number> = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
+			var raw:Array<number> = Matrix3DUtils.RAW_DATA_CONTAINER;
 			var cx:number = this._rayPos.x, cy:number = this._rayPos.y, cz:number = this._rayPos.z;
 
 			// unprojected projection point, gives ray dir in cam space

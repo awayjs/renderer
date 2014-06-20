@@ -2,6 +2,10 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import Texture2DBase							= away.textures.Texture2DBase;
+
 	/**
 	 * DiffuseGradientMethod is an alternative to DiffuseBasicMethod in which the shading can be modulated with a gradient
 	 * to introduce color-tinted shading as opposed to the single-channel diffuse strength. This can be used as a crude
@@ -11,14 +15,14 @@ module away.materials
 	export class DiffuseGradientMethod extends DiffuseBasicMethod
 	{
 		private _gradientTextureRegister:ShaderRegisterElement;
-		private _gradient:away.textures.Texture2DBase;
+		private _gradient:Texture2DBase;
 		
 		/**
 		 * Creates a new DiffuseGradientMethod object.
 		 * @param gradient A texture that contains the light colour based on the angle. This can be used to change
 		 * the light colour due to subsurface scattering when the surface faces away from the light.
 		 */
-		constructor(gradient:away.textures.Texture2DBase)
+		constructor(gradient:Texture2DBase)
 		{
 			super();
 
@@ -29,12 +33,12 @@ module away.materials
 		 * A texture that contains the light colour based on the angle. This can be used to change the light colour
 		 * due to subsurface scattering when the surface faces away from the light.
 		 */
-		public get gradient():away.textures.Texture2DBase
+		public get gradient():Texture2DBase
 		{
 			return this._gradient;
 		}
 		
-		public set gradient(value:away.textures.Texture2DBase)
+		public set gradient(value:Texture2DBase)
 		{
 			if (value.hasMipmaps != this._gradient.hasMipmaps || value.format != this._gradient.format)
 				this.iInvalidateShaderProgram();
@@ -118,10 +122,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stageGL);
-			this._gradient.activateTextureForStage(vo.secondaryTexturesIndex, stageGL);
+			super.iActivate(vo, stage);
+
+			(<IContextStageGL> stage.context).activateTexture(vo.secondaryTexturesIndex, this._gradient);
 		}
 	}
 }

@@ -2,7 +2,7 @@
 
 module away.animators
 {
-	import StageGL                     		= away.base.StageGL;
+	import Stage                     		= away.base.Stage;
 	import AbstractMethodError				= away.errors.AbstractMethodError;
 	import MaterialPassBase                 = away.materials.MaterialPassBase;
 
@@ -84,7 +84,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public activate(stageGL:StageGL, pass:MaterialPassBase)
+		public activate(stage:Stage, pass:MaterialPassBase)
 		{
 			throw new AbstractMethodError();
 		}
@@ -92,7 +92,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public deactivate(stageGL:StageGL, pass:MaterialPassBase)
+		public deactivate(stage:Stage, pass:MaterialPassBase)
 		{
 			throw new AbstractMethodError();
 		}

@@ -7,7 +7,7 @@ module away.animators
 	import Camera							= away.entities.Camera;
 	import ContextGLVertexBufferFormat		= away.stagegl.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
-	import StageGL							= away.base.StageGL;
+	import Stage							= away.base.Stage;
 	import MathConsts						= away.geom.MathConsts;
 	
 	/**
@@ -58,7 +58,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+		public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{	
 			if (this._followTarget) {
 				if (this._particleFollowNode._iUsesPosition) {
@@ -89,18 +89,18 @@ module away.animators
 				if (needProcess)
 					this.processPositionAndRotation(currentTime, deltaTime, animationSubGeometry);
 				
-				animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
-				animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+				animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
+				animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat.FLOAT_3);
 			} else if (this._particleFollowNode._iUsesPosition) {
 				if (needProcess)
 					this.processPosition(currentTime, deltaTime, animationSubGeometry);
 				
-				animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+				animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 			} else if (this._particleFollowNode._iUsesRotation) {
 				if (needProcess)
 					this.precessRotation(currentTime, deltaTime, animationSubGeometry);
 				
-				animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+				animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 			}
 			
 			this._prePos.copyFrom(this._targetPos);

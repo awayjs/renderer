@@ -120,7 +120,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:away.base.Stage)
 		{
 			var index:number /*int*/ = vo.fragmentConstantsIndex;
 			var data:Array<number> = vo.fragmentData;
@@ -143,25 +143,25 @@ module away.materials
 			
 			vo.fragmentConstantsIndex = dataRegister.index*4;
 			
-			code += "dp3 " + temp + ".x, " + this._sharedRegisters.viewDirFragment + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz	\n" +
-				"sat " + temp + ".x, " + temp + ".x														\n" +
-				"sub " + temp + ".x, " + dataRegister + ".w, " + temp + ".x								\n" +
-				"pow " + temp + ".x, " + temp + ".x, " + dataRegister2 + ".y							\n" +
-				"mul " + temp + ".x, " + temp + ".x, " + dataRegister2 + ".x							\n" +
-				"sub " + temp + ".x, " + dataRegister + ".w, " + temp + ".x								\n" +
-				"mul " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".x						\n" +
-				"sub " + temp + ".w, " + dataRegister + ".w, " + temp + ".x								\n";
+			code += "dp3 " + temp + ".x, " + this._sharedRegisters.viewDirFragment + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz\n" +
+				"sat " + temp + ".x, " + temp + ".x\n" +
+				"sub " + temp + ".x, " + dataRegister + ".w, " + temp + ".x\n" +
+				"pow " + temp + ".x, " + temp + ".x, " + dataRegister2 + ".y\n" +
+				"mul " + temp + ".x, " + temp + ".x, " + dataRegister2 + ".x\n" +
+				"sub " + temp + ".x, " + dataRegister + ".w, " + temp + ".x\n" +
+				"mul " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".x\n" +
+				"sub " + temp + ".w, " + dataRegister + ".w, " + temp + ".x\n";
 			
 			if (this._blendMode == EffectRimLightMethod.ADD) {
-				code += "mul " + temp + ".xyz, " + temp + ".w, " + dataRegister + ".xyz							\n" +
-					"add " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz						\n";
+				code += "mul " + temp + ".xyz, " + temp + ".w, " + dataRegister + ".xyz\n" +
+					"add " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz\n";
 			} else if (this._blendMode == EffectRimLightMethod.MULTIPLY) {
-				code += "mul " + temp + ".xyz, " + temp + ".w, " + dataRegister + ".xyz							\n" +
-					"mul " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz						\n";
+				code += "mul " + temp + ".xyz, " + temp + ".w, " + dataRegister + ".xyz\n" +
+					"mul " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz\n";
 			} else {
-				code += "sub " + temp + ".xyz, " + dataRegister + ".xyz, " + targetReg + ".xyz				\n" +
-					"mul " + temp + ".xyz, " + temp + ".xyz, " + temp + ".w								\n" +
-					"add " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz					\n";
+				code += "sub " + temp + ".xyz, " + dataRegister + ".xyz, " + targetReg + ".xyz\n" +
+					"mul " + temp + ".xyz, " + temp + ".xyz, " + temp + ".w\n" +
+					"add " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz\n";
 			}
 			
 			return code;

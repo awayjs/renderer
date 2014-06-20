@@ -2,6 +2,10 @@
 
 module away.animators
 {
+	import Stage					= away.base.Stage;
+	import MaterialPassBase			= away.materials.MaterialPassBase;
+	import IContextStageGL			= away.stagegl.IContextStageGL;
+
 	/**
 	 * The animation data set used by vertex-based animators, containing vertex animation state data.
 	 *
@@ -60,7 +64,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAGALVertexCode(pass:away.materials.MaterialPassBase, sourceRegisters:Array<string>, targetRegisters:Array<string>, profile:string):string
+		public getAGALVertexCode(pass:MaterialPassBase, sourceRegisters:Array<string>, targetRegisters:Array<string>, profile:string):string
 		{
 			if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE)
 				return this.getAbsoluteAGALCode(pass, sourceRegisters, targetRegisters); else
@@ -70,7 +74,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public activate(stageGL:away.base.StageGL, pass:away.materials.MaterialPassBase)
+		public activate(stage:Stage, pass:MaterialPassBase)
 		{
 			var uID:number = pass._iUniqueId;
 			this._uploadNormals = <boolean> this._useNormals[uID];
@@ -80,11 +84,11 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public deactivate(stageGL:away.base.StageGL, pass:away.materials.MaterialPassBase)
+		public deactivate(stage:Stage, pass:MaterialPassBase)
 		{
 			var uID:number = pass._iUniqueId;
 			var index:number /*uint*/ = this._streamIndices[uID];
-			var context:away.stagegl.IContext = stageGL.contextGL;
+			var context:IContextStageGL = <IContextStageGL> stage.context;
 			context.setVertexBufferAt(index, null);
 			if (this._uploadNormals)
 				context.setVertexBufferAt(index + 1, null);
@@ -95,7 +99,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAGALFragmentCode(pass:away.materials.MaterialPassBase, shadedTarget:string, profile:string):string
+		public getAGALFragmentCode(pass:MaterialPassBase, shadedTarget:string, profile:string):string
 		{
 			return "";
 		}
@@ -103,7 +107,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAGALUVCode(pass:away.materials.MaterialPassBase, UVSource:string, UVTarget:string):string
+		public getAGALUVCode(pass:MaterialPassBase, UVSource:string, UVTarget:string):string
 		{
 			return "mov " + UVTarget + "," + UVSource + "\n";
 		}
@@ -111,7 +115,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public doneAGALCode(pass:away.materials.MaterialPassBase)
+		public doneAGALCode(pass:MaterialPassBase)
 		{
 
 		}
@@ -119,7 +123,7 @@ module away.animators
 		/**
 		 * Generates the vertex AGAL code for absolute blending.
 		 */
-		private getAbsoluteAGALCode(pass:away.materials.MaterialPassBase, sourceRegisters:Array<string>, targetRegisters:Array<string>):string
+		private getAbsoluteAGALCode(pass:MaterialPassBase, sourceRegisters:Array<string>, targetRegisters:Array<string>):string
 		{
 			var code:string = "";
 			var uID:number = pass._iUniqueId;
@@ -160,7 +164,7 @@ module away.animators
 		/**
 		 * Generates the vertex AGAL code for additive blending.
 		 */
-		private getAdditiveAGALCode(pass:away.materials.MaterialPassBase, sourceRegisters:Array<string>, targetRegisters:Array<string>):string
+		private getAdditiveAGALCode(pass:MaterialPassBase, sourceRegisters:Array<string>, targetRegisters:Array<string>):string
 		{
 			var code:string = "";
 			var uID:number = pass._iUniqueId;

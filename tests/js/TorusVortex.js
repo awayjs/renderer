@@ -5,6 +5,7 @@ var demos;
         var BlendMode = away.base.BlendMode;
 
         var View = away.containers.View;
+        var ContextMode = away.display.ContextMode;
 
         var Vector3D = away.geom.Vector3D;
         var TriangleMaterial = away.materials.TriangleMaterial;
@@ -16,6 +17,7 @@ var demos;
         var PrimitiveCubePrefab = away.prefabs.PrimitiveCubePrefab;
         var PerspectiveProjection = away.projections.PerspectiveProjection;
         var DefaultRenderer = away.render.DefaultRenderer;
+        var ContextGLProfile = away.stagegl.ContextGLProfile;
         var ImageTexture = away.textures.ImageTexture;
         var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
@@ -23,7 +25,7 @@ var demos;
             function TorusVortex() {
                 away.Debug.THROW_ERRORS = false;
 
-                this._view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
+                this._view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE, ContextMode.FLASH));
 
                 this._view.backgroundColor = 0x000000;
                 this._view.camera.x = 130;

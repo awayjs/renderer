@@ -2,13 +2,12 @@
 
 module away.materials
 {
-	//import away.arcane;
-	//import away.base.StageGL;
-	//import away.materials.compilation.ShaderRegisterCache;
-	//import away.materials.compilation.ShaderRegisterElement;
-	//import away.textures.Texture2DBase;
-
-	//use namespace arcane;
+	import Stage									= away.base.Stage;
+	import ContextGLMipFilter						= away.stagegl.ContextGLMipFilter;
+	import ContextGLTextureFilter					= away.stagegl.ContextGLTextureFilter;
+	import ContextGLWrapMode						= away.stagegl.ContextGLWrapMode;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import Texture2DBase							= away.textures.Texture2DBase;
 
 	/**
 	 * DiffuseBasicMethod provides the default shading method for Lambert (dot3) diffuse lighting.
@@ -21,7 +20,7 @@ module away.materials
 		public _pTotalLightColorReg:ShaderRegisterElement;
 		public _pDiffuseInputRegister:ShaderRegisterElement;
 
-		private _texture:away.textures.Texture2DBase;
+		private _texture:Texture2DBase;
 		private _diffuseColor:number = 0xffffff;
 		private _diffuseR:number = 1;
 		private _diffuseG:number = 1;
@@ -70,12 +69,12 @@ module away.materials
 
 		/**
 		 * Forces the creation of the texture.
-		 * @param stageGL The StageGL used by the renderer
+		 * @param stage The Stage used by the renderer
 		 */
-		public generateMip(stageGL:away.base.StageGL)
+		public generateMip(stage:Stage)
 		{
 			if (this._pUseTexture)
-				this._texture.activateTextureForStage(0, stageGL);
+				(<IContextStageGL> stage.context).activateTexture(0, this._texture);
 		}
 
 		/**
@@ -109,25 +108,20 @@ module away.materials
 		/**
 		 * The bitmapData to use to define the diffuse reflection color per texel.
 		 */
-		public get texture():away.textures.Texture2DBase
+		public get texture():Texture2DBase
 		{
 			return this._texture;
 		}
 
-		public set texture(value:away.textures.Texture2DBase)
+		public set texture(value:Texture2DBase)
 		{
+			var b:boolean = (value != null);
 
-			var b:boolean = ( value != null );
-
-			if (b != this._pUseTexture || (value && this._texture && (value.hasMipmaps != this._texture.hasMipmaps || value.format != this._texture.format))) {
-
+			if (b != this._pUseTexture || (value && this._texture && (value.hasMipmaps != this._texture.hasMipmaps || value.format != this._texture.format)))
 				this.iInvalidateShaderProgram();
-
-			}
 
 			this._pUseTexture = b;
 			this._texture = value;
-
 		}
 
 		/**
@@ -167,10 +161,7 @@ module away.materials
 		 */
 		public copyFrom(method:ShadingMethodBase)
 		{
-
-			var m:any = method;
-
-			var diff:DiffuseBasicMethod = <DiffuseBasicMethod> m;
+			var diff:DiffuseBasicMethod = <DiffuseBasicMethod> method;
 
 			this.alphaThreshold = diff.alphaThreshold;
 			this.texture = diff.texture;
@@ -220,27 +211,18 @@ module away.materials
 			if (this._pIsFirstLight) {
 				t = this._pTotalLightColorReg;
 			} else {
-
 				t = regCache.getFreeFragmentVectorTemp();
 				regCache.addFragmentTempUsages(t, 1);
-
 			}
 
-			//TODO: AGAL <> GLSL
+			code += "dp3 " + t + ".x, " + lightDirReg + ", " + this._sharedRegisters.normalFragment + "\n" +
+					"max " + t + ".w, " + t + ".x, " + this._sharedRegisters.commons + ".y\n";
 
-			//*
-			code += "dp3 " + t + ".x, " + lightDirReg + ", " + this._sharedRegisters.normalFragment + "\n" + "max " + t + ".w, " + t + ".x, " + this._sharedRegisters.commons + ".y\n";
-
-			if (vo.useLightFallOff) {
-
+			if (vo.useLightFallOff)
 				code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
-
-			}
-
 
 			if (this._iModulateMethod != null)
 				code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
-
 
 			code += "mul " + t + ", " + t + ".w, " + lightColReg + "\n";
 
@@ -248,7 +230,7 @@ module away.materials
 				code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
 				regCache.removeFragmentTempUsage(t);
 			}
-			//*/
+
 			this._pIsFirstLight = false;
 
 			return code;
@@ -264,30 +246,21 @@ module away.materials
 
 			// write in temporary if not first light, so we can add to total diffuse colour
 			if (this._pIsFirstLight) {
-
 				t = this._pTotalLightColorReg;
-
 			} else {
-
 				t = regCache.getFreeFragmentVectorTemp();
 				regCache.addFragmentTempUsages(t, 1);
-
 			}
 
-			// TODO: AGAL <> GLSL
-
-
-			code += "tex " + t + ", " + this._sharedRegisters.normalFragment + ", " + cubeMapReg + " <cube,linear,miplinear>\n" + "mul " + t + ".xyz, " + t + ".xyz, " + weightRegister + "\n";
+			code += "tex " + t + ", " + this._sharedRegisters.normalFragment + ", " + cubeMapReg + " <cube,linear,miplinear>\n" +
+					"mul " + t + ".xyz, " + t + ".xyz, " + weightRegister + "\n";
 
 			if (this._iModulateMethod != null)
 				code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
 
-
 			if (!this._pIsFirstLight) {
-
 				code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
 				regCache.removeFragmentTempUsage(t);
-
 			}
 
 			this._pIsFirstLight = false;
@@ -306,51 +279,37 @@ module away.materials
 
 			// incorporate input from ambient
 			if (vo.numLights > 0) {
-
 				if (this._pShadowRegister)
 					code += this.pApplyShadow(vo, regCache);
 
 				albedo = regCache.getFreeFragmentVectorTemp();
 				regCache.addFragmentTempUsages(albedo, 1);
-
 			} else {
-
 				albedo = targetReg;
-
 			}
 
-
 			if (this._pUseTexture) {
-
 				this._pDiffuseInputRegister = regCache.getFreeTextureReg();
 
 				vo.texturesIndex = this._pDiffuseInputRegister.index;
 
-
 				code += this.pGetTex2DSampleCode(vo, albedo, this._pDiffuseInputRegister, this._texture);
 
 				if (this._alphaThreshold > 0) {
-
-					//TODO: AGAL <> GLSL
-
 					cutOffReg = regCache.getFreeFragmentConstant();
 					vo.fragmentConstantsIndex = cutOffReg.index*4;
 
-					code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n" + "add " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n";
-
+					code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" +
+							"kil " + albedo + ".w\n" +
+							"add " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n";
 				}
 
 			} else {
-
-				//TODO: AGAL <> GLSL
-
 				this._pDiffuseInputRegister = regCache.getFreeFragmentConstant();
 
 				vo.fragmentConstantsIndex = this._pDiffuseInputRegister.index*4;
 
 				code += "mov " + albedo + ", " + this._pDiffuseInputRegister + "\n";
-
-
 			}
 
 			if (vo.numLights == 0)
@@ -360,28 +319,21 @@ module away.materials
 			code += "sat " + this._pTotalLightColorReg + ", " + this._pTotalLightColorReg + "\n";
 
 			if (this._useAmbientTexture) {
-
-				//TODO: AGAL <> GLSL
-
-				code += "mul " + albedo + ".xyz, " + albedo + ", " + this._pTotalLightColorReg + "\n" + "mul " + this._pTotalLightColorReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n" + "sub " + targetReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n" + "add " + targetReg + ".xyz, " + albedo + ", " + targetReg + "\n";
-
-
+				code += "mul " + albedo + ".xyz, " + albedo + ", " + this._pTotalLightColorReg + "\n" +
+						"mul " + this._pTotalLightColorReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n" +
+						"sub " + targetReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n" +
+						"add " + targetReg + ".xyz, " + albedo + ", " + targetReg + "\n";
 			} else {
-
-				//TODO: AGAL <> GLSL
-
 				code += "add " + targetReg + ".xyz, " + this._pTotalLightColorReg + ", " + targetReg + "\n";
 
 				if (this._pUseTexture) {
-
-					code += "mul " + targetReg + ".xyz, " + albedo + ", " + targetReg + "\n" + "mov " + targetReg + ".w, " + albedo + ".w\n";
-
+					code += "mul " + targetReg + ".xyz, " + albedo + ", " + targetReg + "\n" +
+							"mov " + targetReg + ".w, " + albedo + ".w\n";
 				} else {
 
-					code += "mul " + targetReg + ".xyz, " + this._pDiffuseInputRegister + ", " + targetReg + "\n" + "mov " + targetReg + ".w, " + this._pDiffuseInputRegister + ".w\n";
-
+					code += "mul " + targetReg + ".xyz, " + this._pDiffuseInputRegister + ", " + targetReg + "\n" +
+							"mov " + targetReg + ".w, " + this._pDiffuseInputRegister + ".w\n";
 				}
-
 			}
 
 			regCache.removeFragmentTempUsage(this._pTotalLightColorReg);
@@ -397,34 +349,27 @@ module away.materials
 		 */
 		public pApplyShadow(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
-
-			//TODO: AGAL <> GLSL
 			return "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + this._pShadowRegister + ".w\n";
-
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
 			if (this._pUseTexture) {
-				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.stagegl.ContextGLWrapMode.REPEAT:away.stagegl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.stagegl.ContextGLTextureFilter.LINEAR:away.stagegl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.stagegl.ContextGLMipFilter.MIPLINEAR:away.stagegl.ContextGLMipFilter.MIPNONE);
-
-				this._texture.activateTextureForStage(vo.texturesIndex, stageGL);
+				(<IContextStageGL> stage.context).setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, vo.useSmoothTextures? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, vo.useMipmapping? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
+				(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex, this._texture);
 
 				if (this._alphaThreshold > 0)
 					vo.fragmentData[vo.fragmentConstantsIndex] = this._alphaThreshold;
-
 			} else {
-
 				var index:number = vo.fragmentConstantsIndex;
 				var data:Array<number> = vo.fragmentData;
 				data[index] = this._diffuseR;
 				data[index + 1] = this._diffuseG;
 				data[index + 2] = this._diffuseB;
 				data[index + 3] = this._diffuseA;
-
 			}
 		}
 

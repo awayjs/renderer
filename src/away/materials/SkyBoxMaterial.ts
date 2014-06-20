@@ -24,7 +24,7 @@ module away.materials
 			super();
 
 			this._cubeMap = cubeMap;
-			this.pAddPass(this._skyboxPass = new SkyboxPass());
+			this.pAddPass(this._skyboxPass = new SkyboxPass(this));
 			this._skyboxPass.cubeTexture = this._cubeMap;
 		}
 

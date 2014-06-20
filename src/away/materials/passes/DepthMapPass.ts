@@ -3,14 +3,14 @@
 module away.materials
 {
 	import TriangleSubGeometry						= away.base.TriangleSubGeometry;
-	import StageGL									= away.base.StageGL;
+	import Stage									= away.base.Stage;
 	import Camera									= away.entities.Camera;
 	import Matrix3D									= away.geom.Matrix3D;
 	import Matrix3DUtils							= away.geom.Matrix3DUtils;
 	import RenderableBase							= away.pool.RenderableBase;
 	import ContextGLProgramType						= away.stagegl.ContextGLProgramType;
 	import ContextGLTextureFormat					= away.stagegl.ContextGLTextureFormat;
-	import IContext									= away.stagegl.IContext;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
 	import Texture2DBase							= away.textures.Texture2DBase;
 
 	/**
@@ -25,10 +25,14 @@ module away.materials
 
 		/**
 		 * Creates a new DepthMapPass object.
+		 *
+		 * @param material The material to which this pass belongs.
 		 */
-		constructor()
+		constructor(material:MaterialBase)
 		{
 			super();
+
+			this.material = material;
 
 			this._data = new Array<number>(1.0, 255.0, 65025.0, 16581375.0, 1.0/255.0, 1.0/255.0, 1.0/255.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 		}
@@ -151,33 +155,35 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
+		public iRender(renderable:RenderableBase, stage:Stage, camera:Camera, viewProjection:Matrix3D)
 		{
-			if (this._alphaThreshold > 0)
-				stageGL.activateBuffer(1, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
+			var context:IContextStageGL = <IContextStageGL> stage.context;
 
-			var context:IContext = stageGL.contextGL;
+			if (this._alphaThreshold > 0)
+				context.activateBuffer(1, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
+
+
 			var matrix:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
 
 			matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
 			matrix.append(viewProjection);
 			context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
 
-			stageGL.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA),  renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+			context.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA),  renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+			context.drawTriangles(context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:StageGL, camera:Camera)
+		public iActivate(stage:Stage, camera:Camera)
 		{
-			var context:IContext = stageGL.contextGL;
+			var context:IContextStageGL = <IContextStageGL> stage.context;
 
-			super.iActivate(stageGL, camera);
+			super.iActivate(stage, camera);
 
 			if (this._alphaThreshold > 0) {
-				this._alphaMask.activateTextureForStage(0, stageGL);
+				context.activateTexture(0, this._alphaMask);
 				context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 3);
 			} else {
 				context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 2);

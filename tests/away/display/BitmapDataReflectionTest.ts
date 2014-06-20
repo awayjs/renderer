@@ -8,11 +8,11 @@ module tests.display
 	import Mesh							= away.entities.Mesh;
 	import LoaderEvent					= away.events.LoaderEvent;
 	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetLoader					= away.library.AssetLoader;
+	import AssetLoaderToken				= away.library.AssetLoaderToken;
 	import AssetType					= away.library.AssetType;
 	import IAsset						= away.library.IAsset;
 	import TriangleMaterial				= away.materials.TriangleMaterial;
-	import AssetLoader					= away.net.AssetLoader;
-	import AssetLoaderToken				= away.net.AssetLoaderToken;
 	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
 	import DefaultRenderer				= away.render.DefaultRenderer;
 	import BitmapTexture				= away.textures.BitmapTexture;

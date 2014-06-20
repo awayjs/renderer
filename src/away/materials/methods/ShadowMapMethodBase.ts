@@ -2,22 +2,17 @@
 
 module away.materials
 {
-	//import away.*;
-	//import away.errors.*;
-	//import away.library.assets.*;
-	//import away.lights.*;
-	//import away.lights.shadowmaps.*;
-	//import away.materials.compilation.*;
-
-	//use namespace arcane;
+	import LightBase								= away.base.LightBase;
+	import AbstractMethodError						= away.errors.AbstractMethodError;
+	import ShadowMapperBase							= away.materials.ShadowMapperBase;
 
 	/**
 	 * ShadowMapMethodBase provides an abstract base method for shadow map methods.
 	 */
 	export class ShadowMapMethodBase extends ShadingMethodBase implements away.library.IAsset
 	{
-		public _pCastingLight:away.lights.LightBase;
-		public _pShadowMapper:away.lights.ShadowMapperBase;
+		public _pCastingLight:LightBase;
+		public _pShadowMapper:ShadowMapperBase;
 
 		public _pEpsilon:number = .02;
 		public _pAlpha:number = 1;
@@ -26,7 +21,7 @@ module away.materials
 		 * Creates a new ShadowMapMethodBase object.
 		 * @param castingLight The light used to cast shadows.
 		 */
-		constructor(castingLight:away.lights.LightBase)
+		constructor(castingLight:LightBase)
 		{
 			super();
 			this._pCastingLight = castingLight;
@@ -59,7 +54,7 @@ module away.materials
 		/**
 		 * The light casting the shadows.
 		 */
-		public get castingLight():away.lights.LightBase
+		public get castingLight():LightBase
 		{
 			return this._pCastingLight;
 		}
@@ -83,7 +78,7 @@ module away.materials
 		 */
 		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 			return null;
 		}
 	}

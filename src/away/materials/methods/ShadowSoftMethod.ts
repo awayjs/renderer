@@ -2,6 +2,9 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import DirectionalLight							= away.entities.DirectionalLight;
+
 	/**
 	 * ShadowSoftMethod provides a soft shadowing technique by randomly distributing sample points.
 	 */
@@ -17,7 +20,7 @@ module away.materials
 		 * @param castingLight The light casting the shadows
 		 * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 32.
 		 */
-		constructor(castingLight:away.lights.DirectionalLight, numSamples:number /*int*/ = 5, range:number = 1)
+		constructor(castingLight:DirectionalLight, numSamples:number /*int*/ = 5, range:number = 1)
 		{
 			super(castingLight);
 
@@ -72,9 +75,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stageGL);
+			super.iActivate(vo, stage);
 			var texRange:number = .5*this._range/this._pCastingLight.shadowMapper.depthMapSize;
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.fragmentConstantsIndex + 10;
@@ -120,9 +123,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivateForCascade(vo:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stageGL);
+			super.iActivate(vo, stage);
 			var texRange:number = this._range/this._pCastingLight.shadowMapper.depthMapSize;
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.secondaryFragmentConstantsIndex;
@@ -130,6 +133,7 @@ module away.materials
 			data[index] = 1/this._numSamples;
 			data[index + 1] = 0;
 			index += 2;
+
 			for (var i:number /*int*/ = 0; i < len; ++i)
 				data[index + i] = this._offsets[i]*texRange;
 

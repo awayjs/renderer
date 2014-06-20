@@ -4,9 +4,10 @@ var tests;
 (function (tests) {
     (function (_primitives) {
         var View = away.containers.View;
+        var ContextMode = away.display.ContextMode;
 
         var Vector3D = away.geom.Vector3D;
-        var DirectionalLight = away.lights.DirectionalLight;
+        var DirectionalLight = away.entities.DirectionalLight;
         var StaticLightPicker = away.materials.StaticLightPicker;
 
         var PrimitivePolygonPrefab = away.prefabs.PrimitivePolygonPrefab;
@@ -17,6 +18,7 @@ var tests;
         var PrimitiveConePrefab = away.prefabs.PrimitiveConePrefab;
         var PrimitiveCubePrefab = away.prefabs.PrimitiveCubePrefab;
         var DefaultRenderer = away.render.DefaultRenderer;
+        var ContextGLProfile = away.stagegl.ContextGLProfile;
         var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
         var WireframePrimitiveTest = (function () {
@@ -27,7 +29,7 @@ var tests;
                 away.Debug.LOG_PI_ERRORS = false;
                 away.Debug.THROW_ERRORS = false;
 
-                this.view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
+                this.view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE, ContextMode.FLASH));
                 this.raf = new RequestAnimationFrame(this.render, this);
 
                 this.light = new DirectionalLight();
@@ -38,9 +40,9 @@ var tests;
                 this.light.diffuse = 1;
                 this.light.specular = 1;
 
-                this.lightB = new away.lights.DirectionalLight();
+                this.lightB = new DirectionalLight();
                 this.lightB.color = 0xFF0000;
-                this.lightB.direction = new away.geom.Vector3D(-1, 0, 1);
+                this.lightB.direction = new Vector3D(-1, 0, 1);
                 this.lightB.ambient = 0;
                 this.lightB.ambientColor = 0xFFFFFF;
                 this.lightB.diffuse = 1;
@@ -82,7 +84,7 @@ var tests;
                     mesh.x = Math.cos(t) * this.radius;
                     mesh.y = Math.sin(t) * this.radius;
                     mesh.z = 0;
-                    mesh.transform.scale = new away.geom.Vector3D(2, 2, 2);
+                    mesh.transform.scale = new Vector3D(2, 2, 2);
 
                     this.view.scene.addChild(mesh);
                     this.meshes.push(mesh);

@@ -5,6 +5,31 @@
  */
 module away.render
 {
+	import LightBase					= away.base.LightBase;
+	import Stage						= away.base.Stage;
+	import Camera						= away.entities.Camera;
+	import DirectionalLight				= away.entities.DirectionalLight;
+	import PointLight					= away.entities.PointLight;
+	import Filter3DBase					= away.filters.Filter3DBase;
+	import Matrix3D						= away.geom.Matrix3D;
+	import Rectangle					= away.geom.Rectangle;
+	import Vector3D						= away.geom.Vector3D;
+	import RTTBufferManager				= away.managers.RTTBufferManager;
+	import StageManager					= away.managers.StageManager;
+	import MaterialBase					= away.materials.MaterialBase;
+	import ShadowMapperBase				= away.materials.ShadowMapperBase;
+	import RenderableBase				= away.pool.RenderableBase;
+	import RenderablePool				= away.pool.RenderablePool;
+	import SkyboxRenderable				= away.pool.SkyboxRenderable;
+	import ContextGLBlendFactor			= away.stagegl.ContextGLBlendFactor;
+	import ContextGLCompareMode			= away.stagegl.ContextGLCompareMode;
+	import ContextGLClearMask			= away.stagegl.ContextGLClearMask;
+	import IContextStageGL				= away.stagegl.IContextStageGL;
+	import RenderTexture				= away.textures.RenderTexture;
+	import TextureProxyBase				= away.textures.TextureProxyBase;
+	import EntityCollector				= away.traverse.EntityCollector;
+	import ICollector					= away.traverse.ICollector;
+
 	/**
 	 * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
 	 * materials assigned to them.
@@ -14,18 +39,19 @@ module away.render
 	export class DefaultRenderer extends RendererBase implements IRenderer
 	{
 		public _pRequireDepthRender:boolean;
+		private _skyboxRenderablePool:RenderablePool;
 
 		private static RTT_PASSES:number = 1;
 		private static SCREEN_PASSES:number = 2;
 		private static ALL_PASSES:number = 3;
 
-		private _activeMaterial:away.materials.MaterialBase;
+		private _activeMaterial:MaterialBase;
 		private _pDistanceRenderer:DepthRenderer;
 		private _pDepthRenderer:DepthRenderer;
-		private _skyboxProjection:away.geom.Matrix3D = new away.geom.Matrix3D();
+		private _skyboxProjection:Matrix3D = new Matrix3D();
 		public _pFilter3DRenderer:Filter3DRenderer;
 
-		public _pDepthRender:away.textures.TextureProxyBase;
+		public _pDepthRender:TextureProxyBase;
 
 		private _antiAlias:number;
 
@@ -61,11 +87,11 @@ module away.render
 		 *
 		 * @returns {*}
 		 */
-		public get filters3d():Array<away.filters.Filter3DBase>
+		public get filters3d():Array<Filter3DBase>
 		{
 			return this._pFilter3DRenderer? this._pFilter3DRenderer.filters : null;
 		}
-		public set filters3d(value:Array<away.filters.Filter3DBase>)
+		public set filters3d(value:Array<Filter3DBase>)
 		{
 			if (value && value.length == 0)
 				value = null;
@@ -74,7 +100,7 @@ module away.render
 				this._pFilter3DRenderer.dispose();
 				this._pFilter3DRenderer = null;
 			} else if (!this._pFilter3DRenderer && value) {
-				this._pFilter3DRenderer = new Filter3DRenderer(this._pStageGL);
+				this._pFilter3DRenderer = new Filter3DRenderer(this._pStage);
 				this._pFilter3DRenderer.filters = value;
 			}
 
@@ -101,13 +127,15 @@ module away.render
 		{
 			super();
 
+			this._skyboxRenderablePool = RenderablePool.getPool(SkyboxRenderable);
+
 			this._pDepthRenderer = new DepthRenderer();
 			this._pDistanceRenderer = new DepthRenderer(false, true);
 
-			if (this._pStageGL == null)
-				this.stageGL = away.managers.StageGLManager.getInstance().getFreeStageGL(forceSoftware, profile, mode);
+			if (this._pStage == null)
+				this.stage = StageManager.getInstance().getFreeStage(forceSoftware, profile, mode);
 
-			this._pRttBufferManager = away.managers.RTTBufferManager.getInstance(this._pStageGL);
+			this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
 
 			if (this._width == 0)
 				this.width = window.innerWidth;
@@ -120,11 +148,11 @@ module away.render
 				this._pRttBufferManager.viewHeight = this._height;
 		}
 
-		public render(entityCollector:away.traverse.ICollector)
+		public render(entityCollector:ICollector)
 		{
 			super.render(entityCollector);
 
-			if (!this._pStageGL.recoverFromDisposal()) {//if contextGL has Disposed by the OS,don't render at this frame
+			if (!this._pStage.recoverFromDisposal()) {//if context has Disposed by the OS,don't render at this frame
 				this._pBackBufferInvalid = true;
 				return;
 			}
@@ -132,8 +160,8 @@ module away.render
 			if (this._pBackBufferInvalid)// reset or update render settings
 				this.pUpdateBackBuffer();
 
-			if (this._shareContext)
-				this._pStageGL.clearDepthBuffer();
+			if (this._shareContext && this._pContext)
+				this._pContext.clear(0, 0, 0, 1, 1, 0, ContextGLClearMask.DEPTH);
 
 			if (this._pFilter3DRenderer) {
 				this.textureRatioX = this._pRttBufferManager.textureRatioX;
@@ -144,14 +172,14 @@ module away.render
 			}
 
 			if (this._pRequireDepthRender)
-				this.pRenderSceneDepthToTexture(<away.traverse.EntityCollector> entityCollector);
+				this.pRenderSceneDepthToTexture(<EntityCollector> entityCollector);
 
 			if (this._depthPrepass)
-				this.pRenderDepthPrepass(<away.traverse.EntityCollector> entityCollector);
+				this.pRenderDepthPrepass(<EntityCollector> entityCollector);
 
-			if (this._pFilter3DRenderer && this._pStageGL.contextGL) { //TODO
-				//this._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStageGL), this._pRttBufferManager.renderToTextureRect);
-				//this._pFilter3DRenderer.render(this._pStageGL, entityCollector.camera, this._pDepthRender);
+			if (this._pFilter3DRenderer && this._pContext) { //TODO
+				//this._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+				//this._pFilter3DRenderer.render(this._pStage, entityCollector.camera, this._pDepthRender);
 
 			} else {
 
@@ -163,14 +191,14 @@ module away.render
 
 			super.render(entityCollector);
 
-			if (!this._shareContext)
-				this._pStageGL.present();
+			if (!this._shareContext && this._pContext)
+				this._pContext.present();
 
 			// register that a view has been rendered
-			this._pStageGL.bufferClear = false;
+			this._pStage.bufferClear = false;
 		}
 
-		public pExecuteRender(entityCollector:away.traverse.EntityCollector, target:away.textures.TextureProxyBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
+		public pExecuteRender(entityCollector:EntityCollector, target:TextureProxyBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 		{
 			this.updateLights(entityCollector);
 
@@ -185,13 +213,13 @@ module away.render
 			super.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
 		}
 
-		private updateLights(entityCollector:away.traverse.EntityCollector)
+		private updateLights(entityCollector:EntityCollector)
 		{
-			var dirLights:away.lights.DirectionalLight[] = entityCollector.directionalLights;
-			var pointLights:away.lights.PointLight[] = entityCollector.pointLights;
+			var dirLights:Array<DirectionalLight> = entityCollector.directionalLights;
+			var pointLights:Array<PointLight> = entityCollector.pointLights;
 			var len:number, i:number;
-			var light:away.lights.LightBase;
-			var shadowMapper:away.lights.ShadowMapperBase;
+			var light:LightBase;
+			var shadowMapper:ShadowMapperBase;
 
 			len = dirLights.length;
 			for (i = 0; i < len; ++i) {
@@ -200,7 +228,7 @@ module away.render
 				shadowMapper = light.shadowMapper;
 
 				if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid ))
-					shadowMapper.iRenderDepthMap(this._pStageGL, entityCollector, this._pDepthRenderer);
+					shadowMapper.iRenderDepthMap(this._pStage, entityCollector, this._pDepthRenderer);
 			}
 
 			len = pointLights.length;
@@ -210,73 +238,74 @@ module away.render
 				shadowMapper = light.shadowMapper;
 
 				if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid))
-					shadowMapper.iRenderDepthMap(this._pStageGL, entityCollector, this._pDistanceRenderer);
+					shadowMapper.iRenderDepthMap(this._pStage, entityCollector, this._pDistanceRenderer);
 			}
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.textures.TextureProxyBase)
+		public pDraw(entityCollector:EntityCollector, target:TextureProxyBase)
 		{
 			if (!target)
 				this.pCollectRenderables(entityCollector);
 
-			this._pContext.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
+			this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 
 			if (entityCollector.skyBox) {
 				if (this._activeMaterial)
-					this._activeMaterial.iDeactivate(this._pStageGL);
+					this._activeMaterial.iDeactivate(this._pStage);
 
 				this._activeMaterial = null;
 
-				this._pContext.setDepthTest(false, away.stagegl.ContextGLCompareMode.ALWAYS);
-				this.drawSkybox(entityCollector);
+				this._pContext.setDepthTest(false, ContextGLCompareMode.ALWAYS);
 
+				this.drawSkybox(entityCollector);
 			}
 
-			this._pContext.setDepthTest(true, away.stagegl.ContextGLCompareMode.LESS_EQUAL);
+			this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
 
 			var which:number = target? DefaultRenderer.SCREEN_PASSES : DefaultRenderer.ALL_PASSES;
 
 			this.drawRenderables(this._pOpaqueRenderableHead, entityCollector, which);
 			this.drawRenderables(this._pBlendedRenderableHead, entityCollector, which);
 
-			this._pContext.setDepthTest(false, away.stagegl.ContextGLCompareMode.LESS_EQUAL);
+			this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
 
 			if (this._activeMaterial)
-				this._activeMaterial.iDeactivate(this._pStageGL);
+				this._activeMaterial.iDeactivate(this._pStage);
 
 			this._activeMaterial = null;
 		}
 
 		/**
 		 * Draw the skybox if present.
+		 *
 		 * @param entityCollector The EntityCollector containing all potentially visible information.
 		 */
-		private drawSkybox(entityCollector:away.traverse.EntityCollector)
+		private drawSkybox(entityCollector:EntityCollector)
 		{
-			var skyBox:away.pool.RenderableBase = entityCollector.skyBox;
+			var skyBox:SkyboxRenderable = <SkyboxRenderable> this._skyboxRenderablePool.getItem(entityCollector.skyBox);
 
-			var material:away.materials.MaterialBase = skyBox.material;
+			var material:MaterialBase = entityCollector.skyBox.material;
 
-			var camera:away.entities.Camera = entityCollector.camera;
+			var camera:Camera = entityCollector.camera;
 
 			this.updateSkyboxProjection(camera);
 
-			material.iActivatePass(0, this._pStageGL, camera);
-			material.iRenderPass(0, skyBox, this._pStageGL, entityCollector, this._skyboxProjection);
-			material.iDeactivatePass(0, this._pStageGL);
+			material.iActivatePass(0, this._pStage, camera);
+			material.iRenderPass(0, skyBox, this._pStage, entityCollector, this._skyboxProjection);
+			material.iDeactivatePass(0, this._pStage);
 		}
 
-		private updateSkyboxProjection(camera:away.entities.Camera)
+		private updateSkyboxProjection(camera:Camera)
 		{
-			var near:away.geom.Vector3D = new away.geom.Vector3D();
+			var near:Vector3D = new Vector3D();
 
 			this._skyboxProjection.copyFrom(this._pRttViewProjectionMatrix);
 			this._skyboxProjection.copyRowTo(2, near);
 
-			var camPos:away.geom.Vector3D = camera.scenePosition;
+			var camPos:Vector3D = camera.scenePosition;
 
 			var cx:number = near.x;
 			var cy:number = near.y;
@@ -286,31 +315,32 @@ module away.render
 			var signX:number = cx >= 0? 1 : -1;
 			var signY:number = cy >= 0? 1 : -1;
 
-			var p:away.geom.Vector3D = new away.geom.Vector3D(signX, signY, 1, 1);
+			var p:Vector3D = new Vector3D(signX, signY, 1, 1);
 
-			var inverse:away.geom.Matrix3D = this._skyboxProjection.clone();
+			var inverse:Matrix3D = this._skyboxProjection.clone();
 			inverse.invert();
 
-			var q:away.geom.Vector3D = inverse.transformVector(p);
+			var q:Vector3D = inverse.transformVector(p);
 
 			this._skyboxProjection.copyRowTo(3, p);
 
 			var a:number = (q.x*p.x + q.y*p.y + q.z*p.z + q.w*p.w)/(cx*q.x + cy*q.y + cz*q.z + cw*q.w);
 
-			this._skyboxProjection.copyRowFrom(2, new away.geom.Vector3D(cx*a, cy*a, cz*a, cw*a));
+			this._skyboxProjection.copyRowFrom(2, new Vector3D(cx*a, cy*a, cz*a, cw*a));
 		}
 
 		/**
 		 * Draw a list of renderables.
+		 *
 		 * @param renderables The renderables to draw.
 		 * @param entityCollector The EntityCollector containing all potentially visible information.
 		 */
-		private drawRenderables(renderable:away.pool.RenderableBase, entityCollector:away.traverse.ICollector, which:number)
+		private drawRenderables(renderable:RenderableBase, entityCollector:ICollector, which:number)
 		{
 			var numPasses:number;
 			var j:number;
-			var camera:away.entities.Camera = entityCollector.camera;
-			var renderable2:away.pool.RenderableBase;
+			var camera:Camera = entityCollector.camera;
+			var renderable2:RenderableBase;
 
 			while (renderable) {
 				this._activeMaterial = renderable.material;
@@ -319,7 +349,7 @@ module away.render
 
 				numPasses = this._activeMaterial._iNumPasses;
 
-				j = 0;
+				j = this._activeMaterial._iBaseScreenPassIndex; //skip any depth passes
 
 				do {
 					renderable2 = renderable;
@@ -327,16 +357,16 @@ module away.render
 					var rttMask:number = this._activeMaterial.iPassRendersToTexture(j)? 1 : 2;
 
 					if ((rttMask & which) != 0) {
-						this._activeMaterial.iActivatePass(j, this._pStageGL, camera);
+						this._activeMaterial.iActivatePass(j, this._pStage, camera);
 
 						do {
-							this._activeMaterial.iRenderPass(j, renderable2, this._pStageGL, entityCollector, this._pRttViewProjectionMatrix);
+							this._activeMaterial.iRenderPass(j, renderable2, this._pStage, entityCollector, this._pRttViewProjectionMatrix);
 
 							renderable2 = renderable2.next;
 
 						} while (renderable2 && renderable2.material == this._activeMaterial);
 
-						this._activeMaterial.iDeactivatePass(j, this._pStageGL);
+						this._activeMaterial.iDeactivatePass(j, this._pStage);
 
 					} else {
 						do {
@@ -353,7 +383,7 @@ module away.render
 		public dispose()
 		{
 			if (!this._shareContext)
-				this._pStageGL.dispose();
+				this._pStage.dispose();
 
 			this._pDepthRenderer.dispose();
 			this._pDistanceRenderer.dispose();
@@ -369,14 +399,14 @@ module away.render
 		/**
 		 *
 		 */
-		public pRenderDepthPrepass(entityCollector:away.traverse.EntityCollector)
+		public pRenderDepthPrepass(entityCollector:EntityCollector)
 		{
 			this._pDepthRenderer.disableColor = true;
 
 			if (this._pFilter3DRenderer) { //TODO
 //				this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
 //				this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-//				this._pDepthRenderer._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStageGL), this._pRttBufferManager.renderToTextureRect);
+//				this._pDepthRenderer._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
 			} else {
 				this._pDepthRenderer.textureRatioX = 1;
 				this._pDepthRenderer.textureRatioY = 1;
@@ -390,10 +420,10 @@ module away.render
 		/**
 		 *
 		 */
-		public pRenderSceneDepthToTexture(entityCollector:away.traverse.EntityCollector)
+		public pRenderSceneDepthToTexture(entityCollector:EntityCollector)
 		{
 			if (this._pDepthTextureInvalid || !this._pDepthRender)
-				this.initDepthTexture(this._pStageGL.contextGL);
+				this.initDepthTexture(<IContextStageGL> this._pStage.context);
 
 			this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
 			this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
@@ -407,35 +437,35 @@ module away.render
 		public pUpdateBackBuffer()
 		{
 			// No reason trying to configure back buffer if there is no context available.
-			// Doing this anyway (and relying on _stageGL to cache width/height for
+			// Doing this anyway (and relying on _stage to cache width/height for
 			// context does get available) means usesSoftwareRendering won't be reliable.
-			if (this._pStageGL.contextGL && !this._shareContext) {
+			if (this._pStage.context && !this._shareContext) {
 				if (this._width && this._height) {
-					this._pStageGL.configureBackBuffer(this._width, this._height, this._antiAlias, true);
+					this._pStage.configureBackBuffer(this._width, this._height, this._antiAlias, true);
 					this._pBackBufferInvalid = false;
 				}
 			}
 		}
 
-		public iSetStageGL(value:away.base.StageGL)
+		public iSetStage(value:Stage)
 		{
-			super.iSetStageGL(value);
+			super.iSetStage(value);
 
-			this._pDistanceRenderer.iSetStageGL(value);
-			this._pDepthRenderer.iSetStageGL(value);
+			this._pDistanceRenderer.iSetStage(value);
+			this._pDepthRenderer.iSetStage(value);
 		}
 
 		/**
 		 *
 		 */
-		private initDepthTexture(context:away.stagegl.IContext):void
+		private initDepthTexture(context:IContextStageGL):void
 		{
 			this._pDepthTextureInvalid = false;
 
 			if (this._pDepthRender)
 				this._pDepthRender.dispose();
 
-			this._pDepthRender = new away.textures.RenderTexture(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
+			this._pDepthRender = new RenderTexture(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
 		}
 	}
 }

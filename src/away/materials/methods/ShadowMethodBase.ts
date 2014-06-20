@@ -2,6 +2,17 @@
 
 module away.materials
 {
+	import LightBase								= away.base.LightBase;
+	import Stage									= away.base.Stage;
+	import Camera									= away.entities.Camera;
+	import DirectionalLight							= away.entities.DirectionalLight;
+	import PointLight								= away.entities.PointLight;
+	import AbstractMethodError						= away.errors.AbstractMethodError;
+	import RenderableBase							= away.pool.RenderableBase;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import CubeTextureBase							= away.textures.CubeTextureBase;
+	import Texture2DBase							= away.textures.Texture2DBase;
+
 	/**
 	 * ShadowMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
 	 */
@@ -14,9 +25,10 @@ module away.materials
 		 * Creates a new ShadowMethodBase object.
 		 * @param castingLight The light used to cast shadows.
 		 */
-		constructor(castingLight:away.lights.LightBase)
+		constructor(castingLight:LightBase)
 		{
-			this._pUsePoint = (castingLight instanceof away.lights.PointLight);
+			this._pUsePoint = (castingLight instanceof PointLight);
+
 			super(castingLight);
 		}
 
@@ -151,7 +163,7 @@ module away.materials
 		 */
 		public _pGetPlanarFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 			return "";
 		}
 
@@ -164,17 +176,17 @@ module away.materials
 		 */
 		public _pGetPointFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 			return "";
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iSetRenderState(vo:MethodVO, renderable:RenderableBase, stage:Stage, camera:Camera)
 		{
 			if (!this._pUsePoint)
-				(<away.lights.DirectionalShadowMapper> this._pShadowMapper).iDepthProjection.copyRawDataTo(vo.vertexData, vo.vertexConstantsIndex + 4, true);
+				(<DirectionalShadowMapper> this._pShadowMapper).iDepthProjection.copyRawDataTo(vo.vertexData, vo.vertexConstantsIndex + 4, true);
 		}
 
 		/**
@@ -195,15 +207,15 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
 			var fragmentData:Array<number> = vo.fragmentData;
 			var index:number /*int*/ = vo.fragmentConstantsIndex;
 
 			if (this._pUsePoint)
-				fragmentData[index + 4] = -Math.pow(1/((< away.lights.PointLight> this._pCastingLight).fallOff*this._pEpsilon), 2);
+				fragmentData[index + 4] = -Math.pow(1/((<PointLight> this._pCastingLight).fallOff*this._pEpsilon), 2);
 			else
-				vo.vertexData[vo.vertexConstantsIndex + 3] = -1/((<away.lights.DirectionalShadowMapper> this._pShadowMapper).depth*this._pEpsilon);
+				vo.vertexData[vo.vertexConstantsIndex + 3] = -1/((<DirectionalShadowMapper> this._pShadowMapper).depth*this._pEpsilon);
 
 			fragmentData[index + 5] = 1 - this._pAlpha;
 
@@ -213,16 +225,20 @@ module away.materials
 				fragmentData[index + 9] = pos.y;
 				fragmentData[index + 10] = pos.z;
 				// used to decompress distance
-				var f:number = (<away.lights.PointLight> this._pCastingLight).fallOff;
+				var f:number = (<PointLight> this._pCastingLight).fallOff;
 				fragmentData[index + 11] = 1/(2*f*f);
 			}
-			this._pCastingLight.shadowMapper.depthMap.activateTextureForStage(vo.texturesIndex, stageGL);
+
+			if (this._pCastingLight.shadowMapper.depthMap instanceof Texture2DBase)
+				(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex, <Texture2DBase> this._pCastingLight.shadowMapper.depthMap);
+			else if (this._pCastingLight.shadowMapper.depthMap instanceof CubeTextureBase)
+				(<IContextStageGL> stage.context).activateCubeTexture(vo.texturesIndex, <CubeTextureBase> this._pCastingLight.shadowMapper.depthMap);
 		}
 
 		/**
 		 * Sets the method state for cascade shadow mapping.
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivateForCascade(vo:MethodVO, stage:Stage)
 		{
 			throw new Error("This shadow method is incompatible with cascade shadows");
 		}

@@ -2,6 +2,10 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import Texture2DBase							= away.textures.Texture2DBase;
+
 	/**
 	 * DiffuseLightMapMethod provides a diffuse shading method that uses a light map to modulate the calculated diffuse
 	 * lighting. It is different from EffectLightMapMethod in that the latter modulates the entire calculated pixel color, rather
@@ -21,7 +25,7 @@ module away.materials
 		 */
 		public static ADD:string = "add";
 		
-		private _lightMapTexture:away.textures.Texture2DBase;
+		private _lightMapTexture:Texture2DBase;
 		private _blendMode:string;
 		private _useSecondaryUV:boolean;
 
@@ -33,7 +37,7 @@ module away.materials
 		 * @param useSecondaryUV Indicates whether the secondary UV set should be used to map the light map.
 		 * @param baseMethod The diffuse method used to calculate the regular diffuse-based lighting.
 		 */
-		constructor(lightMap:away.textures.Texture2DBase, blendMode:string = "multiply", useSecondaryUV:boolean = false, baseMethod:DiffuseBasicMethod = null)
+		constructor(lightMap:Texture2DBase, blendMode:string = "multiply", useSecondaryUV:boolean = false, baseMethod:DiffuseBasicMethod = null)
 		{
 			super(null, baseMethod);
 
@@ -66,21 +70,24 @@ module away.materials
 		{
 			if (value != DiffuseLightMapMethod.ADD && value != DiffuseLightMapMethod.MULTIPLY)
 				throw new Error("Unknown blendmode!");
+
 			if (this._blendMode == value)
 				return;
+
 			this._blendMode = value;
+
 			this.iInvalidateShaderProgram();
 		}
 
 		/**
 		 * The texture containing the light map data.
 		 */
-		public get lightMapTexture():away.textures.Texture2DBase
+		public get lightMapTexture():Texture2DBase
 		{
 			return this._lightMapTexture;
 		}
 		
-		public set lightMapTexture(value:away.textures.Texture2DBase)
+		public set lightMapTexture(value:Texture2DBase)
 		{
 			this._lightMapTexture = value;
 		}
@@ -88,10 +95,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
-			this._lightMapTexture.activateTextureForStage(vo.secondaryTexturesIndex, stageGL);
-			super.iActivate(vo, stageGL);
+			(<IContextStageGL> stage.context).activateTexture(vo.secondaryTexturesIndex, this._lightMapTexture);
+			super.iActivate(vo, stage);
 		}
 
 		/**

@@ -3,9 +3,13 @@
 module away.animators
 {
 	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
-	import StageGL							= away.base.StageGL;
+	import Stage							= away.base.Stage;
 	import Camera							= away.entities.Camera;
-	import MaterialPassBase					= away.materials.MaterialPassBase;
+	import Mesh								= away.entities.Mesh;
+	import AbstractMethodError				= away.errors.AbstractMethodError;
+	import AnimatorEvent					= away.events.AnimatorEvent;
+	import AssetType						= away.library.AssetType;
+	import IMaterialPass					= away.materials.IMaterialPass;
 	import RenderableBase					= away.pool.RenderableBase;
 
 	/**
@@ -39,14 +43,14 @@ module away.animators
 		private _broadcaster:away.utils.RequestAnimationFrame;
 		private _isPlaying:boolean;
 		private _autoUpdate:boolean = true;
-		private _startEvent:away.events.AnimatorEvent;
-		private _stopEvent:away.events.AnimatorEvent;
-		private _cycleEvent:away.events.AnimatorEvent;
+		private _startEvent:AnimatorEvent;
+		private _stopEvent:AnimatorEvent;
+		private _cycleEvent:AnimatorEvent;
 		private _time:number /*int*/ = 0;
 		private _playbackSpeed:number = 1;
 
 		public _pAnimationSet:IAnimationSet;
-		public _pOwners:Array<away.entities.Mesh> = new Array<away.entities.Mesh>();
+		public _pOwners:Array<away.entities.Mesh> = new Array<Mesh>();
 		public _pActiveNode:AnimationNodeBase;
 		public _pActiveState:IAnimationState;
 		public _pActiveAnimationName:string;
@@ -198,7 +202,7 @@ module away.animators
 			this._playbackSpeed = value;
 		}
 
-		public setRenderState(stageGL:StageGL, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera)
+		public setRenderState(stage:Stage, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera)
 		{
 			throw new away.errors.AbstractMethodError();
 		}
@@ -217,11 +221,11 @@ module away.animators
 
 			this._broadcaster.start();
 
-			if (!this.hasEventListener(away.events.AnimatorEvent.START))
+			if (!this.hasEventListener(AnimatorEvent.START))
 				return;
 
 			if (this._startEvent == null)
-				this._startEvent = new away.events.AnimatorEvent(away.events.AnimatorEvent.START, this);
+				this._startEvent = new AnimatorEvent(AnimatorEvent.START, this);
 
 			this.dispatchEvent(this._startEvent);
 		}
@@ -242,11 +246,11 @@ module away.animators
 
 			this._broadcaster.stop();
 
-			if (!this.hasEventListener(away.events.AnimatorEvent.STOP))
+			if (!this.hasEventListener(AnimatorEvent.STOP))
 				return;
 
 			if (this._stopEvent == null)
-				this._stopEvent = new away.events.AnimatorEvent(away.events.AnimatorEvent.STOP, this);
+				this._stopEvent = new AnimatorEvent(AnimatorEvent.STOP, this);
 
 			this.dispatchEvent(this._stopEvent);
 		}
@@ -277,7 +281,7 @@ module away.animators
 		 *
 		 * @private
 		 */
-		public addOwner(mesh:away.entities.Mesh)
+		public addOwner(mesh:Mesh)
 		{
 			this._pOwners.push(mesh);
 		}
@@ -287,7 +291,7 @@ module away.animators
 		 *
 		 * @private
 		 */
-		public removeOwner(mesh:away.entities.Mesh)
+		public removeOwner(mesh:Mesh)
 		{
 			this._pOwners.splice(this._pOwners.indexOf(mesh), 1);
 		}
@@ -334,9 +338,9 @@ module away.animators
 		 */
 		public dispatchCycleEvent()
 		{
-			if (this.hasEventListener(away.events.AnimatorEvent.CYCLE_COMPLETE)) {
+			if (this.hasEventListener(AnimatorEvent.CYCLE_COMPLETE)) {
 				if (this._cycleEvent == null)
-					this._cycleEvent = new away.events.AnimatorEvent(away.events.AnimatorEvent.CYCLE_COMPLETE, this);
+					this._cycleEvent = new AnimatorEvent(AnimatorEvent.CYCLE_COMPLETE, this);
 
 				this.dispatchEvent(this._cycleEvent);
 			}
@@ -347,7 +351,7 @@ module away.animators
 		 */
 		public clone():AnimatorBase
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 		}
 
 		/**
@@ -360,9 +364,9 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public testGPUCompatibility(pass:MaterialPassBase)
+		public testGPUCompatibility(pass:IMaterialPass)
 		{
-			throw new away.errors.AbstractMethodError();
+			throw new AbstractMethodError();
 		}
 
 		/**
@@ -370,7 +374,7 @@ module away.animators
 		 */
 		public get assetType():string
 		{
-			return away.library.AssetType.ANIMATOR;
+			return AssetType.ANIMATOR;
 		}
 
 

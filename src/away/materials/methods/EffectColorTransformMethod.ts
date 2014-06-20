@@ -2,7 +2,7 @@
 module away.materials
 {
 	//import away.arcane;
-	//import away.base.StageGL;
+	//import away.base.Stage;
 	//import away.materials.compilation.ShaderRegisterCache;
 	//import away.materials.compilation.ShaderRegisterElement;
 
@@ -60,7 +60,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:away.base.Stage)
 		{
 			var inv:number = 1/0xff;
 			var index:number = vo.fragmentConstantsIndex;

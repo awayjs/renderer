@@ -6,7 +6,7 @@ module away.animators
 	import Camera							= away.entities.Camera;
 	import ContextGLVertexBufferFormat		= away.stagegl.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
-	import StageGL							= away.base.StageGL;
+	import Stage							= away.base.Stage;
 	
 	/**
 	 * ...
@@ -60,7 +60,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+		public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{
 			if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
 				this._pUpdateDynamicProperties(animationSubGeometry);
@@ -70,7 +70,7 @@ module away.animators
 			if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode.GLOBAL)
 				animationRegisterCache.setVertexConst(index, this._rotationalVelocityData.x, this._rotationalVelocityData.y, this._rotationalVelocityData.z, this._rotationalVelocityData.w);
 			else
-				animationSubGeometry.activateVertexBuffer(index, this._particleRotationalVelocityNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+				animationSubGeometry.activateVertexBuffer(index, this._particleRotationalVelocityNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 		}
 		
 		private updateRotationalVelocityData()

@@ -2,6 +2,11 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import Camera									= away.entities.Camera;
+	import RenderableBase							= away.pool.RenderableBase;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import Texture2DBase							= away.textures.Texture2DBase;
 
 	/**
 	 * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
@@ -9,7 +14,7 @@ module away.materials
 	export class AmbientBasicMethod extends ShadingMethodBase
 	{
 		private _useTexture:boolean = false;
-		private _texture:away.textures.Texture2DBase;
+		private _texture:Texture2DBase;
 
 		public _pAmbientInputRegister:ShaderRegisterElement;
 
@@ -78,12 +83,12 @@ module away.materials
 		/**
 		 * The bitmapData to use to define the diffuse reflection color per texel.
 		 */
-		public get texture():away.textures.Texture2DBase
+		public get texture():Texture2DBase
 		{
 			return this._texture;
 		}
 
-		public set texture(value:away.textures.Texture2DBase)
+		public set texture(value:Texture2DBase)
 		{
 
 			var b:boolean = ( value != null );
@@ -156,13 +161,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
 			if (this._useTexture) {
 
-				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.stagegl.ContextGLWrapMode.REPEAT:away.stagegl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.stagegl.ContextGLTextureFilter.LINEAR:away.stagegl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.stagegl.ContextGLMipFilter.MIPLINEAR:away.stagegl.ContextGLMipFilter.MIPNONE);
-
-				this._texture.activateTextureForStage(vo.texturesIndex, stageGL);
+				(<IContextStageGL> stage.context).setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.stagegl.ContextGLWrapMode.REPEAT:away.stagegl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.stagegl.ContextGLTextureFilter.LINEAR:away.stagegl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.stagegl.ContextGLMipFilter.MIPLINEAR:away.stagegl.ContextGLMipFilter.MIPNONE);
+				(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex, this._texture);
 
 			}
 
@@ -181,7 +185,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iSetRenderState(vo:MethodVO, renderable:RenderableBase, stage:Stage, camera:Camera)
 		{
 			this.updateAmbient();
 

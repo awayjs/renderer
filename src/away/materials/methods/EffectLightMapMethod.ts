@@ -2,6 +2,10 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import Texture2DBase							= away.textures.Texture2DBase;
+
 	/**
 	 * EffectLightMapMethod provides a method that allows applying a light map texture to the calculated pixel colour.
 	 * It is different from DiffuseLightMapMethod in that the latter only modulates the diffuse shading value rather
@@ -19,7 +23,7 @@ module away.materials
 		 */
 		public static ADD:string = "add";
 		
-		private _texture:away.textures.Texture2DBase;
+		private _texture:Texture2DBase;
 		
 		private _blendMode:string;
 		private _useSecondaryUV:boolean;
@@ -31,7 +35,7 @@ module away.materials
 		 * @param blendMode The blend mode with which the light map should be applied to the lighting result.
 		 * @param useSecondaryUV Indicates whether the secondary UV set should be used to map the light map.
 		 */
-		constructor(texture:away.textures.Texture2DBase, blendMode:string = "multiply", useSecondaryUV:boolean = false)
+		constructor(texture:Texture2DBase, blendMode:string = "multiply", useSecondaryUV:boolean = false)
 		{
 			super();
 			this._useSecondaryUV = useSecondaryUV;
@@ -72,12 +76,12 @@ module away.materials
 		/**
 		 * The texture containing the light map.
 		 */
-		public get texture():away.textures.Texture2DBase
+		public get texture():Texture2DBase
 		{
 			return this._texture;
 		}
 		
-		public set texture(value:away.textures.Texture2DBase)
+		public set texture(value:Texture2DBase)
 		{
 			if (value.hasMipmaps != this._texture.hasMipmaps || value.format != this._texture.format)
 				this.iInvalidateShaderProgram();
@@ -87,10 +91,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:away.base.Stage)
 		{
-			this._texture.activateTextureForStage(vo.texturesIndex, stageGL);
-			super.iActivate(vo, stageGL);
+			(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex, this._texture);
+
+			super.iActivate(vo, stage);
 		}
 
 		/**

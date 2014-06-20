@@ -55,7 +55,7 @@ module away.materials
 			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
 
 			code += "m44 " + temp + ", " + targetReg + ", " + colorMultReg + "\n" +
-				"add " + targetReg + ", " + temp + ", " + colorOffsetReg + "\n";
+					"add " + targetReg + ", " + temp + ", " + colorOffsetReg + "\n";
 			
 			return code;
 		}
@@ -63,11 +63,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:away.base.Stage)
 		{
 			var matrix:Array<number> = this._matrix;
 			var index:number /*int*/ = vo.fragmentConstantsIndex;
 			var data:Array<number> = vo.fragmentData;
+
 			// r
 			data[index] = matrix[0];
 			data[index + 1] = matrix[1];

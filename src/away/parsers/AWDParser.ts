@@ -14,10 +14,13 @@ module away.parsers
 	import VertexAnimationSet				= away.animators.VertexAnimationSet;
 	import VertexAnimator					= away.animators.VertexAnimator;
 	import VertexClipNode					= away.animators.VertexClipNode;
-	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
-	import Geometry							= away.base.Geometry;
 	import BlendMode						= away.base.BlendMode;
+	import Geometry							= away.base.Geometry;
+	import LightBase						= away.base.LightBase;
+	import TriangleSubGeometry				= away.base.TriangleSubGeometry;
 	import Mesh								= away.entities.Mesh;
+	import DirectionalLight					= away.entities.DirectionalLight;
+	import PointLight						= away.entities.PointLight;
 	import ColorTransform					= away.geom.ColorTransform;
 	import Matrix3D							= away.geom.Matrix3D;
 	import AssetType						= away.library.AssetType;
@@ -52,9 +55,16 @@ module away.parsers
 	import SpecularCelMethod				= away.materials.SpecularCelMethod;
 	import SpecularPhongMethod				= away.materials.SpecularPhongMethod;
 	import ShadowNearMethod					= away.materials.ShadowNearMethod;
+	import CubeMapShadowMapper				= away.materials.CubeMapShadowMapper;
+	import DirectionalShadowMapper			= away.materials.DirectionalShadowMapper;
+	import ShadowMapperBase					= away.materials.ShadowMapperBase;
 	import ShadowMethodBase					= away.materials.ShadowMethodBase;
 	import ShadowSoftMethod					= away.materials.ShadowSoftMethod;
 	import StaticLightPicker				= away.materials.StaticLightPicker;
+	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
+	import ParserBase						= away.parsers.ParserBase;
+	import ParserUtils						= away.parsers.ParserUtils;
+	import ResourceDependency				= away.parsers.ResourceDependency;
 	import BitmapCubeTexture				= away.textures.BitmapCubeTexture;
 	import BitmapTexture					= away.textures.BitmapTexture;
 	import CubeTextureBase					= away.textures.CubeTextureBase;
@@ -62,7 +72,7 @@ module away.parsers
 	import ImageTexture						= away.textures.ImageTexture;
 	import Texture2DBase					= away.textures.Texture2DBase;
 	import TextureProxyBase					= away.textures.TextureProxyBase;
-	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
+	import ByteArray						= away.utils.ByteArray;
 
 	/**
 	 * AWDParser provides a parser for the AWD data type.
@@ -71,11 +81,11 @@ module away.parsers
 	{
 		//set to "true" to have some console.logs in the Console
 		private _debug:boolean = false;
-		private _byteData:away.utils.ByteArray;
+		private _byteData:ByteArray;
 		private _startedParsing:boolean = false;
 		private _cur_block_id:number;
 		private _blocks:Array<AWDBlock>;
-		private _newBlockBytes:away.utils.ByteArray;
+		private _newBlockBytes:ByteArray;
 		private _version:Array<number>;
 		private _compression:number;
 		private _accuracyOnBlocks:boolean;
@@ -88,7 +98,7 @@ module away.parsers
 		private _streaming:boolean;
 		private _texture_users:Object = {};
 		private _parsed_header:boolean = false;
-		private _body:away.utils.ByteArray;
+		private _body:ByteArray;
 		private _defaultTexture:BitmapTexture;     // HTML IMAGE TEXTURE >? !
 		private _cubeTextures:Array<any>;
 		private _defaultBitmapMaterial:TriangleMaterial;
@@ -185,7 +195,7 @@ module away.parsers
 		/**
 		 * @inheritDoc
 		 */
-		public _iResolveDependency(resourceDependency:away.parsers.ResourceDependency):void
+		public _iResolveDependency(resourceDependency:ResourceDependency):void
 		{
 			// this will be called when Dependency has finished loading.
 			// the Assets waiting for this Bitmap, can be Texture or CubeTexture.
@@ -267,7 +277,7 @@ module away.parsers
 		/**
 		 * @inheritDoc
 		 */
-		public _iResolveDependencyFailure(resourceDependency:away.parsers.ResourceDependency):void
+		public _iResolveDependencyFailure(resourceDependency:ResourceDependency):void
 		{
 			//not used - if a dependcy fails, the awaiting Texture or CubeTexture will never be finalized, and the default-bitmaps will be used.
 			// this means, that if one Bitmap of a CubeTexture fails, the CubeTexture will have the DefaultTexture applied for all six Bitmaps.
@@ -278,7 +288,7 @@ module away.parsers
 		 *
 		 * @param resourceDependency The dependency to be resolved.
 		 */
-		public _iResolveDependencyName(resourceDependency:away.parsers.ResourceDependency, asset:away.library.IAsset):string
+		public _iResolveDependencyName(resourceDependency:ResourceDependency, asset:away.library.IAsset):string
 		{
 			var oldName:string = asset.name;
 
@@ -338,14 +348,14 @@ module away.parsers
 					/*
 					 case AWDParser.DEFLATE:
 
-					 this._body = new away.utils.ByteArray();
+					 this._body = new ByteArray();
 					 this._byteData.readBytes(this._body, 0, this._byteData.getBytesAvailable());
 					 this._body.uncompress();
 
 					 break;
 					 case AWDParser.LZMA:
 
-					 this._body = new away.utils.ByteArray();
+					 this._body = new ByteArray();
 					 this._byteData.readBytes(this._body, 0, this._byteData.getBytesAvailable());
 					 this._body.uncompress(COMPRESSIONMODE_LZMA);
 
@@ -376,9 +386,9 @@ module away.parsers
 				// Return complete status
 				if (this._body.getBytesAvailable() == 0) {
 					this.dispose();
-					return  away.parsers.ParserBase.PARSING_DONE;
+					return  ParserBase.PARSING_DONE;
 				} else {
-					return  away.parsers.ParserBase.MORE_TO_PARSE;
+					return  ParserBase.MORE_TO_PARSE;
 				}
 			} else {
 
@@ -395,7 +405,7 @@ module away.parsers
 
 				}
 				// Error - most likely _body not set because we do not support compression.
-				return  away.parsers.ParserBase.PARSING_DONE;
+				return  ParserBase.PARSING_DONE;
 
 			}
 
@@ -471,7 +481,7 @@ module away.parsers
 				this._body.position += this._body.getBytesAvailable();
 				return;
 			}
-			this._newBlockBytes = new away.utils.ByteArray();
+			this._newBlockBytes = new ByteArray();
 
 
 			this._body.readBytes(this._newBlockBytes, 0, len);
@@ -1060,8 +1070,8 @@ module away.parsers
 		//Block ID = 41
 		private parseLight(blockID:number):void
 		{
-			var light:away.lights.LightBase;
-			var newShadowMapper:away.lights.ShadowMapperBase;
+			var light:LightBase;
+			var newShadowMapper:ShadowMapperBase;
 
 			var par_id:number = this._newBlockBytes.readUnsignedInt();
 			var mtx:Matrix3D = this.parseMatrix3D();
@@ -1074,14 +1084,14 @@ module away.parsers
 			var shadowMapperTypes:Array<string> = ["No ShadowMapper", "DirectionalShadowMapper", "NearDirectionalShadowMapper", "CascadeShadowMapper", "CubeMapShadowMapper"];
 
 			if (lightType == 1) {
-				light = new away.lights.PointLight();
+				light = new PointLight();
 
-				(<away.lights.PointLight> light).radius = props.get(1, 90000);
-				(<away.lights.PointLight> light).fallOff = props.get(2, 100000);
+				(<PointLight> light).radius = props.get(1, 90000);
+				(<PointLight> light).fallOff = props.get(2, 100000);
 
 				if (shadowMapperType > 0) {
 					if (shadowMapperType == 4) {
-						newShadowMapper = new away.lights.CubeMapShadowMapper();
+						newShadowMapper = new CubeMapShadowMapper();
 					}
 				}
 
@@ -1091,11 +1101,11 @@ module away.parsers
 
 			if (lightType == 2) {
 
-				light = new away.lights.DirectionalLight(props.get(21, 0), props.get(22, -1), props.get(23, 1));
+				light = new DirectionalLight(props.get(21, 0), props.get(22, -1), props.get(23, 1));
 
 				if (shadowMapperType > 0) {
 					if (shadowMapperType == 1) {
-						newShadowMapper = new away.lights.DirectionalShadowMapper();
+						newShadowMapper = new DirectionalShadowMapper();
 					}
 
 					//if (shadowMapperType == 2)
@@ -1114,7 +1124,7 @@ module away.parsers
 
 			// if a shadowMapper has been created, adjust the depthMapSize if needed, assign to light and set castShadows to true
 			if (newShadowMapper) {
-				if (newShadowMapper instanceof away.lights.CubeMapShadowMapper) {
+				if (newShadowMapper instanceof CubeMapShadowMapper) {
 					if (props.get(10, 1) != 1) {
 						newShadowMapper.depthMapSize = this._depthSizeDic[props.get(10, 1)];
 					}
@@ -1224,7 +1234,7 @@ module away.parsers
 		{
 			var name:string = this.parseVarStr();
 			var numLights:number = this._newBlockBytes.readUnsignedShort();
-			var lightsArray:Array<away.lights.LightBase> = new Array<away.lights.LightBase>();
+			var lightsArray:Array<LightBase> = new Array<LightBase>();
 			var k:number = 0;
 			var lightID:number = 0;
 
@@ -1236,8 +1246,8 @@ module away.parsers
 				returnedArrayLight = this.getAssetByID(lightID, [AssetType.LIGHT])
 
 				if (returnedArrayLight[0]) {
-					lightsArray.push(<away.lights.LightBase> returnedArrayLight[1]);
-					lightsArrayNames.push(( <away.lights.LightBase> returnedArrayLight[1]).name);
+					lightsArray.push(<LightBase> returnedArrayLight[1]);
+					lightsArrayNames.push(( <LightBase> returnedArrayLight[1]).name);
 
 				} else {
 					this._blocks[blockID].addError("Could not find a Light Nr " + k + " (ID = " + lightID + " ) for this LightPicker");
@@ -1627,8 +1637,8 @@ module away.parsers
 			} else {
 				data_len = this._newBlockBytes.readUnsignedInt();
 
-				var data:away.utils.ByteArray;
-				data = new away.utils.ByteArray();
+				var data:ByteArray;
+				data = new ByteArray();
 				this._newBlockBytes.readBytes(data, 0, data_len);
 
 				//
@@ -1637,7 +1647,7 @@ module away.parsers
 				// Converting data to image here instead of parser - fix FireFox bug where image width / height is 0 when created from data
 				// This gives the browser time to initialise image width / height.
 
-				this._pAddDependency(this._cur_block_id.toString(), null, false, away.parsers.ParserUtils.byteArrayToImage(data), true);
+				this._pAddDependency(this._cur_block_id.toString(), null, false, ParserUtils.byteArrayToImage(data), true);
 				//this._pAddDependency(this._cur_block_id.toString(), null, false, data, true);
 
 			}
@@ -1684,12 +1694,12 @@ module away.parsers
 				} else {
 
 					data_len = this._newBlockBytes.readUnsignedInt();
-					var data:away.utils.ByteArray;
-					data = new away.utils.ByteArray();
+					var data:ByteArray;
+					data = new ByteArray();
 
 					this._newBlockBytes.readBytes(data, 0, data_len);
 
-					this._pAddDependency(this._cur_block_id.toString() + "#" + i, null, false, away.parsers.ParserUtils.byteArrayToImage(data), true);
+					this._pAddDependency(this._cur_block_id.toString() + "#" + i, null, false, ParserUtils.byteArrayToImage(data), true);
 				}
 			}
 
@@ -1739,7 +1749,7 @@ module away.parsers
 				return;
 			}
 
-			asset = this.parseShadowMethodList(<away.lights.LightBase> returnedArray[1], blockID);
+			asset = this.parseShadowMethodList(<LightBase> returnedArray[1], blockID);
 
 			if (!asset)
 				return;
@@ -1749,7 +1759,7 @@ module away.parsers
 			this._blocks[blockID].data = asset;
 
 			if (this._debug) {
-				console.log("Parsed a ShadowMapMethodMethod: Name = " + asset.name + " | Type = " + asset + " | Light-Name = ", ( <away.lights.LightBase> returnedArray[1] ).name);
+				console.log("Parsed a ShadowMapMethodMethod: Name = " + asset.name + " | Type = " + asset + " | Light-Name = ", ( <LightBase> returnedArray[1] ).name);
 			}
 		}
 
@@ -1839,7 +1849,7 @@ module away.parsers
 		//--Parser UTILS---------------------------------------------------------------------------
 
 		// this functions reads and creates a ShadowMethodMethod
-		private parseShadowMethodList(light:away.lights.LightBase, blockID:number):ShadowMethodBase
+		private parseShadowMethodList(light:LightBase, blockID:number):ShadowMethodBase
 		{
 
 			var methodType:number = this._newBlockBytes.readUnsignedShort();
@@ -1869,7 +1879,7 @@ module away.parsers
 					break;
 				case 1101: //ShadowFilteredMethod
 
-					shadowMethod = new ShadowFilteredMethod(<away.lights.DirectionalLight> light);
+					shadowMethod = new ShadowFilteredMethod(<DirectionalLight> light);
 					(<ShadowFilteredMethod> shadowMethod).alpha = props.get(101, 1);
 					(<ShadowFilteredMethod> shadowMethod).epsilon = props.get(102, 0.002);
 					break;
@@ -1877,7 +1887,7 @@ module away.parsers
 				case 1102: //ShadowDitheredMethod
 
 
-					shadowMethod = new ShadowDitheredMethod(<away.lights.DirectionalLight> light, <number> props.get(201, 5));
+					shadowMethod = new ShadowDitheredMethod(<DirectionalLight> light, <number> props.get(201, 5));
 					(<ShadowDitheredMethod> shadowMethod).alpha = props.get(101, 1);
 					(<ShadowDitheredMethod> shadowMethod).epsilon = props.get(102, 0.002);
 					(<ShadowDitheredMethod> shadowMethod).range = props.get(103, 1);
@@ -1885,7 +1895,7 @@ module away.parsers
 					break;
 				case 1103: //ShadowSoftMethod
 
-					shadowMethod = new ShadowSoftMethod(<away.lights.DirectionalLight> light, <number> props.get(201, 5));
+					shadowMethod = new ShadowSoftMethod(<DirectionalLight> light, <number> props.get(201, 5));
 					(<ShadowSoftMethod> shadowMethod).alpha = props.get(101, 1);
 					(<ShadowSoftMethod> shadowMethod).epsilon = props.get(102, 0.002);
 					(<ShadowSoftMethod> shadowMethod).range = props.get(103, 1);

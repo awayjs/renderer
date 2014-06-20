@@ -18,7 +18,7 @@ module away.pool
 		private _subGeometry:away.base.SubGeometryBase;
 		private _geometryDirty:boolean = true;
 		private _indexData:away.pool.IndexData;
-		private _indexDataDirty:boolean;
+		private _indexDataDirty:boolean = true;
 		private _vertexData:Object = new Object();
 		public _pVertexDataDirty:Object = new Object();
 		private _vertexOffset:Object = new Object();
@@ -43,9 +43,6 @@ module away.pool
 		 */
 		public get overflow():RenderableBase
 		{
-			if (this._geometryDirty)
-				this._updateGeometry();
-
 			if (this._indexDataDirty)
 				this._updateIndexData();
 
@@ -121,6 +118,9 @@ module away.pool
 		 */
 		public getVertexData(dataType:string):away.pool.VertexData
 		{
+			if (this._indexDataDirty)
+				this._updateIndexData();
+
 			if (this._pVertexDataDirty[dataType])
 				this._updateVertexData(dataType);
 
@@ -132,6 +132,9 @@ module away.pool
 		 */
 		public getVertexOffset(dataType:string):number
 		{
+			if (this._indexDataDirty)
+				this._updateIndexData();
+
 			if (this._pVertexDataDirty[dataType])
 				this._updateVertexData(dataType);
 
@@ -184,6 +187,12 @@ module away.pool
 		public invalidateGeometry()
 		{
 			this._geometryDirty = true;
+
+			//invalidate indices
+			if (this._level == 0)
+				this._indexDataDirty = true;
+
+			//invalidate vertices
 
 			if (this._overflow)
 				this._overflow.invalidateGeometry();
@@ -282,10 +291,6 @@ module away.pool
 //			}
 
 			this._geometryDirty = false;
-
-			//invalidate indices
-			if (this._level == 0)
-				this._indexDataDirty = true;
 
 			//specific vertex data types have to be invalidated in the specific renderable
 		}

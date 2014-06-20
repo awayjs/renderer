@@ -2,7 +2,7 @@
 
 module away.materials
 {
-	import StageGL = away.base.StageGL;
+	import Stage = away.base.Stage;
 	/**
 	 * EffectFogMethod provides a method to add distance-based fog to a material.
 	 */
@@ -94,7 +94,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*int*/ = vo.fragmentConstantsIndex;
@@ -118,9 +118,12 @@ module away.materials
 			var code:string = "";
 			vo.fragmentConstantsIndex = fogColor.index*4;
 
-			code += "sub " + temp2 + ".w, " + this._sharedRegisters.projectionFragment + ".z, " + fogData + ".x          \n" + "mul " + temp2 + ".w, " + temp2 + ".w, " + fogData + ".y					\n" + "sat " + temp2 + ".w, " + temp2 + ".w										\n" + "sub " + temp + ", " + fogColor + ", " + targetReg + "\n" + 			// (fogColor- col)
-				"mul " + temp + ", " + temp + ", " + temp2 + ".w					\n" +			// (fogColor- col)*fogRatio
-				"add " + targetReg + ", " + targetReg + ", " + temp + "\n"; // fogRatio*(fogColor- col) + col
+			code += "sub " + temp2 + ".w, " + this._sharedRegisters.projectionFragment + ".z, " + fogData + ".x\n" +
+					"mul " + temp2 + ".w, " + temp2 + ".w, " + fogData + ".y\n" +
+					"sat " + temp2 + ".w, " + temp2 + ".w\n" +
+					"sub " + temp + ", " + fogColor + ", " + targetReg + "\n" + // (fogColor- col)
+					"mul " + temp + ", " + temp + ", " + temp2 + ".w\n" + // (fogColor- col)*fogRatio
+					"add " + targetReg + ", " + targetReg + ", " + temp + "\n"; // fogRatio*(fogColor- col) + col
 
 			regCache.removeFragmentTempUsage(temp);
 

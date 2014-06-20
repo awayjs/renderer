@@ -7,7 +7,7 @@ module away.animators
 	import ContextGLVertexBufferFormat		= away.stagegl.ContextGLVertexBufferFormat
 	import Matrix3D							= away.geom.Matrix3D;
 	import Vector3D							= away.geom.Vector3D;
-	import StageGL							= away.base.StageGL;
+	import Stage							= away.base.Stage;
 	
 	/**
 	 * ...
@@ -101,15 +101,15 @@ module away.animators
 			this.updateOrbitData();
 		}
 		
-		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+		public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{
 			var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleOrbitNode.ORBIT_INDEX);
 			
 			if (this._particleOrbitNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
 				if (this._usesPhase)
-					animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+					animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 				else
-					animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+					animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 			} else
 				animationRegisterCache.setVertexConst(index, this._orbitData.x, this._orbitData.y, this._orbitData.z, this._orbitData.w);
 			

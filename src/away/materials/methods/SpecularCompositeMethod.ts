@@ -2,7 +2,7 @@
 
 module away.materials
 {
-	import StageGL                    		= away.base.StageGL;
+	import Stage                    		= away.base.Stage;
 	import Texture2DBase					= away.textures.Texture2DBase;
 	import Delegate							= away.utils.Delegate;
 
@@ -129,17 +129,17 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
-			this._baseMethod.iActivate(vo, stageGL);
+			this._baseMethod.iActivate(vo, stage);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(vo:MethodVO, stageGL:StageGL)
+		public iDeactivate(vo:MethodVO, stage:Stage)
 		{
-			this._baseMethod.iDeactivate(vo, stageGL);
+			this._baseMethod.iDeactivate(vo, stage);
 		}
 
 		/**

@@ -2,12 +2,9 @@
 
 module away.materials
 {
-	//import away.*;
-	//import away.managers.*;
-	//import away.materials.compilation.*;
-	//import away.textures.*;
-
-	//use namespace arcane;
+	import Stage									= away.base.Stage;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import Texture2DBase							= away.textures.Texture2DBase;
 
 	/**
 	 * SpecularBasicMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
@@ -21,7 +18,7 @@ module away.materials
 		public _pSpecularTexData:ShaderRegisterElement;
 		public _pSpecularDataRegister:ShaderRegisterElement;
 
-		private _texture:away.textures.Texture2DBase;
+		private _texture:Texture2DBase;
 
 		private _gloss:number = 50;
 		private _specular:number = 1;
@@ -106,19 +103,18 @@ module away.materials
 		 * in the green channel. You can use SpecularBitmapTexture if you want to easily set specular and gloss maps
 		 * from grayscale images, but prepared images are preferred.
 		 */
-		public get texture():away.textures.Texture2DBase
+		public get texture():Texture2DBase
 		{
 			return this._texture;
 		}
 
-		public set texture(value:away.textures.Texture2DBase)
+		public set texture(value:Texture2DBase)
 		{
-
 			var b:boolean = ( value != null );
 
-			if (b != this._pUseTexture || (value && this._texture && (value.hasMipmaps != this._texture.hasMipmaps || value.format != this._texture.format))) {
+			if (b != this._pUseTexture || (value && this._texture && (value.hasMipmaps != this._texture.hasMipmaps || value.format != this._texture.format)))
 				this.iInvalidateShaderProgram();
-			}
+
 			this._pUseTexture = b;
 			this._texture = value;
 
@@ -163,7 +159,6 @@ module away.materials
 			this._pIsFirstLight = true;
 
 			if (vo.numLights > 0) {
-
 				this._pSpecularDataRegister = regCache.getFreeFragmentConstant();
 				vo.fragmentConstantsIndex = this._pSpecularDataRegister.index*4;
 
@@ -179,7 +174,6 @@ module away.materials
 
 					this._pSpecularTextureRegister = null;
 				}
-
 
 				this._pTotalLightColorReg = regCache.getFreeFragmentVectorTemp();
 				regCache.addFragmentTempUsages(this._pTotalLightColorReg, 1);
@@ -197,67 +191,41 @@ module away.materials
 			var t:ShaderRegisterElement;
 
 			if (this._pIsFirstLight) {
-
 				t = this._pTotalLightColorReg;
-
 			} else {
-
 				t = regCache.getFreeFragmentVectorTemp();
 				regCache.addFragmentTempUsages(t, 1);
-
 			}
 
 			var viewDirReg:ShaderRegisterElement = this._sharedRegisters.viewDirFragment;
 			var normalReg:ShaderRegisterElement = this._sharedRegisters.normalFragment;
 
 			// blinn-phong half vector model
-
-			//TODO: AGAL <> GLSL
-
-			code += "add " + t + ", " + lightDirReg + ", " + viewDirReg + "\n" + "nrm " + t + ".xyz, " + t + "\n" + "dp3 " + t + ".w, " + normalReg + ", " + t + "\n" + "sat " + t + ".w, " + t + ".w\n";
-
+			code += "add " + t + ", " + lightDirReg + ", " + viewDirReg + "\n" +
+					"nrm " + t + ".xyz, " + t + "\n" +
+					"dp3 " + t + ".w, " + normalReg + ", " + t + "\n" +
+					"sat " + t + ".w, " + t + ".w\n";
 
 			if (this._pUseTexture) {
-
-				//TODO: AGAL <> GLSL
-
 				// apply gloss modulation from texture
-				code += "mul " + this._pSpecularTexData + ".w, " + this._pSpecularTexData + ".y, " + this._pSpecularDataRegister + ".w\n" + "pow " + t + ".w, " + t + ".w, " + this._pSpecularTexData + ".w\n";
-
-
+				code += "mul " + this._pSpecularTexData + ".w, " + this._pSpecularTexData + ".y, " + this._pSpecularDataRegister + ".w\n" +
+						"pow " + t + ".w, " + t + ".w, " + this._pSpecularTexData + ".w\n";
 			} else {
-
-				//TODO: AGAL <> GLSL
-
 				code += "pow " + t + ".w, " + t + ".w, " + this._pSpecularDataRegister + ".w\n";
-
-
 			}
-
 
 			// attenuate
-			if (vo.useLightFallOff) {
-
-				//TODO: AGAL <> GLSL
+			if (vo.useLightFallOff)
 				code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
-
-
-			}
-
 
 			if (this._iModulateMethod != null)
 				code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
 
-
-			//TODO: AGAL <> GLSL
 			code += "mul " + t + ".xyz, " + lightColReg + ", " + t + ".w\n";
 
 			if (!this._pIsFirstLight) {
-				//TODO: AGAL <> GLSL
 				code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
-
 				regCache.removeFragmentTempUsage(t);
-
 			}
 
 			this._pIsFirstLight = false;
@@ -275,44 +243,34 @@ module away.materials
 
 			// write in temporary if not first light, so we can add to total diffuse colour
 			if (this._pIsFirstLight) {
-
 				t = this._pTotalLightColorReg;
-
 			} else {
-
 				t = regCache.getFreeFragmentVectorTemp();
 				regCache.addFragmentTempUsages(t, 1);
-
 			}
 
 			var normalReg:ShaderRegisterElement = this._sharedRegisters.normalFragment;
 			var viewDirReg:ShaderRegisterElement = this._sharedRegisters.viewDirFragment;
 
-			//TODO: AGAL <> GLSL
-
-			code += "dp3 " + t + ".w, " + normalReg + ", " + viewDirReg + "\n" + "add " + t + ".w, " + t + ".w, " + t + ".w\n" + "mul " + t + ", " + t + ".w, " + normalReg + "\n" + "sub " + t + ", " + t + ", " + viewDirReg + "\n" + "tex " + t + ", " + t + ", " + cubeMapReg + " <cube," + (vo.useSmoothTextures? "linear":"nearest") + ",miplinear>\n" + "mul " + t + ".xyz, " + t + ", " + weightRegister + "\n";
-
+			code += "dp3 " + t + ".w, " + normalReg + ", " + viewDirReg + "\n" +
+					"add " + t + ".w, " + t + ".w, " + t + ".w\n" +
+					"mul " + t + ", " + t + ".w, " + normalReg + "\n" +
+					"sub " + t + ", " + t + ", " + viewDirReg + "\n" +
+					"tex " + t + ", " + t + ", " + cubeMapReg + " <cube," + (vo.useSmoothTextures? "linear":"nearest") + ",miplinear>\n" +
+					"mul " + t + ".xyz, " + t + ", " + weightRegister + "\n";
 
 			if (this._iModulateMethod != null)
 				code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
 
 			/*
-			 if (this._iModulateMethod!= null)
-			 {
-
-			 //TODO: AGAL <> GLSL
-			 code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
-
+			 if (this._iModulateMethod!= null) {
+			 	code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
 			 }
 			 */
 
 			if (!this._pIsFirstLight) {
-
-				//TODO: AGAL <> GLSL
 				code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
-
 				regCache.removeFragmentTempUsage(t);
-
 			}
 
 			this._pIsFirstLight = false;
@@ -330,32 +288,17 @@ module away.materials
 			if (vo.numLights == 0)
 				return code;
 
-			if (this._shadowRegister) {
-
-				//TODO: AGAL <> GLSL
+			if (this._shadowRegister)
 				code += "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + this._shadowRegister + ".w\n";
 
-			}
-
-
 			if (this._pUseTexture) {
-
 				// apply strength modulation from texture
-
-				//TODO: AGAL <> GLSL
 				code += "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + this._pSpecularTexData + ".x\n";
-
 				regCache.removeFragmentTempUsage(this._pSpecularTexData);
-
-
 			}
 
 			// apply material's specular reflection
-
-			//TODO: AGAL <> GLSL
-
 			code += "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + this._pSpecularDataRegister + "\n" + "add " + targetReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n";
-
 			regCache.removeFragmentTempUsage(this._pTotalLightColorReg);
 
 			return code;
@@ -364,18 +307,14 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
-			//var context:ContextGL = stageGL._contextGL;
-
 			if (vo.numLights == 0)
 				return;
 
 			if (this._pUseTexture) {
-
-				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.stagegl.ContextGLWrapMode.REPEAT:away.stagegl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.stagegl.ContextGLTextureFilter.LINEAR:away.stagegl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.stagegl.ContextGLMipFilter.MIPLINEAR:away.stagegl.ContextGLMipFilter.MIPNONE);
-				this._texture.activateTextureForStage(vo.texturesIndex, stageGL);
-
+				(<IContextStageGL> stage.context).setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.stagegl.ContextGLWrapMode.REPEAT:away.stagegl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.stagegl.ContextGLTextureFilter.LINEAR:away.stagegl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.stagegl.ContextGLMipFilter.MIPLINEAR:away.stagegl.ContextGLMipFilter.MIPNONE);
+				(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex, this._texture);
 			}
 
 			var index:number = vo.fragmentConstantsIndex;
@@ -401,18 +340,12 @@ module away.materials
 		 */
 		public set iShadowRegister(shadowReg:ShaderRegisterElement)
 		{
-
 			this._shadowRegister = shadowReg;
-
 		}
 
 		public setIShadowRegister(shadowReg:ShaderRegisterElement)
 		{
-
 			this._shadowRegister = shadowReg;
-
 		}
-
-
 	}
 }

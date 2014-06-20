@@ -1145,6 +1145,690 @@ var aglsl;
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
+    /**
+    * @module away.base
+    */
+    (function (pool) {
+        /**
+        *
+        */
+        var IndexData = (function () {
+            function IndexData(level) {
+                this._dataDirty = true;
+                this.invalid = new Array(8);
+                this.contexts = new Array(8);
+                this.buffers = new Array(8);
+                this.level = level;
+            }
+            IndexData.prototype.updateData = function (offset, indices, numVertices) {
+                if (this._dataDirty) {
+                    this._dataDirty = false;
+
+                    if (indices.length < IndexData.LIMIT_INDICES && numVertices < IndexData.LIMIT_VERTS) {
+                        //shortcut for those buffers that fit into the maximum buffer sizes
+                        this.indexMappings = null;
+                        this.originalIndices = null;
+                        this.setData(indices);
+                        this.offset = indices.length;
+                    } else {
+                        var i;
+                        var len;
+                        var outIndex;
+                        var j;
+                        var k;
+                        var splitIndices = new Array();
+
+                        this.indexMappings = new Array(indices.length);
+                        this.originalIndices = new Array();
+
+                        i = this.indexMappings.length;
+
+                        while (i--)
+                            this.indexMappings[i] = -1;
+
+                        var originalIndex;
+                        var splitIndex;
+
+                        // Loop over all triangles
+                        outIndex = 0;
+                        len = indices.length;
+                        i = offset;
+                        k = 0;
+                        while (i < len && outIndex + 3 < IndexData.LIMIT_INDICES && k + 3 < IndexData.LIMIT_VERTS) {
+                            for (j = 0; j < 3; j++) {
+                                originalIndex = indices[i + j];
+
+                                if (this.indexMappings[originalIndex] >= 0) {
+                                    splitIndex = this.indexMappings[originalIndex];
+                                } else {
+                                    // This vertex does not yet exist in the split list and
+                                    // needs to be copied from the long list.
+                                    splitIndex = k++;
+                                    this.indexMappings[originalIndex] = splitIndex;
+                                    this.originalIndices.push(originalIndex);
+                                }
+
+                                // Store new index, which may have come from the mapping look-up,
+                                // or from copying a new set of vertex data from the original vector
+                                splitIndices[outIndex + j] = splitIndex;
+                            }
+
+                            outIndex += 3;
+                            i += 3;
+                        }
+
+                        this.setData(splitIndices);
+                        this.offset = i;
+                    }
+                }
+            };
+
+            IndexData.prototype.invalidateData = function () {
+                this._dataDirty = true;
+            };
+
+            IndexData.prototype.dispose = function () {
+                for (var i = 0; i < 8; ++i) {
+                    if (this.contexts[i]) {
+                        this.contexts[i].disposeIndexData(this);
+                        this.contexts[i] = null;
+                    }
+                }
+            };
+
+            /**
+            * @private
+            */
+            IndexData.prototype.disposeBuffers = function () {
+                for (var i = 0; i < 8; ++i) {
+                    if (this.buffers[i]) {
+                        this.buffers[i].dispose();
+                        this.buffers[i] = null;
+                    }
+                }
+            };
+
+            /**
+            * @private
+            */
+            IndexData.prototype.invalidateBuffers = function () {
+                for (var i = 0; i < 8; ++i)
+                    this.invalid[i] = true;
+            };
+
+            /**
+            *
+            * @param data
+            * @private
+            */
+            IndexData.prototype.setData = function (data) {
+                if (this.data && this.data.length != data.length)
+                    this.disposeBuffers();
+                else
+                    this.invalidateBuffers();
+
+                this.data = data;
+            };
+            IndexData.LIMIT_VERTS = 0xffff;
+
+            IndexData.LIMIT_INDICES = 0xffffff;
+            return IndexData;
+        })();
+        pool.IndexData = IndexData;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (pool) {
+        /**
+        *
+        */
+        var IndexDataPool = (function () {
+            function IndexDataPool() {
+            }
+            IndexDataPool.getItem = function (subGeometry, level, indexOffset) {
+                var subGeometryData = (IndexDataPool._pool[subGeometry.id] || (IndexDataPool._pool[subGeometry.id] = new Array()));
+
+                var indexData = subGeometryData[level] || (subGeometryData[level] = new pool.IndexData(level));
+                indexData.updateData(indexOffset, subGeometry.indices, subGeometry.numVertices);
+
+                return indexData;
+            };
+
+            IndexDataPool.disposeItem = function (id, level) {
+                var subGeometryData = this._pool[id];
+
+                subGeometryData[level].dispose();
+                subGeometryData[level] = null;
+            };
+
+            IndexDataPool.prototype.disposeData = function (id) {
+                var subGeometryData = IndexDataPool._pool[id];
+
+                var len = subGeometryData.length;
+                for (var i = 0; i < len; i++) {
+                    subGeometryData[i].dispose();
+                    subGeometryData[i] = null;
+                }
+
+                IndexDataPool._pool[id] = null;
+            };
+            IndexDataPool._pool = new Object();
+            return IndexDataPool;
+        })();
+        pool.IndexDataPool = IndexDataPool;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.pool
+    */
+    (function (pool) {
+        /**
+        *
+        * @class away.pool.TextureDataBase
+        */
+        var TextureData = (function () {
+            function TextureData(context, textureProxy) {
+                this.context = context;
+                this.textureProxy = textureProxy;
+            }
+            /**
+            *
+            */
+            TextureData.prototype.dispose = function () {
+                this.texture.dispose();
+                this.texture = null;
+            };
+
+            /**
+            *
+            */
+            TextureData.prototype.invalidate = function () {
+                this.invalid = true;
+            };
+            return TextureData;
+        })();
+        pool.TextureData = TextureData;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.pool
+    */
+    (function (pool) {
+        /**
+        * @class away.pool.TextureDataPool
+        */
+        var TextureDataPool = (function () {
+            /**
+            * //TODO
+            *
+            * @param textureDataClass
+            */
+            function TextureDataPool(context) {
+                this._pool = new Object();
+                this._context = context;
+            }
+            /**
+            * //TODO
+            *
+            * @param materialOwner
+            * @returns ITexture
+            */
+            TextureDataPool.prototype.getItem = function (textureProxy) {
+                return (this._pool[textureProxy.id] || (this._pool[textureProxy.id] = textureProxy._iAddTextureData(new pool.TextureData(this._context, textureProxy))));
+            };
+
+            /**
+            * //TODO
+            *
+            * @param materialOwner
+            */
+            TextureDataPool.prototype.disposeItem = function (textureProxy) {
+                textureProxy._iRemoveTextureData(this._pool[textureProxy.id]);
+
+                this._pool[textureProxy.id] = null;
+            };
+            return TextureDataPool;
+        })();
+        pool.TextureDataPool = TextureDataPool;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (pool) {
+        var SubGeometryBase = away.base.SubGeometryBase;
+        var SubGeometryEvent = away.events.SubGeometryEvent;
+
+        /**
+        *
+        */
+        var VertexData = (function () {
+            function VertexData(subGeometry, dataType) {
+                var _this = this;
+                this._dataDirty = true;
+                this.invalid = new Array(8);
+                this.buffers = new Array(8);
+                this.contexts = new Array(8);
+                this._subGeometry = subGeometry;
+                this._dataType = dataType;
+
+                this._onVerticesUpdatedDelegate = function (event) {
+                    return _this._onVerticesUpdated(event);
+                };
+                this._subGeometry.addEventListener(SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdatedDelegate);
+            }
+            VertexData.prototype.updateData = function (originalIndices, indexMappings) {
+                if (typeof originalIndices === "undefined") { originalIndices = null; }
+                if (typeof indexMappings === "undefined") { indexMappings = null; }
+                if (this._dataDirty) {
+                    this._dataDirty = false;
+
+                    this.dataPerVertex = this._subGeometry.getStride(this._dataType);
+
+                    var vertices = this._subGeometry[this._dataType];
+
+                    if (indexMappings == null) {
+                        this.setData(vertices);
+                    } else {
+                        var splitVerts = new Array(originalIndices.length * this.dataPerVertex);
+                        var originalIndex;
+                        var splitIndex;
+                        var i = 0;
+                        var j = 0;
+                        while (i < originalIndices.length) {
+                            originalIndex = originalIndices[i];
+
+                            splitIndex = indexMappings[originalIndex] * this.dataPerVertex;
+                            originalIndex *= this.dataPerVertex;
+
+                            for (j = 0; j < this.dataPerVertex; j++)
+                                splitVerts[splitIndex + j] = vertices[originalIndex + j];
+
+                            i++;
+                        }
+
+                        this.setData(splitVerts);
+                    }
+                }
+            };
+
+            VertexData.prototype.dispose = function () {
+                for (var i = 0; i < 8; ++i) {
+                    if (this.contexts[i]) {
+                        this.contexts[i].disposeVertexData(this);
+                        this.contexts[i] = null;
+                    }
+                }
+            };
+
+            /**
+            * @private
+            */
+            VertexData.prototype.disposeBuffers = function () {
+                for (var i = 0; i < 8; ++i) {
+                    if (this.buffers[i]) {
+                        this.buffers[i].dispose();
+                        this.buffers[i] = null;
+                    }
+                }
+            };
+
+            /**
+            * @private
+            */
+            VertexData.prototype.invalidateBuffers = function () {
+                for (var i = 0; i < 8; ++i)
+                    this.invalid[i] = true;
+            };
+
+            /**
+            *
+            * @param data
+            * @param dataPerVertex
+            * @private
+            */
+            VertexData.prototype.setData = function (data) {
+                if (this.data && this.data.length != data.length)
+                    this.disposeBuffers();
+                else
+                    this.invalidateBuffers();
+
+                this.data = data;
+            };
+
+            /**
+            * //TODO
+            *
+            * @param event
+            * @private
+            */
+            VertexData.prototype._onVerticesUpdated = function (event) {
+                var dataType = this._subGeometry.concatenateArrays ? SubGeometryBase.VERTEX_DATA : event.dataType;
+
+                if (dataType == this._dataType)
+                    this._dataDirty = true;
+            };
+            return VertexData;
+        })();
+        pool.VertexData = VertexData;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.base
+    */
+    (function (pool) {
+        var SubGeometryBase = away.base.SubGeometryBase;
+
+        /**
+        *
+        */
+        var VertexDataPool = (function () {
+            function VertexDataPool() {
+            }
+            VertexDataPool.getItem = function (subGeometry, indexData, dataType) {
+                if (subGeometry.concatenateArrays)
+                    dataType = SubGeometryBase.VERTEX_DATA;
+
+                var subGeometryDictionary = (VertexDataPool._pool[subGeometry.id] || (VertexDataPool._pool[subGeometry.id] = new Object()));
+                var subGeometryData = (subGeometryDictionary[dataType] || (subGeometryDictionary[dataType] = new Array()));
+
+                var vertexData = subGeometryData[indexData.level] || (subGeometryData[indexData.level] = new pool.VertexData(subGeometry, dataType));
+                vertexData.updateData(indexData.originalIndices, indexData.indexMappings);
+
+                return vertexData;
+            };
+
+            VertexDataPool.disposeItem = function (subGeometry, level, dataType) {
+                var subGeometryDictionary = VertexDataPool._pool[subGeometry.id];
+                var subGeometryData = subGeometryDictionary[dataType];
+
+                subGeometryData[level].dispose();
+                subGeometryData[level] = null;
+            };
+
+            VertexDataPool.prototype.disposeData = function (subGeometry) {
+                var subGeometryDictionary = VertexDataPool._pool[subGeometry.id];
+
+                for (var key in subGeometryDictionary) {
+                    var subGeometryData = subGeometryDictionary[key];
+
+                    var len = subGeometryData.length;
+                    for (var i = 0; i < len; i++) {
+                        subGeometryData[i].dispose();
+                        subGeometryData[i] = null;
+                    }
+                }
+
+                VertexDataPool._pool[subGeometry.id] = null;
+            };
+            VertexDataPool._pool = new Object();
+            return VertexDataPool;
+        })();
+        pool.VertexDataPool = VertexDataPool;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (stagegl) {
+        var AbstractMethodError = away.errors.AbstractMethodError;
+
+        var TextureDataPool = away.pool.TextureDataPool;
+
+        var RenderTexture = away.textures.RenderTexture;
+
+        /**
+        * Stage provides a proxy class to handle the creation and attachment of the Context
+        * (and in turn the back buffer) it uses. Stage should never be created directly,
+        * but requested through StageManager.
+        *
+        * @see away.managers.StageManager
+        *
+        */
+        var ContextGLBase = (function () {
+            function ContextGLBase() {
+                //private static _frameEventDriver:Shape = new Shape(); // TODO: add frame driver / request animation frame
+                this._iStageIndex = -1;
+                this._antiAlias = 0;
+                this._renderTarget = null;
+                this._renderSurfaceSelector = 0;
+                this._texturePool = new TextureDataPool(this);
+            }
+            Object.defineProperty(ContextGLBase.prototype, "container", {
+                get: function () {
+                    return this._pContainer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            ContextGLBase.prototype.setRenderTarget = function (target, enableDepthAndStencil, surfaceSelector) {
+                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = false; }
+                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
+                if (this._renderTarget === target && surfaceSelector == this._renderSurfaceSelector && this._enableDepthAndStencil == enableDepthAndStencil)
+                    return;
+
+                this._renderTarget = target;
+                this._renderSurfaceSelector = surfaceSelector;
+                this._enableDepthAndStencil = enableDepthAndStencil;
+                if (target instanceof RenderTexture) {
+                    this.setRenderToTexture(this.getRenderTexture(target), enableDepthAndStencil, this._antiAlias, surfaceSelector);
+                } else {
+                    this.setRenderToBackBuffer();
+                    this.configureBackBuffer(this._width, this._height, this._antiAlias, this._enableDepthAndStencil);
+                }
+            };
+
+            ContextGLBase.prototype.getRenderTexture = function (textureProxy) {
+                var textureData = this._texturePool.getItem(textureProxy);
+
+                if (!textureData.texture)
+                    textureData.texture = this.createTexture(textureProxy.width, textureProxy.height, stagegl.ContextGLTextureFormat.BGRA, true);
+
+                return textureData.texture;
+            };
+
+            /**
+            * Assigns an attribute stream
+            *
+            * @param index The attribute stream index for the vertex shader
+            * @param buffer
+            * @param offset
+            * @param stride
+            * @param format
+            */
+            ContextGLBase.prototype.activateBuffer = function (index, buffer, offset, format) {
+                if (!buffer.contexts[this._iStageIndex])
+                    buffer.contexts[this._iStageIndex] = this;
+
+                if (!buffer.buffers[this._iStageIndex]) {
+                    buffer.buffers[this._iStageIndex] = this.createVertexBuffer(buffer.data.length / buffer.dataPerVertex, buffer.dataPerVertex);
+                    buffer.invalid[this._iStageIndex] = true;
+                }
+
+                if (buffer.invalid[this._iStageIndex]) {
+                    buffer.buffers[this._iStageIndex].uploadFromArray(buffer.data, 0, buffer.data.length / buffer.dataPerVertex);
+                    buffer.invalid[this._iStageIndex] = false;
+                }
+
+                this.setVertexBufferAt(index, buffer.buffers[this._iStageIndex], offset, format);
+            };
+
+            ContextGLBase.prototype.disposeVertexData = function (buffer) {
+                buffer.buffers[this._iStageIndex].dispose();
+                buffer.buffers[this._iStageIndex] = null;
+            };
+
+            ContextGLBase.prototype.activateRenderTexture = function (index, textureProxy) {
+                this.setTextureAt(index, this.getRenderTexture(textureProxy));
+            };
+
+            ContextGLBase.prototype.activateTexture = function (index, textureProxy) {
+                var textureData = this._texturePool.getItem(textureProxy);
+
+                if (!textureData.texture) {
+                    textureData.texture = this.createTexture(textureProxy.width, textureProxy.height, stagegl.ContextGLTextureFormat.BGRA, true);
+                    textureData.invalid = true;
+                }
+
+                if (textureData.invalid) {
+                    textureData.invalid = false;
+                    if (textureProxy.generateMipmaps) {
+                        var mipmapData = textureProxy._iGetMipmapData();
+                        var len = mipmapData.length;
+                        for (var i = 0; i < len; i++)
+                            textureData.texture.uploadFromData(mipmapData[i], i);
+                    } else {
+                        textureData.texture.uploadFromData(textureProxy._iGetTextureData(), 0);
+                    }
+                }
+
+                this.setTextureAt(index, textureData.texture);
+            };
+
+            ContextGLBase.prototype.activateCubeTexture = function (index, textureProxy) {
+                var textureData = this._texturePool.getItem(textureProxy);
+
+                if (!textureData.texture) {
+                    textureData.texture = this.createCubeTexture(textureProxy.size, stagegl.ContextGLTextureFormat.BGRA, false);
+                    textureData.invalid = true;
+                }
+
+                if (textureData.invalid) {
+                    textureData.invalid = false;
+                    for (var i = 0; i < 6; ++i) {
+                        if (textureProxy.generateMipmaps) {
+                            var mipmapData = textureProxy._iGetMipmapData(i);
+                            var len = mipmapData.length;
+                            for (var j = 0; j < len; j++)
+                                textureData.texture.uploadFromData(mipmapData[j], i, j);
+                        } else {
+                            textureData.texture.uploadFromData(textureProxy._iGetTextureData(i), i, 0);
+                        }
+                    }
+                }
+
+                this.setTextureAt(index, textureData.texture);
+            };
+
+            /**
+            * Retrieves the VertexBuffer object that contains triangle indices.
+            * @param context The ContextWeb for which we request the buffer
+            * @return The VertexBuffer object that contains triangle indices.
+            */
+            ContextGLBase.prototype.getIndexBuffer = function (buffer) {
+                if (!buffer.contexts[this._iStageIndex])
+                    buffer.contexts[this._iStageIndex] = this;
+
+                if (!buffer.buffers[this._iStageIndex]) {
+                    buffer.buffers[this._iStageIndex] = this.createIndexBuffer(buffer.data.length);
+                    buffer.invalid[this._iStageIndex] = true;
+                }
+
+                if (buffer.invalid[this._iStageIndex]) {
+                    buffer.buffers[this._iStageIndex].uploadFromArray(buffer.data, 0, buffer.data.length);
+                    buffer.invalid[this._iStageIndex] = false;
+                }
+
+                return buffer.buffers[this._iStageIndex];
+            };
+
+            ContextGLBase.prototype.disposeIndexData = function (buffer) {
+                buffer.buffers[this._iStageIndex].dispose();
+                buffer.buffers[this._iStageIndex] = null;
+            };
+
+            ContextGLBase.prototype.clear = function (red, green, blue, alpha, depth, stencil, mask) {
+                if (typeof red === "undefined") { red = 0; }
+                if (typeof green === "undefined") { green = 0; }
+                if (typeof blue === "undefined") { blue = 0; }
+                if (typeof alpha === "undefined") { alpha = 1; }
+                if (typeof depth === "undefined") { depth = 1; }
+                if (typeof stencil === "undefined") { stencil = 0; }
+                if (typeof mask === "undefined") { mask = stagegl.ContextGLClearMask.ALL; }
+            };
+
+            ContextGLBase.prototype.configureBackBuffer = function (width, height, antiAlias, enableDepthAndStencil) {
+                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = true; }
+                this._width = width;
+                this._height = height;
+            };
+
+            ContextGLBase.prototype.createIndexBuffer = function (numIndices) {
+                throw new AbstractMethodError();
+            };
+
+            ContextGLBase.prototype.createVertexBuffer = function (numVertices, data32PerVertex) {
+                throw new AbstractMethodError();
+            };
+
+            ContextGLBase.prototype.createTexture = function (width, height, format, optimizeForRenderToTexture, streamingLevels) {
+                if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
+                throw new AbstractMethodError();
+            };
+
+            ContextGLBase.prototype.createCubeTexture = function (size, format, optimizeForRenderToTexture, streamingLevels) {
+                if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
+                throw new AbstractMethodError();
+            };
+
+            ContextGLBase.prototype.dispose = function () {
+            };
+
+            ContextGLBase.prototype.present = function () {
+            };
+
+            ContextGLBase.prototype.setRenderToTexture = function (target, enableDepthAndStencil, antiAlias, surfaceSelector) {
+                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = false; }
+                if (typeof antiAlias === "undefined") { antiAlias = 0; }
+                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
+            };
+
+            ContextGLBase.prototype.setRenderToBackBuffer = function () {
+            };
+
+            ContextGLBase.prototype.setScissorRectangle = function (rectangle) {
+            };
+
+            ContextGLBase.prototype.setTextureAt = function (sampler, texture) {
+            };
+
+            ContextGLBase.prototype.setVertexBufferAt = function (index, buffer, bufferOffset, format) {
+                if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
+                if (typeof format === "undefined") { format = null; }
+            };
+            return ContextGLBase;
+        })();
+        stagegl.ContextGLBase = ContextGLBase;
+    })(away.stagegl || (away.stagegl = {}));
+    var stagegl = away.stagegl;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
     (function (stagegl) {
         var ContextGLClearMask = (function () {
             function ContextGLClearMask() {
@@ -1287,23 +1971,6 @@ var away;
     })(away.stagegl || (away.stagegl = {}));
     var stagegl = away.stagegl;
 })(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (stagegl) {
-        var ContextGLMode = (function () {
-            function ContextGLMode() {
-            }
-            ContextGLMode.AUTO = "auto";
-            ContextGLMode.WEBGL = "webgl";
-            ContextGLMode.FLASH = "webgl";
-            ContextGLMode.NATIVE = "native";
-            return ContextGLMode;
-        })();
-        stagegl.ContextGLMode = ContextGLMode;
-    })(away.stagegl || (away.stagegl = {}));
-    var stagegl = away.stagegl;
-})(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
@@ -1372,12 +2039,21 @@ var away;
     var stagegl = away.stagegl;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
 var away;
 (function (away) {
     (function (stagegl) {
-        var ContextStage3D = (function () {
+        var ContextStage3D = (function (_super) {
+            __extends(ContextStage3D, _super);
             function ContextStage3D(container, callback) {
+                _super.call(this);
                 this._cmdStream = "";
+
                 this._resources = new Array();
 
                 var swfVersionStr = "11.0.0";
@@ -1414,7 +2090,7 @@ var away;
                     if (!callbackInfo.success)
                         return;
 
-                    context3dObj._container = callbackInfo.ref;
+                    context3dObj._pContainer = callbackInfo.ref;
                     context3dObj._iCallback = callback;
                 }
 
@@ -1422,7 +2098,7 @@ var away;
             }
             Object.defineProperty(ContextStage3D.prototype, "container", {
                 get: function () {
-                    return this._container;
+                    return this._pContainer;
                 },
                 enumerable: true,
                 configurable: true
@@ -1603,6 +2279,8 @@ var away;
 
             ContextStage3D.prototype.configureBackBuffer = function (width, height, antiAlias, enableDepthAndStencil) {
                 if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = true; }
+                _super.prototype.configureBackBuffer.call(this, width, height, antiAlias, enableDepthAndStencil);
+
                 //TODO: add Anitalias setting
                 this.addStream(String.fromCharCode(away.stagegl.OpCodes.configureBackBuffer) + width + "," + height + ",");
             };
@@ -1678,7 +2356,7 @@ var away;
             };
 
             ContextStage3D.prototype.dispose = function () {
-                if (this._container == null)
+                if (this._pContainer == null)
                     return;
 
                 console.log("Context3D dispose, releasing " + this._resources.length + " resources.");
@@ -1686,7 +2364,7 @@ var away;
                 while (this._resources.length)
                     this._resources[0].dispose();
 
-                if (this._container) {
+                if (this._pContainer) {
                     // encode command
                     this.addStream(String.fromCharCode(away.stagegl.OpCodes.disposeContext));
                     this.execute();
@@ -1695,7 +2373,7 @@ var away;
                         this._oldParent.appendChild(this._oldCanvas);
                         this._oldParent = null;
                     }
-                    this._container = null;
+                    this._pContainer = null;
                 }
 
                 this._oldCanvas = null;
@@ -1709,7 +2387,7 @@ var away;
                 if (ContextStage3D.logStream)
                     console.log(this._cmdStream);
 
-                var result = this._container["CallFunction"]("<invoke name=\"execStage3dOpStream\" returntype=\"javascript\"><arguments><string>" + this._cmdStream + "</string></arguments></invoke>");
+                var result = this._pContainer["CallFunction"]("<invoke name=\"execStage3dOpStream\" returntype=\"javascript\"><arguments><string>" + this._cmdStream + "</string></arguments></invoke>");
 
                 if (Number(result) <= -3)
                     throw "Exec stream failed";
@@ -1729,7 +2407,7 @@ var away;
             ContextStage3D.debug = false;
             ContextStage3D.logStream = false;
             return ContextStage3D;
-        })();
+        })(stagegl.ContextGLBase);
         stagegl.ContextStage3D = ContextStage3D;
     })(away.stagegl || (away.stagegl = {}));
     var stagegl = away.stagegl;
@@ -1758,8 +2436,10 @@ function mountain_js_context_available(id, driverInfo) {
 var away;
 (function (away) {
     (function (stagegl) {
-        var ContextWebGL = (function () {
+        var ContextWebGL = (function (_super) {
+            __extends(ContextWebGL, _super);
             function ContextWebGL(canvas) {
+                _super.call(this);
                 this._blendFactorDictionary = new Object();
                 this._depthTestDictionary = new Object();
                 this._textureIndexDictionary = new Array(8);
@@ -1774,7 +2454,8 @@ var away;
                 this._textureList = new Array();
                 this._programList = new Array();
                 this._samplerStates = new Array(8);
-                this._container = canvas;
+
+                this._pContainer = canvas;
 
                 try  {
                     this._gl = canvas.getContext("experimental-webgl", { premultipliedAlpha: false, alpha: false });
@@ -1858,7 +2539,7 @@ var away;
             }
             Object.defineProperty(ContextWebGL.prototype, "container", {
                 get: function () {
-                    return this._container;
+                    return this._pContainer;
                 },
                 enumerable: true,
                 configurable: true
@@ -1897,6 +2578,8 @@ var away;
 
             ContextWebGL.prototype.configureBackBuffer = function (width, height, antiAlias, enableDepthAndStencil) {
                 if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = true; }
+                _super.prototype.configureBackBuffer.call(this, width, height, antiAlias, enableDepthAndStencil);
+
                 if (enableDepthAndStencil) {
                     this._gl.enable(this._gl.STENCIL_TEST);
                     this._gl.enable(this._gl.DEPTH_TEST);
@@ -2170,7 +2853,7 @@ var away;
 
             ContextWebGL.modulo = 0;
             return ContextWebGL;
-        })();
+        })(stagegl.ContextGLBase);
         stagegl.ContextWebGL = ContextWebGL;
     })(away.stagegl || (away.stagegl = {}));
     var stagegl = away.stagegl;
@@ -2225,12 +2908,6 @@ var away;
     var stagegl = away.stagegl;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 var away;
 (function (away) {
     (function (stagegl) {
@@ -2898,1219 +3575,36 @@ var away;
     })(away.stagegl || (away.stagegl = {}));
     var stagegl = away.stagegl;
 })(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (base) {
-        /**
-        * StageGL provides a proxy class to handle the creation and attachment of the ContextWebGL
-        * (and in turn the back buffer) it uses. StageGL should never be created directly,
-        * but requested through StageGLManager.
-        *
-        * @see away.managers.StageGLManager
-        *
-        * todo: consider moving all creation methods (createVertexBuffer etc) in here, so that disposal can occur here
-        * along with the context, instead of scattered throughout the framework
-        */
-        var StageGL = (function (_super) {
-            __extends(StageGL, _super);
-            function StageGL(container, stageGLIndex, stageGLManager, forceSoftware, profile) {
-                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
-                if (typeof profile === "undefined") { profile = "baseline"; }
-                _super.call(this);
-                this._x = 0;
-                this._y = 0;
-                //private static _frameEventDriver:Shape = new Shape(); // TODO: add frame driver / request animation frame
-                this._iStageGLIndex = -1;
-                this._antiAlias = 0;
-                //private var _activeVertexBuffers : Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8, true);
-                //private var _activeTextures : Vector.<TextureBase> = new Vector.<TextureBase>(8, true);
-                this._renderTarget = null;
-                this._renderSurfaceSelector = 0;
-                //private _mouse3DManager:away.managers.Mouse3DManager;
-                //private _touch3DManager:Touch3DManager; //TODO: imeplement dependency Touch3DManager
-                this._initialised = false;
-
-                this._texturePool = new away.pool.TextureDataPool(this);
-
-                this._container = container;
-
-                this._iStageGLIndex = stageGLIndex;
-
-                this._stageGLManager = stageGLManager;
-
-                this._viewPort = new away.geom.Rectangle();
-
-                this._enableDepthAndStencil = true;
-
-                away.utils.CSS.setElementX(this._container, 0);
-                away.utils.CSS.setElementY(this._container, 0);
-
-                this.visible = true;
-            }
-            /**
-            * Requests a ContextWebGL object to attach to the managed gl canvas.
-            */
-            StageGL.prototype.requestContext = function (forceSoftware, profile, mode) {
-                // If forcing software, we can be certain that the
-                // returned ContextWebGL will be running software mode.
-                // If not, we can't be sure and should stick to the
-                // old value (will likely be same if re-requesting.)
-                var _this = this;
-                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
-                if (typeof profile === "undefined") { profile = "baseline"; }
-                if (typeof mode === "undefined") { mode = "auto"; }
-                if (this._usesSoftwareRendering != null)
-                    this._usesSoftwareRendering = forceSoftware;
-
-                this._profile = profile;
-
-                try  {
-                    if (mode == away.stagegl.ContextGLMode.FLASH)
-                        new away.stagegl.ContextStage3D(this._container, function (context) {
-                            return _this._callback(context);
-                        });
-                    else
-                        this._contextGL = new away.stagegl.ContextWebGL(this._container);
-                } catch (e) {
-                    try  {
-                        if (mode == away.stagegl.ContextGLMode.AUTO)
-                            new away.stagegl.ContextStage3D(this._container, function (context) {
-                                return _this._callback(context);
-                            });
-                        else
-                            this.dispatchEvent(new away.events.Event(away.events.Event.ERROR));
-                    } catch (e) {
-                        this.dispatchEvent(new away.events.Event(away.events.Event.ERROR));
-                    }
-                }
-
-                if (this._contextGL)
-                    this._callback(this._contextGL);
-            };
-
-            Object.defineProperty(StageGL.prototype, "width", {
-                /**
-                * The width of the gl canvas
-                */
-                get: function () {
-                    return this._width;
-                },
-                set: function (val) {
-                    if (this._width == val)
-                        return;
-
-                    away.utils.CSS.setElementWidth(this._container, val);
-
-                    this._width = this._viewPort.width = val;
-
-                    this._backBufferDirty = true;
-
-                    this.notifyViewportUpdated();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(StageGL.prototype, "height", {
-                /**
-                * The height of the gl canvas
-                */
-                get: function () {
-                    return this._height;
-                },
-                set: function (val) {
-                    if (this._height == val)
-                        return;
-
-                    away.utils.CSS.setElementHeight(this._container, val);
-
-                    this._height = this._viewPort.height = val;
-
-                    this._backBufferDirty = true;
-
-                    this.notifyViewportUpdated();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(StageGL.prototype, "x", {
-                /**
-                * The x position of the gl canvas
-                */
-                get: function () {
-                    return this._x;
-                },
-                set: function (val) {
-                    if (this._x == val)
-                        return;
-
-                    away.utils.CSS.setElementX(this._container, val);
-
-                    this._x = this._viewPort.x = val;
-
-                    this.notifyViewportUpdated();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(StageGL.prototype, "y", {
-                /**
-                * The y position of the gl canvas
-                */
-                get: function () {
-                    return this._y;
-                },
-                set: function (val) {
-                    if (this._y == val)
-                        return;
-
-                    away.utils.CSS.setElementY(this._container, val);
-
-                    this._y = this._viewPort.y = val;
-
-                    this.notifyViewportUpdated();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-
-            Object.defineProperty(StageGL.prototype, "visible", {
-                get: function () {
-                    return away.utils.CSS.getElementVisibility(this._container);
-                },
-                set: function (val) {
-                    away.utils.CSS.setElementVisibility(this._container, val);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(StageGL.prototype, "container", {
-                get: function () {
-                    return this._container;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(StageGL.prototype, "contextGL", {
-                /**
-                * The ContextWebGL object associated with the given gl canvas object.
-                */
-                get: function () {
-                    return this._contextGL;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            StageGL.prototype.notifyViewportUpdated = function () {
-                if (this._viewportDirty)
-                    return;
-
-                this._viewportDirty = true;
-
-                //if (!this.hasEventListener(away.events.StageGLEvent.VIEWPORT_UPDATED))
-                //return;
-                //if (!_viewportUpdated)
-                this._viewportUpdated = new away.events.StageGLEvent(away.events.StageGLEvent.VIEWPORT_UPDATED);
-
-                this.dispatchEvent(this._viewportUpdated);
-            };
-
-            StageGL.prototype.notifyEnterFrame = function () {
-                //if (!hasEventListener(Event.ENTER_FRAME))
-                //return;
-                if (!this._enterFrame)
-                    this._enterFrame = new away.events.Event(away.events.Event.ENTER_FRAME);
-
-                this.dispatchEvent(this._enterFrame);
-            };
-
-            StageGL.prototype.notifyExitFrame = function () {
-                //if (!hasEventListener(Event.EXIT_FRAME))
-                //return;
-                if (!this._exitFrame)
-                    this._exitFrame = new away.events.Event(away.events.Event.EXIT_FRAME);
-
-                this.dispatchEvent(this._exitFrame);
-            };
-
-            Object.defineProperty(StageGL.prototype, "profile", {
-                get: function () {
-                    return this._profile;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Disposes the StageGL object, freeing the ContextWebGL attached to the StageGL.
-            */
-            StageGL.prototype.dispose = function () {
-                this._stageGLManager.iRemoveStageGL(this);
-                this.freeContextGL();
-                this._stageGLManager = null;
-                this._iStageGLIndex = -1;
-            };
-
-            /**
-            * Configures the back buffer associated with the StageGL object.
-            * @param backBufferWidth The width of the backbuffer.
-            * @param backBufferHeight The height of the backbuffer.
-            * @param antiAlias The amount of anti-aliasing to use.
-            * @param enableDepthAndStencil Indicates whether the back buffer contains a depth and stencil buffer.
-            */
-            StageGL.prototype.configureBackBuffer = function (backBufferWidth, backBufferHeight, antiAlias, enableDepthAndStencil) {
-                this.width = backBufferWidth;
-                this.height = backBufferHeight;
-
-                this._antiAlias = antiAlias;
-                this._enableDepthAndStencil = enableDepthAndStencil;
-
-                if (this._contextGL)
-                    this._contextGL.configureBackBuffer(backBufferWidth, backBufferHeight, antiAlias, enableDepthAndStencil);
-            };
-
-            Object.defineProperty(StageGL.prototype, "enableDepthAndStencil", {
-                /*
-                * Indicates whether the depth and stencil buffer is used
-                */
-                get: function () {
-                    return this._enableDepthAndStencil;
-                },
-                set: function (enableDepthAndStencil) {
-                    this._enableDepthAndStencil = enableDepthAndStencil;
-                    this._backBufferDirty = true;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(StageGL.prototype, "renderTarget", {
-                get: function () {
-                    return this._renderTarget;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(StageGL.prototype, "renderSurfaceSelector", {
-                get: function () {
-                    return this._renderSurfaceSelector;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            StageGL.prototype.setRenderTarget = function (target, enableDepthAndStencil, surfaceSelector) {
-                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = false; }
-                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
-                if (this._renderTarget === target && surfaceSelector == this._renderSurfaceSelector && this._enableDepthAndStencil == enableDepthAndStencil)
-                    return;
-
-                this._renderTarget = target;
-                this._renderSurfaceSelector = surfaceSelector;
-                this._enableDepthAndStencil = enableDepthAndStencil;
-                if (target instanceof away.textures.RenderTexture) {
-                    this._contextGL.setRenderToTexture(this.getRenderTexture(target), enableDepthAndStencil, this._antiAlias, surfaceSelector);
-                } else {
-                    this._contextGL.setRenderToBackBuffer();
-                    this.configureBackBuffer(this._width, this._height, this._antiAlias, this._enableDepthAndStencil);
-                }
-            };
-
-            StageGL.prototype.getRenderTexture = function (textureProxy) {
-                var textureData = this._texturePool.getItem(textureProxy);
-
-                if (!textureData.texture)
-                    textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.stagegl.ContextGLTextureFormat.BGRA, true);
-
-                return textureData.texture;
-            };
-
-            /*
-            * Clear and reset the back buffer when using a shared context
-            */
-            StageGL.prototype.clear = function () {
-                if (!this._contextGL)
-                    return;
-
-                if (this._backBufferDirty) {
-                    this.configureBackBuffer(this._width, this._height, this._antiAlias, this._enableDepthAndStencil);
-                    this._backBufferDirty = false;
-                }
-
-                this._contextGL.clear((this._color & 0xff000000) >>> 24, (this._color & 0xff0000) >>> 16, (this._color & 0xff00) >>> 8, this._color & 0xff);
-
-                this._bufferClear = true;
-            };
-
-            /*
-            * Display the back rendering buffer
-            */
-            StageGL.prototype.present = function () {
-                if (!this._contextGL)
-                    return;
-
-                this._contextGL.present();
-
-                this._activeProgram = null;
-                //if (this._mouse3DManager)
-                //	this._mouse3DManager.fireMouseEvents();
-            };
-
-            /**
-            * Registers an event listener object with an EventDispatcher object so that the listener receives notification of an event. Special case for enterframe and exitframe events - will switch StageGLProxy into automatic render mode.
-            * You can register event listeners on all nodes in the display list for a specific type of event, phase, and priority.
-            *
-            * @param type The type of event.
-            * @param listener The listener function that processes the event.
-            * @param useCapture Determines whether the listener works in the capture phase or the target and bubbling phases. If useCapture is set to true, the listener processes the event only during the capture phase and not in the target or bubbling phase. If useCapture is false, the listener processes the event only during the target or bubbling phase. To listen for the event in all three phases, call addEventListener twice, once with useCapture set to true, then again with useCapture set to false.
-            * @param priority The priority level of the event listener. The priority is designated by a signed 32-bit integer. The higher the number, the higher the priority. All listeners with priority n are processed before listeners of priority n-1. If two or more listeners share the same priority, they are processed in the order in which they were added. The default priority is 0.
-            * @param useWeakReference Determines whether the reference to the listener is strong or weak. A strong reference (the default) prevents your listener from being garbage-collected. A weak reference does not.
-            */
-            //public override function addEventListener(type:string, listener, useCapture:boolean = false, priority:number = 0, useWeakReference:boolean = false)
-            StageGL.prototype.addEventListener = function (type, listener) {
-                _super.prototype.addEventListener.call(this, type, listener); //useCapture, priority, useWeakReference);
-                //away.Debug.throwPIR( 'StageGLProxy' , 'addEventListener' ,  'EnterFrame, ExitFrame');
-                //if ((type == away.events.Event.ENTER_FRAME || type == away.events.Event.EXIT_FRAME) ){//&& ! this._frameEventDriver.hasEventListener(Event.ENTER_FRAME)){
-                //_frameEventDriver.addEventListener(Event.ENTER_FRAME, onEnterFrame, useCapture, priority, useWeakReference);
-                //}
-                /* Original code
-                if ((type == Event.ENTER_FRAME || type == Event.EXIT_FRAME) && ! _frameEventDriver.hasEventListener(Event.ENTER_FRAME)){
-                
-                _frameEventDriver.addEventListener(Event.ENTER_FRAME, onEnterFrame, useCapture, priority, useWeakReference);
-                
-                
-                }
-                */
-            };
-
-            /**
-            * Removes a listener from the EventDispatcher object. Special case for enterframe and exitframe events - will switch StageGLProxy out of automatic render mode.
-            * If there is no matching listener registered with the EventDispatcher object, a call to this method has no effect.
-            *
-            * @param type The type of event.
-            * @param listener The listener object to remove.
-            * @param useCapture Specifies whether the listener was registered for the capture phase or the target and bubbling phases. If the listener was registered for both the capture phase and the target and bubbling phases, two calls to removeEventListener() are required to remove both, one call with useCapture() set to true, and another call with useCapture() set to false.
-            */
-            StageGL.prototype.removeEventListener = function (type, listener) {
-                _super.prototype.removeEventListener.call(this, type, listener);
-                //away.Debug.throwPIR( 'StageGLProxy' , 'removeEventListener' ,  'EnterFrame, ExitFrame');
-                /*
-                // Remove the main rendering listener if no EnterFrame listeners remain
-                if (    ! this.hasEventListener(away.events.Event.ENTER_FRAME , this.onEnterFrame , this )
-                &&  ! this.hasEventListener(away.events.Event.EXIT_FRAME , this.onEnterFrame , this) ) //&& _frameEventDriver.hasEventListener(Event.ENTER_FRAME))
-                {
-                
-                //_frameEventDriver.removeEventListener(Event.ENTER_FRAME, this.onEnterFrame, this );
-                
-                }
-                */
-            };
-
-            Object.defineProperty(StageGL.prototype, "scissorRect", {
-                get: function () {
-                    return this._scissorRect;
-                },
-                set: function (value) {
-                    this._scissorRect = value;
-
-                    this._contextGL.setScissorRectangle(this._scissorRect);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(StageGL.prototype, "stageGLIndex", {
-                /**
-                * The index of the StageGL which is managed by this instance of StageGLProxy.
-                */
-                get: function () {
-                    return this._iStageGLIndex;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(StageGL.prototype, "usesSoftwareRendering", {
-                /**
-                * Indicates whether the StageGL managed by this proxy is running in software mode.
-                * Remember to wait for the CONTEXTGL_CREATED event before checking this property,
-                * as only then will it be guaranteed to be accurate.
-                */
-                get: function () {
-                    return this._usesSoftwareRendering;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(StageGL.prototype, "antiAlias", {
-                /**
-                * The antiAliasing of the StageGL.
-                */
-                get: function () {
-                    return this._antiAlias;
-                },
-                set: function (antiAlias) {
-                    this._antiAlias = antiAlias;
-                    this._backBufferDirty = true;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(StageGL.prototype, "viewPort", {
-                /**
-                * A viewPort rectangle equivalent of the StageGL size and position.
-                */
-                get: function () {
-                    this._viewportDirty = false;
-
-                    return this._viewPort;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(StageGL.prototype, "color", {
-                /**
-                * The background color of the StageGL.
-                */
-                get: function () {
-                    return this._color;
-                },
-                set: function (color) {
-                    this._color = color;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(StageGL.prototype, "bufferClear", {
-                /**
-                * The freshly cleared state of the backbuffer before any rendering
-                */
-                get: function () {
-                    return this._bufferClear;
-                },
-                set: function (newBufferClear) {
-                    this._bufferClear = newBufferClear;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            /**
-            * Assigns an attribute stream
-            *
-            * @param index The attribute stream index for the vertex shader
-            * @param buffer
-            * @param offset
-            * @param stride
-            * @param format
-            */
-            StageGL.prototype.activateBuffer = function (index, buffer, offset, format) {
-                if (!buffer.stageGLs[this._iStageGLIndex])
-                    buffer.stageGLs[this._iStageGLIndex] = this;
-
-                if (!buffer.buffers[this._iStageGLIndex]) {
-                    buffer.buffers[this._iStageGLIndex] = this._contextGL.createVertexBuffer(buffer.data.length / buffer.dataPerVertex, buffer.dataPerVertex);
-                    buffer.invalid[this._iStageGLIndex] = true;
-                }
-
-                if (buffer.invalid[this._iStageGLIndex]) {
-                    buffer.buffers[this._iStageGLIndex].uploadFromArray(buffer.data, 0, buffer.data.length / buffer.dataPerVertex);
-                    buffer.invalid[this._iStageGLIndex] = false;
-                }
-
-                this._contextGL.setVertexBufferAt(index, buffer.buffers[this._iStageGLIndex], offset, format);
-            };
-
-            StageGL.prototype.disposeVertexData = function (buffer) {
-                buffer.buffers[this._iStageGLIndex].dispose();
-                buffer.buffers[this._iStageGLIndex] = null;
-            };
-
-            StageGL.prototype.activateRenderTexture = function (index, textureProxy) {
-                this._contextGL.setTextureAt(index, this.getRenderTexture(textureProxy));
-            };
-
-            StageGL.prototype.activateTexture = function (index, textureProxy) {
-                var textureData = this._texturePool.getItem(textureProxy);
-
-                if (!textureData.texture) {
-                    textureData.texture = this._contextGL.createTexture(textureProxy.width, textureProxy.height, away.stagegl.ContextGLTextureFormat.BGRA, true);
-                    textureData.invalid = true;
-                }
-
-                if (textureData.invalid) {
-                    textureData.invalid = false;
-                    if (textureProxy.generateMipmaps) {
-                        var mipmapData = textureProxy._iGetMipmapData();
-                        var len = mipmapData.length;
-                        for (var i = 0; i < len; i++)
-                            textureData.texture.uploadFromData(mipmapData[i], i);
-                    } else {
-                        textureData.texture.uploadFromData(textureProxy._iGetTextureData(), 0);
-                    }
-                }
-
-                this._contextGL.setTextureAt(index, textureData.texture);
-            };
-
-            StageGL.prototype.activateCubeTexture = function (index, textureProxy) {
-                var textureData = this._texturePool.getItem(textureProxy);
-
-                if (!textureData.texture) {
-                    textureData.texture = this._contextGL.createCubeTexture(textureProxy.size, away.stagegl.ContextGLTextureFormat.BGRA, false);
-                    textureData.invalid = true;
-                }
-
-                if (textureData.invalid) {
-                    textureData.invalid = false;
-                    for (var i = 0; i < 6; ++i) {
-                        if (textureProxy.generateMipmaps) {
-                            var mipmapData = textureProxy._iGetMipmapData(i);
-                            var len = mipmapData.length;
-                            for (var j = 0; j < len; j++)
-                                textureData.texture.uploadFromData(mipmapData[j], i, j);
-                        } else {
-                            textureData.texture.uploadFromData(textureProxy._iGetTextureData(i), i, 0);
-                        }
-                    }
-                }
-
-                this._contextGL.setTextureAt(index, textureData.texture);
-            };
-
-            /**
-            * Retrieves the VertexBuffer object that contains triangle indices.
-            * @param context The ContextWebGL for which we request the buffer
-            * @return The VertexBuffer object that contains triangle indices.
-            */
-            StageGL.prototype.getIndexBuffer = function (buffer) {
-                if (!buffer.stageGLs[this._iStageGLIndex])
-                    buffer.stageGLs[this._iStageGLIndex] = this;
-
-                if (!buffer.buffers[this._iStageGLIndex]) {
-                    buffer.buffers[this._iStageGLIndex] = this._contextGL.createIndexBuffer(buffer.data.length);
-                    buffer.invalid[this._iStageGLIndex] = true;
-                }
-
-                if (buffer.invalid[this._iStageGLIndex]) {
-                    buffer.buffers[this._iStageGLIndex].uploadFromArray(buffer.data, 0, buffer.data.length);
-                    buffer.invalid[this._iStageGLIndex] = false;
-                }
-
-                return buffer.buffers[this._iStageGLIndex];
-            };
-
-            StageGL.prototype.disposeIndexData = function (buffer) {
-                buffer.buffers[this._iStageGLIndex].dispose();
-                buffer.buffers[this._iStageGLIndex] = null;
-            };
-
-            /*
-            * Access to fire mouseevents across multiple layered view3D instances
-            */
-            //		public get mouse3DManager():Mouse3DManager
-            //		{
-            //			return this._mouse3DManager;
-            //		}
-            //
-            //		public set mouse3DManager(value:Mouse3DManager)
-            //		{
-            //			this._mouse3DManager = value;
-            //		}
-            /* TODO: implement dependency Touch3DManager
-            public get touch3DManager():Touch3DManager
-            {
-            return _touch3DManager;
-            }
-            
-            public set touch3DManager(value:Touch3DManager)
-            {
-            _touch3DManager = value;
-            }
-            */
-            /**
-            * Frees the ContextWebGL associated with this StageGLProxy.
-            */
-            StageGL.prototype.freeContextGL = function () {
-                if (this._contextGL) {
-                    this._contextGL.dispose();
-
-                    this.dispatchEvent(new away.events.StageGLEvent(away.events.StageGLEvent.CONTEXTGL_DISPOSED));
-                }
-
-                this._contextGL = null;
-
-                this._initialised = false;
-            };
-
-            /**
-            * The Enter_Frame handler for processing the proxy.ENTER_FRAME and proxy.EXIT_FRAME event handlers.
-            * Typically the proxy.ENTER_FRAME listener would render the layers for this StageGL instance.
-            */
-            StageGL.prototype.onEnterFrame = function (event) {
-                if (!this._contextGL)
-                    return;
-
-                // Clear the stageGL instance
-                this.clear();
-
-                //notify the enterframe listeners
-                this.notifyEnterFrame();
-
-                // Call the present() to render the frame
-                this.present();
-
-                //notify the exitframe listeners
-                this.notifyExitFrame();
-            };
-
-            StageGL.prototype.recoverFromDisposal = function () {
-                if (!this._contextGL)
-                    return false;
-
-                //away.Debug.throwPIR( 'StageGLProxy' , 'recoverFromDisposal' , '' );
-                /*
-                if (this._iContextGL.driverInfo == "Disposed")
-                {
-                this._iContextGL = null;
-                this.dispatchEvent(new away.events.StageGLEvent(away.events.StageGLEvent.CONTEXTGL_DISPOSED));
-                return false;
-                
-                }
-                */
-                return true;
-            };
-
-            StageGL.prototype.clearDepthBuffer = function () {
-                if (!this._contextGL)
-                    return;
-
-                this._contextGL.clear(0, 0, 0, 1, 1, 0, away.stagegl.ContextGLClearMask.DEPTH);
-            };
-
-            StageGL.prototype._callback = function (context) {
-                this._contextGL = context;
-
-                this._container = this._contextGL.container;
-
-                // Only configure back buffer if width and height have been set,
-                // which they may not have been if View.render() has yet to be
-                // invoked for the first time.
-                if (this._width && this._height)
-                    this._contextGL.configureBackBuffer(this._width, this._height, this._antiAlias, this._enableDepthAndStencil);
-
-                // Dispatch the appropriate event depending on whether context was
-                // created for the first time or recreated after a device loss.
-                this.dispatchEvent(new away.events.StageGLEvent(this._initialised ? away.events.StageGLEvent.CONTEXTGL_RECREATED : away.events.StageGLEvent.CONTEXTGL_CREATED));
-
-                this._initialised = true;
-            };
-            return StageGL;
-        })(away.events.EventDispatcher);
-        base.StageGL = StageGL;
-    })(away.base || (away.base = {}));
-    var base = away.base;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.base
-    */
-    (function (pool) {
-        /**
-        *
-        */
-        var IndexData = (function () {
-            function IndexData(level) {
-                this._dataDirty = true;
-                this.invalid = new Array(8);
-                this.stageGLs = new Array(8);
-                this.buffers = new Array(8);
-                this.level = level;
-            }
-            IndexData.prototype.updateData = function (offset, indices, numVertices) {
-                if (this._dataDirty) {
-                    this._dataDirty = false;
-
-                    if (indices.length < IndexData.LIMIT_INDICES && numVertices < IndexData.LIMIT_VERTS) {
-                        //shortcut for those buffers that fit into the maximum buffer sizes
-                        this.indexMappings = null;
-                        this.originalIndices = null;
-                        this.setData(indices);
-                        this.offset = indices.length;
-                    } else {
-                        var i;
-                        var len;
-                        var outIndex;
-                        var j;
-                        var k;
-                        var splitIndices = new Array();
-
-                        this.indexMappings = new Array(indices.length);
-                        this.originalIndices = new Array();
-
-                        i = this.indexMappings.length;
-
-                        while (i--)
-                            this.indexMappings[i] = -1;
-
-                        var originalIndex;
-                        var splitIndex;
-
-                        // Loop over all triangles
-                        outIndex = 0;
-                        len = indices.length;
-                        i = offset;
-                        k = 0;
-                        while (i < len && outIndex + 3 < IndexData.LIMIT_INDICES && k + 3 < IndexData.LIMIT_VERTS) {
-                            for (j = 0; j < 3; j++) {
-                                originalIndex = indices[i + j];
-
-                                if (this.indexMappings[originalIndex] >= 0) {
-                                    splitIndex = this.indexMappings[originalIndex];
-                                } else {
-                                    // This vertex does not yet exist in the split list and
-                                    // needs to be copied from the long list.
-                                    splitIndex = k++;
-                                    this.indexMappings[originalIndex] = splitIndex;
-                                    this.originalIndices.push(originalIndex);
-                                }
-
-                                // Store new index, which may have come from the mapping look-up,
-                                // or from copying a new set of vertex data from the original vector
-                                splitIndices[outIndex + j] = splitIndex;
-                            }
-
-                            outIndex += 3;
-                            i += 3;
-                        }
-
-                        this.setData(splitIndices);
-                        this.offset = i;
-                    }
-                }
-            };
-
-            IndexData.prototype.invalidateData = function () {
-                this._dataDirty = true;
-            };
-
-            IndexData.prototype.dispose = function () {
-                for (var i = 0; i < 8; ++i) {
-                    if (this.stageGLs[i]) {
-                        this.stageGLs[i].disposeIndexData(this);
-                        this.stageGLs[i] = null;
-                    }
-                }
-            };
-
-            /**
-            * @private
-            */
-            IndexData.prototype.disposeBuffers = function () {
-                for (var i = 0; i < 8; ++i) {
-                    if (this.buffers[i]) {
-                        this.buffers[i].dispose();
-                        this.buffers[i] = null;
-                    }
-                }
-            };
-
-            /**
-            * @private
-            */
-            IndexData.prototype.invalidateBuffers = function () {
-                for (var i = 0; i < 8; ++i)
-                    this.invalid[i] = true;
-            };
-
-            /**
-            *
-            * @param data
-            * @private
-            */
-            IndexData.prototype.setData = function (data) {
-                if (this.data && this.data.length != data.length)
-                    this.disposeBuffers();
-                else
-                    this.invalidateBuffers();
-
-                this.data = data;
-            };
-            IndexData.LIMIT_VERTS = 0xffff;
-
-            IndexData.LIMIT_INDICES = 0xffffff;
-            return IndexData;
-        })();
-        pool.IndexData = IndexData;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.base
-    */
-    (function (pool) {
-        /**
-        *
-        */
-        var IndexDataPool = (function () {
-            function IndexDataPool() {
-            }
-            IndexDataPool.getItem = function (subGeometry, level, indexOffset) {
-                var subGeometryData = (IndexDataPool._pool[subGeometry.id] || (IndexDataPool._pool[subGeometry.id] = new Array()));
-
-                var indexData = subGeometryData[level] || (subGeometryData[level] = new pool.IndexData(level));
-                indexData.updateData(indexOffset, subGeometry.indices, subGeometry.numVertices);
-
-                return indexData;
-            };
-
-            IndexDataPool.disposeItem = function (id, level) {
-                var subGeometryData = this._pool[id];
-
-                subGeometryData[level].dispose();
-                subGeometryData[level] = null;
-            };
-
-            IndexDataPool.prototype.disposeData = function (id) {
-                var subGeometryData = IndexDataPool._pool[id];
-
-                var len = subGeometryData.length;
-                for (var i = 0; i < len; i++) {
-                    subGeometryData[i].dispose();
-                    subGeometryData[i] = null;
-                }
-
-                IndexDataPool._pool[id] = null;
-            };
-            IndexDataPool._pool = new Object();
-            return IndexDataPool;
-        })();
-        pool.IndexDataPool = IndexDataPool;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.pool
-    */
-    (function (pool) {
-        /**
-        *
-        * @class away.pool.TextureDataBase
-        */
-        var TextureData = (function () {
-            function TextureData(stageGL, textureProxy) {
-                this.stageGL = stageGL;
-                this.textureProxy = textureProxy;
-            }
-            /**
-            *
-            */
-            TextureData.prototype.dispose = function () {
-                this.texture.dispose();
-                this.texture = null;
-            };
-
-            /**
-            *
-            */
-            TextureData.prototype.invalidate = function () {
-                this.invalid = true;
-            };
-            return TextureData;
-        })();
-        pool.TextureData = TextureData;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.pool
-    */
-    (function (pool) {
-        /**
-        * @class away.pool.TextureDataPool
-        */
-        var TextureDataPool = (function () {
-            /**
-            * //TODO
-            *
-            * @param textureDataClass
-            */
-            function TextureDataPool(stage) {
-                this._pool = new Object();
-                this._stage = stage;
-            }
-            /**
-            * //TODO
-            *
-            * @param materialOwner
-            * @returns ITexture
-            */
-            TextureDataPool.prototype.getItem = function (textureProxy) {
-                return (this._pool[textureProxy.id] || (this._pool[textureProxy.id] = textureProxy._iAddTextureData(new pool.TextureData(this._stage, textureProxy))));
-            };
-
-            /**
-            * //TODO
-            *
-            * @param materialOwner
-            */
-            TextureDataPool.prototype.disposeItem = function (textureProxy) {
-                textureProxy._iRemoveTextureData(this._pool[textureProxy.id]);
-
-                this._pool[textureProxy.id] = null;
-            };
-            return TextureDataPool;
-        })();
-        pool.TextureDataPool = TextureDataPool;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.base
-    */
-    (function (pool) {
-        var SubGeometryBase = away.base.SubGeometryBase;
-
-        var SubGeometryEvent = away.events.SubGeometryEvent;
-
-        /**
-        *
-        */
-        var VertexData = (function () {
-            function VertexData(subGeometry, dataType) {
-                var _this = this;
-                this._dataDirty = true;
-                this.invalid = new Array(8);
-                this.buffers = new Array(8);
-                this.stageGLs = new Array(8);
-                this._subGeometry = subGeometry;
-                this._dataType = dataType;
-
-                this._onVerticesUpdatedDelegate = function (event) {
-                    return _this._onVerticesUpdated(event);
-                };
-                this._subGeometry.addEventListener(SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdatedDelegate);
-            }
-            VertexData.prototype.updateData = function (originalIndices, indexMappings) {
-                if (typeof originalIndices === "undefined") { originalIndices = null; }
-                if (typeof indexMappings === "undefined") { indexMappings = null; }
-                if (this._dataDirty) {
-                    this._dataDirty = false;
-
-                    this.dataPerVertex = this._subGeometry.getStride(this._dataType);
-
-                    var vertices = this._subGeometry[this._dataType];
-
-                    if (indexMappings == null) {
-                        this.setData(vertices);
-                    } else {
-                        var splitVerts = new Array(originalIndices.length * this.dataPerVertex);
-                        var originalIndex;
-                        var splitIndex;
-                        var i = 0;
-                        var j = 0;
-                        while (i < originalIndices.length) {
-                            originalIndex = originalIndices[i];
-
-                            splitIndex = indexMappings[originalIndex] * this.dataPerVertex;
-                            originalIndex *= this.dataPerVertex;
-
-                            for (j = 0; j < this.dataPerVertex; j++)
-                                splitVerts[splitIndex + j] = vertices[originalIndex + j];
-
-                            i++;
-                        }
-
-                        this.setData(splitVerts);
-                    }
-                }
-            };
-
-            VertexData.prototype.dispose = function () {
-                for (var i = 0; i < 8; ++i) {
-                    if (this.stageGLs[i]) {
-                        this.stageGLs[i].disposeVertexData(this);
-                        this.stageGLs[i] = null;
-                    }
-                }
-            };
-
-            /**
-            * @private
-            */
-            VertexData.prototype.disposeBuffers = function () {
-                for (var i = 0; i < 8; ++i) {
-                    if (this.buffers[i]) {
-                        this.buffers[i].dispose();
-                        this.buffers[i] = null;
-                    }
-                }
-            };
-
-            /**
-            * @private
-            */
-            VertexData.prototype.invalidateBuffers = function () {
-                for (var i = 0; i < 8; ++i)
-                    this.invalid[i] = true;
-            };
-
-            /**
-            *
-            * @param data
-            * @param dataPerVertex
-            * @private
-            */
-            VertexData.prototype.setData = function (data) {
-                if (this.data && this.data.length != data.length)
-                    this.disposeBuffers();
-                else
-                    this.invalidateBuffers();
-
-                this.data = data;
-            };
-
-            /**
-            * //TODO
-            *
-            * @param event
-            * @private
-            */
-            VertexData.prototype._onVerticesUpdated = function (event) {
-                var dataType = this._subGeometry.concatenateArrays ? SubGeometryBase.VERTEX_DATA : event.dataType;
-
-                if (dataType == this._dataType)
-                    this._dataDirty = true;
-            };
-            return VertexData;
-        })();
-        pool.VertexData = VertexData;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.base
-    */
-    (function (pool) {
-        var SubGeometryBase = away.base.SubGeometryBase;
-
-        /**
-        *
-        */
-        var VertexDataPool = (function () {
-            function VertexDataPool() {
-            }
-            VertexDataPool.getItem = function (subGeometry, indexData, dataType) {
-                if (subGeometry.concatenateArrays)
-                    dataType = SubGeometryBase.VERTEX_DATA;
-
-                var subGeometryDictionary = (VertexDataPool._pool[subGeometry.id] || (VertexDataPool._pool[subGeometry.id] = new Object()));
-                var subGeometryData = (subGeometryDictionary[dataType] || (subGeometryDictionary[dataType] = new Array()));
-
-                var vertexData = subGeometryData[indexData.level] || (subGeometryData[indexData.level] = new pool.VertexData(subGeometry, dataType));
-                vertexData.updateData(indexData.originalIndices, indexData.indexMappings);
-
-                return vertexData;
-            };
-
-            VertexDataPool.disposeItem = function (subGeometry, level, dataType) {
-                var subGeometryDictionary = VertexDataPool._pool[subGeometry.id];
-                var subGeometryData = subGeometryDictionary[dataType];
-
-                subGeometryData[level].dispose();
-                subGeometryData[level] = null;
-            };
-
-            VertexDataPool.prototype.disposeData = function (subGeometry) {
-                var subGeometryDictionary = VertexDataPool._pool[subGeometry.id];
-
-                for (var key in subGeometryDictionary) {
-                    var subGeometryData = subGeometryDictionary[key];
-
-                    var len = subGeometryData.length;
-                    for (var i = 0; i < len; i++) {
-                        subGeometryData[i].dispose();
-                        subGeometryData[i] = null;
-                    }
-                }
-
-                VertexDataPool._pool[subGeometry.id] = null;
-            };
-            VertexDataPool._pool = new Object();
-            return VertexDataPool;
-        })();
-        pool.VertexDataPool = VertexDataPool;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
     (function (managers) {
-        var StageGLEvent = away.events.StageGLEvent;
+        var StageEvent = away.events.StageEvent;
 
         var AGALProgramCache = (function () {
-            function AGALProgramCache(stageGL, agalProgramCacheSingletonEnforcer) {
+            function AGALProgramCache(stage, agalProgramCacheSingletonEnforcer) {
                 if (!agalProgramCacheSingletonEnforcer)
-                    throw new Error("This class is a multiton and cannot be instantiated manually. Use StageGLManager.getInstance instead.");
+                    throw new Error("This class is a multiton and cannot be instantiated manually. Use StageManager.getInstance instead.");
 
-                this._stageGL = stageGL;
+                this._stage = stage;
 
                 this._program3Ds = new Object();
                 this._ids = new Object();
                 this._usages = new Object();
                 this._keys = new Object();
             }
-            AGALProgramCache.getInstance = function (stageGL) {
-                var index = stageGL._iStageGLIndex;
+            AGALProgramCache.getInstance = function (stage) {
+                var index = stage._iStageIndex;
 
                 if (AGALProgramCache._instances == null)
                     AGALProgramCache._instances = new Array(8);
 
                 if (!AGALProgramCache._instances[index]) {
-                    AGALProgramCache._instances[index] = new AGALProgramCache(stageGL, new AGALProgramCacheSingletonEnforcer());
+                    AGALProgramCache._instances[index] = new AGALProgramCache(stage, new AGALProgramCacheSingletonEnforcer());
 
-                    stageGL.addEventListener(StageGLEvent.CONTEXTGL_DISPOSED, AGALProgramCache.onContextGLDisposed);
-                    stageGL.addEventListener(StageGLEvent.CONTEXTGL_CREATED, AGALProgramCache.onContextGLDisposed);
-                    stageGL.addEventListener(StageGLEvent.CONTEXTGL_RECREATED, AGALProgramCache.onContextGLDisposed);
+                    stage.addEventListener(StageEvent.CONTEXT_DISPOSED, AGALProgramCache.onContextGLDisposed);
+                    stage.addEventListener(StageEvent.CONTEXT_CREATED, AGALProgramCache.onContextGLDisposed);
+                    stage.addEventListener(StageEvent.CONTEXT_RECREATED, AGALProgramCache.onContextGLDisposed);
                 }
 
                 return AGALProgramCache._instances[index];
@@ -4124,16 +3618,16 @@ var away;
             };
 
             AGALProgramCache.onContextGLDisposed = function (event) {
-                var stageGL = event.target;
+                var stage = event.target;
 
-                var index = stageGL._iStageGLIndex;
+                var index = stage._iStageIndex;
 
                 AGALProgramCache._instances[index].dispose();
                 AGALProgramCache._instances[index] = null;
 
-                stageGL.removeEventListener(StageGLEvent.CONTEXTGL_DISPOSED, AGALProgramCache.onContextGLDisposed);
-                stageGL.removeEventListener(StageGLEvent.CONTEXTGL_CREATED, AGALProgramCache.onContextGLDisposed);
-                stageGL.removeEventListener(StageGLEvent.CONTEXTGL_RECREATED, AGALProgramCache.onContextGLDisposed);
+                stage.removeEventListener(StageEvent.CONTEXT_DISPOSED, AGALProgramCache.onContextGLDisposed);
+                stage.removeEventListener(StageEvent.CONTEXT_CREATED, AGALProgramCache.onContextGLDisposed);
+                stage.removeEventListener(StageEvent.CONTEXT_RECREATED, AGALProgramCache.onContextGLDisposed);
             };
 
             AGALProgramCache.prototype.dispose = function () {
@@ -4147,7 +3641,7 @@ var away;
 
             AGALProgramCache.prototype.setProgram = function (programIds, programs, vertexCode, fragmentCode) {
                 //TODO move program id arrays into stagegl
-                var stageIndex = this._stageGL._iStageGLIndex;
+                var stageIndex = this._stage._iStageIndex;
                 var program;
                 var key = this.getKey(vertexCode, fragmentCode);
 
@@ -4157,7 +3651,7 @@ var away;
                     this._ids[key] = AGALProgramCache._currentId;
                     ++AGALProgramCache._currentId;
 
-                    program = this._stageGL.contextGL.createProgram();
+                    program = this._stage.context.createProgram();
 
                     var vertexByteCode = (new aglsl.assembler.AGALMiniAssembler().assemble("part vertex 1\n" + vertexCode + "endpart"))['vertex'].data;
                     var fragmentByteCode = (new aglsl.assembler.AGALMiniAssembler().assemble("part fragment 1\n" + fragmentCode + "endpart"))['fragment'].data;
@@ -4218,7 +3712,7 @@ var away;
     (function (managers) {
         var RTTBufferManager = (function (_super) {
             __extends(RTTBufferManager, _super);
-            function RTTBufferManager(se, stageGL) {
+            function RTTBufferManager(se, stage) {
                 _super.call(this);
                 this._viewWidth = -1;
                 this._viewHeight = -1;
@@ -4231,23 +3725,23 @@ var away;
 
                 this._renderToTextureRect = new away.geom.Rectangle();
 
-                this._stageGL = stageGL;
+                this._stage = stage;
             }
-            RTTBufferManager.getInstance = function (stageGL) {
-                if (!stageGL)
-                    throw new Error("stageGL key cannot be null!");
+            RTTBufferManager.getInstance = function (stage) {
+                if (!stage)
+                    throw new Error("stage key cannot be null!");
 
                 if (RTTBufferManager._instances == null)
                     RTTBufferManager._instances = new Array();
 
-                var rttBufferManager = RTTBufferManager.getRTTBufferManagerFromStageGL(stageGL);
+                var rttBufferManager = RTTBufferManager.getRTTBufferManagerFromStage(stage);
 
                 if (rttBufferManager == null) {
-                    rttBufferManager = new RTTBufferManager(new SingletonEnforcer(), stageGL);
+                    rttBufferManager = new RTTBufferManager(new SingletonEnforcer(), stage);
 
                     var vo = new RTTBufferManagerVO();
 
-                    vo.stage3d = stageGL;
+                    vo.stage3d = stage;
                     vo.rttbfm = rttBufferManager;
 
                     RTTBufferManager._instances.push(vo);
@@ -4256,28 +3750,28 @@ var away;
                 return rttBufferManager;
             };
 
-            RTTBufferManager.getRTTBufferManagerFromStageGL = function (stageGL) {
+            RTTBufferManager.getRTTBufferManagerFromStage = function (stage) {
                 var l = RTTBufferManager._instances.length;
                 var r;
 
                 for (var c = 0; c < l; c++) {
                     r = RTTBufferManager._instances[c];
 
-                    if (r.stage3d === stageGL)
+                    if (r.stage3d === stage)
                         return r.rttbfm;
                 }
 
                 return null;
             };
 
-            RTTBufferManager.deleteRTTBufferManager = function (stageGL) {
+            RTTBufferManager.deleteRTTBufferManager = function (stage) {
                 var l = RTTBufferManager._instances.length;
                 var r;
 
                 for (var c = 0; c < l; c++) {
                     r = RTTBufferManager._instances[c];
 
-                    if (r.stage3d === stageGL) {
+                    if (r.stage3d === stage) {
                         RTTBufferManager._instances.splice(c, 1);
                         return;
                     }
@@ -4422,7 +3916,7 @@ var away;
             });
 
             RTTBufferManager.prototype.dispose = function () {
-                RTTBufferManager.deleteRTTBufferManager(this._stageGL);
+                RTTBufferManager.deleteRTTBufferManager(this._stage);
 
                 if (this._indexBuffer) {
                     this._indexBuffer.dispose();
@@ -4438,7 +3932,7 @@ var away;
             // maybe it even has a place in the core (together with screenRect etc)?
             // needs to be stored per view of course
             RTTBufferManager.prototype.updateRTTBuffers = function () {
-                var context = this._stageGL.contextGL;
+                var context = this._stage.context;
                 var textureVerts;
                 var screenVerts;
 
@@ -4493,178 +3987,6 @@ var SingletonEnforcer = (function () {
     }
     return SingletonEnforcer;
 })();
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (managers) {
-        var StageGL = away.base.StageGL;
-
-        /**
-        * The StageGLManager class provides a multiton object that handles management for StageGL objects. StageGL objects
-        * should not be requested directly, but are exposed by a StageGLProxy.
-        *
-        * @see away.base.StageGL
-        */
-        var StageGLManager = (function (_super) {
-            __extends(StageGLManager, _super);
-            /**
-            * Creates a new StageGLManager class.
-            * @param stage The Stage object that contains the StageGL objects to be managed.
-            * @private
-            */
-            function StageGLManager(StageGLManagerSingletonEnforcer) {
-                _super.call(this);
-
-                if (!StageGLManagerSingletonEnforcer)
-                    throw new Error("This class is a multiton and cannot be instantiated manually. Use StageGLManager.getInstance instead.");
-
-                this._stageGLs = new Array(StageGLManager.STAGEGL_MAX_QUANTITY);
-
-                this._onContextCreatedDelegate = away.utils.Delegate.create(this, this.onContextCreated);
-            }
-            /**
-            * Gets a StageGLManager instance for the given Stage object.
-            * @param stage The Stage object that contains the StageGL objects to be managed.
-            * @return The StageGLManager instance for the given Stage object.
-            */
-            StageGLManager.getInstance = function () {
-                if (this._instance == null)
-                    this._instance = new StageGLManager(new StageGLManagerSingletonEnforcer());
-
-                return this._instance;
-            };
-
-            /**
-            * Requests the StageGL for the given index.
-            *
-            * @param index The index of the requested StageGL.
-            * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
-            * @param profile The compatibility profile, an enumeration of ContextGLProfile
-            * @return The StageGL for the given index.
-            */
-            StageGLManager.prototype.getStageGLAt = function (index, forceSoftware, profile, mode) {
-                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
-                if (typeof profile === "undefined") { profile = "baseline"; }
-                if (typeof mode === "undefined") { mode = "auto"; }
-                if (index < 0 || index >= StageGLManager.STAGEGL_MAX_QUANTITY)
-                    throw new away.errors.ArgumentError("Index is out of bounds [0.." + StageGLManager.STAGEGL_MAX_QUANTITY + "]");
-
-                if (!this._stageGLs[index]) {
-                    StageGLManager._numStageGLs++;
-
-                    var canvas = document.createElement("canvas");
-                    canvas.id = "stagegl" + index;
-                    document.body.appendChild(canvas);
-                    var stageGL = this._stageGLs[index] = new StageGL(canvas, index, this, forceSoftware, profile);
-                    stageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextCreatedDelegate);
-                    stageGL.requestContext(forceSoftware, profile, mode);
-                }
-
-                return stageGL;
-            };
-
-            /**
-            * Removes a StageGL from the manager.
-            * @param stageGL
-            * @private
-            */
-            StageGLManager.prototype.iRemoveStageGL = function (stageGL) {
-                StageGLManager._numStageGLs--;
-
-                stageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextCreatedDelegate);
-
-                this._stageGLs[stageGL._iStageGLIndex] = null;
-            };
-
-            /**
-            * Get the next available stageGL. An error is thrown if there are no StageGLProxies available
-            * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
-            * @param profile The compatibility profile, an enumeration of ContextGLProfile
-            * @return The allocated stageGL
-            */
-            StageGLManager.prototype.getFreeStageGL = function (forceSoftware, profile, mode) {
-                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
-                if (typeof profile === "undefined") { profile = "baseline"; }
-                if (typeof mode === "undefined") { mode = "auto"; }
-                var i = 0;
-                var len = this._stageGLs.length;
-
-                while (i < len) {
-                    if (!this._stageGLs[i])
-                        return this.getStageGLAt(i, forceSoftware, profile, mode);
-
-                    ++i;
-                }
-
-                return null;
-            };
-
-            Object.defineProperty(StageGLManager.prototype, "hasFreeStageGL", {
-                /**
-                * Checks if a new stageGL can be created and managed by the class.
-                * @return true if there is one slot free for a new stageGL
-                */
-                get: function () {
-                    return StageGLManager._numStageGLs < StageGLManager.STAGEGL_MAX_QUANTITY ? true : false;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(StageGLManager.prototype, "numSlotsFree", {
-                /**
-                * Returns the amount of stageGL objects that can be created and managed by the class
-                * @return the amount of free slots
-                */
-                get: function () {
-                    return StageGLManager.STAGEGL_MAX_QUANTITY - StageGLManager._numStageGLs;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(StageGLManager.prototype, "numSlotsUsed", {
-                /**
-                * Returns the amount of StageGL objects currently managed by the class.
-                * @return the amount of slots used
-                */
-                get: function () {
-                    return StageGLManager._numStageGLs;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(StageGLManager.prototype, "numSlotsTotal", {
-                /**
-                * The maximum amount of StageGL objects that can be managed by the class
-                */
-                get: function () {
-                    return this._stageGLs.length;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            StageGLManager.prototype.onContextCreated = function (e) {
-                //var stageGL:StageGL = <StageGL> e.target;
-                //document.body.appendChild(stageGL.canvas)
-            };
-            StageGLManager.STAGEGL_MAX_QUANTITY = 8;
-
-            StageGLManager._numStageGLs = 0;
-            return StageGLManager;
-        })(away.events.EventDispatcher);
-        managers.StageGLManager = StageGLManager;
-    })(away.managers || (away.managers = {}));
-    var managers = away.managers;
-})(away || (away = {}));
-
-var StageGLManagerSingletonEnforcer = (function () {
-    function StageGLManagerSingletonEnforcer() {
-    }
-    return StageGLManagerSingletonEnforcer;
-})();
 /**********************************************************************************************************************************************************************************************************
 * This file contains a reference to all the classes used in the project.
 ********************************************************************************************************************************************************************************************************
@@ -4697,6 +4019,13 @@ var StageGLManagerSingletonEnforcer = (function () {
 ///<reference path="../aglsl/assembler/AGALMiniAssembler.ts"/>
 ///<reference path="../aglsl/AGALTokenizer.ts"/>
 ///<reference path="../aglsl/Parser.ts"/>
+///<reference path="core/pool/IndexData.ts" />
+///<reference path="core/pool/IndexDataPool.ts" />
+///<reference path="core/pool/TextureData.ts"/>
+///<reference path="core/pool/TextureDataPool.ts"/>
+///<reference path="core/pool/VertexData.ts" />
+///<reference path="core/pool/VertexDataPool.ts" />
+///<reference path="core/stagegl/ContextGLBase.ts"/>
 ///<reference path="core/stagegl/ContextGLClearMask.ts"/>
 ///<reference path="core/stagegl/ContextGLTextureFormat.ts"/>
 ///<reference path="core/stagegl/ContextGLTriangleFace.ts"/>
@@ -4705,7 +4034,6 @@ var StageGLManagerSingletonEnforcer = (function () {
 ///<reference path="core/stagegl/ContextGLBlendFactor.ts"/>
 ///<reference path="core/stagegl/ContextGLCompareMode.ts"/>
 ///<reference path="core/stagegl/ContextGLMipFilter.ts"/>
-///<reference path="core/stagegl/ContextGLMode.ts"/>
 ///<reference path="core/stagegl/ContextGLProfile.ts"/>
 ///<reference path="core/stagegl/ContextGLStencilAction.ts"/>
 ///<reference path="core/stagegl/ContextGLTextureFilter.ts"/>
@@ -4716,7 +4044,7 @@ var StageGLManagerSingletonEnforcer = (function () {
 ///<reference path="core/stagegl/TextureBaseWebGL.ts"/>
 ///<reference path="core/stagegl/CubeTextureFlash.ts" />
 ///<reference path="core/stagegl/CubeTextureWebGL.ts" />
-///<reference path="core/stagegl/IContext.ts" />
+///<reference path="core/stagegl/IContextStageGL.ts" />
 ///<reference path="core/stagegl/ICubeTexture.ts" />
 ///<reference path="core/stagegl/IIndexBuffer.ts"/>
 ///<reference path="core/stagegl/IndexBufferFlash.ts"/>
@@ -4733,16 +4061,8 @@ var StageGLManagerSingletonEnforcer = (function () {
 ///<reference path="core/stagegl/TextureWebGL.ts" />
 ///<reference path="core/stagegl/VertexBufferFlash.ts"/>
 ///<reference path="core/stagegl/VertexBufferWebGL.ts"/>
-///<reference path="core/base/StageGL.ts" />
-///<reference path="core/pool/IndexData.ts" />
-///<reference path="core/pool/IndexDataPool.ts" />
-///<reference path="core/pool/TextureData.ts"/>
-///<reference path="core/pool/TextureDataPool.ts"/>
-///<reference path="core/pool/VertexData.ts" />
-///<reference path="core/pool/VertexDataPool.ts" />
 ///<reference path="managers/AGALProgramCache.ts"/>
 ///<reference path="managers/RTTBufferManager.ts"/>
-///<reference path="managers/StageGLManager.ts"/>
 ///<reference path="away/_definitions.ts"/>
 away.Debug.THROW_ERRORS = false;
 away.Debug.LOG_PI_ERRORS = false;

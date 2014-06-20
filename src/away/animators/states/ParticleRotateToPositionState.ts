@@ -7,7 +7,7 @@ module away.animators
 	import ContextGLVertexBufferFormat		= away.stagegl.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
 	import Matrix3D							= away.geom.Matrix3D;
-	import StageGL							= away.base.StageGL;
+	import Stage							= away.base.Stage;
 	
 	/**
 	 * ...
@@ -40,7 +40,7 @@ module away.animators
 			this._position = this._particleRotateToPositionNode._iPosition;
 		}
 		
-		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+		public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{
 			var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionNode.POSITION_INDEX);
 			
@@ -54,7 +54,7 @@ module away.animators
 				this._offset = renderable.sourceEntity.inverseSceneTransform.transformVector(this._position);
 				animationRegisterCache.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
 			} else
-				animationSubGeometry.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+				animationSubGeometry.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 		
 		}
 	

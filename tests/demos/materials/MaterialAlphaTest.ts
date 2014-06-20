@@ -12,7 +12,7 @@ module demos.materials
 	import AssetLoader					= away.library.AssetLoader;
 	import AssetLoaderToken				= away.library.AssetLoaderToken;
 	import AssetType					= away.library.AssetType;
-	import DirectionalLight				= away.lights.DirectionalLight;
+	import DirectionalLight				= away.entities.DirectionalLight;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import URLLoader					= away.net.URLLoader;

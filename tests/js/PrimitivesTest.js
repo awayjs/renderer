@@ -6,7 +6,7 @@ var tests;
         var View = away.containers.View;
 
         var Vector3D = away.geom.Vector3D;
-        var DirectionalLight = away.lights.DirectionalLight;
+        var DirectionalLight = away.entities.DirectionalLight;
         var StaticLightPicker = away.materials.StaticLightPicker;
 
         var DefaultMaterialManager = away.materials.DefaultMaterialManager;

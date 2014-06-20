@@ -2,13 +2,16 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import Texture2DBase							= away.textures.Texture2DBase;
 
 	/**
 	 * NormalSimpleWaterMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
 	 */
 	export class NormalSimpleWaterMethod extends NormalBasicMethod
 	{
-		private _texture2:away.textures.Texture2DBase;
+		private _texture2:Texture2DBase;
 		private _normalTextureRegister2:ShaderRegisterElement;
 		private _useSecondNormalMap:boolean = false;
 		private _water1OffsetX:number = 0;
@@ -21,7 +24,7 @@ module away.materials
 		 * @param waveMap1 A normal map containing one layer of a wave structure.
 		 * @param waveMap2 A normal map containing a second layer of a wave structure.
 		 */
-		constructor(waveMap1:away.textures.Texture2DBase, waveMap2:away.textures.Texture2DBase)
+		constructor(waveMap1:Texture2DBase, waveMap2:Texture2DBase)
 		{
 			super();
 			this.normalMap = waveMap1;
@@ -105,12 +108,12 @@ module away.materials
 		/**
 		 * A second normal map that will be combined with the first to create a wave-like animation pattern.
 		 */
-		public get secondaryNormalMap():away.textures.Texture2DBase
+		public get secondaryNormalMap():Texture2DBase
 		{
 			return this._texture2;
 		}
 
-		public set secondaryNormalMap(value:away.textures.Texture2DBase)
+		public set secondaryNormalMap(value:Texture2DBase)
 		{
 			this._texture2 = value;
 		}
@@ -136,9 +139,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stageGL);
+			super.iActivate(vo, stage);
 
 			var data:Array<number> = vo.fragmentData;
 			var index:number = vo.fragmentConstantsIndex;
@@ -150,7 +153,7 @@ module away.materials
 
 			//if (this._useSecondNormalMap >= 0)
 			if (this._useSecondNormalMap)
-				this._texture2.activateTextureForStage(vo.texturesIndex + 1, stageGL);
+				(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex + 1, this._texture2);
 		}
 
 		/**
@@ -175,7 +178,6 @@ module away.materials
 				"mul " + targetReg + ", " + targetReg + ", " + dataReg + ".x	\n" +
 				"sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx	\n" +
 				"nrm " + targetReg + ".xyz, " + targetReg + ".xyz							\n";
-
 		}
 	}
 }

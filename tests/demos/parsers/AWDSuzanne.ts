@@ -13,7 +13,7 @@ module demos.parsers
 	import AssetLoaderToken				= away.library.AssetLoaderToken;
 	import AssetType					= away.library.AssetType;
 	import IAsset						= away.library.IAsset;
-	import DirectionalLight				= away.lights.DirectionalLight;
+	import DirectionalLight				= away.entities.DirectionalLight;
 	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import URLRequest					= away.net.URLRequest;
@@ -43,7 +43,7 @@ module demos.parsers
 			this._token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 			this._token.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
 
-            this._view = new View(new away.render.DefaultRenderer());
+            this._view = new View(new DefaultRenderer());
             this._view.camera.projection.far  = 6000;
             this._timer = new RequestAnimationFrame(this.render, this);
 

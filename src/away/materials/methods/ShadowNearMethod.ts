@@ -2,13 +2,11 @@
 
 module away.materials
 {
-	import StageGL                     = away.base.StageGL;
-	import Delegate							= away.utils.Delegate;
-
-	import Camera                         = away.entities.Camera;
+	import Stage                     		= away.base.Stage;
+	import Camera							= away.entities.Camera;
 	import IRenderable                      = away.pool.RenderableBase;
 	import ShadingMethodEvent               = away.events.ShadingMethodEvent;
-	import NearDirectionalShadowMapper      = away.lights.NearDirectionalShadowMapper;
+	import NearDirectionalShadowMapper      = away.materials.NearDirectionalShadowMapper;
 
 	// TODO: shadow mappers references in materials should be an interface so that this class should NOT extend ShadowMapMethodBase just for some delegation work
 	/**
@@ -35,7 +33,7 @@ module away.materials
 		{
 			super(baseMethod.castingLight);
 
-			this._onShaderInvalidatedDelegate = Delegate.create(this, this.onShaderInvalidated);
+			this._onShaderInvalidatedDelegate = (event:ShadingMethodEvent) => this.onShaderInvalidated(event);
 
 			this._baseMethod = baseMethod;
 			this._fadeRatio = fadeRatio;
@@ -151,23 +149,23 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
-			this._baseMethod.iActivate(vo, stageGL);
+			this._baseMethod.iActivate(vo, stage);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(vo:MethodVO, stageGL:StageGL)
+		public iDeactivate(vo:MethodVO, stage:Stage)
 		{
-			this._baseMethod.iDeactivate(vo, stageGL);
+			this._baseMethod.iDeactivate(vo, stage);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:IRenderable, stageGL:StageGL, camera:Camera)
+		public iSetRenderState(vo:MethodVO, renderable:IRenderable, stage:Stage, camera:Camera)
 		{
 			// todo: move this to activate (needs camera)
 			var near:number = camera.projection.near;
@@ -182,7 +180,7 @@ module away.materials
 			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
 			fragmentData[index] = minDistance;
 			fragmentData[index + 1] = 1/(maxDistance - minDistance);
-			this._baseMethod.iSetRenderState(vo, renderable, stageGL, camera);
+			this._baseMethod.iSetRenderState(vo, renderable, stage, camera);
 		}
 
 		/**

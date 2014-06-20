@@ -2,6 +2,8 @@
 
 module away.materials
 {
+	import Texture2DBase							= away.textures.Texture2DBase;
+
 	/**
 	 * NormalHeightMapMethod provides a normal map method that uses a height map to calculate the normals.
 	 */
@@ -18,7 +20,7 @@ module away.materials
 		 * @param worldHeight The height of the 'world'. This is used to map the height map values to scene dimensions.
 		 * @param worldDepth The depth of the 'world'. This is used to map uv coordinates' v component to scene dimensions.
 		 */
-		constructor(heightMap:away.textures.Texture2DBase, worldWidth:number, worldHeight:number, worldDepth:number)
+		constructor(heightMap:Texture2DBase, worldWidth:number, worldHeight:number, worldDepth:number)
 		{
 			super();
 
@@ -76,13 +78,15 @@ module away.materials
 			return this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this.normalMap, this._sharedRegisters.uvVarying, "clamp") +
 				
 				"add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg + ".xzzz\n" +
+
 				this.pGetTex2DSampleCode(vo, temp, this._pNormalTextureRegister, this.normalMap, temp, "clamp") +
+
 				"sub " + targetReg + ".x, " + targetReg + ".x, " + temp + ".x\n" +
-				
 				"add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg + ".zyzz\n" +
+
 				this.pGetTex2DSampleCode(vo, temp, this._pNormalTextureRegister, this.normalMap, temp, "clamp") +
+
 				"sub " + targetReg + ".z, " + targetReg + ".z, " + temp + ".x\n" +
-				
 				"mov " + targetReg + ".y, " + dataReg + ".w\n" +
 				"mul " + targetReg + ".xz, " + targetReg + ".xz, " + dataReg2 + ".xy\n" +
 				"nrm " + targetReg + ".xyz, " + targetReg + ".xyz\n";

@@ -4,7 +4,7 @@ module away.animators
 {
 	import TriangleSubGeometry       		= away.base.TriangleSubGeometry;
 	import SubMesh                          = away.base.TriangleSubMesh;
-	import StageGL                     		= away.base.StageGL;
+	import Stage                     		= away.base.Stage;
 	import Camera                         	= away.entities.Camera;
 	import AnimationStateEvent              = away.events.AnimationStateEvent;
 	import SubGeometryEvent              	= away.events.SubGeometryEvent;
@@ -13,7 +13,8 @@ module away.animators
 	import Vector3D                         = away.geom.Vector3D;
 	import RenderableBase                   = away.pool.RenderableBase;
 	import TriangleSubMeshRenderable		= away.pool.TriangleSubMeshRenderable;
-	import MaterialPassBase                 = away.materials.MaterialPassBase;
+	import MaterialPassBase                	= away.materials.MaterialPassBase;
+	import IContextStageGL					= away.stagegl.IContextStageGL;
 
 	/**
 	 * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects
@@ -192,7 +193,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGL:StageGL, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera)
+		public setRenderState(stage:Stage, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera)
 		{
 			// do on request of globalProperties
 			if (this._globalPropertiesDirty)
@@ -205,7 +206,7 @@ module away.animators
 			if (this._useCondensedIndices) {
 				// using a condensed data set
 				this.updateCondensedMatrices(subGeometry.condensedIndexLookUp, subGeometry.numCondensedJoints);
-				stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, subGeometry.numCondensedJoints*3);
+				(<IContextStageGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, subGeometry.numCondensedJoints*3);
 			} else {
 				if (this._pAnimationSet.usesCPU) {
 					if (this._morphedSubGeometryDirty[subGeometry.id])
@@ -213,11 +214,11 @@ module away.animators
 
 					return
 				}
-				stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints*3);
+				(<IContextStageGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints*3);
 			}
 
-			stageGL.activateBuffer(vertexStreamOffset, renderable.getVertexData(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.JOINT_INDEX_FORMAT);
-			stageGL.activateBuffer(vertexStreamOffset + 1, renderable.getVertexData(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.JOINT_WEIGHT_FORMAT);
+			(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset, renderable.getVertexData(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.JOINT_INDEX_FORMAT);
+			(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset + 1, renderable.getVertexData(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.JOINT_WEIGHT_FORMAT);
 		}
 
 		/**

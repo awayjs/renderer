@@ -2,14 +2,15 @@
 
 module away.materials
 {
-	import StageGL									= away.base.StageGL;
+	import Stage									= away.base.Stage;
 	import Camera									= away.entities.Camera;
+	import DirectionalLight							= away.entities.DirectionalLight;
+	import LightProbe								= away.entities.LightProbe;
+	import PointLight								= away.entities.PointLight;
 	import Vector3D									= away.geom.Vector3D;
 	import Matrix3D									= away.geom.Matrix3D;
-	import DirectionalLight							= away.lights.DirectionalLight;
-	import LightProbe								= away.lights.LightProbe;
-	import PointLight								= away.lights.PointLight;
 	import RenderableBase							= away.pool.RenderableBase;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
 
 	/**
 	 * LightingPass is a shader pass that uses shader methods to compile a complete program. It only includes the lighting
@@ -204,7 +205,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
+		public iRender(renderable:RenderableBase, stage:Stage, camera:Camera, viewProjection:Matrix3D)
 		{
 			renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
 
@@ -219,15 +220,15 @@ module away.materials
 				this._pVertexConstantData[this._pCameraPositionIndex + 2] = this._inverseSceneMatrix[2]*x + this._inverseSceneMatrix[6]*y + this._inverseSceneMatrix[10]*z + this._inverseSceneMatrix[14];
 			}
 
-			super.iRender(renderable, stageGL, camera, viewProjection);
+			super.iRender(renderable, stage, camera, viewProjection);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:StageGL, camera:Camera)
+		public iActivate(stage:Stage, camera:Camera)
 		{
-			super.iActivate(stageGL, camera);
+			super.iActivate(stage, camera);
 
 			if (!this._tangentSpace && this._pCameraPositionIndex >= 0) {
 				var pos:Vector3D = camera.scenePosition;
@@ -417,7 +418,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pUpdateProbes(stageGL:StageGL)
+		public pUpdateProbes(stage:Stage)
 		{
 			var probe:LightProbe;
 			var lightProbes:Array<LightProbe> = this._pLightPicker.lightProbes;
@@ -436,10 +437,10 @@ module away.materials
 				probe = lightProbes[ this._lightProbesOffset + i];
 
 				if (addDiff)
-					probe.diffuseMap.activateTextureForStage(this._pLightProbeDiffuseIndices[i], stageGL);
+					(<IContextStageGL> stage.context).activateCubeTexture(this._pLightProbeDiffuseIndices[i], probe.diffuseMap);
 
 				if (addSpec)
-					probe.specularMap.activateTextureForStage(this._pLightProbeSpecularIndices[i], stageGL);
+					(<IContextStageGL> stage.context).activateCubeTexture(this._pLightProbeSpecularIndices[i], probe.specularMap);
 			}
 
 			for (i = 0; i < len; ++i)

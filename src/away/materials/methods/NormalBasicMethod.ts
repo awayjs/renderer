@@ -2,13 +2,19 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import ContextGLMipFilter						= away.stagegl.ContextGLMipFilter;
+	import ContextGLTextureFilter					= away.stagegl.ContextGLTextureFilter;
+	import ContextGLWrapMode						= away.stagegl.ContextGLWrapMode;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import Texture2DBase							= away.textures.Texture2DBase;
 
 	/**
 	 * NormalBasicMethod is the default method for standard tangent-space normal mapping.
 	 */
 	export class NormalBasicMethod extends ShadingMethodBase
 	{
-		private _texture:away.textures.Texture2DBase;
+		private _texture:Texture2DBase;
 		private _useTexture:boolean;
 		public _pNormalTextureRegister:ShaderRegisterElement;
 
@@ -25,17 +31,7 @@ module away.materials
 		 */
 		public iInitVO(vo:MethodVO)
 		{
-			if (this._texture) {
-
-				vo.needsUV = true;
-
-			} else {
-
-				vo.needsUV = false;
-
-			}
-
-			//vo.needsUV = Boolean(_texture);
+			vo.needsUV = (this._texture == null);
 		}
 
 		/**
@@ -70,14 +66,14 @@ module away.materials
 		/**
 		 * The texture containing the normals per pixel.
 		 */
-		public get normalMap():away.textures.Texture2DBase
+		public get normalMap():Texture2DBase
 		{
 			return this._texture;
 		}
 
-		public set normalMap(value:away.textures.Texture2DBase)
+		public set normalMap(value:Texture2DBase)
 		{
-			var b:boolean = ( value != null );
+			var b:boolean = (value != null);
 
 			if (b != this._useTexture || (value && this._texture && (value.hasMipmaps != this._texture.hasMipmaps || value.format != this._texture.format)))
 				this.iInvalidateShaderProgram();
@@ -105,15 +101,14 @@ module away.materials
 				this._texture = null;
 		}
 
-
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
 			if (vo.texturesIndex >= 0) {
-				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.stagegl.ContextGLWrapMode.REPEAT:away.stagegl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.stagegl.ContextGLTextureFilter.LINEAR:away.stagegl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.stagegl.ContextGLMipFilter.MIPLINEAR:away.stagegl.ContextGLMipFilter.MIPNONE);
-				this._texture.activateTextureForStage(vo.texturesIndex, stageGL);
+				(<IContextStageGL> stage.context).setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, vo.useSmoothTextures? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, vo.useMipmapping? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
+				(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex, this._texture);
 			}
 		}
 
@@ -127,7 +122,6 @@ module away.materials
 			vo.texturesIndex = this._pNormalTextureRegister.index;
 
 			return this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this._texture) + "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx\n" + "nrm " + targetReg + ".xyz, " + targetReg + "\n";
-
 		}
 	}
 }

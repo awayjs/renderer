@@ -2,8 +2,8 @@
 
 module away.animators
 {
-	import StageGL					= away.base.StageGL;
-	import IContext					= away.stagegl.IContext;
+	import Stage					= away.base.Stage;
+	import IContextStageGL			= away.stagegl.IContextStageGL;
 	import IVertexBuffer			= away.stagegl.IVertexBuffer;
 	
 	/**
@@ -13,11 +13,11 @@ module away.animators
 	{
 		public static SUBGEOM_ID_COUNT:number = 0;
 
-		public _pVertexData:number[];
+		public _pVertexData:Array<number>;
 		
-		public _pVertexBuffer:IVertexBuffer[] = new Array<IVertexBuffer>(8);
-		public _pBufferContext:IContext[] = new Array<IContext>(8);
-		public _pBufferDirty:boolean[] = new Array<boolean>(8);
+		public _pVertexBuffer:Array<IVertexBuffer> = new Array<IVertexBuffer>(8);
+		public _pBufferContext:Array<IContextStageGL> = new Array<IContextStageGL>(8);
+		public _pBufferDirty:Array<boolean> = new Array<boolean>(8);
 		
 		private _numVertices:number /*uint*/;
 		
@@ -51,11 +51,10 @@ module away.animators
 			this._pVertexData = new Array<number>(numVertices*totalLenOfOneVertex);
 		}
 
-		//TODO Why does Typescript complain when stageGL type away.base.StageGL is changed to StageGL?
-		public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stageGL:away.base.StageGL, format:string)
+		public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stage:Stage, format:string)
 		{
-			var contextIndex:number /*int*/ = stageGL.stageGLIndex;
-			var context:IContext = stageGL.contextGL;
+			var contextIndex:number /*int*/ = stage.stageIndex;
+			var context:IContextStageGL = <IContextStageGL> stage.context;
 			
 			var buffer:IVertexBuffer = this._pVertexBuffer[contextIndex];
 			if (!buffer || this._pBufferContext[contextIndex] != context) {

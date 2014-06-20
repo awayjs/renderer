@@ -9,11 +9,11 @@ module tests.textures
 	import LoaderEvent					= away.events.LoaderEvent;
 	import Vector3D						= away.geom.Vector3D;
 	import AssetLibrary					= away.library.AssetLibrary;
-	import DirectionalLight				= away.lights.DirectionalLight;
+	import AssetLoader					= away.library.AssetLoader;
+	import AssetLoaderToken				= away.library.AssetLoaderToken;
+	import DirectionalLight				= away.entities.DirectionalLight;
 	import SkyboxMaterial				= away.materials.SkyboxMaterial;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import AssetLoader					= away.net.AssetLoader;
-	import AssetLoaderToken				= away.net.AssetLoaderToken;
 	import URLLoader					= away.net.URLLoader;
 	import URLRequest					= away.net.URLRequest;
 	import PrimitiveTorusPrefab			= away.prefabs.PrimitiveTorusPrefab;

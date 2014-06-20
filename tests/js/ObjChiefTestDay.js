@@ -13,7 +13,7 @@ var demos;
 
         var AssetType = away.library.AssetType;
 
-        var DirectionalLight = away.lights.DirectionalLight;
+        var DirectionalLight = away.entities.DirectionalLight;
         var TriangleMaterial = away.materials.TriangleMaterial;
         var StaticLightPicker = away.materials.StaticLightPicker;
         var URLRequest = away.net.URLRequest;

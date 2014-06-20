@@ -4,13 +4,14 @@ module away.animators
 {
 	import SubGeometryBase					= away.base.SubGeometryBase;
 	import ISubMesh							= away.base.ISubMesh;
-	import StageGL							= away.base.StageGL;
+	import Stage							= away.base.Stage;
 	import Camera							= away.entities.Camera;
 	import Vector3D							= away.geom.Vector3D;
 	import ContextGLProgramType				= away.stagegl.ContextGLProgramType;
 	import ContextGLVertexBufferFormat		= away.stagegl.ContextGLVertexBufferFormat;
 	import MaterialPassBase					= away.materials.MaterialPassBase;
 	import RenderableBase					= away.pool.RenderableBase;
+	import IContextStageGL					= away.stagegl.IContextStageGL;
 	
 	/**
 	 * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
@@ -70,7 +71,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGL:StageGL, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera)
+		public setRenderState(stage:Stage, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera)
 		{
 			var animationRegisterCache:AnimationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
 			
@@ -85,18 +86,18 @@ module away.animators
 			var animationSubGeometry:AnimationSubGeometry = this._particleAnimationSet.getAnimationSubGeometry(subMesh);
 			
 			for (i = 0; i < this._animationParticleStates.length; i++)
-				this._animationParticleStates[i].setRenderState(stageGL, renderable, animationSubGeometry, animationRegisterCache, camera);
+				this._animationParticleStates[i].setRenderState(stage, renderable, animationSubGeometry, animationRegisterCache, camera);
 
 			//process animator subgeometries
 			var animatorSubGeometry:AnimationSubGeometry = this.getAnimatorSubGeometry(subMesh);
 			
 			for (i = 0; i < this._animatorParticleStates.length; i++)
-				this._animatorParticleStates[i].setRenderState(stageGL, renderable, animatorSubGeometry, animationRegisterCache, camera);
-			
-			stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, animationRegisterCache.vertexConstantOffset, animationRegisterCache.vertexConstantData, animationRegisterCache.numVertexConstant);
+				this._animatorParticleStates[i].setRenderState(stage, renderable, animatorSubGeometry, animationRegisterCache, camera);
+
+			(<IContextStageGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, animationRegisterCache.vertexConstantOffset, animationRegisterCache.vertexConstantData, animationRegisterCache.numVertexConstant);
 			
 			if (animationRegisterCache.numFragmentConstant > 0)
-				stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, animationRegisterCache.fragmentConstantOffset, animationRegisterCache.fragmentConstantData, animationRegisterCache.numFragmentConstant);
+				(<IContextStageGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, animationRegisterCache.fragmentConstantOffset, animationRegisterCache.fragmentConstantData, animationRegisterCache.numFragmentConstant);
 		}
 		
 		/**

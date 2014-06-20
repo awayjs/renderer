@@ -2,6 +2,12 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import Matrix3D									= away.geom.Matrix3D;
+	import RenderableBase							= away.pool.RenderableBase;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import RenderTexture							= away.textures.RenderTexture;
+
 	/**
 	 * DiffuseSubSurfaceMethod provides a depth map-based diffuse shading method that mimics the scattering of
 	 * light inside translucent surfaces. It allows light to shine through an object and to soften the diffuse shading.
@@ -37,7 +43,9 @@ module away.materials
 			this.pBaseMethod._iModulateMethod = (vo:MethodVO, target:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => this.scatterLight(vo, target, regCache, sharedRegisters);
 
 			this._passes = new Array<MaterialPassBase>();
-			this._depthPass = new SingleObjectDepthPass(depthMapSize, depthMapOffset);
+			this._depthPass = new SingleObjectDepthPass();
+			this._depthPass.textureSize = depthMapSize;
+			this._depthPass.polyOffset = depthMapOffset;
 			this._passes.push(this._depthPass);
 			this._scattering = 0.2;
 			this._translucency = 1;
@@ -195,9 +203,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stageGL);
+			super.iActivate(vo, stage);
 			
 			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
 			var data:Array<number> = vo.fragmentData;
@@ -211,13 +219,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public setRenderState(vo:MethodVO, renderable:RenderableBase, stage:Stage, camera:away.entities.Camera)
 		{
-			var depthMap:away.textures.RenderTexture = this._depthPass._iGetDepthMap(renderable);
-			var projection:away.geom.Matrix3D = this._depthPass._iGetProjection(renderable);
+			(<IContextStageGL> stage.context).activateTexture(vo.secondaryTexturesIndex, this._depthPass._iGetDepthMap(renderable));
 
-			depthMap.activateTextureForStage(vo.secondaryTexturesIndex, stageGL);
-			projection.copyRawDataTo(vo.vertexData, vo.secondaryVertexConstantsIndex + 4, true);
+			this._depthPass._iGetProjection(renderable).copyRawDataTo(vo.vertexData, vo.secondaryVertexConstantsIndex + 4, true);
 		}
 		
 		/**

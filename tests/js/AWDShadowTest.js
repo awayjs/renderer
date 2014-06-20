@@ -3,28 +3,47 @@
 var demos;
 (function (demos) {
     (function (parsers) {
+        var View = away.containers.View;
+        var HoverController = away.controllers.HoverController;
+
+        var AssetEvent = away.events.AssetEvent;
+        var LoaderEvent = away.events.LoaderEvent;
+        var Vector3D = away.geom.Vector3D;
+        var AssetLibrary = away.library.AssetLibrary;
+
+        var AssetType = away.library.AssetType;
+
+        var URLRequest = away.net.URLRequest;
+        var AWDParser = away.parsers.AWDParser;
+        var DefaultRenderer = away.render.DefaultRenderer;
+        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+
         var AWDShadowTest = (function () {
             function AWDShadowTest() {
                 var _this = this;
-                this.lookAtPosition = new away.geom.Vector3D();
+                this.lookAtPosition = new Vector3D();
                 this._move = false;
                 away.Debug.LOG_PI_ERRORS = true;
                 away.Debug.THROW_ERRORS = false;
 
-                away.library.AssetLibrary.enableParser(away.parsers.AWDParser);
+                AssetLibrary.enableParser(AWDParser);
 
-                this._token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/awd/ShadowTest.awd'));
+                this._token = AssetLibrary.load(new URLRequest('assets/awd/ShadowTest.awd'));
 
-                this._token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
-                this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
+                this._token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                    return _this.onResourceComplete(event);
+                });
+                this._token.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) {
+                    return _this.onAssetComplete(event);
+                });
 
-                this._view = new away.containers.View(new away.render.DefaultRenderer());
+                this._view = new View(new DefaultRenderer());
                 this._view.camera.projection.far = 5000;
                 this._view.camera.y = 100;
 
-                this._timer = new away.utils.RequestAnimationFrame(this.render, this);
+                this._timer = new RequestAnimationFrame(this.render, this);
 
-                this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 2000, 5);
+                this._cameraController = new HoverController(this._view.camera, null, 45, 20, 2000, 5);
 
                 document.onmousedown = function (event) {
                     return _this.onMouseDown(event);
@@ -38,11 +57,13 @@ var demos;
                 document.onmousewheel = function (event) {
                     return _this.onMouseWheel(event);
                 };
-                window.onresize = function () {
-                    return _this.resize();
+
+                window.onresize = function (event) {
+                    return _this.resize(event);
                 };
             }
-            AWDShadowTest.prototype.resize = function () {
+            AWDShadowTest.prototype.resize = function (event) {
+                if (typeof event === "undefined") { event = null; }
                 this._view.y = 0;
                 this._view.x = 0;
                 this._view.width = window.innerWidth;
@@ -50,47 +71,44 @@ var demos;
             };
 
             AWDShadowTest.prototype.render = function (dt) {
-                if (this._view.camera) {
+                if (this._view.camera)
                     this._view.camera.lookAt(this.lookAtPosition);
-                }
 
-                if (this._awdMesh) {
+                if (this._awdMesh)
                     this._awdMesh.rotationY += 0.2;
-                }
+
                 this._view.render();
             };
 
-            AWDShadowTest.prototype.onAssetComplete = function (e) {
+            AWDShadowTest.prototype.onAssetComplete = function (event) {
                 console.log('------------------------------------------------------------------------------');
-                console.log('away.events.AssetEvent.ASSET_COMPLETE', away.library.AssetLibrary.getAsset(e.asset.name));
+                console.log('AssetEvent.ASSET_COMPLETE', AssetLibrary.getAsset(event.asset.name));
                 console.log('------------------------------------------------------------------------------');
             };
 
-            AWDShadowTest.prototype.onResourceComplete = function (e) {
+            AWDShadowTest.prototype.onResourceComplete = function (event) {
                 console.log('------------------------------------------------------------------------------');
-                console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', e);
+                console.log('LoaderEvent.RESOURCE_COMPLETE', event);
                 console.log('------------------------------------------------------------------------------');
 
-                var loader = e.target;
+                var loader = event.target;
                 var numAssets = loader.baseDependency.assets.length;
 
                 for (var i = 0; i < numAssets; ++i) {
                     var asset = loader.baseDependency.assets[i];
 
                     switch (asset.assetType) {
-                        case away.library.AssetType.MESH:
+                        case AssetType.MESH:
                             this._awdMesh = asset;
                             this._view.scene.addChild(this._awdMesh);
                             this.resize();
-
                             break;
 
-                        case away.library.AssetType.LIGHT:
+                        case AssetType.LIGHT:
                             this._view.scene.addChild(asset);
-
                             break;
 
-                        case away.library.AssetType.MATERIAL:
+                        case AssetType.MATERIAL:
                             break;
                     }
                 }

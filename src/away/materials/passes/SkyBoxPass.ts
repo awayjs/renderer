@@ -3,12 +3,12 @@
 module away.materials
 {
 	import TriangleSubGeometry						= away.base.TriangleSubGeometry;
-	import StageGL									= away.base.StageGL;
+	import Stage									= away.base.Stage;
 	import Camera									= away.entities.Camera;
 	import Matrix3D									= away.geom.Matrix3D;
 	import Vector3D									= away.geom.Vector3D;
 	import RenderableBase							= away.pool.RenderableBase;
-	import IContext									= away.stagegl.IContext;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
 	import ContextGLCompareMode						= away.stagegl.ContextGLCompareMode;
 	import ContextGLMipFilter						= away.stagegl.ContextGLMipFilter;
 	import ContextGLProgramType						= away.stagegl.ContextGLProgramType;
@@ -27,12 +27,16 @@ module away.materials
 
 		/**
 		 * Creates a new SkyboxPass object.
+		 *
+		 * @param material The material to which this pass belongs.
 		 */
-		constructor()
+		constructor(material:MaterialBase)
 		{
 			super();
 
+			this.material = material;
 			this.mipmap = false;
+
 			this._pNumUsedTextures = 1;
 			this._vertexData = new Array<number>(0, 0, 0, 0, 1, 1, 1, 1);
 		}
@@ -90,9 +94,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
+		public iRender(renderable:RenderableBase, stage:Stage, camera:Camera, viewProjection:Matrix3D)
 		{
-			var context:IContext = stageGL.contextGL;
+			var context:IContextStageGL = <IContextStageGL> stage.context;
 			var pos:Vector3D = camera.scenePosition;
 			this._vertexData[0] = pos.x;
 			this._vertexData[1] = pos.y;
@@ -101,20 +105,20 @@ module away.materials
 			context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, viewProjection, true);
 			context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
 
-			stageGL.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-			context.drawTriangles(stageGL.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+			context.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+			context.drawTriangles(context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:StageGL, camera:Camera)
+		public iActivate(stage:Stage, camera:Camera)
 		{
-			super.iActivate(stageGL, camera);
-			var context:IContext = stageGL.contextGL;
+			super.iActivate(stage, camera);
+			var context:IContextStageGL = <IContextStageGL> stage.context;
 			context.setSamplerStateAt(0, ContextGLWrapMode.CLAMP, ContextGLTextureFilter.LINEAR, this._cubeTexture.hasMipmaps? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
 			context.setDepthTest(false, ContextGLCompareMode.LESS);
-			this._cubeTexture.activateTextureForStage(0, stageGL);
+			context.activateCubeTexture(0, this._cubeTexture);
 		}
 	}
 }

@@ -8,7 +8,7 @@ module away.animators
 	import Matrix3D							= away.geom.Matrix3D;
 	import Orientation3D					= away.geom.Orientation3D;
 	import Vector3D							= away.geom.Vector3D;
-	import StageGL							= away.base.StageGL;
+	import Stage							= away.base.Stage;
 	import MathConsts						= away.geom.MathConsts;
 	
 	/**
@@ -30,7 +30,7 @@ module away.animators
 			this._billboardAxis = particleNode._iBillboardAxis;
 		}
 		
-		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+		public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{
 			var comps:Array<Vector3D>;
 			if (this._billboardAxis) {

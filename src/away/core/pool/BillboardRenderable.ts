@@ -45,7 +45,7 @@ module away.pool
 		 */
 		public _pGetSubGeometry():SubGeometryBase
 		{
-			var material:away.materials.IMaterial = this._billboard.material;
+			var material:away.materials.MaterialBase = this._billboard.material;
 
 			var geometry:TriangleSubGeometry = BillboardRenderable._materialGeometry[material.id];
 

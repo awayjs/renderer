@@ -2,13 +2,19 @@
 
 module away.materials
 {
-
+	import Stage									= away.base.Stage;
+	import Camera									= away.entities.Camera;
+	import DirectionalLight							= away.entities.DirectionalLight;
+	import PointLight								= away.entities.PointLight;
+	import Matrix3D									= away.geom.Matrix3D;
+	import Vector3D									= away.geom.Vector3D;
+	import RenderableBase							= away.pool.RenderableBase;
 
 	/**
 	 * ShadowCasterPass is a shader pass that uses shader methods to compile a complete program. It only draws the lighting
 	 * contribution for a single shadow-casting light.
 	 *
-	 * @see away3d.materials.methods.ShadingMethodBase
+	 * @see away.materials.ShadingMethodBase
 	 */
 	export class ShadowCasterPass extends CompiledPass
 	{
@@ -88,7 +94,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:RenderableBase, stage:Stage, camera:Camera, viewProjection:Matrix3D)
 		{
 			renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
 
@@ -103,15 +109,15 @@ module away.materials
 				this._pVertexConstantData[this._pCameraPositionIndex + 2] = this._inverseSceneMatrix[2]*x + this._inverseSceneMatrix[6]*y + this._inverseSceneMatrix[10]*z + this._inverseSceneMatrix[14];
 			}
 
-			super.iRender(renderable, stageGL, camera, viewProjection);
+			super.iRender(renderable, stage, camera, viewProjection);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iActivate(stage:Stage, camera:Camera)
 		{
-			super.iActivate(stageGL, camera);
+			super.iActivate(stage, camera);
 
 			if (!this._tangentSpace && this._pCameraPositionIndex >= 0) {
 				var pos:away.geom.Vector3D = camera.scenePosition;
@@ -127,11 +133,11 @@ module away.materials
 		public pUpdateLightConstants()
 		{
 			// first dirs, then points
-			var dirLight:away.lights.DirectionalLight;
-			var pointLight:away.lights.PointLight;
+			var dirLight:DirectionalLight;
+			var pointLight:PointLight;
 			var k:number = 0;
 			var l:number = 0;
-			var dirPos:away.geom.Vector3D;
+			var dirPos:Vector3D;
 
 			l = this._lightVertexConstantIndex;
 			k = this._pLightFragmentConstantIndex;
@@ -228,7 +234,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pUpdateProbes(stageGL:away.base.StageGL)
+		public pUpdateProbes(stage:Stage)
 		{
 		}
 	}

@@ -2,7 +2,8 @@
 
 module away.filters
 {
-	import StageGL					 		= away.base.StageGL;
+	import Stage					 		= away.base.Stage;
+	import IContextStageGL					= away.stagegl.IContextStageGL;
 	import ByteArray						= away.utils.ByteArray;
 
 	export class Filter3DTaskBase
@@ -111,7 +112,7 @@ module away.filters
 
 		}
 
-		public getMainInputTexture(stage:StageGL):away.stagegl.ITexture
+		public getMainInputTexture(stage:Stage):away.stagegl.ITexture
 		{
 
 			if (this._textureDimensionsInvalid) {
@@ -147,7 +148,7 @@ module away.filters
 			this._program3DInvalid = true;
 		}
 
-		public pUpdateProgram(stage:StageGL)
+		public pUpdateProgram(stage:Stage)
 		{
 			if (this._program3D) {
 
@@ -155,7 +156,7 @@ module away.filters
 
 			}
 
-			this._program3D = stage.contextGL.createProgram();
+			this._program3D = (<IContextStageGL> stage.context).createProgram();
 
 			var vertexByteCode:ByteArray = (new aglsl.assembler.AGALMiniAssembler().assemble("part vertex 1\n" + this.pGetVertexCode() + "endpart"))['vertex'].data;
 			var fragmentByteCode:ByteArray = (new aglsl.assembler.AGALMiniAssembler().assemble("part fragment 1\n" + this.pGetFragmentCode() + "endpart"))['fragment'].data;
@@ -181,7 +182,7 @@ module away.filters
 
 		}
 
-		public pUpdateTextures(stage:StageGL)
+		public pUpdateTextures(stage:Stage)
 		{
 
 			if (this._mainInputTexture) {
@@ -191,28 +192,28 @@ module away.filters
 			}
 
 
-			this._mainInputTexture = stage.contextGL.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, away.stagegl.ContextGLTextureFormat.BGRA, true);
+			this._mainInputTexture = (<IContextStageGL> stage.context).createTexture(this._scaledTextureWidth, this._scaledTextureHeight, away.stagegl.ContextGLTextureFormat.BGRA, true);
 
 			this._textureDimensionsInvalid = false;
 
 		}
 
-		public getProgram(stageGL:StageGL):away.stagegl.IProgram
+		public getProgram(stage:Stage):away.stagegl.IProgram
 		{
 			if (this._program3DInvalid) {
 
-				this.pUpdateProgram(stageGL);
+				this.pUpdateProgram(stage);
 
 			}
 
 			return this._program3D;
 		}
 
-		public activate(stageGL:StageGL, camera:away.entities.Camera, depthTexture:away.stagegl.ITexture)
+		public activate(stage:Stage, camera:away.entities.Camera, depthTexture:away.stagegl.ITexture)
 		{
 		}
 
-		public deactivate(stageGL:StageGL)
+		public deactivate(stage:Stage)
 		{
 		}
 

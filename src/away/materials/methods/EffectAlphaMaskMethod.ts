@@ -2,6 +2,10 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import Texture2DBase							= away.textures.Texture2DBase;
+
 	/**
 	 * EffectAlphaMaskMethod allows the use of an additional texture to specify the alpha value of the material. When used
 	 * with the secondary uv set, it allows for a tiled main texture with independently varying alpha (useful for water
@@ -9,7 +13,7 @@ module away.materials
 	 */
 	export class EffectAlphaMaskMethod extends EffectMethodBase
 	{
-		private _texture:away.textures.Texture2DBase;
+		private _texture:Texture2DBase;
 		private _useSecondaryUV:boolean;
 
 		/**
@@ -18,7 +22,7 @@ module away.materials
 		 * @param texture The texture to use as the alpha mask.
 		 * @param useSecondaryUV Indicated whether or not the secondary uv set for the mask. This allows mapping alpha independently.
 		 */
-		constructor(texture:away.textures.Texture2DBase, useSecondaryUV:boolean = false)
+		constructor(texture:Texture2DBase, useSecondaryUV:boolean = false)
 		{
 			super();
 			
@@ -56,12 +60,12 @@ module away.materials
 		/**
 		 * The texture to use as the alpha mask.
 		 */
-		public get texture():away.textures.Texture2DBase
+		public get texture():Texture2DBase
 		{
 			return this._texture;
 		}
 		
-		public set texture(value:away.textures.Texture2DBase)
+		public set texture(value:Texture2DBase)
 		{
 			this._texture = value;
 		}
@@ -69,9 +73,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
-			this._texture.activateTextureForStage(vo.texturesIndex, stageGL);
+			(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex, this._texture);
 		}
 
 		/**

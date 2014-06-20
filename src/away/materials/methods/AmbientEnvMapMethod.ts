@@ -2,6 +2,8 @@
 
 module away.materials
 {
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+
 	/**
 	 * AmbientEnvMapMethod provides a diffuse shading method that uses a diffuse irradiance environment map to
 	 * approximate global lighting rather than lights.
@@ -46,11 +48,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:away.base.Stage)
 		{
-			super.iActivate(vo, stageGL);
+			super.iActivate(vo, stage);
 
-			this._cubeTexture.activateTextureForStage(vo.texturesIndex, stageGL);
+			(<IContextStageGL> stage.context).activateCubeTexture(vo.texturesIndex, this._cubeTexture);
 		}
 		
 		/**

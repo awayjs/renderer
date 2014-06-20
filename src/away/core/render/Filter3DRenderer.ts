@@ -16,16 +16,16 @@ module away.render
 		private _mainInputTexture:away.stagegl.ITexture;
 		private _requireDepthRender:boolean;
 		private _rttManager:away.managers.RTTBufferManager;
-		private _stageGL:away.base.StageGL;
+		private _stage:away.base.Stage;
 		private _filterSizesInvalid:boolean = true;
 		private _onRTTResizeDelegate:Function;
 
-		constructor(stageGL:away.base.StageGL)
+		constructor(stage:away.base.Stage)
 		{
 			this._onRTTResizeDelegate = away.utils.Delegate.create(this, this.onRTTResize);
 
-			this._stageGL = stageGL;
-			this._rttManager = away.managers.RTTBufferManager.getInstance(stageGL);
+			this._stage = stage;
+			this._rttManager = away.managers.RTTBufferManager.getInstance(stage);
 			this._rttManager.addEventListener(away.events.Event.RESIZE, this._onRTTResizeDelegate);
 
 		}
@@ -40,11 +40,11 @@ module away.render
 			return this._requireDepthRender;
 		}
 
-		public getMainInputTexture(stageGL:away.base.StageGL):away.stagegl.ITexture
+		public getMainInputTexture(stage:away.base.Stage):away.stagegl.ITexture
 		{
 			if (this._filterTasksInvalid) {
 
-				this.updateFilterTasks(stageGL);
+				this.updateFilterTasks(stage);
 
 			}
 
@@ -86,7 +86,7 @@ module away.render
 
 		}
 
-		private updateFilterTasks(stageGL:away.base.StageGL)
+		private updateFilterTasks(stage:away.base.Stage)
 		{
 			var len:number;
 
@@ -113,24 +113,24 @@ module away.render
 				filter = this._filters[i];
 
 				// TODO: check logic
-				// filter.setRenderTargets(i == len? null : Filter3DBase(_filters[i + 1]).getMainInputTexture(stageGL), stageGL);
+				// filter.setRenderTargets(i == len? null : Filter3DBase(_filters[i + 1]).getMainInputTexture(stage), stage);
 
-				filter.setRenderTargets(i == len? null : this._filters[i + 1].getMainInputTexture(stageGL), stageGL);
+				filter.setRenderTargets(i == len? null : this._filters[i + 1].getMainInputTexture(stage), stage);
 
 				this._tasks = this._tasks.concat(filter.tasks);
 
 			}
 
-			this._mainInputTexture = this._filters[0].getMainInputTexture(stageGL);
+			this._mainInputTexture = this._filters[0].getMainInputTexture(stage);
 
 		}
 
-		public render(stageGL:away.base.StageGL, camera:away.entities.Camera, depthTexture:away.stagegl.ITexture)
+		public render(stage:away.base.Stage, camera:away.entities.Camera, depthTexture:away.stagegl.ITexture)
 		{
 			var len:number;
 			var i:number;
 			var task:away.filters.Filter3DTaskBase;
-			var context:away.stagegl.IContext = stageGL.contextGL;
+			var context:away.stagegl.IContextStageGL = <away.stagegl.IContextStageGL> stage.context;
 
 			var indexBuffer:away.stagegl.IIndexBuffer = this._rttManager.indexBuffer;
 
@@ -145,13 +145,13 @@ module away.render
 			}
 
 			if (this._filterTasksInvalid) {
-				this.updateFilterTasks(stageGL);
+				this.updateFilterTasks(stage);
 			}
 
 			len = this._filters.length;
 
 			for (i = 0; i < len; ++i) {
-				this._filters[i].update(stageGL, camera);
+				this._filters[i].update(stage, camera);
 			}
 
 			len = this._tasks.length;
@@ -165,27 +165,27 @@ module away.render
 
 				task = this._tasks[i];
 
-				//stageGL.setRenderTarget(task.target); //TODO
+				//stage.setRenderTarget(task.target); //TODO
 
 				if (!task.target) {
 
-					stageGL.scissorRect = null;
+					stage.scissorRect = null;
 					vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
 					context.setVertexBufferAt(0, vertexBuffer, 0, away.stagegl.ContextGLVertexBufferFormat.FLOAT_2);
 					context.setVertexBufferAt(1, vertexBuffer, 2, away.stagegl.ContextGLVertexBufferFormat.FLOAT_2);
 
 				}
 
-				context.setTextureAt(0, task.getMainInputTexture(stageGL));
-				context.setProgram(task.getProgram(stageGL));
+				context.setTextureAt(0, task.getMainInputTexture(stage));
+				context.setProgram(task.getProgram(stage));
 				context.clear(0.0, 0.0, 0.0, 0.0);
 
-				task.activate(stageGL, camera, depthTexture);
+				task.activate(stage, camera, depthTexture);
 
 				context.setBlendFactors(away.stagegl.ContextGLBlendFactor.ONE, away.stagegl.ContextGLBlendFactor.ZERO);
 				context.drawTriangles(indexBuffer, 0, 2);
 
-				task.deactivate(stageGL);
+				task.deactivate(stage);
 			}
 
 			context.setTextureAt(0, null);
@@ -208,7 +208,7 @@ module away.render
 		{
 			this._rttManager.removeEventListener(away.events.Event.RESIZE, this._onRTTResizeDelegate);
 			this._rttManager = null;
-			this._stageGL = null;
+			this._stage = null;
 		}
 	}
 

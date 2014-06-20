@@ -128,11 +128,11 @@ module away.materials
 		 * Sets the render state for this method.
 		 *
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
-		 * @param stageGL The StageGL object currently used for rendering.
+		 * @param stage The Stage object currently used for rendering.
 		 *
 		 * @internal
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:away.base.Stage)
 		{
 
 		}
@@ -142,12 +142,12 @@ module away.materials
 		 *
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
 		 * @param renderable The renderable currently being rendered.
-		 * @param stageGL The StageGL object currently used for rendering.
+		 * @param stage The Stage object currently used for rendering.
 		 * @param camera The camera from which the scene is currently rendered.
 		 *
 		 * @internal
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera)
+		public iSetRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stage:away.base.Stage, camera:away.entities.Camera)
 		{
 
 		}
@@ -155,11 +155,11 @@ module away.materials
 		/**
 		 * Clears the render state for this method.
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
-		 * @param stageGL The StageGL object currently used for rendering.
+		 * @param stage The Stage object currently used for rendering.
 		 *
 		 * @internal
 		 */
-		public iDeactivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iDeactivate(vo:MethodVO, stage:away.base.Stage)
 		{
 
 		}

@@ -18,7 +18,6 @@
 
 ///<reference path="errors/AnimationSetError.ts"/>
 
-///<reference path="events/LightEvent.ts" />
 ///<reference path="events/AnimationStateEvent.ts" />
 ///<reference path="events/AnimatorEvent.ts" />
 ///<reference path="events/ShadingMethodEvent.ts"/>
@@ -31,17 +30,11 @@
 ///<reference path="core/pool/SkyboxRenderable.ts"/>
 ///<reference path="core/pool/TriangleSubMeshRenderable.ts"/>
 
-
-///<reference path="core/traverse/EntityCollector.ts" />
-///<reference path="core/traverse/ShadowCasterCollector.ts" />
-
-///<reference path="core/partition/DirectionalLightNode.ts" />
-///<reference path="core/partition/LightProbeNode.ts" />
-///<reference path="core/partition/PointLightNode.ts" />
-
 ///<reference path="core/pick/PickingColliderBase.ts" />
 ///<reference path="core/pick/JSPickingCollider.ts" />
 ///<reference path="core/pick/ShaderPicker.ts" />
+
+///<reference path="materials/utils/DefaultMaterialManager.ts"/>
 
 ///<reference path="core/render/RendererBase.ts"/>
 
@@ -49,20 +42,8 @@
 ///<reference path="core/render/DefaultRenderer.ts"/>
 ///<reference path="core/render/Filter3DRenderer.ts"/>
 
-///<reference path="materials/utils/DefaultMaterialManager.ts"/>
-
 ///<reference path="filters/tasks/Filter3DTaskBase.ts"/>
 ///<reference path="filters/Filter3DBase.ts"/>
-
-///<reference path="lights/LightBase.ts"/>
-///<reference path="lights/LightProbe.ts"/>
-///<reference path="lights/PointLight.ts"/>
-///<reference path="lights/DirectionalLight.ts"/>
-///<reference path="lights/shadowmaps/ShadowMapperBase.ts"/>
-///<reference path="lights/shadowmaps/CubeMapShadowMapper.ts"/>
-///<reference path="lights/shadowmaps/DirectionalShadowMapper.ts"/>
-///<reference path="lights/shadowmaps/CascadeShadowMapper.ts"/>
-///<reference path="lights/shadowmaps/NearDirectionalShadowMapper.ts"/>
 
 ///<reference path="materials/passes/MaterialPassBase.ts"/>
 ///<reference path="materials/passes/CompiledPass.ts"/>
@@ -124,10 +105,6 @@
 ///<reference path="materials/methods/SpecularFresnelMethod.ts"/>
 ///<reference path="materials/methods/SpecularPhongMethod.ts"/>
 
-
-///<reference path="materials/lightpickers/LightPickerBase.ts"/>
-///<reference path="materials/lightpickers/StaticLightPicker.ts"/>
-
 ///<reference path="materials/compilation/ShaderRegisterCache.ts"/>
 ///<reference path="materials/compilation/ShaderRegisterElement.ts"/>
 ///<reference path="materials/compilation/ShaderRegisterData.ts"/>
@@ -138,7 +115,7 @@
 ///<reference path="materials/compilation/SuperShaderCompiler.ts"/>
 
 ///<reference path="materials/LightSources.ts"/>
-///<reference path="materials/MaterialBase.ts"/>
+///<reference path="materials/ShadowMaterialBase.ts"/>
 ///<reference path="materials/TriangleMaterial.ts"/>
 ///<reference path="materials/TriangleMaterialMode.ts"/>
 ///<reference path="materials/compilation/LightingShaderCompiler.ts"/>

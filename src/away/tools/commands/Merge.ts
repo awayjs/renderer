@@ -7,7 +7,7 @@ module away.commands
 	import TriangleSubGeometry			= away.base.TriangleSubGeometry
 	import Matrix3DUtils				= away.geom.Matrix3DUtils;
 	import Mesh							= away.entities.Mesh;
-	import IMaterial					= away.materials.IMaterial;
+	import MaterialBase					= away.materials.MaterialBase;
 	
 	/**
 	 *  Class Merge merges two or more static meshes into one.<code>Merge</code>
@@ -300,7 +300,7 @@ module away.commands
 			}
 		}
 		
-		private getSubGeomData(material:IMaterial):GeometryVO
+		private getSubGeomData(material:MaterialBase):GeometryVO
 		{
 			var data:GeometryVO;
 			
@@ -360,5 +360,5 @@ class GeometryVO
 	public normals:Array<number>;
 	public tangents:Array<number>;
 	public indices:Array<number /*uint*/>;
-	public material:away.materials.IMaterial;
+	public material:away.materials.MaterialBase;
 }

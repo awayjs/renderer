@@ -4,9 +4,10 @@
 module tests.primitives
 {
 	import View							= away.containers.View;
+	import ContextMode					= away.display.ContextMode;
 	import Mesh							= away.entities.Mesh;
 	import Vector3D						= away.geom.Vector3D;
-	import DirectionalLight				= away.lights.DirectionalLight;
+	import DirectionalLight				= away.entities.DirectionalLight;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import DefaultMaterialManager		= away.materials.DefaultMaterialManager;
 	import PrimitivePrefabBase			= away.prefabs.PrimitivePrefabBase;
@@ -18,15 +19,15 @@ module tests.primitives
 	import PrimitiveConePrefab			= away.prefabs.PrimitiveConePrefab;
 	import PrimitiveCubePrefab			= away.prefabs.PrimitiveCubePrefab;
 	import DefaultRenderer				= away.render.DefaultRenderer;
+	import ContextGLProfile				= away.stagegl.ContextGLProfile;
 	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
     export class WireframePrimitiveTest
     {
-
         private view:View;
         private raf:RequestAnimationFrame;
         private meshes:Array<Mesh> = new Array<Mesh>();
-        private light:away.lights.DirectionalLight;
+        private light:DirectionalLight;
         private lightB:DirectionalLight;
         private staticLightPicker:StaticLightPicker;
 
@@ -34,11 +35,11 @@ module tests.primitives
 
         constructor()
         {
-            away.Debug.LOG_PI_ERRORS    = false;
-            away.Debug.THROW_ERRORS     = false;
+            away.Debug.LOG_PI_ERRORS = false;
+            away.Debug.THROW_ERRORS = false;
 
-            this.view                   = new View( new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
-            this.raf                    = new RequestAnimationFrame(this.render, this);
+            this.view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE, ContextMode.FLASH));
+            this.raf = new RequestAnimationFrame(this.render, this);
 
             this.light = new DirectionalLight();
             this.light.color = 0xFFFFFF;
@@ -48,9 +49,9 @@ module tests.primitives
             this.light.diffuse = 1;
             this.light.specular = 1;
 
-            this.lightB = new away.lights.DirectionalLight();
+            this.lightB = new DirectionalLight();
             this.lightB.color = 0xFF0000;
-            this.lightB.direction = new away.geom.Vector3D(-1, 0, 1);
+            this.lightB.direction = new Vector3D(-1, 0, 1);
             this.lightB.ambient = 0;
             this.lightB.ambientColor = 0xFFFFFF;
             this.lightB.diffuse = 1;
@@ -70,7 +71,7 @@ module tests.primitives
             this.onResize();
         }
 
-        private initMeshes() : void
+        private initMeshes():void
         {
 
             var primitives:Array<PrimitivePrefabBase> = new Array<PrimitivePrefabBase>();
@@ -93,7 +94,7 @@ module tests.primitives
 				mesh.x = Math.cos(t)*this.radius;
 				mesh.y = Math.sin(t)*this.radius;
 				mesh.z = 0;
-				mesh.transform.scale = new away.geom.Vector3D(2, 2, 2);
+				mesh.transform.scale = new Vector3D(2, 2, 2);
 
                 this.view.scene.addChild(mesh);
                 this.meshes.push(mesh);

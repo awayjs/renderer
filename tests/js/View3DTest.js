@@ -5,7 +5,7 @@ var tests;
     (function (containers) {
         var View = away.containers.View;
 
-        var PointLight = away.lights.PointLight;
+        var PointLight = away.entities.PointLight;
         var TriangleMaterial = away.materials.TriangleMaterial;
         var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
         var DefaultRenderer = away.render.DefaultRenderer;

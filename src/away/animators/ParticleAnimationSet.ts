@@ -5,9 +5,9 @@ module away.animators
 	import SubGeometryBase		= away.base.SubGeometryBase;
 	import ParticleGeometry		= away.base.ParticleGeometry;
 	import ISubMesh				= away.base.ISubMesh;
-	import IContext				= away.stagegl.IContext;
+	import IContextStageGL		= away.stagegl.IContextStageGL;
 	import Mesh					= away.entities.Mesh;
-	import StageGL				= away.base.StageGL;
+	import Stage				= away.base.Stage;
 	import MaterialPassBase		= away.materials.MaterialPassBase;
 	
 	/**
@@ -123,7 +123,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public activate(stageGL:StageGL, pass:MaterialPassBase)
+		public activate(stage:Stage, pass:MaterialPassBase)
 		{
 			this._iAnimationRegisterCache = pass.animationRegisterCache;
 		}
@@ -131,9 +131,9 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public deactivate(stageGL:StageGL, pass:MaterialPassBase)
+		public deactivate(stage:Stage, pass:MaterialPassBase)
 		{
-			var context:IContext = stageGL.contextGL;
+			var context:IContextStageGL = <IContextStageGL> stage.context;
 			var offset:number /*int*/ = this._iAnimationRegisterCache.vertexAttributesOffset;
 			var used:number /*int*/ = this._iAnimationRegisterCache.numUsedStreams;
 			for (var i:number /*int*/ = offset; i < used; i++)

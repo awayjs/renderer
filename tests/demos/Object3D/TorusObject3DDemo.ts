@@ -4,14 +4,16 @@ module demos.object3d
 {
 	import PerspectiveProjection		= away.projections.PerspectiveProjection;
 	import View							= away.containers.View;
+	import ContextMode					= away.display.ContextMode;
 	import Mesh							= away.entities.Mesh;
-	import PointLight					= away.lights.PointLight;
+	import PointLight					= away.entities.PointLight;
 	import URLLoader					= away.net.URLLoader;
 	import URLRequest					= away.net.URLRequest;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import PrimitiveTorusPrefab			= away.prefabs.PrimitiveTorusPrefab;
 	import DefaultRenderer				= away.render.DefaultRenderer;
+	import ContextGLProfile				= away.stagegl.ContextGLProfile;
 	import ImageTexture					= away.textures.ImageTexture;
 	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
@@ -42,7 +44,7 @@ module demos.object3d
 
             this.meshes = new Array<Mesh>();
             this.light = new PointLight();
-            this.view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
+            this.view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE, ContextMode.FLASH));
             this.pointLight = new PointLight();
             this.lightPicker = new StaticLightPicker([this.pointLight])
 

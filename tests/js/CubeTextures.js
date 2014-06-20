@@ -4,22 +4,17 @@ var tests;
 (function (tests) {
     (function (textures) {
         var View = away.containers.View;
-        var Mesh = away.entities.Mesh;
+
         var Skybox = away.entities.Skybox;
         var LoaderEvent = away.events.LoaderEvent;
-        var Vector3D = away.geom.Vector3D;
+
         var AssetLibrary = away.library.AssetLibrary;
-        var DirectionalLight = away.lights.DirectionalLight;
+
         var SkyboxMaterial = away.materials.SkyboxMaterial;
-        var StaticLightPicker = away.materials.StaticLightPicker;
-        var AssetLoader = away.net.AssetLoader;
-        var AssetLoaderToken = away.net.AssetLoaderToken;
-        var URLLoader = away.net.URLLoader;
+
         var URLRequest = away.net.URLRequest;
         var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
         var DefaultRenderer = away.render.DefaultRenderer;
-        var ImageCubeTexture = away.textures.ImageCubeTexture;
-        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
         var CubeTextures = (function () {
             function CubeTextures() {

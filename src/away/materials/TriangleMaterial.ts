@@ -2,18 +2,19 @@
 
 module away.materials
 {
-	import StageGL						= away.base.StageGL;
+	import Stage						= away.base.Stage;
 	import Camera						= away.entities.Camera;
 	import ColorTransform				= away.geom.ColorTransform;
 	import ContextGLBlendFactor			= away.stagegl.ContextGLBlendFactor;
 	import ContextGLCompareMode			= away.stagegl.ContextGLCompareMode;
+	import IContextStageGL				= away.stagegl.IContextStageGL;
 	import Texture2DBase				= away.textures.Texture2DBase;
 
 	/**
-	 * TriangleMaterial forms an abstract base class for the default shaded materials provided by StageGL,
+	 * TriangleMaterial forms an abstract base class for the default shaded materials provided by Stage,
 	 * using material methods to define their appearance.
 	 */
-	export class TriangleMaterial extends MaterialBase
+	export class TriangleMaterial extends ShadowMaterialBase
 	{
 		private _animateUVs:boolean = false;
 		private _alphaBlending:boolean = false;
@@ -250,14 +251,14 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForDepth(stageGL:StageGL, camera:Camera, distanceBased:boolean = false)
+		public iActivateForDepth(stage:Stage, camera:Camera, distanceBased:boolean = false)
 		{
 			if (distanceBased)
 				this._pDistancePass.alphaMask = this._diffuseMethod.texture;
 			else
 				this._pDepthPass.alphaMask = this._diffuseMethod.texture;
 
-			super.iActivateForDepth(stageGL, camera, distanceBased);
+			super.iActivateForDepth(stage, camera, distanceBased);
 		}
 
 		/**
@@ -604,6 +605,8 @@ module away.materials
 			if (passesInvalid || this.isAnyScreenPassInvalid()) {
 				this.pClearPasses();
 
+				this.pAddDepthPasses();
+
 				if (this._materialMode == TriangleMaterialMode.MULTI_PASS) {
 					this.pAddChildPassesFor(this._casterLightPass);
 
@@ -611,7 +614,6 @@ module away.materials
 						for (var i:number = 0; i < this._nonCasterLightPasses.length; ++i)
 							this.pAddChildPassesFor(this._nonCasterLightPasses[i]);
 				}
-
 
 				this.pAddChildPassesFor(this._screenPass);
 
@@ -659,22 +661,22 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivatePass(index:number, stageGL:StageGL, camera:Camera)
+		public iActivatePass(index:number, stage:Stage, camera:Camera)
 		{
 			if (index == 0)
-				stageGL.contextGL.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+				(<IContextStageGL> stage.context).setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 
-			super.iActivatePass(index, stageGL, camera);
+			super.iActivatePass(index, stage, camera);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(stageGL:StageGL)
+		public iDeactivate(stage:Stage)
 		{
-			super.iDeactivate(stageGL);
+			super.iDeactivate(stage);
 
-			stageGL.contextGL.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+			(<IContextStageGL> stage.context).setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 		}
 
 		/**

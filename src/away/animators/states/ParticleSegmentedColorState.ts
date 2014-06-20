@@ -7,7 +7,7 @@ module away.animators
 	import ContextGLVertexBufferFormat		= away.stagegl.ContextGLVertexBufferFormat
 	import ColorTransform					= away.geom.ColorTransform;
 	import Vector3D							= away.geom.Vector3D;
-	import StageGL							= away.base.StageGL;
+	import Stage							= away.base.Stage;
 	
 	export class ParticleSegmentedColorState extends ParticleStateBase
 	{
@@ -96,7 +96,7 @@ module away.animators
 			this.updateColorData();
 		}
 		
-		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+		public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{
 			if (animationRegisterCache.needFragmentAnimation) {
 				if (this._numSegmentPoint > 0)

@@ -5,7 +5,7 @@ module away.animators
 	import RenderableBase					= away.pool.RenderableBase;
 	import Camera							= away.entities.Camera;
 	import Matrix3D							= away.geom.Matrix3D;
-	import StageGL							= away.base.StageGL;
+	import Stage							= away.base.Stage;
 	
 	/**
 	 * ...
@@ -20,7 +20,7 @@ module away.animators
 			super(animator, particleNode);
 		}
 		
-		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+		public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{
 			if (animationRegisterCache.hasBillboard) {
 				this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);

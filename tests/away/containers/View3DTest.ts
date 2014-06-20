@@ -5,7 +5,7 @@ module tests.containers
 {
 	import View							= away.containers.View;
 	import Mesh							= away.entities.Mesh;
-	import PointLight					= away.lights.PointLight;
+	import PointLight					= away.entities.PointLight;
 	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import PrimitiveTorusPrefab			= away.prefabs.PrimitiveTorusPrefab;
 	import DefaultRenderer				= away.render.DefaultRenderer;

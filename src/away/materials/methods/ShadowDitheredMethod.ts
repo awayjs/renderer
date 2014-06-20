@@ -2,14 +2,20 @@
 
 module away.materials
 {
+	import BitmapData								= away.base.BitmapData;
+	import Stage									= away.base.Stage;
+	import DirectionalLight							= away.entities.DirectionalLight;
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import BitmapTexture							= away.textures.BitmapTexture;
+
 	/**
 	 * ShadowDitheredMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
 	 */
 	export class ShadowDitheredMethod extends ShadowMethodBase
 	{
-		private static _grainTexture:away.textures.BitmapTexture;
+		private static _grainTexture:BitmapTexture;
 		private static _grainUsages:number /*int*/;
-		private static _grainBitmapData:away.base.BitmapData;
+		private static _grainBitmapData:BitmapData;
 		private _depthMapSize:number /*int*/;
 		private _range:number;
 		private _numSamples:number /*int*/;
@@ -19,7 +25,7 @@ module away.materials
 		 * @param castingLight The light casting the shadows
 		 * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 24.
 		 */
-		constructor(castingLight:away.lights.DirectionalLight, numSamples:number /*int*/ = 4, range:number = 1)
+		constructor(castingLight:DirectionalLight, numSamples:number /*int*/ = 4, range:number = 1)
 		{
 			super(castingLight);
 
@@ -91,7 +97,7 @@ module away.materials
 		 */
 		private initGrainTexture()
 		{
-			ShadowDitheredMethod._grainBitmapData = new away.base.BitmapData(64, 64, false);
+			ShadowDitheredMethod._grainBitmapData = new BitmapData(64, 64, false);
 			var vec:Array<number> /*uint*/ = new Array<number>();
 			var len:number /*uint*/ = 4096;
 			var step:number = 1/(this._depthMapSize*this._range);
@@ -116,7 +122,7 @@ module away.materials
 			}
 
 			ShadowDitheredMethod._grainBitmapData.setVector(ShadowDitheredMethod._grainBitmapData.rect, vec);
-			ShadowDitheredMethod._grainTexture = new away.textures.BitmapTexture(ShadowDitheredMethod._grainBitmapData);
+			ShadowDitheredMethod._grainTexture = new BitmapTexture(ShadowDitheredMethod._grainBitmapData);
 		}
 
 		/**
@@ -134,15 +140,15 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivate(vo:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stageGL);
+			super.iActivate(vo, stage);
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.fragmentConstantsIndex;
-			data[index + 9] = (stageGL.width - 1)/63;
-			data[index + 10] = (stageGL.height - 1)/63;
+			data[index + 9] = (stage.width - 1)/63;
+			data[index + 10] = (stage.height - 1)/63;
 			data[index + 11] = 2*this._range/this._depthMapSize;
-			ShadowDitheredMethod._grainTexture.activateTextureForStage(vo.texturesIndex + 1, stageGL);
+			(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
 		}
 
 		/**
@@ -184,50 +190,46 @@ module away.materials
 
 			while (numSamples > 0) {
 				if (numSamples == this._numSamples)
-					code += "tex " + uvReg + ", " + uvReg + ", " + grainRegister + " <2d,nearest,repeat,mipnone>\n"; else
+					code += "tex " + uvReg + ", " + uvReg + ", " + grainRegister + " <2d,nearest,repeat,mipnone>\n";
+				else
 					code += "tex " + uvReg + ", " + uvReg + ".zwxy, " + grainRegister + " <2d,nearest,repeat,mipnone>\n";
 
 				// keep grain in uvReg.zw
 				code += "sub " + uvReg + ".zw, " + uvReg + ".xy, fc0.xx\n" + // uv-.5
 					"mul " + uvReg + ".zw, " + uvReg + ".zw, " + customDataReg + ".w\n"; // (tex unpack scale and tex scale in one)
 
-				// first sample
-
 				if (numSamples == this._numSamples) {
 					// first sample
-					code += "add " + uvReg + ".xy, " + uvReg + ".zw, " + this._pDepthMapCoordReg + ".xy\n" + "tex " + temp + ", " + uvReg + ", " + depthMapRegister + " <2d,nearest,clamp,mipnone>\n" + "dp4 " + temp + ".z, " + temp + ", " + decReg + "\n" + "slt " + targetReg + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n"; // 0 if in shadow
-				} else
+					code += "add " + uvReg + ".xy, " + uvReg + ".zw, " + this._pDepthMapCoordReg + ".xy\n" +
+						"tex " + temp + ", " + uvReg + ", " + depthMapRegister + " <2d,nearest,clamp,mipnone>\n" +
+						"dp4 " + temp + ".z, " + temp + ", " + decReg + "\n" +
+						"slt " + targetReg + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n"; // 0 if in shadow
+				} else {
 					code += this.addSample(uvReg, depthMapRegister, decReg, targetReg, regCache);
+				}
 
-				if (numSamples > 4) {
+				if (numSamples > 4)
 					code += "add " + uvReg + ".xy, " + uvReg + ".xy, " + uvReg + ".zw\n" + this.addSample(uvReg, depthMapRegister, decReg, targetReg, regCache);
-				}
 
-				if (numSamples > 1) {
+				if (numSamples > 1)
 					code += "sub " + uvReg + ".xy, " + this._pDepthMapCoordReg + ".xy, " + uvReg + ".zw\n" + this.addSample(uvReg, depthMapRegister, decReg, targetReg, regCache);
-				}
 
-				if (numSamples > 5) {
+				if (numSamples > 5)
 					code += "sub " + uvReg + ".xy, " + uvReg + ".xy, " + uvReg + ".zw\n" + this.addSample(uvReg, depthMapRegister, decReg, targetReg, regCache);
-				}
 
 				if (numSamples > 2) {
 					code += "neg " + uvReg + ".w, " + uvReg + ".w\n"; // will be rotated 90 degrees when being accessed as wz
-
 					code += "add " + uvReg + ".xy, " + uvReg + ".wz, " + this._pDepthMapCoordReg + ".xy\n" + this.addSample(uvReg, depthMapRegister, decReg, targetReg, regCache);
 				}
 
-				if (numSamples > 6) {
+				if (numSamples > 6)
 					code += "add " + uvReg + ".xy, " + uvReg + ".xy, " + uvReg + ".wz\n" + this.addSample(uvReg, depthMapRegister, decReg, targetReg, regCache);
-				}
 
-				if (numSamples > 3) {
+				if (numSamples > 3)
 					code += "sub " + uvReg + ".xy, " + this._pDepthMapCoordReg + ".xy, " + uvReg + ".wz\n" + this.addSample(uvReg, depthMapRegister, decReg, targetReg, regCache);
-				}
 
-				if (numSamples > 7) {
+				if (numSamples > 7)
 					code += "sub " + uvReg + ".xy, " + uvReg + ".xy, " + uvReg + ".wz\n" + this.addSample(uvReg, depthMapRegister, decReg, targetReg, regCache);
-				}
 
 				numSamples -= 8;
 			}
@@ -249,22 +251,26 @@ module away.materials
 		private addSample(uvReg:ShaderRegisterElement, depthMapRegister:ShaderRegisterElement, decReg:ShaderRegisterElement, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache):string
 		{
 			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			return "tex " + temp + ", " + uvReg + ", " + depthMapRegister + " <2d,nearest,clamp,mipnone>\n" + "dp4 " + temp + ".z, " + temp + ", " + decReg + "\n" + "slt " + temp + ".z, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n" + // 0 if in shadow
+
+			return "tex " + temp + ", " + uvReg + ", " + depthMapRegister + " <2d,nearest,clamp,mipnone>\n" +
+				"dp4 " + temp + ".z, " + temp + ", " + decReg + "\n" +
+				"slt " + temp + ".z, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n" + // 0 if in shadow
 				"add " + targetReg + ".w, " + targetReg + ".w, " + temp + ".z\n";
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL)
+		public iActivateForCascade(vo:MethodVO, stage:Stage)
 		{
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.secondaryFragmentConstantsIndex;
 			data[index] = 1/this._numSamples;
-			data[index + 1] = (stageGL.width - 1)/63;
-			data[index + 2] = (stageGL.height - 1)/63;
+			data[index + 1] = (stage.width - 1)/63;
+			data[index + 2] = (stage.height - 1)/63;
 			data[index + 3] = 2*this._range/this._depthMapSize;
-			ShadowDitheredMethod._grainTexture.activateTextureForStage(vo.texturesIndex + 1, stageGL);
+
+			(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
 		}
 
 		/**

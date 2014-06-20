@@ -351,11 +351,10 @@ declare module away.events {
 * @module away.events
 */
 declare module away.events {
-    class ProjectionEvent extends Event {
-        static MATRIX_CHANGED: string;
-        private _projection;
-        constructor(type: string, projection: projections.IProjection);
-        public projection : projections.IProjection;
+    class LightEvent extends Event {
+        static CASTS_SHADOW_CHANGE: string;
+        constructor(type: string);
+        public clone(): Event;
     }
 }
 /**
@@ -492,7 +491,7 @@ declare module away.events {
         /**
         * The material of the 3d element inside which the event took place.
         */
-        public material: materials.IMaterial;
+        public material: materials.MaterialBase;
         /**
         * The uv coordinate inside the draw primitive where the event took place.
         */
@@ -584,6 +583,17 @@ declare module away.events {
 * @module away.events
 */
 declare module away.events {
+    class ProjectionEvent extends Event {
+        static MATRIX_CHANGED: string;
+        private _projection;
+        constructor(type: string, projection: projections.IProjection);
+        public projection : projections.IProjection;
+    }
+}
+/**
+* @module away.events
+*/
+declare module away.events {
     class RendererEvent extends Event {
         static VIEWPORT_UPDATED: string;
         static SCISSOR_UPDATED: string;
@@ -618,10 +628,10 @@ declare module away.events {
 * @module away.events
 */
 declare module away.events {
-    class StageGLEvent extends Event {
-        static CONTEXTGL_CREATED: string;
-        static CONTEXTGL_DISPOSED: string;
-        static CONTEXTGL_RECREATED: string;
+    class StageEvent extends Event {
+        static CONTEXT_CREATED: string;
+        static CONTEXT_DISPOSED: string;
+        static CONTEXT_RECREATED: string;
         static VIEWPORT_UPDATED: string;
         constructor(type: string);
     }
@@ -3338,6 +3348,126 @@ declare module away.geom {
         public toString(): string;
     }
 }
+declare module away.bounds {
+    class BoundingVolumeBase {
+        public _aabb: geom.Box;
+        public _pAabbPoints: number[];
+        public _pAabbPointsDirty: boolean;
+        public _pBoundingEntity: entities.IEntity;
+        constructor();
+        public aabb : geom.Box;
+        public aabbPoints : number[];
+        public boundingEntity : entities.IEntity;
+        public nullify(): void;
+        public disposeRenderable(): void;
+        public fromVertices(vertices: number[]): void;
+        /**
+        * Updates the bounds to fit a Geometry object.
+        *
+        * @param geometry The Geometry object to be bounded.
+        */
+        public fromGeometry(geometry: base.Geometry): void;
+        public fromSphere(center: geom.Vector3D, radius: number): void;
+        public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
+        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
+        public overlaps(bounds: BoundingVolumeBase): boolean;
+        public clone(): BoundingVolumeBase;
+        public rayIntersection(position: geom.Vector3D, direction: geom.Vector3D, targetNormal: geom.Vector3D): number;
+        public containsPoint(position: geom.Vector3D): boolean;
+        public pUpdateAABBPoints(): void;
+        public pUpdateBoundingEntity(): void;
+        public pCreateBoundingEntity(): entities.IEntity;
+        public classifyToPlane(plane: geom.Plane3D): number;
+        public transformFrom(bounds: BoundingVolumeBase, matrix: geom.Matrix3D): void;
+    }
+}
+declare module away.bounds {
+    class NullBounds extends BoundingVolumeBase {
+        private _alwaysIn;
+        constructor(alwaysIn?: boolean);
+        public clone(): BoundingVolumeBase;
+        public pCreateBoundingEntity(): entities.IEntity;
+        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
+        public fromSphere(center: geom.Vector3D, radius: number): void;
+        public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
+        public classifyToPlane(plane: geom.Plane3D): number;
+        public transformFrom(bounds: BoundingVolumeBase, matrix: geom.Matrix3D): void;
+    }
+}
+declare module away.bounds {
+    class BoundingSphere extends BoundingVolumeBase {
+        private _radius;
+        private _centerX;
+        private _centerY;
+        private _centerZ;
+        constructor();
+        public radius : number;
+        public nullify(): void;
+        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
+        public fromSphere(center: geom.Vector3D, radius: number): void;
+        public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
+        public clone(): BoundingVolumeBase;
+        public rayIntersection(position: geom.Vector3D, direction: geom.Vector3D, targetNormal: geom.Vector3D): number;
+        public containsPoint(position: geom.Vector3D): boolean;
+        public pUpdateBoundingEntity(): void;
+        public pCreateBoundingEntity(): entities.IEntity;
+        public classifyToPlane(plane: geom.Plane3D): number;
+        public transformFrom(bounds: BoundingVolumeBase, matrix: geom.Matrix3D): void;
+    }
+}
+declare module away.bounds {
+    /**
+    * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
+    * This is useful for most meshes.
+    */
+    class AxisAlignedBoundingBox extends BoundingVolumeBase {
+        private _centerX;
+        private _centerY;
+        private _centerZ;
+        private _halfExtentsX;
+        private _halfExtentsY;
+        private _halfExtentsZ;
+        /**
+        * Creates a new <code>AxisAlignedBoundingBox</code> object.
+        */
+        constructor();
+        /**
+        * @inheritDoc
+        */
+        public nullify(): void;
+        /**
+        * @inheritDoc
+        */
+        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
+        public rayIntersection(position: geom.Vector3D, direction: geom.Vector3D, targetNormal: geom.Vector3D): number;
+        /**
+        * @inheritDoc
+        */
+        public containsPoint(position: geom.Vector3D): boolean;
+        /**
+        * @inheritDoc
+        */
+        public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
+        /**
+        * @inheritDoc
+        */
+        public clone(): BoundingVolumeBase;
+        public halfExtentsX : number;
+        public halfExtentsY : number;
+        public halfExtentsZ : number;
+        /**
+        * Finds the closest point on the bounding volume to another given point. This can be used for maximum error calculations for content within a given bound.
+        * @param point The point for which to find the closest point on the bounding volume
+        * @param target An optional Vector3D to store the result to prevent creating a new object.
+        * @return
+        */
+        public closestPointToPoint(point: geom.Vector3D, target?: geom.Vector3D): geom.Vector3D;
+        public pUpdateBoundingRenderable(): void;
+        public pCreateBoundingEntity(): entities.IEntity;
+        public classifyToPlane(plane: geom.Plane3D): number;
+        public transformFrom(bounds: BoundingVolumeBase, matrix: geom.Matrix3D): void;
+    }
+}
 declare module away.net {
     /**
     *
@@ -3649,6 +3779,59 @@ declare module away.library {
         public assetPathEquals(name: string, ns: string): boolean;
         public resetAssetPath(name: string, ns?: string, overrideOriginal?: boolean): void;
         private updateFullPath();
+    }
+}
+declare module away.library {
+    class AssetType {
+        static ANIMATION_NODE: string;
+        static ANIMATION_SET: string;
+        static ANIMATION_STATE: string;
+        static ANIMATOR: string;
+        static BILLBOARD: string;
+        static CAMERA: string;
+        static CONTAINER: string;
+        static EFFECTS_METHOD: string;
+        static GEOMETRY: string;
+        static LINE_SEGMENT: string;
+        static LIGHT: string;
+        static LIGHT_PICKER: string;
+        static MATERIAL: string;
+        static MESH: string;
+        static TRIANGLE_SUB_MESH: string;
+        static LINE_SUB_MESH: string;
+        static PRIMITIVE_PREFAB: string;
+        static SHADOW_MAP_METHOD: string;
+        static SKELETON: string;
+        static SKELETON_POSE: string;
+        static SKYBOX: string;
+        static STATE_TRANSITION: string;
+        static TEXTURE: string;
+        static TEXTURE_PROJECTOR: string;
+    }
+}
+declare module away.display {
+    class ContextMode {
+        static AUTO: string;
+        static WEBGL: string;
+        static FLASH: string;
+        static NATIVE: string;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.display {
+    /**
+    *
+    * @class away.base.IContext
+    */
+    interface IContext {
+        container: HTMLElement;
+        clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): any;
+        configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): any;
+        dispose(): any;
+        present(): any;
+        setScissorRectangle(rect: geom.Rectangle): any;
     }
 }
 /**
@@ -6028,7 +6211,7 @@ declare module away.base {
         /**
         * The material with which to render the object.
         */
-        material: materials.IMaterial;
+        material: materials.MaterialBase;
         /**
         *
         */
@@ -6095,46 +6278,17 @@ declare module away.base {
 */
 declare module away.base {
     /**
+    * ISubMesh is an interface for object SubMesh that is used to
+    * apply a material to a SubGeometry class
     *
-    * @class away.base.IStage
-    */
-    interface IStage {
-        /**
-        *
-        * @param index
-        * @param texture
-        */
-        activateRenderTexture(index: number, texture: textures.RenderTexture): any;
-        /**
-        *
-        * @param index
-        * @param texture
-        */
-        activateTexture(index: number, texture: textures.Texture2DBase): any;
-        /**
-        *
-        * @param index
-        * @param texture
-        */
-        activateCubeTexture(index: number, texture: textures.CubeTextureBase): any;
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.base {
-    /**
-    * ISubMeshClass is an interface for the constructable class definition SubMesh that is used to
-    * create apply a marterial to a SubGeometry class
-    *
-    * @class away.base.ISubMeshClass
+    * @class away.base.ISubMesh
     */
     interface ISubMesh extends IMaterialOwner {
         subGeometry: SubGeometryBase;
         parentMesh: entities.Mesh;
         _iIndex: number;
         _iInvalidateRenderableGeometry(): any;
-        _iGetExplicitMaterial(): materials.IMaterial;
+        _iGetExplicitMaterial(): materials.MaterialBase;
     }
 }
 /**
@@ -6151,7 +6305,7 @@ declare module away.base {
         /**
         *
         */
-        new(subGeometry: SubGeometryBase, parentMesh: entities.Mesh, material?: materials.IMaterial): ISubMesh;
+        new(subGeometry: SubGeometryBase, parentMesh: entities.Mesh, material?: materials.MaterialBase): ISubMesh;
     }
 }
 /**
@@ -6260,7 +6414,7 @@ declare module away.base {
         public _pParentMesh: entities.Mesh;
         public _uvTransform: geom.UVTransform;
         public _iIndex: number;
-        public _material: materials.IMaterial;
+        public _material: materials.MaterialBase;
         private _renderables;
         /**
         * The animator object that provides the state for the TriangleSubMesh's animation.
@@ -6269,7 +6423,7 @@ declare module away.base {
         /**
         * The material used to render the current TriangleSubMesh. If set to null, its parent Mesh's material will be used instead.
         */
-        public material : materials.IMaterial;
+        public material : materials.MaterialBase;
         /**
         * The scene transform object that transforms from model to world space.
         */
@@ -6300,7 +6454,7 @@ declare module away.base {
         public _iRemoveRenderable(renderable: pool.IRenderable): pool.IRenderable;
         public _iInvalidateRenderableGeometry(): void;
         public _iCollectRenderable(renderer: render.IRenderer): void;
-        public _iGetExplicitMaterial(): materials.IMaterial;
+        public _iGetExplicitMaterial(): materials.MaterialBase;
     }
 }
 /**
@@ -6499,7 +6653,7 @@ declare module away.base {
         * @param parentMesh The Mesh object to which this LineSubMesh belongs.
         * @param material An optional material used to render this LineSubMesh.
         */
-        constructor(subGeometry: LineSubGeometry, parentMesh: entities.Mesh, material?: materials.IMaterial);
+        constructor(subGeometry: LineSubGeometry, parentMesh: entities.Mesh, material?: materials.MaterialBase);
         /**
         *
         */
@@ -6762,6 +6916,138 @@ declare module away.base {
         * Specifies that the gradient use the <i>repeat</i> spread method.
         */
         static REPEAT: string;
+    }
+}
+declare module away.base {
+    /**
+    * Stage provides a proxy class to handle the creation and attachment of the Context
+    * (and in turn the back buffer) it uses. Stage should never be created directly,
+    * but requested through StageManager.
+    *
+    * @see away.managers.StageManager
+    *
+    */
+    class Stage extends events.EventDispatcher {
+        private _context;
+        private _container;
+        private _width;
+        private _height;
+        private _x;
+        private _y;
+        public _iStageIndex: number;
+        private _usesSoftwareRendering;
+        private _profile;
+        private _stageManager;
+        private _antiAlias;
+        private _enableDepthAndStencil;
+        private _contextRequested;
+        private _renderTarget;
+        private _renderSurfaceSelector;
+        private _scissorRect;
+        private _color;
+        private _backBufferDirty;
+        private _viewPort;
+        private _enterFrame;
+        private _exitFrame;
+        private _viewportUpdated;
+        private _viewportDirty;
+        private _bufferClear;
+        private _initialised;
+        constructor(container: HTMLCanvasElement, stageIndex: number, stageManager: managers.StageManager, forceSoftware?: boolean, profile?: string);
+        /**
+        * Requests a Context object to attach to the managed gl canvas.
+        */
+        public requestContext(forceSoftware?: boolean, profile?: string, mode?: string): void;
+        /**
+        * The width of the gl canvas
+        */
+        public width : number;
+        /**
+        * The height of the gl canvas
+        */
+        public height : number;
+        /**
+        * The x position of the gl canvas
+        */
+        public x : number;
+        /**
+        * The y position of the gl canvas
+        */
+        public y : number;
+        public visible : boolean;
+        public container : HTMLElement;
+        /**
+        * The Context object associated with the given stage object.
+        */
+        public context : display.IContext;
+        private notifyViewportUpdated();
+        private notifyEnterFrame();
+        private notifyExitFrame();
+        public profile : string;
+        /**
+        * Disposes the Stage object, freeing the Context attached to the Stage.
+        */
+        public dispose(): void;
+        /**
+        * Configures the back buffer associated with the Stage object.
+        * @param backBufferWidth The width of the backbuffer.
+        * @param backBufferHeight The height of the backbuffer.
+        * @param antiAlias The amount of anti-aliasing to use.
+        * @param enableDepthAndStencil Indicates whether the back buffer contains a depth and stencil buffer.
+        */
+        public configureBackBuffer(backBufferWidth: number, backBufferHeight: number, antiAlias: number, enableDepthAndStencil: boolean): void;
+        public enableDepthAndStencil : boolean;
+        public renderTarget : textures.TextureProxyBase;
+        public renderSurfaceSelector : number;
+        public clear(): void;
+        public addEventListener(type: string, listener: Function): void;
+        /**
+        * Removes a listener from the EventDispatcher object. Special case for enterframe and exitframe events - will switch StageProxy out of automatic render mode.
+        * If there is no matching listener registered with the EventDispatcher object, a call to this method has no effect.
+        *
+        * @param type The type of event.
+        * @param listener The listener object to remove.
+        * @param useCapture Specifies whether the listener was registered for the capture phase or the target and bubbling phases. If the listener was registered for both the capture phase and the target and bubbling phases, two calls to removeEventListener() are required to remove both, one call with useCapture() set to true, and another call with useCapture() set to false.
+        */
+        public removeEventListener(type: string, listener: Function): void;
+        public scissorRect : geom.Rectangle;
+        /**
+        * The index of the Stage which is managed by this instance of StageProxy.
+        */
+        public stageIndex : number;
+        /**
+        * Indicates whether the Stage managed by this proxy is running in software mode.
+        * Remember to wait for the CONTEXT_CREATED event before checking this property,
+        * as only then will it be guaranteed to be accurate.
+        */
+        public usesSoftwareRendering : boolean;
+        /**
+        * The antiAliasing of the Stage.
+        */
+        public antiAlias : number;
+        /**
+        * A viewPort rectangle equivalent of the Stage size and position.
+        */
+        public viewPort : geom.Rectangle;
+        /**
+        * The background color of the Stage.
+        */
+        public color : number;
+        /**
+        * The freshly cleared state of the backbuffer before any rendering
+        */
+        public bufferClear : boolean;
+        /**
+        * Frees the Context associated with this StageProxy.
+        */
+        private freeContext();
+        /**
+        * The Enter_Frame handler for processing the proxy.ENTER_FRAME and proxy.EXIT_FRAME event handlers.
+        * Typically the proxy.ENTER_FRAME listener would render the layers for this Stage instance.
+        */
+        private onEnterFrame(event);
+        public recoverFromDisposal(): boolean;
+        private _callback(context);
     }
 }
 /**
@@ -7043,7 +7329,7 @@ declare module away.base {
         * @param parentMesh The Mesh object to which this TriangleSubMesh belongs.
         * @param material An optional material used to render this TriangleSubMesh.
         */
-        constructor(subGeometry: TriangleSubGeometry, parentMesh: entities.Mesh, material?: materials.IMaterial);
+        constructor(subGeometry: TriangleSubGeometry, parentMesh: entities.Mesh, material?: materials.MaterialBase);
         /**
         *
         */
@@ -7082,11 +7368,6 @@ declare module away.textures {
         * @returns {string}
         */
         public assetType : string;
-        /**
-        *
-        * @param stage
-        */
-        public activateTextureForStage(index: number, stage: base.IStage): void;
         /**
         *
         */
@@ -7137,11 +7418,6 @@ declare module away.textures {
         * @private
         */
         public _pSetSize(width: number, height: number): void;
-        /**
-        *
-        * @param stage
-        */
-        public activateTextureForStage(index: number, stage: base.IStage): void;
         public _iGetMipmapData(): base.BitmapData[];
         public _iGetTextureData(): any;
     }
@@ -7166,11 +7442,6 @@ declare module away.textures {
         *
         */
         public invalidateContent(): void;
-        /**
-        *
-        * @param stage
-        */
-        public activateTextureForStage(index: number, stage: base.IStage): void;
         public _iGetMipmapData(side: number): base.BitmapData[];
         public _iGetTextureData(side: number): any;
     }
@@ -7217,11 +7488,6 @@ declare module away.textures {
         */
         public height : number;
         constructor(width: number, height: number);
-        /**
-        *
-        * @param stage
-        */
-        public activateTextureForStage(index: number, stage: base.IStage): void;
     }
 }
 declare module away.textures {
@@ -8007,34 +8273,6 @@ declare module away.library {
     }
 }
 declare module away.library {
-    class AssetType {
-        static ANIMATION_NODE: string;
-        static ANIMATION_SET: string;
-        static ANIMATION_STATE: string;
-        static ANIMATOR: string;
-        static BILLBOARD: string;
-        static CAMERA: string;
-        static CONTAINER: string;
-        static EFFECTS_METHOD: string;
-        static GEOMETRY: string;
-        static LINE_SEGMENT: string;
-        static LIGHT: string;
-        static LIGHT_PICKER: string;
-        static MATERIAL: string;
-        static MESH: string;
-        static TRIANGLE_SUB_MESH: string;
-        static LINE_SUB_MESH: string;
-        static PRIMITIVE_PREFAB: string;
-        static SHADOW_MAP_METHOD: string;
-        static SKELETON: string;
-        static SKELETON_POSE: string;
-        static SKYBOX: string;
-        static STATE_TRANSITION: string;
-        static TEXTURE: string;
-        static TEXTURE_PROJECTOR: string;
-    }
-}
-declare module away.library {
     class AssetLibraryIterator {
         private _assets;
         private _filtered;
@@ -8535,6 +8773,14 @@ declare module away.pool {
         /**
         *
         */
+        materialOwner: base.IMaterialOwner;
+        /**
+        *
+        */
+        sourceEntity: entities.IEntity;
+        /**
+        *
+        */
         renderOrderId: number;
         /**
         *
@@ -8811,6 +9057,11 @@ declare module away.traverse {
         * @param entity
         */
         applyPointLight(entity: entities.IEntity): any;
+        /**
+        *
+        * @param entity
+        */
+        applySkybox(entity: entities.IEntity): any;
     }
 }
 /**
@@ -8881,6 +9132,75 @@ declare module away.traverse {
         * @param entity
         */
         public applyPointLight(entity: entities.IEntity): void;
+        /**
+        *
+        * @param entity
+        */
+        public applySkybox(entity: entities.IEntity): void;
+    }
+}
+/**
+* @module away.traverse
+*/
+declare module away.traverse {
+    /**
+    * @class away.traverse.EntityCollector
+    */
+    class EntityCollector extends CollectorBase {
+        public _pSkybox: entities.Skybox;
+        public _pLights: base.LightBase[];
+        private _directionalLights;
+        private _pointLights;
+        private _lightProbes;
+        public _pNumLights: number;
+        private _numDirectionalLights;
+        private _numPointLights;
+        private _numLightProbes;
+        /**
+        *
+        */
+        public directionalLights : entities.DirectionalLight[];
+        /**
+        *
+        */
+        public lightProbes : entities.LightProbe[];
+        /**
+        *
+        */
+        public lights : base.LightBase[];
+        /**
+        *
+        */
+        public pointLights : entities.PointLight[];
+        /**
+        *
+        */
+        public skyBox : entities.Skybox;
+        constructor();
+        /**
+        *
+        * @param entity
+        */
+        public applyDirectionalLight(entity: entities.IEntity): void;
+        /**
+        *
+        * @param entity
+        */
+        public applyLightProbe(entity: entities.IEntity): void;
+        /**
+        *
+        * @param entity
+        */
+        public applyPointLight(entity: entities.IEntity): void;
+        /**
+        *
+        * @param entity
+        */
+        public applySkybox(entity: entities.IEntity): void;
+        /**
+        *
+        */
+        public clear(): void;
     }
 }
 /**
@@ -8896,7 +9216,7 @@ declare module away.traverse {
     *
     * @class away.traverse.RaycastCollector
     */
-    class RaycastCollector extends CollectorBase implements ICollector {
+    class RaycastCollector extends CollectorBase {
         private _rayPosition;
         private _rayDirection;
         public _iCollectionMark: number;
@@ -8929,6 +9249,21 @@ declare module away.traverse {
     */
     class CSSEntityCollector extends CollectorBase implements ICollector {
         constructor();
+    }
+}
+/**
+* @module away.traverse
+*/
+declare module away.traverse {
+    /**
+    * @class away.traverse.ShadowCasterCollector
+    */
+    class ShadowCasterCollector extends CollectorBase {
+        constructor();
+        /**
+        *
+        */
+        public enterNode(node: partition.NodeBase): boolean;
     }
 }
 /**
@@ -9112,6 +9447,81 @@ declare module away.partition {
 */
 declare module away.partition {
     /**
+    * @class away.partition.DirectionalLightNode
+    */
+    class DirectionalLightNode extends EntityNode {
+        private _directionalLight;
+        /**
+        *
+        * @param directionalLight
+        */
+        constructor(directionalLight: entities.IEntity);
+        /**
+        * @inheritDoc
+        */
+        public acceptTraverser(traverser: traverse.ICollector): void;
+        /**
+        *
+        * @returns {boolean}
+        */
+        public isCastingShadow(): boolean;
+    }
+}
+/**
+* @module away.partition
+*/
+declare module away.partition {
+    /**
+    * @class away.partition.LightProbeNode
+    */
+    class LightProbeNode extends EntityNode {
+        private _lightProbe;
+        /**
+        *
+        * @param lightProbe
+        */
+        constructor(lightProbe: entities.IEntity);
+        /**
+        * @inheritDoc
+        */
+        public acceptTraverser(traverser: traverse.ICollector): void;
+        /**
+        *
+        * @returns {boolean}
+        */
+        public isCastingShadow(): boolean;
+    }
+}
+/**
+* @module away.partition
+*/
+declare module away.partition {
+    /**
+    * @class away.partition.PointLightNode
+    */
+    class PointLightNode extends EntityNode {
+        private _pointLight;
+        /**
+        *
+        * @param pointLight
+        */
+        constructor(pointLight: entities.IEntity);
+        /**
+        * @inheritDoc
+        */
+        public acceptTraverser(traverser: traverse.ICollector): void;
+        /**
+        *
+        * @returns {boolean}
+        */
+        public isCastingShadow(): boolean;
+    }
+}
+/**
+* @module away.partition
+*/
+declare module away.partition {
+    /**
     * SkyboxNode is a space partitioning leaf node that contains a Skybox object.
     *
     * @class away.partition.SkyboxNode
@@ -9123,6 +9533,10 @@ declare module away.partition {
         * @param skyBox The Skybox to be contained in the node.
         */
         constructor(skyBox: entities.IEntity);
+        /**
+        * @inheritDoc
+        */
+        public acceptTraverser(traverser: traverse.ICollector): void;
         /**
         *
         * @param planes
@@ -9380,11 +9794,6 @@ declare module away.render {
         applyLineSubMesh(triangleSubMesh: base.LineSubMesh): any;
         /**
         *
-        * @param skybox
-        */
-        applySkybox(skybox: entities.Skybox): any;
-        /**
-        *
         * @param triangleSubMesh
         */
         applyTriangleSubMesh(triangleSubMesh: base.TriangleSubMesh): any;
@@ -9417,6 +9826,8 @@ declare module away.render {
         * @internal
         */
         _iCreateEntityCollector(): traverse.ICollector;
+        _iRender(entityCollector: traverse.ICollector, target?: textures.TextureProxyBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): any;
+        _iRenderCascades(entityCollector: traverse.ICollector, target: textures.TextureProxyBase, numCascades: number, scissorRects: geom.Rectangle[], cameras: entities.Camera[]): any;
     }
 }
 /**
@@ -9514,7 +9925,8 @@ declare module away.render {
         * @param entityCollector The EntityCollector object containing the potentially visible geometry.
         * @param scissorRect
         */
-        public _iRender(entityCollector: traverse.CSSEntityCollector, scissorRect?: geom.Rectangle): void;
+        public _iRender(entityCollector: traverse.EntityCollector, target?: textures.TextureProxyBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
+        public _iRenderCascades(entityCollector: traverse.ICollector, target: textures.TextureProxyBase, numCascades: number, scissorRects: geom.Rectangle[], cameras: entities.Camera[]): void;
         public pCollectRenderables(entityCollector: traverse.ICollector): void;
         /**
         * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
@@ -9600,7 +10012,7 @@ declare module away.render {
         /**
         * @inheritDoc
         */
-        public pDraw(entityCollector: traverse.CSSEntityCollector): void;
+        public pDraw(entityCollector: traverse.EntityCollector): void;
         /**
         * Updates the backbuffer properties.
         */
@@ -9609,7 +10021,7 @@ declare module away.render {
         * Draw the skybox if present.
         * @param entityCollector The EntityCollector containing all potentially visible information.
         */
-        private drawSkyBox(entityCollector);
+        private drawSkybox(entityCollector);
         /**
         * Draw a list of renderables.
         * @param renderables The renderables to draw.
@@ -11248,6 +11660,378 @@ declare module away.containers {
         private removeChildInternal(child);
     }
 }
+declare module away.base {
+    class LightBase extends containers.DisplayObjectContainer {
+        private _color;
+        private _colorR;
+        private _colorG;
+        private _colorB;
+        private _ambientColor;
+        private _ambient;
+        public _iAmbientR: number;
+        public _iAmbientG: number;
+        public _iAmbientB: number;
+        private _specular;
+        public _iSpecularR: number;
+        public _iSpecularG: number;
+        public _iSpecularB: number;
+        private _diffuse;
+        public _iDiffuseR: number;
+        public _iDiffuseG: number;
+        public _iDiffuseB: number;
+        private _castsShadows;
+        private _shadowMapper;
+        constructor();
+        public castsShadows : boolean;
+        public pCreateShadowMapper(): materials.ShadowMapperBase;
+        public specular : number;
+        public diffuse : number;
+        public color : number;
+        public ambient : number;
+        public ambientColor : number;
+        private updateAmbient();
+        public iGetObjectProjectionMatrix(entity: entities.IEntity, camera: entities.Camera, target?: geom.Matrix3D): geom.Matrix3D;
+        public assetType : string;
+        private updateSpecular();
+        private updateDiffuse();
+        public shadowMapper : materials.ShadowMapperBase;
+    }
+}
+declare module away.projections {
+    /**
+    * Provides constant values for camera lens projection options use the the <code>coordinateSystem</code> property
+    *
+    * @see away.projections.PerspectiveLens#coordinateSystem
+    */
+    class CoordinateSystem {
+        /**
+        * Default option, projects to a left-handed coordinate system
+        */
+        static LEFT_HANDED: string;
+        /**
+        * Projects to a right-handed coordinate system
+        */
+        static RIGHT_HANDED: string;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.projections {
+    /**
+    * IMaterialOwner provides an interface for objects that can use materials.
+    *
+    * @interface away.base.IMaterialOwner
+    */
+    interface IProjection extends events.IEventDispatcher {
+        coordinateSystem: string;
+        frustumCorners: number[];
+        matrix: geom.Matrix3D;
+        near: number;
+        originX: number;
+        originY: number;
+        far: number;
+        _iAspectRatio: number;
+        project(point3d: geom.Vector3D): geom.Vector3D;
+        unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
+        _iUpdateScissorRect(x: number, y: number, width: number, height: number): any;
+        _iUpdateViewport(x: number, y: number, width: number, height: number): any;
+    }
+}
+declare module away.projections {
+    class ProjectionBase extends events.EventDispatcher implements IProjection {
+        public _pMatrix: geom.Matrix3D;
+        public _pScissorRect: geom.Rectangle;
+        public _pViewPort: geom.Rectangle;
+        public _pNear: number;
+        public _pFar: number;
+        public _pAspectRatio: number;
+        public _pMatrixInvalid: boolean;
+        public _pFrustumCorners: number[];
+        public _pCoordinateSystem: string;
+        public _pOriginX: number;
+        public _pOriginY: number;
+        private _unprojection;
+        private _unprojectionInvalid;
+        constructor(coordinateSystem?: string);
+        /**
+        * The handedness of the coordinate system projection. The default is LEFT_HANDED.
+        */
+        public coordinateSystem : string;
+        public frustumCorners : number[];
+        public matrix : geom.Matrix3D;
+        public near : number;
+        public originX : number;
+        public originY : number;
+        public far : number;
+        public project(point3d: geom.Vector3D): geom.Vector3D;
+        public unprojectionMatrix : geom.Matrix3D;
+        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
+        public clone(): ProjectionBase;
+        public _iAspectRatio : number;
+        public pInvalidateMatrix(): void;
+        public pUpdateMatrix(): void;
+        public _iUpdateScissorRect(x: number, y: number, width: number, height: number): void;
+        public _iUpdateViewport(x: number, y: number, width: number, height: number): void;
+    }
+}
+declare module away.projections {
+    class PerspectiveProjection extends ProjectionBase {
+        private _fieldOfView;
+        private _focalLength;
+        private _hFieldOfView;
+        private _hFocalLength;
+        private _preserveAspectRatio;
+        private _preserveFocalLength;
+        constructor(fieldOfView?: number, coordinateSystem?: string);
+        /**
+        *
+        */
+        public preserveAspectRatio : boolean;
+        /**
+        *
+        */
+        public preserveFocalLength : boolean;
+        /**
+        *
+        */
+        public fieldOfView : number;
+        /**
+        *
+        */
+        public focalLength : number;
+        /**
+        *
+        */
+        public hFieldOfView : number;
+        /**
+        *
+        */
+        public hFocalLength : number;
+        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
+        public clone(): ProjectionBase;
+        public pUpdateMatrix(): void;
+    }
+}
+declare module away.projections {
+    class FreeMatrixProjection extends ProjectionBase {
+        constructor();
+        public near : number;
+        public far : number;
+        public iAspectRatio : number;
+        public clone(): ProjectionBase;
+        public pUpdateMatrix(): void;
+    }
+}
+declare module away.projections {
+    class OrthographicProjection extends ProjectionBase {
+        private _projectionHeight;
+        private _xMax;
+        private _yMax;
+        constructor(projectionHeight?: number);
+        public projectionHeight : number;
+        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
+        public clone(): ProjectionBase;
+        public pUpdateMatrix(): void;
+    }
+}
+declare module away.projections {
+    class OrthographicOffCenterProjection extends ProjectionBase {
+        private _minX;
+        private _maxX;
+        private _minY;
+        private _maxY;
+        constructor(minX: number, maxX: number, minY: number, maxY: number);
+        public minX : number;
+        public maxX : number;
+        public minY : number;
+        public maxY : number;
+        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
+        public clone(): ProjectionBase;
+        public pUpdateMatrix(): void;
+    }
+}
+declare module away.projections {
+    class ObliqueNearPlaneProjection extends ProjectionBase {
+        private _baseProjection;
+        private _plane;
+        private _onProjectionMatrixChangedDelegate;
+        constructor(baseProjection: IProjection, plane: geom.Plane3D);
+        public frustumCorners : number[];
+        public near : number;
+        public far : number;
+        public iAspectRatio : number;
+        public plane : geom.Plane3D;
+        public baseProjection : IProjection;
+        private onProjectionMatrixChanged(event);
+        public pUpdateMatrix(): void;
+    }
+}
+declare module away.entities {
+    class Camera extends containers.DisplayObjectContainer implements IEntity {
+        private _viewProjection;
+        private _viewProjectionDirty;
+        private _projection;
+        private _frustumPlanes;
+        private _frustumPlanesDirty;
+        private _onProjectionMatrixChangedDelegate;
+        constructor(projection?: projections.IProjection);
+        public pCreateDefaultBoundingVolume(): bounds.BoundingVolumeBase;
+        /**
+        * @protected
+        */
+        public pCreateEntityPartitionNode(): partition.EntityNode;
+        public assetType : string;
+        private onProjectionMatrixChanged(event);
+        public frustumPlanes : geom.Plane3D[];
+        private updateFrustum();
+        /**
+        * @protected
+        */
+        public pInvalidateSceneTransform(): void;
+        /**
+        * @protected
+        */
+        public pUpdateBounds(): void;
+        /**
+        *
+        */
+        public projection : projections.IProjection;
+        /**
+        *
+        */
+        public viewProjection : geom.Matrix3D;
+        /**
+        * Calculates the ray in scene space from the camera to the given normalized coordinates in screen space.
+        *
+        * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
+        * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
+        * @param sZ The z coordinate in screen space, representing the distance into the screen.
+        * @return The ray from the camera to the scene space position of the given screen coordinates.
+        */
+        public getRay(nX: number, nY: number, sZ: number): geom.Vector3D;
+        /**
+        * Calculates the normalised position in screen space of the given scene position.
+        *
+        * @param point3d the position vector of the scene coordinates to be projected.
+        * @return The normalised screen position of the given scene coordinates.
+        */
+        public project(point3d: geom.Vector3D): geom.Vector3D;
+        /**
+        * Calculates the scene position of the given normalized coordinates in screen space.
+        *
+        * @param nX The normalised x coordinate in screen space, minus the originX offset of the projection property.
+        * @param nY The normalised y coordinate in screen space, minus the originY offset of the projection property.
+        * @param sZ The z coordinate in screen space, representing the distance into the screen.
+        * @return The scene position of the given screen coordinates.
+        */
+        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
+        public _iCollectRenderables(renderer: render.IRenderer): void;
+        public _iCollectRenderable(renderer: render.IRenderer): void;
+    }
+}
+declare module away.materials {
+    class ShadowMapperBase {
+        public _pCasterCollector: traverse.ShadowCasterCollector;
+        private _depthMap;
+        public _pDepthMapSize: number;
+        public _pLight: base.LightBase;
+        private _explicitDepthMap;
+        private _autoUpdateShadows;
+        public _iShadowsInvalid: boolean;
+        constructor();
+        public pCreateCasterCollector(): traverse.ShadowCasterCollector;
+        public autoUpdateShadows : boolean;
+        public updateShadows(): void;
+        public iSetDepthMap(depthMap: textures.TextureProxyBase): void;
+        public light : base.LightBase;
+        public depthMap : textures.TextureProxyBase;
+        public depthMapSize : number;
+        public dispose(): void;
+        public pCreateDepthTexture(): textures.TextureProxyBase;
+        public iRenderDepthMap(stage: base.Stage, entityCollector: traverse.EntityCollector, renderer: render.IRenderer): void;
+        public pUpdateDepthProjection(viewCamera: entities.Camera): void;
+        public pDrawDepthMap(target: textures.TextureProxyBase, scene: containers.Scene, renderer: render.IRenderer): void;
+        public _pSetDepthMapSize(value: any): void;
+    }
+}
+declare module away.materials {
+    class CubeMapShadowMapper extends ShadowMapperBase {
+        private _depthCameras;
+        private _projections;
+        private _needsRender;
+        constructor();
+        private initCameras();
+        private addCamera(rotationX, rotationY, rotationZ);
+        public pCreateDepthTexture(): textures.TextureProxyBase;
+        public pUpdateDepthProjection(viewCamera: entities.Camera): void;
+        public pDrawDepthMap(target: textures.RenderTexture, scene: containers.Scene, renderer: render.IRenderer): void;
+    }
+}
+declare module away.materials {
+    class DirectionalShadowMapper extends ShadowMapperBase {
+        public _pOverallDepthCamera: entities.Camera;
+        public _pLocalFrustum: number[];
+        public _pLightOffset: number;
+        public _pMatrix: geom.Matrix3D;
+        public _pOverallDepthProjection: projections.FreeMatrixProjection;
+        public _pSnap: number;
+        public _pCullPlanes: geom.Plane3D[];
+        public _pMinZ: number;
+        public _pMaxZ: number;
+        constructor();
+        public snap : number;
+        public lightOffset : number;
+        public iDepthProjection : geom.Matrix3D;
+        public depth : number;
+        public pDrawDepthMap(target: textures.TextureProxyBase, scene: containers.Scene, renderer: render.IRenderer): void;
+        public pUpdateCullPlanes(viewCamera: entities.Camera): void;
+        public pUpdateDepthProjection(viewCamera: entities.Camera): void;
+        public pUpdateProjectionFromFrustumCorners(viewCamera: entities.Camera, corners: number[], matrix: geom.Matrix3D): void;
+    }
+}
+declare module away.materials {
+    class CascadeShadowMapper extends DirectionalShadowMapper implements events.IEventDispatcher {
+        public _pScissorRects: geom.Rectangle[];
+        private _pScissorRectsInvalid;
+        private _splitRatios;
+        private _numCascades;
+        private _depthCameras;
+        private _depthLenses;
+        private _texOffsetsX;
+        private _texOffsetsY;
+        private _changeDispatcher;
+        private _nearPlaneDistances;
+        constructor(numCascades?: number);
+        public getSplitRatio(index: number): number;
+        public setSplitRatio(index: number, value: number): void;
+        public getDepthProjections(partition: number): geom.Matrix3D;
+        private init();
+        public _pSetDepthMapSize(value: number): void;
+        private invalidateScissorRects();
+        public numCascades : number;
+        public pDrawDepthMap(target: textures.RenderTexture, scene: containers.Scene, renderer: render.IRenderer): void;
+        private updateScissorRects();
+        public pUpdateDepthProjection(viewCamera: entities.Camera): void;
+        private updateProjectionPartition(matrix, splitRatio, texOffsetX, texOffsetY);
+        public addEventListener(type: string, listener: Function): void;
+        public removeEventListener(type: string, listener: Function): void;
+        public dispatchEvent(event: events.Event): void;
+        public hasEventListener(type: string): boolean;
+        public _iNearPlaneDistances : number[];
+    }
+}
+declare module away.materials {
+    class NearDirectionalShadowMapper extends DirectionalShadowMapper {
+        private _coverageRatio;
+        constructor(coverageRatio?: number);
+        /**
+        * A value between 0 and 1 to indicate the ratio of the view frustum that needs to be covered by the shadow map.
+        */
+        public coverageRatio : number;
+        public pUpdateDepthProjection(viewCamera: entities.Camera): void;
+    }
+}
 declare module away.entities {
     interface IEntity extends library.IAsset {
         x: number;
@@ -11424,7 +12208,7 @@ declare module away.entities {
         /**
         *
         */
-        public material : materials.IMaterial;
+        public material : materials.MaterialBase;
         /**
         * Controls whether or not the Billboard object is snapped to the nearest pixel.
         * This value is ignored in the native and HTML5 targets.
@@ -11452,7 +12236,7 @@ declare module away.entities {
         *
         */
         public uvTransform : geom.UVTransform;
-        constructor(material: materials.IMaterial, pixelSnapping?: string, smoothing?: boolean);
+        constructor(material: materials.MaterialBase, pixelSnapping?: string, smoothing?: boolean);
         /**
         * @protected
         */
@@ -11480,66 +12264,48 @@ declare module away.entities {
     }
 }
 declare module away.entities {
-    class Camera extends containers.DisplayObjectContainer implements IEntity {
-        private _viewProjection;
-        private _viewProjectionDirty;
-        private _projection;
-        private _frustumPlanes;
-        private _frustumPlanesDirty;
-        private _onProjectionMatrixChangedDelegate;
-        constructor(projection?: projections.IProjection);
-        public pCreateDefaultBoundingVolume(): bounds.BoundingVolumeBase;
+    class DirectionalLight extends base.LightBase implements IEntity {
+        private _direction;
+        private _tmpLookAt;
+        private _sceneDirection;
+        private _projAABBPoints;
+        constructor(xDir?: number, yDir?: number, zDir?: number);
+        public sceneDirection : geom.Vector3D;
+        public direction : geom.Vector3D;
+        /**
+        *
+        * @returns {away.bounds.NullBounds}
+        */
+        public pGetDefaultBoundingVolume(): bounds.BoundingVolumeBase;
+        /**
+        *
+        */
+        public pUpdateBounds(): void;
+        public pUpdateSceneTransform(): void;
+        public pCreateShadowMapper(): materials.DirectionalShadowMapper;
         /**
         * @protected
         */
         public pCreateEntityPartitionNode(): partition.EntityNode;
-        public assetType : string;
-        private onProjectionMatrixChanged(event);
-        public frustumPlanes : geom.Plane3D[];
-        private updateFrustum();
-        /**
-        * @protected
-        */
-        public pInvalidateSceneTransform(): void;
-        /**
-        * @protected
-        */
-        public pUpdateBounds(): void;
-        /**
-        *
-        */
-        public projection : projections.IProjection;
-        /**
-        *
-        */
-        public viewProjection : geom.Matrix3D;
-        /**
-        * Calculates the ray in scene space from the camera to the given normalized coordinates in screen space.
-        *
-        * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
-        * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
-        * @param sZ The z coordinate in screen space, representing the distance into the screen.
-        * @return The ray from the camera to the scene space position of the given screen coordinates.
-        */
-        public getRay(nX: number, nY: number, sZ: number): geom.Vector3D;
-        /**
-        * Calculates the normalised position in screen space of the given scene position.
-        *
-        * @param point3d the position vector of the scene coordinates to be projected.
-        * @return The normalised screen position of the given scene coordinates.
-        */
-        public project(point3d: geom.Vector3D): geom.Vector3D;
-        /**
-        * Calculates the scene position of the given normalized coordinates in screen space.
-        *
-        * @param nX The normalised x coordinate in screen space, minus the originX offset of the projection property.
-        * @param nY The normalised y coordinate in screen space, minus the originY offset of the projection property.
-        * @param sZ The z coordinate in screen space, representing the distance into the screen.
-        * @return The scene position of the given screen coordinates.
-        */
-        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
+        public iGetObjectProjectionMatrix(entity: IEntity, camera: Camera, target?: geom.Matrix3D): geom.Matrix3D;
         public _iCollectRenderables(renderer: render.IRenderer): void;
-        public _iCollectRenderable(renderer: render.IRenderer): void;
+    }
+}
+declare module away.entities {
+    class LightProbe extends base.LightBase implements IEntity {
+        private _diffuseMap;
+        private _specularMap;
+        constructor(diffuseMap: textures.CubeTextureBase, specularMap?: textures.CubeTextureBase);
+        public diffuseMap : textures.CubeTextureBase;
+        public specularMap : textures.CubeTextureBase;
+        /**
+        * @protected
+        */
+        public pCreateEntityPartitionNode(): partition.EntityNode;
+        public pUpdateBounds(): void;
+        public pGetDefaultBoundingVolume(): bounds.BoundingVolumeBase;
+        public iGetObjectProjectionMatrix(entity: IEntity, camera: Camera, target?: geom.Matrix3D): geom.Matrix3D;
+        public _iCollectRenderables(renderer: render.IRenderer): void;
     }
 }
 declare module away.entities {
@@ -11574,7 +12340,7 @@ declare module away.entities {
         /**
         *
         */
-        public material : materials.IMaterial;
+        public material : materials.MaterialBase;
         /**
         *
         */
@@ -11590,7 +12356,7 @@ declare module away.entities {
         * @param endPosition Ending position of the line segment
         * @param thickness Thickness of the line
         */
-        constructor(material: materials.IMaterial, startPosition: geom.Vector3D, endPosition: geom.Vector3D, thickness?: number);
+        constructor(material: materials.MaterialBase, startPosition: geom.Vector3D, endPosition: geom.Vector3D, thickness?: number);
         public dispose(): void;
         /**
         * @protected
@@ -11648,7 +12414,7 @@ declare module away.entities {
         /**
         * The material with which to render the Mesh.
         */
-        public material : materials.IMaterial;
+        public material : materials.MaterialBase;
         /**
         * Indicates whether or not the mesh share the same animation geometry.
         */
@@ -11668,7 +12434,7 @@ declare module away.entities {
         * @param geometry                    The geometry used by the mesh that provides it with its shape.
         * @param material    [optional]        The material with which to render the Mesh.
         */
-        constructor(geometry: base.Geometry, material?: materials.IMaterial);
+        constructor(geometry: base.Geometry, material?: materials.MaterialBase);
         /**
         *
         */
@@ -11760,6 +12526,26 @@ declare module away.entities {
         public _iInvalidateRenderableGeometries(): void;
     }
 }
+declare module away.entities {
+    class PointLight extends base.LightBase implements IEntity {
+        public _pRadius: number;
+        public _pFallOff: number;
+        public _pFallOffFactor: number;
+        constructor();
+        public pCreateShadowMapper(): materials.CubeMapShadowMapper;
+        public radius : number;
+        public iFallOffFactor(): number;
+        public fallOff : number;
+        /**
+        * @protected
+        */
+        public pCreateEntityPartitionNode(): partition.EntityNode;
+        public pUpdateBounds(): void;
+        public pGetDefaultBoundingVolume(): bounds.BoundingVolumeBase;
+        public iGetObjectProjectionMatrix(entity: IEntity, camera: Camera, target?: geom.Matrix3D): geom.Matrix3D;
+        public _iCollectRenderables(renderer: render.IRenderer): void;
+    }
+}
 /**
 * This class is used to create lightweight shapes using the ActionScript
 * drawing application program interface(API). The Shape class includes a
@@ -11808,11 +12594,11 @@ declare module away.entities {
         *
         * @param material	The material with which to render the Skybox.
         */
-        constructor(material: materials.IMaterial);
+        constructor(material: materials.MaterialBase);
         /**
         * The material with which to render the Skybox.
         */
-        public material : materials.IMaterial;
+        public material : materials.MaterialBase;
         public assetType : string;
         /**
         * @protected
@@ -11821,7 +12607,7 @@ declare module away.entities {
         /**
         * @protected
         */
-        public pCreateEntityPartitionNode(): partition.EntityNode;
+        public pCreateEntityPartitionNode(): partition.SkyboxNode;
         /**
         * @protected
         */
@@ -12710,176 +13496,6 @@ declare module away.entities {
         static isFontCompatible(fontName: string, fontStyle: string): boolean;
     }
 }
-declare module away.projections {
-    /**
-    * Provides constant values for camera lens projection options use the the <code>coordinateSystem</code> property
-    *
-    * @see away.projections.PerspectiveLens#coordinateSystem
-    */
-    class CoordinateSystem {
-        /**
-        * Default option, projects to a left-handed coordinate system
-        */
-        static LEFT_HANDED: string;
-        /**
-        * Projects to a right-handed coordinate system
-        */
-        static RIGHT_HANDED: string;
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.projections {
-    /**
-    * IMaterialOwner provides an interface for objects that can use materials.
-    *
-    * @interface away.base.IMaterialOwner
-    */
-    interface IProjection extends events.IEventDispatcher {
-        coordinateSystem: string;
-        frustumCorners: number[];
-        matrix: geom.Matrix3D;
-        near: number;
-        originX: number;
-        originY: number;
-        far: number;
-        _iAspectRatio: number;
-        project(point3d: geom.Vector3D): geom.Vector3D;
-        unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
-        _iUpdateScissorRect(x: number, y: number, width: number, height: number): any;
-        _iUpdateViewport(x: number, y: number, width: number, height: number): any;
-    }
-}
-declare module away.projections {
-    class ProjectionBase extends events.EventDispatcher implements IProjection {
-        public _pMatrix: geom.Matrix3D;
-        public _pScissorRect: geom.Rectangle;
-        public _pViewPort: geom.Rectangle;
-        public _pNear: number;
-        public _pFar: number;
-        public _pAspectRatio: number;
-        public _pMatrixInvalid: boolean;
-        public _pFrustumCorners: number[];
-        public _pCoordinateSystem: string;
-        public _pOriginX: number;
-        public _pOriginY: number;
-        private _unprojection;
-        private _unprojectionInvalid;
-        constructor(coordinateSystem?: string);
-        /**
-        * The handedness of the coordinate system projection. The default is LEFT_HANDED.
-        */
-        public coordinateSystem : string;
-        public frustumCorners : number[];
-        public matrix : geom.Matrix3D;
-        public near : number;
-        public originX : number;
-        public originY : number;
-        public far : number;
-        public project(point3d: geom.Vector3D): geom.Vector3D;
-        public unprojectionMatrix : geom.Matrix3D;
-        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
-        public clone(): ProjectionBase;
-        public _iAspectRatio : number;
-        public pInvalidateMatrix(): void;
-        public pUpdateMatrix(): void;
-        public _iUpdateScissorRect(x: number, y: number, width: number, height: number): void;
-        public _iUpdateViewport(x: number, y: number, width: number, height: number): void;
-    }
-}
-declare module away.projections {
-    class PerspectiveProjection extends ProjectionBase {
-        private _fieldOfView;
-        private _focalLength;
-        private _hFieldOfView;
-        private _hFocalLength;
-        private _preserveAspectRatio;
-        private _preserveFocalLength;
-        constructor(fieldOfView?: number, coordinateSystem?: string);
-        /**
-        *
-        */
-        public preserveAspectRatio : boolean;
-        /**
-        *
-        */
-        public preserveFocalLength : boolean;
-        /**
-        *
-        */
-        public fieldOfView : number;
-        /**
-        *
-        */
-        public focalLength : number;
-        /**
-        *
-        */
-        public hFieldOfView : number;
-        /**
-        *
-        */
-        public hFocalLength : number;
-        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
-        public clone(): ProjectionBase;
-        public pUpdateMatrix(): void;
-    }
-}
-declare module away.projections {
-    class FreeMatrixProjection extends ProjectionBase {
-        constructor();
-        public near : number;
-        public far : number;
-        public iAspectRatio : number;
-        public clone(): ProjectionBase;
-        public pUpdateMatrix(): void;
-    }
-}
-declare module away.projections {
-    class OrthographicProjection extends ProjectionBase {
-        private _projectionHeight;
-        private _xMax;
-        private _yMax;
-        constructor(projectionHeight?: number);
-        public projectionHeight : number;
-        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
-        public clone(): ProjectionBase;
-        public pUpdateMatrix(): void;
-    }
-}
-declare module away.projections {
-    class OrthographicOffCenterProjection extends ProjectionBase {
-        private _minX;
-        private _maxX;
-        private _minY;
-        private _maxY;
-        constructor(minX: number, maxX: number, minY: number, maxY: number);
-        public minX : number;
-        public maxX : number;
-        public minY : number;
-        public maxY : number;
-        public unproject(nX: number, nY: number, sZ: number): geom.Vector3D;
-        public clone(): ProjectionBase;
-        public pUpdateMatrix(): void;
-    }
-}
-declare module away.projections {
-    class ObliqueNearPlaneProjection extends ProjectionBase {
-        private _baseProjection;
-        private _plane;
-        private _onProjectionMatrixChangedDelegate;
-        constructor(baseProjection: IProjection, plane: geom.Plane3D);
-        public frustumCorners : number[];
-        public near : number;
-        public far : number;
-        public iAspectRatio : number;
-        public plane : geom.Plane3D;
-        public baseProjection : IProjection;
-        private onProjectionMatrixChanged(event);
-        public pUpdateMatrix(): void;
-    }
-}
 declare module away.managers {
     /**
     * MouseManager enforces a singleton pattern and is not intended to be instanced.
@@ -12930,6 +13546,76 @@ declare module away.managers {
         private onMouseWheel(event);
         private updateColliders(event);
     }
+}
+declare module away.managers {
+    /**
+    * The StageManager class provides a multiton object that handles management for Stage objects.
+    *
+    * @see away.base.Stage
+    */
+    class StageManager extends events.EventDispatcher {
+        private static STAGE_MAX_QUANTITY;
+        private _stages;
+        private static _instance;
+        private static _numStages;
+        private _onContextCreatedDelegate;
+        /**
+        * Creates a new StageManager class.
+        * @param stage The Stage object that contains the Stage objects to be managed.
+        * @private
+        */
+        constructor(StageManagerSingletonEnforcer: StageManagerSingletonEnforcer);
+        /**
+        * Gets a StageManager instance for the given Stage object.
+        * @param stage The Stage object that contains the Stage objects to be managed.
+        * @return The StageManager instance for the given Stage object.
+        */
+        static getInstance(): StageManager;
+        /**
+        * Requests the Stage for the given index.
+        *
+        * @param index The index of the requested Stage.
+        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
+        * @param profile The compatibility profile, an enumeration of ContextProfile
+        * @return The Stage for the given index.
+        */
+        public getStageAt(index: number, forceSoftware?: boolean, profile?: string, mode?: string): base.Stage;
+        /**
+        * Removes a Stage from the manager.
+        * @param stage
+        * @private
+        */
+        public iRemoveStage(stage: base.Stage): void;
+        /**
+        * Get the next available stage. An error is thrown if there are no StageProxies available
+        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
+        * @param profile The compatibility profile, an enumeration of ContextProfile
+        * @return The allocated stage
+        */
+        public getFreeStage(forceSoftware?: boolean, profile?: string, mode?: string): base.Stage;
+        /**
+        * Checks if a new stage can be created and managed by the class.
+        * @return true if there is one slot free for a new stage
+        */
+        public hasFreeStage : boolean;
+        /**
+        * Returns the amount of stage objects that can be created and managed by the class
+        * @return the amount of free slots
+        */
+        public numSlotsFree : number;
+        /**
+        * Returns the amount of Stage objects currently managed by the class.
+        * @return the amount of slots used
+        */
+        public numSlotsUsed : number;
+        /**
+        * The maximum amount of Stage objects that can be managed by the class
+        */
+        public numSlotsTotal : number;
+        private onContextCreated(e);
+    }
+}
+declare class StageManagerSingletonEnforcer {
 }
 /**
 * The Loader class is used to load SWF files or image(JPG, PNG, or GIF)
@@ -13585,126 +14271,6 @@ declare module away.containers {
         public updateCollider(): void;
     }
 }
-declare module away.bounds {
-    class BoundingVolumeBase {
-        public _aabb: geom.Box;
-        public _pAabbPoints: number[];
-        public _pAabbPointsDirty: boolean;
-        public _pBoundingEntity: entities.IEntity;
-        constructor();
-        public aabb : geom.Box;
-        public aabbPoints : number[];
-        public boundingEntity : entities.IEntity;
-        public nullify(): void;
-        public disposeRenderable(): void;
-        public fromVertices(vertices: number[]): void;
-        /**
-        * Updates the bounds to fit a Geometry object.
-        *
-        * @param geometry The Geometry object to be bounded.
-        */
-        public fromGeometry(geometry: base.Geometry): void;
-        public fromSphere(center: geom.Vector3D, radius: number): void;
-        public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
-        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
-        public overlaps(bounds: BoundingVolumeBase): boolean;
-        public clone(): BoundingVolumeBase;
-        public rayIntersection(position: geom.Vector3D, direction: geom.Vector3D, targetNormal: geom.Vector3D): number;
-        public containsPoint(position: geom.Vector3D): boolean;
-        public pUpdateAABBPoints(): void;
-        public pUpdateBoundingEntity(): void;
-        public pCreateBoundingEntity(): entities.IEntity;
-        public classifyToPlane(plane: geom.Plane3D): number;
-        public transformFrom(bounds: BoundingVolumeBase, matrix: geom.Matrix3D): void;
-    }
-}
-declare module away.bounds {
-    class NullBounds extends BoundingVolumeBase {
-        private _alwaysIn;
-        constructor(alwaysIn?: boolean);
-        public clone(): BoundingVolumeBase;
-        public pCreateBoundingEntity(): entities.IEntity;
-        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
-        public fromSphere(center: geom.Vector3D, radius: number): void;
-        public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
-        public classifyToPlane(plane: geom.Plane3D): number;
-        public transformFrom(bounds: BoundingVolumeBase, matrix: geom.Matrix3D): void;
-    }
-}
-declare module away.bounds {
-    class BoundingSphere extends BoundingVolumeBase {
-        private _radius;
-        private _centerX;
-        private _centerY;
-        private _centerZ;
-        constructor();
-        public radius : number;
-        public nullify(): void;
-        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
-        public fromSphere(center: geom.Vector3D, radius: number): void;
-        public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
-        public clone(): BoundingVolumeBase;
-        public rayIntersection(position: geom.Vector3D, direction: geom.Vector3D, targetNormal: geom.Vector3D): number;
-        public containsPoint(position: geom.Vector3D): boolean;
-        public pUpdateBoundingEntity(): void;
-        public pCreateBoundingEntity(): entities.IEntity;
-        public classifyToPlane(plane: geom.Plane3D): number;
-        public transformFrom(bounds: BoundingVolumeBase, matrix: geom.Matrix3D): void;
-    }
-}
-declare module away.bounds {
-    /**
-    * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
-    * This is useful for most meshes.
-    */
-    class AxisAlignedBoundingBox extends BoundingVolumeBase {
-        private _centerX;
-        private _centerY;
-        private _centerZ;
-        private _halfExtentsX;
-        private _halfExtentsY;
-        private _halfExtentsZ;
-        /**
-        * Creates a new <code>AxisAlignedBoundingBox</code> object.
-        */
-        constructor();
-        /**
-        * @inheritDoc
-        */
-        public nullify(): void;
-        /**
-        * @inheritDoc
-        */
-        public isInFrustum(planes: geom.Plane3D[], numPlanes: number): boolean;
-        public rayIntersection(position: geom.Vector3D, direction: geom.Vector3D, targetNormal: geom.Vector3D): number;
-        /**
-        * @inheritDoc
-        */
-        public containsPoint(position: geom.Vector3D): boolean;
-        /**
-        * @inheritDoc
-        */
-        public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
-        /**
-        * @inheritDoc
-        */
-        public clone(): BoundingVolumeBase;
-        public halfExtentsX : number;
-        public halfExtentsY : number;
-        public halfExtentsZ : number;
-        /**
-        * Finds the closest point on the bounding volume to another given point. This can be used for maximum error calculations for content within a given bound.
-        * @param point The point for which to find the closest point on the bounding volume
-        * @param target An optional Vector3D to store the result to prevent creating a new object.
-        * @return
-        */
-        public closestPointToPoint(point: geom.Vector3D, target?: geom.Vector3D): geom.Vector3D;
-        public pUpdateBoundingRenderable(): void;
-        public pCreateBoundingEntity(): entities.IEntity;
-        public classifyToPlane(plane: geom.Plane3D): number;
-        public transformFrom(bounds: BoundingVolumeBase, matrix: geom.Matrix3D): void;
-    }
-}
 declare module away.controllers {
     class ControllerBase {
         public _pAutoUpdate: boolean;
@@ -13940,50 +14506,231 @@ declare module away.controllers {
         public update(interpolate?: boolean): void;
     }
 }
-/**
-* @module away.materials
-*/
 declare module away.materials {
     /**
-    * @class away.materials.IMaterial
+    * LightPickerBase provides an abstract base clase for light picker classes. These classes are responsible for
+    * feeding materials with relevant lights. Usually, StaticLightPicker can be used, but LightPickerBase can be
+    * extended to provide more application-specific dynamic selection of lights.
+    *
+    * @see StaticLightPicker
     */
-    interface IMaterial extends library.IAsset {
+    class LightPickerBase extends library.NamedAssetBase implements library.IAsset {
+        public _pNumPointLights: number;
+        public _pNumDirectionalLights: number;
+        public _pNumCastingPointLights: number;
+        public _pNumCastingDirectionalLights: number;
+        public _pNumLightProbes: number;
+        public _pAllPickedLights: base.LightBase[];
+        public _pPointLights: entities.PointLight[];
+        public _pCastingPointLights: entities.PointLight[];
+        public _pDirectionalLights: entities.DirectionalLight[];
+        public _pCastingDirectionalLights: entities.DirectionalLight[];
+        public _pLightProbes: entities.LightProbe[];
+        public _pLightProbeWeights: number[];
+        /**
+        * Creates a new LightPickerBase object.
+        */
+        constructor();
+        /**
+        * Disposes resources used by the light picker.
+        */
+        public dispose(): void;
+        /**
+        * @inheritDoc
+        */
+        public assetType : string;
+        /**
+        * The maximum amount of directional lights that will be provided.
+        */
+        public numDirectionalLights : number;
+        /**
+        * The maximum amount of point lights that will be provided.
+        */
+        public numPointLights : number;
+        /**
+        * The maximum amount of directional lights that cast shadows.
+        */
+        public numCastingDirectionalLights : number;
+        /**
+        * The amount of point lights that cast shadows.
+        */
+        public numCastingPointLights : number;
+        /**
+        * The maximum amount of light probes that will be provided.
+        */
+        public numLightProbes : number;
+        /**
+        * The collected point lights to be used for shading.
+        */
+        public pointLights : entities.PointLight[];
+        /**
+        * The collected directional lights to be used for shading.
+        */
+        public directionalLights : entities.DirectionalLight[];
+        /**
+        * The collected point lights that cast shadows to be used for shading.
+        */
+        public castingPointLights : entities.PointLight[];
+        /**
+        * The collected directional lights that cast shadows to be used for shading.
+        */
+        public castingDirectionalLights : entities.DirectionalLight[];
+        /**
+        * The collected light probes to be used for shading.
+        */
+        public lightProbes : entities.LightProbe[];
+        /**
+        * The weights for each light probe, defining their influence on the object.
+        */
+        public lightProbeWeights : number[];
+        /**
+        * A collection of all the collected lights.
+        */
+        public allPickedLights : base.LightBase[];
+        /**
+        * Updates set of lights for a given renderable and EntityCollector. Always call super.collectLights() after custom overridden code.
+        */
+        public collectLights(renderable: pool.IRenderable, entityCollector: traverse.ICollector): void;
+        /**
+        * Updates the weights for the light probes, based on the renderable's position relative to them.
+        * @param renderable The renderble for which to calculate the light probes' influence.
+        */
+        private updateProbeWeights(renderable);
+    }
+}
+declare module away.materials {
+    /**
+    * StaticLightPicker is a light picker that provides a static set of lights. The lights can be reassigned, but
+    * if the configuration changes (number of directional lights, point lights, etc), a material recompilation may
+    * occur.
+    */
+    class StaticLightPicker extends LightPickerBase {
+        private _lights;
+        private _onCastShadowChangeDelegate;
+        /**
+        * Creates a new StaticLightPicker object.
+        * @param lights The lights to be used for shading.
+        */
+        constructor(lights: any);
+        /**
+        * The lights used for shading.
+        */
+        public lights : any[];
+        /**
+        * Remove configuration change listeners on the lights.
+        */
+        private clearListeners();
+        /**
+        * Notifies the material of a configuration change.
+        */
+        private onCastShadowChange(event);
+        /**
+        * Called when a directional light's shadow casting configuration changes.
+        */
+        private updateDirectionalCasting(light);
+        /**
+        * Called when a point light's shadow casting configuration changes.
+        */
+        private updatePointCasting(light);
+    }
+}
+declare module away.materials {
+    /**
+    * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
+    * a render call per required renderable.
+    */
+    interface IMaterialPass extends events.IEventDispatcher {
         /**
         *
         */
-        height: number;
+        _iPasses: IMaterialPass[];
         /**
         *
         */
-        requiresBlending: boolean;
+        _iProgramids: number[];
         /**
-        *
+        * The material to which this pass belongs.
         */
-        width: number;
+        material: MaterialBase;
         /**
-        * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
+        * Indicate whether this pass should write to the depth buffer or not. Ignored when blending is enabled.
+        */
+        writeDepth: boolean;
+        /**
+        * Defines whether any used textures should use mipmapping.
+        */
+        mipmap: boolean;
+        /**
+        * Defines whether smoothing should be applied to any used textures.
+        */
+        smooth: boolean;
+        /**
+        * Defines whether textures should be tiled.
+        */
+        repeat: boolean;
+        /**
+        * Defines whether or not the material should perform backface culling.
+        */
+        bothSides: boolean;
+        /**
+        * Returns the animation data set adding animations to the material.
+        */
+        animationSet: animators.IAnimationSet;
+        /**
+        * Specifies whether this pass renders to texture
+        */
+        renderToTexture: boolean;
+        /**
+        * Cleans up any resources used by the current object.
+        * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
+        */
+        dispose(): any;
+        /**
+        * Sets up the animation state. This needs to be called before render()
         *
         * @private
         */
-        _iMaterialId: number;
+        iUpdateAnimationState(renderable: pool.IRenderable, stage: base.Stage, camera: entities.Camera): any;
         /**
-        * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
+        * Renders an object to the current render target.
         *
         * @private
         */
-        _iRenderOrderId: number;
+        iRender(renderable: pool.IRenderable, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): any;
         /**
-        *
-        *
-        * @param owner
+        * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
+        * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
+        * @param stage The Stage object which is currently used for rendering.
+        * @param camera The camera from which the scene is viewed.
+        * @private
         */
-        iAddOwner(owner: base.IMaterialOwner): any;
+        iActivate(stage: base.Stage, camera: entities.Camera): any;
         /**
+        * Clears the render state for the pass. This needs to be called before activating another pass.
+        * @param stage The Stage used for rendering
         *
-        *
-        * @param owner
+        * @private
         */
-        iRemoveOwner(owner: base.IMaterialOwner): any;
+        iDeactivate(stage: base.Stage): any;
+        /**
+        * Marks the shader program as invalid, so it will be recompiled before the next render.
+        *
+        * @param updateMaterial Indicates whether the invalidation should be performed on the entire material. Should always pass "true" unless it's called from the material itself.
+        */
+        iInvalidateShaderProgram(updateMaterial?: boolean): any;
+        /**
+        * The light picker used by the material to provide lights to the material if it supports lighting.
+        *
+        * @see away.materials.LightPickerBase
+        * @see away.materials.StaticLightPicker
+        */
+        lightPicker: LightPickerBase;
+        /**
+        * Indicates whether visible textures (or other pixels) used by this material have
+        * already been premultiplied. Toggle this if you are seeing black halos around your
+        * blended alpha edges.
+        */
+        alphaPremultiplied: boolean;
     }
 }
 declare module away.materials {
@@ -13994,18 +14741,23 @@ declare module away.materials {
     * pass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space
     * subsurface scattering, or rendering a depth map for specialized self-shadowing).
     *
-    * Away3D provides default materials trough SinglePassMaterialBase and MultiPassMaterialBase, which use modular
+    * Away3D provides default materials trough SinglePassMaterialBase and TriangleMaterial, which use modular
     * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
     * shaders, or entire new material frameworks.
     */
-    class CSSMaterialBase extends library.NamedAssetBase implements IMaterial {
-        private _height;
-        private _sizeChanged;
-        private _width;
+    class MaterialBase extends library.NamedAssetBase implements library.IAsset {
         /**
         * An object to contain any extra data.
         */
         public extra: Object;
+        /**
+        * A value that can be used by materials that only work with a given type of renderer. The renderer can test the
+        * classification to choose which render path to use. For example, a deferred material could set this value so
+        * that the deferred renderer knows not to take the forward rendering path.
+        *
+        * @private
+        */
+        public _iClassification: string;
         /**
         * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
         *
@@ -14018,54 +14770,59 @@ declare module away.materials {
         * @private
         */
         public _iRenderOrderId: number;
-        /**
-        * The same as _renderOrderId, but applied to the depth shader passes.
-        *
-        * @private
-        */
-        public _iDepthPassId: number;
+        public _iBaseScreenPassIndex: number;
         private _bothSides;
+        private _animationSet;
+        public _pScreenPassesInvalid: boolean;
         /**
         * A list of material owners, renderables or custom Entities.
         */
         private _owners;
+        private _alphaPremultiplied;
         public _pBlendMode: string;
-        private _imageElement;
-        private _imageStyle;
-        private _repeat;
+        private _numPasses;
+        private _passes;
+        public _pMipmap: boolean;
         private _smooth;
-        private _texture;
+        private _repeat;
+        public _pLightPicker: LightPickerBase;
+        public _pHeight: number;
+        public _pWidth: number;
+        public _pRequiresBlending: boolean;
+        private _onPassChangeDelegate;
+        private _onLightChangeDelegate;
+        /**
+        * Creates a new MaterialBase object.
+        */
+        constructor();
+        /**
+        * @inheritDoc
+        */
+        public assetType : string;
         /**
         *
         */
         public height : number;
-        public imageElement : HTMLImageElement;
-        public imageStyle : MSStyleCSSProperties;
         /**
-        * Indicates whether or not any used textures should be tiled. If set to false, texture samples are clamped to
-        * the texture's borders when the uv coordinates are outside the [0, 1] interval.
+        * The light picker used by the material to provide lights to the material if it supports lighting.
+        *
+        * @see LightPickerBase
+        * @see StaticLightPicker
         */
-        public repeat : boolean;
+        public lightPicker : LightPickerBase;
+        /**
+        * Indicates whether or not any used textures should use mipmapping. Defaults to true.
+        */
+        public mipmap : boolean;
         /**
         * Indicates whether or not any used textures should use smoothing.
         */
         public smooth : boolean;
         /**
-        * The texture object to use for the albedo colour.
+        * Indicates whether or not any used textures should be tiled. If set to false, texture samples are clamped to
+        * the texture's borders when the uv coordinates are outside the [0, 1] interval.
         */
-        public texture : textures.Texture2DBase;
-        /**
-        *
-        */
-        public width : number;
-        /**
-        * Creates a new MaterialBase object.
-        */
-        constructor(texture?: textures.Texture2DBase, smooth?: boolean, repeat?: boolean);
-        /**
-        * @inheritDoc
-        */
-        public assetType : string;
+        public repeat : boolean;
         /**
         * Cleans up resources owned by the material, including passes. Textures are not owned by the material since they
         * could be used by other materials and will not be disposed.
@@ -14087,9 +14844,62 @@ declare module away.materials {
         */
         public blendMode : string;
         /**
+        * Indicates whether visible textures (or other pixels) used by this material have
+        * already been premultiplied. Toggle this if you are seeing black halos around your
+        * blended alpha edges.
+        */
+        public alphaPremultiplied : boolean;
+        /**
         * Indicates whether or not the material requires alpha blending during rendering.
         */
         public requiresBlending : boolean;
+        /**
+        *
+        */
+        public width : number;
+        /**
+        * The amount of passes used by the material.
+        *
+        * @private
+        */
+        public _iNumPasses : number;
+        /**
+        * Indicates whether or not the pass with the given index renders to texture or not.
+        * @param index The index of the pass.
+        * @return True if the pass renders to texture, false otherwise.
+        *
+        * @internal
+        */
+        public iPassRendersToTexture(index: number): boolean;
+        /**
+        * Sets the render state for a pass that is independent of the rendered object. This needs to be called before
+        * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
+        * @param index The index of the pass to activate.
+        * @param stage The Stage object which is currently used for rendering.
+        * @param camera The camera from which the scene is viewed.
+        * @private
+        */
+        public iActivatePass(index: number, stage: base.Stage, camera: entities.Camera): void;
+        /**
+        * Clears the render state for a pass. This needs to be called before activating another pass.
+        * @param index The index of the pass to deactivate.
+        * @param stage The Stage used for rendering
+        *
+        * @internal
+        */
+        public iDeactivatePass(index: number, stage: base.Stage): void;
+        /**
+        * Renders the current pass. Before calling renderPass, activatePass needs to be called with the same index.
+        * @param index The index of the pass used to render the renderable.
+        * @param renderable The IRenderable object to draw.
+        * @param stage The Stage object used for rendering.
+        * @param entityCollector The EntityCollector object that contains the visible scene data.
+        * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
+        * camera.viewProjection as it includes the scaling factors when rendering to textures.
+        *
+        * @internal
+        */
+        public iRenderPass(index: number, renderable: pool.IRenderable, stage: base.Stage, entityCollector: traverse.ICollector, viewProjection: geom.Matrix3D): void;
         /**
         * Mark an IMaterialOwner as owner of this material.
         * Assures we're not using the same material across renderables with different animations, since the
@@ -14097,7 +14907,7 @@ declare module away.materials {
         *
         * @param owner The IMaterialOwner that had this material assigned
         *
-        * @private
+        * @internal
         */
         public iAddOwner(owner: base.IMaterialOwner): void;
         /**
@@ -14110,9 +14920,89 @@ declare module away.materials {
         /**
         * A list of the IMaterialOwners that use this material
         *
-        * @internal
+        * @private
         */
         public iOwners : base.IMaterialOwner[];
+        /**
+        * Performs any processing that needs to occur before any of its passes are used.
+        *
+        * @private
+        */
+        public iUpdateMaterial(): void;
+        /**
+        * Deactivates the last pass of the material.
+        *
+        * @private
+        */
+        public iDeactivate(stage: base.Stage): void;
+        /**
+        * Marks the shader programs for all passes as invalid, so they will be recompiled before the next use.
+        * @param triggerPass The pass triggering the invalidation, if any. This is passed to prevent invalidating the
+        * triggering pass, which would result in an infinite loop.
+        *
+        * @private
+        */
+        public iInvalidatePasses(triggerPass: IMaterialPass): void;
+        /**
+        * Removes a pass from the material.
+        * @param pass The pass to be removed.
+        */
+        public pRemovePass(pass: IMaterialPass): void;
+        /**
+        * Removes all passes from the material
+        */
+        public pClearPasses(): void;
+        /**
+        * Adds a pass to the material
+        * @param pass
+        */
+        public pAddPass(pass: IMaterialPass): void;
+        /**
+        * Adds any additional passes on which the given pass is dependent.
+        * @param pass The pass that my need additional passes.
+        */
+        public pAddChildPassesFor(pass: IMaterialPass): void;
+        /**
+        * Listener for when a pass's shader code changes. It recalculates the render order id.
+        */
+        private onPassChange(event);
+        /**
+        * Flags that the screen passes have become invalid.
+        */
+        public pInvalidateScreenPasses(): void;
+        /**
+        * Called when the light picker's configuration changed.
+        */
+        private onLightsChange(event);
+    }
+}
+declare module away.materials {
+    /**
+    * MaterialBase forms an abstract base class for any material.
+    * A material consists of several passes, each of which constitutes at least one render call. Several passes could
+    * be used for special effects (render lighting for many lights in several passes, render an outline in a separate
+    * pass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space
+    * subsurface scattering, or rendering a depth map for specialized self-shadowing).
+    *
+    * Away3D provides default materials trough SinglePassMaterialBase and MultiPassMaterialBase, which use modular
+    * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
+    * shaders, or entire new material frameworks.
+    */
+    class CSSMaterialBase extends MaterialBase {
+        private _sizeChanged;
+        private _imageElement;
+        private _imageStyle;
+        private _texture;
+        public imageElement : HTMLImageElement;
+        public imageStyle : MSStyleCSSProperties;
+        /**
+        * The texture object to use for the albedo colour.
+        */
+        public texture : textures.Texture2DBase;
+        /**
+        * Creates a new MaterialBase object.
+        */
+        constructor(texture?: textures.Texture2DBase, smooth?: boolean, repeat?: boolean);
         private notifySizeChanged();
     }
 }
@@ -14158,13 +15048,13 @@ declare module away.prefabs {
         /**
         * The material with which to render the primitive.
         */
-        public material : materials.IMaterial;
+        public material : materials.MaterialBase;
         /**
         * Creates a new PrimitivePrefabBase object.
         *
         * @param material The material with which to render the object
         */
-        constructor(material?: materials.IMaterial, geometryType?: string);
+        constructor(material?: materials.MaterialBase, geometryType?: string);
         /**
         * Builds the primitive's geometry when invalid. This method should not be called directly. The calling should
         * be triggered by the invalidateGeometry method (and in turn by updateGeometry).
@@ -14685,13 +15575,15 @@ declare module away.animators {
         * @param sourceSubGeometry
         */
         getRenderableSubGeometry(renderable: pool.IRenderable, sourceSubGeometry: base.SubGeometryBase): base.SubGeometryBase;
+        /**
+        *
+        * @param pass
+        */
+        testGPUCompatibility(pass: materials.IMaterialPass): any;
     }
 }
 declare module away {
     class AwayJSCore extends events.EventDispatcher {
         constructor();
     }
-}
-declare module "awayjs-core" {
-    export = away;
 }

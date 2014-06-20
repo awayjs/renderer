@@ -4,7 +4,7 @@ var demos;
     (function (object3d) {
         var View = away.containers.View;
 
-        var PointLight = away.lights.PointLight;
+        var PointLight = away.entities.PointLight;
         var URLLoader = away.net.URLLoader;
         var URLRequest = away.net.URLRequest;
         var StaticLightPicker = away.materials.StaticLightPicker;
@@ -26,7 +26,7 @@ var demos;
 
                 this.meshes = new Array();
                 this.light = new PointLight();
-                this.view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
+                this.view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.display.ContextMode.FLASH));
                 this.pointLight = new PointLight();
                 this.lightPicker = new StaticLightPicker([this.pointLight]);
 

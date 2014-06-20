@@ -2,13 +2,14 @@
 
 module away.materials
 {
-	import StageGL									= away.base.StageGL;
+	import Stage									= away.base.Stage;
+	import DirectionalLight							= away.entities.DirectionalLight;
+	import LightProbe								= away.entities.LightProbe;
+	import PointLight								= away.entities.PointLight;
 	import ColorTransform							= away.geom.ColorTransform;
 	import Vector3D									= away.geom.Vector3D;
-	import DirectionalLight							= away.lights.DirectionalLight;
-	import LightProbe								= away.lights.LightProbe;
-	import PointLight								= away.lights.PointLight;
-	
+	import IContextStageGL							= away.stagegl.IContextStageGL;
+
 	/**
 	 * SuperShaderPass is a shader pass that uses shader methods to compile a complete program. It includes all methods
 	 * associated with a material.
@@ -22,8 +23,6 @@ module away.materials
 
 		/**
 		 * Creates a new SuperShaderPass objects.
-		 *
-		 * @param material The material to which this material belongs.
 		 */
 		constructor(material:MaterialBase)
 		{
@@ -181,19 +180,19 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:StageGL, camera:away.entities.Camera)
+		public iActivate(stage:Stage, camera:away.entities.Camera)
 		{
-			super.iActivate(stageGL, camera);
+			super.iActivate(stage, camera);
 
 			if (this._pMethodSetup._iColorTransformMethod)
-				this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stageGL);
+				this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stage);
 
 			var methods:Array<MethodVOSet> = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
 
 			for (var i:number = 0; i < len; ++i) {
 				var aset:MethodVOSet = methods[i];
-				aset.method.iActivate(aset.data, stageGL);
+				aset.method.iActivate(aset.data, stage);
 			}
 
 			if (this._pCameraPositionIndex >= 0) {
@@ -208,12 +207,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(stageGL:StageGL)
+		public iDeactivate(stage:Stage)
 		{
-			super.iDeactivate(stageGL);
+			super.iDeactivate(stage);
 
 			if (this._pMethodSetup._iColorTransformMethod)
-				this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stageGL);
+				this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stage);
 
 			var aset:MethodVOSet;
 			var methods:Array<MethodVOSet> = this._pMethodSetup._iMethods;
@@ -221,7 +220,7 @@ module away.materials
 
 			for (var i:number = 0; i < len; ++i) {
 				aset = methods[i];
-				aset.method.iDeactivate(aset.data, stageGL);
+				aset.method.iDeactivate(aset.data, stage);
 			}
 		}
 
@@ -381,7 +380,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pUpdateProbes(stageGL:StageGL)
+		public pUpdateProbes(stage:Stage)
 		{
 			var probe:LightProbe;
 			var lightProbes:Array<LightProbe> = this._pLightPicker.lightProbes;
@@ -397,10 +396,10 @@ module away.materials
 				probe = lightProbes[i];
 
 				if (addDiff)
-					probe.diffuseMap.activateTextureForStage(this._pLightProbeSpecularIndices[i], stageGL);//<------ TODO: implement
+					(<IContextStageGL> stage.context).activateCubeTexture(this._pLightProbeSpecularIndices[i], probe.diffuseMap);//<------ TODO: implement
 
 				if (addSpec)
-					probe.specularMap.activateTextureForStage(this._pLightProbeSpecularIndices[i], stageGL);//<------ TODO: implement
+					(<IContextStageGL> stage.context).activateCubeTexture(this._pLightProbeSpecularIndices[i], probe.specularMap);//<------ TODO: implement
 			}
 
 			this._pFragmentConstantData[this._pProbeWeightsIndex] = weights[0];
