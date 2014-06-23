@@ -6934,7 +6934,7 @@ declare module away.base {
         private _height;
         private _x;
         private _y;
-        public _iStageIndex: number;
+        private _stageIndex;
         private _usesSoftwareRendering;
         private _profile;
         private _stageManager;

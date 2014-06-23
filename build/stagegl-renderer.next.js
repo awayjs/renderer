@@ -311,7 +311,6 @@ var away;
                 if (this._level == 0)
                     this._indexDataDirty = true;
 
-                //invalidate vertices
                 if (this._overflow)
                     this._overflow.invalidateGeometry();
             };
@@ -2223,6 +2222,9 @@ var away;
                 if (!material)
                     material = DefaultMaterialManager.getDefaultMaterial(renderable.materialOwner);
 
+                //update material if invalidated
+                material.iUpdateMaterial();
+
                 //set ids for faster referencing
                 renderable.material = material;
                 renderable.materialId = material._iMaterialId;
@@ -2750,8 +2752,6 @@ var away;
 
                 while (renderable) {
                     this._activeMaterial = renderable.material;
-
-                    this._activeMaterial.iUpdateMaterial();
 
                     numPasses = this._activeMaterial._iNumPasses;
 
@@ -3692,7 +3692,7 @@ var away;
             * @private
             */
             MaterialPassBase.prototype.iActivate = function (stage, camera) {
-                var contextIndex = stage._iStageIndex;
+                var stageIndex = stage.stageIndex;
                 var context = stage.context;
 
                 context.setDepthTest((this._writeDepth && !this._pEnableBlending), this._depthCompareMode);
@@ -3700,20 +3700,20 @@ var away;
                 if (this._pEnableBlending)
                     context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
 
-                if (this._contextGLs[contextIndex] != context || !this._iPrograms[contextIndex]) {
-                    this._contextGLs[contextIndex] = context;
+                if (this._contextGLs[stageIndex] != context || !this._iPrograms[stageIndex]) {
+                    this._contextGLs[stageIndex] = context;
 
                     this.iUpdateProgram(stage);
                     this.dispatchEvent(new Event(Event.CHANGE));
                 }
 
-                var prevUsed = MaterialPassBase._previousUsedStreams[contextIndex];
+                var prevUsed = MaterialPassBase._previousUsedStreams[stageIndex];
                 var i;
 
                 for (i = this._pNumUsedStreams; i < prevUsed; ++i)
                     context.setVertexBufferAt(i, null);
 
-                prevUsed = MaterialPassBase._previousUsedTexs[contextIndex];
+                prevUsed = MaterialPassBase._previousUsedTexs[stageIndex];
 
                 for (i = this._pNumUsedTextures; i < prevUsed; ++i)
                     context.setTextureAt(i, null);
@@ -3721,7 +3721,7 @@ var away;
                 if (this._animationSet && !this._animationSet.usesCPU)
                     this._animationSet.activate(stage, this);
 
-                context.setProgram(this._iPrograms[contextIndex]);
+                context.setProgram(this._iPrograms[stageIndex]);
 
                 context.setCulling(this._pBothSides ? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
 
@@ -3740,9 +3740,9 @@ var away;
             * @private
             */
             MaterialPassBase.prototype.iDeactivate = function (stage) {
-                var index = stage._iStageIndex;
-                MaterialPassBase._previousUsedStreams[index] = this._pNumUsedStreams;
-                MaterialPassBase._previousUsedTexs[index] = this._pNumUsedTextures;
+                var stageIndex = stage.stageIndex;
+                MaterialPassBase._previousUsedStreams[stageIndex] = this._pNumUsedStreams;
+                MaterialPassBase._previousUsedTexs[stageIndex] = this._pNumUsedTextures;
 
                 if (this._animationSet && !this._animationSet.usesCPU)
                     this._animationSet.deactivate(stage, this);
@@ -10541,9 +10541,6 @@ var away;
         var PointLight = away.entities.PointLight;
         var AbstractMethodError = away.errors.AbstractMethodError;
 
-        var CubeTextureBase = away.textures.CubeTextureBase;
-        var Texture2DBase = away.textures.Texture2DBase;
-
         /**
         * ShadowMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
         */
@@ -10745,10 +10742,10 @@ var away;
                     fragmentData[index + 11] = 1 / (2 * f * f);
                 }
 
-                if (this._pCastingLight.shadowMapper.depthMap instanceof Texture2DBase)
-                    stage.context.activateTexture(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap);
-                else if (this._pCastingLight.shadowMapper.depthMap instanceof CubeTextureBase)
-                    stage.context.activateCubeTexture(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap);
+                if (!this._pUsePoint)
+                    stage.context.activateRenderTexture(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap);
+                //else
+                //	(<IContextStageGL> stage.context).activateCubeRenderTexture(vo.texturesIndex, <CubeTextureBase> this._pCastingLight.shadowMapper.depthMap);
             };
 
             /**
@@ -15044,10 +15041,13 @@ var away;
                 this._pRequiresBlending = false;
 
                 this._iBaseScreenPassIndex = 2; //allow for depth pass objects
+
+                this._pDepthPass = new DepthMapPass(this);
+                this._pDistancePass = new DistanceMapPass(this);
             }
             ShadowMaterialBase.prototype.pAddDepthPasses = function () {
-                this.pAddPass(this._pDepthPass = new DepthMapPass(this));
-                this.pAddPass(this._pDistancePass = new DistanceMapPass(this));
+                this.pAddPass(this._pDepthPass);
+                this.pAddPass(this._pDistancePass);
             };
 
             /**
@@ -15369,19 +15369,6 @@ var away;
                 configurable: true
             });
 
-
-            /**
-            * @inheritDoc
-            */
-            TriangleMaterial.prototype.iActivateForDepth = function (stage, camera, distanceBased) {
-                if (typeof distanceBased === "undefined") { distanceBased = false; }
-                if (distanceBased)
-                    this._pDistancePass.alphaMask = this._diffuseMethod.texture;
-                else
-                    this._pDepthPass.alphaMask = this._diffuseMethod.texture;
-
-                _super.prototype.iActivateForDepth.call(this, stage, camera, distanceBased);
-            };
 
             Object.defineProperty(TriangleMaterial.prototype, "specularLightSources", {
                 /**

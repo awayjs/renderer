@@ -348,13 +348,13 @@ declare module away.stagegl {
         private _texturePool;
         private _width;
         private _height;
-        public _iStageIndex: number;
+        private _stageIndex;
         private _antiAlias;
         private _enableDepthAndStencil;
         private _renderTarget;
         private _renderSurfaceSelector;
         public container : HTMLElement;
-        constructor();
+        constructor(stageIndex: number);
         public setRenderTarget(target: textures.TextureProxyBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
         public getRenderTexture(textureProxy: textures.RenderTexture): ITextureBase;
         /**
@@ -518,7 +518,7 @@ declare module away.stagegl {
         public container : HTMLElement;
         public driverInfo : any;
         public errorCheckingEnabled : boolean;
-        constructor(container: HTMLCanvasElement, callback: (context: IContextStageGL) => void);
+        constructor(container: HTMLCanvasElement, stageIndex: number, callback: (context: IContextStageGL) => void);
         public _iAddResource(resource: ResourceBaseFlash): void;
         public _iRemoveResource(resource: ResourceBaseFlash): void;
         public createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): TextureFlash;
@@ -580,7 +580,7 @@ declare module away.stagegl {
         public _currentProgram: ProgramWebGL;
         private _activeTexture;
         public container : HTMLElement;
-        constructor(canvas: HTMLCanvasElement);
+        constructor(canvas: HTMLCanvasElement, stageIndex: number);
         public gl(): WebGLRenderingContext;
         public clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): void;
         public configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): void;

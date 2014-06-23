@@ -47,12 +47,15 @@ module away.materials
 			super();
 
 			this._iBaseScreenPassIndex = 2; //allow for depth pass objects
+
+			this._pDepthPass = new DepthMapPass(this);
+			this._pDistancePass = new DistanceMapPass(this);
 		}
 
 		public pAddDepthPasses()
 		{
-			this.pAddPass(this._pDepthPass = new DepthMapPass(this));
-			this.pAddPass(this._pDistancePass = new DistanceMapPass(this));
+			this.pAddPass(this._pDepthPass);
+			this.pAddPass(this._pDistancePass);
 		}
 
 		/**

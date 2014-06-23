@@ -8,6 +8,7 @@ module away.materials
 	import DirectionalLight							= away.entities.DirectionalLight;
 	import PointLight								= away.entities.PointLight;
 	import AbstractMethodError						= away.errors.AbstractMethodError;
+	import Vector3D									= away.geom.Vector3D;
 	import RenderableBase							= away.pool.RenderableBase;
 	import IContextStageGL							= away.stagegl.IContextStageGL;
 	import CubeTextureBase							= away.textures.CubeTextureBase;
@@ -220,7 +221,7 @@ module away.materials
 			fragmentData[index + 5] = 1 - this._pAlpha;
 
 			if (this._pUsePoint) {
-				var pos:away.geom.Vector3D = this._pCastingLight.scenePosition;
+				var pos:Vector3D = this._pCastingLight.scenePosition;
 				fragmentData[index + 8] = pos.x;
 				fragmentData[index + 9] = pos.y;
 				fragmentData[index + 10] = pos.z;
@@ -229,10 +230,10 @@ module away.materials
 				fragmentData[index + 11] = 1/(2*f*f);
 			}
 
-			if (this._pCastingLight.shadowMapper.depthMap instanceof Texture2DBase)
-				(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex, <Texture2DBase> this._pCastingLight.shadowMapper.depthMap);
-			else if (this._pCastingLight.shadowMapper.depthMap instanceof CubeTextureBase)
-				(<IContextStageGL> stage.context).activateCubeTexture(vo.texturesIndex, <CubeTextureBase> this._pCastingLight.shadowMapper.depthMap);
+			if (!this._pUsePoint)
+				(<IContextStageGL> stage.context).activateRenderTexture(vo.texturesIndex, <Texture2DBase> this._pCastingLight.shadowMapper.depthMap);
+			//else
+			//	(<IContextStageGL> stage.context).activateCubeRenderTexture(vo.texturesIndex, <CubeTextureBase> this._pCastingLight.shadowMapper.depthMap);
 		}
 
 		/**

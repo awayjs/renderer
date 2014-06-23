@@ -345,8 +345,6 @@ module away.render
 			while (renderable) {
 				this._activeMaterial = renderable.material;
 
-				this._activeMaterial.iUpdateMaterial();
-
 				numPasses = this._activeMaterial._iNumPasses;
 
 				j = this._activeMaterial._iBaseScreenPassIndex; //skip any depth passes

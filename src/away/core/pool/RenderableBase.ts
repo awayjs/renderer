@@ -192,8 +192,6 @@ module away.pool
 			if (this._level == 0)
 				this._indexDataDirty = true;
 
-			//invalidate vertices
-
 			if (this._overflow)
 				this._overflow.invalidateGeometry();
 		}

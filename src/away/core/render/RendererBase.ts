@@ -679,6 +679,9 @@ module away.render
 			if (!material)
 				material = DefaultMaterialManager.getDefaultMaterial(renderable.materialOwner);
 
+			//update material if invalidated
+			material.iUpdateMaterial();
+
 			//set ids for faster referencing
 			renderable.material = material;
 			renderable.materialId = material._iMaterialId;

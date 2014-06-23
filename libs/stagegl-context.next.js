@@ -1609,12 +1609,13 @@ var away;
         *
         */
         var ContextGLBase = (function () {
-            function ContextGLBase() {
+            function ContextGLBase(stageIndex) {
                 //private static _frameEventDriver:Shape = new Shape(); // TODO: add frame driver / request animation frame
-                this._iStageIndex = -1;
+                this._stageIndex = -1;
                 this._antiAlias = 0;
                 this._renderTarget = null;
                 this._renderSurfaceSelector = 0;
+                this._stageIndex = stageIndex;
                 this._texturePool = new TextureDataPool(this);
             }
             Object.defineProperty(ContextGLBase.prototype, "container", {
@@ -1661,25 +1662,25 @@ var away;
             * @param format
             */
             ContextGLBase.prototype.activateBuffer = function (index, buffer, offset, format) {
-                if (!buffer.contexts[this._iStageIndex])
-                    buffer.contexts[this._iStageIndex] = this;
+                if (!buffer.contexts[this._stageIndex])
+                    buffer.contexts[this._stageIndex] = this;
 
-                if (!buffer.buffers[this._iStageIndex]) {
-                    buffer.buffers[this._iStageIndex] = this.createVertexBuffer(buffer.data.length / buffer.dataPerVertex, buffer.dataPerVertex);
-                    buffer.invalid[this._iStageIndex] = true;
+                if (!buffer.buffers[this._stageIndex]) {
+                    buffer.buffers[this._stageIndex] = this.createVertexBuffer(buffer.data.length / buffer.dataPerVertex, buffer.dataPerVertex);
+                    buffer.invalid[this._stageIndex] = true;
                 }
 
-                if (buffer.invalid[this._iStageIndex]) {
-                    buffer.buffers[this._iStageIndex].uploadFromArray(buffer.data, 0, buffer.data.length / buffer.dataPerVertex);
-                    buffer.invalid[this._iStageIndex] = false;
+                if (buffer.invalid[this._stageIndex]) {
+                    buffer.buffers[this._stageIndex].uploadFromArray(buffer.data, 0, buffer.data.length / buffer.dataPerVertex);
+                    buffer.invalid[this._stageIndex] = false;
                 }
 
-                this.setVertexBufferAt(index, buffer.buffers[this._iStageIndex], offset, format);
+                this.setVertexBufferAt(index, buffer.buffers[this._stageIndex], offset, format);
             };
 
             ContextGLBase.prototype.disposeVertexData = function (buffer) {
-                buffer.buffers[this._iStageIndex].dispose();
-                buffer.buffers[this._iStageIndex] = null;
+                buffer.buffers[this._stageIndex].dispose();
+                buffer.buffers[this._stageIndex] = null;
             };
 
             ContextGLBase.prototype.activateRenderTexture = function (index, textureProxy) {
@@ -1740,25 +1741,25 @@ var away;
             * @return The VertexBuffer object that contains triangle indices.
             */
             ContextGLBase.prototype.getIndexBuffer = function (buffer) {
-                if (!buffer.contexts[this._iStageIndex])
-                    buffer.contexts[this._iStageIndex] = this;
+                if (!buffer.contexts[this._stageIndex])
+                    buffer.contexts[this._stageIndex] = this;
 
-                if (!buffer.buffers[this._iStageIndex]) {
-                    buffer.buffers[this._iStageIndex] = this.createIndexBuffer(buffer.data.length);
-                    buffer.invalid[this._iStageIndex] = true;
+                if (!buffer.buffers[this._stageIndex]) {
+                    buffer.buffers[this._stageIndex] = this.createIndexBuffer(buffer.data.length);
+                    buffer.invalid[this._stageIndex] = true;
                 }
 
-                if (buffer.invalid[this._iStageIndex]) {
-                    buffer.buffers[this._iStageIndex].uploadFromArray(buffer.data, 0, buffer.data.length);
-                    buffer.invalid[this._iStageIndex] = false;
+                if (buffer.invalid[this._stageIndex]) {
+                    buffer.buffers[this._stageIndex].uploadFromArray(buffer.data, 0, buffer.data.length);
+                    buffer.invalid[this._stageIndex] = false;
                 }
 
-                return buffer.buffers[this._iStageIndex];
+                return buffer.buffers[this._stageIndex];
             };
 
             ContextGLBase.prototype.disposeIndexData = function (buffer) {
-                buffer.buffers[this._iStageIndex].dispose();
-                buffer.buffers[this._iStageIndex] = null;
+                buffer.buffers[this._stageIndex].dispose();
+                buffer.buffers[this._stageIndex] = null;
             };
 
             ContextGLBase.prototype.clear = function (red, green, blue, alpha, depth, stencil, mask) {
@@ -2050,8 +2051,8 @@ var away;
     (function (stagegl) {
         var ContextStage3D = (function (_super) {
             __extends(ContextStage3D, _super);
-            function ContextStage3D(container, callback) {
-                _super.call(this);
+            function ContextStage3D(container, stageIndex, callback) {
+                _super.call(this, stageIndex);
                 this._cmdStream = "";
 
                 this._resources = new Array();
@@ -2438,8 +2439,8 @@ var away;
     (function (stagegl) {
         var ContextWebGL = (function (_super) {
             __extends(ContextWebGL, _super);
-            function ContextWebGL(canvas) {
-                _super.call(this);
+            function ContextWebGL(canvas, stageIndex) {
+                _super.call(this, stageIndex);
                 this._blendFactorDictionary = new Object();
                 this._depthTestDictionary = new Object();
                 this._textureIndexDictionary = new Array(8);
@@ -3594,7 +3595,7 @@ var away;
                 this._keys = new Object();
             }
             AGALProgramCache.getInstance = function (stage) {
-                var index = stage._iStageIndex;
+                var index = stage.stageIndex;
 
                 if (AGALProgramCache._instances == null)
                     AGALProgramCache._instances = new Array(8);
@@ -3620,7 +3621,7 @@ var away;
             AGALProgramCache.onContextGLDisposed = function (event) {
                 var stage = event.target;
 
-                var index = stage._iStageIndex;
+                var index = stage.stageIndex;
 
                 AGALProgramCache._instances[index].dispose();
                 AGALProgramCache._instances[index] = null;
@@ -3641,7 +3642,7 @@ var away;
 
             AGALProgramCache.prototype.setProgram = function (programIds, programs, vertexCode, fragmentCode) {
                 //TODO move program id arrays into stagegl
-                var stageIndex = this._stage._iStageIndex;
+                var stageIndex = this._stage.stageIndex;
                 var program;
                 var key = this.getKey(vertexCode, fragmentCode);
 

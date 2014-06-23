@@ -5178,10 +5178,6 @@ declare module away.materials {
         */
         public alphaThreshold : number;
         /**
-        * @inheritDoc
-        */
-        public iActivateForDepth(stage: base.Stage, camera: entities.Camera, distanceBased?: boolean): void;
-        /**
         * Define which light source types to use for specular reflections. This allows choosing between regular lights
         * and/or light probes for specular reflections.
         *

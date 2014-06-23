@@ -418,7 +418,7 @@ module away.materials
 		 */
 		public iActivate(stage:Stage, camera:Camera)
 		{
-			var contextIndex:number = stage._iStageIndex;
+			var stageIndex:number = stage.stageIndex;
 			var context:IContextStageGL = <IContextStageGL> stage.context;
 
 			context.setDepthTest(( this._writeDepth && !this._pEnableBlending ), this._depthCompareMode);
@@ -426,22 +426,22 @@ module away.materials
 			if (this._pEnableBlending)
 				context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
 
-			if (this._contextGLs[contextIndex] != context || !this._iPrograms[contextIndex]) {
+			if (this._contextGLs[stageIndex] != context || !this._iPrograms[stageIndex]) {
 
-				this._contextGLs[contextIndex] = context;
+				this._contextGLs[stageIndex] = context;
 
 				this.iUpdateProgram(stage);
 				this.dispatchEvent(new Event(Event.CHANGE));
 
 			}
 
-			var prevUsed:number = MaterialPassBase._previousUsedStreams[contextIndex];
+			var prevUsed:number = MaterialPassBase._previousUsedStreams[stageIndex];
 			var i:number;
 
 			for (i = this._pNumUsedStreams; i < prevUsed; ++i)
 				context.setVertexBufferAt(i, null);
 
-			prevUsed = MaterialPassBase._previousUsedTexs[contextIndex];
+			prevUsed = MaterialPassBase._previousUsedTexs[stageIndex];
 
 			for (i = this._pNumUsedTextures; i < prevUsed; ++i)
 				context.setTextureAt(i, null);
@@ -449,7 +449,7 @@ module away.materials
 			if (this._animationSet && !this._animationSet.usesCPU)
 				this._animationSet.activate(stage, this);
 
-			context.setProgram(this._iPrograms[contextIndex]);
+			context.setProgram(this._iPrograms[stageIndex]);
 
 			context.setCulling(this._pBothSides? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
 
@@ -469,9 +469,9 @@ module away.materials
 		 */
 		public iDeactivate(stage:Stage)
 		{
-			var index:number = stage._iStageIndex;
-			MaterialPassBase._previousUsedStreams[index] = this._pNumUsedStreams;
-			MaterialPassBase._previousUsedTexs[index] = this._pNumUsedTextures;
+			var stageIndex:number = stage.stageIndex;
+			MaterialPassBase._previousUsedStreams[stageIndex] = this._pNumUsedStreams;
+			MaterialPassBase._previousUsedTexs[stageIndex] = this._pNumUsedTextures;
 
 			if (this._animationSet && !this._animationSet.usesCPU)
 				this._animationSet.deactivate(stage, this);

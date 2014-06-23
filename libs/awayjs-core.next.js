@@ -13723,7 +13723,7 @@ var away;
                 this._x = 0;
                 this._y = 0;
                 //private static _frameEventDriver:Shape = new Shape(); // TODO: add frame driver / request animation frame
-                this._iStageIndex = -1;
+                this._stageIndex = -1;
                 this._antiAlias = 0;
                 //private var _activeVertexBuffers : Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8, true);
                 //private var _activeTextures : Vector.<TextureBase> = new Vector.<TextureBase>(8, true);
@@ -13735,7 +13735,7 @@ var away;
 
                 this._container = container;
 
-                this._iStageIndex = stageIndex;
+                this._stageIndex = stageIndex;
 
                 this._stageManager = stageManager;
 
@@ -13767,15 +13767,15 @@ var away;
 
                 try  {
                     if (mode == ContextMode.FLASH)
-                        new away["stagegl"]["ContextStage3D"](this._container, function (context) {
+                        new away["stagegl"]["ContextStage3D"](this._container, this._stageIndex, function (context) {
                             return _this._callback(context);
                         });
                     else
-                        this._context = new away["stagegl"]["ContextWebGL"](this._container);
+                        this._context = new away["stagegl"]["ContextWebGL"](this._container, this._stageIndex);
                 } catch (e) {
                     try  {
                         if (mode == ContextMode.AUTO)
-                            new away["stagegl"]["ContextStage3D"](this._container, function (context) {
+                            new away["stagegl"]["ContextStage3D"](this._container, this._stageIndex, function (context) {
                                 return _this._callback(context);
                             });
                         else
@@ -13959,7 +13959,7 @@ var away;
                 this._stageManager.iRemoveStage(this);
                 this.freeContext();
                 this._stageManager = null;
-                this._iStageIndex = -1;
+                this._stageIndex = -1;
             };
 
             /**
@@ -14098,7 +14098,7 @@ var away;
                 * The index of the Stage which is managed by this instance of StageProxy.
                 */
                 get: function () {
-                    return this._iStageIndex;
+                    return this._stageIndex;
                 },
                 enumerable: true,
                 configurable: true
@@ -28076,7 +28076,7 @@ var away;
 
                 stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextCreatedDelegate);
 
-                this._stages[stage._iStageIndex] = null;
+                this._stages[stage.stageIndex] = null;
             };
 
             /**
@@ -31225,6 +31225,9 @@ var away;
 
                 var l;
                 var c;
+
+                if (this._animationSet)
+                    this._animationSet.resetGPUCompatibility();
 
                 for (var i = 0; i < this._numPasses; ++i) {
                     // only invalidate the pass if it wasn't the triggering pass

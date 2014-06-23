@@ -249,19 +249,6 @@ module away.materials
 		}
 
 		/**
-		 * @inheritDoc
-		 */
-		public iActivateForDepth(stage:Stage, camera:Camera, distanceBased:boolean = false)
-		{
-			if (distanceBased)
-				this._pDistancePass.alphaMask = this._diffuseMethod.texture;
-			else
-				this._pDepthPass.alphaMask = this._diffuseMethod.texture;
-
-			super.iActivateForDepth(stage, camera, distanceBased);
-		}
-
-		/**
 		 * Define which light source types to use for specular reflections. This allows choosing between regular lights
 		 * and/or light probes for specular reflections.
 		 *
