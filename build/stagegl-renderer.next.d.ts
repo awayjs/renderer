@@ -5282,6 +5282,18 @@ declare module away.materials {
         */
         public alphaBlending : boolean;
         /**
+        * Sets the render state for the depth pass that is independent of the rendered object. Used when rendering
+        * depth or distances (fe: shadow maps, depth pre-pass).
+        *
+        * @param stage The Stage used for rendering.
+        * @param camera The camera from which the scene is viewed.
+        * @param distanceBased Whether or not the depth pass or distance pass should be activated. The distance pass
+        * is required for shadow cube maps.
+        *
+        * @internal
+        */
+        public iActivateForDepth(stage: base.Stage, camera: entities.Camera, distanceBased?: boolean): void;
+        /**
         * @inheritDoc
         */
         public iUpdateMaterial(): void;

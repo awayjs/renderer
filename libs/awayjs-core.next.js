@@ -25952,7 +25952,7 @@ var away;
             *
             * @returns {away.bounds.NullBounds}
             */
-            DirectionalLight.prototype.pGetDefaultBoundingVolume = function () {
+            DirectionalLight.prototype.pCreateDefaultBoundingVolume = function () {
                 //directional lights are to be considered global, hence always in view
                 return new NullBounds();
             };
@@ -26113,7 +26113,7 @@ var away;
             };
 
             //@override
-            LightProbe.prototype.pGetDefaultBoundingVolume = function () {
+            LightProbe.prototype.pCreateDefaultBoundingVolume = function () {
                 return new NullBounds();
             };
 
@@ -26881,7 +26881,7 @@ var away;
                 this._pBoundsInvalid = false;
             };
 
-            PointLight.prototype.pGetDefaultBoundingVolume = function () {
+            PointLight.prototype.pCreateDefaultBoundingVolume = function () {
                 //point lights are culled based on their falloff radius
                 return new BoundingSphere();
             };
@@ -27079,7 +27079,7 @@ var away;
             /**
             * @protected
             */
-            Skybox.prototype.pGetDefaultBoundingVolume = function () {
+            Skybox.prototype.pCreateDefaultBoundingVolume = function () {
                 return new NullBounds();
             };
 

@@ -12276,7 +12276,7 @@ declare module away.entities {
         *
         * @returns {away.bounds.NullBounds}
         */
-        public pGetDefaultBoundingVolume(): bounds.BoundingVolumeBase;
+        public pCreateDefaultBoundingVolume(): bounds.BoundingVolumeBase;
         /**
         *
         */
@@ -12303,7 +12303,7 @@ declare module away.entities {
         */
         public pCreateEntityPartitionNode(): partition.EntityNode;
         public pUpdateBounds(): void;
-        public pGetDefaultBoundingVolume(): bounds.BoundingVolumeBase;
+        public pCreateDefaultBoundingVolume(): bounds.BoundingVolumeBase;
         public iGetObjectProjectionMatrix(entity: IEntity, camera: Camera, target?: geom.Matrix3D): geom.Matrix3D;
         public _iCollectRenderables(renderer: render.IRenderer): void;
     }
@@ -12541,7 +12541,7 @@ declare module away.entities {
         */
         public pCreateEntityPartitionNode(): partition.EntityNode;
         public pUpdateBounds(): void;
-        public pGetDefaultBoundingVolume(): bounds.BoundingVolumeBase;
+        public pCreateDefaultBoundingVolume(): bounds.BoundingVolumeBase;
         public iGetObjectProjectionMatrix(entity: IEntity, camera: Camera, target?: geom.Matrix3D): geom.Matrix3D;
         public _iCollectRenderables(renderer: render.IRenderer): void;
     }
@@ -12611,7 +12611,7 @@ declare module away.entities {
         /**
         * @protected
         */
-        public pGetDefaultBoundingVolume(): bounds.BoundingVolumeBase;
+        public pCreateDefaultBoundingVolume(): bounds.BoundingVolumeBase;
         /**
         * @protected
         */

@@ -577,6 +577,28 @@ module away.materials
 			this.pInvalidateScreenPasses();
 		}
 
+
+		/**
+		 * Sets the render state for the depth pass that is independent of the rendered object. Used when rendering
+		 * depth or distances (fe: shadow maps, depth pre-pass).
+		 *
+		 * @param stage The Stage used for rendering.
+		 * @param camera The camera from which the scene is viewed.
+		 * @param distanceBased Whether or not the depth pass or distance pass should be activated. The distance pass
+		 * is required for shadow cube maps.
+		 *
+		 * @internal
+		 */
+		public iActivateForDepth(stage:Stage, camera:Camera, distanceBased:boolean = false) // ARCANE
+		{
+			if (distanceBased)
+				this._pDistancePass.alphaMask = this._diffuseMethod.texture;
+			else
+				this._pDepthPass.alphaMask = this._diffuseMethod.texture;
+
+			super.iActivateForDepth(stage, camera, distanceBased)
+		}
+
 		/**
 		 * @inheritDoc
 		 */
