@@ -8,8 +8,9 @@ module away.animators
 	import Geometry							= away.base.Geometry;
 	import Stage							= away.base.Stage;
 	import Mesh								= away.entities.Mesh;
+	import Camera							= away.entities.Camera;
 	import VertexDataPool					= away.pool.VertexDataPool;
-	import IMaterialPass					= away.materials.IMaterialPass;
+	import ShaderObjectBase					= away.materials.ShaderObjectBase;
 	import RenderableBase					= away.pool.RenderableBase;
 	import TriangleSubMeshRenderable		= away.pool.TriangleSubMeshRenderable;
 	import IContextStageGL					= away.stagegl.IContextStageGL;
@@ -120,13 +121,13 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stage:Stage, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:away.entities.Camera)
+		public setRenderState(shaderObject:ShaderObjectBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 		{
 			// todo: add code for when running on cpu
 
 			// if no poses defined, set temp data
 			if (!this._poses.length) {
-				this.setNullPose(stage, renderable, vertexConstantOffset, vertexStreamOffset);
+				this.setNullPose(shaderObject, renderable, stage, vertexConstantOffset, vertexStreamOffset);
 				return;
 			}
 
@@ -148,12 +149,12 @@ module away.animators
 
 				(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.POSITION_DATA), subGeom.getOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
-				if (this._vertexAnimationSet.useNormals)
+				if (shaderObject.normalDependencies > 0)
 					(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.NORMAL_DATA), subGeom.getOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 			}
 		}
 
-		private setNullPose(stage:Stage, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+		private setNullPose(shaderObject:ShaderObjectBase, renderable:RenderableBase, stage:Stage, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 		{
 			(<IContextStageGL> stage.context).setProgramConstantsFromArray(away.stagegl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
@@ -162,7 +163,7 @@ module away.animators
 				for (var i:number /*uint*/ = 1; i < len; ++i) {
 					(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
-					if (this._vertexAnimationSet.useNormals)
+					if (shaderObject.normalDependencies > 0)
 						(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 				}
 			}
@@ -173,7 +174,7 @@ module away.animators
 		 * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
 		 * Needs to be called if gpu code is potentially required.
 		 */
-		public testGPUCompatibility(pass:IMaterialPass)
+		public testGPUCompatibility(shaderObject:ShaderObjectBase)
 		{
 		}
 

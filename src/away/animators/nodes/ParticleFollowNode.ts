@@ -3,7 +3,7 @@
 module away.animators
 {
 	import Vector3D						= away.geom.Vector3D;
-	import MaterialPassBase				= away.materials.MaterialPassBase;
+	import ShaderObjectBase				= away.materials.ShaderObjectBase;
 	import ShaderRegisterElement		= away.materials.ShaderRegisterElement;
 	
 	/**
@@ -48,7 +48,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAGALVertexCode(pass:MaterialPassBase, animationRegisterCache:AnimationRegisterCache):string
+		public getAGALVertexCode(shaderObject:ShaderObjectBase, animationRegisterCache:AnimationRegisterCache):string
 		{
 			//TODO: use Quaternion to implement this function
 			var code:string = "";

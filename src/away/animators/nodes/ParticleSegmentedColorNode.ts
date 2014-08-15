@@ -4,7 +4,7 @@ module away.animators
 {
 	import ColorTransform				= away.geom.ColorTransform;
 	import Vector3D						= away.geom.Vector3D;
-	import MaterialPassBase				= away.materials.MaterialPassBase;
+	import ShaderObjectBase				= away.materials.ShaderObjectBase;
 	import ShaderRegisterElement		= away.materials.ShaderRegisterElement;
 	
 	export class ParticleSegmentedColorNode extends ParticleNodeBase
@@ -62,7 +62,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAGALVertexCode(pass:MaterialPassBase, animationRegisterCache:AnimationRegisterCache):string
+		public getAGALVertexCode(shaderObject:ShaderObjectBase, animationRegisterCache:AnimationRegisterCache):string
 		{
 			var code:string = "";
 			if (animationRegisterCache.needFragmentAnimation) {

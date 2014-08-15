@@ -28,7 +28,7 @@ module away.parsers
 	import DefaultMaterialManager			= away.materials.DefaultMaterialManager;
 	import DiffuseDepthMethod				= away.materials.DiffuseDepthMethod;
 	import DiffuseCelMethod					= away.materials.DiffuseCelMethod;
-	import DiffuseSubSurfaceMethod			= away.materials.DiffuseSubSurfaceMethod;
+//	import DiffuseSubSurfaceMethod			= away.materials.DiffuseSubSurfaceMethod;
 	import DiffuseGradientMethod			= away.materials.DiffuseGradientMethod;
 	import DiffuseLightMapMethod			= away.materials.DiffuseLightMapMethod;
 	import DiffuseWrapMethod				= away.materials.DiffuseWrapMethod;
@@ -44,7 +44,7 @@ module away.parsers
 	import LightPickerBase					= away.materials.LightPickerBase;
 	import MaterialBase						= away.materials.MaterialBase;
 	import NormalSimpleWaterMethod			= away.materials.NormalSimpleWaterMethod;
-	import TriangleMaterial					= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial			= away.materials.TriangleMethodMaterial;
 	import TriangleMaterialMode				= away.materials.TriangleMaterialMode;
 	import ShadowDitheredMethod				= away.materials.ShadowDitheredMethod;
 	import ShadowFilteredMethod				= away.materials.ShadowFilteredMethod;
@@ -101,7 +101,7 @@ module away.parsers
 		private _body:ByteArray;
 		private _defaultTexture:BitmapTexture;     // HTML IMAGE TEXTURE >? !
 		private _cubeTextures:Array<any>;
-		private _defaultBitmapMaterial:TriangleMaterial;
+		private _defaultBitmapMaterial:TriangleMethodMaterial;
 		private _defaultCubeTexture:BitmapCubeTexture;
 
 		public static COMPRESSIONMODE_LZMA:string = "lzma";
@@ -212,7 +212,7 @@ module away.parsers
 				{
 					asset = <Texture2DBase> resourceDependency.assets[0];
 					if (asset) {
-						var mat:TriangleMaterial;
+						var mat:TriangleMethodMaterial;
 						var users:Array<string>;
 
 						block = this._blocks[ resourceDependency.id ];
@@ -1280,7 +1280,7 @@ module away.parsers
 			var name:string;
 			var type:number;
 			var props:AWDProperties;
-			var mat:TriangleMaterial;
+			var mat:TriangleMethodMaterial;
 			var attributes:Object;
 			var finalize:boolean;
 			var num_methods:number;
@@ -1309,11 +1309,11 @@ module away.parsers
 			if (type === 1) { // Color material
 				debugString += "Parsed a ColorMaterial(SinglePass): Name = '" + name + "' | ";
 				var color:number;
-				color = props.get(1, 0xcccccc);
+				color = props.get(1, 0xffffff);
 				if (this.materialMode < 2) {
-					mat = new TriangleMaterial(color, props.get(10, 1.0));
+					mat = new TriangleMethodMaterial(color, props.get(10, 1.0));
 				} else {
-					mat = new TriangleMaterial(color);
+					mat = new TriangleMethodMaterial(color);
 					mat.materialMode = TriangleMaterialMode.MULTI_PASS;
 				}
 			} else if (type === 2) {
@@ -1324,15 +1324,15 @@ module away.parsers
 				if ((!returnedArray[0]) && (tex_addr > 0))
 					this._blocks[blockID].addError("Could not find the DiffsueTexture (ID = " + tex_addr + " ) for this Material");
 
-				mat = new TriangleMaterial(<Texture2DBase> returnedArray[1]);
+				mat = new TriangleMethodMaterial(<Texture2DBase> returnedArray[1]);
 
 				if (this.materialMode < 2) {
 					mat.alphaBlending = props.get(11, false);
 					mat.alpha = props.get(10, 1.0);
-					debugString += "Parsed a TriangleMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + mat.name;
+					debugString += "Parsed a TriangleMethodMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + mat.name;
 				} else {
 					mat.materialMode = TriangleMaterialMode.MULTI_PASS;
-					debugString += "Parsed a TriangleMaterial(MultiPass): Name = '" + name + "' | Texture-Name = " + mat.name;
+					debugString += "Parsed a TriangleMethodMaterial(MultiPass): Name = '" + name + "' | Texture-Name = " + mat.name;
 				}
 			}
 
@@ -1351,7 +1351,7 @@ module away.parsers
 		// Block ID = 81 AWD2.1
 		private parseMaterial_v1(blockID:number):void
 		{
-			var mat:TriangleMaterial;
+			var mat:TriangleMethodMaterial;
 			var normalTexture:Texture2DBase;
 			var specTexture:Texture2DBase;
 			var returnedArray:Array<any>;
@@ -1376,56 +1376,57 @@ module away.parsers
 			if (spezialType < 2) {//this is SinglePass or MultiPass
 
 				if (type == 1) {// Color material
-					var color:number = props.get(1, 0xcccccc);//var color : number = color = props.get(1, 0xcccccc);
+					var color:number = props.get(1, 0xcccccc);//TODO temporarily swapped so that diffuse color goes to ambient
 
 					if (spezialType == 1) {//	MultiPassMaterial
-						mat = new TriangleMaterial(color);
+						mat = new TriangleMethodMaterial(color);
 						mat.materialMode = TriangleMaterialMode.MULTI_PASS;
 						debugString += "Parsed a ColorMaterial(MultiPass): Name = '" + name + "' | ";
 
 					} else { //	SinglePassMaterial
-						mat = new TriangleMaterial(color, props.get(10, 1.0));
+						mat = new TriangleMethodMaterial(color, props.get(10, 1.0));
 						mat.alphaBlending = props.get(11, false);
 						debugString += "Parsed a ColorMaterial(SinglePass): Name = '" + name + "' | ";
 					}
 
 				} else if (type == 2) {// texture material
-					var tex_addr:number = props.get(2, 0);
+					var tex_addr:number = props.get(2, 0);//TODO temporarily swapped so that diffuse texture goes to ambient
 					returnedArray = this.getAssetByID(tex_addr, [AssetType.TEXTURE]);
 
 					if ((!returnedArray[0]) && (tex_addr > 0))
-						this._blocks[blockID].addError("Could not find the DiffuseTexture (ID = " + tex_addr + " ) for this TriangleMaterial");
+						this._blocks[blockID].addError("Could not find the AmbientTexture (ID = " + tex_addr + " ) for this TriangleMethodMaterial");
 
 					var texture:Texture2DBase = returnedArray[1];
-					var ambientTexture:Texture2DBase;
-					var ambientTex_addr:number = props.get(17, 0);
 
-					returnedArray = this.getAssetByID(ambientTex_addr, [AssetType.TEXTURE]);
-
-					if ((!returnedArray[0]) && (ambientTex_addr != 0)) {
-						this._blocks[blockID].addError("Could not find the AmbientTexture (ID = " + ambientTex_addr + " ) for this TriangleMaterial");
-					}
-
-					if (returnedArray[0])
-						ambientTexture = returnedArray[1];
-
-					mat = new TriangleMaterial(texture);
+					mat = new TriangleMethodMaterial(texture);
 
 					if (spezialType == 1) {// MultiPassMaterial
 						mat.materialMode = TriangleMaterialMode.MULTI_PASS;
 
-						debugString += "Parsed a TriangleMaterial(MultiPass): Name = '" + name + "' | Texture-Name = " + texture.name;
+						debugString += "Parsed a TriangleMethodMaterial(MultiPass): Name = '" + name + "' | Texture-Name = " + texture.name;
 					} else {//	SinglePassMaterial
 						mat.alpha = props.get(10, 1.0);
 						mat.alphaBlending = props.get(11, false);
 
-						debugString += "Parsed a TriangleMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + texture.name;
+						debugString += "Parsed a TriangleMethodMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + texture.name;
 					}
+				}
 
-					if (ambientTexture) {
-						mat.ambientTexture = ambientTexture;
-						debugString += " | AmbientTexture-Name = " + ambientTexture.name;
-					}
+				var diffuseTexture:Texture2DBase;
+				var diffuseTex_addr:number = props.get(17, 0);
+
+				returnedArray = this.getAssetByID(diffuseTex_addr, [AssetType.TEXTURE]);
+
+				if ((!returnedArray[0]) && (diffuseTex_addr != 0)) {
+					this._blocks[blockID].addError("Could not find the DiffuseTexture (ID = " + diffuseTex_addr + " ) for this TriangleMethodMaterial");
+				}
+
+				if (returnedArray[0])
+					diffuseTexture = returnedArray[1];
+
+				if (diffuseTexture) {
+					mat.diffuseTexture = diffuseTexture;
+					debugString += " | DiffuseTexture-Name = " + diffuseTexture.name;
 				}
 
 				var normalTex_addr:number = props.get(3, 0);
@@ -1433,7 +1434,7 @@ module away.parsers
 				returnedArray = this.getAssetByID(normalTex_addr, [AssetType.TEXTURE]);
 
 				if ((!returnedArray[0]) && (normalTex_addr != 0)) {
-					this._blocks[blockID].addError("Could not find the NormalTexture (ID = " + normalTex_addr + " ) for this TriangleMaterial");
+					this._blocks[blockID].addError("Could not find the NormalTexture (ID = " + normalTex_addr + " ) for this TriangleMethodMaterial");
 				}
 
 				if (returnedArray[0]) {
@@ -1445,7 +1446,7 @@ module away.parsers
 				returnedArray = this.getAssetByID(specTex_addr, [AssetType.TEXTURE]);
 
 				if ((!returnedArray[0]) && (specTex_addr != 0)) {
-					this._blocks[blockID].addError("Could not find the SpecularTexture (ID = " + specTex_addr + " ) for this TriangleMaterial");
+					this._blocks[blockID].addError("Could not find the SpecularTexture (ID = " + specTex_addr + " ) for this TriangleMethodMaterial");
 				}
 				if (returnedArray[0]) {
 					specTexture = returnedArray[1];
@@ -1456,7 +1457,7 @@ module away.parsers
 				returnedArray = this.getAssetByID(lightPickerAddr, [AssetType.LIGHT_PICKER])
 
 				if ((!returnedArray[0]) && (lightPickerAddr)) {
-					this._blocks[blockID].addError("Could not find the LightPicker (ID = " + lightPickerAddr + " ) for this TriangleMaterial");
+					this._blocks[blockID].addError("Could not find the LightPicker (ID = " + lightPickerAddr + " ) for this TriangleMethodMaterial");
 				} else {
 					mat.lightPicker = <LightPickerBase> returnedArray[1];
 					//debugString+=" | Lightpicker-Name = "+LightPickerBase(returnedArray[1]).name;
@@ -1477,7 +1478,7 @@ module away.parsers
 
 				mat.alphaThreshold = props.get(12, 0.0);
 				mat.ambient = props.get(15, 1.0);
-				mat.ambientColor = props.get(16, 0xffffff);
+				mat.diffuseColor = props.get(16, 0xffffff);
 				mat.specular = props.get(18, 1.0);
 				mat.gloss = props.get(19, 50);
 				mat.specularColor = props.get(20, 0xffffff);
@@ -1560,11 +1561,11 @@ module away.parsers
 							debugString += " | DiffuseCelMethod";
 							break;
 						case 56: //SubSurfaceScatteringMethod
-							mat.diffuseMethod = new DiffuseSubSurfaceMethod(); //depthMapSize and depthMapOffset ?
-							(<DiffuseSubSurfaceMethod> mat.diffuseMethod).scattering = props.get(101, 0.2);
-							(<DiffuseSubSurfaceMethod> mat.diffuseMethod).translucency = props.get(102, 1);
-							(<DiffuseSubSurfaceMethod> mat.diffuseMethod).scatterColor = props.get(601, 0xffffff);
-							debugString += " | DiffuseSubSurfaceMethod";
+//							mat.diffuseMethod = new DiffuseSubSurfaceMethod(); //depthMapSize and depthMapOffset ?
+//							(<DiffuseSubSurfaceMethod> mat.diffuseMethod).scattering = props.get(101, 0.2);
+//							(<DiffuseSubSurfaceMethod> mat.diffuseMethod).translucency = props.get(102, 1);
+//							(<DiffuseSubSurfaceMethod> mat.diffuseMethod).scatterColor = props.get(601, 0xffffff);
+//							debugString += " | DiffuseSubSurfaceMethod";
 							break;
 
 						case 101: //AnisotropicSpecularMethod
@@ -2701,7 +2702,7 @@ module away.parsers
 		private getDefaultMaterial():away.library.IAsset
 		{
 			if (!this._defaultBitmapMaterial)
-				this._defaultBitmapMaterial = <TriangleMaterial> DefaultMaterialManager.getDefaultMaterial();
+				this._defaultBitmapMaterial = <TriangleMethodMaterial> DefaultMaterialManager.getDefaultMaterial();
 
 			return  <away.library.IAsset>  this._defaultBitmapMaterial;
 		}

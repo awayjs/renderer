@@ -3,7 +3,8 @@
 module away.animators
 {
 	import Stage					= away.base.Stage;
-	import MaterialPassBase			= away.materials.MaterialPassBase;
+	import ShaderObjectBase			= away.materials.ShaderObjectBase;
+	import ShaderRegisterElement	= away.materials.ShaderRegisterElement;
 	import IContextStageGL			= away.stagegl.IContextStageGL;
 
 	/**
@@ -15,11 +16,6 @@ module away.animators
 	{
 		private _numPoses:number /*uint*/;
 		private _blendMode:string;
-		private _streamIndices:Object = new Object(); //Dictionary
-		private _useNormals:Object = new Object(); //Dictionary
-		private _useTangents:Object = new Object(); //Dictionary
-		private _uploadNormals:boolean;
-		private _uploadTangents:boolean;
 
 		/**
 		 * Returns the number of poses made available at once to the GPU animation code.
@@ -40,10 +36,10 @@ module away.animators
 		/**
 		 * Returns whether or not normal data is used in last set GPU pass of the vertex shader.
 		 */
-		public get useNormals():boolean
-		{
-			return this._uploadNormals;
-		}
+//		public get useNormals():boolean
+//		{
+//			return this._uploadNormals;
+//		}
 
 		/**
 		 * Creates a new <code>VertexAnimationSet</code> object.
@@ -64,42 +60,43 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAGALVertexCode(pass:MaterialPassBase, sourceRegisters:Array<string>, targetRegisters:Array<string>, profile:string):string
+		public getAGALVertexCode(shaderObject:ShaderObjectBase):string
 		{
 			if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE)
-				return this.getAbsoluteAGALCode(pass, sourceRegisters, targetRegisters); else
-				return this.getAdditiveAGALCode(pass, sourceRegisters, targetRegisters);
+				return this.getAbsoluteAGALCode(shaderObject);
+			else
+				return this.getAdditiveAGALCode(shaderObject);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activate(stage:Stage, pass:MaterialPassBase)
+		public activate(shaderObject:ShaderObjectBase, stage:Stage)
 		{
-			var uID:number = pass._iUniqueId;
-			this._uploadNormals = <boolean> this._useNormals[uID];
-			this._uploadTangents = <boolean> this._useTangents[uID];
+//			var uID:number = pass._iUniqueId;
+//			this._uploadNormals = <boolean> this._useNormals[uID];
+//			this._uploadTangents = <boolean> this._useTangents[uID];
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public deactivate(stage:Stage, pass:MaterialPassBase)
+		public deactivate(shaderObject:ShaderObjectBase, stage:Stage)
 		{
-			var uID:number = pass._iUniqueId;
-			var index:number /*uint*/ = this._streamIndices[uID];
-			var context:IContextStageGL = <IContextStageGL> stage.context;
-			context.setVertexBufferAt(index, null);
-			if (this._uploadNormals)
-				context.setVertexBufferAt(index + 1, null);
-			if (this._uploadTangents)
-				context.setVertexBufferAt(index + 2, null);
+//			var uID:number = pass._iUniqueId;
+//			var index:number /*uint*/ = this._streamIndices[uID];
+//			var context:IContextStageGL = <IContextStageGL> stage.context;
+//			context.setVertexBufferAt(index, null);
+//			if (this._uploadNormals)
+//				context.setVertexBufferAt(index + 1, null);
+//			if (this._uploadTangents)
+//				context.setVertexBufferAt(index + 2, null);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public getAGALFragmentCode(pass:MaterialPassBase, shadedTarget:string, profile:string):string
+		public getAGALFragmentCode(shaderObject:ShaderObjectBase, shadedTarget:string):string
 		{
 			return "";
 		}
@@ -107,15 +104,15 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAGALUVCode(pass:MaterialPassBase, UVSource:string, UVTarget:string):string
+		public getAGALUVCode(shaderObject:ShaderObjectBase):string
 		{
-			return "mov " + UVTarget + "," + UVSource + "\n";
+			return "mov " + shaderObject.uvTarget + "," + shaderObject.uvSource + "\n";
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public doneAGALCode(pass:MaterialPassBase)
+		public doneAGALCode(shaderObject:ShaderObjectBase)
 		{
 
 		}
@@ -123,24 +120,21 @@ module away.animators
 		/**
 		 * Generates the vertex AGAL code for absolute blending.
 		 */
-		private getAbsoluteAGALCode(pass:MaterialPassBase, sourceRegisters:Array<string>, targetRegisters:Array<string>):string
+		private getAbsoluteAGALCode(shaderObject:ShaderObjectBase):string
 		{
 			var code:string = "";
-			var uID:number = pass._iUniqueId;
-			var temp1:string = this._pFindTempReg(targetRegisters);
-			var temp2:string = this._pFindTempReg(targetRegisters, temp1);
+			var temp1:string = this._pFindTempReg(shaderObject.animationTargetRegisters);
+			var temp2:string = this._pFindTempReg(shaderObject.animationTargetRegisters, temp1);
 			var regs:Array<string> = new Array<string>("x", "y", "z", "w");
-			var len:number /*uint*/ = sourceRegisters.length;
-			var constantReg:string = "vc" + pass.numUsedVertexConstants;
-			var useTangents:boolean = this._useTangents[uID] = <boolean> (len > 2);
-			this._useNormals[uID] = <boolean> (len > 1);
+			var len:number /*uint*/ = shaderObject.animatableAttributes.length;
+			var constantReg:string = "vc" + shaderObject.numUsedVertexConstants;
 
 			if (len > 2)
 				len = 2;
-			var streamIndex:number /*uint*/ = this._streamIndices[uID] = pass.numUsedStreams;
+			var streamIndex:number /*uint*/ = shaderObject.numUsedStreams;
 
 			for (var i:number /*uint*/ = 0; i < len; ++i) {
-				code += "mul " + temp1 + ", " + sourceRegisters[i] + ", " + constantReg + "." + regs[0] + "\n";
+				code += "mul " + temp1 + ", " + shaderObject.animatableAttributes[i] + ", " + constantReg + "." + regs[0] + "\n";
 
 				for (var j:number /*uint*/ = 1; j < this._numPoses; ++j) {
 					code += "mul " + temp2 + ", va" + streamIndex + ", " + constantReg + "." + regs[j] + "\n";
@@ -151,12 +145,14 @@ module away.animators
 					++streamIndex;
 				}
 
-				code += "add " + targetRegisters[i] + ", " + temp1 + ", " + temp2 + "\n";
+				code += "add " + shaderObject.animationTargetRegisters[i] + ", " + temp1 + ", " + temp2 + "\n";
 			}
 
 			// add code for bitangents if tangents are used
-			if (useTangents) {
-				code += "dp3 " + temp1 + ".x, " + sourceRegisters[2] + ", " + targetRegisters[1] + "\n" + "mul " + temp1 + ", " + targetRegisters[1] + ", " + temp1 + ".x			 \n" + "sub " + targetRegisters[2] + ", " + sourceRegisters[2] + ", " + temp1 + "\n";
+			if (shaderObject.tangentDependencies > 0 || shaderObject.outputsNormals) {
+				code += "dp3 " + temp1 + ".x, " + shaderObject.animatableAttributes[2] + ", " + shaderObject.animationTargetRegisters[1] + "\n" +
+					"mul " + temp1 + ", " + shaderObject.animationTargetRegisters[1] + ", " + temp1 + ".x\n" +
+					"sub " + shaderObject.animationTargetRegisters[2] + ", " + shaderObject.animationTargetRegisters[2] + ", " + temp1 + "\n";
 			}
 			return code;
 		}
@@ -164,34 +160,35 @@ module away.animators
 		/**
 		 * Generates the vertex AGAL code for additive blending.
 		 */
-		private getAdditiveAGALCode(pass:MaterialPassBase, sourceRegisters:Array<string>, targetRegisters:Array<string>):string
+		private getAdditiveAGALCode(shaderObject:ShaderObjectBase):string
 		{
 			var code:string = "";
-			var uID:number = pass._iUniqueId;
-			var len:number /*uint*/ = sourceRegisters.length;
+			var len:number /*uint*/ = shaderObject.animatableAttributes.length;
 			var regs:Array<string> = ["x", "y", "z", "w"];
-			var temp1:string = this._pFindTempReg(targetRegisters);
+			var temp1:string = this._pFindTempReg(shaderObject.animationTargetRegisters);
 			var k:number /*uint*/;
-			var useTangents:boolean = this._useTangents[uID] = <boolean> (len > 2);
-			var useNormals:boolean = this._useNormals[uID] = <boolean> (len > 1);
-			var streamIndex:number /*uint*/ = this._streamIndices[uID] = pass.numUsedStreams;
+
+			var streamIndex:number /*uint*/ = shaderObject.numUsedStreams;
 
 			if (len > 2)
 				len = 2;
 
-			code += "mov  " + targetRegisters[0] + ", " + sourceRegisters[0] + "\n";
-			if (useNormals)
-				code += "mov " + targetRegisters[1] + ", " + sourceRegisters[1] + "\n";
+			code += "mov  " + shaderObject.animationTargetRegisters[0] + ", " + shaderObject.animatableAttributes[0] + "\n";
+			if (shaderObject.normalDependencies > 0)
+				code += "mov " + shaderObject.animationTargetRegisters[1] + ", " + shaderObject.animatableAttributes[1] + "\n";
 
 			for (var i:number /*uint*/ = 0; i < len; ++i) {
 				for (var j:number /*uint*/ = 0; j < this._numPoses; ++j) {
-					code += "mul " + temp1 + ", va" + (streamIndex + k) + ", vc" + pass.numUsedVertexConstants + "." + regs[j] + "\n" + "add " + targetRegisters[i] + ", " + targetRegisters[i] + ", " + temp1 + "\n";
+					code += "mul " + temp1 + ", va" + (streamIndex + k) + ", vc" + shaderObject.numUsedVertexConstants + "." + regs[j] + "\n" +
+						"add " + shaderObject.animationTargetRegisters[i] + ", " + shaderObject.animationTargetRegisters[i] + ", " + temp1 + "\n";
 					k++;
 				}
 			}
 
-			if (useTangents) {
-				code += "dp3 " + temp1 + ".x, " + sourceRegisters[2] + ", " + targetRegisters[1] + "\n" + "mul " + temp1 + ", " + targetRegisters[1] + ", " + temp1 + ".x			 \n" + "sub " + targetRegisters[2] + ", " + sourceRegisters[2] + ", " + temp1 + "\n";
+			if (shaderObject.tangentDependencies > 0 || shaderObject.outputsNormals) {
+				code += "dp3 " + temp1 + ".x, " + shaderObject.animatableAttributes[2] + ", " + shaderObject.animationTargetRegisters[1] + "\n" +
+					"mul " + temp1 + ", " + shaderObject.animationTargetRegisters[1] + ", " + temp1 + ".x\n" +
+					"sub " + shaderObject.animationTargetRegisters[2] + ", " + shaderObject.animatableAttributes[2] + ", " + temp1 + "\n";
 			}
 
 			return code;

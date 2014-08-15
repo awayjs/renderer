@@ -3,6 +3,8 @@
 module away.materials
 {
 	import Stage                    		= away.base.Stage;
+	import Camera							= away.entities.Camera;
+	import RenderableBase					= away.pool.RenderableBase;
 	import Texture2DBase					= away.textures.Texture2DBase;
 	import Delegate							= away.utils.Delegate;
 
@@ -24,7 +26,7 @@ module away.materials
 		 * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature modSpecular(t:ShaderRegisterElement, regCache:ShaderRegisterCache):string, in which t.w will contain the specular strength and t.xyz will contain the half-vector or the reflection vector.
 		 * @param baseMethod The base specular method on which this method's shading is based.
 		 */
-		constructor(modulateMethod:Function, baseMethod:SpecularBasicMethod = null)
+		constructor(modulateMethod:(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => string, baseMethod:SpecularBasicMethod = null)
 		{
 			super();
 
@@ -38,17 +40,17 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderLightingObject, methodVO:MethodVO)
 		{
-			this._baseMethod.iInitVO(vo);
+			this._baseMethod.iInitVO(shaderObject, methodVO);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			this._baseMethod.iInitConstants(vo);
+			this._baseMethod.iInitConstants(shaderObject, methodVO);
 		}
 
 		/**
@@ -129,73 +131,66 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:Stage)
+		public iActivate(shaderObject:ShaderLightingObject, methodVO:MethodVO, stage:Stage)
 		{
-			this._baseMethod.iActivate(vo, stage);
+			this._baseMethod.iActivate(shaderObject, methodVO, stage);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(vo:MethodVO, stage:Stage)
+		public iSetRenderState(shaderObject:ShaderLightingObject, methodVO:MethodVO, renderable:RenderableBase, stage:Stage, camera:Camera)
 		{
-			this._baseMethod.iDeactivate(vo, stage);
+			this._baseMethod.iSetRenderState(shaderObject, methodVO, renderable, stage, camera);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public set iSharedRegisters(value:ShaderRegisterData)
+		public iDeactivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			super.setISharedRegisters(value);
-			this._baseMethod.setISharedRegisters(value);
-		}
-
-		public setISharedRegisters(value:ShaderRegisterData)
-		{
-			super.setISharedRegisters(value);
-			this._baseMethod.setISharedRegisters(value);
+			this._baseMethod.iDeactivate(shaderObject, methodVO, stage);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetVertexCode(vo:MethodVO, regCache:ShaderRegisterCache):string
+		public iGetVertexCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			return this._baseMethod.iGetVertexCode(vo, regCache);
+			return this._baseMethod.iGetVertexCode(shaderObject, methodVO, registerCache, sharedRegisters);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPreLightingCode(vo:MethodVO, regCache:ShaderRegisterCache):string
+		public iGetFragmentPreLightingCode(shaderObject:ShaderLightingObject, methodVO:MethodVO, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			return this._baseMethod.iGetFragmentPreLightingCode(vo, regCache);
+			return this._baseMethod.iGetFragmentPreLightingCode(shaderObject, methodVO, registerCache, sharedRegisters);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCodePerLight(vo:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, regCache:ShaderRegisterCache):string
+		public iGetFragmentCodePerLight(shaderObject:ShaderLightingObject, methodVO:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			return this._baseMethod.iGetFragmentCodePerLight(vo, lightDirReg, lightColReg, regCache);
+			return this._baseMethod.iGetFragmentCodePerLight(shaderObject, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters);
 		}
 
 		/**
 		 * @inheritDoc
 		 * @return
 		 */
-		public iGetFragmentCodePerProbe(vo:MethodVO, cubeMapReg:ShaderRegisterElement, weightRegister:string, regCache:ShaderRegisterCache):string
+		public iGetFragmentCodePerProbe(shaderObject:ShaderLightingObject, methodVO:MethodVO, cubeMapReg:ShaderRegisterElement, weightRegister:string, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			return this._baseMethod.iGetFragmentCodePerProbe(vo, cubeMapReg, weightRegister, regCache);
+			return this._baseMethod.iGetFragmentCodePerProbe(shaderObject, methodVO, cubeMapReg, weightRegister, registerCache, sharedRegisters);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPostLightingCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentPostLightingCode(shaderObject:ShaderLightingObject, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			return this._baseMethod.iGetFragmentPostLightingCode(vo, regCache, targetReg);
+			return this._baseMethod.iGetFragmentPostLightingCode(shaderObject, methodVO, targetReg, registerCache, sharedRegisters);
 		}
 
 		/**
@@ -213,16 +208,6 @@ module away.materials
 		{
 			super.iCleanCompilationData();
 			this._baseMethod.iCleanCompilationData();
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public set iShadowRegister(value:ShaderRegisterElement)
-		{
-
-			this.setIShadowRegister(value);
-			this._baseMethod.setIShadowRegister(value);
 		}
 
 		/**

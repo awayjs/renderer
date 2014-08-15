@@ -49,10 +49,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderLightingObject, methodVO:MethodVO)
 		{
-			vo.needsSecondaryUV = this._useSecondaryUV;
-			vo.needsUV = !this._useSecondaryUV;
+			methodVO.needsSecondaryUV = this._useSecondaryUV;
+			methodVO.needsUV = !this._useSecondaryUV;
 		}
 
 		/**
@@ -95,23 +95,24 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:Stage)
+		public iActivate(shaderObject:ShaderLightingObject, methodVO:MethodVO, stage:Stage)
 		{
-			(<IContextStageGL> stage.context).activateTexture(vo.secondaryTexturesIndex, this._lightMapTexture);
-			super.iActivate(vo, stage);
+			(<IContextStageGL> stage.context).activateTexture(methodVO.secondaryTexturesIndex, this._lightMapTexture);
+
+			super.iActivate(shaderObject, methodVO, stage);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPostLightingCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentPostLightingCode(shaderObject:ShaderLightingObject, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var code:string;
-			var lightMapReg:ShaderRegisterElement = regCache.getFreeTextureReg();
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			vo.secondaryTexturesIndex = lightMapReg.index;
+			var lightMapReg:ShaderRegisterElement = registerCache.getFreeTextureReg();
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+			methodVO.secondaryTexturesIndex = lightMapReg.index;
 			
-			code = this.pGetTex2DSampleCode(vo, temp, lightMapReg, this._lightMapTexture, this._sharedRegisters.secondaryUVVarying);
+			code = ShaderCompilerHelper.getTex2DSampleCode(temp, sharedRegisters, lightMapReg, this._lightMapTexture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping, sharedRegisters.secondaryUVVarying);
 			
 			switch (this._blendMode) {
 				case DiffuseLightMapMethod.MULTIPLY:
@@ -122,7 +123,7 @@ module away.materials
 					break;
 			}
 			
-			code += super.iGetFragmentPostLightingCode(vo, regCache, targetReg);
+			code += super.iGetFragmentPostLightingCode(shaderObject, methodVO, targetReg, registerCache, sharedRegisters);
 			
 			return code;
 		}

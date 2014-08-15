@@ -46,10 +46,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			vo.needsUV = !this._useSecondaryUV;
-			vo.needsSecondaryUV = this._useSecondaryUV;
+			methodVO.needsUV = !this._useSecondaryUV;
+			methodVO.needsSecondaryUV = this._useSecondaryUV;
 		}
 
 		/**
@@ -91,25 +91,25 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:away.base.Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex, this._texture);
+			(<IContextStageGL> stage.context).activateTexture(methodVO.texturesIndex, this._texture);
 
-			super.iActivate(vo, stage);
+			super.iActivate(shaderObject, methodVO, stage);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var code:string;
-			var lightMapReg:ShaderRegisterElement = regCache.getFreeTextureReg();
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			vo.texturesIndex = lightMapReg.index;
-			
-			code = this.pGetTex2DSampleCode(vo, temp, lightMapReg, this._texture, this._useSecondaryUV? this._sharedRegisters.secondaryUVVarying:this._sharedRegisters.uvVarying);
-			
+			var lightMapReg:ShaderRegisterElement = registerCache.getFreeTextureReg();
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+			methodVO.texturesIndex = lightMapReg.index;
+
+			code = ShaderCompilerHelper.getTex2DSampleCode(temp, sharedRegisters, lightMapReg, this._texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping, this._useSecondaryUV? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying);
+
 			switch (this._blendMode) {
 				case EffectLightMapMethod.MULTIPLY:
 					code += "mul " + targetReg + ", " + targetReg + ", " + temp + "\n";

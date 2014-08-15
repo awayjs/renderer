@@ -40,7 +40,7 @@ module away.materials
 		{
 			super(null, baseMethod);
 
-			this.pBaseMethod._iModulateMethod = (vo:MethodVO, target:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => this.scatterLight(vo, target, regCache, sharedRegisters);
+			this.pBaseMethod._iModulateMethod = (shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => this.scatterLight(shaderObject, methodVO, targetReg, registerCache, sharedRegisters);
 
 			this._passes = new Array<MaterialPassBase>();
 			this._depthPass = new SingleObjectDepthPass();
@@ -54,18 +54,19 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			super.iInitConstants(vo);
-			var data:Array<number> = vo.vertexData;
-			var index:number /*int*/ = vo.secondaryVertexConstantsIndex;
+			super.iInitConstants(shaderObject, methodVO);
+
+			var data:Array<number> = shaderObject.vertexConstantData;
+			var index:number /*int*/ = methodVO.secondaryVertexConstantsIndex;
 			data[index] = .5;
 			data[index + 1] = -.5;
 			data[index + 2] = 0;
 			data[index + 3] = 1;
 			
-			data = vo.fragmentData;
-			index = vo.secondaryFragmentConstantsIndex;
+			data = shaderObject.fragmentConstantData;
+			index = methodVO.secondaryFragmentConstantsIndex;
 			data[index + 3] = 1.0;
 			data[index + 4] = 1.0;
 			data[index + 5] = 1/255;
@@ -133,21 +134,21 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetVertexCode(vo:MethodVO, regCache:ShaderRegisterCache):string
+		public iGetVertexCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			var code:string = super.iGetVertexCode(vo, regCache);
+			var code:string = super.iGetVertexCode(shaderObject, methodVO, registerCache, sharedRegisters);
 			var lightProjection:ShaderRegisterElement;
 			var toTexRegister:ShaderRegisterElement;
-			var temp:ShaderRegisterElement = regCache.getFreeVertexVectorTemp();
+			var temp:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
 			
-			toTexRegister = regCache.getFreeVertexConstant();
+			toTexRegister = registerCache.getFreeVertexConstant();
 			vo.secondaryVertexConstantsIndex = toTexRegister.index*4;
 
-			this._lightProjVarying = regCache.getFreeVarying();
-			lightProjection = regCache.getFreeVertexConstant();
-			regCache.getFreeVertexConstant();
-			regCache.getFreeVertexConstant();
-			regCache.getFreeVertexConstant();
+			this._lightProjVarying = registerCache.getFreeVarying();
+			lightProjection = registerCache.getFreeVertexConstant();
+			registerCache.getFreeVertexConstant();
+			registerCache.getFreeVertexConstant();
+			registerCache.getFreeVertexConstant();
 			
 			code += "m44 " + temp + ", vt0, " + lightProjection + "\n" +
 				"div " + temp + ".xyz, " + temp + ".xyz, " + temp + ".w\n" +
@@ -162,40 +163,40 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPreLightingCode(vo:MethodVO, regCache:ShaderRegisterCache):string
+		public iGetFragmentPreLightingCode(shaderObject:ShaderLightingObject, methodVO:MethodVO, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			this._colorReg = regCache.getFreeFragmentConstant();
-			this._decReg = regCache.getFreeFragmentConstant();
-			this._propReg = regCache.getFreeFragmentConstant();
-			vo.secondaryFragmentConstantsIndex = this._colorReg.index*4;
+			this._colorReg = registerCache.getFreeFragmentConstant();
+			this._decReg = registerCache.getFreeFragmentConstant();
+			this._propReg = registerCache.getFreeFragmentConstant();
+			methodVO.secondaryFragmentConstantsIndex = this._colorReg.index*4;
 			
-			return super.iGetFragmentPreLightingCode(vo, regCache);
+			return super.iGetFragmentPreLightingCode(shaderObject, methodVO, registerCache, sharedRegisters);
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCodePerLight(vo:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, regCache:ShaderRegisterCache):string
+		public iGetFragmentCodePerLight(shaderObject:ShaderLightingObject, methodVO:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			this._pIsFirstLight = true;
 			this._lightColorReg = lightColReg;
-			return super.iGetFragmentCodePerLight(vo, lightDirReg, lightColReg, regCache);
+			return super.iGetFragmentCodePerLight(shaderObject, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters);
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPostLightingCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentPostLightingCode(shaderObject:ShaderLightingObject, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			var code:string = super.iGetFragmentPostLightingCode(vo, regCache, targetReg);
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			var code:string = super.iGetFragmentPostLightingCode(shaderObject, methodVO, targetReg, registerCache, sharedRegisters);
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
 			
 			code += "mul " + temp + ".xyz, " + this._lightColorReg + ".xyz, " + this._targetReg + ".w\n" +
 				"mul " + temp + ".xyz, " + temp + ".xyz, " + this._colorReg + ".xyz\n" +
 				"add " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz\n";
 			
-			if (this._targetReg != this._sharedRegisters.viewDirFragment)
-				regCache.removeFragmentTempUsage(targetReg);
+			if (this._targetReg != sharedRegisters.viewDirFragment)
+				registerCache.removeFragmentTempUsage(targetReg);
 			
 			return code;
 		}
@@ -203,12 +204,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:Stage)
+		public iActivate(shaderObject:ShaderLightingObject, methodVO:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stage);
+			super.iActivate(shaderObject, methodVO, stage);
 			
-			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
-			var data:Array<number> = vo.fragmentData;
+			var index:number /*int*/ = methodVO.secondaryFragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
 			data[index] = this._scatterR;
 			data[index + 1] = this._scatterG;
 			data[index + 2] = this._scatterB;
@@ -219,17 +220,17 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(vo:MethodVO, renderable:RenderableBase, stage:Stage, camera:away.entities.Camera)
+		public iSetRenderState(shaderObject:ShaderObjectBase, methodVO:MethodVO, renderable:away.pool.RenderableBase, stage:away.base.Stage, camera:away.entities.Camera)
 		{
-			(<IContextStageGL> stage.context).activateTexture(vo.secondaryTexturesIndex, this._depthPass._iGetDepthMap(renderable));
+			(<IContextStageGL> stage.context).activateTexture(methodVO.secondaryTexturesIndex, this._depthPass._iGetDepthMap(renderable));
 
-			this._depthPass._iGetProjection(renderable).copyRawDataTo(vo.vertexData, vo.secondaryVertexConstantsIndex + 4, true);
+			this._depthPass._iGetProjection(renderable).copyRawDataTo(methodVO.vertexData, methodVO.secondaryVertexConstantsIndex + 4, true);
 		}
 		
 		/**
 		 * Generates the code for this method
 		 */
-		private scatterLight(vo:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+		private scatterLight(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			// only scatter first light
 			if (!this._pIsFirstLight)
@@ -238,18 +239,18 @@ module away.materials
 			this._pIsFirstLight = false;
 
 			var code:string = "";
-			var depthReg:ShaderRegisterElement = regCache.getFreeTextureReg();
+			var depthReg:ShaderRegisterElement = registerCache.getFreeTextureReg();
 
 			if (sharedRegisters.viewDirFragment) {
 				this._targetReg = sharedRegisters.viewDirFragment;
 			} else {
-				this._targetReg = regCache.getFreeFragmentVectorTemp();
-				regCache.addFragmentTempUsages(this._targetReg, 1);
+				this._targetReg = registerCache.getFreeFragmentVectorTemp();
+				registerCache.addFragmentTempUsages(this._targetReg, 1);
 			}
+
+			methodVO.secondaryTexturesIndex = depthReg.index;
 			
-			vo.secondaryTexturesIndex = depthReg.index;
-			
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
 			code += "tex " + temp + ", " + this._lightProjVarying + ", " + depthReg + " <2d,nearest,clamp>\n" +
 				// reencode RGBA
 				"dp4 " + targetReg + ".z, " + temp + ", " + this._decReg + "\n";

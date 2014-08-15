@@ -6,7 +6,7 @@ module away.parsers
 	import Mesh								= away.entities.Mesh;
 	import DefaultMaterialManager			= away.materials.DefaultMaterialManager;
 	import BasicSpecularMethod				= away.materials.SpecularBasicMethod;
-	import TriangleMaterial					= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial			= away.materials.TriangleMethodMaterial;
 	import TriangleMaterialMode				= away.materials.TriangleMaterialMode;
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 	
@@ -303,7 +303,7 @@ module away.parsers
 
 				var m:number;
 				var sm:number;
-				var bmMaterial:TriangleMaterial;
+				var bmMaterial:TriangleMethodMaterial;
 
 				for (var g:number = 0; g < numGroups; ++g) {
 					geometry = new away.base.Geometry();
@@ -319,7 +319,7 @@ module away.parsers
 					// Finalize and force type-based name
 					this._pFinalizeAsset(<away.library.IAsset> geometry);//, "");
 
-					bmMaterial = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
+					bmMaterial = new TriangleMethodMaterial(DefaultMaterialManager.getDefaultTexture());
 
 					//check for multipass
 					if (this.materialMode >= 2)
@@ -633,7 +633,7 @@ module away.parsers
 			var useSpecular:boolean;
 			var useColor:boolean;
 			var diffuseColor:number;
-			var ambientColor:number;
+			var color:number;
 			var specularColor:number;
 			var specular:number;
 			var alpha:number;
@@ -648,7 +648,7 @@ module away.parsers
 				if (lines.length == 1)
 					lines = materialDefinitions[i].split(String.fromCharCode(13));
 
-				diffuseColor = ambientColor = specularColor = 0xFFFFFF;
+				diffuseColor = color = specularColor = 0xFFFFFF;
 				specular = 0;
 				useSpecular = false;
 				useColor = false;
@@ -675,7 +675,7 @@ module away.parsers
 
 								case "Ka":
 									if (trunk[1] && !isNaN(Number(trunk[1])) && trunk[2] && !isNaN(Number(trunk[2])) && trunk[3] && !isNaN(Number(trunk[3])))
-										ambientColor = trunk[1]*255 << 16 | trunk[2]*255 << 8 | trunk[3]*255;
+										color = trunk[1]*255 << 16 | trunk[2]*255 << 8 | trunk[3]*255;
 									break;
 
 								case "Ks":
@@ -735,7 +735,7 @@ module away.parsers
 
 					this._pAddDependency(this._lastMtlID, new away.net.URLRequest(mapkd));
 
-				} else if (useColor && !isNaN(diffuseColor)) {
+				} else if (useColor && !isNaN(color)) {
 
 					var lm:LoadedMaterial = new LoadedMaterial();
 					lm.materialID = this._lastMtlID;
@@ -743,15 +743,15 @@ module away.parsers
 					if (alpha == 0)
 						console.log("Warning: an alpha value of 0 was found in mtl color tag (Tr or d) ref:" + this._lastMtlID + ", mesh(es) using it will be invisible!");
 
-					var cm:TriangleMaterial;
+					var cm:TriangleMethodMaterial;
 
 					if (this.materialMode < 2) {
-						cm = new TriangleMaterial(diffuseColor);
+						cm = new TriangleMethodMaterial(color);
 
-						var colorMat:TriangleMaterial = <TriangleMaterial> cm;
+						var colorMat:TriangleMethodMaterial = <TriangleMethodMaterial> cm;
 
 						colorMat.alpha = alpha;
-						colorMat.ambientColor = ambientColor;
+						colorMat.diffuseColor = diffuseColor;
 						colorMat.repeat = true;
 
 						if (useSpecular) {
@@ -760,13 +760,13 @@ module away.parsers
 						}
 
 					} else {
-						cm = new TriangleMaterial(diffuseColor);
+						cm = new TriangleMethodMaterial(color);
 						cm.materialMode = TriangleMaterialMode.MULTI_PASS;
 
-						var colorMultiMat:TriangleMaterial = <TriangleMaterial> cm;
+						var colorMultiMat:TriangleMethodMaterial = <TriangleMethodMaterial> cm;
 
 
-						colorMultiMat.ambientColor = ambientColor;
+						colorMultiMat.diffuseColor = diffuseColor;
 						colorMultiMat.repeat = true;
 
 						if (useSpecular) {
@@ -844,7 +844,7 @@ module away.parsers
 		{
 			var decomposeID;
 			var mesh:Mesh;
-			var tm:TriangleMaterial;
+			var tm:TriangleMethodMaterial;
 			var j:number;
 			var specularData:SpecularData;
 
@@ -861,10 +861,10 @@ module away.parsers
 
 					} else if (lm.texture) {
 						if (this.materialMode < 2) { // if materialMode is 0 or 1, we create a SinglePass
-							tm = <TriangleMaterial > mesh.material;
+							tm = <TriangleMethodMaterial > mesh.material;
 
 							tm.texture = lm.texture;
-							tm.ambientColor = lm.ambientColor;
+							tm.color = lm.color;
 							tm.alpha = lm.alpha;
 							tm.repeat = true;
 
@@ -885,18 +885,18 @@ module away.parsers
 									if (specularData.materialID == lm.materialID) {
 										tm.specularMethod = null; // Prevent property overwrite (see above)
 										tm.specularMethod = specularData.basicSpecularMethod;
-										tm.ambientColor = specularData.ambientColor;
+										tm.color = specularData.color;
 										tm.alpha = specularData.alpha;
 										break;
 									}
 								}
 							}
 						} else { //if materialMode==2 this is a MultiPassTexture					
-							tm = <TriangleMaterial> mesh.material;
+							tm = <TriangleMethodMaterial> mesh.material;
 							tm.materialMode = TriangleMaterialMode.MULTI_PASS;
 
 							tm.texture = lm.texture;
-							tm.ambientColor = lm.ambientColor;
+							tm.color = lm.color;
 							tm.repeat = true;
 
 							if (lm.specularMethod) {
@@ -913,7 +913,7 @@ module away.parsers
 									if (specularData.materialID == lm.materialID) {
 										tm.specularMethod = null; // Prevent property overwrite (see above)
 										tm.specularMethod = specularData.basicSpecularMethod;
-										tm.ambientColor = specularData.ambientColor;
+										tm.color = specularData.color;
 
 										break;
 
@@ -971,7 +971,7 @@ class SpecularData
 {
 	public materialID:string;
 	public basicSpecularMethod:BasicSpecularMethod;
-	public ambientColor:number = 0xFFFFFF;
+	public color:number = 0xFFFFFF;
 	public alpha:number = 1;
 }
 
@@ -981,7 +981,7 @@ class LoadedMaterial
 	public texture:Texture2DBase;
 	public cm:MaterialBase;
 	public specularMethod:BasicSpecularMethod;
-	public ambientColor:number = 0xFFFFFF;
+	public color:number = 0xFFFFFF;
 	public alpha:number = 1;
 }
 

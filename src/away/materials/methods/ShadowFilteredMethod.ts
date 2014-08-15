@@ -2,6 +2,7 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
 	import DirectionalLight							= away.entities.DirectionalLight;
 
 	/**
@@ -23,12 +24,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderLightingObject, methodVO:MethodVO)
 		{
-			super.iInitConstants(vo);
+			super.iInitConstants(shaderObject, methodVO);
 
-			var fragmentData:Array<number> = vo.fragmentData;
-			var index:number /*int*/ = vo.fragmentConstantsIndex;
+			var fragmentData:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*int*/ = methodVO.fragmentConstantsIndex;
 			fragmentData[index + 8] = .5;
 			var size:number /*int*/ = this.castingLight.shadowMapper.depthMapSize;
 			fragmentData[index + 9] = size;
@@ -38,7 +39,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public _pGetPlanarFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public _pGetPlanarFragmentCode(methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var depthMapRegister:ShaderRegisterElement = regCache.getFreeTextureReg();
 			var decReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
@@ -49,7 +50,7 @@ module away.materials
 			var depthCol:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
 			var uvReg:ShaderRegisterElement;
 			var code:string = "";
-			vo.fragmentConstantsIndex = decReg.index*4;
+			methodVO.fragmentConstantsIndex = decReg.index*4;
 
 			regCache.addFragmentTempUsages(depthCol, 1);
 
@@ -79,7 +80,7 @@ module away.materials
 			regCache.removeFragmentTempUsage(depthCol);
 			regCache.removeFragmentTempUsage(uvReg);
 
-			vo.texturesIndex = depthMapRegister.index;
+			methodVO.texturesIndex = depthMapRegister.index;
 
 			return code;
 		}
@@ -87,11 +88,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stage:away.base.Stage)
+		public iActivateForCascade(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
 			var size:number /*int*/ = this.castingLight.shadowMapper.depthMapSize;
-			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
-			var data:Array<number> = vo.fragmentData;
+			var index:number /*int*/ = methodVO.secondaryFragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
 			data[index] = size;
 			data[index + 1] = 1/size;
 		}
@@ -99,15 +100,15 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public _iGetCascadeFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, decodeRegister:ShaderRegisterElement, depthTexture:ShaderRegisterElement, depthProjection:ShaderRegisterElement, targetRegister:ShaderRegisterElement):string
+		public _iGetCascadeFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, decodeRegister:ShaderRegisterElement, depthTexture:ShaderRegisterElement, depthProjection:ShaderRegisterElement, targetRegister:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var code:string;
-			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			vo.secondaryFragmentConstantsIndex = dataReg.index*4;
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			regCache.addFragmentTempUsages(temp, 1);
-			var predicate:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			regCache.addFragmentTempUsages(predicate, 1);
+			var dataReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			methodVO.secondaryFragmentConstantsIndex = dataReg.index*4;
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+			registerCache.addFragmentTempUsages(temp, 1);
+			var predicate:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+			registerCache.addFragmentTempUsages(predicate, 1);
 
 			code = "tex " + temp + ", " + depthProjection + ", " + depthTexture + " <2d, nearest, clamp>\n" + "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" + "slt " + predicate + ".x, " + depthProjection + ".z, " + temp + ".z\n" +
 
@@ -126,8 +127,8 @@ module away.materials
 
 				"sub " + predicate + ".y, " + predicate + ".y, " + predicate + ".x\n" + "mul " + predicate + ".y, " + predicate + ".y, " + temp + ".y\n" + "add " + targetRegister + ".w, " + predicate + ".x, " + predicate + ".y\n";
 
-			regCache.removeFragmentTempUsage(temp);
-			regCache.removeFragmentTempUsage(predicate);
+			registerCache.removeFragmentTempUsage(temp);
+			registerCache.removeFragmentTempUsage(predicate);
 			return code;
 		}
 	}

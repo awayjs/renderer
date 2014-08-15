@@ -3,7 +3,7 @@
 module away.animators
 {
 	import Vector3D						= away.geom.Vector3D;
-	import MaterialPassBase				= away.materials.MaterialPassBase;
+	import ShaderObjectBase				= away.materials.ShaderObjectBase;
 	import ShaderRegisterElement		= away.materials.ShaderRegisterElement;
 	
 	/**
@@ -95,7 +95,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAGALUVCode(pass:MaterialPassBase, animationRegisterCache:AnimationRegisterCache):string
+		public getAGALUVCode(shaderObject:ShaderObjectBase, animationRegisterCache:AnimationRegisterCache):string
 		{
 			//get 2 vc
 			var uvParamConst1:ShaderRegisterElement = animationRegisterCache.getFreeVertexConstant();

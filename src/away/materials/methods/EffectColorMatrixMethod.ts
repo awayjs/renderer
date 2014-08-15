@@ -2,6 +2,8 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+
 	/**
 	 * EffectColorMatrixMethod provides a shading method that changes the colour of a material analogous to a ColorMatrixFilter.
 	 */
@@ -40,19 +42,19 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var code:string = "";
-			var colorMultReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			regCache.getFreeFragmentConstant();
-			regCache.getFreeFragmentConstant();
-			regCache.getFreeFragmentConstant();
+			var colorMultReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			registerCache.getFreeFragmentConstant();
+			registerCache.getFreeFragmentConstant();
+			registerCache.getFreeFragmentConstant();
 
-			var colorOffsetReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			
-			vo.fragmentConstantsIndex = colorMultReg.index*4;
+			var colorOffsetReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			methodVO.fragmentConstantsIndex = colorMultReg.index*4;
+
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
 
 			code += "m44 " + temp + ", " + targetReg + ", " + colorMultReg + "\n" +
 					"add " + targetReg + ", " + temp + ", " + colorOffsetReg + "\n";
@@ -63,11 +65,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:away.base.Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
 			var matrix:Array<number> = this._matrix;
-			var index:number /*int*/ = vo.fragmentConstantsIndex;
-			var data:Array<number> = vo.fragmentData;
+			var index:number /*int*/ = methodVO.fragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
 
 			// r
 			data[index] = matrix[0];

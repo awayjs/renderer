@@ -18,10 +18,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			var data:Array<number> = vo.fragmentData;
-			var index:number /*int*/ = vo.fragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*int*/ = methodVO.fragmentConstantsIndex;
 			data[index] = 1.0;
 			data[index + 1] = 1/255.0;
 			data[index + 2] = 1/65025.0;
@@ -31,7 +31,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPostLightingCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentPostLightingCode(shaderObject:ShaderLightingObject, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var code:string = "";
 			var temp:ShaderRegisterElement;
@@ -41,27 +41,27 @@ module away.materials
 				throw new Error("DiffuseDepthMethod requires texture!");
 			
 			// incorporate input from ambient
-			if (vo.numLights > 0) {
-				if (this._pShadowRegister)
-					code += "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ".xyz, " + this._pShadowRegister + ".w\n";
+			if (shaderObject.numLights > 0) {
+				if (sharedRegisters.shadowTarget)
+					code += "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ".xyz, " + sharedRegisters.shadowTarget + ".w\n";
 				code += "add " + targetReg + ".xyz, " + this._pTotalLightColorReg + ".xyz, " + targetReg + ".xyz\n" +
 					"sat " + targetReg + ".xyz, " + targetReg + ".xyz\n";
-				regCache.removeFragmentTempUsage(this._pTotalLightColorReg);
+				registerCache.removeFragmentTempUsage(this._pTotalLightColorReg);
 			}
 			
-			temp = vo.numLights > 0? regCache.getFreeFragmentVectorTemp():targetReg;
+			temp = shaderObject.numLights > 0? registerCache.getFreeFragmentVectorTemp():targetReg;
 			
-			this._pDiffuseInputRegister = regCache.getFreeTextureReg();
-			vo.texturesIndex = this._pDiffuseInputRegister.index;
-			decReg = regCache.getFreeFragmentConstant();
-			vo.fragmentConstantsIndex = decReg.index*4;
-			code += this.pGetTex2DSampleCode(vo, temp, this._pDiffuseInputRegister, this.texture) +
+			this._pDiffuseInputRegister = registerCache.getFreeTextureReg();
+			methodVO.texturesIndex = this._pDiffuseInputRegister.index;
+			decReg = registerCache.getFreeFragmentConstant();
+			methodVO.fragmentConstantsIndex = decReg.index*4;
+			code += ShaderCompilerHelper.getTex2DSampleCode(temp, sharedRegisters, this._pDiffuseInputRegister, this.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping) +
 				"dp4 " + temp + ".x, " + temp + ", " + decReg + "\n" +
 				"mov " + temp + ".yz, " + temp + ".xx			\n" +
 				"mov " + temp + ".w, " + decReg + ".x\n" +
 				"sub " + temp + ".xyz, " + decReg + ".xxx, " + temp + ".xyz\n";
 			
-			if (vo.numLights == 0)
+			if (shaderObject.numLights == 0)
 				return code;
 			
 			code += "mul " + targetReg + ".xyz, " + temp + ".xyz, " + targetReg + ".xyz\n" +

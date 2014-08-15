@@ -18,7 +18,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCodePerLight(vo:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, regCache:ShaderRegisterCache):string
+		public iGetFragmentCodePerLight(shaderObject:ShaderLightingObject, methodVO:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var code:string = "";
 			var t:ShaderRegisterElement;
@@ -26,12 +26,12 @@ module away.materials
 			if (this._pIsFirstLight) {
 				t = this._pTotalLightColorReg;
 			} else {
-				t = regCache.getFreeFragmentVectorTemp();
-				regCache.addFragmentTempUsages(t, 1);
+				t = registerCache.getFreeFragmentVectorTemp();
+				registerCache.addFragmentTempUsages(t, 1);
 			}
 
-			var viewDirReg:ShaderRegisterElement = this._sharedRegisters.viewDirFragment;
-			var normalReg:ShaderRegisterElement = this._sharedRegisters.normalFragment;
+			var viewDirReg:ShaderRegisterElement =sharedRegisters.viewDirFragment;
+			var normalReg:ShaderRegisterElement =sharedRegisters.normalFragment;
 
 			// phong model
 			code += "dp3 " + t + ".w, " + lightDirReg + ", " + normalReg + "\n" + // sca1 = light.normal
@@ -42,7 +42,7 @@ module away.materials
 				"sub " + t + ".xyz, " + t + ", " + lightDirReg + "\n" + // vec1 = vec1 - light (light vector is negative)
 
 				//smooth the edge as incidence angle approaches 90
-				"add " + t + ".w, " + t + ".w, " + this._sharedRegisters.commons + ".w\n" + // sca1 = sca1 + smoothtep;
+				"add " + t + ".w, " + t + ".w, " +sharedRegisters.commons + ".w\n" + // sca1 = sca1 + smoothtep;
 				"sat " + t + ".w, " + t + ".w\n" + // sca1 range 0 - 1
 				"mul " + t + ".xyz, " + t + ", " + t + ".w\n" + // vec1 = vec1*sca1
 
@@ -57,17 +57,17 @@ module away.materials
 				code += "pow " + t + ".w, " + t + ".w, " + this._pSpecularDataRegister + ".w\n";
 
 			// attenuate
-			if (vo.useLightFallOff)
+			if (shaderObject.usesLightFallOff)
 				code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
 
 			if (this._iModulateMethod != null)
-				code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
+				code += this._iModulateMethod(shaderObject, methodVO, t, registerCache, sharedRegisters);
 
 			code += "mul " + t + ".xyz, " + lightColReg + ".xyz, " + t + ".w\n";
 
 			if (!this._pIsFirstLight) {
 				code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ".xyz, " + t + ".xyz\n";
-				regCache.removeFragmentTempUsage(t);
+				registerCache.removeFragmentTempUsage(t);
 			}
 
 			this._pIsFirstLight = false;

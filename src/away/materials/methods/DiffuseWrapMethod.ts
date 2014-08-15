@@ -2,6 +2,8 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+
 	/**
 	 * DiffuseWrapMethod is an alternative to DiffuseBasicMethod in which the light is allowed to be "wrapped around" the normally dark area, to some extent.
 	 * It can be used as a crude approximation to Oren-Nayar or simple subsurface scattering.
@@ -49,12 +51,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPreLightingCode(vo:MethodVO, regCache:ShaderRegisterCache):string
+		public iGetFragmentPreLightingCode(shaderObject:ShaderLightingObject, methodVO:MethodVO, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			var code:string = super.iGetFragmentPreLightingCode(vo, regCache);
+			var code:string = super.iGetFragmentPreLightingCode(shaderObject, methodVO, registerCache, sharedRegisters);
 			this._pIsFirstLight = true;
-			this._wrapDataRegister = regCache.getFreeFragmentConstant();
-			vo.secondaryFragmentConstantsIndex = this._wrapDataRegister.index*4;
+			this._wrapDataRegister = registerCache.getFreeFragmentConstant();
+			methodVO.secondaryFragmentConstantsIndex = this._wrapDataRegister.index*4;
 			
 			return code;
 		}
@@ -62,7 +64,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCodePerLight(vo:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, regCache:ShaderRegisterCache):string
+		public iGetFragmentCodePerLight(shaderObject:ShaderLightingObject, methodVO:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var code:string = "";
 			var t:ShaderRegisterElement;
@@ -71,24 +73,24 @@ module away.materials
 			if (this._pIsFirstLight) {
 				t = this._pTotalLightColorReg;
 			} else {
-				t = regCache.getFreeFragmentVectorTemp();
-				regCache.addFragmentTempUsages(t, 1);
+				t = registerCache.getFreeFragmentVectorTemp();
+				registerCache.addFragmentTempUsages(t, 1);
 			}
 			
-			code += "dp3 " + t + ".x, " + lightDirReg + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz\n" +
+			code += "dp3 " + t + ".x, " + lightDirReg + ".xyz, " + sharedRegisters.normalFragment + ".xyz\n" +
 				"add " + t + ".y, " + t + ".x, " + this._wrapDataRegister + ".x\n" +
 				"mul " + t + ".y, " + t + ".y, " + this._wrapDataRegister + ".y\n" +
 				"sat " + t + ".w, " + t + ".y\n" +
 				"mul " + t + ".xz, " + t + ".w, " + lightDirReg + ".wz\n";
 			
 			if (this._iModulateMethod != null)
-				code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
+				code += this._iModulateMethod(shaderObject, methodVO, lightDirReg, registerCache, sharedRegisters);
 			
 			code += "mul " + t + ", " + t + ".x, " + lightColReg + "\n";
 			
 			if (!this._pIsFirstLight) {
 				code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ".xyz, " + t + ".xyz\n";
-				regCache.removeFragmentTempUsage(t);
+				registerCache.removeFragmentTempUsage(t);
 			}
 			
 			this._pIsFirstLight = false;
@@ -99,11 +101,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:away.base.Stage)
+		public iActivate(shaderObject:ShaderLightingObject, methodVO:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stage);
-			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
-			var data:Array<number> = vo.fragmentData;
+			super.iActivate(shaderObject, methodVO, stage);
+
+			var index:number /*int*/ = methodVO.secondaryFragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
 			data[index] = this._wrapFactor;
 			data[index + 1] = 1/(this._wrapFactor + 1);
 		}

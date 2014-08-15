@@ -32,10 +32,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			var index:number /*int*/ = vo.fragmentConstantsIndex;
-			var data:Array<number> = vo.fragmentData;
+			var index:number /*int*/ = methodVO.fragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
 			data[index] = 1/this.normalMap.width;
 			data[index + 1] = 1/this.normalMap.height;
 			data[index + 2] = 0;
@@ -66,25 +66,25 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var dataReg2:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			this._pNormalTextureRegister = regCache.getFreeTextureReg();
-			vo.texturesIndex = this._pNormalTextureRegister.index;
-			vo.fragmentConstantsIndex = dataReg.index*4;
-			
-			return this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this.normalMap, this._sharedRegisters.uvVarying, "clamp") +
-				
-				"add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg + ".xzzz\n" +
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+			var dataReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			var dataReg2:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			this._pNormalTextureRegister = registerCache.getFreeTextureReg();
+			methodVO.texturesIndex = this._pNormalTextureRegister.index;
+			methodVO.fragmentConstantsIndex = dataReg.index*4;
 
-				this.pGetTex2DSampleCode(vo, temp, this._pNormalTextureRegister, this.normalMap, temp, "clamp") +
+			return ShaderCompilerHelper.getTex2DSampleCode(targetReg, sharedRegisters, this._pNormalTextureRegister, this.normalMap, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping, sharedRegisters.uvVarying, "clamp") +
+
+				"add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg + ".xzzz\n" +
+
+				ShaderCompilerHelper.getTex2DSampleCode(temp, sharedRegisters, this._pNormalTextureRegister, this.normalMap, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping, temp, "clamp") +
 
 				"sub " + targetReg + ".x, " + targetReg + ".x, " + temp + ".x\n" +
-				"add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg + ".zyzz\n" +
+				"add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg + ".zyzz\n" +
 
-				this.pGetTex2DSampleCode(vo, temp, this._pNormalTextureRegister, this.normalMap, temp, "clamp") +
+				ShaderCompilerHelper.getTex2DSampleCode(temp, sharedRegisters, this._pNormalTextureRegister, this.normalMap, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping, temp, "clamp") +
 
 				"sub " + targetReg + ".z, " + targetReg + ".z, " + temp + ".x\n" +
 				"mov " + targetReg + ".y, " + dataReg + ".w\n" +

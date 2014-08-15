@@ -43,10 +43,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			var index:number /*int*/ = vo.fragmentConstantsIndex;
-			var data:Array<number> = vo.fragmentData;
+			var index:number /*int*/ = methodVO.fragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
 			data[index + 4] = 1;
 			data[index + 5] = 0;
 			data[index + 7] = 1;
@@ -55,10 +55,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			vo.needsNormals = true;
-			vo.needsView = true;
+			methodVO.needsNormals = true;
+			methodVO.needsView = true;
 		}
 		
 		/**
@@ -161,10 +161,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			var index:number /*int*/ = vo.fragmentConstantsIndex;
-			var data:Array<number> = vo.fragmentData;
+			var index:number /*int*/ = methodVO.fragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
 
 			data[index] = this._dispersionR + this._refractionIndex;
 
@@ -174,35 +174,35 @@ module away.materials
 			}
 			data[index + 3] = this._alpha;
 
-			(<IContextStageGL> stage.context).activateCubeTexture(vo.texturesIndex, this._envMap);
+			(<IContextStageGL> stage.context).activateCubeTexture(methodVO.texturesIndex, this._envMap);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			// todo: data2.x could use common reg, so only 1 reg is used
-			var data:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var data2:ShaderRegisterElement = regCache.getFreeFragmentConstant();
+			var data:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			var data2:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 			var code:string = "";
-			var cubeMapReg:ShaderRegisterElement = regCache.getFreeTextureReg();
+			var cubeMapReg:ShaderRegisterElement = registerCache.getFreeTextureReg();
 			var refractionDir:ShaderRegisterElement;
 			var refractionColor:ShaderRegisterElement;
 			var temp:ShaderRegisterElement;
+
+			methodVO.texturesIndex = cubeMapReg.index;
+			methodVO.fragmentConstantsIndex = data.index*4;
 			
-			vo.texturesIndex = cubeMapReg.index;
-			vo.fragmentConstantsIndex = data.index*4;
+			refractionDir = registerCache.getFreeFragmentVectorTemp();
+			registerCache.addFragmentTempUsages(refractionDir, 1);
+			refractionColor = registerCache.getFreeFragmentVectorTemp();
+			registerCache.addFragmentTempUsages(refractionColor, 1);
 			
-			refractionDir = regCache.getFreeFragmentVectorTemp();
-			regCache.addFragmentTempUsages(refractionDir, 1);
-			refractionColor = regCache.getFreeFragmentVectorTemp();
-			regCache.addFragmentTempUsages(refractionColor, 1);
+			temp = registerCache.getFreeFragmentVectorTemp();
 			
-			temp = regCache.getFreeFragmentVectorTemp();
-			
-			var viewDirReg:ShaderRegisterElement = this._sharedRegisters.viewDirFragment;
-			var normalReg:ShaderRegisterElement = this._sharedRegisters.normalFragment;
+			var viewDirReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
+			var normalReg:ShaderRegisterElement = sharedRegisters.normalFragment;
 			
 			code += "neg " + viewDirReg + ".xyz, " + viewDirReg + ".xyz\n";
 			
@@ -221,8 +221,7 @@ module away.materials
 				"mul " + refractionDir + ", " + data + ".x, " + viewDirReg + "\n" +
 				"sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
 				"nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n";
-			
-			code += this.pGetTexCubeSampleCode(vo, refractionColor, cubeMapReg, this._envMap, refractionDir) +
+			code += ShaderCompilerHelper.getTexCubeSampleCode(refractionColor, cubeMapReg, this._envMap, shaderObject.useSmoothTextures, shaderObject.useMipmapping, refractionDir) +
 				"sub " + refractionColor + ".w, " + refractionColor + ".w, fc0.x	\n" +
 				"kil " + refractionColor + ".w\n";
 			
@@ -243,8 +242,7 @@ module away.materials
 					"mul " + refractionDir + ", " + data + ".y, " + viewDirReg + "\n" +
 					"sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
 					"nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n";
-
-				code += this.pGetTexCubeSampleCode(vo, temp, cubeMapReg, this._envMap, refractionDir) +
+				code += ShaderCompilerHelper.getTexCubeSampleCode(temp, cubeMapReg, this._envMap, shaderObject.useSmoothTextures, shaderObject.useMipmapping, refractionDir) +
 					"mov " + refractionColor + ".y, " + temp + ".y\n";
 				
 				// BLUE
@@ -263,18 +261,17 @@ module away.materials
 					"mul " + refractionDir + ", " + data + ".z, " + viewDirReg + "\n" +
 					"sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
 					"nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n";
-				
-				code += this.pGetTexCubeSampleCode(vo, temp, cubeMapReg, this._envMap, refractionDir) +
+				code += ShaderCompilerHelper.getTexCubeSampleCode(temp, cubeMapReg, this._envMap, shaderObject.useSmoothTextures, shaderObject.useMipmapping, refractionDir) +
 					"mov " + refractionColor + ".z, " + temp + ".z\n";
 			}
-			
-			regCache.removeFragmentTempUsage(refractionDir);
+
+			registerCache.removeFragmentTempUsage(refractionDir);
 			
 			code += "sub " + refractionColor + ".xyz, " + refractionColor + ".xyz, " + targetReg + ".xyz\n" +
 				"mul " + refractionColor + ".xyz, " + refractionColor + ".xyz, " + data + ".w\n" +
 				"add " + targetReg + ".xyz, " + targetReg + ".xyz, " + refractionColor + ".xyz\n";
 
-			regCache.removeFragmentTempUsage(refractionColor);
+			registerCache.removeFragmentTempUsage(refractionColor);
 			
 			// restore
 			code += "neg " + viewDirReg + ".xyz, " + viewDirReg + ".xyz\n";

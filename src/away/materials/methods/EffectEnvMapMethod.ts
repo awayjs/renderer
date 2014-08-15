@@ -48,11 +48,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			vo.needsNormals = true;
-			vo.needsView = true;
-			vo.needsUV = this._mask != null;
+			methodVO.needsNormals = true;
+			methodVO.needsView = true;
+			methodVO.needsUV = this._mask != null;
 		}
 
 		/**
@@ -91,48 +91,49 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:away.base.Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			vo.fragmentData[vo.fragmentConstantsIndex] = this._alpha;
+			shaderObject.fragmentConstantData[methodVO.fragmentConstantsIndex] = this._alpha;
 
-			(<IContextStageGL> stage.context).activateCubeTexture(vo.texturesIndex, this._cubeTexture);
+			(<IContextStageGL> stage.context).activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
 			if (this._mask)
-				(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex + 1, this._mask);
+				(<IContextStageGL> stage.context).activateTexture(methodVO.texturesIndex + 1, this._mask);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			var dataRegister:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			var dataRegister:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
 			var code:string = "";
-			var cubeMapReg:ShaderRegisterElement = regCache.getFreeTextureReg();
+			var cubeMapReg:ShaderRegisterElement = registerCache.getFreeTextureReg();
 
-			vo.texturesIndex = cubeMapReg.index;
-			vo.fragmentConstantsIndex = dataRegister.index*4;
+			methodVO.texturesIndex = cubeMapReg.index;
+			methodVO.fragmentConstantsIndex = dataRegister.index*4;
 
-			regCache.addFragmentTempUsages(temp, 1);
-			var temp2:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			registerCache.addFragmentTempUsages(temp, 1);
+			var temp2:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
 
 			// r = I - 2(I.N)*N
-			code += "dp3 " + temp + ".w, " + this._sharedRegisters.viewDirFragment + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz\n" +
+			code += "dp3 " + temp + ".w, " + sharedRegisters.viewDirFragment + ".xyz, " + sharedRegisters.normalFragment + ".xyz\n" +
 					"add " + temp + ".w, " + temp + ".w, " + temp + ".w\n" +
-					"mul " + temp + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz, " + temp + ".w\n" +
-					"sub " + temp + ".xyz, " + temp + ".xyz, " + this._sharedRegisters.viewDirFragment + ".xyz\n" +
-			this.pGetTexCubeSampleCode(vo, temp, cubeMapReg, this._cubeTexture, temp) +
+					"mul " + temp + ".xyz, " + sharedRegisters.normalFragment + ".xyz, " + temp + ".w\n" +
+					"sub " + temp + ".xyz, " + temp + ".xyz, " + sharedRegisters.viewDirFragment + ".xyz\n" +
+				ShaderCompilerHelper.getTexCubeSampleCode(temp, cubeMapReg, this._cubeTexture, shaderObject.useSmoothTextures, shaderObject.useMipmapping, temp) +
 					"sub " + temp2 + ".w, " + temp + ".w, fc0.x\n" + // -.5
 					"kil " + temp2 + ".w\n" +	// used for real time reflection mapping - if alpha is not 1 (mock texture) kil output
 					"sub " + temp + ", " + temp + ", " + targetReg + "\n";
 
 			if (this._mask)
-				code += this.pGetTex2DSampleCode(vo, temp2, regCache.getFreeTextureReg(), this._mask, this._sharedRegisters.uvVarying) + "mul " + temp + ", " + temp2 + ", " + temp + "\n";
+				code += ShaderCompilerHelper.getTex2DSampleCode(temp2, sharedRegisters, registerCache.getFreeTextureReg(), this._mask, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping) +
+					"mul " + temp + ", " + temp2 + ", " + temp + "\n";
 
 			code += "mul " + temp + ", " + temp + ", " + dataRegister + ".x\n" +
 					"add " + targetReg + ", " + targetReg + ", " + temp + "\n";
 
-			regCache.removeFragmentTempUsage(temp);
+			registerCache.removeFragmentTempUsage(temp);
 
 			return code;
 		}

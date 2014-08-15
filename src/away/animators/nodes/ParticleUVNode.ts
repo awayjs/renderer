@@ -3,9 +3,9 @@
 module away.animators
 {
 	import Vector3D						= away.geom.Vector3D;
-	import MaterialPassBase				= away.materials.MaterialPassBase;
+	import ShaderObjectBase				= away.materials.ShaderObjectBase;
 	import ShaderRegisterElement		= away.materials.ShaderRegisterElement;
-	
+
 	/**
 	 * A particle animation node used to control the UV offset and scale of a particle over time.
 	 */
@@ -99,28 +99,25 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAGALUVCode(pass:MaterialPassBase, animationRegisterCache:AnimationRegisterCache):string
+		public getAGALUVCode(shaderObject:ShaderObjectBase, animationRegisterCache:AnimationRegisterCache):string
 		{
 			var code:string = "";
-			
-			if (animationRegisterCache.needUVAnimation) {
-				var uvConst:ShaderRegisterElement = animationRegisterCache.getFreeVertexConstant();
-				animationRegisterCache.setRegisterIndex(this, ParticleUVNode.UV_INDEX, uvConst.index);
-				
-				var axisIndex:number = this._axis == "x"? 0 :
-					this._axis == "y"? 1 :
-					2;
-				var target:ShaderRegisterElement = new ShaderRegisterElement(animationRegisterCache.uvTarget.regName, animationRegisterCache.uvTarget.index, axisIndex);
-				
-				var sin:ShaderRegisterElement = animationRegisterCache.getFreeVertexSingleTemp();
-				
-				if (this._scale != 1)
-					code += "mul " + target + "," + target + "," + uvConst + ".y\n";
-				
-				code += "mul " + sin + "," + animationRegisterCache.vertexTime + "," + uvConst + ".x\n";
-				code += "sin " + sin + "," + sin + "\n";
-				code += "add " + target + "," + target + "," + sin + "\n";
-			}
+
+			var uvConst:ShaderRegisterElement = animationRegisterCache.getFreeVertexConstant();
+			animationRegisterCache.setRegisterIndex(this, ParticleUVNode.UV_INDEX, uvConst.index);
+
+			var axisIndex:number = this._axis == "x"? 0 : (this._axis == "y"? 1 : 2);
+
+			var target:ShaderRegisterElement = new ShaderRegisterElement(animationRegisterCache.uvTarget.regName, animationRegisterCache.uvTarget.index, axisIndex);
+
+			var sin:ShaderRegisterElement = animationRegisterCache.getFreeVertexSingleTemp();
+
+			if (this._scale != 1)
+				code += "mul " + target + "," + target + "," + uvConst + ".y\n";
+
+			code += "mul " + sin + "," + animationRegisterCache.vertexTime + "," + uvConst + ".x\n";
+			code += "sin " + sin + "," + sin + "\n";
+			code += "add " + target + "," + target + "," + sin + "\n";
 			
 			return code;
 		}

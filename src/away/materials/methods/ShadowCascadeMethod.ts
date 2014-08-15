@@ -73,31 +73,23 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderLightingObject, methodVO:MethodVO)
 		{
-			var tempVO:MethodVO = new MethodVO();
-			this._baseMethod.iInitVO(tempVO);
-			vo.needsGlobalVertexPos = true;
-			vo.needsProjection = true;
+			var tempVO:MethodVO = new MethodVO(this._baseMethod);
+			this._baseMethod.iInitVO(shaderObject, tempVO);
+
+			methodVO.needsGlobalVertexPos = true;
+			methodVO.needsProjection = true;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		set iSharedRegisters(value:ShaderRegisterData)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			this.setISharedRegisters(value);
-			this._baseMethod.iSharedRegisters = value;
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public iInitConstants(vo:MethodVO)
-		{
-			var fragmentData:Array<number> = vo.fragmentData;
-			var vertexData:Array<number> = vo.vertexData;
-			var index:number = vo.fragmentConstantsIndex;
+			var fragmentData:Array<number> = shaderObject.fragmentConstantData;
+			var vertexData:Array<number> = shaderObject.vertexConstantData;
+			var index:number = methodVO.fragmentConstantsIndex;
 			fragmentData[index] = 1.0;
 			fragmentData[index + 1] = 1/255.0;
 			fragmentData[index + 2] = 1/65025.0;
@@ -106,7 +98,7 @@ module away.materials
 			fragmentData[index + 6] = .5;
 			fragmentData[index + 7] = -.5;
 			
-			index = vo.vertexConstantsIndex;
+			index = methodVO.vertexConstantsIndex;
 			vertexData[index] = .5;
 			vertexData[index + 1] = -.5;
 			vertexData[index + 2] = 0;
@@ -125,18 +117,18 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetVertexCode(vo:MethodVO, regCache:ShaderRegisterCache):string
+		public iGetVertexCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var code:string = "";
-			var dataReg:ShaderRegisterElement = regCache.getFreeVertexConstant();
+			var dataReg:ShaderRegisterElement = registerCache.getFreeVertexConstant();
 			
-			this.initProjectionsRegs(regCache);
-			vo.vertexConstantsIndex = dataReg.index*4;
+			this.initProjectionsRegs(registerCache);
+			methodVO.vertexConstantsIndex = dataReg.index*4;
 			
-			var temp:ShaderRegisterElement = regCache.getFreeVertexVectorTemp();
+			var temp:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
 			
 			for (var i:number = 0; i < this._cascadeShadowMapper.numCascades; ++i) {
-				code += "m44 " + temp + ", " + this._sharedRegisters.globalPositionVertex + ", " + this._cascadeProjections[i] + "\n" +
+				code += "m44 " + temp + ", " + sharedRegisters.globalPositionVertex + ", " + this._cascadeProjections[i] + "\n" +
 					"add " + this._depthMapCoordVaryings[i] + ", " + temp + ", " + dataReg + ".zzwz\n";
 			}
 			
@@ -146,40 +138,40 @@ module away.materials
 		/**
 		 * Creates the registers for the cascades' projection coordinates.
 		 */
-		private initProjectionsRegs(regCache:ShaderRegisterCache)
+		private initProjectionsRegs(registerCache:ShaderRegisterCache)
 		{
 			this._cascadeProjections = new Array<ShaderRegisterElement>(this._cascadeShadowMapper.numCascades);
 			this._depthMapCoordVaryings = new Array<ShaderRegisterElement>(this._cascadeShadowMapper.numCascades);
 			
 			for (var i:number = 0; i < this._cascadeShadowMapper.numCascades; ++i) {
-				this._depthMapCoordVaryings[i] = regCache.getFreeVarying();
-				this._cascadeProjections[i] = regCache.getFreeVertexConstant();
-				regCache.getFreeVertexConstant();
-				regCache.getFreeVertexConstant();
-				regCache.getFreeVertexConstant();
+				this._depthMapCoordVaryings[i] = registerCache.getFreeVarying();
+				this._cascadeProjections[i] = registerCache.getFreeVertexConstant();
+				registerCache.getFreeVertexConstant();
+				registerCache.getFreeVertexConstant();
+				registerCache.getFreeVertexConstant();
 			}
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var numCascades:number = this._cascadeShadowMapper.numCascades;
-			var depthMapRegister:ShaderRegisterElement = regCache.getFreeTextureReg();
-			var decReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var planeDistanceReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
+			var depthMapRegister:ShaderRegisterElement = registerCache.getFreeTextureReg();
+			var decReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			var dataReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			var planeDistanceReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 			var planeDistances:Array<string> = Array<string>( planeDistanceReg + ".x", planeDistanceReg + ".y", planeDistanceReg + ".z", planeDistanceReg + ".w" );
 			var code:string;
+
+			methodVO.fragmentConstantsIndex = decReg.index*4;
+			methodVO.texturesIndex = depthMapRegister.index;
 			
-			vo.fragmentConstantsIndex = decReg.index*4;
-			vo.texturesIndex = depthMapRegister.index;
-			
-			var inQuad:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			regCache.addFragmentTempUsages(inQuad, 1);
-			var uvCoord:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			regCache.addFragmentTempUsages(uvCoord, 1);
+			var inQuad:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+			registerCache.addFragmentTempUsages(inQuad, 1);
+			var uvCoord:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+			registerCache.addFragmentTempUsages(uvCoord, 1);
 			
 			// assume lowest partition is selected, will be overwritten later otherwise
 			code = "mov " + uvCoord + ", " + this._depthMapCoordVaryings[numCascades - 1] + "\n";
@@ -188,9 +180,9 @@ module away.materials
 				var uvProjection:ShaderRegisterElement = this._depthMapCoordVaryings[i];
 				
 				// calculate if in texturemap (result == 0 or 1, only 1 for a single partition)
-				code += "slt " + inQuad + ".z, " + this._sharedRegisters.projectionFragment + ".z, " + planeDistances[i] + "\n"; // z = x > minX, w = y > minY
+				code += "slt " + inQuad + ".z, " + sharedRegisters.projectionFragment + ".z, " + planeDistances[i] + "\n"; // z = x > minX, w = y > minY
 				
-				var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+				var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
 				
 				// linearly interpolate between old and new uv coords using predicate value == conditional toggle to new value if predicate == 1 (true)
 				code += "sub " + temp + ", " + uvProjection + ", " + uvCoord + "\n" +
@@ -198,16 +190,16 @@ module away.materials
 					"add " + uvCoord + ", " + uvCoord + ", " + temp + "\n";
 			}
 			
-			regCache.removeFragmentTempUsage(inQuad);
+			registerCache.removeFragmentTempUsage(inQuad);
 			
 			code += "div " + uvCoord + ", " + uvCoord + ", " + uvCoord + ".w\n" +
 				"mul " + uvCoord + ".xy, " + uvCoord + ".xy, " + dataReg + ".zw\n" +
 				"add " + uvCoord + ".xy, " + uvCoord + ".xy, " + dataReg + ".zz\n";
-			
-			code += this._baseMethod._iGetCascadeFragmentCode(vo, regCache, decReg, depthMapRegister, uvCoord, targetReg) +
+
+			code += this._baseMethod._iGetCascadeFragmentCode(shaderObject, methodVO, decReg, depthMapRegister, uvCoord, targetReg, registerCache, sharedRegisters) +
 				"add " + targetReg + ".w, " + targetReg + ".w, " + dataReg + ".y\n";
 			
-			regCache.removeFragmentTempUsage(uvCoord);
+			registerCache.removeFragmentTempUsage(uvCoord);
 			
 			return code;
 		}
@@ -215,14 +207,14 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:away.base.Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex, <Texture2DBase> this._pCastingLight.shadowMapper.depthMap)
+			(<IContextStageGL> stage.context).activateTexture(methodVO.texturesIndex, <Texture2DBase> this._pCastingLight.shadowMapper.depthMap);
 			
-			var vertexData:Array<number> = vo.vertexData;
-			var vertexIndex:number = vo.vertexConstantsIndex;
-			
-			vo.vertexData[vo.vertexConstantsIndex + 3] = -1/(this._cascadeShadowMapper.depth*this._pEpsilon);
+			var vertexData:Array<number> = shaderObject.vertexConstantData;
+			var vertexIndex:number = methodVO.vertexConstantsIndex;
+
+			shaderObject.vertexConstantData[methodVO.vertexConstantsIndex + 3] = -1/(this._cascadeShadowMapper.depth*this._pEpsilon);
 			
 			var numCascades:number = this._cascadeShadowMapper.numCascades;
 			vertexIndex += 4;
@@ -231,8 +223,8 @@ module away.materials
 				vertexIndex += 16;
 			}
 			
-			var fragmentData:Array<number> = vo.fragmentData;
-			var fragmentIndex:number = vo.fragmentConstantsIndex;
+			var fragmentData:Array<number> = shaderObject.fragmentConstantData;
+			var fragmentIndex:number = methodVO.fragmentConstantsIndex;
 			fragmentData[fragmentIndex + 5] = 1 - this._pAlpha;
 			
 			var nearPlaneDistances:Array<number> = this._cascadeShadowMapper._iNearPlaneDistances;
@@ -241,13 +233,13 @@ module away.materials
 			for (var i:number = 0; i < numCascades; ++i)
 				fragmentData[fragmentIndex + i] = nearPlaneDistances[i];
 			
-			this._baseMethod.iActivateForCascade(vo, stage);
+			this._baseMethod.iActivateForCascade(shaderObject, methodVO, stage);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stage:away.base.Stage, camera:away.entities.Camera)
+		public iSetRenderState(shaderObject:ShaderObjectBase, methodVO:MethodVO, renderable:RenderableBase, stage:Stage, camera:Camera)
 		{
 		}
 

@@ -61,21 +61,22 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderLightingObject, methodVO:MethodVO)
 		{
-			super.iInitVO(vo);
-			vo.needsProjection = true;
+			super.iInitVO(shaderObject, methodVO);
+
+			methodVO.needsProjection = true;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			super.iInitConstants(vo);
+			super.iInitConstants(shaderObject, methodVO);
 
-			var fragmentData:Array<number> = vo.fragmentData;
-			var index:number /*int*/ = vo.fragmentConstantsIndex;
+			var fragmentData:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*int*/ = methodVO.fragmentConstantsIndex;
 			fragmentData[index + 8] = 1/this._numSamples;
 		}
 
@@ -140,31 +141,32 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stage);
-			var data:Array<number> = vo.fragmentData;
-			var index:number /*uint*/ = vo.fragmentConstantsIndex;
+			super.iActivate(shaderObject, methodVO, stage);
+
+			var data:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*uint*/ = methodVO.fragmentConstantsIndex;
 			data[index + 9] = (stage.width - 1)/63;
 			data[index + 10] = (stage.height - 1)/63;
 			data[index + 11] = 2*this._range/this._depthMapSize;
-			(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
+			(<IContextStageGL> stage.context).activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public _pGetPlanarFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public _pGetPlanarFragmentCode(methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var depthMapRegister:ShaderRegisterElement = regCache.getFreeTextureReg();
 			var decReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 			var customDataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 
-			vo.fragmentConstantsIndex = decReg.index*4;
-			vo.texturesIndex = depthMapRegister.index;
+			methodVO.fragmentConstantsIndex = decReg.index*4;
+			methodVO.texturesIndex = depthMapRegister.index;
 
-			return this.getSampleCode(regCache, customDataReg, depthMapRegister, decReg, targetReg);
+			return this.getSampleCode(customDataReg, depthMapRegister, decReg, targetReg, regCache, sharedRegisters);
 		}
 
 		/**
@@ -174,7 +176,7 @@ module away.materials
 		 * @param decReg The register containing the depth map decoding data.
 		 * @param targetReg The target register to add the shadow coverage.
 		 */
-		private getSampleCode(regCache:ShaderRegisterCache, customDataReg:ShaderRegisterElement, depthMapRegister:ShaderRegisterElement, decReg:ShaderRegisterElement, targetReg:ShaderRegisterElement):string
+		private getSampleCode(customDataReg:ShaderRegisterElement, depthMapRegister:ShaderRegisterElement, decReg:ShaderRegisterElement, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var code:string = "";
 			var grainRegister:ShaderRegisterElement = regCache.getFreeTextureReg();
@@ -184,7 +186,7 @@ module away.materials
 
 			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
 
-			var projectionReg:ShaderRegisterElement = this._sharedRegisters.projectionFragment;
+			var projectionReg:ShaderRegisterElement = sharedRegisters.projectionFragment;
 
 			code += "div " + uvReg + ", " + projectionReg + ", " + projectionReg + ".w\n" + "mul " + uvReg + ".xy, " + uvReg + ".xy, " + customDataReg + ".yz\n";
 
@@ -261,29 +263,29 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stage:Stage)
+		public iActivateForCascade(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			var data:Array<number> = vo.fragmentData;
-			var index:number /*uint*/ = vo.secondaryFragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*uint*/ = methodVO.secondaryFragmentConstantsIndex;
 			data[index] = 1/this._numSamples;
 			data[index + 1] = (stage.width - 1)/63;
 			data[index + 2] = (stage.height - 1)/63;
 			data[index + 3] = 2*this._range/this._depthMapSize;
 
-			(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
+			(<IContextStageGL> stage.context).activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public _iGetCascadeFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, decodeRegister:ShaderRegisterElement, depthTexture:ShaderRegisterElement, depthProjection:ShaderRegisterElement, targetRegister:ShaderRegisterElement):string
+		public _iGetCascadeFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, decodeRegister:ShaderRegisterElement, depthTexture:ShaderRegisterElement, depthProjection:ShaderRegisterElement, targetRegister:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			this._pDepthMapCoordReg = depthProjection;
 
-			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			vo.secondaryFragmentConstantsIndex = dataReg.index*4;
+			var dataReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			methodVO.secondaryFragmentConstantsIndex = dataReg.index*4;
 
-			return this.getSampleCode(regCache, dataReg, depthTexture, decodeRegister, targetRegister);
+			return this.getSampleCode(dataReg, depthTexture, decodeRegister, targetRegister, registerCache, sharedRegisters);
 		}
 	}
 }

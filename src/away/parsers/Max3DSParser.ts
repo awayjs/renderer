@@ -4,7 +4,7 @@ module away.parsers
 {
 	import SubGeometry						= away.base.TriangleSubGeometry;
 	import DefaultMaterialManager			= away.materials.DefaultMaterialManager;
-	import TriangleMaterial					= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial			= away.materials.TriangleMethodMaterial;
 	import TriangleMaterialMode				= away.materials.TriangleMaterialMode;
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 	import Texture2DBase					= away.textures.Texture2DBase;
@@ -713,14 +713,14 @@ module away.parsers
 
 		private finalizeCurrentMaterial():void
 		{
-			var mat:TriangleMaterial;
+			var mat:TriangleMethodMaterial;
 
 			if (this._cur_mat.colorMap)
-				mat = new TriangleMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture());
+				mat = new TriangleMethodMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture());
 			else
-				mat = new TriangleMaterial(this._cur_mat.diffuseColor);
+				mat = new TriangleMethodMaterial(this._cur_mat.ambientColor);
 
-			mat.ambientColor = this._cur_mat.ambientColor;
+			mat.diffuseColor = this._cur_mat.diffuseColor;
 			mat.specularColor = this._cur_mat.specularColor;
 
 			if (this.materialMode >= 2)

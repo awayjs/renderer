@@ -2,6 +2,8 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+
 	/**
 	 * SpecularCelMethod provides a shading method to add specular cel (cartoon) shading.
 	 */
@@ -20,7 +22,7 @@ module away.materials
 		{
 			super(null, baseMethod);
 
-			this.baseMethod._iModulateMethod = (vo:MethodVO, target:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => this.clampSpecular(vo, target, regCache, sharedRegisters);
+			this.baseMethod._iModulateMethod = (shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => this.clampSpecular(shaderObject, methodVO, targetReg, registerCache, sharedRegisters);
 
 			this._specularCutOff = specularCutOff;
 		}
@@ -54,11 +56,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:away.base.Stage)
+		public iActivate(shaderObject:ShaderLightingObject, methodVO:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stage);
-			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
-			var data:Array<number> = vo.fragmentData;
+			super.iActivate(shaderObject, methodVO, stage);
+
+			var index:number /*int*/ = methodVO.secondaryFragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
 			data[index] = this._smoothness;
 			data[index + 1] = this._specularCutOff;
 		}
@@ -80,26 +83,24 @@ module away.materials
 		 * @param sharedRegisters The shared register data for this shader.
 		 * @return The AGAL fragment code for the method.
 		 */
-		private clampSpecular(methodVO:MethodVO, target:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+		private clampSpecular(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			methodVO = methodVO;
-			regCache = regCache;
-			sharedRegisters = sharedRegisters;
-			return "sub " + target + ".y, " + target + ".w, " + this._dataReg + ".y\n" + // x - cutoff
-				"div " + target + ".y, " + target + ".y, " + this._dataReg + ".x\n" + // (x - cutoff)/epsilon
-				"sat " + target + ".y, " + target + ".y\n" +
-				"sge " + target + ".w, " + target + ".w, " + this._dataReg + ".y\n" +
-				"mul " + target + ".w, " + target + ".w, " + target + ".y\n";
+			return "sub " + targetReg + ".y, " + targetReg + ".w, " + this._dataReg + ".y\n" + // x - cutoff
+				"div " + targetReg + ".y, " + targetReg + ".y, " + this._dataReg + ".x\n" + // (x - cutoff)/epsilon
+				"sat " + targetReg + ".y, " + targetReg + ".y\n" +
+				"sge " + targetReg + ".w, " + targetReg + ".w, " + this._dataReg + ".y\n" +
+				"mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".y\n";
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPreLightingCode(vo:MethodVO, regCache:ShaderRegisterCache):string
+		public iGetFragmentPreLightingCode(shaderObject:ShaderLightingObject, methodVO:MethodVO, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			this._dataReg = regCache.getFreeFragmentConstant();
-			vo.secondaryFragmentConstantsIndex = this._dataReg.index*4;
-			return super.iGetFragmentPreLightingCode(vo, regCache);
+			this._dataReg = registerCache.getFreeFragmentConstant();
+			methodVO.secondaryFragmentConstantsIndex = this._dataReg.index*4;
+
+			return super.iGetFragmentPreLightingCode(shaderObject, methodVO, registerCache, sharedRegisters);
 		}
 	}
 }

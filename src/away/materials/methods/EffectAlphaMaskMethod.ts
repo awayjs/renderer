@@ -33,10 +33,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			vo.needsSecondaryUV = this._useSecondaryUV;
-			vo.needsUV = !this._useSecondaryUV;
+			methodVO.needsSecondaryUV = this._useSecondaryUV;
+			methodVO.needsUV = !this._useSecondaryUV;
 		}
 
 		/**
@@ -73,22 +73,22 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:Stage)
+		public iActivate(shaderObject:ShaderLightingObject, methodVO:MethodVO, stage:Stage)
 		{
-			(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex, this._texture);
+			(<IContextStageGL> stage.context).activateTexture(methodVO.texturesIndex, this._texture);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			var textureReg:ShaderRegisterElement = regCache.getFreeTextureReg();
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			var uvReg:ShaderRegisterElement = this._useSecondaryUV? this._sharedRegisters.secondaryUVVarying:this._sharedRegisters.uvVarying;
-			vo.texturesIndex = textureReg.index;
+			var textureReg:ShaderRegisterElement = registerCache.getFreeTextureReg();
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+			var uvReg:ShaderRegisterElement = this._useSecondaryUV? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying;
+			methodVO.texturesIndex = textureReg.index;
 			
-			return this.pGetTex2DSampleCode(vo, temp, textureReg, this._texture, uvReg) +
+			return ShaderCompilerHelper.getTex2DSampleCode(temp, sharedRegisters, textureReg, this._texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping, uvReg) +
 				"mul " + targetReg + ", " + targetReg + ", " + temp + ".x\n";
 		}
 	}

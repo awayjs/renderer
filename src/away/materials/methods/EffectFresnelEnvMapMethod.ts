@@ -36,19 +36,19 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			vo.needsNormals = true;
-			vo.needsView = true;
-			vo.needsUV = this._mask != null;
+			methodVO.needsNormals = true;
+			methodVO.needsView = true;
+			methodVO.needsUV = this._mask != null;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			vo.fragmentData[vo.fragmentConstantsIndex + 3] = 1;
+			shaderObject.fragmentConstantData[methodVO.fragmentConstantsIndex + 3] = 1;
 		}
 
 		/**
@@ -123,44 +123,44 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			var data:Array<number> = vo.fragmentData;
-			var index:number /*int*/ = vo.fragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*int*/ = methodVO.fragmentConstantsIndex;
 			data[index] = this._alpha;
 			data[index + 1] = this._normalReflectance;
 			data[index + 2] = this._fresnelPower;
 
-			(<IContextStageGL> stage.context).activateCubeTexture(vo.texturesIndex, this._cubeTexture);
+			(<IContextStageGL> stage.context).activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
 
 			if (this._mask)
-				(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex + 1, this._mask);
+				(<IContextStageGL> stage.context).activateTexture(methodVO.texturesIndex + 1, this._mask);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			var dataRegister:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			var dataRegister:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
 			var code:string = "";
-			var cubeMapReg:ShaderRegisterElement = regCache.getFreeTextureReg();
-			var viewDirReg:ShaderRegisterElement = this._sharedRegisters.viewDirFragment;
-			var normalReg:ShaderRegisterElement = this._sharedRegisters.normalFragment;
+			var cubeMapReg:ShaderRegisterElement = registerCache.getFreeTextureReg();
+			var viewDirReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
+			var normalReg:ShaderRegisterElement = sharedRegisters.normalFragment;
+
+			methodVO.texturesIndex = cubeMapReg.index;
+			methodVO.fragmentConstantsIndex = dataRegister.index*4;
 			
-			vo.texturesIndex = cubeMapReg.index;
-			vo.fragmentConstantsIndex = dataRegister.index*4;
-			
-			regCache.addFragmentTempUsages(temp, 1);
-			var temp2:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			registerCache.addFragmentTempUsages(temp, 1);
+			var temp2:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
 			
 			// r = V - 2(V.N)*N
 			code += "dp3 " + temp + ".w, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
 					"add " + temp + ".w, " + temp + ".w, " + temp + ".w\n" +
 					"mul " + temp + ".xyz, " + normalReg + ".xyz, " + temp + ".w\n" +
 					"sub " + temp + ".xyz, " + temp + ".xyz, " + viewDirReg + ".xyz\n" +
-			this.pGetTexCubeSampleCode(vo, temp, cubeMapReg, this._cubeTexture, temp) +
+				ShaderCompilerHelper.getTexCubeSampleCode(temp, cubeMapReg, this._cubeTexture, shaderObject.useSmoothTextures, shaderObject.useMipmapping, temp) +
 					"sub " + temp2 + ".w, " + temp + ".w, fc0.x\n" +               	// -.5
 					"kil " + temp2 + ".w\n" +	// used for real time reflection mapping - if alpha is not 1 (mock texture) kil output
 					"sub " + temp + ", " + temp + ", " + targetReg + "\n";
@@ -177,16 +177,16 @@ module away.materials
 					"mul " + viewDirReg + ".w, " + dataRegister + ".x, " + viewDirReg + ".w\n";
 			
 			if (this._mask) {
-				var maskReg:ShaderRegisterElement = regCache.getFreeTextureReg();
-				code += this.pGetTex2DSampleCode(vo, temp2, maskReg, this._mask, this._sharedRegisters.uvVarying) +
-						"mul " + viewDirReg + ".w, " + temp2 + ".x, " + viewDirReg + ".w\n";
+				var maskReg:ShaderRegisterElement = registerCache.getFreeTextureReg();
+				code += ShaderCompilerHelper.getTex2DSampleCode(temp2, sharedRegisters, maskReg, this._mask, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping) +
+					"mul " + viewDirReg + ".w, " + temp2 + ".x, " + viewDirReg + ".w\n";
 			}
 			
 			// blend
 			code += "mul " + temp + ", " + temp + ", " + viewDirReg + ".w\n" +
 					"add " + targetReg + ", " + targetReg + ", " + temp + "\n";
 			
-			regCache.removeFragmentTempUsage(temp);
+			registerCache.removeFragmentTempUsage(temp);
 			
 			return code;
 		}

@@ -16,69 +16,28 @@
 ///<reference path="../../libs/awayjs-core.next.d.ts"/>
 ///<reference path="../../libs/stagegl-context.next.d.ts"/>
 
-///<reference path="errors/AnimationSetError.ts"/>
-
 ///<reference path="events/AnimationStateEvent.ts" />
-///<reference path="events/AnimatorEvent.ts" />
-///<reference path="events/ShadingMethodEvent.ts"/>
 
 ///<reference path="core/base/ParticleGeometry.ts"/>
-
-///<reference path="core/pool/RenderableBase.ts"/>
-///<reference path="core/pool/BillboardRenderable.ts"/>
-///<reference path="core/pool/LineSubMeshRenderable.ts"/>
-///<reference path="core/pool/SkyboxRenderable.ts"/>
-///<reference path="core/pool/TriangleSubMeshRenderable.ts"/>
 
 ///<reference path="core/pick/PickingColliderBase.ts" />
 ///<reference path="core/pick/JSPickingCollider.ts" />
 ///<reference path="core/pick/ShaderPicker.ts" />
 
-///<reference path="materials/utils/DefaultMaterialManager.ts"/>
+//<reference path="materials/passes/SingleObjectDepthPass.ts"/>
 
-///<reference path="core/render/RendererBase.ts"/>
-
-///<reference path="core/render/DepthRenderer.ts"/>
-///<reference path="core/render/DefaultRenderer.ts"/>
-///<reference path="core/render/Filter3DRenderer.ts"/>
-
-///<reference path="filters/tasks/Filter3DTaskBase.ts"/>
-///<reference path="filters/Filter3DBase.ts"/>
-
-///<reference path="materials/passes/MaterialPassBase.ts"/>
-///<reference path="materials/passes/CompiledPass.ts"/>
-///<reference path="materials/passes/SuperShaderPass.ts"/>
-///<reference path="materials/passes/DepthMapPass.ts"/>
-///<reference path="materials/passes/DistanceMapPass.ts"/>
-///<reference path="materials/passes/LightingPass.ts"/>
-///<reference path="materials/passes/ShadowCasterPass.ts"/>
-///<reference path="materials/passes/SingleObjectDepthPass.ts"/>
-///<reference path="materials/passes/SegmentPass.ts"/>
-///<reference path="materials/passes/SkyboxPass.ts"/>
-
-///<reference path="materials/methods/MethodVO.ts"/>
-///<reference path="materials/methods/MethodVOSet.ts"/>
-///<reference path="materials/methods/ShadingMethodBase.ts"/>
-///<reference path="materials/methods/LightingMethodBase.ts"/>
-///<reference path="materials/methods/ShadowMapMethodBase.ts"/>
-///<reference path="materials/methods/ShaderMethodSetup.ts"/>
-
-///<reference path="materials/methods/AmbientBasicMethod.ts"/>
 ///<reference path="materials/methods/AmbientEnvMapMethod.ts"/>
 
-///<reference path="materials/methods/DiffuseBasicMethod.ts"/>
 ///<reference path="materials/methods/DiffuseCompositeMethod.ts"/>
 ///<reference path="materials/methods/DiffuseCelMethod.ts"/>
 ///<reference path="materials/methods/DiffuseDepthMethod.ts"/>
 ///<reference path="materials/methods/DiffuseGradientMethod.ts"/>
 ///<reference path="materials/methods/DiffuseLightMapMethod.ts"/>
-///<reference path="materials/methods/DiffuseSubSurfaceMethod.ts"/>
+//<reference path="materials/methods/DiffuseSubSurfaceMethod.ts"/>
 ///<reference path="materials/methods/DiffuseWrapMethod.ts"/>
 
-///<reference path="materials/methods/EffectMethodBase.ts"/>
 ///<reference path="materials/methods/EffectAlphaMaskMethod.ts"/>
 ///<reference path="materials/methods/EffectColorMatrixMethod.ts"/>
-///<reference path="materials/methods/EffectColorTransformMethod.ts"/>
 ///<reference path="materials/methods/EffectEnvMapMethod.ts"/>
 ///<reference path="materials/methods/EffectFogMethod.ts"/>
 ///<reference path="materials/methods/EffectFresnelEnvMapMethod.ts"/>
@@ -86,45 +45,23 @@
 ///<reference path="materials/methods/EffectRefractionEnvMapMethod.ts"/>
 ///<reference path="materials/methods/EffectRimLightMethod.ts"/>
 
-///<reference path="materials/methods/NormalBasicMethod.ts"/>
 ///<reference path="materials/methods/NormalHeightMapMethod.ts"/>
 ///<reference path="materials/methods/NormalSimpleWaterMethod.ts"/>
 
-///<reference path="materials/methods/ShadowMethodBase.ts"/>
 ///<reference path="materials/methods/ShadowCascadeMethod.ts"/>
 ///<reference path="materials/methods/ShadowDitheredMethod.ts"/>
 ///<reference path="materials/methods/ShadowFilteredMethod.ts"/>
-///<reference path="materials/methods/ShadowHardMethod.ts"/>
 ///<reference path="materials/methods/ShadowNearMethod.ts"/>
 ///<reference path="materials/methods/ShadowSoftMethod.ts"/>
 
-///<reference path="materials/methods/SpecularBasicMethod.ts"/>
 ///<reference path="materials/methods/SpecularCompositeMethod.ts"/>
 ///<reference path="materials/methods/SpecularAnisotropicMethod.ts"/>
 ///<reference path="materials/methods/SpecularCelMethod.ts"/>
 ///<reference path="materials/methods/SpecularFresnelMethod.ts"/>
 ///<reference path="materials/methods/SpecularPhongMethod.ts"/>
 
-///<reference path="materials/compilation/ShaderRegisterCache.ts"/>
-///<reference path="materials/compilation/ShaderRegisterElement.ts"/>
-///<reference path="materials/compilation/ShaderRegisterData.ts"/>
-///<reference path="materials/compilation/MethodDependencyCounter.ts"/>
-///<reference path="materials/compilation/RegisterPool.ts"/>
-///<reference path="materials/compilation/ShaderRegisterCache.ts"/>
-///<reference path="materials/compilation/ShaderCompiler.ts"/>
-///<reference path="materials/compilation/SuperShaderCompiler.ts"/>
-
-///<reference path="materials/LightSources.ts"/>
-///<reference path="materials/ShadowMaterialBase.ts"/>
-///<reference path="materials/TriangleMaterial.ts"/>
-///<reference path="materials/TriangleMaterialMode.ts"/>
-///<reference path="materials/compilation/LightingShaderCompiler.ts"/>
-///<reference path="materials/LineMaterial.ts"/>
-///<reference path="materials/SkyboxMaterial.ts"/>
-
 ///<reference path="utils/PerspectiveMatrix3D.ts"/>
 
-///<reference path="animators/data/AnimationRegisterCache.ts"/>
 ///<reference path="animators/data/AnimationSubGeometry.ts"/>
 ///<reference path="animators/data/ColorSegmentPoint.ts"/>
 ///<reference path="animators/data/JointPose.ts"/>
@@ -165,7 +102,6 @@
 ///<reference path="animators/nodes/SkeletonNaryLERPNode.ts"/>
 ///<reference path="animators/nodes/VertexClipNode.ts"/>
 
-///<reference path="animators/states/IAnimationState.ts"/>
 ///<reference path="animators/states/ISkeletonAnimationState.ts"/>
 ///<reference path="animators/states/IVertexAnimationState.ts"/>
 ///<reference path="animators/states/AnimationStateBase.ts"/>
@@ -201,8 +137,6 @@
 ///<reference path="animators/transitions/CrossfadeTransitionNode.ts"/>
 ///<reference path="animators/transitions/CrossfadeTransitionState.ts"/>
 
-///<reference path="animators/AnimationSetBase.ts"/>
-///<reference path="animators/AnimatorBase.ts"/>
 ///<reference path="animators/ParticleAnimationSet.ts"/>
 ///<reference path="animators/ParticleAnimator.ts"/>
 ///<reference path="animators/SkeletonAnimator.ts"/>

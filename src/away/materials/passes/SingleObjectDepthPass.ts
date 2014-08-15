@@ -5,6 +5,7 @@ module away.materials
 	import LightBase								= away.base.LightBase;
 	import TriangleSubGeometry						= away.base.TriangleSubGeometry;
 	import Stage									= away.base.Stage;
+	import Camera									= away.entities.Camera;
 	import Matrix3D									= away.geom.Matrix3D;
 	import RenderableBase							= away.pool.RenderableBase;
 	import ContextGLProgramType						= away.stagegl.ContextGLProgramType;
@@ -157,7 +158,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:RenderableBase, stage:Stage, camera:away.entities.Camera, viewProjection:Matrix3D)
+		public iRender(renderable:RenderableBase, stage:Stage, camera:Camera, viewProjection:Matrix3D)
 		{
 			var matrix:Matrix3D;
 			var context:IContextStageGL = <IContextStageGL> stage.context;
@@ -192,13 +193,13 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stage:Stage, camera:away.entities.Camera)
+		public iActivate(material:MaterialBase, stage:Stage, camera:Camera)
 		{
 			if (this._projectionTexturesInvalid)
 				this.updateProjectionTextures();
 
 			// never scale
-			super.iActivate(stage, camera);
+			super.iActivate(material, stage, camera);
 
 			(<IContextStageGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
 		}

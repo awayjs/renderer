@@ -34,21 +34,22 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			var index:number = vo.fragmentConstantsIndex;
-			vo.fragmentData[index] = .5;
-			vo.fragmentData[index + 1] = 0;
-			vo.fragmentData[index + 2] = 0;
-			vo.fragmentData[index + 3] = 1;
+			var index:number = methodVO.fragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
+			data[index] = .5;
+			data[index + 1] = 0;
+			data[index + 2] = 0;
+			data[index + 3] = 1;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			super.iInitVO(vo);
+			super.iInitVO(shaderObject, methodVO);
 
 			this._useSecondNormalMap = this.normalMap != this.secondaryNormalMap;
 		}
@@ -139,12 +140,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stage);
+			super.iActivate(shaderObject, methodVO, stage);
 
-			var data:Array<number> = vo.fragmentData;
-			var index:number = vo.fragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
+			var index:number = methodVO.fragmentConstantsIndex;
 
 			data[index + 4] = this._water1OffsetX;
 			data[index + 5] = this._water1OffsetY;
@@ -153,30 +154,30 @@ module away.materials
 
 			//if (this._useSecondNormalMap >= 0)
 			if (this._useSecondNormalMap)
-				(<IContextStageGL> stage.context).activateTexture(vo.texturesIndex + 1, this._texture2);
+				(<IContextStageGL> stage.context).activateTexture(methodVO.texturesIndex + 1, this._texture2);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var dataReg2:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			this._pNormalTextureRegister = regCache.getFreeTextureReg();
-			this._normalTextureRegister2 = this._useSecondNormalMap? regCache.getFreeTextureReg():this._pNormalTextureRegister;
-			vo.texturesIndex = this._pNormalTextureRegister.index;
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+			var dataReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			var dataReg2:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			this._pNormalTextureRegister = registerCache.getFreeTextureReg();
+			this._normalTextureRegister2 = this._useSecondNormalMap? registerCache.getFreeTextureReg():this._pNormalTextureRegister;
+			methodVO.texturesIndex = this._pNormalTextureRegister.index;
 
-			vo.fragmentConstantsIndex = dataReg.index*4;
+			methodVO.fragmentConstantsIndex = dataReg.index*4;
 
-			return "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".xyxy\n" +
-				this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this.normalMap, temp) +
-				"add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".zwzw\n" +
-				this.pGetTex2DSampleCode(vo, temp, this._normalTextureRegister2, this._texture2, temp) +
+			return "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg2 + ".xyxy\n" +
+				ShaderCompilerHelper.getTex2DSampleCode(targetReg, sharedRegisters, this._pNormalTextureRegister, this.normalMap, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping, temp) +
+				"add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg2 + ".zwzw\n" +
+				ShaderCompilerHelper.getTex2DSampleCode(temp, sharedRegisters, this._normalTextureRegister2, this._texture2, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping, temp) +
 				"add " + targetReg + ", " + targetReg + ", " + temp + "		\n" +
 				"mul " + targetReg + ", " + targetReg + ", " + dataReg + ".x	\n" +
-				"sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx	\n" +
+				"sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + sharedRegisters.commons + ".xxx	\n" +
 				"nrm " + targetReg + ".xyz, " + targetReg + ".xyz							\n";
 		}
 	}

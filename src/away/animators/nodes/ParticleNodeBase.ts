@@ -3,7 +3,7 @@
 module away.animators
 {
 	import Vector3D						= away.geom.Vector3D;
-	import MaterialPassBase				= away.materials.MaterialPassBase;
+	import ShaderObjectBase				= away.materials.ShaderObjectBase;
 	import ShaderRegisterElement		= away.materials.ShaderRegisterElement;
 	
 	/**
@@ -100,7 +100,7 @@ module away.animators
 		/**
 		 * Returns the AGAL code of the particle animation node for use in the vertex shader.
 		 */
-		public getAGALVertexCode(pass:MaterialPassBase, animationRegisterCache:AnimationRegisterCache):string
+		public getAGALVertexCode(shaderObject:ShaderObjectBase, animationRegisterCache:AnimationRegisterCache):string
 		{
 			return "";
 		}
@@ -108,7 +108,7 @@ module away.animators
 		/**
 		 * Returns the AGAL code of the particle animation node for use in the fragment shader.
 		 */
-		public getAGALFragmentCode(pass:MaterialPassBase, animationRegisterCache:AnimationRegisterCache):string
+		public getAGALFragmentCode(shaderObject:ShaderObjectBase, animationRegisterCache:AnimationRegisterCache):string
 		{
 			return "";
 		}
@@ -116,7 +116,7 @@ module away.animators
 		/**
 		 * Returns the AGAL code of the particle animation node for use in the fragment shader when UV coordinates are required.
 		 */
-		public getAGALUVCode(pass:MaterialPassBase, animationRegisterCache:AnimationRegisterCache):string
+		public getAGALUVCode(shaderObject:ShaderObjectBase, animationRegisterCache:AnimationRegisterCache):string
 		{
 			return "";
 		}

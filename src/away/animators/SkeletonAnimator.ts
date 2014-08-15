@@ -13,7 +13,7 @@ module away.animators
 	import Vector3D                         = away.geom.Vector3D;
 	import RenderableBase                   = away.pool.RenderableBase;
 	import TriangleSubMeshRenderable		= away.pool.TriangleSubMeshRenderable;
-	import MaterialPassBase                	= away.materials.MaterialPassBase;
+	import ShaderObjectBase					= away.materials.ShaderObjectBase;
 	import IContextStageGL					= away.stagegl.IContextStageGL;
 
 	/**
@@ -193,7 +193,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stage:Stage, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera)
+		public setRenderState(shaderObject:ShaderObjectBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 		{
 			// do on request of globalProperties
 			if (this._globalPropertiesDirty)
@@ -224,9 +224,9 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public testGPUCompatibility(pass:MaterialPassBase)
+		public testGPUCompatibility(shaderObject:ShaderObjectBase)
 		{
-			if (!this._useCondensedIndices && (this._forceCPU || this._jointsPerVertex > 4 || pass.numUsedVertexConstants + this._numJoints*3 > 128))
+			if (!this._useCondensedIndices && (this._forceCPU || this._jointsPerVertex > 4 || shaderObject.numUsedVertexConstants + this._numJoints*3 > 128))
 				this._pAnimationSet.cancelGPUCompatibility();
 		}
 

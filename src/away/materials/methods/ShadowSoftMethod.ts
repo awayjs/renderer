@@ -64,23 +64,24 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			super.iInitConstants(vo);
+			super.iInitConstants(shaderObject, methodVO);
 
-			vo.fragmentData[vo.fragmentConstantsIndex + 8] = 1/this._numSamples;
-			vo.fragmentData[vo.fragmentConstantsIndex + 9] = 0;
+			shaderObject.fragmentConstantData[methodVO.fragmentConstantsIndex + 8] = 1/this._numSamples;
+			shaderObject.fragmentConstantData[methodVO.fragmentConstantsIndex + 9] = 0;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stage);
+			super.iActivate(shaderObject, methodVO, stage);
+
 			var texRange:number = .5*this._range/this._pCastingLight.shadowMapper.depthMapSize;
-			var data:Array<number> = vo.fragmentData;
-			var index:number /*uint*/ = vo.fragmentConstantsIndex + 10;
+			var data:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*uint*/ = methodVO.fragmentConstantsIndex + 10;
 			var len:number /*uint*/ = this._numSamples << 1;
 
 			for (var i:number /*int*/ = 0; i < len; ++i)
@@ -90,7 +91,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public _pGetPlanarFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public _pGetPlanarFragmentCode(methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			// todo: move some things to super
 			var depthMapRegister:ShaderRegisterElement = regCache.getFreeTextureReg();
@@ -98,8 +99,8 @@ module away.materials
 			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 			var customDataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 
-			vo.fragmentConstantsIndex = decReg.index*4;
-			vo.texturesIndex = depthMapRegister.index;
+			methodVO.fragmentConstantsIndex = decReg.index*4;
+			methodVO.texturesIndex = depthMapRegister.index;
 
 			return this.getSampleCode(regCache, depthMapRegister, decReg, targetReg, customDataReg);
 		}
@@ -116,19 +117,22 @@ module away.materials
 		private addSample(uv:ShaderRegisterElement, texture:ShaderRegisterElement, decode:ShaderRegisterElement, target:ShaderRegisterElement, regCache:ShaderRegisterCache):string
 		{
 			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			return "tex " + temp + ", " + uv + ", " + texture + " <2d,nearest,clamp>\n" + "dp4 " + temp + ".z, " + temp + ", " + decode + "\n" + "slt " + uv + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n" + // 0 if in shadow
+			return "tex " + temp + ", " + uv + ", " + texture + " <2d,nearest,clamp>\n" +
+				"dp4 " + temp + ".z, " + temp + ", " + decode + "\n" +
+				"slt " + uv + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n" + // 0 if in shadow
 				"add " + target + ".w, " + target + ".w, " + uv + ".w\n";
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stage:Stage)
+		public iActivateForCascade(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stage);
+			super.iActivate(shaderObject, methodVO, stage);
+
 			var texRange:number = this._range/this._pCastingLight.shadowMapper.depthMapSize;
-			var data:Array<number> = vo.fragmentData;
-			var index:number /*uint*/ = vo.secondaryFragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*uint*/ = methodVO.secondaryFragmentConstantsIndex;
 			var len:number /*uint*/ = this._numSamples << 1;
 			data[index] = 1/this._numSamples;
 			data[index + 1] = 0;
@@ -146,14 +150,14 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public _iGetCascadeFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, decodeRegister:ShaderRegisterElement, depthTexture:ShaderRegisterElement, depthProjection:ShaderRegisterElement, targetRegister:ShaderRegisterElement):string
+		public _iGetCascadeFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, decodeRegister:ShaderRegisterElement, depthTexture:ShaderRegisterElement, depthProjection:ShaderRegisterElement, targetRegister:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			this._pDepthMapCoordReg = depthProjection;
 
-			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			vo.secondaryFragmentConstantsIndex = dataReg.index*4;
+			var dataReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			methodVO.secondaryFragmentConstantsIndex = dataReg.index*4;
 
-			return this.getSampleCode(regCache, depthTexture, decodeRegister, targetRegister, dataReg);
+			return this.getSampleCode(registerCache, depthTexture, decodeRegister, targetRegister, dataReg);
 		}
 
 		/**
@@ -183,16 +187,20 @@ module away.materials
 
 			for (i = 0; i < this._numSamples; ++i) {
 				if (i == 0) {
-					code = "add " + uvReg + ", " + this._pDepthMapCoordReg + ", " + dataReg + ".zwyy\n";
-					code += "tex " + temp + ", " + uvReg + ", " + depthTexture + " <2d,nearest,clamp>\n" + "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" + "slt " + targetRegister + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n"; // 0 if in shadow;
+					code = "add " + uvReg + ", " + this._pDepthMapCoordReg + ", " + dataReg + ".zwyy\n" +
+						"tex " + temp + ", " + uvReg + ", " + depthTexture + " <2d,nearest,clamp>\n" +
+						"dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
+						"slt " + targetRegister + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n"; // 0 if in shadow;
 				} else {
-					code += "add " + uvReg + ".xy, " + this._pDepthMapCoordReg + ".xy, " + offsets[i] + "\n";
-					code += this.addSample(uvReg, depthTexture, decodeRegister, targetRegister, regCache);
+					code += "add " + uvReg + ".xy, " + this._pDepthMapCoordReg + ".xy, " + offsets[i] + "\n" +
+						this.addSample(uvReg, depthTexture, decodeRegister, targetRegister, regCache);
 				}
 			}
 
 			regCache.removeFragmentTempUsage(uvReg);
+
 			code += "mul " + targetRegister + ".w, " + targetRegister + ".w, " + dataReg + ".x\n"; // average
+
 			return code;
 		}
 	}

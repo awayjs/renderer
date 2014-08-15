@@ -3,6 +3,7 @@
 module away.materials
 {
 	import IContextStageGL							= away.stagegl.IContextStageGL;
+	import CubeTextureBase							= away.textures.CubeTextureBase;
 
 	/**
 	 * AmbientEnvMapMethod provides a diffuse shading method that uses a diffuse irradiance environment map to
@@ -10,14 +11,14 @@ module away.materials
 	 */
 	export class AmbientEnvMapMethod extends AmbientBasicMethod
 	{
-		private _cubeTexture:away.textures.CubeTextureBase;
+		private _cubeTexture:CubeTextureBase;
 		
 		/**
 		 * Creates a new <code>AmbientEnvMapMethod</code> object.
 		 *
 		 * @param envMap The cube environment map to use for the ambient lighting.
 		 */
-		constructor(envMap:away.textures.CubeTextureBase)
+		constructor(envMap:CubeTextureBase)
 		{
 			super();
 			this._cubeTexture = envMap;
@@ -26,21 +27,22 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			super.iInitVO(vo);
-			vo.needsNormals = true;
+			super.iInitVO(shaderObject, methodVO);
+
+			methodVO.needsNormals = true;
 		}
 		
 		/**
 		 * The cube environment map to use for the diffuse lighting.
 		 */
-		public get envMap():away.textures.CubeTextureBase
+		public get envMap():CubeTextureBase
 		{
 			return this._cubeTexture;
 		}
 		
-		public set envMap(value:away.textures.CubeTextureBase)
+		public set envMap(value:CubeTextureBase)
 		{
 			this._cubeTexture = value;
 		}
@@ -48,28 +50,29 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:away.base.Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:away.base.Stage)
 		{
-			super.iActivate(vo, stage);
+			super.iActivate(shaderObject, methodVO, stage);
 
-			(<IContextStageGL> stage.context).activateCubeTexture(vo.texturesIndex, this._cubeTexture);
+			(<IContextStageGL> stage.context).activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var code:string = "";
+			var ambientInputRegister:ShaderRegisterElement;
 			var cubeMapReg:ShaderRegisterElement = regCache.getFreeTextureReg();
-			vo.texturesIndex = cubeMapReg.index;
+			methodVO.texturesIndex = cubeMapReg.index;
 			
-			code += this.pGetTexCubeSampleCode(vo, targetReg, cubeMapReg, this._cubeTexture, this._sharedRegisters.normalFragment);
+			code += ShaderCompilerHelper.getTexCubeSampleCode(targetReg, cubeMapReg, this._cubeTexture, shaderObject.useSmoothTextures, shaderObject.useMipmapping, sharedRegisters.normalFragment);
+
+			ambientInputRegister = regCache.getFreeFragmentConstant();
+			methodVO.fragmentConstantsIndex = ambientInputRegister.index;
 			
-			this._pAmbientInputRegister = regCache.getFreeFragmentConstant();
-			vo.fragmentConstantsIndex = this._pAmbientInputRegister.index;
-			
-			code += "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._pAmbientInputRegister + ".xyz\n";
+			code += "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + ambientInputRegister + ".xyz\n";
 			
 			return code;
 		}

@@ -2,6 +2,8 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+
 	/**
 	 * EffectRimLightMethod provides a method to add rim lighting to a material. This adds a glow-like effect to edges of objects.
 	 */
@@ -41,18 +43,18 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			vo.fragmentData[vo.fragmentConstantsIndex + 3] = 1;
+			shaderObject.fragmentConstantData[methodVO.fragmentConstantsIndex + 3] = 1;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			vo.needsNormals = true;
-			vo.needsView = true;
+			methodVO.needsNormals = true;
+			methodVO.needsView = true;
 		}
 
 
@@ -120,10 +122,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:away.base.Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			var index:number /*int*/ = vo.fragmentConstantsIndex;
-			var data:Array<number> = vo.fragmentData;
+			var index:number /*int*/ = methodVO.fragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
 			data[index] = this._colorR;
 			data[index + 1] = this._colorG;
 			data[index + 2] = this._colorB;
@@ -134,16 +136,16 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			var dataRegister:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var dataRegister2:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			var dataRegister:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			var dataRegister2:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
 			var code:string = "";
+
+			methodVO.fragmentConstantsIndex = dataRegister.index*4;
 			
-			vo.fragmentConstantsIndex = dataRegister.index*4;
-			
-			code += "dp3 " + temp + ".x, " + this._sharedRegisters.viewDirFragment + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz\n" +
+			code += "dp3 " + temp + ".x, " + sharedRegisters.viewDirFragment + ".xyz, " + sharedRegisters.normalFragment + ".xyz\n" +
 				"sat " + temp + ".x, " + temp + ".x\n" +
 				"sub " + temp + ".x, " + dataRegister + ".w, " + temp + ".x\n" +
 				"pow " + temp + ".x, " + temp + ".x, " + dataRegister2 + ".y\n" +

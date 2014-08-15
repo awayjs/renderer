@@ -32,18 +32,18 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderLightingObject, methodVO:MethodVO)
 		{
-			vo.needsProjection = true;
+			methodVO.needsProjection = true;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			var data:Array<number> = vo.fragmentData;
-			var index:number /*int*/ = vo.fragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*int*/ = methodVO.fragmentConstantsIndex;
 			data[index + 3] = 1;
 			data[index + 6] = 0;
 			data[index + 7] = 0;
@@ -94,10 +94,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			var data:Array<number> = vo.fragmentData;
-			var index:number /*int*/ = vo.fragmentConstantsIndex;
+			var data:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*int*/ = methodVO.fragmentConstantsIndex;
 			data[index] = this._fogR;
 			data[index + 1] = this._fogG;
 			data[index + 2] = this._fogB;
@@ -108,24 +108,24 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			var fogColor:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var fogData:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			regCache.addFragmentTempUsages(temp, 1);
-			var temp2:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			var fogColor:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			var fogData:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+			registerCache.addFragmentTempUsages(temp, 1);
+			var temp2:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
 			var code:string = "";
-			vo.fragmentConstantsIndex = fogColor.index*4;
+			methodVO.fragmentConstantsIndex = fogColor.index*4;
 
-			code += "sub " + temp2 + ".w, " + this._sharedRegisters.projectionFragment + ".z, " + fogData + ".x\n" +
+			code += "sub " + temp2 + ".w, " + sharedRegisters.projectionFragment + ".z, " + fogData + ".x\n" +
 					"mul " + temp2 + ".w, " + temp2 + ".w, " + fogData + ".y\n" +
 					"sat " + temp2 + ".w, " + temp2 + ".w\n" +
 					"sub " + temp + ", " + fogColor + ", " + targetReg + "\n" + // (fogColor- col)
 					"mul " + temp + ", " + temp + ", " + temp2 + ".w\n" + // (fogColor- col)*fogRatio
 					"add " + targetReg + ", " + targetReg + ", " + temp + "\n"; // fogRatio*(fogColor- col) + col
 
-			regCache.removeFragmentTempUsage(temp);
+			registerCache.removeFragmentTempUsage(temp);
 
 			return code;
 		}

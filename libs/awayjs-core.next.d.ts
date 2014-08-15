@@ -8830,6 +8830,52 @@ declare module away.pool {
 */
 declare module away.pool {
     /**
+    * IRenderOrderData is an interface for classes that are used in the rendering pipeline to render the
+    * contents of a texture
+    *
+    * @class away.pool.IRenderOrderData
+    */
+    interface IRenderOrderData {
+        /**
+        *
+        */
+        dispose(): any;
+        /**
+        *
+        */
+        reset(): any;
+        /**
+        *
+        */
+        invalidate(): any;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    * ITextureData is an interface for classes that are used in the rendering pipeline to render the
+    * contents of a texture
+    *
+    * @class away.pool.ITextureData
+    */
+    interface ITextureData {
+        /**
+        *
+        */
+        dispose(): any;
+        /**
+        *
+        */
+        invalidate(): any;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
     * @class away.pool.RenderablePool
     */
     class RenderablePool {
@@ -8868,27 +8914,6 @@ declare module away.pool {
         * @param renderableClass
         */
         static disposePool(renderableClass: any): void;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * ITextureData is an interface for classes that are used in the rendering pipeline to render the
-    * contents of a texture
-    *
-    * @class away.pool.ITextureData
-    */
-    interface ITextureData {
-        /**
-        *
-        */
-        dispose(): any;
-        /**
-        *
-        */
-        invalidate(): any;
     }
 }
 /**
@@ -14645,37 +14670,9 @@ declare module away.materials {
         */
         _iPasses: IMaterialPass[];
         /**
-        *
-        */
-        _iProgramids: number[];
-        /**
-        * The material to which this pass belongs.
-        */
-        material: MaterialBase;
-        /**
         * Indicate whether this pass should write to the depth buffer or not. Ignored when blending is enabled.
         */
         writeDepth: boolean;
-        /**
-        * Defines whether any used textures should use mipmapping.
-        */
-        mipmap: boolean;
-        /**
-        * Defines whether smoothing should be applied to any used textures.
-        */
-        smooth: boolean;
-        /**
-        * Defines whether textures should be tiled.
-        */
-        repeat: boolean;
-        /**
-        * Defines whether or not the material should perform backface culling.
-        */
-        bothSides: boolean;
-        /**
-        * Returns the animation data set adding animations to the material.
-        */
-        animationSet: animators.IAnimationSet;
         /**
         * Specifies whether this pass renders to texture
         */
@@ -14685,12 +14682,6 @@ declare module away.materials {
         * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
         */
         dispose(): any;
-        /**
-        * Sets up the animation state. This needs to be called before render()
-        *
-        * @private
-        */
-        iUpdateAnimationState(renderable: pool.IRenderable, stage: base.Stage, camera: entities.Camera): any;
         /**
         * Renders an object to the current render target.
         *
@@ -14704,14 +14695,14 @@ declare module away.materials {
         * @param camera The camera from which the scene is viewed.
         * @private
         */
-        iActivate(stage: base.Stage, camera: entities.Camera): any;
+        iActivate(material: MaterialBase, stage: base.Stage, camera: entities.Camera): any;
         /**
         * Clears the render state for the pass. This needs to be called before activating another pass.
         * @param stage The Stage used for rendering
         *
         * @private
         */
-        iDeactivate(stage: base.Stage): any;
+        iDeactivate(material: MaterialBase, stage: base.Stage): any;
         /**
         * Marks the shader program as invalid, so it will be recompiled before the next render.
         *
@@ -14725,12 +14716,38 @@ declare module away.materials {
         * @see away.materials.StaticLightPicker
         */
         lightPicker: LightPickerBase;
+        _iAddOwner(material: MaterialBase): any;
+        _iRemoveOwner(material: MaterialBase): any;
+    }
+}
+declare module away.materials {
+    /**
+    * Enumeration class for defining which lighting types affect the specific material
+    * lighting component (diffuse and specular). This can be useful if, for example, you
+    * want to use light probes for diffuse global lighting, but want specular reflections from
+    * traditional light sources without those affecting the diffuse light.
+    *
+    * @see away.materials.ColorMaterial.diffuseLightSources
+    * @see away.materials.ColorMaterial.specularLightSources
+    * @see away.materials.TextureMaterial.diffuseLightSources
+    * @see away.materials.TextureMaterial.specularLightSources
+    */
+    class LightSources {
         /**
-        * Indicates whether visible textures (or other pixels) used by this material have
-        * already been premultiplied. Toggle this if you are seeing black halos around your
-        * blended alpha edges.
+        * Defines normal lights are to be used as the source for the lighting
+        * component.
         */
-        alphaPremultiplied: boolean;
+        static LIGHTS: number;
+        /**
+        * Defines that global lighting probes are to be used as the source for the
+        * lighting component.
+        */
+        static PROBES: number;
+        /**
+        * Defines that both normal and global lighting probes  are to be used as the
+        * source for the lighting component. This is equivalent to LightSources.LIGHTS | LightSources.PROBES.
+        */
+        static ALL: number;
     }
 }
 declare module away.materials {
@@ -14746,6 +14763,12 @@ declare module away.materials {
     * shaders, or entire new material frameworks.
     */
     class MaterialBase extends library.NamedAssetBase implements library.IAsset {
+        private _renderOrderData;
+        public _pAlphaThreshold: number;
+        public _pAnimateUVs: boolean;
+        private _enableLightFallOff;
+        private _specularLightSources;
+        private _diffuseLightSources;
         /**
         * An object to contain any extra data.
         */
@@ -14769,7 +14792,7 @@ declare module away.materials {
         *
         * @private
         */
-        public _iRenderOrderId: number;
+        private _renderOrderId;
         public _iBaseScreenPassIndex: number;
         private _bothSides;
         private _animationSet;
@@ -14804,6 +14827,10 @@ declare module away.materials {
         */
         public height : number;
         /**
+        *
+        */
+        public animationSet : animators.IAnimationSet;
+        /**
         * The light picker used by the material to provide lights to the material if it supports lighting.
         *
         * @see LightPickerBase
@@ -14823,6 +14850,29 @@ declare module away.materials {
         * the texture's borders when the uv coordinates are outside the [0, 1] interval.
         */
         public repeat : boolean;
+        /**
+        * Specifies whether or not the UV coordinates should be animated using a transformation matrix.
+        */
+        public animateUVs : boolean;
+        /**
+        * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
+        * compatibility for constrained mode.
+        */
+        public enableLightFallOff : boolean;
+        /**
+        * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
+        * and/or light probes for diffuse reflections.
+        *
+        * @see away3d.materials.LightSources
+        */
+        public diffuseLightSources : number;
+        /**
+        * Define which light source types to use for specular reflections. This allows choosing between regular lights
+        * and/or light probes for specular reflections.
+        *
+        * @see away3d.materials.LightSources
+        */
+        public specularLightSources : number;
         /**
         * Cleans up resources owned by the material, including passes. Textures are not owned by the material since they
         * could be used by other materials and will not be disposed.
@@ -14850,6 +14900,12 @@ declare module away.materials {
         */
         public alphaPremultiplied : boolean;
         /**
+        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
+        * invisible or entirely opaque, often used with textures for foliage, etc.
+        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
+        */
+        public alphaThreshold : number;
+        /**
         * Indicates whether or not the material requires alpha blending during rendering.
         */
         public requiresBlending : boolean;
@@ -14862,7 +14918,13 @@ declare module away.materials {
         *
         * @private
         */
-        public _iNumPasses : number;
+        public getNumPasses(): number;
+        /**
+        *
+        * @param index
+        * @returns {IMaterialPass}
+        */
+        public getPass(index: number): IMaterialPass;
         /**
         * Indicates whether or not the pass with the given index renders to texture or not.
         * @param index The index of the pass.
@@ -14924,6 +14986,12 @@ declare module away.materials {
         */
         public iOwners : base.IMaterialOwner[];
         /**
+        * A list of the passes used in this material
+        *
+        * @private
+        */
+        public iPasses : IMaterialPass[];
+        /**
         * Performs any processing that needs to occur before any of its passes are used.
         *
         * @private
@@ -14943,6 +15011,7 @@ declare module away.materials {
         * @private
         */
         public iInvalidatePasses(triggerPass: IMaterialPass): void;
+        public iInvalidateAnimation(): void;
         /**
         * Removes a pass from the material.
         * @param pass The pass to be removed.
@@ -14974,6 +15043,8 @@ declare module away.materials {
         * Called when the light picker's configuration changed.
         */
         private onLightsChange(event);
+        public _iAddRenderOrderData(renderOrderData: pool.IRenderOrderData): pool.IRenderOrderData;
+        public _iRemoveRenderOrderData(renderOrderData: pool.IRenderOrderData): pool.IRenderOrderData;
     }
 }
 declare module away.materials {
@@ -15575,11 +15646,6 @@ declare module away.animators {
         * @param sourceSubGeometry
         */
         getRenderableSubGeometry(renderable: pool.IRenderable, sourceSubGeometry: base.SubGeometryBase): base.SubGeometryBase;
-        /**
-        *
-        * @param pass
-        */
-        testGPUCompatibility(pass: materials.IMaterialPass): any;
     }
 }
 declare module away {

@@ -57,14 +57,14 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPreLightingCode(vo:MethodVO, regCache:ShaderRegisterCache):string
+		public iGetFragmentPreLightingCode(shaderObject:ShaderLightingObject, methodVO:MethodVO, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			var code:string = super.iGetFragmentPreLightingCode(vo, regCache);
+			var code:string = super.iGetFragmentPreLightingCode(shaderObject, methodVO, registerCache, sharedRegisters);
 			this._pIsFirstLight = true;
 			
-			if (vo.numLights > 0) {
-				this._gradientTextureRegister = regCache.getFreeTextureReg();
-				vo.secondaryTexturesIndex = this._gradientTextureRegister.index;
+			if (shaderObject.numLights > 0) {
+				this._gradientTextureRegister = registerCache.getFreeTextureReg();
+				methodVO.secondaryTexturesIndex = this._gradientTextureRegister.index;
 			}
 			return code;
 		}
@@ -72,7 +72,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCodePerLight(vo:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, regCache:ShaderRegisterCache):string
+		public iGetFragmentCodePerLight(shaderObject:ShaderLightingObject, methodVO:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var code:string = "";
 			var t:ShaderRegisterElement;
@@ -81,25 +81,25 @@ module away.materials
 			if (this._pIsFirstLight)
 				t = this._pTotalLightColorReg;
 			else {
-				t = regCache.getFreeFragmentVectorTemp();
-				regCache.addFragmentTempUsages(t, 1);
+				t = registerCache.getFreeFragmentVectorTemp();
+				registerCache.addFragmentTempUsages(t, 1);
 			}
 			
-			code += "dp3 " + t + ".w, " + lightDirReg + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz\n" +
-				"mul " + t + ".w, " + t + ".w, " + this._sharedRegisters.commons + ".x\n" +
-				"add " + t + ".w, " + t + ".w, " + this._sharedRegisters.commons + ".x\n" +
+			code += "dp3 " + t + ".w, " + lightDirReg + ".xyz, " + sharedRegisters.normalFragment + ".xyz\n" +
+				"mul " + t + ".w, " + t + ".w, " + sharedRegisters.commons + ".x\n" +
+				"add " + t + ".w, " + t + ".w, " + sharedRegisters.commons + ".x\n" +
 				"mul " + t + ".xyz, " + t + ".w, " + lightDirReg + ".w\n";
 			
 			if (this._iModulateMethod != null)
-				code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
-			
-			code += this.pGetTex2DSampleCode(vo, t, this._gradientTextureRegister, this._gradient, t, "clamp") +
+				code += this._iModulateMethod(shaderObject, methodVO, t, registerCache, sharedRegisters);
+
+			code += ShaderCompilerHelper.getTex2DSampleCode(t, sharedRegisters, this._gradientTextureRegister, this._gradient, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping, t, "clamp") +
 				//					"mul " + t + ".xyz, " + t + ".xyz, " + t + ".w\n" +
 				"mul " + t + ".xyz, " + t + ".xyz, " + lightColReg + ".xyz\n";
 			
 			if (!this._pIsFirstLight) {
 				code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ".xyz, " + t + ".xyz\n";
-				regCache.removeFragmentTempUsage(t);
+				registerCache.removeFragmentTempUsage(t);
 			}
 			
 			this._pIsFirstLight = false;
@@ -110,23 +110,23 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pApplyShadow(vo:MethodVO, regCache:ShaderRegisterCache):string
+		public pApplyShadow(shaderObject:ShaderLightingObject, methodVO:MethodVO, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var t:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
 			
-			return "mov " + t + ", " + this._pShadowRegister + ".wwww\n" +
-				this.pGetTex2DSampleCode(vo, t, this._gradientTextureRegister, this._gradient, t, "clamp") +
+			return "mov " + t + ", " + sharedRegisters.shadowTarget + ".wwww\n" +
+				ShaderCompilerHelper.getTex2DSampleCode(t, sharedRegisters, this._gradientTextureRegister, this._gradient, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping, t, "clamp") +
 				"mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:Stage)
+		public iActivate(shaderObject:ShaderLightingObject, methodVO:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stage);
+			super.iActivate(shaderObject, methodVO, stage);
 
-			(<IContextStageGL> stage.context).activateTexture(vo.secondaryTexturesIndex, this._gradient);
+			(<IContextStageGL> stage.context).activateTexture(methodVO.secondaryTexturesIndex, this._gradient);
 		}
 	}
 }

@@ -1,11 +1,6 @@
 /// <reference path="../libs/ref/js.d.ts" />
 /// <reference path="../libs/awayjs-core.next.d.ts" />
 /// <reference path="../libs/stagegl-context.next.d.ts" />
-declare module away.errors {
-    class AnimationSetError extends Error {
-        constructor(message: string);
-    }
-}
 declare module away.events {
     /**
     * Dispatched to notify changes in an animation state's state.
@@ -47,49 +42,6 @@ declare module away.events {
         public clone(): Event;
     }
 }
-declare module away.events {
-    /**
-    * Dispatched to notify changes in an animator's state.
-    */
-    class AnimatorEvent extends Event {
-        /**
-        * Defines the value of the type property of a start event object.
-        */
-        static START: string;
-        /**
-        * Defines the value of the type property of a stop event object.
-        */
-        static STOP: string;
-        /**
-        * Defines the value of the type property of a cycle complete event object.
-        */
-        static CYCLE_COMPLETE: string;
-        private _animator;
-        /**
-        * Create a new <code>AnimatorEvent</code> object.
-        *
-        * @param type The event type.
-        * @param animator The animator object that is the subject of this event.
-        */
-        constructor(type: string, animator: animators.AnimatorBase);
-        public animator : animators.AnimatorBase;
-        /**
-        * Clones the event.
-        *
-        * @return An exact duplicate of the current event object.
-        */
-        public clone(): Event;
-    }
-}
-/**
-* @module away.events
-*/
-declare module away.events {
-    class ShadingMethodEvent extends Event {
-        static SHADER_INVALIDATED: string;
-        constructor(type: string);
-    }
-}
 /**
 * @module away.base
 */
@@ -100,308 +52,6 @@ declare module away.base {
     class ParticleGeometry extends Geometry {
         public particles: animators.ParticleData[];
         public numParticles: number;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * @class away.pool.RenderableListItem
-    */
-    class RenderableBase implements IRenderable {
-        private _onIndicesUpdatedDelegate;
-        private _onVerticesUpdatedDelegate;
-        private _subGeometry;
-        private _geometryDirty;
-        private _indexData;
-        private _indexDataDirty;
-        private _vertexData;
-        public _pVertexDataDirty: Object;
-        private _vertexOffset;
-        private _level;
-        private _indexOffset;
-        private _overflow;
-        private _numTriangles;
-        private _concatenateArrays;
-        public JOINT_INDEX_FORMAT: string;
-        public JOINT_WEIGHT_FORMAT: string;
-        /**
-        *
-        */
-        public _pool: RenderablePool;
-        /**
-        *
-        */
-        public overflow : RenderableBase;
-        /**
-        *
-        */
-        public numTriangles : number;
-        /**
-        *
-        */
-        public next: RenderableBase;
-        /**
-        *
-        */
-        public materialId: number;
-        /**
-        *
-        */
-        public renderOrderId: number;
-        /**
-        *
-        */
-        public zIndex: number;
-        /**
-        *
-        */
-        public cascaded: boolean;
-        /**
-        *
-        */
-        public renderSceneTransform: geom.Matrix3D;
-        /**
-        *
-        */
-        public sourceEntity: entities.IEntity;
-        /**
-        *
-        */
-        public materialOwner: base.IMaterialOwner;
-        /**
-        *
-        */
-        public material: materials.MaterialBase;
-        /**
-        *
-        */
-        public getIndexData(): IndexData;
-        /**
-        *
-        */
-        public getVertexData(dataType: string): VertexData;
-        /**
-        *
-        */
-        public getVertexOffset(dataType: string): number;
-        /**
-        *
-        * @param sourceEntity
-        * @param materialOwner
-        * @param subGeometry
-        * @param animationSubGeometry
-        */
-        constructor(pool: RenderablePool, sourceEntity: entities.IEntity, materialOwner: base.IMaterialOwner, level?: number, indexOffset?: number);
-        public dispose(): void;
-        public invalidateGeometry(): void;
-        /**
-        *
-        */
-        public invalidateIndexData(): void;
-        /**
-        * //TODO
-        *
-        * @param dataType
-        */
-        public invalidateVertexData(dataType: string): void;
-        public _pGetSubGeometry(): base.SubGeometryBase;
-        /**
-        * //TODO
-        *
-        * @param subGeometry
-        * @param offset
-        * @internal
-        */
-        public _iFillIndexData(indexOffset: number): void;
-        public _pGetOverflowRenderable(pool: RenderablePool, materialOwner: base.IMaterialOwner, level: number, indexOffset: number): RenderableBase;
-        /**
-        * //TODO
-        *
-        * @private
-        */
-        private _updateGeometry();
-        /**
-        * //TODO
-        *
-        * @private
-        */
-        private _updateIndexData();
-        /**
-        * //TODO
-        *
-        * @param dataType
-        * @private
-        */
-        private _updateVertexData(dataType);
-        /**
-        * //TODO
-        *
-        * @param event
-        * @private
-        */
-        private _onIndicesUpdated(event);
-        /**
-        * //TODO
-        *
-        * @param event
-        * @private
-        */
-        private _onVerticesUpdated(event);
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * @class away.pool.RenderableListItem
-    */
-    class BillboardRenderable extends RenderableBase {
-        private static _materialGeometry;
-        /**
-        *
-        */
-        static id: string;
-        /**
-        *
-        */
-        private _billboard;
-        /**
-        * //TODO
-        *
-        * @param pool
-        * @param billboard
-        */
-        constructor(pool: RenderablePool, billboard: entities.Billboard);
-        /**
-        * //TODO
-        *
-        * @returns {away.base.TriangleSubGeometry}
-        */
-        public _pGetSubGeometry(): base.SubGeometryBase;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * @class away.pool.LineSubMeshRenderable
-    */
-    class LineSubMeshRenderable extends RenderableBase {
-        /**
-        *
-        */
-        static id: string;
-        /**
-        *
-        */
-        public subMesh: base.LineSubMesh;
-        /**
-        * //TODO
-        *
-        * @param pool
-        * @param subMesh
-        * @param level
-        * @param dataOffset
-        */
-        constructor(pool: RenderablePool, subMesh: base.LineSubMesh, level?: number, indexOffset?: number);
-        /**
-        * //TODO
-        *
-        * @returns {base.LineSubGeometry}
-        * @protected
-        */
-        public _pGetSubGeometry(): base.LineSubGeometry;
-        /**
-        * //TODO
-        *
-        * @param pool
-        * @param materialOwner
-        * @param level
-        * @param indexOffset
-        * @returns {away.pool.LineSubMeshRenderable}
-        * @private
-        */
-        public _pGetOverflowRenderable(pool: RenderablePool, materialOwner: base.IMaterialOwner, level: number, indexOffset: number): RenderableBase;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * @class away.pool.SkyboxRenderable
-    */
-    class SkyboxRenderable extends RenderableBase {
-        /**
-        *
-        */
-        static id: string;
-        /**
-        *
-        */
-        private static _geometry;
-        /**
-        * //TODO
-        *
-        * @param pool
-        * @param skybox
-        */
-        constructor(pool: RenderablePool, skybox: entities.Skybox);
-        /**
-        * //TODO
-        *
-        * @returns {away.base.TriangleSubGeometry}
-        * @private
-        */
-        public _pGetSubGeometry(): base.TriangleSubGeometry;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * @class away.pool.TriangleSubMeshRenderable
-    */
-    class TriangleSubMeshRenderable extends RenderableBase {
-        /**
-        *
-        */
-        static id: string;
-        /**
-        *
-        */
-        public subMesh: base.TriangleSubMesh;
-        /**
-        * //TODO
-        *
-        * @param pool
-        * @param subMesh
-        * @param level
-        * @param indexOffset
-        */
-        constructor(pool: RenderablePool, subMesh: base.TriangleSubMesh, level?: number, indexOffset?: number);
-        /**
-        *
-        * @returns {away.base.SubGeometryBase}
-        * @protected
-        */
-        public _pGetSubGeometry(): base.TriangleSubGeometry;
-        /**
-        * //TODO
-        *
-        * @param pool
-        * @param materialOwner
-        * @param level
-        * @param indexOffset
-        * @returns {away.pool.TriangleSubMeshRenderable}
-        * @protected
-        */
-        public _pGetOverflowRenderable(pool: RenderablePool, materialOwner: base.IMaterialOwner, level: number, indexOffset: number): RenderableBase;
     }
 }
 /**
@@ -591,1786 +241,6 @@ declare module away.pick {
     }
 }
 declare module away.materials {
-    class DefaultMaterialManager {
-        private static _defaultBitmapData;
-        private static _defaultTriangleMaterial;
-        private static _defaultLineMaterial;
-        private static _defaultTexture;
-        static getDefaultMaterial(materialOwner?: base.IMaterialOwner): MaterialBase;
-        static getDefaultTexture(materialOwner?: base.IMaterialOwner): textures.BitmapTexture;
-        private static createDefaultTexture();
-        static createCheckeredBitmapData(): base.BitmapData;
-        private static createDefaultTriangleMaterial();
-        private static createDefaultLineMaterial();
-    }
-}
-/**
-* @module away.render
-*/
-declare module away.render {
-    /**
-    * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
-    * contents of a partition
-    *
-    * @class away.render.RendererBase
-    */
-    class RendererBase extends events.EventDispatcher {
-        private _billboardRenderablePool;
-        private _triangleSubMeshRenderablePool;
-        private _lineSubMeshRenderablePool;
-        public _pContext: stagegl.IContextStageGL;
-        public _pStage: base.Stage;
-        public _pCamera: entities.Camera;
-        public _iEntryPoint: geom.Vector3D;
-        public _pCameraForward: geom.Vector3D;
-        public _pRttBufferManager: managers.RTTBufferManager;
-        private _viewPort;
-        private _viewportDirty;
-        private _scissorDirty;
-        public _pBackBufferInvalid: boolean;
-        public _pDepthTextureInvalid: boolean;
-        public _depthPrepass: boolean;
-        private _backgroundR;
-        private _backgroundG;
-        private _backgroundB;
-        private _backgroundAlpha;
-        public _shareContext: boolean;
-        public _width: number;
-        public _height: number;
-        public textureRatioX: number;
-        public textureRatioY: number;
-        private _snapshotBitmapData;
-        private _snapshotRequired;
-        public _pRttViewProjectionMatrix: geom.Matrix3D;
-        private _localPos;
-        private _globalPos;
-        public _pScissorRect: geom.Rectangle;
-        private _scissorUpdated;
-        private _viewPortUpdated;
-        private _onContextUpdateDelegate;
-        private _onViewportUpdatedDelegate;
-        public _pNumTriangles: number;
-        public _pOpaqueRenderableHead: pool.RenderableBase;
-        public _pBlendedRenderableHead: pool.RenderableBase;
-        /**
-        *
-        */
-        public numTriangles : number;
-        /**
-        *
-        */
-        public renderableSorter: sort.IEntitySorter;
-        /**
-        * A viewPort rectangle equivalent of the Stage size and position.
-        */
-        public viewPort : geom.Rectangle;
-        /**
-        * A scissor rectangle equivalent of the view size and position.
-        */
-        public scissorRect : geom.Rectangle;
-        /**
-        *
-        */
-        public x : number;
-        /**
-        *
-        */
-        public y : number;
-        /**
-        *
-        */
-        public width : number;
-        /**
-        *
-        */
-        public height : number;
-        /**
-        * Creates a new RendererBase object.
-        */
-        constructor();
-        public _iCreateEntityCollector(): traverse.ICollector;
-        /**
-        * The background color's red component, used when clearing.
-        *
-        * @private
-        */
-        public _iBackgroundR : number;
-        /**
-        * The background color's green component, used when clearing.
-        *
-        * @private
-        */
-        public _iBackgroundG : number;
-        /**
-        * The background color's blue component, used when clearing.
-        *
-        * @private
-        */
-        public _iBackgroundB : number;
-        /**
-        * The Stage that will provide the ContextGL used for rendering.
-        */
-        public stage : base.Stage;
-        public iSetStage(value: base.Stage): void;
-        /**
-        * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
-        * to share the same ContextGL object.
-        */
-        public shareContext : boolean;
-        /**
-        * Disposes the resources used by the RendererBase.
-        */
-        public dispose(): void;
-        public render(entityCollector: traverse.ICollector): void;
-        /**
-        * Renders the potentially visible geometry to the back buffer or texture.
-        * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-        * @param target An option target texture to render to.
-        * @param surfaceSelector The index of a CubeTexture's face to render to.
-        * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
-        */
-        public _iRender(entityCollector: traverse.ICollector, target?: textures.TextureProxyBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
-        public _iRenderCascades(entityCollector: traverse.ShadowCasterCollector, target: textures.TextureProxyBase, numCascades: number, scissorRects: geom.Rectangle[], cameras: entities.Camera[]): void;
-        public pCollectRenderables(entityCollector: traverse.ICollector): void;
-        /**
-        * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
-        *
-        * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-        * @param target An option target texture to render to.
-        * @param surfaceSelector The index of a CubeTexture's face to render to.
-        * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
-        */
-        public pExecuteRender(entityCollector: traverse.ICollector, target?: textures.TextureProxyBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
-        public queueSnapshot(bmd: base.BitmapData): void;
-        /**
-        * Performs the actual drawing of geometry to the target.
-        * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-        */
-        public pDraw(entityCollector: traverse.ICollector, target: textures.TextureProxyBase): void;
-        /**
-        * Assign the context once retrieved
-        */
-        private onContextUpdate(event);
-        public _iBackgroundAlpha : number;
-        /**
-        * @private
-        */
-        private notifyScissorUpdate();
-        /**
-        * @private
-        */
-        private notifyViewportUpdate();
-        /**
-        *
-        */
-        public onViewportUpdated(event: events.StageEvent): void;
-        /**
-        *
-        */
-        public updateGlobalPos(): void;
-        /**
-        *
-        * @param billboard
-        * @protected
-        */
-        public applyBillboard(billboard: entities.Billboard): void;
-        /**
-        *
-        * @param triangleSubMesh
-        */
-        public applyTriangleSubMesh(triangleSubMesh: base.TriangleSubMesh): void;
-        /**
-        *
-        * @param lineSubMesh
-        */
-        public applyLineSubMesh(lineSubMesh: base.LineSubMesh): void;
-        /**
-        *
-        * @param renderable
-        * @protected
-        */
-        private _applyRenderable(renderable);
-    }
-}
-/**
-* @module away.render
-*/
-declare module away.render {
-    /**
-    * The DepthRenderer class renders 32-bit depth information encoded as RGBA
-    *
-    * @class away.render.DepthRenderer
-    */
-    class DepthRenderer extends RendererBase {
-        private _activeMaterial;
-        private _renderBlended;
-        private _distanceBased;
-        private _disableColor;
-        /**
-        * Creates a new DepthRenderer object.
-        * @param renderBlended Indicates whether semi-transparent objects should be rendered.
-        * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
-        */
-        constructor(renderBlended?: boolean, distanceBased?: boolean);
-        public disableColor : boolean;
-        public _iRenderCascades(entityCollector: traverse.ShadowCasterCollector, target: textures.TextureProxyBase, numCascades: number, scissorRects: geom.Rectangle[], cameras: entities.Camera[]): void;
-        private drawCascadeRenderables(renderable, camera, cullPlanes);
-        /**
-        * @inheritDoc
-        */
-        public pDraw(entityCollector: traverse.EntityCollector, target: textures.TextureProxyBase): void;
-        /**
-        * Draw a list of renderables.
-        * @param renderables The renderables to draw.
-        * @param entityCollector The EntityCollector containing all potentially visible information.
-        */
-        private drawRenderables(renderable, entityCollector);
-    }
-}
-/**
-* @module away.render
-*/
-declare module away.render {
-    /**
-    * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
-    * materials assigned to them.
-    *
-    * @class away.render.DefaultRenderer
-    */
-    class DefaultRenderer extends RendererBase implements IRenderer {
-        public _pRequireDepthRender: boolean;
-        private _skyboxRenderablePool;
-        private static RTT_PASSES;
-        private static SCREEN_PASSES;
-        private static ALL_PASSES;
-        private _activeMaterial;
-        private _pDistanceRenderer;
-        private _pDepthRenderer;
-        private _skyboxProjection;
-        public _pFilter3DRenderer: Filter3DRenderer;
-        public _pDepthRender: textures.TextureProxyBase;
-        private _antiAlias;
-        public antiAlias : number;
-        /**
-        *
-        */
-        public depthPrepass : boolean;
-        /**
-        *
-        * @returns {*}
-        */
-        public filters3d : filters.Filter3DBase[];
-        /**
-        * Creates a new DefaultRenderer object.
-        *
-        * @param antiAlias The amount of anti-aliasing to use.
-        * @param renderMode The render mode to use.
-        */
-        constructor(forceSoftware?: boolean, profile?: string, mode?: string);
-        public render(entityCollector: traverse.ICollector): void;
-        public pExecuteRender(entityCollector: traverse.EntityCollector, target?: textures.TextureProxyBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
-        private updateLights(entityCollector);
-        /**
-        * @inheritDoc
-        */
-        public pDraw(entityCollector: traverse.EntityCollector, target: textures.TextureProxyBase): void;
-        /**
-        * Draw the skybox if present.
-        *
-        * @param entityCollector The EntityCollector containing all potentially visible information.
-        */
-        private drawSkybox(entityCollector);
-        private updateSkyboxProjection(camera);
-        /**
-        * Draw a list of renderables.
-        *
-        * @param renderables The renderables to draw.
-        * @param entityCollector The EntityCollector containing all potentially visible information.
-        */
-        private drawRenderables(renderable, entityCollector, which);
-        public dispose(): void;
-        /**
-        *
-        */
-        public pRenderDepthPrepass(entityCollector: traverse.EntityCollector): void;
-        /**
-        *
-        */
-        public pRenderSceneDepthToTexture(entityCollector: traverse.EntityCollector): void;
-        /**
-        * Updates the backbuffer dimensions.
-        */
-        public pUpdateBackBuffer(): void;
-        public iSetStage(value: base.Stage): void;
-        /**
-        *
-        */
-        private initDepthTexture(context);
-    }
-}
-/**
-* @module away.render
-*/
-declare module away.render {
-    /**
-    * @class away.render.Filter3DRenderer
-    */
-    class Filter3DRenderer {
-        private _filters;
-        private _tasks;
-        private _filterTasksInvalid;
-        private _mainInputTexture;
-        private _requireDepthRender;
-        private _rttManager;
-        private _stage;
-        private _filterSizesInvalid;
-        private _onRTTResizeDelegate;
-        constructor(stage: base.Stage);
-        private onRTTResize(event);
-        public requireDepthRender : boolean;
-        public getMainInputTexture(stage: base.Stage): stagegl.ITexture;
-        public filters : filters.Filter3DBase[];
-        private updateFilterTasks(stage);
-        public render(stage: base.Stage, camera: entities.Camera, depthTexture: stagegl.ITexture): void;
-        private updateFilterSizes();
-        public dispose(): void;
-    }
-}
-declare module away.filters {
-    class Filter3DTaskBase {
-        private _mainInputTexture;
-        private _scaledTextureWidth;
-        private _scaledTextureHeight;
-        private _textureWidth;
-        private _textureHeight;
-        private _textureDimensionsInvalid;
-        private _program3DInvalid;
-        private _program3D;
-        private _target;
-        private _requireDepthRender;
-        private _textureScale;
-        constructor(requireDepthRender?: boolean);
-        /**
-        * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
-        */
-        public textureScale : number;
-        public target : stagegl.ITexture;
-        public textureWidth : number;
-        public textureHeight : number;
-        public getMainInputTexture(stage: base.Stage): stagegl.ITexture;
-        public dispose(): void;
-        public pInvalidateProgram(): void;
-        public pUpdateProgram(stage: base.Stage): void;
-        public pGetVertexCode(): string;
-        public pGetFragmentCode(): string;
-        public pUpdateTextures(stage: base.Stage): void;
-        public getProgram(stage: base.Stage): stagegl.IProgram;
-        public activate(stage: base.Stage, camera: entities.Camera, depthTexture: stagegl.ITexture): void;
-        public deactivate(stage: base.Stage): void;
-        public requireDepthRender : boolean;
-    }
-}
-declare module away.filters {
-    class Filter3DBase {
-        private _tasks;
-        private _requireDepthRender;
-        private _textureWidth;
-        private _textureHeight;
-        constructor();
-        public requireDepthRender : boolean;
-        public pAddTask(filter: Filter3DTaskBase): void;
-        public tasks : Filter3DTaskBase[];
-        public getMainInputTexture(stage: base.Stage): stagegl.ITexture;
-        public textureWidth : number;
-        public textureHeight : number;
-        public setRenderTargets(mainTarget: stagegl.ITexture, stage: base.Stage): void;
-        public dispose(): void;
-        public update(stage: base.Stage, camera: entities.Camera): void;
-    }
-}
-declare module away.materials {
-    /**
-    * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
-    * a render call per required renderable.
-    */
-    class MaterialPassBase extends events.EventDispatcher implements IMaterialPass {
-        static MATERIALPASS_ID_COUNT: number;
-        public _iPasses: IMaterialPass[];
-        /**
-        * An id for this material pass, used to identify material passes when using animation sets.
-        *
-        * @private
-        */
-        public _iUniqueId: number;
-        private _material;
-        private _animationSet;
-        public _iPrograms: stagegl.IProgram[];
-        public _iProgramids: number[];
-        private _contextGLs;
-        public _pNumUsedStreams: number;
-        public _pNumUsedTextures: number;
-        public _pNumUsedVertexConstants: number;
-        public _pNumUsedFragmentConstants: number;
-        public _pNumUsedVaryings: number;
-        public _pSmooth: boolean;
-        public _pRepeat: boolean;
-        public _pMipmap: boolean;
-        private _depthCompareMode;
-        private _blendFactorSource;
-        private _blendFactorDest;
-        public _pEnableBlending: boolean;
-        public _pBothSides: boolean;
-        public _pLightPicker: LightPickerBase;
-        public _pAnimatableAttributes: string[];
-        public _pAnimationTargetRegisters: string[];
-        public _pShadedTarget: string;
-        private static _previousUsedStreams;
-        private static _previousUsedTexs;
-        private _defaultCulling;
-        private _renderToTexture;
-        private _oldTarget;
-        private _oldSurface;
-        private _oldDepthStencil;
-        private _oldRect;
-        public _pAlphaPremultiplied: boolean;
-        public _pNeedFragmentAnimation: boolean;
-        public _pNeedUVAnimation: boolean;
-        public _pUVTarget: string;
-        public _pUVSource: string;
-        private _writeDepth;
-        private _onLightsChangeDelegate;
-        public animationRegisterCache: animators.AnimationRegisterCache;
-        /**
-        * Creates a new MaterialPassBase object.
-        */
-        constructor();
-        /**
-        * The material to which this pass belongs.
-        */
-        public material : MaterialBase;
-        /**
-        * Indicate whether this pass should write to the depth buffer or not. Ignored when blending is enabled.
-        */
-        public writeDepth : boolean;
-        /**
-        * Defines whether any used textures should use mipmapping.
-        */
-        public mipmap : boolean;
-        /**
-        * Defines whether smoothing should be applied to any used textures.
-        */
-        public smooth : boolean;
-        /**
-        * Defines whether textures should be tiled.
-        */
-        public repeat : boolean;
-        /**
-        * Defines whether or not the material should perform backface culling.
-        */
-        public bothSides : boolean;
-        /**
-        * The depth compare mode used to render the renderables using this material.
-        *
-        * @see away.stagegl.ContextGLCompareMode
-        */
-        public depthCompareMode : string;
-        /**
-        * Returns the animation data set adding animations to the material.
-        */
-        public animationSet : animators.AnimationSetBase;
-        /**
-        * Specifies whether this pass renders to texture
-        */
-        public renderToTexture : boolean;
-        /**
-        * Cleans up any resources used by the current object.
-        * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
-        */
-        public dispose(): void;
-        /**
-        * The amount of used vertex streams in the vertex code. Used by the animation code generation to know from which index on streams are available.
-        */
-        public numUsedStreams : number;
-        /**
-        * The amount of used vertex constants in the vertex code. Used by the animation code generation to know from which index on registers are available.
-        */
-        public numUsedVertexConstants : number;
-        public numUsedVaryings : number;
-        /**
-        * The amount of used fragment constants in the fragment code. Used by the animation code generation to know from which index on registers are available.
-        */
-        public numUsedFragmentConstants : number;
-        /**
-        * Indicates whether the pass requires any fragment animation code.
-        */
-        public needFragmentAnimation : boolean;
-        /**
-        * Indicates whether the pass requires any UV animation code.
-        */
-        public needUVAnimation : boolean;
-        /**
-        * Sets up the animation state. This needs to be called before render()
-        *
-        * @private
-        */
-        public iUpdateAnimationState(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * Renders an object to the current render target.
-        *
-        * @private
-        */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-        /**
-        * Returns the vertex AGAL code for the material.
-        */
-        public iGetVertexCode(): string;
-        /**
-        * Returns the fragment AGAL code for the material.
-        */
-        public iGetFragmentCode(fragmentAnimatorCode: string): string;
-        /**
-        * The blend mode to use when drawing this renderable. The following blend modes are supported:
-        * <ul>
-        * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
-        * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
-        * <li>BlendMode.MULTIPLY</li>
-        * <li>BlendMode.ADD</li>
-        * <li>BlendMode.ALPHA</li>
-        * </ul>
-        */
-        public setBlendMode(value: string): void;
-        /**
-        * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
-        * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
-        * @param stage The Stage object which is currently used for rendering.
-        * @param camera The camera from which the scene is viewed.
-        * @private
-        */
-        public iActivate(stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * Clears the render state for the pass. This needs to be called before activating another pass.
-        * @param stage The Stage used for rendering
-        *
-        * @private
-        */
-        public iDeactivate(stage: base.Stage): void;
-        /**
-        * Marks the shader program as invalid, so it will be recompiled before the next render.
-        *
-        * @param updateMaterial Indicates whether the invalidation should be performed on the entire material. Should always pass "true" unless it's called from the material itself.
-        */
-        public iInvalidateShaderProgram(updateMaterial?: boolean): void;
-        /**
-        * Compiles the shader program.
-        * @param polyOffsetReg An optional register that contains an amount by which to inflate the model (used in single object depth map rendering).
-        */
-        public iUpdateProgram(stage: base.Stage): void;
-        /**
-        * The light picker used by the material to provide lights to the material if it supports lighting.
-        *
-        * @see away.materials.LightPickerBase
-        * @see away.materials.StaticLightPicker
-        */
-        public lightPicker : LightPickerBase;
-        /**
-        * Called when the light picker's configuration changes.
-        */
-        private onLightsChange(event);
-        /**
-        * Implemented by subclasses if the pass uses lights to update the shader.
-        */
-        public pUpdateLights(): void;
-        /**
-        * Indicates whether visible textures (or other pixels) used by this material have
-        * already been premultiplied. Toggle this if you are seeing black halos around your
-        * blended alpha edges.
-        */
-        public alphaPremultiplied : boolean;
-    }
-}
-declare module away.materials {
-    /**
-    * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
-    * using material methods to define their appearance.
-    */
-    class CompiledPass extends MaterialPassBase {
-        public _iPassesDirty: boolean;
-        public _pSpecularLightSources: number;
-        public _pDiffuseLightSources: number;
-        private _vertexCode;
-        private _fragmentLightCode;
-        private _framentPostLightCode;
-        public _pVertexConstantData: number[];
-        public _pFragmentConstantData: number[];
-        private _commonsDataIndex;
-        public _pProbeWeightsIndex: number;
-        private _uvBufferIndex;
-        private _secondaryUVBufferIndex;
-        private _normalBufferIndex;
-        private _tangentBufferIndex;
-        private _sceneMatrixIndex;
-        private _sceneNormalMatrixIndex;
-        public _pLightFragmentConstantIndex: number;
-        public _pCameraPositionIndex: number;
-        private _uvTransformIndex;
-        public _pLightProbeDiffuseIndices: number[];
-        public _pLightProbeSpecularIndices: number[];
-        public _pAmbientLightR: number;
-        public _pAmbientLightG: number;
-        public _pAmbientLightB: number;
-        public _pCompiler: ShaderCompiler;
-        public _pMethodSetup: ShaderMethodSetup;
-        private _usingSpecularMethod;
-        private _usesNormals;
-        public _preserveAlpha: boolean;
-        private _animateUVs;
-        public _pNumPointLights: number;
-        public _pNumDirectionalLights: number;
-        public _pNumLightProbes: number;
-        private _enableLightFallOff;
-        private _forceSeparateMVP;
-        private _onShaderInvalidatedDelegate;
-        /**
-        * Creates a new CompiledPass object.
-        *
-        * @param material The material to which this pass belongs.
-        */
-        constructor(material: MaterialBase);
-        /**
-        * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
-        * compatibility for constrained mode.
-        */
-        public enableLightFallOff : boolean;
-        /**
-        * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
-        * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
-        * projection code.
-        */
-        public forceSeparateMVP : boolean;
-        /**
-        * The amount of point lights that need to be supported.
-        */
-        public iNumPointLights : number;
-        /**
-        * The amount of directional lights that need to be supported.
-        */
-        public iNumDirectionalLights : number;
-        /**
-        * The amount of light probes that need to be supported.
-        */
-        public iNumLightProbes : number;
-        /**
-        * @inheritDoc
-        */
-        public iUpdateProgram(stage: base.Stage): void;
-        /**
-        * Resets the compilation state.
-        *
-        * @param profile The compatibility profile used by the renderer.
-        */
-        private reset(profile);
-        /**
-        * Updates the amount of used register indices.
-        */
-        private updateUsedOffsets();
-        /**
-        * Initializes the unchanging constant data for this material.
-        */
-        private initConstantData();
-        /**
-        * Initializes the compiler for this pass.
-        * @param profile The compatibility profile used by the renderer.
-        */
-        public iInitCompiler(profile: string): void;
-        /**
-        * Factory method to create a concrete compiler object for this pass.
-        * @param profile The compatibility profile used by the renderer.
-        */
-        public pCreateCompiler(profile: string): ShaderCompiler;
-        /**
-        * Copies the shader's properties from the compiler.
-        */
-        public pUpdateShaderProperties(): void;
-        /**
-        * Updates the indices for various registers.
-        */
-        public pUpdateRegisterIndices(): void;
-        /**
-        * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
-        */
-        public preserveAlpha : boolean;
-        /**
-        * Indicate whether UV coordinates need to be animated using the renderable's transformUV matrix.
-        */
-        public animateUVs : boolean;
-        /**
-        * The normal map to modulate the direction of the surface for each texel. The default normal method expects
-        * tangent-space normal maps, but others could expect object-space maps.
-        */
-        public normalMap : textures.Texture2DBase;
-        /**
-        * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
-        */
-        public normalMethod : NormalBasicMethod;
-        /**
-        * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
-        */
-        public ambientMethod : AmbientBasicMethod;
-        /**
-        * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
-        */
-        public shadowMethod : ShadowMapMethodBase;
-        /**
-        * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
-        */
-        public diffuseMethod : DiffuseBasicMethod;
-        /**
-        * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
-        */
-        public specularMethod : SpecularBasicMethod;
-        /**
-        * Initializes the pass.
-        */
-        private init();
-        /**
-        * @inheritDoc
-        */
-        public dispose(): void;
-        /**
-        * @inheritDoc
-        */
-        public iInvalidateShaderProgram(updateMaterial?: boolean): void;
-        /**
-        * Adds any possible passes needed by the used methods.
-        */
-        public pAddPassesFromMethods(): void;
-        /**
-        * Adds internal passes to the material.
-        *
-        * @param passes The passes to add.
-        */
-        public pAddPasses(passes: MaterialPassBase[]): void;
-        /**
-        * Initializes the default UV transformation matrix.
-        */
-        public pInitUVTransformData(): void;
-        /**
-        * Initializes commonly required constant values.
-        */
-        public pInitCommonsData(): void;
-        /**
-        * Cleans up the after compiling.
-        */
-        public pCleanUp(): void;
-        /**
-        * Updates method constants if they have changed.
-        */
-        public pUpdateMethodConstants(): void;
-        /**
-        * Updates constant data render state used by the lights. This method is optional for subclasses to implement.
-        */
-        public pUpdateLightConstants(): void;
-        /**
-        * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
-        */
-        public pUpdateProbes(stage: base.Stage): void;
-        /**
-        * Called when any method's shader code is invalidated.
-        */
-        private onShaderInvalidated(event);
-        /**
-        * @inheritDoc
-        */
-        public iGetVertexCode(): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(animatorCode: string): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * @inheritDoc
-        */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-        /**
-        * Indicates whether the shader uses any light probes.
-        */
-        public pUsesProbes(): boolean;
-        /**
-        * Indicates whether the shader uses any lights.
-        */
-        public pUsesLights(): boolean;
-        /**
-        * @inheritDoc
-        */
-        public iDeactivate(stage: base.Stage): void;
-        /**
-        * Define which light source types to use for specular reflections. This allows choosing between regular lights
-        * and/or light probes for specular reflections.
-        *
-        * @see away3d.materials.LightSources
-        */
-        public specularLightSources : number;
-        /**
-        * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
-        * and/or light probes for diffuse reflections.
-        *
-        * @see away3d.materials.LightSources
-        */
-        public diffuseLightSources : number;
-    }
-}
-declare module away.materials {
-    /**
-    * SuperShaderPass is a shader pass that uses shader methods to compile a complete program. It includes all methods
-    * associated with a material.
-    *
-    * @see away.materials.ShadingMethodBase
-    */
-    class SuperShaderPass extends CompiledPass {
-        private _includeCasters;
-        private _ignoreLights;
-        /**
-        * Creates a new SuperShaderPass objects.
-        */
-        constructor(material: MaterialBase);
-        /**
-        * @inheritDoc
-        */
-        public pCreateCompiler(profile: string): ShaderCompiler;
-        /**
-        * Indicates whether lights that cast shadows should be included in the pass.
-        */
-        public includeCasters : boolean;
-        /**
-        * The ColorTransform object to transform the colour of the material with. Defaults to null.
-        */
-        public colorTransform : geom.ColorTransform;
-        /**
-        * The EffectColorTransformMethod object to transform the colour of the material with. Defaults to null.
-        */
-        public colorTransformMethod : EffectColorTransformMethod;
-        /**
-        * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
-        * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
-        * methods added prior.
-        */
-        public addMethod(method: EffectMethodBase): void;
-        /**
-        * The number of "effect" methods added to the material.
-        */
-        public numMethods : number;
-        /**
-        * Queries whether a given effect method was added to the material.
-        *
-        * @param method The method to be queried.
-        * @return true if the method was added to the material, false otherwise.
-        */
-        public hasMethod(method: EffectMethodBase): boolean;
-        /**
-        * Returns the method added at the given index.
-        * @param index The index of the method to retrieve.
-        * @return The method at the given index.
-        */
-        public getMethodAt(index: number): EffectMethodBase;
-        /**
-        * Adds an effect method at the specified index amongst the methods already added to the material. Effect
-        * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
-        * etc. The method will be applied to the result of the methods with a lower index.
-        */
-        public addMethodAt(method: EffectMethodBase, index: number): void;
-        /**
-        * Removes an effect method from the material.
-        * @param method The method to be removed.
-        */
-        public removeMethod(method: EffectMethodBase): void;
-        /**
-        * @inheritDoc
-        */
-        public pUpdateLights(): void;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * @inheritDoc
-        */
-        public iDeactivate(stage: base.Stage): void;
-        /**
-        * @inheritDoc
-        */
-        public pAddPassesFromMethods(): void;
-        /**
-        * Indicates whether any light probes are used to contribute to the specular shading.
-        */
-        private usesProbesForSpecular();
-        /**
-        * Indicates whether any light probes are used to contribute to the diffuse shading.
-        */
-        private usesProbesForDiffuse();
-        /**
-        * @inheritDoc
-        */
-        public pUpdateMethodConstants(): void;
-        /**
-        * @inheritDoc
-        */
-        public pUpdateLightConstants(): void;
-        /**
-        * @inheritDoc
-        */
-        public pUpdateProbes(stage: base.Stage): void;
-        /**
-        * Indicates whether lights should be ignored in this pass. This is used when only effect methods are rendered in
-        * a multipass material.
-        */
-        public iIgnoreLights : boolean;
-    }
-}
-declare module away.materials {
-    /**
-    * DepthMapPass is a pass that writes depth values to a depth map as a 32-bit value exploded over the 4 texture channels.
-    * This is used to render shadow maps, depth maps, etc.
-    */
-    class DepthMapPass extends MaterialPassBase {
-        private _data;
-        private _alphaThreshold;
-        private _alphaMask;
-        /**
-        * Creates a new DepthMapPass object.
-        *
-        * @param material The material to which this pass belongs.
-        */
-        constructor(material: MaterialBase);
-        /**
-        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
-        * invisible or entirely opaque, often used with textures for foliage, etc.
-        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
-        */
-        public alphaThreshold : number;
-        /**
-        * A texture providing alpha data to be able to prevent semi-transparent pixels to write to the alpha mask.
-        * Usually the diffuse texture when alphaThreshold is used.
-        */
-        public alphaMask : textures.Texture2DBase;
-        /**
-        * @inheritDoc
-        */
-        public iGetVertexCode(): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(code: string): string;
-        /**
-        * @inheritDoc
-        */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(stage: base.Stage, camera: entities.Camera): void;
-    }
-}
-declare module away.materials {
-    /**
-    * DistanceMapPass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
-    * This is used to render omnidirectional shadow maps.
-    */
-    class DistanceMapPass extends MaterialPassBase {
-        private _fragmentData;
-        private _vertexData;
-        private _alphaThreshold;
-        private _alphaMask;
-        /**
-        * Creates a new DistanceMapPass object.
-        *
-        * @param material The material to which this pass belongs.
-        */
-        constructor(material: MaterialBase);
-        /**
-        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
-        * invisible or entirely opaque, often used with textures for foliage, etc.
-        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
-        */
-        public alphaThreshold : number;
-        /**
-        * A texture providing alpha data to be able to prevent semi-transparent pixels to write to the alpha mask.
-        * Usually the diffuse texture when alphaThreshold is used.
-        */
-        public alphaMask : textures.Texture2DBase;
-        /**
-        * @inheritDoc
-        */
-        public iGetVertexCode(): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(animationCode: string): string;
-        /**
-        * @inheritDoc
-        */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(stage: base.Stage, camera: entities.Camera): void;
-    }
-}
-declare module away.materials {
-    /**
-    * LightingPass is a shader pass that uses shader methods to compile a complete program. It only includes the lighting
-    * methods. It's used by multipass triangle materials to accumulate lighting passes.
-    *
-    * @see away.materials.TriangleMaterial
-    */
-    class LightingPass extends CompiledPass {
-        private _includeCasters;
-        private _tangentSpace;
-        private _lightVertexConstantIndex;
-        private _inverseSceneMatrix;
-        private _directionalLightsOffset;
-        private _pointLightsOffset;
-        private _lightProbesOffset;
-        private _maxLights;
-        /**
-        * Creates a new LightingPass objects.
-        *
-        * @param material The material to which this pass belongs.
-        */
-        constructor(material: MaterialBase);
-        /**
-        * Indicates the offset in the light picker's directional light vector for which to start including lights.
-        * This needs to be set before the light picker is assigned.
-        */
-        public directionalLightsOffset : number;
-        /**
-        * Indicates the offset in the light picker's point light vector for which to start including lights.
-        * This needs to be set before the light picker is assigned.
-        */
-        public pointLightsOffset : number;
-        /**
-        * Indicates the offset in the light picker's light probes vector for which to start including lights.
-        * This needs to be set before the light picker is assigned.
-        */
-        public lightProbesOffset : number;
-        /**
-        * @inheritDoc
-        */
-        public pCreateCompiler(profile: string): ShaderCompiler;
-        /**
-        * Indicates whether or not shadow casting lights need to be included.
-        */
-        public includeCasters : boolean;
-        /**
-        * @inheritDoc
-        */
-        public pUpdateLights(): void;
-        /**
-        * Calculates the amount of directional lights this material will support.
-        * @param numDirectionalLights The maximum amount of directional lights to support.
-        * @return The amount of directional lights this material will support, bounded by the amount necessary.
-        */
-        private calculateNumDirectionalLights(numDirectionalLights);
-        /**
-        * Calculates the amount of point lights this material will support.
-        * @param numDirectionalLights The maximum amount of point lights to support.
-        * @return The amount of point lights this material will support, bounded by the amount necessary.
-        */
-        private calculateNumPointLights(numPointLights);
-        /**
-        * Calculates the amount of light probes this material will support.
-        * @param numDirectionalLights The maximum amount of light probes to support.
-        * @return The amount of light probes this material will support, bounded by the amount necessary.
-        */
-        private calculateNumProbes(numLightProbes);
-        /**
-        * @inheritDoc
-        */
-        public pUpdateShaderProperties(): void;
-        /**
-        * @inheritDoc
-        */
-        public pUpdateRegisterIndices(): void;
-        /**
-        * @inheritDoc
-        */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * Indicates whether any light probes are used to contribute to the specular shading.
-        */
-        private usesProbesForSpecular();
-        /**
-        * Indicates whether any light probes are used to contribute to the diffuse shading.
-        */
-        private usesProbesForDiffuse();
-        /**
-        * @inheritDoc
-        */
-        public pUpdateLightConstants(): void;
-        /**
-        * @inheritDoc
-        */
-        public pUpdateProbes(stage: base.Stage): void;
-    }
-}
-declare module away.materials {
-    /**
-    * ShadowCasterPass is a shader pass that uses shader methods to compile a complete program. It only draws the lighting
-    * contribution for a single shadow-casting light.
-    *
-    * @see away.materials.ShadingMethodBase
-    */
-    class ShadowCasterPass extends CompiledPass {
-        private _tangentSpace;
-        private _lightVertexConstantIndex;
-        private _inverseSceneMatrix;
-        /**
-        * Creates a new ShadowCasterPass objects.
-        *
-        * @param material The material to which this pass belongs.
-        */
-        constructor(material: MaterialBase);
-        /**
-        * @inheritDoc
-        */
-        public pCreateCompiler(profile: string): ShaderCompiler;
-        /**
-        * @inheritDoc
-        */
-        public pUpdateLights(): void;
-        /**
-        * @inheritDoc
-        */
-        public pUpdateShaderProperties(): void;
-        /**
-        * @inheritDoc
-        */
-        public pUpdateRegisterIndices(): void;
-        /**
-        * @inheritDoc
-        */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * @inheritDoc
-        */
-        public pUpdateLightConstants(): void;
-        /**
-        * @inheritDoc
-        */
-        public pUsesProbes(): boolean;
-        /**
-        * @inheritDoc
-        */
-        public pUsesLights(): boolean;
-        /**
-        * @inheritDoc
-        */
-        public pUpdateProbes(stage: base.Stage): void;
-    }
-}
-declare module away.materials {
-    /**
-    * The SingleObjectDepthPass provides a material pass that renders a single object to a depth map from the point
-    * of view from a light.
-    */
-    class SingleObjectDepthPass extends MaterialPassBase {
-        private _textures;
-        private _projections;
-        private _textureSize;
-        private _polyOffset;
-        private _enc;
-        private _projectionTexturesInvalid;
-        /**
-        * The size of the depth map texture to render to.
-        */
-        public textureSize : number;
-        /**
-        * The amount by which the rendered object will be inflated, to prevent depth map rounding errors.
-        */
-        public polyOffset : number;
-        /**
-        * Creates a new SingleObjectDepthPass object.
-        */
-        constructor();
-        /**
-        * @inheritDoc
-        */
-        public dispose(): void;
-        /**
-        * Updates the projection textures used to contain the depth renders.
-        */
-        private updateProjectionTextures();
-        /**
-        * @inheritDoc
-        */
-        public iGetVertexCode(): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(animationCode: string): string;
-        /**
-        * Gets the depth maps rendered for this object from all lights.
-        * @param renderable The renderable for which to retrieve the depth maps.
-        * @param stage3DProxy The Stage3DProxy object currently used for rendering.
-        * @return A list of depth map textures for all supported lights.
-        */
-        public _iGetDepthMap(renderable: pool.RenderableBase): textures.RenderTexture;
-        /**
-        * Retrieves the depth map projection maps for all lights.
-        * @param renderable The renderable for which to retrieve the projection maps.
-        * @return A list of projection maps for all supported lights.
-        */
-        public _iGetProjection(renderable: pool.RenderableBase): geom.Matrix3D;
-        /**
-        * @inheritDoc
-        */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(stage: base.Stage, camera: entities.Camera): void;
-    }
-}
-declare module away.materials {
-    /**
-    * SegmentPass is a material pass that draws wireframe segments.
-    */
-    class SegmentPass extends MaterialPassBase {
-        static pONE_VECTOR: number[];
-        static pFRONT_VECTOR: number[];
-        private _constants;
-        private _calcMatrix;
-        private _thickness;
-        public thickness : number;
-        /**
-        * Creates a new SegmentPass object.
-        *
-        * @param material The material to which this pass belongs.
-        */
-        constructor(material: MaterialBase);
-        /**
-        * @inheritDoc
-        */
-        public iGetVertexCode(): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(animationCode: string): string;
-        /**
-        * @inheritDoc
-        * todo: keep maps in dictionary per renderable
-        */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * @inheritDoc
-        */
-        public pDeactivate(stage: base.Stage): void;
-    }
-}
-declare module away.materials {
-    /**
-    * SkyboxPass provides a material pass exclusively used to render sky boxes from a cube texture.
-    */
-    class SkyboxPass extends MaterialPassBase {
-        private _cubeTexture;
-        private _vertexData;
-        /**
-        * Creates a new SkyboxPass object.
-        *
-        * @param material The material to which this pass belongs.
-        */
-        constructor(material: MaterialBase);
-        /**
-        * The cube texture to use as the skybox.
-        */
-        public cubeTexture : textures.CubeTextureBase;
-        /**
-        * @inheritDoc
-        */
-        public iGetVertexCode(): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(animationCode: string): string;
-        /**
-        * @inheritDoc
-        */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(stage: base.Stage, camera: entities.Camera): void;
-    }
-}
-declare module away.materials {
-    /**
-    * MethodVO contains data for a given method for the use within a single material.
-    * This allows methods to be shared across materials while their non-public state differs.
-    */
-    class MethodVO {
-        public vertexData: number[];
-        public fragmentData: number[];
-        public texturesIndex: number;
-        public secondaryTexturesIndex: number;
-        public vertexConstantsIndex: number;
-        public secondaryVertexConstantsIndex: number;
-        public fragmentConstantsIndex: number;
-        public secondaryFragmentConstantsIndex: number;
-        public useMipmapping: boolean;
-        public useSmoothTextures: boolean;
-        public repeatTextures: boolean;
-        public needsProjection: boolean;
-        public needsView: boolean;
-        public needsNormals: boolean;
-        public needsTangents: boolean;
-        public needsUV: boolean;
-        public needsSecondaryUV: boolean;
-        public needsGlobalVertexPos: boolean;
-        public needsGlobalFragmentPos: boolean;
-        public numLights: number;
-        public useLightFallOff: boolean;
-        /**
-        * Creates a new MethodVO object.
-        */
-        constructor();
-        /**
-        * Resets the values of the value object to their "unused" state.
-        */
-        public reset(): void;
-    }
-}
-declare module away.materials {
-    /**
-    * MethodVOSet provides a EffectMethodBase and MethodVO combination to be used by a material, allowing methods
-    * to be shared across different materials while their internal state changes.
-    */
-    class MethodVOSet {
-        /**
-        * An instance of a concrete EffectMethodBase subclass.
-        */
-        public method: EffectMethodBase;
-        /**
-        * The MethodVO data for the given method containing the material-specific data for a given material/method combination.
-        */
-        public data: MethodVO;
-        /**
-        * Creates a new MethodVOSet object.
-        * @param method The method for which we need to store a MethodVO object.
-        */
-        constructor(method: EffectMethodBase);
-    }
-}
-declare module away.materials {
-    /**
-    * ShadingMethodBase provides an abstract base method for shading methods, used by compiled passes to compile
-    * the final shading program.
-    */
-    class ShadingMethodBase extends library.NamedAssetBase {
-        public _sharedRegisters: ShaderRegisterData;
-        public _passes: MaterialPassBase[];
-        /**
-        * Create a new ShadingMethodBase object.
-        */
-        constructor();
-        /**
-        * Initializes the properties for a MethodVO, including register and texture indices.
-        *
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        *
-        * @internal
-        */
-        public iInitVO(vo: MethodVO): void;
-        /**
-        * Initializes unchanging shader constants using the data from a MethodVO.
-        *
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        *
-        * @internal
-        */
-        public iInitConstants(vo: MethodVO): void;
-        /**
-        * The shared registers created by the compiler and possibly used by methods.
-        *
-        * @internal
-        */
-        /**
-        * @internal
-        */
-        public iSharedRegisters : ShaderRegisterData;
-        public setISharedRegisters(value: ShaderRegisterData): void;
-        /**
-        * Any passes required that render to a texture used by this method.
-        */
-        public passes : MaterialPassBase[];
-        /**
-        * Cleans up any resources used by the current object.
-        */
-        public dispose(): void;
-        /**
-        * Creates a data container that contains material-dependent data. Provided as a factory method so a custom subtype can be overridden when needed.
-        *
-        * @internal
-        */
-        public iCreateMethodVO(): MethodVO;
-        /**
-        * Resets the compilation state of the method.
-        *
-        * @internal
-        */
-        public iReset(): void;
-        /**
-        * Resets the method's state for compilation.
-        *
-        * @internal
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * Get the vertex shader code for this method.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param regCache The register cache used during the compilation.
-        *
-        * @internal
-        */
-        public iGetVertexCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
-        /**
-        * Sets the render state for this method.
-        *
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param stage The Stage object currently used for rendering.
-        *
-        * @internal
-        */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
-        /**
-        * Sets the render state for a single renderable.
-        *
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param renderable The renderable currently being rendered.
-        * @param stage The Stage object currently used for rendering.
-        * @param camera The camera from which the scene is currently rendered.
-        *
-        * @internal
-        */
-        public iSetRenderState(vo: MethodVO, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * Clears the render state for this method.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param stage The Stage object currently used for rendering.
-        *
-        * @internal
-        */
-        public iDeactivate(vo: MethodVO, stage: base.Stage): void;
-        /**
-        * A helper method that generates standard code for sampling from a texture using the normal uv coordinates.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param targetReg The register in which to store the sampled colour.
-        * @param inputReg The texture stream register.
-        * @param texture The texture which will be assigned to the given slot.
-        * @param uvReg An optional uv register if coordinates different from the primary uv coordinates are to be used.
-        * @param forceWrap If true, texture wrapping is enabled regardless of the material setting.
-        * @return The fragment code that performs the sampling.
-        *
-        * @protected
-        */
-        public pGetTex2DSampleCode(vo: MethodVO, targetReg: ShaderRegisterElement, inputReg: ShaderRegisterElement, texture: textures.TextureProxyBase, uvReg?: ShaderRegisterElement, forceWrap?: string): string;
-        /**
-        * A helper method that generates standard code for sampling from a cube texture.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param targetReg The register in which to store the sampled colour.
-        * @param inputReg The texture stream register.
-        * @param texture The cube map which will be assigned to the given slot.
-        * @param uvReg The direction vector with which to sample the cube map.
-        *
-        * @protected
-        */
-        public pGetTexCubeSampleCode(vo: MethodVO, targetReg: ShaderRegisterElement, inputReg: ShaderRegisterElement, texture: textures.TextureProxyBase, uvReg: ShaderRegisterElement): string;
-        /**
-        * Generates a texture format string for the sample instruction.
-        * @param texture The texture for which to get the format string.
-        * @return
-        *
-        * @protected
-        */
-        private getFormatStringForTexture(texture);
-        /**
-        * Marks the shader program as invalid, so it will be recompiled before the next render.
-        *
-        * @internal
-        */
-        public iInvalidateShaderProgram(): void;
-        /**
-        * Copies the state from a ShadingMethodBase object into the current object.
-        */
-        public copyFrom(method: ShadingMethodBase): void;
-    }
-}
-declare module away.materials {
-    /**
-    * LightingMethodBase provides an abstract base method for shading methods that uses lights.
-    * Used for diffuse and specular shaders only.
-    */
-    class LightingMethodBase extends ShadingMethodBase {
-        /**
-        * A method that is exposed to wrappers in case the strength needs to be controlled
-        */
-        public _iModulateMethod: any;
-        /**
-        * Creates a new LightingMethodBase.
-        */
-        constructor();
-        /**
-        * Get the fragment shader code that will be needed before any per-light code is added.
-        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
-        * @param regCache The register cache used during the compilation.
-        * @private
-        */
-        public iGetFragmentPreLightingCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
-        /**
-        * Get the fragment shader code that will generate the code relevant to a single light.
-        *
-        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
-        * @param lightDirReg The register containing the light direction vector.
-        * @param lightColReg The register containing the light colour.
-        * @param regCache The register cache used during the compilation.
-        */
-        public iGetFragmentCodePerLight(vo: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, regCache: ShaderRegisterCache): string;
-        /**
-        * Get the fragment shader code that will generate the code relevant to a single light probe object.
-        *
-        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
-        * @param cubeMapReg The register containing the cube map for the current probe
-        * @param weightRegister A string representation of the register + component containing the current weight
-        * @param regCache The register cache providing any necessary registers to the shader
-        */
-        public iGetFragmentCodePerProbe(vo: MethodVO, cubeMapReg: ShaderRegisterElement, weightRegister: string, regCache: ShaderRegisterCache): string;
-        /**
-        * Get the fragment shader code that should be added after all per-light code. Usually composits everything to the target register.
-        *
-        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
-        * @param regCache The register cache used during the compilation.
-        * @param targetReg The register containing the final shading output.
-        * @private
-        */
-        public iGetFragmentPostLightingCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-    }
-}
-declare module away.materials {
-    /**
-    * ShadowMapMethodBase provides an abstract base method for shadow map methods.
-    */
-    class ShadowMapMethodBase extends ShadingMethodBase implements library.IAsset {
-        public _pCastingLight: base.LightBase;
-        public _pShadowMapper: ShadowMapperBase;
-        public _pEpsilon: number;
-        public _pAlpha: number;
-        /**
-        * Creates a new ShadowMapMethodBase object.
-        * @param castingLight The light used to cast shadows.
-        */
-        constructor(castingLight: base.LightBase);
-        /**
-        * @inheritDoc
-        */
-        public assetType : string;
-        /**
-        * The "transparency" of the shadows. This allows making shadows less strong.
-        */
-        public alpha : number;
-        /**
-        * The light casting the shadows.
-        */
-        public castingLight : base.LightBase;
-        /**
-        * A small value to counter floating point precision errors when comparing values in the shadow map with the
-        * calculated depth value. Increase this if shadow banding occurs, decrease it if the shadow seems to be too detached.
-        */
-        public epsilon : number;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-    }
-}
-declare module away.materials {
-    /**
-    * ShaderMethodSetup contains the method configuration for an entire material.
-    */
-    class ShaderMethodSetup extends events.EventDispatcher {
-        public _iColorTransformMethod: EffectColorTransformMethod;
-        public _iColorTransformMethodVO: MethodVO;
-        public _iNormalMethod: NormalBasicMethod;
-        public _iNormalMethodVO: MethodVO;
-        public _iAmbientMethod: AmbientBasicMethod;
-        public _iAmbientMethodVO: MethodVO;
-        public _iShadowMethod: ShadowMapMethodBase;
-        public _iShadowMethodVO: MethodVO;
-        public _iDiffuseMethod: DiffuseBasicMethod;
-        public _iDiffuseMethodVO: MethodVO;
-        public _iSpecularMethod: SpecularBasicMethod;
-        public _iSpecularMethodVO: MethodVO;
-        public _iMethods: MethodVOSet[];
-        private _onShaderInvalidatedDelegate;
-        /**
-        * Creates a new <code>ShaderMethodSetup</code> object.
-        */
-        constructor();
-        /**
-        * Called when any method's code is invalidated.
-        */
-        private onShaderInvalidated(event);
-        /**
-        * Invalidates the material's shader code.
-        */
-        private iInvalidateShaderProgram();
-        /**
-        *  The method used to generate the per-pixel normals.
-        */
-        public normalMethod : NormalBasicMethod;
-        /**
-        * The method that provides the ambient lighting contribution.
-        */
-        public ambientMethod : AmbientBasicMethod;
-        /**
-        * The method used to render shadows cast on this surface, or null if no shadows are to be rendered.
-        */
-        public shadowMethod : ShadowMapMethodBase;
-        /**
-        * The method that provides the diffuse lighting contribution.
-        */
-        public diffuseMethod : DiffuseBasicMethod;
-        /**
-        * The method to perform specular shading.
-        */
-        public specularMethod : SpecularBasicMethod;
-        /**
-        * @private
-        */
-        public iColorTransformMethod : EffectColorTransformMethod;
-        /**
-        * Disposes the object.
-        */
-        public dispose(): void;
-        /**
-        * Removes all listeners from a method.
-        */
-        private clearListeners(method);
-        /**
-        * Adds a method to change the material after all lighting is performed.
-        * @param method The method to be added.
-        */
-        public addMethod(method: EffectMethodBase): void;
-        /**
-        * Queries whether a given effect method was added to the material.
-        *
-        * @param method The method to be queried.
-        * @return true if the method was added to the material, false otherwise.
-        */
-        public hasMethod(method: EffectMethodBase): boolean;
-        /**
-        * Inserts a method to change the material after all lighting is performed at the given index.
-        * @param method The method to be added.
-        * @param index The index of the method's occurrence
-        */
-        public addMethodAt(method: EffectMethodBase, index: number): void;
-        /**
-        * Returns the method added at the given index.
-        * @param index The index of the method to retrieve.
-        * @return The method at the given index.
-        */
-        public getMethodAt(index: number): EffectMethodBase;
-        /**
-        * The number of "effect" methods added to the material.
-        */
-        public numMethods : number;
-        /**
-        * Removes a method from the pass.
-        * @param method The method to be removed.
-        */
-        public removeMethod(method: EffectMethodBase): void;
-        private getMethodSetForMethod(method);
-    }
-}
-declare module away.materials {
-    /**
-    * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
-    */
-    class AmbientBasicMethod extends ShadingMethodBase {
-        private _useTexture;
-        private _texture;
-        public _pAmbientInputRegister: ShaderRegisterElement;
-        private _ambientColor;
-        private _ambientR;
-        private _ambientG;
-        private _ambientB;
-        private _ambient;
-        public _iLightAmbientR: number;
-        public _iLightAmbientG: number;
-        public _iLightAmbientB: number;
-        /**
-        * Creates a new AmbientBasicMethod object.
-        */
-        constructor();
-        /**
-        * @inheritDoc
-        */
-        public iInitVO(vo: MethodVO): void;
-        /**
-        * @inheritDoc
-        */
-        public iInitConstants(vo: MethodVO): void;
-        /**
-        * The strength of the ambient reflection of the surface.
-        */
-        public ambient : number;
-        /**
-        * The colour of the ambient reflection of the surface.
-        */
-        public ambientColor : number;
-        /**
-        * The bitmapData to use to define the diffuse reflection color per texel.
-        */
-        public texture : textures.Texture2DBase;
-        /**
-        * @inheritDoc
-        */
-        public copyFrom(method: ShadingMethodBase): void;
-        /**
-        * @inheritDoc
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
-        /**
-        * Updates the ambient color data used by the render state.
-        */
-        private updateAmbient();
-        /**
-        * @inheritDoc
-        */
-        public iSetRenderState(vo: MethodVO, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera): void;
-    }
-}
-declare module away.materials {
     /**
     * AmbientEnvMapMethod provides a diffuse shading method that uses a diffuse irradiance environment map to
     * approximate global lighting rather than lights.
@@ -2386,7 +256,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * The cube environment map to use for the diffuse lighting.
         */
@@ -2394,110 +264,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-    }
-}
-declare module away.materials {
-    /**
-    * DiffuseBasicMethod provides the default shading method for Lambert (dot3) diffuse lighting.
-    */
-    class DiffuseBasicMethod extends LightingMethodBase {
-        private _useAmbientTexture;
-        public _pUseTexture: boolean;
-        public _pTotalLightColorReg: ShaderRegisterElement;
-        public _pDiffuseInputRegister: ShaderRegisterElement;
-        private _texture;
-        private _diffuseColor;
-        private _diffuseR;
-        private _diffuseG;
-        private _diffuseB;
-        private _diffuseA;
-        public _pShadowRegister: ShaderRegisterElement;
-        private _alphaThreshold;
-        public _pIsFirstLight: boolean;
-        /**
-        * Creates a new DiffuseBasicMethod object.
-        */
-        constructor();
-        /**
-        * Set internally if the ambient method uses a texture.
-        */
-        public iUseAmbientTexture : boolean;
-        public iInitVO(vo: MethodVO): void;
-        /**
-        * Forces the creation of the texture.
-        * @param stage The Stage used by the renderer
-        */
-        public generateMip(stage: base.Stage): void;
-        /**
-        * The alpha component of the diffuse reflection.
-        */
-        public diffuseAlpha : number;
-        /**
-        * The color of the diffuse reflection when not using a texture.
-        */
-        public diffuseColor : number;
-        /**
-        * The bitmapData to use to define the diffuse reflection color per texel.
-        */
-        public texture : textures.Texture2DBase;
-        /**
-        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
-        * invisible or entirely opaque, often used with textures for foliage, etc.
-        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
-        */
-        public alphaThreshold : number;
-        /**
-        * @inheritDoc
-        */
-        public dispose(): void;
-        /**
-        * @inheritDoc
-        */
-        public copyFrom(method: ShadingMethodBase): void;
-        /**
-        * @inheritDoc
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentPreLightingCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCodePerLight(vo: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, regCache: ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCodePerProbe(vo: MethodVO, cubeMapReg: ShaderRegisterElement, weightRegister: string, regCache: ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentPostLightingCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-        /**
-        * Generate the code that applies the calculated shadow to the diffuse light
-        * @param vo The MethodVO object for which the compilation is currently happening.
-        * @param regCache The register cache the compiler is currently using for the register management.
-        */
-        public pApplyShadow(vo: MethodVO, regCache: ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
-        /**
-        * Updates the diffuse color data used by the render state.
-        */
-        private updateDiffuse();
-        /**
-        * Set internally by the compiler, so the method knows the register containing the shadow calculation.
-        */
-        public iShadowRegister : ShaderRegisterElement;
-        public setIShadowRegister(value: ShaderRegisterElement): void;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -2514,7 +285,7 @@ declare module away.materials {
         * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature clampDiffuse(t:ShaderRegisterElement, regCache:ShaderRegisterCache):string, in which t.w will contain the diffuse strength.
         * @param baseMethod The base diffuse method on which this method's shading is based.
         */
-        constructor(modulateMethod: Function, baseMethod?: DiffuseBasicMethod);
+        constructor(modulateMethod: (shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData) => string, baseMethod?: DiffuseBasicMethod);
         /**
         * The base diffuse method on which this method's shading is based.
         */
@@ -2522,19 +293,15 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderLightingObject, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderLightingObject, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
         public dispose(): void;
-        /**
-        * @inheritDoc
-        */
-        public alphaThreshold : number;
         /**
         * @inheritDoc
         */
@@ -2548,42 +315,46 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public diffuseAlpha : number;
-        /**
-        * @inheritDoc
-        */
-        /**
-        * @inheritDoc
-        */
         public diffuseColor : number;
         /**
         * @inheritDoc
         */
-        public iGetFragmentPreLightingCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCodePerLight(vo: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, regCache: ShaderRegisterCache): string;
+        public ambientColor : number;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCodePerProbe(vo: MethodVO, cubeMapReg: ShaderRegisterElement, weightRegister: string, regCache: ShaderRegisterCache): string;
+        public iGetFragmentPreLightingCode(shaderObject: ShaderLightingObject, methodVO: MethodVO, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iGetFragmentCodePerLight(shaderObject: ShaderLightingObject, methodVO: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iDeactivate(vo: MethodVO, stage: base.Stage): void;
+        public iGetFragmentCodePerProbe(shaderObject: ShaderLightingObject, methodVO: MethodVO, cubeMapReg: ShaderRegisterElement, weightRegister: string, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iGetVertexCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
+        public iActivate(shaderObject: ShaderLightingObject, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentPostLightingCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iSetRenderState(shaderObject: ShaderLightingObject, methodVO: MethodVO, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera): void;
+        /**
+        * @inheritDoc
+        */
+        public iDeactivate(shaderObject: ShaderLightingObject, methodVO: MethodVO, stage: base.Stage): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetVertexCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPostLightingCode(shaderObject: ShaderLightingObject, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
@@ -2592,15 +363,6 @@ declare module away.materials {
         * @inheritDoc
         */
         public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public iSharedRegisters : ShaderRegisterData;
-        public setISharedRegisters(value: ShaderRegisterData): void;
-        /**
-        * @inheritDoc
-        */
-        public iShadowRegister : ShaderRegisterElement;
         /**
         * Called when the base method's shader code is invalidated.
         */
@@ -2624,7 +386,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderLightingObject, methodVO: MethodVO): void;
         /**
         * The amount of shadow gradations.
         */
@@ -2640,11 +402,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iGetFragmentPreLightingCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
+        public iGetFragmentPreLightingCode(shaderObject: ShaderLightingObject, methodVO: MethodVO, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderLightingObject, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * Snaps the diffuse shading of the wrapped method to one of the levels.
         * @param vo The MethodVO used to compile the current shader.
@@ -2653,7 +415,7 @@ declare module away.materials {
         * @param sharedRegisters The shared register data for this shader.
         * @return The AGAL fragment code for the method.
         */
-        private clampDiffuse(vo, t, regCache, sharedRegisters);
+        private clampDiffuse(shaderObject, methodVO, targetReg, registerCache, sharedRegisters);
     }
 }
 declare module away.materials {
@@ -2668,11 +430,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentPostLightingCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentPostLightingCode(shaderObject: ShaderLightingObject, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -2703,19 +465,19 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iGetFragmentPreLightingCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
+        public iGetFragmentPreLightingCode(shaderObject: ShaderLightingObject, methodVO: MethodVO, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCodePerLight(vo: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, regCache: ShaderRegisterCache): string;
+        public iGetFragmentCodePerLight(shaderObject: ShaderLightingObject, methodVO: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public pApplyShadow(vo: MethodVO, regCache: ShaderRegisterCache): string;
+        public pApplyShadow(shaderObject: ShaderLightingObject, methodVO: MethodVO, regCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderLightingObject, methodVO: MethodVO, stage: base.Stage): void;
     }
 }
 declare module away.materials {
@@ -2750,7 +512,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderLightingObject, methodVO: MethodVO): void;
         /**
         * The blend mode with which the light map should be applied to the lighting result.
         *
@@ -2765,87 +527,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderLightingObject, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentPostLightingCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-    }
-}
-declare module away.materials {
-    /**
-    * DiffuseSubSurfaceMethod provides a depth map-based diffuse shading method that mimics the scattering of
-    * light inside translucent surfaces. It allows light to shine through an object and to soften the diffuse shading.
-    * It can be used for candle wax, ice, skin, ...
-    */
-    class DiffuseSubSurfaceMethod extends DiffuseCompositeMethod {
-        private _depthPass;
-        private _lightProjVarying;
-        private _propReg;
-        private _scattering;
-        private _translucency;
-        private _lightColorReg;
-        private _scatterColor;
-        private _colorReg;
-        private _decReg;
-        private _scatterR;
-        private _scatterG;
-        private _scatterB;
-        private _targetReg;
-        /**
-        * Creates a new <code>DiffuseSubSurfaceMethod</code> object.
-        *
-        * @param depthMapSize The size of the depth map used.
-        * @param depthMapOffset The amount by which the rendered object will be inflated, to prevent depth map rounding errors.
-        * @param baseMethod The diffuse method used to calculate the regular diffuse-based lighting.
-        */
-        constructor(depthMapSize?: number, depthMapOffset?: number, baseMethod?: DiffuseBasicMethod);
-        /**
-        * @inheritDoc
-        */
-        public iInitConstants(vo: MethodVO): void;
-        public iCleanCompilationData(): void;
-        /**
-        * The amount by which the light scatters. It can be used to set the translucent surface's thickness. Use low
-        * values for skin.
-        */
-        public scattering : number;
-        /**
-        * The translucency of the object.
-        */
-        public translucency : number;
-        /**
-        * The colour of the "insides" of the object, ie: the colour the light becomes after leaving the object.
-        */
-        public scatterColor : number;
-        /**
-        * @inheritDoc
-        */
-        public iGetVertexCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentPreLightingCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCodePerLight(vo: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, regCache: ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentPostLightingCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
-        /**
-        * @inheritDoc
-        */
-        public setRenderState(vo: MethodVO, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * Generates the code for this method
-        */
-        private scatterLight(vo, targetReg, regCache, sharedRegisters);
+        public iGetFragmentPostLightingCode(shaderObject: ShaderLightingObject, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -2872,36 +558,15 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iGetFragmentPreLightingCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
+        public iGetFragmentPreLightingCode(shaderObject: ShaderLightingObject, methodVO: MethodVO, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCodePerLight(vo: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, regCache: ShaderRegisterCache): string;
+        public iGetFragmentCodePerLight(shaderObject: ShaderLightingObject, methodVO: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
-    }
-}
-declare module away.materials {
-    /**
-    * EffectMethodBase forms an abstract base class for shader methods that are not dependent on light sources,
-    * and are in essence post-process effects on the materials.
-    */
-    class EffectMethodBase extends ShadingMethodBase implements library.IAsset {
-        constructor();
-        /**
-        * @inheritDoc
-        */
-        public assetType : string;
-        /**
-        * Get the fragment shader code that should be added after all per-light code. Usually composits everything to the target register.
-        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
-        * @param regCache The register cache used during the compilation.
-        * @param targetReg The register that will be containing the method's output.
-        * @private
-        */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iActivate(shaderObject: ShaderLightingObject, methodVO: MethodVO, stage: base.Stage): void;
     }
 }
 declare module away.materials {
@@ -2923,7 +588,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * Indicated whether or not the secondary uv set for the mask. This allows mapping alpha independently, for
         * instance to tile the main texture and normal map while providing untiled alpha, for example to define the
@@ -2937,11 +602,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderLightingObject, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -2963,36 +628,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
-    }
-}
-declare module away.materials {
-    /**
-    * EffectColorTransformMethod provides a shading method that changes the colour of a material analogous to a
-    * ColorTransform object.
-    */
-    class EffectColorTransformMethod extends EffectMethodBase {
-        private _colorTransform;
-        /**
-        * Creates a new EffectColorTransformMethod.
-        */
-        constructor();
-        /**
-        * The ColorTransform object to transform the colour of the material with.
-        */
-        public colorTransform : geom.ColorTransform;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
     }
 }
 declare module away.materials {
@@ -3016,7 +656,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * The cubic environment map containing the reflected scene.
         */
@@ -3032,11 +672,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -3060,11 +700,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderLightingObject, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * The distance from which the fog starts appearing.
         */
@@ -3080,11 +720,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -3108,11 +748,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * An optional texture to modulate the reflectivity of the surface.
         */
@@ -3136,11 +776,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -3172,7 +812,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * The blend mode with which the light map should be applied to the lighting result.
         *
@@ -3187,11 +827,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -3219,11 +859,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * The cube environment map to use for the refraction.
         */
@@ -3252,11 +892,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -3286,11 +926,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * The blend mode with which to add the light to the object.
         *
@@ -3314,62 +954,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-    }
-}
-declare module away.materials {
-    /**
-    * NormalBasicMethod is the default method for standard tangent-space normal mapping.
-    */
-    class NormalBasicMethod extends ShadingMethodBase {
-        private _texture;
-        private _useTexture;
-        public _pNormalTextureRegister: ShaderRegisterElement;
-        /**
-        * Creates a new NormalBasicMethod object.
-        */
-        constructor();
-        /**
-        * @inheritDoc
-        */
-        public iInitVO(vo: MethodVO): void;
-        /**
-        * Indicates whether or not this method outputs normals in tangent space. Override for object-space normals.
-        */
-        public iTangentSpace : boolean;
-        /**
-        * Indicates if the normal method output is not based on a texture (if not, it will usually always return true)
-        * Override if subclasses are different.
-        */
-        public iHasOutput : boolean;
-        /**
-        * @inheritDoc
-        */
-        public copyFrom(method: ShadingMethodBase): void;
-        /**
-        * The texture containing the normals per pixel.
-        */
-        public normalMap : textures.Texture2DBase;
-        /**
-        * @inheritDoc
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public dispose(): void;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -3391,7 +980,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
@@ -3403,7 +992,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -3427,11 +1016,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * The translation of the first wave layer along the X-axis.
         */
@@ -3463,102 +1052,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-    }
-}
-declare module away.materials {
-    /**
-    * ShadowMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
-    */
-    class ShadowMethodBase extends ShadowMapMethodBase {
-        public _pDepthMapCoordReg: ShaderRegisterElement;
-        public _pUsePoint: boolean;
-        /**
-        * Creates a new ShadowMethodBase object.
-        * @param castingLight The light used to cast shadows.
-        */
-        constructor(castingLight: base.LightBase);
-        /**
-        * @inheritDoc
-        */
-        public iInitVO(vo: MethodVO): void;
-        /**
-        * @inheritDoc
-        */
-        public iInitConstants(vo: MethodVO): void;
-        /**
-        * Wrappers that override the vertex shader need to set this explicitly
-        */
-        public _iDepthMapCoordReg : ShaderRegisterElement;
-        /**
-        * @inheritDoc
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public iGetVertexCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
-        /**
-        * Gets the vertex code for shadow mapping with a point light.
-        *
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param regCache The register cache used during the compilation.
-        */
-        public _pGetPointVertexCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
-        /**
-        * Gets the vertex code for shadow mapping with a planar shadow map (fe: directional lights).
-        *
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param regCache The register cache used during the compilation.
-        */
-        public pGetPlanarVertexCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-        /**
-        * Gets the fragment code for shadow mapping with a planar shadow map.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param regCache The register cache used during the compilation.
-        * @param targetReg The register to contain the shadow coverage
-        * @return
-        */
-        public _pGetPlanarFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-        /**
-        * Gets the fragment code for shadow mapping with a point light.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param regCache The register cache used during the compilation.
-        * @param targetReg The register to contain the shadow coverage
-        * @return
-        */
-        public _pGetPointFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iSetRenderState(vo: MethodVO, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * Gets the fragment code for combining this method with a cascaded shadow map method.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param regCache The register cache used during the compilation.
-        * @param decodeRegister The register containing the data to decode the shadow map depth value.
-        * @param depthTexture The texture containing the shadow map.
-        * @param depthProjection The projection of the fragment relative to the light.
-        * @param targetRegister The register to contain the shadow coverage
-        * @return
-        */
-        public _iGetCascadeFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, decodeRegister: ShaderRegisterElement, depthTexture: ShaderRegisterElement, depthProjection: ShaderRegisterElement, targetRegister: ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
-        /**
-        * Sets the method state for cascade shadow mapping.
-        */
-        public iActivateForCascade(vo: MethodVO, stage: base.Stage): void;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -3590,15 +1088,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderLightingObject, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iSharedRegisters : ShaderRegisterData;
-        /**
-        * @inheritDoc
-        */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
@@ -3606,23 +1100,23 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iGetVertexCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
+        public iGetVertexCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * Creates the registers for the cascades' projection coordinates.
         */
-        private initProjectionsRegs(regCache);
+        private initProjectionsRegs(registerCache);
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iSetRenderState(vo: MethodVO, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera): void;
+        public iSetRenderState(shaderObject: ShaderObjectBase, methodVO: MethodVO, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera): void;
         /**
         * Called when the shadow mappers cascade configuration changes.
         */
@@ -3658,11 +1152,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderLightingObject, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * The range in the shadow map in which to distribute the samples.
         */
@@ -3678,11 +1172,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public _pGetPlanarFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public _pGetPlanarFragmentCode(methodVO: MethodVO, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * Get the actual shader code for shadow mapping
         * @param regCache The register cache managing the registers.
@@ -3690,7 +1184,7 @@ declare module away.materials {
         * @param decReg The register containing the depth map decoding data.
         * @param targetReg The target register to add the shadow coverage.
         */
-        private getSampleCode(regCache, customDataReg, depthMapRegister, decReg, targetReg);
+        private getSampleCode(customDataReg, depthMapRegister, decReg, targetReg, regCache, sharedRegisters);
         /**
         * Adds the code for another tap to the shader code.
         * @param uvReg The uv register for the tap.
@@ -3704,11 +1198,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivateForCascade(vo: MethodVO, stage: base.Stage): void;
+        public iActivateForCascade(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public _iGetCascadeFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, decodeRegister: ShaderRegisterElement, depthTexture: ShaderRegisterElement, depthProjection: ShaderRegisterElement, targetRegister: ShaderRegisterElement): string;
+        public _iGetCascadeFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, decodeRegister: ShaderRegisterElement, depthTexture: ShaderRegisterElement, depthProjection: ShaderRegisterElement, targetRegister: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -3726,46 +1220,19 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderLightingObject, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public _pGetPlanarFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public _pGetPlanarFragmentCode(methodVO: MethodVO, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iActivateForCascade(vo: MethodVO, stage: base.Stage): void;
+        public iActivateForCascade(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public _iGetCascadeFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, decodeRegister: ShaderRegisterElement, depthTexture: ShaderRegisterElement, depthProjection: ShaderRegisterElement, targetRegister: ShaderRegisterElement): string;
-    }
-}
-declare module away.materials {
-    /**
-    * ShadowHardMethod provides the cheapest shadow map method by using a single tap without any filtering.
-    */
-    class ShadowHardMethod extends ShadowMethodBase {
-        /**
-        * Creates a new ShadowHardMethod object.
-        */
-        constructor(castingLight: base.LightBase);
-        /**
-        * @inheritDoc
-        */
-        public _pGetPlanarFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public _pGetPointFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public _iGetCascadeFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, decodeRegister: ShaderRegisterElement, depthTexture: ShaderRegisterElement, depthProjection: ShaderRegisterElement, targetRegister: ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivateForCascade(vo: MethodVO, stage: base.Stage): void;
+        public _iGetCascadeFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, decodeRegister: ShaderRegisterElement, depthTexture: ShaderRegisterElement, depthProjection: ShaderRegisterElement, targetRegister: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -3793,11 +1260,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderLightingObject, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
@@ -3817,23 +1284,23 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iDeactivate(vo: MethodVO, stage: base.Stage): void;
+        public iDeactivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iSetRenderState(vo: MethodVO, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera): void;
+        public iSetRenderState(shaderObject: ShaderObjectBase, methodVO: MethodVO, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera): void;
         /**
         * @inheritDoc
         */
-        public iGetVertexCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
+        public iGetVertexCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
@@ -3842,10 +1309,6 @@ declare module away.materials {
         * @inheritDoc
         */
         public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public iSharedRegisters : ShaderRegisterData;
         /**
         * Called when the base method's shader code is invalidated.
         */
@@ -3879,15 +1342,15 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public _pGetPlanarFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public _pGetPlanarFragmentCode(methodVO: MethodVO, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * Adds the code for another tap to the shader code.
         * @param uv The uv register for the tap.
@@ -3901,11 +1364,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivateForCascade(vo: MethodVO, stage: base.Stage): void;
+        public iActivateForCascade(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public _iGetCascadeFragmentCode(vo: MethodVO, regCache: ShaderRegisterCache, decodeRegister: ShaderRegisterElement, depthTexture: ShaderRegisterElement, depthProjection: ShaderRegisterElement, targetRegister: ShaderRegisterElement): string;
+        public _iGetCascadeFragmentCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, decodeRegister: ShaderRegisterElement, depthTexture: ShaderRegisterElement, depthProjection: ShaderRegisterElement, targetRegister: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * Get the actual shader code for shadow mapping
         * @param regCache The register cache managing the registers.
@@ -3915,91 +1378,6 @@ declare module away.materials {
         * @param dataReg The register containing additional data.
         */
         private getSampleCode(regCache, depthTexture, decodeRegister, targetRegister, dataReg);
-    }
-}
-declare module away.materials {
-    /**
-    * SpecularBasicMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
-    * version of Phong specularity).
-    */
-    class SpecularBasicMethod extends LightingMethodBase {
-        public _pUseTexture: boolean;
-        public _pTotalLightColorReg: ShaderRegisterElement;
-        public _pSpecularTextureRegister: ShaderRegisterElement;
-        public _pSpecularTexData: ShaderRegisterElement;
-        public _pSpecularDataRegister: ShaderRegisterElement;
-        private _texture;
-        private _gloss;
-        private _specular;
-        private _specularColor;
-        public _iSpecularR: number;
-        public _iSpecularG: number;
-        public _iSpecularB: number;
-        private _shadowRegister;
-        public _pIsFirstLight: boolean;
-        /**
-        * Creates a new SpecularBasicMethod object.
-        */
-        constructor();
-        /**
-        * @inheritDoc
-        */
-        public iInitVO(vo: MethodVO): void;
-        /**
-        * The sharpness of the specular highlight.
-        */
-        public gloss : number;
-        /**
-        * The overall strength of the specular highlights.
-        */
-        public specular : number;
-        /**
-        * The colour of the specular reflection of the surface.
-        */
-        public specularColor : number;
-        /**
-        * The bitmapData that encodes the specular highlight strength per texel in the red channel, and the sharpness
-        * in the green channel. You can use SpecularBitmapTexture if you want to easily set specular and gloss maps
-        * from grayscale images, but prepared images are preferred.
-        */
-        public texture : textures.Texture2DBase;
-        /**
-        * @inheritDoc
-        */
-        public copyFrom(method: ShadingMethodBase): void;
-        /**
-        * @inheritDoc
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentPreLightingCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCodePerLight(vo: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, regCache: ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCodePerProbe(vo: MethodVO, cubeMapReg: ShaderRegisterElement, weightRegister: string, regCache: ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentPostLightingCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
-        /**
-        * Updates the specular color data used by the render state.
-        */
-        private updateSpecular();
-        /**
-        * Set internally by the compiler, so the method knows the register containing the shadow calculation.
-        */
-        public iShadowRegister : ShaderRegisterElement;
-        public setIShadowRegister(shadowReg: ShaderRegisterElement): void;
     }
 }
 declare module away.materials {
@@ -4016,15 +1394,15 @@ declare module away.materials {
         * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature modSpecular(t:ShaderRegisterElement, regCache:ShaderRegisterCache):string, in which t.w will contain the specular strength and t.xyz will contain the half-vector or the reflection vector.
         * @param baseMethod The base specular method on which this method's shading is based.
         */
-        constructor(modulateMethod: Function, baseMethod?: SpecularBasicMethod);
+        constructor(modulateMethod: (shaderObject: ShaderObjectBase, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData) => string, baseMethod?: SpecularBasicMethod);
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderLightingObject, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * The base specular method on which this method's shading is based.
         */
@@ -4052,37 +1430,36 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderLightingObject, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iDeactivate(vo: MethodVO, stage: base.Stage): void;
+        public iSetRenderState(shaderObject: ShaderLightingObject, methodVO: MethodVO, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera): void;
         /**
         * @inheritDoc
         */
-        public iSharedRegisters : ShaderRegisterData;
-        public setISharedRegisters(value: ShaderRegisterData): void;
+        public iDeactivate(shaderObject: ShaderObjectBase, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetVertexCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
+        public iGetVertexCode(shaderObject: ShaderObjectBase, methodVO: MethodVO, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iGetFragmentPreLightingCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
+        public iGetFragmentPreLightingCode(shaderObject: ShaderLightingObject, methodVO: MethodVO, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCodePerLight(vo: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, regCache: ShaderRegisterCache): string;
+        public iGetFragmentCodePerLight(shaderObject: ShaderLightingObject, methodVO: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         * @return
         */
-        public iGetFragmentCodePerProbe(vo: MethodVO, cubeMapReg: ShaderRegisterElement, weightRegister: string, regCache: ShaderRegisterCache): string;
+        public iGetFragmentCodePerProbe(shaderObject: ShaderLightingObject, methodVO: MethodVO, cubeMapReg: ShaderRegisterElement, weightRegister: string, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
-        public iGetFragmentPostLightingCode(vo: MethodVO, regCache: ShaderRegisterCache, targetReg: ShaderRegisterElement): string;
+        public iGetFragmentPostLightingCode(shaderObject: ShaderLightingObject, methodVO: MethodVO, targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * @inheritDoc
         */
@@ -4091,10 +1468,6 @@ declare module away.materials {
         * @inheritDoc
         */
         public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public iShadowRegister : ShaderRegisterElement;
         /**
         * Called when the base method's shader code is invalidated.
         */
@@ -4118,11 +1491,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitVO(vo: MethodVO): void;
+        public iInitVO(shaderObject: ShaderLightingObject, methodVO: MethodVO): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCodePerLight(vo: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, regCache: ShaderRegisterCache): string;
+        public iGetFragmentCodePerLight(shaderObject: ShaderLightingObject, methodVO: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -4150,7 +1523,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderLightingObject, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
@@ -4163,11 +1536,11 @@ declare module away.materials {
         * @param sharedRegisters The shared register data for this shader.
         * @return The AGAL fragment code for the method.
         */
-        private clampSpecular(methodVO, target, regCache, sharedRegisters);
+        private clampSpecular(shaderObject, methodVO, targetReg, registerCache, sharedRegisters);
         /**
         * @inheritDoc
         */
-        public iGetFragmentPreLightingCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
+        public iGetFragmentPreLightingCode(shaderObject: ShaderLightingObject, methodVO: MethodVO, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -4188,7 +1561,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: MethodVO): void;
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
         * Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.
         */
@@ -4208,11 +1581,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: MethodVO, stage: base.Stage): void;
+        public iActivate(shaderObject: ShaderLightingObject, methodVO: MethodVO, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentPreLightingCode(vo: MethodVO, regCache: ShaderRegisterCache): string;
+        public iGetFragmentPreLightingCode(shaderObject: ShaderLightingObject, methodVO: MethodVO, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         /**
         * Applies the fresnel effect to the specular strength.
         *
@@ -4222,7 +1595,7 @@ declare module away.materials {
         * @param sharedRegisters The shared registers created by the compiler.
         * @return The AGAL fragment code for the method.
         */
-        private modulateSpecular(vo, target, regCache, sharedRegisters);
+        private modulateSpecular(shaderObject, methodVO, targetReg, registerCache, sharedRegisters);
     }
 }
 declare module away.materials {
@@ -4237,1302 +1610,13 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iGetFragmentCodePerLight(vo: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, regCache: ShaderRegisterCache): string;
-    }
-}
-declare module away.materials {
-    /**
-    * ShaderRegister Cache provides the usage management system for all registers during shading compilation.
-    */
-    class ShaderRegisterCache {
-        private _fragmentTempCache;
-        private _vertexTempCache;
-        private _varyingCache;
-        private _fragmentConstantsCache;
-        private _vertexConstantsCache;
-        private _textureCache;
-        private _vertexAttributesCache;
-        private _vertexConstantOffset;
-        private _vertexAttributesOffset;
-        private _varyingsOffset;
-        private _fragmentConstantOffset;
-        private _fragmentOutputRegister;
-        private _vertexOutputRegister;
-        private _numUsedVertexConstants;
-        private _numUsedFragmentConstants;
-        private _numUsedStreams;
-        private _numUsedTextures;
-        private _numUsedVaryings;
-        private _profile;
-        /**
-        * Create a new ShaderRegisterCache object.
-        *
-        * @param profile The compatibility profile used by the renderer.
-        */
-        constructor(profile: string);
-        /**
-        * Resets all registers.
-        */
-        public reset(): void;
-        /**
-        * Disposes all resources used.
-        */
-        public dispose(): void;
-        /**
-        * Marks a fragment temporary register as used, so it cannot be retrieved. The register won't be able to be used until removeUsage
-        * has been called usageCount times again.
-        * @param register The register to mark as used.
-        * @param usageCount The amount of usages to add.
-        */
-        public addFragmentTempUsages(register: ShaderRegisterElement, usageCount: number): void;
-        /**
-        * Removes a usage from a fragment temporary register. When usages reach 0, the register is freed again.
-        * @param register The register for which to remove a usage.
-        */
-        public removeFragmentTempUsage(register: ShaderRegisterElement): void;
-        /**
-        * Marks a vertex temporary register as used, so it cannot be retrieved. The register won't be able to be used
-        * until removeUsage has been called usageCount times again.
-        * @param register The register to mark as used.
-        * @param usageCount The amount of usages to add.
-        */
-        public addVertexTempUsages(register: ShaderRegisterElement, usageCount: number): void;
-        /**
-        * Removes a usage from a vertex temporary register. When usages reach 0, the register is freed again.
-        * @param register The register for which to remove a usage.
-        */
-        public removeVertexTempUsage(register: ShaderRegisterElement): void;
-        /**
-        * Retrieve an entire fragment temporary register that's still available. The register won't be able to be used until removeUsage
-        * has been called usageCount times again.
-        */
-        public getFreeFragmentVectorTemp(): ShaderRegisterElement;
-        /**
-        * Retrieve a single component from a fragment temporary register that's still available.
-        */
-        public getFreeFragmentSingleTemp(): ShaderRegisterElement;
-        /**
-        * Retrieve an available varying register
-        */
-        public getFreeVarying(): ShaderRegisterElement;
-        /**
-        * Retrieve an available fragment constant register
-        */
-        public getFreeFragmentConstant(): ShaderRegisterElement;
-        /**
-        * Retrieve an available vertex constant register
-        */
-        public getFreeVertexConstant(): ShaderRegisterElement;
-        /**
-        * Retrieve an entire vertex temporary register that's still available.
-        */
-        public getFreeVertexVectorTemp(): ShaderRegisterElement;
-        /**
-        * Retrieve a single component from a vertex temporary register that's still available.
-        */
-        public getFreeVertexSingleTemp(): ShaderRegisterElement;
-        /**
-        * Retrieve an available vertex attribute register
-        */
-        public getFreeVertexAttribute(): ShaderRegisterElement;
-        /**
-        * Retrieve an available texture register
-        */
-        public getFreeTextureReg(): ShaderRegisterElement;
-        /**
-        * Indicates the start index from which to retrieve vertex constants.
-        */
-        public vertexConstantOffset : number;
-        /**
-        * Indicates the start index from which to retrieve vertex attributes.
-        */
-        public vertexAttributesOffset : number;
-        /**
-        * Indicates the start index from which to retrieve varying registers.
-        */
-        public varyingsOffset : number;
-        /**
-        * Indicates the start index from which to retrieve fragment constants.
-        */
-        public fragmentConstantOffset : number;
-        /**
-        * The fragment output register.
-        */
-        public fragmentOutputRegister : ShaderRegisterElement;
-        /**
-        * The amount of used vertex constant registers.
-        */
-        public numUsedVertexConstants : number;
-        /**
-        * The amount of used fragment constant registers.
-        */
-        public numUsedFragmentConstants : number;
-        /**
-        * The amount of used vertex streams.
-        */
-        public numUsedStreams : number;
-        /**
-        * The amount of used texture slots.
-        */
-        public numUsedTextures : number;
-        /**
-        * The amount of used varying registers.
-        */
-        public numUsedVaryings : number;
-    }
-}
-declare module away.materials {
-    /**
-    * A single register element (an entire register or a single register's component) used by the RegisterPool.
-    */
-    class ShaderRegisterElement {
-        private _regName;
-        private _index;
-        private _toStr;
-        private static COMPONENTS;
-        public _component: number;
-        /**
-        * Creates a new ShaderRegisterElement object.
-        *
-        * @param regName The name of the register.
-        * @param index The index of the register.
-        * @param component The register's component, if not the entire register is represented.
-        */
-        constructor(regName: string, index: number, component?: number);
-        /**
-        * Converts the register or the components AGAL string representation.
-        */
-        public toString(): string;
-        /**
-        * The register's name.
-        */
-        public regName : string;
-        /**
-        * The register's index.
-        */
-        public index : number;
-    }
-}
-declare module away.materials {
-    /**
-    * ShaderRegisterData contains the "named" registers, generated by the compiler and to be passed on to the methods.
-    */
-    class ShaderRegisterData {
-        public normalVarying: ShaderRegisterElement;
-        public tangentVarying: ShaderRegisterElement;
-        public bitangentVarying: ShaderRegisterElement;
-        public uvVarying: ShaderRegisterElement;
-        public secondaryUVVarying: ShaderRegisterElement;
-        public viewDirVarying: ShaderRegisterElement;
-        public shadedTarget: ShaderRegisterElement;
-        public globalPositionVertex: ShaderRegisterElement;
-        public globalPositionVarying: ShaderRegisterElement;
-        public localPosition: ShaderRegisterElement;
-        public normalInput: ShaderRegisterElement;
-        public tangentInput: ShaderRegisterElement;
-        public animatedNormal: ShaderRegisterElement;
-        public animatedTangent: ShaderRegisterElement;
-        public commons: ShaderRegisterElement;
-        public projectionFragment: ShaderRegisterElement;
-        public normalFragment: ShaderRegisterElement;
-        public viewDirFragment: ShaderRegisterElement;
-        public bitangent: ShaderRegisterElement;
-        constructor();
-    }
-}
-declare module away.materials {
-    /**
-    * MethodDependencyCounter keeps track of the number of dependencies for "named registers" used across methods.
-    * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
-    * passed on to methods. The compiler uses the results to reserve usages through RegisterPool, which can be removed
-    * each time a method has been compiled into the shader.
-    *
-    * @see RegisterPool.addUsage
-    */
-    class MethodDependencyCounter {
-        private _projectionDependencies;
-        private _normalDependencies;
-        private _viewDirDependencies;
-        private _uvDependencies;
-        private _secondaryUVDependencies;
-        private _globalPosDependencies;
-        private _tangentDependencies;
-        private _usesGlobalPosFragment;
-        private _numPointLights;
-        private _lightSourceMask;
-        /**
-        * Creates a new MethodDependencyCounter object.
-        */
-        constructor();
-        /**
-        * Clears dependency counts for all registers. Called when recompiling a pass.
-        */
-        public reset(): void;
-        /**
-        * Sets the amount of lights that have a position associated with them.
-        * @param numPointLights The amount of point lights.
-        * @param lightSourceMask The light source types used by the material.
-        */
-        public setPositionedLights(numPointLights: number, lightSourceMask: number): void;
-        /**
-        * Increases dependency counters for the named registers listed as required by the given MethodVO.
-        * @param methodVO the MethodVO object for which to include dependencies.
-        */
-        public includeMethodVO(methodVO: MethodVO): void;
-        /**
-        * The amount of tangent vector dependencies (fragment shader).
-        */
-        public tangentDependencies : number;
-        /**
-        * Indicates whether there are any dependencies on the world-space position vector.
-        */
-        public usesGlobalPosFragment : boolean;
-        /**
-        * The amount of dependencies on the projected position.
-        */
-        public projectionDependencies : number;
-        /**
-        * The amount of dependencies on the normal vector.
-        */
-        public normalDependencies : number;
-        /**
-        * The amount of dependencies on the view direction.
-        */
-        public viewDirDependencies : number;
-        /**
-        * The amount of dependencies on the primary UV coordinates.
-        */
-        public uvDependencies : number;
-        /**
-        * The amount of dependencies on the secondary UV coordinates.
-        */
-        public secondaryUVDependencies : number;
-        /**
-        * The amount of dependencies on the global position. This can be 0 while hasGlobalPosDependencies is true when
-        * the global position is used as a temporary value (fe to calculate the view direction)
-        */
-        public globalPosDependencies : number;
-        /**
-        * Adds any external world space dependencies, used to force world space calculations.
-        */
-        public addWorldSpaceDependencies(fragmentLights: boolean): void;
-    }
-}
-declare module away.materials {
-    /**
-    * RegisterPool is used by the shader compilation process to keep track of which registers of a certain type are
-    * currently used and should not be allowed to be written to. Either entire registers can be requested and locked,
-    * or single components (x, y, z, w) of a single register.
-    * It is used by ShaderRegisterCache to track usages of individual register types.
-    *
-    * @see away.materials.ShaderRegisterCache
-    */
-    class RegisterPool {
-        private static _regPool;
-        private static _regCompsPool;
-        private _vectorRegisters;
-        private _registerComponents;
-        private _regName;
-        private _usedSingleCount;
-        private _usedVectorCount;
-        private _regCount;
-        private _persistent;
-        /**
-        * Creates a new RegisterPool object.
-        * @param regName The base name of the register type ("ft" for fragment temporaries, "vc" for vertex constants, etc)
-        * @param regCount The amount of available registers of this type.
-        * @param persistent Whether or not registers, once reserved, can be freed again. For example, temporaries are not persistent, but constants are.
-        */
-        constructor(regName: string, regCount: number, persistent?: boolean);
-        /**
-        * Retrieve an entire vector register that's still available.
-        */
-        public requestFreeVectorReg(): ShaderRegisterElement;
-        /**
-        * Retrieve a single vector component that's still available.
-        */
-        public requestFreeRegComponent(): ShaderRegisterElement;
-        /**
-        * Marks a register as used, so it cannot be retrieved. The register won't be able to be used until removeUsage
-        * has been called usageCount times again.
-        * @param register The register to mark as used.
-        * @param usageCount The amount of usages to add.
-        */
-        public addUsage(register: ShaderRegisterElement, usageCount: number): void;
-        /**
-        * Removes a usage from a register. When usages reach 0, the register is freed again.
-        * @param register The register for which to remove a usage.
-        */
-        public removeUsage(register: ShaderRegisterElement): void;
-        /**
-        * Disposes any resources used by the current RegisterPool object.
-        */
-        public dispose(): void;
-        /**
-        * Indicates whether or not any registers are in use.
-        */
-        public hasRegisteredRegs(): boolean;
-        /**
-        * Initializes all registers.
-        */
-        private initRegisters(regName, regCount);
-        private static _initPool(regName, regCount);
-        /**
-        * Check if the temp register is either used for single or vector use
-        */
-        private isRegisterUsed(index);
-        private _initArray(a, val);
-    }
-}
-declare module away.materials {
-    /**
-    * ShaderCompiler is an abstract base class for shader compilers that use modular shader methods to assemble a
-    * material. Concrete subclasses are used by the default materials.
-    *
-    * @see away.materials.ShadingMethodBase
-    */
-    class ShaderCompiler {
-        public _pSharedRegisters: ShaderRegisterData;
-        public _pRegisterCache: ShaderRegisterCache;
-        public _pDependencyCounter: MethodDependencyCounter;
-        public _pMethodSetup: ShaderMethodSetup;
-        private _smooth;
-        private _repeat;
-        private _mipmap;
-        public _pEnableLightFallOff: boolean;
-        private _preserveAlpha;
-        private _animateUVs;
-        public _pAlphaPremultiplied: boolean;
-        private _vertexConstantData;
-        private _fragmentConstantData;
-        public _pVertexCode: string;
-        public _pFragmentCode: string;
-        private _fragmentLightCode;
-        private _fragmentPostLightCode;
-        private _commonsDataIndex;
-        public _pAnimatableAttributes: string[];
-        public _pAnimationTargetRegisters: string[];
-        public _pLightProbeDiffuseIndices: number[];
-        public _pLightProbeSpecularIndices: number[];
-        private _uvBufferIndex;
-        private _uvTransformIndex;
-        private _secondaryUVBufferIndex;
-        public _pNormalBufferIndex: number;
-        public _pTangentBufferIndex: number;
-        public _pLightFragmentConstantIndex: number;
-        private _sceneMatrixIndex;
-        public _pSceneNormalMatrixIndex: number;
-        public _pCameraPositionIndex: number;
-        public _pProbeWeightsIndex: number;
-        private _specularLightSources;
-        private _diffuseLightSources;
-        public _pNumLights: number;
-        public _pNumLightProbes: number;
-        public _pNumPointLights: number;
-        public _pNumDirectionalLights: number;
-        public _pNumProbeRegisters: number;
-        private _combinedLightSources;
-        public _usingSpecularMethod: boolean;
-        private _needUVAnimation;
-        private _UVTarget;
-        private _UVSource;
-        public _pProfile: string;
-        private _forceSeperateMVP;
-        /**
-        * Creates a new ShaderCompiler object.
-        * @param profile The compatibility profile of the renderer.
-        */
-        constructor(profile: string);
-        /**
-        * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
-        * compatibility for constrained mode.
-        */
-        public enableLightFallOff : boolean;
-        /**
-        * Indicates whether the compiled code needs UV animation.
-        */
-        public needUVAnimation : boolean;
-        /**
-        * The target register to place the animated UV coordinate.
-        */
-        public UVTarget : string;
-        /**
-        * The souce register providing the UV coordinate to animate.
-        */
-        public UVSource : string;
-        /**
-        * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
-        * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
-        * projection code.
-        */
-        public forceSeperateMVP : boolean;
-        /**
-        * Initialized the register cache.
-        *
-        * @param profile The compatibility profile of the renderer.
-        */
-        private initRegisterCache(profile);
-        /**
-        * Indicate whether UV coordinates need to be animated using the renderable's transformUV matrix.
-        */
-        public animateUVs : boolean;
-        /**
-        * Indicates whether visible textures (or other pixels) used by this material have
-        * already been premultiplied.
-        */
-        public alphaPremultiplied : boolean;
-        /**
-        * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
-        */
-        public preserveAlpha : boolean;
-        /**
-        * Sets the default texture sampling properties.
-        * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
-        * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
-        * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
-        */
-        public setTextureSampling(smooth: boolean, repeat: boolean, mipmap: boolean): void;
-        /**
-        * Sets the constant buffers allocated by the material. This allows setting constant data during compilation.
-        * @param vertexConstantData The vertex constant data buffer.
-        * @param fragmentConstantData The fragment constant data buffer.
-        */
-        public setConstantDataBuffers(vertexConstantData: number[], fragmentConstantData: number[]): void;
-        /**
-        * The shader method setup object containing the method configuration and their value objects for the material being compiled.
-        */
-        public methodSetup : ShaderMethodSetup;
-        /**
-        * Compiles the code after all setup on the compiler has finished.
-        */
-        public compile(): void;
-        /**
-        * Creates the registers to contain the normal data.
-        */
-        public pCreateNormalRegisters(): void;
-        /**
-        * Compile the code for the methods.
-        */
-        public pCompileMethodsCode(): void;
-        /**
-        * Compile the lighting code.
-        */
-        public pCompileLightingCode(): void;
-        /**
-        * Calculate the view direction.
-        */
-        public pCompileViewDirCode(): void;
-        /**
-        * Calculate the normal.
-        */
-        public pCompileNormalCode(): void;
-        /**
-        * Calculate the (possibly animated) UV coordinates.
-        */
-        private compileUVCode();
-        /**
-        * Provide the secondary UV coordinates.
-        */
-        private compileSecondaryUVCode();
-        /**
-        * Compile the world-space position.
-        */
-        public pCompileGlobalPositionCode(): void;
-        /**
-        * Get the projection coordinates.
-        */
-        private compileProjectionCode();
-        /**
-        * Assign the final output colour the the output register.
-        */
-        private compileFragmentOutput();
-        /**
-        * Reset all the indices to "unused".
-        */
-        public pInitRegisterIndices(): void;
-        /**
-        * Prepares the setup for the light code.
-        */
-        public pInitLightData(): void;
-        /**
-        * Create the commonly shared constant register.
-        */
-        private createCommons();
-        /**
-        * Figure out which named registers are required, and how often.
-        */
-        public pCalculateDependencies(): void;
-        /**
-        * Counts the dependencies for a given method.
-        * @param method The method to count the dependencies for.
-        * @param methodVO The method's data for this material.
-        */
-        private setupAndCountMethodDependencies(method, methodVO);
-        /**
-        * Assigns all prerequisite data for the methods, so we can calculate dependencies for them.
-        */
-        private setupMethod(method, methodVO);
-        /**
-        * The index for the common data register.
-        */
-        public commonsDataIndex : number;
-        /**
-        * Assigns the shared register data to all methods.
-        */
-        private updateMethodRegisters();
-        /**
-        * The amount of vertex constants used by the material. Any animation code to be added can append its vertex
-        * constant data after this.
-        */
-        public numUsedVertexConstants : number;
-        /**
-        * The amount of fragment constants used by the material. Any animation code to be added can append its vertex
-        * constant data after this.
-        */
-        public numUsedFragmentConstants : number;
-        /**
-        * The amount of vertex attribute streams used by the material. Any animation code to be added can add its
-        * streams after this. Also used to automatically disable attribute slots on pass deactivation.
-        */
-        public numUsedStreams : number;
-        /**
-        * The amount of textures used by the material. Used to automatically disable texture slots on pass deactivation.
-        */
-        public numUsedTextures : number;
-        /**
-        * Number of used varyings. Any animation code to be added can add its used varyings after this.
-        */
-        public numUsedVaryings : number;
-        /**
-        * Indicates whether lights are used for specular reflections.
-        */
-        public pUsesLightsForSpecular(): boolean;
-        /**
-        * Indicates whether lights are used for diffuse reflections.
-        */
-        public pUsesLightsForDiffuse(): boolean;
-        /**
-        * Disposes all resources used by the compiler.
-        */
-        public dispose(): void;
-        /**
-        * Clean up method's compilation data after compilation finished.
-        */
-        private cleanUpMethods();
-        /**
-        * Define which light source types to use for specular reflections. This allows choosing between regular lights
-        * and/or light probes for specular reflections.
-        *
-        * @see away.materials.LightSources
-        */
-        public specularLightSources : number;
-        /**
-        * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
-        * and/or light probes for diffuse reflections.
-        *
-        * @see away.materials.LightSources
-        */
-        public diffuseLightSources : number;
-        /**
-        * Indicates whether light probes are being used for specular reflections.
-        */
-        public pUsesProbesForSpecular(): boolean;
-        /**
-        * Indicates whether light probes are being used for diffuse reflections.
-        */
-        public pUsesProbesForDiffuse(): boolean;
-        /**
-        * Indicates whether any light probes are used.
-        */
-        public pUsesProbes(): boolean;
-        /**
-        * The index for the UV vertex attribute stream.
-        */
-        public uvBufferIndex : number;
-        /**
-        * The index for the UV transformation matrix vertex constant.
-        */
-        public uvTransformIndex : number;
-        /**
-        * The index for the secondary UV vertex attribute stream.
-        */
-        public secondaryUVBufferIndex : number;
-        /**
-        * The index for the vertex normal attribute stream.
-        */
-        public normalBufferIndex : number;
-        /**
-        * The index for the vertex tangent attribute stream.
-        */
-        public tangentBufferIndex : number;
-        /**
-        * The first index for the fragment constants containing the light data.
-        */
-        public lightFragmentConstantIndex : number;
-        /**
-        * The index of the vertex constant containing the camera position.
-        */
-        public cameraPositionIndex : number;
-        /**
-        * The index of the vertex constant containing the scene matrix.
-        */
-        public sceneMatrixIndex : number;
-        /**
-        * The index of the vertex constant containing the uniform scene matrix (the inverse transpose).
-        */
-        public sceneNormalMatrixIndex : number;
-        /**
-        * The index of the fragment constant containing the weights for the light probes.
-        */
-        public probeWeightsIndex : number;
-        /**
-        * The generated vertex code.
-        */
-        public vertexCode : string;
-        /**
-        * The generated fragment code.
-        */
-        public fragmentCode : string;
-        /**
-        * The code containing the lighting calculations.
-        */
-        public fragmentLightCode : string;
-        /**
-        * The code containing the post-lighting calculations.
-        */
-        public fragmentPostLightCode : string;
-        /**
-        * The register name containing the final shaded colour.
-        */
-        public shadedTarget : string;
-        /**
-        * The amount of point lights that need to be supported.
-        */
-        public numPointLights : number;
-        /**
-        * The amount of directional lights that need to be supported.
-        */
-        public numDirectionalLights : number;
-        /**
-        * The amount of light probes that need to be supported.
-        */
-        public numLightProbes : number;
-        /**
-        * Indicates whether the specular method is used.
-        */
-        public usingSpecularMethod : boolean;
-        /**
-        * The attributes that need to be animated by animators.
-        */
-        public animatableAttributes : string[];
-        /**
-        * The target registers for animated properties, written to by the animators.
-        */
-        public animationTargetRegisters : string[];
-        /**
-        * Indicates whether the compiled shader uses normals.
-        */
-        public usesNormals : boolean;
-        /**
-        * Indicates whether the compiled shader uses lights.
-        */
-        public pUsesLights(): boolean;
-        /**
-        * Compiles the code for the methods.
-        */
-        public pCompileMethods(): void;
-        /**
-        * Indices for the light probe diffuse textures.
-        */
-        public lightProbeDiffuseIndices : number[];
-        /**
-        * Indices for the light probe specular textures.
-        */
-        public lightProbeSpecularIndices : number[];
-    }
-}
-declare module away.materials {
-    /**
-    * SuperShaderCompiler is a compiler that generates shaders that perform both lighting and "effects" through methods.
-    * This is used by the single-pass materials.
-    */
-    class SuperShaderCompiler extends ShaderCompiler {
-        public _pointLightRegisters: ShaderRegisterElement[];
-        public _dirLightRegisters: ShaderRegisterElement[];
-        /**
-        * Creates a new SuperShaderCompiler object.
-        *
-        * @param profile The compatibility profile used by the renderer.
-        */
-        constructor(profile: string);
-        /**
-        * @inheritDoc
-        */
-        public pInitLightData(): void;
-        /**
-        * @inheritDoc
-        */
-        public pCalculateDependencies(): void;
-        /**
-        * @inheritDoc
-        */
-        public pCompileNormalCode(): void;
-        /**
-        * @inheritDoc
-        */
-        public pCreateNormalRegisters(): void;
-        /**
-        * Compiles the vertex shader code for tangent-space normal maps.
-        * @param matrix The register containing the scene transformation matrix for normals.
-        */
-        private compileTangentVertexCode(matrix);
-        /**
-        * Compiles the fragment shader code for tangent-space normal maps.
-        */
-        private compileTangentNormalMapFragmentCode();
-        /**
-        * @inheritDoc
-        */
-        public pCompileViewDirCode(): void;
-        /**
-        * @inheritDoc
-        */
-        public pCompileLightingCode(): void;
-        /**
-        * Initializes the registers containing the lighting data.
-        */
-        private initLightRegisters();
-        private compileDirectionalLightCode();
-        private compilePointLightCode();
-        private compileLightProbeCode();
-    }
-}
-declare module away.materials {
-    /**
-    * Enumeration class for defining which lighting types affect the specific material
-    * lighting component (diffuse and specular). This can be useful if, for example, you
-    * want to use light probes for diffuse global lighting, but want specular reflections from
-    * traditional light sources without those affecting the diffuse light.
-    *
-    * @see away.materials.ColorMaterial.diffuseLightSources
-    * @see away.materials.ColorMaterial.specularLightSources
-    * @see away.materials.TextureMaterial.diffuseLightSources
-    * @see away.materials.TextureMaterial.specularLightSources
-    */
-    class LightSources {
-        /**
-        * Defines normal lights are to be used as the source for the lighting
-        * component.
-        */
-        static LIGHTS: number;
-        /**
-        * Defines that global lighting probes are to be used as the source for the
-        * lighting component.
-        */
-        static PROBES: number;
-        /**
-        * Defines that both normal and global lighting probes  are to be used as the
-        * source for the lighting component. This is equivalent to LightSources.LIGHTS | LightSources.PROBES.
-        */
-        static ALL: number;
-    }
-}
-declare module away.materials {
-    /**
-    * MaterialBase forms an abstract base class for any material.
-    * A material consists of several passes, each of which constitutes at least one render call. Several passes could
-    * be used for special effects (render lighting for many lights in several passes, render an outline in a separate
-    * pass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space
-    * subsurface scattering, or rendering a depth map for specialized self-shadowing).
-    *
-    * Away3D provides default materials trough SinglePassMaterialBase and TriangleMaterial, which use modular
-    * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
-    * shaders, or entire new material frameworks.
-    */
-    class ShadowMaterialBase extends MaterialBase {
-        public _pDepthPass: DepthMapPass;
-        public _pDistancePass: DistanceMapPass;
-        private _distanceBasedDepthRender;
-        public _pHeight: number;
-        public _pWidth: number;
-        public _pRequiresBlending: boolean;
-        /**
-        * Creates a new MaterialBase object.
-        */
-        constructor();
-        public pAddDepthPasses(): void;
-        /**
-        * Indicates that the depth pass uses transparency testing to discard pixels.
-        *
-        * @private
-        */
-        public iHasDepthAlphaThreshold(): boolean;
-        /**
-        * Sets the render state for the depth pass that is independent of the rendered object. Used when rendering
-        * depth or distances (fe: shadow maps, depth pre-pass).
-        *
-        * @param stage The Stage used for rendering.
-        * @param camera The camera from which the scene is viewed.
-        * @param distanceBased Whether or not the depth pass or distance pass should be activated. The distance pass
-        * is required for shadow cube maps.
-        *
-        * @internal
-        */
-        public iActivateForDepth(stage: base.Stage, camera: entities.Camera, distanceBased?: boolean): void;
-        /**
-        * Clears the render state for the depth pass.
-        *
-        * @param stage The Stage used for rendering.
-        *
-        * @internal
-        */
-        public iDeactivateForDepth(stage: base.Stage): void;
-        /**
-        * Renders a renderable using the depth pass.
-        *
-        * @param renderable The RenderableBase instance that needs to be rendered.
-        * @param stage The Stage used for rendering.
-        * @param camera The camera from which the scene is viewed.
-        * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
-        * camera.viewProjection as it includes the scaling factors when rendering to textures.
-        *
-        * @internal
-        */
-        public iRenderDepth(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-    }
-}
-declare module away.materials {
-    /**
-    * TriangleMaterial forms an abstract base class for the default shaded materials provided by Stage,
-    * using material methods to define their appearance.
-    */
-    class TriangleMaterial extends ShadowMaterialBase {
-        private _animateUVs;
-        private _alphaBlending;
-        private _alpha;
-        private _colorTransform;
-        private _materialMode;
-        private _casterLightPass;
-        private _nonCasterLightPasses;
-        private _screenPass;
-        private _alphaThreshold;
-        private _specularLightSources;
-        private _diffuseLightSources;
-        private _ambientMethod;
-        private _shadowMethod;
-        private _diffuseMethod;
-        private _normalMethod;
-        private _specularMethod;
-        private _enableLightFallOff;
-        private _depthCompareMode;
-        /**
-        * Creates a new TriangleMaterial object.
-        *
-        * @param texture The texture used for the material's albedo color.
-        * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
-        * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
-        * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
-        */
-        constructor(texture?: textures.Texture2DBase, smooth?: boolean, repeat?: boolean, mipmap?: boolean);
-        constructor(color?: number, alpha?: number);
-        public materialMode : string;
-        /**
-        * Specifies whether or not the UV coordinates should be animated using a transformation matrix.
-        */
-        public animateUVs : boolean;
-        /**
-        * The depth compare mode used to render the renderables using this material.
-        *
-        * @see away.stagegl.ContextGLCompareMode
-        */
-        public depthCompareMode : string;
-        /**
-        * The alpha of the surface.
-        */
-        public alpha : number;
-        /**
-        * The ColorTransform object to transform the colour of the material with. Defaults to null.
-        */
-        public colorTransform : geom.ColorTransform;
-        /**
-        * The diffuse reflectivity color of the surface.
-        */
-        public color : number;
-        /**
-        * The texture object to use for the albedo colour.
-        */
-        public texture : textures.Texture2DBase;
-        /**
-        * The texture object to use for the ambient colour.
-        */
-        public ambientTexture : textures.Texture2DBase;
-        /**
-        * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
-        * compatibility for constrained mode.
-        */
-        public enableLightFallOff : boolean;
-        /**
-        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
-        * invisible or entirely opaque, often used with textures for foliage, etc.
-        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
-        */
-        public alphaThreshold : number;
-        /**
-        * Define which light source types to use for specular reflections. This allows choosing between regular lights
-        * and/or light probes for specular reflections.
-        *
-        * @see away3d.materials.LightSources
-        */
-        public specularLightSources : number;
-        /**
-        * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
-        * and/or light probes for diffuse reflections.
-        *
-        * @see away3d.materials.LightSources
-        */
-        public diffuseLightSources : number;
-        /**
-        * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
-        */
-        public ambientMethod : AmbientBasicMethod;
-        /**
-        * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
-        */
-        public shadowMethod : ShadowMapMethodBase;
-        /**
-        * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
-        */
-        public diffuseMethod : DiffuseBasicMethod;
-        /**
-        * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
-        */
-        public specularMethod : SpecularBasicMethod;
-        /**
-        * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
-        */
-        public normalMethod : NormalBasicMethod;
-        /**
-        * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
-        * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
-        * methods added prior.
-        */
-        public addEffectMethod(method: EffectMethodBase): void;
-        /**
-        * The number of "effect" methods added to the material.
-        */
-        public numEffectMethods : number;
-        /**
-        * Queries whether a given effect method was added to the material.
-        *
-        * @param method The method to be queried.
-        * @return true if the method was added to the material, false otherwise.
-        */
-        public hasEffectMethod(method: EffectMethodBase): boolean;
-        /**
-        * Returns the method added at the given index.
-        * @param index The index of the method to retrieve.
-        * @return The method at the given index.
-        */
-        public getEffectMethodAt(index: number): EffectMethodBase;
-        /**
-        * Adds an effect method at the specified index amongst the methods already added to the material. Effect
-        * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
-        * etc. The method will be applied to the result of the methods with a lower index.
-        */
-        public addEffectMethodAt(method: EffectMethodBase, index: number): void;
-        /**
-        * Removes an effect method from the material.
-        * @param method The method to be removed.
-        */
-        public removeEffectMethod(method: EffectMethodBase): void;
-        /**
-        * The normal map to modulate the direction of the surface for each texel. The default normal method expects
-        * tangent-space normal maps, but others could expect object-space maps.
-        */
-        public normalMap : textures.Texture2DBase;
-        /**
-        * A specular map that defines the strength of specular reflections for each texel in the red channel,
-        * and the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set
-        * specular and gloss maps from grayscale images, but correctly authored images are preferred.
-        */
-        public specularMap : textures.Texture2DBase;
-        /**
-        * The glossiness of the material (sharpness of the specular highlight).
-        */
-        public gloss : number;
-        /**
-        * The strength of the ambient reflection.
-        */
-        public ambient : number;
-        /**
-        * The overall strength of the specular reflection.
-        */
-        public specular : number;
-        /**
-        * The colour of the ambient reflection.
-        */
-        public ambientColor : number;
-        /**
-        * The colour of the specular reflection.
-        */
-        public specularColor : number;
-        /**
-        * Indicates whether or not the material has transparency. If binary transparency is sufficient, for
-        * example when using textures of foliage, consider using alphaThreshold instead.
-        */
-        public alphaBlending : boolean;
-        /**
-        * Sets the render state for the depth pass that is independent of the rendered object. Used when rendering
-        * depth or distances (fe: shadow maps, depth pre-pass).
-        *
-        * @param stage The Stage used for rendering.
-        * @param camera The camera from which the scene is viewed.
-        * @param distanceBased Whether or not the depth pass or distance pass should be activated. The distance pass
-        * is required for shadow cube maps.
-        *
-        * @internal
-        */
-        public iActivateForDepth(stage: base.Stage, camera: entities.Camera, distanceBased?: boolean): void;
-        /**
-        * @inheritDoc
-        */
-        public iUpdateMaterial(): void;
-        /**
-        * Adds a compiled pass that renders to the screen.
-        * @param pass The pass to be added.
-        */
-        private addScreenPass(pass);
-        /**
-        * Tests if any pass that renders to the screen is invalid. This would trigger a new setup of the multiple passes.
-        * @return
-        */
-        private isAnyScreenPassInvalid();
-        /**
-        * @inheritDoc
-        */
-        public iActivatePass(index: number, stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * @inheritDoc
-        */
-        public iDeactivate(stage: base.Stage): void;
-        /**
-        * Updates screen passes when they were found to be invalid.
-        */
-        public pUpdateScreenPasses(): void;
-        /**
-        * Initializes all the passes and their dependent passes.
-        */
-        private initPasses();
-        /**
-        * Sets up the various blending modes for all screen passes, based on whether or not there are previous passes.
-        */
-        private setBlendAndCompareModes();
-        private initCasterLightPass();
-        private removeCasterLightPass();
-        private initNonCasterLightPasses();
-        private removeNonCasterLightPasses();
-        private removeEffectsPass();
-        private initEffectsPass();
-        /**
-        * The maximum total number of lights provided by the light picker.
-        */
-        private numLights;
-        /**
-        * The amount of lights that don't cast shadows.
-        */
-        private numNonCasters;
-    }
-}
-/**
-*
-*/
-declare module away.materials {
-    class TriangleMaterialMode {
-        /**
-        *
-        */
-        static SINGLE_PASS: string;
-        /**
-        *
-        */
-        static MULTI_PASS: string;
-    }
-}
-declare module away.materials {
-    /**
-    * LightingShaderCompiler is a ShaderCompiler that generates code for passes performing shading only (no effect passes)
-    */
-    class LightingShaderCompiler extends ShaderCompiler {
-        public _pointLightFragmentConstants: ShaderRegisterElement[];
-        public _pointLightVertexConstants: ShaderRegisterElement[];
-        public _dirLightFragmentConstants: ShaderRegisterElement[];
-        public _dirLightVertexConstants: ShaderRegisterElement[];
-        private _lightVertexConstantIndex;
-        private _shadowRegister;
-        /**
-        * Create a new LightingShaderCompiler object.
-        * @param profile The compatibility profile of the renderer.
-        */
-        constructor(profile: string);
-        /**
-        * The starting index if the vertex constant to which light data needs to be uploaded.
-        */
-        public lightVertexConstantIndex : number;
-        /**
-        * @inheritDoc
-        */
-        public pInitRegisterIndices(): void;
-        /**
-        * @inheritDoc
-        */
-        public pCreateNormalRegisters(): void;
-        /**
-        * Indicates whether or not lighting happens in tangent space. This is only the case if no world-space
-        * dependencies exist.
-        */
-        public tangentSpace : boolean;
-        /**
-        * @inheritDoc
-        */
-        public pInitLightData(): void;
-        /**
-        * @inheritDoc
-        */
-        public pCalculateDependencies(): void;
-        /**
-        * @inheritDoc
-        */
-        public pCompileNormalCode(): void;
-        /**
-        * Generates code to retrieve the tangent space normal from the normal map
-        */
-        private compileTangentSpaceNormalMapCode();
-        /**
-        * @inheritDoc
-        */
-        public pCompileViewDirCode(): void;
-        /**
-        * @inheritDoc
-        */
-        public pCompileLightingCode(): void;
-        /**
-        * Provides the code to provide shadow mapping.
-        */
-        private compileShadowCode();
-        /**
-        * Initializes constant registers to contain light data.
-        */
-        private initLightRegisters();
-        /**
-        * Compiles the shading code for directional lights.
-        */
-        private compileDirectionalLightCode();
-        /**
-        * Compiles the shading code for point lights.
-        */
-        private compilePointLightCode();
-        /**
-        * Compiles shading code for light probes.
-        */
-        private compileLightProbeCode();
-    }
-}
-declare module away.materials {
-    /**
-    * LineMaterial is a material exclusively used to render wireframe objects
-    *
-    * @see away.entities.Lines
-    */
-    class LineMaterial extends ShadowMaterialBase {
-        private _screenPass;
-        /**
-        * Creates a new LineMaterial object.
-        *
-        * @param thickness The thickness of the wireframe lines.
-        */
-        constructor(thickness?: number);
-    }
-}
-declare module away.materials {
-    /**
-    * SkyboxMaterial is a material exclusively used to render skyboxes
-    *
-    * @see away3d.primitives.Skybox
-    */
-    class SkyboxMaterial extends MaterialBase {
-        private _cubeMap;
-        private _skyboxPass;
-        /**
-        * Creates a new SkyboxMaterial object.
-        * @param cubeMap The CubeMap to use as the skybox.
-        */
-        constructor(cubeMap: textures.CubeTextureBase, smooth?: boolean, repeat?: boolean, mipmap?: boolean);
-        /**
-        * The cube texture to use as the skybox.
-        */
-        public cubeMap : textures.CubeTextureBase;
+        public iGetFragmentCodePerLight(shaderObject: ShaderLightingObject, methodVO: MethodVO, lightDirReg: ShaderRegisterElement, lightColReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.utils {
     class PerspectiveMatrix3D extends geom.Matrix3D {
         constructor(v?: number[]);
         public perspectiveFieldOfViewLH(fieldOfViewY: number, aspectRatio: number, zNear: number, zFar: number): void;
-    }
-}
-declare module away.animators {
-    /**
-    * ...
-    */
-    class AnimationRegisterCache extends materials.ShaderRegisterCache {
-        public positionAttribute: materials.ShaderRegisterElement;
-        public uvAttribute: materials.ShaderRegisterElement;
-        public positionTarget: materials.ShaderRegisterElement;
-        public scaleAndRotateTarget: materials.ShaderRegisterElement;
-        public velocityTarget: materials.ShaderRegisterElement;
-        public vertexTime: materials.ShaderRegisterElement;
-        public vertexLife: materials.ShaderRegisterElement;
-        public vertexZeroConst: materials.ShaderRegisterElement;
-        public vertexOneConst: materials.ShaderRegisterElement;
-        public vertexTwoConst: materials.ShaderRegisterElement;
-        public uvTarget: materials.ShaderRegisterElement;
-        public colorAddTarget: materials.ShaderRegisterElement;
-        public colorMulTarget: materials.ShaderRegisterElement;
-        public colorAddVary: materials.ShaderRegisterElement;
-        public colorMulVary: materials.ShaderRegisterElement;
-        public uvVar: materials.ShaderRegisterElement;
-        public rotationRegisters: materials.ShaderRegisterElement[];
-        public needFragmentAnimation: boolean;
-        public needUVAnimation: boolean;
-        public sourceRegisters: string[];
-        public targetRegisters: string[];
-        private indexDictionary;
-        public hasUVNode: boolean;
-        public needVelocity: boolean;
-        public hasBillboard: boolean;
-        public hasColorMulNode: boolean;
-        public hasColorAddNode: boolean;
-        constructor(profile: string);
-        public reset(): void;
-        public setUVSourceAndTarget(UVAttribute: string, UVVaring: string): void;
-        public setRegisterIndex(node: AnimationNodeBase, parameterIndex: number, registerIndex: number): void;
-        public getRegisterIndex(node: AnimationNodeBase, parameterIndex: number): number;
-        public getInitCode(): string;
-        public getCombinationCode(): string;
-        public initColorRegisters(): string;
-        public getColorPassCode(): string;
-        public getColorCombinationCode(shadedTarget: string): string;
-        private getRegisterFromString(code);
-        public vertexConstantData: number[];
-        public fragmentConstantData: number[];
-        private _numVertexConstant;
-        private _numFragmentConstant;
-        public numVertexConstant : number;
-        public numFragmentConstant : number;
-        public setDataLength(): void;
-        public setVertexConst(index: number, x?: number, y?: number, z?: number, w?: number): void;
-        public setVertexConstFromArray(index: number, data: number[]): void;
-        public setVertexConstFromMatrix(index: number, matrix: geom.Matrix3D): void;
-        public setFragmentConst(index: number, x?: number, y?: number, z?: number, w?: number): void;
     }
 }
 declare module away.animators {
@@ -5932,15 +2016,15 @@ declare module away.animators {
         /**
         * Returns the AGAL code of the particle animation node for use in the vertex shader.
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * Returns the AGAL code of the particle animation node for use in the fragment shader.
         */
-        public getAGALFragmentCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALFragmentCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * Returns the AGAL code of the particle animation node for use in the fragment shader when UV coordinates are required.
         */
-        public getAGALUVCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALUVCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * Called internally by the particle animation set when assigning the set of static properties originally defined by the initParticleFunc of the set.
         *
@@ -5977,7 +2061,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public pGetAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public pGetAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6022,7 +2106,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6049,7 +2133,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6118,7 +2202,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6159,7 +2243,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6187,7 +2271,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6242,7 +2326,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6277,7 +2361,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6312,7 +2396,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6337,7 +2421,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6371,7 +2455,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6405,7 +2489,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6455,7 +2539,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6494,7 +2578,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
     }
 }
 declare module away.animators {
@@ -6553,7 +2637,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALUVCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALUVCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6594,7 +2678,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6649,7 +2733,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALUVCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALUVCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6685,7 +2769,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, animationRegisterCache: AnimationRegisterCache): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase, animationRegisterCache: AnimationRegisterCache): string;
         /**
         * @inheritDoc
         */
@@ -6867,19 +2951,6 @@ declare module away.animators {
         * @inheritDoc
         */
         public _pUpdateStitch(): void;
-    }
-}
-declare module away.animators {
-    interface IAnimationState {
-        positionDelta: geom.Vector3D;
-        offset(startTime: number): any;
-        update(time: number): any;
-        /**
-        * Sets the animation phase of the node.
-        *
-        * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
-        */
-        phase(value: number): any;
     }
 }
 declare module away.animators {
@@ -7743,253 +3814,6 @@ declare module away.animators {
 }
 declare module away.animators {
     /**
-    * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
-    *
-    * @see away.animators.AnimatorBase
-    */
-    class AnimationSetBase extends library.NamedAssetBase implements library.IAsset {
-        private _usesCPU;
-        private _animations;
-        private _animationNames;
-        private _animationDictionary;
-        constructor();
-        /**
-        * Retrieves a temporary GPU register that's still free.
-        *
-        * @param exclude An array of non-free temporary registers.
-        * @param excludeAnother An additional register that's not free.
-        * @return A temporary register that can be used.
-        */
-        public _pFindTempReg(exclude: string[], excludeAnother?: string): string;
-        /**
-        * Indicates whether the properties of the animation data contained within the set combined with
-        * the vertex registers already in use on shading materials allows the animation data to utilise
-        * GPU calls.
-        */
-        public usesCPU : boolean;
-        /**
-        * Called by the material to reset the GPU indicator before testing whether register space in the shader
-        * is available for running GPU-based animation code.
-        *
-        * @private
-        */
-        public resetGPUCompatibility(): void;
-        public cancelGPUCompatibility(): void;
-        /**
-        * @inheritDoc
-        */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, sourceRegisters: string[], targetRegisters: string[], profile: string): string;
-        /**
-        * @inheritDoc
-        */
-        public activate(stage: base.Stage, pass: materials.MaterialPassBase): void;
-        /**
-        * @inheritDoc
-        */
-        public deactivate(stage: base.Stage, pass: materials.MaterialPassBase): void;
-        /**
-        * @inheritDoc
-        */
-        public getAGALFragmentCode(pass: materials.MaterialPassBase, shadedTarget: string, profile: string): string;
-        /**
-        * @inheritDoc
-        */
-        public getAGALUVCode(pass: materials.MaterialPassBase, UVSource: string, UVTarget: string): string;
-        /**
-        * @inheritDoc
-        */
-        public doneAGALCode(pass: materials.MaterialPassBase): void;
-        /**
-        * @inheritDoc
-        */
-        public assetType : string;
-        /**
-        * Returns a vector of animation state objects that make up the contents of the animation data set.
-        */
-        public animations : AnimationNodeBase[];
-        /**
-        * Returns a vector of animation state objects that make up the contents of the animation data set.
-        */
-        public animationNames : string[];
-        /**
-        * Check to determine whether a state is registered in the animation set under the given name.
-        *
-        * @param stateName The name of the animation state object to be checked.
-        */
-        public hasAnimation(name: string): boolean;
-        /**
-        * Retrieves the animation state object registered in the animation data set under the given name.
-        *
-        * @param stateName The name of the animation state object to be retrieved.
-        */
-        public getAnimation(name: string): AnimationNodeBase;
-        /**
-        * Adds an animation state object to the aniamtion data set under the given name.
-        *
-        * @param stateName The name under which the animation state object will be stored.
-        * @param animationState The animation state object to be staored in the set.
-        */
-        public addAnimation(node: AnimationNodeBase): void;
-        /**
-        * Cleans up any resources used by the current object.
-        */
-        public dispose(): void;
-    }
-}
-declare module away.animators {
-    /**
-    * Provides an abstract base class for animator classes that control animation output from a data set subtype of <code>AnimationSetBase</code>.
-    *
-    * @see away.animators.AnimationSetBase
-    */
-    class AnimatorBase extends library.NamedAssetBase implements IAnimator {
-        private _broadcaster;
-        private _isPlaying;
-        private _autoUpdate;
-        private _startEvent;
-        private _stopEvent;
-        private _cycleEvent;
-        private _time;
-        private _playbackSpeed;
-        public _pAnimationSet: IAnimationSet;
-        public _pOwners: entities.Mesh[];
-        public _pActiveNode: AnimationNodeBase;
-        public _pActiveState: IAnimationState;
-        public _pActiveAnimationName: string;
-        public _pAbsoluteTime: number;
-        private _animationStates;
-        /**
-        * Enables translation of the animated mesh from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
-        *
-        * @see away.animators.IAnimationState#positionDelta
-        */
-        public updatePosition: boolean;
-        public getAnimationState(node: AnimationNodeBase): IAnimationState;
-        public getAnimationStateByName(name: string): IAnimationState;
-        /**
-        * Returns the internal absolute time of the animator, calculated by the current time and the playback speed.
-        *
-        * @see #time
-        * @see #playbackSpeed
-        */
-        public absoluteTime : number;
-        /**
-        * Returns the animation data set in use by the animator.
-        */
-        public animationSet : IAnimationSet;
-        /**
-        * Returns the current active animation state.
-        */
-        public activeState : IAnimationState;
-        /**
-        * Returns the current active animation node.
-        */
-        public activeAnimation : AnimationNodeBase;
-        /**
-        * Returns the current active animation node.
-        */
-        public activeAnimationName : string;
-        /**
-        * Determines whether the animators internal update mechanisms are active. Used in cases
-        * where manual updates are required either via the <code>time</code> property or <code>update()</code> method.
-        * Defaults to true.
-        *
-        * @see #time
-        * @see #update()
-        */
-        public autoUpdate : boolean;
-        /**
-        * Gets and sets the internal time clock of the animator.
-        */
-        public time : number;
-        /**
-        * Sets the animation phase of the current active state's animation clip(s).
-        *
-        * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
-        */
-        public phase(value: number): void;
-        /**
-        * Creates a new <code>AnimatorBase</code> object.
-        *
-        * @param animationSet The animation data set to be used by the animator object.
-        */
-        constructor(animationSet: IAnimationSet);
-        /**
-        * The amount by which passed time should be scaled. Used to slow down or speed up animations. Defaults to 1.
-        */
-        public playbackSpeed : number;
-        public setRenderState(stage: base.Stage, renderable: pool.RenderableBase, vertexConstantOffset: number, vertexStreamOffset: number, camera: entities.Camera): void;
-        /**
-        * Resumes the automatic playback clock controling the active state of the animator.
-        */
-        public start(): void;
-        /**
-        * Pauses the automatic playback clock of the animator, in case manual updates are required via the
-        * <code>time</code> property or <code>update()</code> method.
-        *
-        * @see #time
-        * @see #update()
-        */
-        public stop(): void;
-        /**
-        * Provides a way to manually update the active state of the animator when automatic
-        * updates are disabled.
-        *
-        * @see #stop()
-        * @see #autoUpdate
-        */
-        public update(time: number): void;
-        public reset(name: string, offset?: number): void;
-        /**
-        * Used by the mesh object to which the animator is applied, registers the owner for internal use.
-        *
-        * @private
-        */
-        public addOwner(mesh: entities.Mesh): void;
-        /**
-        * Used by the mesh object from which the animator is removed, unregisters the owner for internal use.
-        *
-        * @private
-        */
-        public removeOwner(mesh: entities.Mesh): void;
-        /**
-        * Internal abstract method called when the time delta property of the animator's contents requires updating.
-        *
-        * @private
-        */
-        public _pUpdateDeltaTime(dt: number): void;
-        /**
-        * Enter frame event handler for automatically updating the active state of the animator.
-        */
-        private onEnterFrame(event?);
-        private applyPositionDelta();
-        /**
-        *  for internal use.
-        *
-        * @private
-        */
-        public dispatchCycleEvent(): void;
-        /**
-        * @inheritDoc
-        */
-        public clone(): AnimatorBase;
-        /**
-        * @inheritDoc
-        */
-        public dispose(): void;
-        /**
-        * @inheritDoc
-        */
-        public testGPUCompatibility(pass: materials.IMaterialPass): void;
-        /**
-        * @inheritDoc
-        */
-        public assetType : string;
-        public getRenderableSubGeometry(renderable: pool.TriangleSubMeshRenderable, sourceSubGeometry: base.TriangleSubGeometry): base.TriangleSubGeometry;
-    }
-}
-declare module away.animators {
-    /**
     * The animation data set used by particle-based animators, containing particle animation data.
     *
     * @see away.animators.ParticleAnimator
@@ -8055,27 +3879,27 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public activate(stage: base.Stage, pass: materials.MaterialPassBase): void;
+        public activate(shaderObject: materials.ShaderObjectBase, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public deactivate(stage: base.Stage, pass: materials.MaterialPassBase): void;
+        public deactivate(shaderObject: materials.ShaderObjectBase, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, sourceRegisters: string[], targetRegisters: string[], profile: string): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase): string;
         /**
         * @inheritDoc
         */
-        public getAGALUVCode(pass: materials.MaterialPassBase, UVSource: string, UVTarget: string): string;
+        public getAGALUVCode(shaderObject: materials.ShaderObjectBase): string;
         /**
         * @inheritDoc
         */
-        public getAGALFragmentCode(pass: materials.MaterialPassBase, shadedTarget: string, profile: string): string;
+        public getAGALFragmentCode(shaderObject: materials.ShaderObjectBase, shadedTarget: string): string;
         /**
         * @inheritDoc
         */
-        public doneAGALCode(pass: materials.MaterialPassBase): void;
+        public doneAGALCode(shaderObject: materials.ShaderObjectBase): void;
         /**
         * @inheritDoc
         */
@@ -8120,11 +3944,11 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public setRenderState(stage: base.Stage, renderable: pool.RenderableBase, vertexConstantOffset: number, vertexStreamOffset: number, camera: entities.Camera): void;
+        public setRenderState(shaderObject: materials.ShaderObjectBase, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, vertexConstantOffset: number, vertexStreamOffset: number): void;
         /**
         * @inheritDoc
         */
-        public testGPUCompatibility(pass: materials.MaterialPassBase): void;
+        public testGPUCompatibility(shaderObject: materials.ShaderObjectBase): void;
         /**
         * @inheritDoc
         */
@@ -8214,11 +4038,11 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public setRenderState(stage: base.Stage, renderable: pool.RenderableBase, vertexConstantOffset: number, vertexStreamOffset: number, camera: entities.Camera): void;
+        public setRenderState(shaderObject: materials.ShaderObjectBase, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, vertexConstantOffset: number, vertexStreamOffset: number): void;
         /**
         * @inheritDoc
         */
-        public testGPUCompatibility(pass: materials.MaterialPassBase): void;
+        public testGPUCompatibility(shaderObject: materials.ShaderObjectBase): void;
         /**
         * Applies the calculated time delta to the active animation state node or state transition object.
         */
@@ -8265,27 +4089,27 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, sourceRegisters: string[], targetRegisters: string[], profile: string): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase): string;
         /**
         * @inheritDoc
         */
-        public activate(stage: base.Stage, pass: materials.MaterialPassBase): void;
+        public activate(shaderObject: materials.ShaderObjectBase, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public deactivate(stage: base.Stage, pass: materials.MaterialPassBase): void;
+        public deactivate(shaderObject: materials.ShaderObjectBase, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public getAGALFragmentCode(pass: materials.MaterialPassBase, shadedTarget: string, profile: string): string;
+        public getAGALFragmentCode(shaderObject: materials.ShaderObjectBase, shadedTarget: string): string;
         /**
         * @inheritDoc
         */
-        public getAGALUVCode(pass: materials.MaterialPassBase, UVSource: string, UVTarget: string): string;
+        public getAGALUVCode(shaderObject: materials.ShaderObjectBase): string;
         /**
         * @inheritDoc
         */
-        public doneAGALCode(pass: materials.MaterialPassBase): void;
+        public doneAGALCode(shaderObject: materials.ShaderObjectBase): void;
     }
 }
 declare module away.animators {
@@ -8297,11 +4121,6 @@ declare module away.animators {
     class VertexAnimationSet extends AnimationSetBase implements IAnimationSet {
         private _numPoses;
         private _blendMode;
-        private _streamIndices;
-        private _useNormals;
-        private _useTangents;
-        private _uploadNormals;
-        private _uploadTangents;
         /**
         * Returns the number of poses made available at once to the GPU animation code.
         */
@@ -8310,10 +4129,6 @@ declare module away.animators {
         * Returns the active blend mode of the vertex animator object.
         */
         public blendMode : string;
-        /**
-        * Returns whether or not normal data is used in last set GPU pass of the vertex shader.
-        */
-        public useNormals : boolean;
         /**
         * Creates a new <code>VertexAnimationSet</code> object.
         *
@@ -8326,35 +4141,35 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public getAGALVertexCode(pass: materials.MaterialPassBase, sourceRegisters: string[], targetRegisters: string[], profile: string): string;
+        public getAGALVertexCode(shaderObject: materials.ShaderObjectBase): string;
         /**
         * @inheritDoc
         */
-        public activate(stage: base.Stage, pass: materials.MaterialPassBase): void;
+        public activate(shaderObject: materials.ShaderObjectBase, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public deactivate(stage: base.Stage, pass: materials.MaterialPassBase): void;
+        public deactivate(shaderObject: materials.ShaderObjectBase, stage: base.Stage): void;
         /**
         * @inheritDoc
         */
-        public getAGALFragmentCode(pass: materials.MaterialPassBase, shadedTarget: string, profile: string): string;
+        public getAGALFragmentCode(shaderObject: materials.ShaderObjectBase, shadedTarget: string): string;
         /**
         * @inheritDoc
         */
-        public getAGALUVCode(pass: materials.MaterialPassBase, UVSource: string, UVTarget: string): string;
+        public getAGALUVCode(shaderObject: materials.ShaderObjectBase): string;
         /**
         * @inheritDoc
         */
-        public doneAGALCode(pass: materials.MaterialPassBase): void;
+        public doneAGALCode(shaderObject: materials.ShaderObjectBase): void;
         /**
         * Generates the vertex AGAL code for absolute blending.
         */
-        private getAbsoluteAGALCode(pass, sourceRegisters, targetRegisters);
+        private getAbsoluteAGALCode(shaderObject);
         /**
         * Generates the vertex AGAL code for additive blending.
         */
-        private getAdditiveAGALCode(pass, sourceRegisters, targetRegisters);
+        private getAdditiveAGALCode(shaderObject);
     }
 }
 declare module away.animators {
@@ -8392,13 +4207,13 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public setRenderState(stage: base.Stage, renderable: pool.RenderableBase, vertexConstantOffset: number, vertexStreamOffset: number, camera: entities.Camera): void;
-        private setNullPose(stage, renderable, vertexConstantOffset, vertexStreamOffset);
+        public setRenderState(shaderObject: materials.ShaderObjectBase, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, vertexConstantOffset: number, vertexStreamOffset: number): void;
+        private setNullPose(shaderObject, renderable, stage, vertexConstantOffset, vertexStreamOffset);
         /**
         * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
         * Needs to be called if gpu code is potentially required.
         */
-        public testGPUCompatibility(pass: materials.IMaterialPass): void;
+        public testGPUCompatibility(shaderObject: materials.ShaderObjectBase): void;
         public getRenderableSubGeometry(renderable: pool.TriangleSubMeshRenderable, sourceSubGeometry: base.TriangleSubGeometry): base.TriangleSubGeometry;
     }
 }
@@ -8544,7 +4359,7 @@ declare class MaterialGroup {
 declare class SpecularData {
     public materialID: string;
     public basicSpecularMethod: away.materials.SpecularBasicMethod;
-    public ambientColor: number;
+    public color: number;
     public alpha: number;
 }
 declare class LoadedMaterial {
@@ -8552,7 +4367,7 @@ declare class LoadedMaterial {
     public texture: away.textures.Texture2DBase;
     public cm: away.materials.MaterialBase;
     public specularMethod: away.materials.SpecularBasicMethod;
-    public ambientColor: number;
+    public color: number;
     public alpha: number;
 }
 declare class FaceData {

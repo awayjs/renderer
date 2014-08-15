@@ -19992,6 +19992,8 @@ var away;
 ///<reference path="../../_definitions.ts"/>
 ///<reference path="../../_definitions.ts"/>
 ///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
     /**
@@ -20063,7 +20065,6 @@ var away;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
@@ -21931,7 +21932,8 @@ var away;
                 if (material) {
                     //set ids for faster referencing
                     renderable.materialId = material._iMaterialId;
-                    renderable.renderOrderId = material._iRenderOrderId;
+
+                    //				renderable.renderOrderId = material._iRenderOrderId;
                     renderable.cascaded = false;
 
                     // project onto camera's z-axis
@@ -22328,14 +22330,16 @@ var away;
                                 cmp = 1;
                             else
                                 cmp = -1;
-                        } else if (ma > mb)
+                        } else if (ma > mb) {
                             cmp = 1;
-                        else
+                        } else {
                             cmp = -1;
-                    } else if (aid > bid)
+                        }
+                    } else if (aid > bid) {
                         cmp = 1;
-                    else
+                    } else {
                         cmp = -1;
+                    }
 
                     if (cmp < 0) {
                         l = head;
@@ -30782,6 +30786,34 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+var away;
+(function (away) {
+    (function (materials) {
+        /**
+        * Enumeration class for defining which lighting types affect the specific material
+        * lighting component (diffuse and specular). This can be useful if, for example, you
+        * want to use light probes for diffuse global lighting, but want specular reflections from
+        * traditional light sources without those affecting the diffuse light.
+        *
+        * @see away.materials.ColorMaterial.diffuseLightSources
+        * @see away.materials.ColorMaterial.specularLightSources
+        * @see away.materials.TextureMaterial.diffuseLightSources
+        * @see away.materials.TextureMaterial.specularLightSources
+        */
+        var LightSources = (function () {
+            function LightSources() {
+            }
+            LightSources.LIGHTS = 0x01;
+
+            LightSources.PROBES = 0x02;
+
+            LightSources.ALL = 0x03;
+            return LightSources;
+        })();
+        materials.LightSources = LightSources;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
@@ -30811,6 +30843,12 @@ var away;
             function MaterialBase() {
                 var _this = this;
                 _super.call(this);
+                this._renderOrderData = new Array();
+                this._pAlphaThreshold = 0;
+                this._pAnimateUVs = false;
+                this._enableLightFallOff = true;
+                this._specularLightSources = 0x01;
+                this._diffuseLightSources = 0x03;
                 /**
                 * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
                 *
@@ -30822,7 +30860,7 @@ var away;
                 *
                 * @private
                 */
-                this._iRenderOrderId = 0;
+                this._renderOrderId = new Array(0, 0, 0, 0, 0, 0, 0, 0);
                 this._iBaseScreenPassIndex = 0;
                 this._bothSides = false;
                 this._pScreenPassesInvalid = true;
@@ -30871,6 +30909,17 @@ var away;
                 configurable: true
             });
 
+            Object.defineProperty(MaterialBase.prototype, "animationSet", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._animationSet;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(MaterialBase.prototype, "lightPicker", {
                 /**
                 * The light picker used by the material to provide lights to the material if it supports lighting.
@@ -30913,8 +30962,7 @@ var away;
 
                     this._pMipmap = value;
 
-                    for (var i = 0; i < this._numPasses; ++i)
-                        this._passes[i].mipmap = value;
+                    this.iInvalidatePasses(null);
                 },
                 enumerable: true,
                 configurable: true
@@ -30929,10 +30977,12 @@ var away;
                     return this._smooth;
                 },
                 set: function (value) {
+                    if (this._smooth == value)
+                        return;
+
                     this._smooth = value;
 
-                    for (var i = 0; i < this._numPasses; ++i)
-                        this._passes[i].smooth = value;
+                    this.iInvalidatePasses(null);
                 },
                 enumerable: true,
                 configurable: true
@@ -30948,10 +30998,99 @@ var away;
                     return this._repeat;
                 },
                 set: function (value) {
+                    if (this._repeat == value)
+                        return;
+
                     this._repeat = value;
 
-                    for (var i = 0; i < this._numPasses; ++i)
-                        this._passes[i].repeat = value;
+                    this.iInvalidatePasses(null);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MaterialBase.prototype, "animateUVs", {
+                /**
+                * Specifies whether or not the UV coordinates should be animated using a transformation matrix.
+                */
+                get: function () {
+                    return this._pAnimateUVs;
+                },
+                set: function (value) {
+                    if (this._pAnimateUVs == value)
+                        return;
+
+                    this._pAnimateUVs = value;
+
+                    this.iInvalidatePasses(null);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MaterialBase.prototype, "enableLightFallOff", {
+                /**
+                * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
+                * compatibility for constrained mode.
+                */
+                get: function () {
+                    return this._enableLightFallOff;
+                },
+                set: function (value) {
+                    if (this._enableLightFallOff == value)
+                        return;
+
+                    this._enableLightFallOff = value;
+
+                    this.iInvalidatePasses(null);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MaterialBase.prototype, "diffuseLightSources", {
+                /**
+                * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
+                * and/or light probes for diffuse reflections.
+                *
+                * @see away3d.materials.LightSources
+                */
+                get: function () {
+                    return this._diffuseLightSources;
+                },
+                set: function (value) {
+                    if (this._diffuseLightSources == value)
+                        return;
+
+                    this._diffuseLightSources = value;
+
+                    this.iInvalidatePasses(null);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MaterialBase.prototype, "specularLightSources", {
+                /**
+                * Define which light source types to use for specular reflections. This allows choosing between regular lights
+                * and/or light probes for specular reflections.
+                *
+                * @see away3d.materials.LightSources
+                */
+                get: function () {
+                    return this._specularLightSources;
+                },
+                set: function (value) {
+                    if (this._specularLightSources == value)
+                        return;
+
+                    this._specularLightSources = value;
+
+                    this.iInvalidatePasses(null);
                 },
                 enumerable: true,
                 configurable: true
@@ -30967,6 +31106,14 @@ var away;
 
                 for (i = 0; i < this._numPasses; ++i)
                     this._passes[i].dispose();
+
+                this._passes = null;
+
+                var len = this._renderOrderData.length;
+                for (i = 0; i < len; i++)
+                    this._renderOrderData[i].dispose();
+
+                this._renderOrderData = null;
             };
 
             Object.defineProperty(MaterialBase.prototype, "bothSides", {
@@ -30977,10 +31124,12 @@ var away;
                     return this._bothSides;
                 },
                 set: function (value) {
+                    if (this._bothSides = value)
+                        return;
+
                     this._bothSides = value;
 
-                    for (var i = 0; i < this._numPasses; ++i)
-                        this._passes[i].bothSides = value;
+                    this.iInvalidatePasses(null);
                 },
                 enumerable: true,
                 configurable: true
@@ -31007,7 +31156,7 @@ var away;
 
                     this._pBlendMode = value;
 
-                    this.pInvalidateScreenPasses();
+                    this.iInvalidatePasses(null);
                 },
                 enumerable: true,
                 configurable: true
@@ -31024,10 +31173,39 @@ var away;
                     return this._alphaPremultiplied;
                 },
                 set: function (value) {
+                    if (this._alphaPremultiplied == value)
+                        return;
+
                     this._alphaPremultiplied = value;
 
-                    for (var i = 0; i < this._numPasses; ++i)
-                        this._passes[i].alphaPremultiplied = value;
+                    this.iInvalidatePasses(null);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MaterialBase.prototype, "alphaThreshold", {
+                /**
+                * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
+                * invisible or entirely opaque, often used with textures for foliage, etc.
+                * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
+                */
+                get: function () {
+                    return this._pAlphaThreshold;
+                },
+                set: function (value) {
+                    if (value < 0)
+                        value = 0;
+                    else if (value > 1)
+                        value = 1;
+
+                    if (this._pAlphaThreshold == value)
+                        return;
+
+                    this._pAlphaThreshold = value;
+
+                    this.iInvalidatePasses(null);
                 },
                 enumerable: true,
                 configurable: true
@@ -31056,18 +31234,23 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(MaterialBase.prototype, "_iNumPasses", {
-                /**
-                * The amount of passes used by the material.
-                *
-                * @private
-                */
-                get: function () {
-                    return this._numPasses;
-                },
-                enumerable: true,
-                configurable: true
-            });
+            /**
+            * The amount of passes used by the material.
+            *
+            * @private
+            */
+            MaterialBase.prototype.getNumPasses = function () {
+                return this._numPasses;
+            };
+
+            /**
+            *
+            * @param index
+            * @returns {IMaterialPass}
+            */
+            MaterialBase.prototype.getPass = function (index) {
+                return this._passes[index];
+            };
 
             /**
             * Indicates whether or not the pass with the given index renders to texture or not.
@@ -31089,7 +31272,7 @@ var away;
             * @private
             */
             MaterialBase.prototype.iActivatePass = function (index, stage, camera) {
-                this._passes[index].iActivate(stage, camera);
+                this._passes[index].iActivate(this, stage, camera);
             };
 
             /**
@@ -31100,7 +31283,7 @@ var away;
             * @internal
             */
             MaterialBase.prototype.iDeactivatePass = function (index, stage) {
-                this._passes[index].iDeactivate(stage);
+                this._passes[index].iDeactivate(this, stage);
             };
 
             /**
@@ -31118,12 +31301,7 @@ var away;
                 if (this._pLightPicker)
                     this._pLightPicker.collectLights(renderable, entityCollector);
 
-                var pass = this._passes[index];
-
-                if (renderable.materialOwner.animator)
-                    pass.iUpdateAnimationState(renderable, stage, entityCollector.camera);
-
-                pass.iRender(renderable, stage, entityCollector.camera, viewProjection);
+                this._passes[index].iRender(renderable, stage, entityCollector.camera, viewProjection);
             };
 
             //
@@ -31154,10 +31332,7 @@ var away;
                         if (this._animationSet != animationSet) {
                             this._animationSet = animationSet;
 
-                            for (var i = 0; i < this._numPasses; ++i)
-                                this._passes[i].animationSet = this._animationSet;
-
-                            this.iInvalidatePasses(null);
+                            this.iInvalidateAnimation();
                         }
                     }
                 }
@@ -31175,10 +31350,7 @@ var away;
                 if (this._owners.length == 0) {
                     this._animationSet = null;
 
-                    for (var i = 0; i < this._numPasses; ++i)
-                        this._passes[i].animationSet = this._animationSet;
-
-                    this.iInvalidatePasses(null);
+                    this.iInvalidateAnimation();
                 }
             };
 
@@ -31190,6 +31362,19 @@ var away;
                 */
                 get: function () {
                     return this._owners;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MaterialBase.prototype, "iPasses", {
+                /**
+                * A list of the passes used in this material
+                *
+                * @private
+                */
+                get: function () {
+                    return this._passes;
                 },
                 enumerable: true,
                 configurable: true
@@ -31209,7 +31394,7 @@ var away;
             * @private
             */
             MaterialBase.prototype.iDeactivate = function (stage) {
-                this._passes[this._numPasses - 1].iDeactivate(stage);
+                this._passes[this._numPasses - 1].iDeactivate(this, stage);
             };
 
             /**
@@ -31220,36 +31405,17 @@ var away;
             * @private
             */
             MaterialBase.prototype.iInvalidatePasses = function (triggerPass) {
-                var owner;
-                var animator;
-
-                var l;
-                var c;
-
-                if (this._animationSet)
-                    this._animationSet.resetGPUCompatibility();
-
                 for (var i = 0; i < this._numPasses; ++i) {
                     // only invalidate the pass if it wasn't the triggering pass
                     if (this._passes[i] != triggerPass)
                         this._passes[i].iInvalidateShaderProgram(false);
-
-                    // test if animation will be able to run on gpu BEFORE compiling materials
-                    // test if the pass supports animating the animation set in the vertex shader
-                    // if any object using this material fails to support accelerated animations for any of the passes,
-                    // we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
-                    if (this._animationSet) {
-                        l = this._owners.length;
-
-                        for (c = 0; c < l; c++) {
-                            owner = this._owners[c];
-                            animator = owner.animator;
-
-                            if (animator)
-                                animator.testGPUCompatibility(this._passes[i]);
-                        }
-                    }
                 }
+            };
+
+            MaterialBase.prototype.iInvalidateAnimation = function () {
+                var len = this._renderOrderData.length;
+                for (var i = 0; i < len; i++)
+                    this._renderOrderData[i].invalidate();
             };
 
             /**
@@ -31257,7 +31423,9 @@ var away;
             * @param pass The pass to be removed.
             */
             MaterialBase.prototype.pRemovePass = function (pass) {
+                pass.removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
                 this._passes.splice(this._passes.indexOf(pass), 1);
+                pass._iRemoveOwner(this);
                 --this._numPasses;
             };
 
@@ -31265,8 +31433,10 @@ var away;
             * Removes all passes from the material
             */
             MaterialBase.prototype.pClearPasses = function () {
-                for (var i = 0; i < this._numPasses; ++i)
+                for (var i = 0; i < this._numPasses; ++i) {
                     this._passes[i].removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
+                    this._passes[i]._iRemoveOwner(this);
+                }
 
                 this._passes.length = 0;
                 this._numPasses = 0;
@@ -31279,14 +31449,10 @@ var away;
             MaterialBase.prototype.pAddPass = function (pass) {
                 this._passes[this._numPasses++] = pass;
 
-                pass.animationSet = this._animationSet;
-                pass.alphaPremultiplied = this._alphaPremultiplied;
-                pass.mipmap = this._pMipmap;
-                pass.smooth = this._smooth;
-                pass.repeat = this._repeat;
                 pass.lightPicker = this._pLightPicker;
-                pass.bothSides = this._bothSides;
                 pass.addEventListener(Event.CHANGE, this._onPassChangeDelegate);
+
+                pass._iAddOwner(this);
 
                 this.iInvalidatePasses(null);
             };
@@ -31311,25 +31477,9 @@ var away;
             * Listener for when a pass's shader code changes. It recalculates the render order id.
             */
             MaterialBase.prototype.onPassChange = function (event) {
-                var mult = 1;
-                var ids;
-                var len;
-
-                this._iRenderOrderId = 0;
-
-                for (var i = 0; i < this._numPasses; ++i) {
-                    ids = this._passes[i]._iProgramids;
-                    len = ids.length;
-
-                    for (var j = 0; j < len; ++j) {
-                        if (ids[j] != -1) {
-                            this._iRenderOrderId += mult * ids[j];
-                            j = len;
-                        }
-                    }
-
-                    mult *= 1000;
-                }
+                var len = this._renderOrderData.length;
+                for (var i = 0; i < len; i++)
+                    this._renderOrderData[i].reset();
             };
 
             /**
@@ -31344,6 +31494,18 @@ var away;
             */
             MaterialBase.prototype.onLightsChange = function (event) {
                 this.pInvalidateScreenPasses();
+            };
+
+            MaterialBase.prototype._iAddRenderOrderData = function (renderOrderData) {
+                this._renderOrderData.push(renderOrderData);
+
+                return renderOrderData;
+            };
+
+            MaterialBase.prototype._iRemoveRenderOrderData = function (renderOrderData) {
+                this._renderOrderData.splice(this._renderOrderData.indexOf(renderOrderData), 1);
+
+                return renderOrderData;
             };
             return MaterialBase;
         })(away.library.NamedAssetBase);
@@ -34654,8 +34816,9 @@ var away;
 ///<reference path="core/pool/EntityListItemPool.ts"/>
 ///<reference path="core/pool/IRenderable.ts"/>
 ///<reference path="core/pool/IRenderableClass.ts"/>
-///<reference path="core/pool/RenderablePool.ts"/>
+///<reference path="core/pool/IRenderOrderData.ts"/>
 ///<reference path="core/pool/ITextureData.ts"/>
+///<reference path="core/pool/RenderablePool.ts"/>
 ///<reference path="core/pool/CSSRenderableBase.ts"/>
 ///<reference path="core/pool/CSSBillboardRenderable.ts"/>
 ///<reference path="core/pool/CSSLineSegmentRenderable.ts"/>
@@ -34733,6 +34896,7 @@ var away;
 ///<reference path="materials/lightpickers/LightPickerBase.ts"/>
 ///<reference path="materials/lightpickers/StaticLightPicker.ts"/>
 ///<reference path="materials/passes/IMaterialPass.ts"/>
+///<reference path="materials/LightSources.ts"/>
 ///<reference path="materials/MaterialBase.ts"/>
 ///<reference path="materials/CSSMaterialBase.ts"/>
 ///<reference path="prefabs/PrefabBase.ts"/>

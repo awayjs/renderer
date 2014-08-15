@@ -2,6 +2,8 @@
 
 module away.materials
 {
+	import Stage									= away.base.Stage;
+
 	/**
 	 * DiffuseCelMethod provides a shading method to add diffuse cel (cartoon) shading.
 	 */
@@ -20,7 +22,7 @@ module away.materials
 		{
 			super(null, baseMethod);
 
-			this.baseMethod._iModulateMethod = (vo:MethodVO, target:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => this.clampDiffuse(vo, target, regCache, sharedRegisters);
+			this.baseMethod._iModulateMethod = (shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => this.clampDiffuse(shaderObject, methodVO, targetReg, registerCache, sharedRegisters);
 
 			this._levels = levels;
 		}
@@ -28,11 +30,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderLightingObject, methodVO:MethodVO)
 		{
-			var data:Array<number> = vo.fragmentData;
-			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
-			super.iInitConstants(vo);
+			var data:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*int*/ = methodVO.secondaryFragmentConstantsIndex;
+			super.iInitConstants(shaderObject, methodVO);
 			data[index + 1] = 1;
 			data[index + 2] = 0;
 		}
@@ -75,21 +77,22 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPreLightingCode(vo:MethodVO, regCache:ShaderRegisterCache):string
+		public iGetFragmentPreLightingCode(shaderObject:ShaderLightingObject, methodVO:MethodVO, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			this._dataReg = regCache.getFreeFragmentConstant();
-			vo.secondaryFragmentConstantsIndex = this._dataReg.index*4;
-			return super.iGetFragmentPreLightingCode(vo, regCache);
+			this._dataReg = registerCache.getFreeFragmentConstant();
+			methodVO.secondaryFragmentConstantsIndex = this._dataReg.index*4;
+
+			return super.iGetFragmentPreLightingCode(shaderObject, methodVO, registerCache, sharedRegisters);
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:away.base.Stage)
+		public iActivate(shaderObject:ShaderLightingObject, methodVO:MethodVO, stage:Stage)
 		{
-			super.iActivate(vo, stage);
-			var data:Array<number> = vo.fragmentData;
-			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
+			super.iActivate(shaderObject, methodVO, stage);
+			var data:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*int*/ = methodVO.secondaryFragmentConstantsIndex;
 			data[index] = this._levels;
 			data[index + 3] = this._smoothness;
 		}
@@ -102,29 +105,29 @@ module away.materials
 		 * @param sharedRegisters The shared register data for this shader.
 		 * @return The AGAL fragment code for the method.
 		 */
-		private clampDiffuse(vo:MethodVO, t:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+		private clampDiffuse(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			return "mul " + t + ".w, " + t + ".w, " + this._dataReg + ".x\n" +
-				"frc " + t + ".z, " + t + ".w\n" +
-				"sub " + t + ".y, " + t + ".w, " + t + ".z\n" +
-				"mov " + t + ".x, " + this._dataReg + ".x\n" +
-				"sub " + t + ".x, " + t + ".x, " + this._dataReg + ".y\n" +
-				"rcp " + t + ".x," + t + ".x\n" +
-				"mul " + t + ".w, " + t + ".y, " + t + ".x\n" +
+			return "mul " + targetReg + ".w, " + targetReg + ".w, " + this._dataReg + ".x\n" +
+				"frc " + targetReg + ".z, " + targetReg + ".w\n" +
+				"sub " + targetReg + ".y, " + targetReg + ".w, " + targetReg + ".z\n" +
+				"mov " + targetReg + ".x, " + this._dataReg + ".x\n" +
+				"sub " + targetReg + ".x, " + targetReg + ".x, " + this._dataReg + ".y\n" +
+				"rcp " + targetReg + ".x," + targetReg + ".x\n" +
+				"mul " + targetReg + ".w, " + targetReg + ".y, " + targetReg + ".x\n" +
 				
 				// previous clamped strength
-				"sub " + t + ".y, " + t + ".w, " + t + ".x\n" +
+				"sub " + targetReg + ".y, " + targetReg + ".w, " + targetReg + ".x\n" +
 				
 				// fract/epsilon (so 0 - epsilon will become 0 - 1)
-				"div " + t + ".z, " + t + ".z, " + this._dataReg + ".w\n" +
-				"sat " + t + ".z, " + t + ".z\n" +
+				"div " + targetReg + ".z, " + targetReg + ".z, " + this._dataReg + ".w\n" +
+				"sat " + targetReg + ".z, " + targetReg + ".z\n" +
 				
-				"mul " + t + ".w, " + t + ".w, " + t + ".z\n" +
+				"mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".z\n" +
 				// 1-z
-				"sub " + t + ".z, " + this._dataReg + ".y, " + t + ".z\n" +
-				"mul " + t + ".y, " + t + ".y, " + t + ".z\n" +
-				"add " + t + ".w, " + t + ".w, " + t + ".y\n" +
-				"sat " + t + ".w, " + t + ".w\n";
+				"sub " + targetReg + ".z, " + this._dataReg + ".y, " + targetReg + ".z\n" +
+				"mul " + targetReg + ".y, " + targetReg + ".y, " + targetReg + ".z\n" +
+				"add " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".y\n" +
+				"sat " + targetReg + ".w, " + targetReg + ".w\n";
 		}
 	}
 }

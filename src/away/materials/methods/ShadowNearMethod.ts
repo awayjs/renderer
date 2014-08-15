@@ -4,7 +4,7 @@ module away.materials
 {
 	import Stage                     		= away.base.Stage;
 	import Camera							= away.entities.Camera;
-	import IRenderable                      = away.pool.RenderableBase;
+	import RenderableBase                   = away.pool.RenderableBase;
 	import ShadingMethodEvent               = away.events.ShadingMethodEvent;
 	import NearDirectionalShadowMapper      = away.materials.NearDirectionalShadowMapper;
 
@@ -64,13 +64,13 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO)
+		public iInitConstants(shaderObject:ShaderObjectBase, methodVO:MethodVO)
 		{
-			super.iInitConstants(vo);
-			this._baseMethod.iInitConstants(vo);
+			super.iInitConstants(shaderObject, methodVO);
+			this._baseMethod.iInitConstants(shaderObject, methodVO);
 
-			var fragmentData:Array<number> = vo.fragmentData;
-			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
+			var fragmentData:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*int*/ = methodVO.secondaryFragmentConstantsIndex;
 			fragmentData[index + 2] = 0;
 			fragmentData[index + 3] = 1;
 		}
@@ -78,10 +78,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO)
+		public iInitVO(shaderObject:ShaderLightingObject, methodVO:MethodVO)
 		{
-			this._baseMethod.iInitVO(vo);
-			vo.needsProjection = true;
+			this._baseMethod.iInitVO(shaderObject, methodVO);
+
+			methodVO.needsProjection = true;
 		}
 
 		/**
@@ -134,14 +135,22 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			var code:string = this._baseMethod.iGetFragmentCode(vo, regCache, targetReg);
-			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var temp:ShaderRegisterElement = regCache.getFreeFragmentSingleTemp();
-			vo.secondaryFragmentConstantsIndex = dataReg.index*4;
+			var code:string = this._baseMethod.iGetFragmentCode(shaderObject, methodVO, targetReg, registerCache, sharedRegisters);
 
-			code += "abs " + temp + ", " + this._sharedRegisters.projectionFragment + ".w\n" + "sub " + temp + ", " + temp + ", " + dataReg + ".x\n" + "mul " + temp + ", " + temp + ", " + dataReg + ".y\n" + "sat " + temp + ", " + temp + "\n" + "sub " + temp + ", " + dataReg + ".w," + temp + "\n" + "sub " + targetReg + ".w, " + dataReg + ".w," + targetReg + ".w\n" + "mul " + targetReg + ".w, " + targetReg + ".w, " + temp + "\n" + "sub " + targetReg + ".w, " + dataReg + ".w," + targetReg + ".w\n";
+			var dataReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+			var temp:ShaderRegisterElement = registerCache.getFreeFragmentSingleTemp();
+			methodVO.secondaryFragmentConstantsIndex = dataReg.index*4;
+
+			code += "abs " + temp + ", " + sharedRegisters.projectionFragment + ".w\n" +
+				"sub " + temp + ", " + temp + ", " + dataReg + ".x\n" +
+				"mul " + temp + ", " + temp + ", " + dataReg + ".y\n" +
+				"sat " + temp + ", " + temp + "\n" +
+				"sub " + temp + ", " + dataReg + ".w," + temp + "\n" +
+				"sub " + targetReg + ".w, " + dataReg + ".w," + targetReg + ".w\n" +
+				"mul " + targetReg + ".w, " + targetReg + ".w, " + temp + "\n" +
+				"sub " + targetReg + ".w, " + dataReg + ".w," + targetReg + ".w\n";
 
 			return code;
 		}
@@ -149,23 +158,23 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage:Stage)
+		public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			this._baseMethod.iActivate(vo, stage);
+			this._baseMethod.iActivate(shaderObject, methodVO, stage);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(vo:MethodVO, stage:Stage)
+		public iDeactivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 		{
-			this._baseMethod.iDeactivate(vo, stage);
+			this._baseMethod.iDeactivate(shaderObject, methodVO, stage);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:IRenderable, stage:Stage, camera:Camera)
+		public iSetRenderState(shaderObject:ShaderObjectBase, methodVO:MethodVO, renderable:RenderableBase, stage:Stage, camera:Camera)
 		{
 			// todo: move this to activate (needs camera)
 			var near:number = camera.projection.near;
@@ -176,19 +185,20 @@ module away.materials
 			maxDistance = near + maxDistance*d;
 			minDistance = near + minDistance*d;
 
-			var fragmentData:Array<number> = vo.fragmentData;
-			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
+			var fragmentData:Array<number> = shaderObject.fragmentConstantData;
+			var index:number /*int*/ = methodVO.secondaryFragmentConstantsIndex;
 			fragmentData[index] = minDistance;
 			fragmentData[index + 1] = 1/(maxDistance - minDistance);
-			this._baseMethod.iSetRenderState(vo, renderable, stage, camera);
+
+			this._baseMethod.iSetRenderState(shaderObject, methodVO, renderable, stage, camera);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iGetVertexCode(vo:MethodVO, regCache:ShaderRegisterCache):string
+		public iGetVertexCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
-			return this._baseMethod.iGetVertexCode(vo, regCache);
+			return this._baseMethod.iGetVertexCode(shaderObject, methodVO, registerCache, sharedRegisters);
 		}
 
 		/**
@@ -206,14 +216,6 @@ module away.materials
 		{
 			super.iCleanCompilationData();
 			this._baseMethod.iCleanCompilationData();
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public set iSharedRegisters(value:ShaderRegisterData)
-		{
-			this._sharedRegisters = this._baseMethod.iSharedRegisters = value;
 		}
 
 		/**

@@ -7,7 +7,7 @@ module away.parsers
 	import VertexAnimationSet				= away.animators.VertexAnimationSet;
 	import VertexClipNode					= away.animators.VertexClipNode;
 	import DefaultMaterialManager			= away.materials.DefaultMaterialManager;
-	import TriangleMaterial					= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial			= away.materials.TriangleMethodMaterial;
 	import TriangleMaterialMode				= away.materials.TriangleMaterialMode;
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 	import Texture2DBase					= away.textures.Texture2DBase
@@ -110,7 +110,7 @@ module away.parsers
 			var asset:Texture2DBase = <Texture2DBase> resourceDependency.assets[0];
 
 			if (asset) {
-				var material:TriangleMaterial = new TriangleMaterial(asset);
+				var material:TriangleMethodMaterial = new TriangleMethodMaterial(asset);
 
 				if (this.materialMode >= 2)
 					material.materialMode = TriangleMaterialMode.MULTI_PASS;
@@ -136,8 +136,8 @@ module away.parsers
 			if (this.materialMode < 2) {
 				this._mesh.material = DefaultMaterialManager.getDefaultMaterial();
 			} else {
-				this._mesh.material = new TriangleMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
-				(<TriangleMaterial> this._mesh.material).materialMode = TriangleMaterialMode.MULTI_PASS;
+				this._mesh.material = new TriangleMethodMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+				(<TriangleMethodMaterial> this._mesh.material).materialMode = TriangleMaterialMode.MULTI_PASS;
 			}
 
 			//add to the content property
@@ -177,8 +177,8 @@ module away.parsers
 					if (this.materialMode < 2) {
 						this._mesh.material = DefaultMaterialManager.getDefaultMaterial();
 					} else {
-						this._mesh.material = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
-						(<TriangleMaterial> this._mesh.material).materialMode = TriangleMaterialMode.MULTI_PASS;
+						this._mesh.material = new TriangleMethodMaterial(DefaultMaterialManager.getDefaultTexture());
+						(<TriangleMethodMaterial> this._mesh.material).materialMode = TriangleMaterialMode.MULTI_PASS;
 					}
 
 					//_geometry.animation = new VertexAnimation(2, VertexAnimationMode.ABSOLUTE);

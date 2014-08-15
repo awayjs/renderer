@@ -9,7 +9,7 @@ module away.animators
 	import Vector3D							= away.geom.Vector3D;
 	import ContextGLProgramType				= away.stagegl.ContextGLProgramType;
 	import ContextGLVertexBufferFormat		= away.stagegl.ContextGLVertexBufferFormat;
-	import MaterialPassBase					= away.materials.MaterialPassBase;
+	import ShaderObjectBase					= away.materials.ShaderObjectBase;
 	import RenderableBase					= away.pool.RenderableBase;
 	import IContextStageGL					= away.stagegl.IContextStageGL;
 	
@@ -71,7 +71,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stage:Stage, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera)
+		public setRenderState(shaderObject:ShaderObjectBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 		{
 			var animationRegisterCache:AnimationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
 			
@@ -103,7 +103,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public testGPUCompatibility(pass:MaterialPassBase)
+		public testGPUCompatibility(shaderObject:ShaderObjectBase)
 		{
 		
 		}
