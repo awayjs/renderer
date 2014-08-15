@@ -2667,7 +2667,7 @@ var away;
                         shaderObject = shaderObjects[i];
                         shaderObject.shaderObject.usesAnimation = enabledGPUAnimation;
                         this.calcAnimationCode(material, shaderObject);
-                        renderOrderId += this.getProgram(shaderObject).id;
+                        renderOrderId += this.getProgram(shaderObject).id * mult;
                         mult *= 1000;
                     }
 
@@ -4376,16 +4376,16 @@ var away;
                 this._gl.compileShader(this._vertexShader);
 
                 if (!this._gl.getShaderParameter(this._vertexShader, this._gl.COMPILE_STATUS)) {
-                    alert(this._gl.getShaderInfoLog(this._vertexShader));
-                    return null;
+                    throw new Error(this._gl.getShaderInfoLog(this._vertexShader));
+                    return;
                 }
 
                 this._gl.shaderSource(this._fragmentShader, fragmentString);
                 this._gl.compileShader(this._fragmentShader);
 
                 if (!this._gl.getShaderParameter(this._fragmentShader, this._gl.COMPILE_STATUS)) {
-                    alert(this._gl.getShaderInfoLog(this._fragmentShader));
-                    return null;
+                    throw new Error(this._gl.getShaderInfoLog(this._fragmentShader));
+                    return;
                 }
 
                 this._gl.attachShader(this._program, this._vertexShader);
@@ -4393,7 +4393,7 @@ var away;
                 this._gl.linkProgram(this._program);
 
                 if (!this._gl.getProgramParameter(this._program, this._gl.LINK_STATUS)) {
-                    alert("Could not link the program."); //TODO throw errors
+                    throw new Error(this._gl.getProgramInfoLog(this._program));
                 }
             };
 
@@ -6389,7 +6389,7 @@ var away;
 
                 if (this._pShaderObject.outputsNormals) {
                     if (this._pShaderObject.usesTangentSpace) {
-                        // normalize normal + tangent vector and generate (approximated) bitangent
+                        // normalize normal + tangent vector and generate (approximated) bitangent used in m33 operation for view
                         this._pVertexCode += "nrm " + this._pSharedRegisters.animatedNormal + ".xyz, " + this._pSharedRegisters.animatedNormal + "\n" + "nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + this._pSharedRegisters.animatedTangent + "\n" + "crs " + this._pSharedRegisters.bitangent + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n";
 
                         this._pFragmentCode += this._pMaterialPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
@@ -6641,12 +6641,14 @@ var away;
                     }
                 }
 
-                len = this._pointLightVertexConstants.length;
-                for (i = 0; i < len; ++i) {
-                    this._pointLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
+                if (this._pointLightVertexConstants) {
+                    len = this._pointLightVertexConstants.length;
+                    for (i = 0; i < len; ++i) {
+                        this._pointLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
 
-                    if (this._shaderLightingObject.lightVertexConstantIndex == -1)
-                        this._shaderLightingObject.lightVertexConstantIndex = this._pointLightVertexConstants[i].index * 4;
+                        if (this._shaderLightingObject.lightVertexConstantIndex == -1)
+                            this._shaderLightingObject.lightVertexConstantIndex = this._pointLightVertexConstants[i].index * 4;
+                    }
                 }
 
                 len = this._dirLightFragmentConstants.length;
@@ -6712,7 +6714,10 @@ var away;
                 fragmentRegIndex = 0;
 
                 for (var i = 0; i < this._materialLightingPass.iNumPointLights; ++i) {
-                    lightPosReg = this._pointLightVertexConstants[vertexRegIndex++];
+                    if (this._shaderLightingObject.usesTangentSpace || !this._shaderLightingObject.usesGlobalPosFragment)
+                        lightPosReg = this._pointLightVertexConstants[vertexRegIndex++];
+                    else
+                        lightPosReg = this._pointLightFragmentConstants[fragmentRegIndex++];
 
                     diffuseColorReg = this._pointLightFragmentConstants[fragmentRegIndex++];
                     specularColorReg = this._pointLightFragmentConstants[fragmentRegIndex++];
@@ -6720,13 +6725,18 @@ var away;
                     lightDirReg = this._pRegisterCache.getFreeFragmentVectorTemp();
                     this._pRegisterCache.addFragmentTempUsages(lightDirReg, 1);
 
-                    var lightVarying = this._pRegisterCache.getFreeVarying();
+                    var lightVarying;
 
                     if (this._shaderLightingObject.usesTangentSpace) {
+                        lightVarying = this._pRegisterCache.getFreeVarying();
                         var temp = this._pRegisterCache.getFreeVertexVectorTemp();
                         this._pVertexCode += "sub " + temp + ", " + lightPosReg + ", " + this._pSharedRegisters.localPosition + "\n" + "m33 " + lightVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + lightVarying + ".w, " + this._pSharedRegisters.localPosition + ".w\n";
-                    } else {
+                    } else if (!this._shaderLightingObject.usesGlobalPosFragment) {
+                        lightVarying = this._pRegisterCache.getFreeVarying();
                         this._pVertexCode += "sub " + lightVarying + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
+                    } else {
+                        lightVarying = lightDirReg;
+                        this._pFragmentCode += "sub " + lightDirReg + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVarying + "\n";
                     }
 
                     if (this._shaderLightingObject.usesLightFallOff) {
@@ -6804,8 +6814,12 @@ var away;
                 this._pNumProbeRegisters = Math.ceil(this._materialLightingPass.iNumLightProbes / 4);
 
                 //init light data
-                this._pointLightVertexConstants = new Array(this._materialLightingPass.iNumPointLights);
-                this._pointLightFragmentConstants = new Array(this._materialLightingPass.iNumPointLights * 2);
+                if (this._shaderLightingObject.usesTangentSpace || !this._shaderLightingObject.usesGlobalPosFragment) {
+                    this._pointLightVertexConstants = new Array(this._materialLightingPass.iNumPointLights);
+                    this._pointLightFragmentConstants = new Array(this._materialLightingPass.iNumPointLights * 2);
+                } else {
+                    this._pointLightFragmentConstants = new Array(this._materialLightingPass.iNumPointLights * 3);
+                }
 
                 if (this._shaderLightingObject.usesTangentSpace) {
                     this._dirLightVertexConstants = new Array(this._materialLightingPass.iNumDirectionalLights);
@@ -7111,9 +7125,9 @@ var away;
                 this._useTexture = false;
                 this._color = 0xffffff;
                 this._alpha = 1;
-                this._colorR = 0;
-                this._colorG = 0;
-                this._colorB = 0;
+                this._colorR = 1;
+                this._colorG = 1;
+                this._colorB = 1;
                 this._ambient = 1;
             }
             /**
@@ -7235,7 +7249,7 @@ var away;
 
                     methodVO.texturesIndex = ambientInputRegister.index;
 
-                    code += materials.ShaderCompilerHelper.getTex2DSampleCode(targetReg, sharedRegisters, ambientInputRegister, this._texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping) + "div " + targetReg + ".xyz, " + targetReg + ".xyz, " + targetReg + ".w\n"; // apparently, still needs to un-premultiply :s
+                    code += materials.ShaderCompilerHelper.getTex2DSampleCode(targetReg, sharedRegisters, ambientInputRegister, this._texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
 
                     if (shaderObject.alphaThreshold > 0) {
                         var cutOffReg = registerCache.getFreeFragmentConstant();
@@ -7559,9 +7573,9 @@ var away;
                 code += "sat " + this._pTotalLightColorReg + ", " + this._pTotalLightColorReg + "\n" + "mul " + albedo + ".xyz, " + albedo + ", " + this._pTotalLightColorReg + "\n";
 
                 if (this._multiply) {
-                    code += "add " + albedo + ".xyz, " + albedo + ", " + ambientColorRegister + "\n" + "mul " + targetReg + ".xyz, " + albedo + ", " + targetReg + "\n";
+                    code += "add " + albedo + ".xyz, " + albedo + ", " + ambientColorRegister + "\n" + "mul " + targetReg + ".xyz, " + targetReg + ", " + albedo + "\n";
                 } else {
-                    code += "mul " + targetReg + ".xyz, " + targetReg + ", " + ambientColorRegister + "\n" + "mul " + this._pTotalLightColorReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n" + "sub " + targetReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n" + "add " + targetReg + ".xyz, " + albedo + ", " + targetReg + "\n";
+                    code += "mul " + targetReg + ".xyz, " + targetReg + ", " + ambientColorRegister + "\n" + "mul " + this._pTotalLightColorReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n" + "sub " + targetReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n" + "add " + targetReg + ".xyz, " + targetReg + ", " + albedo + "\n";
                 }
 
                 registerCache.removeFragmentTempUsage(this._pTotalLightColorReg);
@@ -9011,7 +9025,7 @@ var away;
             MaterialPassBase.prototype._iRemoveOwner = function (owner) {
                 if (this._materialPassVOs[owner.id]) {
                     this._materialPassVOs[owner.id].dispose();
-                    this._materialPassVOs[owner.id] = null;
+                    delete this._materialPassVOs[owner.id];
                 }
             };
 
@@ -10516,6 +10530,10 @@ var away;
             TriangleMethodPass.prototype._iGetPostLightingFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
                 var code = "";
 
+                if (shaderObject.useAlphaPremultiplied && this._pEnableBlending) {
+                    code += "add " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.commons + ".z\n" + "div " + sharedRegisters.shadedTarget + ".xyz, " + sharedRegisters.shadedTarget + ", " + sharedRegisters.shadedTarget + ".w\n" + "sub " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.commons + ".z\n" + "sat " + sharedRegisters.shadedTarget + ".xyz, " + sharedRegisters.shadedTarget + "\n";
+                }
+
                 if (this._iShadowMethodVO)
                     code += this._iShadowMethodVO.method.iGetFragmentCode(shaderObject, this._iShadowMethodVO, sharedRegisters.shadowTarget, registerCache, sharedRegisters);
 
@@ -10528,10 +10546,6 @@ var away;
 
                     if (this._iDiffuseMethodVO.needsView)
                         registerCache.removeFragmentTempUsage(sharedRegisters.viewDirFragment);
-                }
-
-                if (shaderObject.useAlphaPremultiplied && this._pEnableBlending) {
-                    code += "add " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.commons + ".z\n" + "div " + sharedRegisters.shadedTarget + ".xyz, " + sharedRegisters.shadedTarget + ", " + sharedRegisters.shadedTarget + ".w\n" + "sub " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.commons + ".z\n" + "sat " + sharedRegisters.shadedTarget + ".xyz, " + sharedRegisters.shadedTarget + "\n";
                 }
 
                 if (this._iSpecularMethodVO && this._iSpecularMethodVO.useMethod) {
@@ -10605,14 +10619,12 @@ var away;
                 var methodVO;
                 var len = this._iMethodVOs.length;
                 for (var i = len - this._numEffectDependencies; i < len; i++) {
-                    for (var i = 0; i < len; ++i) {
-                        methodVO = this._iMethodVOs[i];
-                        if (methodVO.useMethod) {
-                            code += methodVO.method.iGetVertexCode(shaderObject, methodVO, regCache, sharedReg);
+                    methodVO = this._iMethodVOs[i];
+                    if (methodVO.useMethod) {
+                        code += methodVO.method.iGetVertexCode(shaderObject, methodVO, regCache, sharedReg);
 
-                            if (methodVO.needsGlobalVertexPos || methodVO.needsGlobalFragmentPos)
-                                regCache.removeVertexTempUsage(sharedReg.globalPositionVertex);
-                        }
+                        if (methodVO.needsGlobalVertexPos || methodVO.needsGlobalFragmentPos)
+                            regCache.removeVertexTempUsage(sharedReg.globalPositionVertex);
                     }
                 }
 
@@ -10665,7 +10677,7 @@ var away;
             * Indicates whether the shader uses any shadows.
             */
             TriangleMethodPass.prototype._iUsesShadows = function () {
-                return Boolean(this._iShadowMethodVO);
+                return Boolean(this._iShadowMethodVO || this.lightPicker.castingDirectionalLights.length > 0 || this.lightPicker.castingPointLights.length > 0);
             };
 
             /**
@@ -11198,7 +11210,7 @@ var away;
                     this.repeat = repeat;
                     this.mipmap = mipmap;
                 } else {
-                    this.color = isNaN(textureColor) ? 0xCCCCCC : Number(textureColor);
+                    this.color = (textureColor == null) ? 0xFFFFFF : Number(textureColor);
                     this.alpha = (smoothAlpha == null) ? 1 : Number(smoothAlpha);
                 }
             }
@@ -11310,6 +11322,8 @@ var away;
                 },
                 set: function (value) {
                     this._ambientMethod.texture = value;
+                    this._pDistancePass.alphaMask = value;
+                    this._pDepthPass.alphaMask = value;
 
                     if (value) {
                         this._pHeight = value.height;
@@ -11905,10 +11919,8 @@ var away;
                 if (!this._nonCasterLightPasses)
                     return;
 
-                for (var i = 0; i < this._nonCasterLightPasses.length; ++i) {
+                for (var i = 0; i < this._nonCasterLightPasses.length; ++i)
                     this.pRemovePass(this._nonCasterLightPasses[i]);
-                    this._nonCasterLightPasses[i].dispose();
-                }
 
                 this._nonCasterLightPasses = null;
             };
@@ -11927,8 +11939,6 @@ var away;
                     this._screenPass.normalMethod.dispose();
 
                 this.pRemovePass(this._screenPass);
-
-                this._screenPass.dispose();
                 this._screenPass = null;
             };
 

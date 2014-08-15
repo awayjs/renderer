@@ -30943,6 +30943,7 @@ var away;
                         this._pLightPicker.addEventListener(Event.CHANGE, this._onLightChangeDelegate);
 
                     this.pInvalidateScreenPasses();
+                    this.pResetRenderOrder();
                 },
                 enumerable: true,
                 configurable: true
@@ -31394,6 +31395,7 @@ var away;
             * @private
             */
             MaterialBase.prototype.iDeactivate = function (stage) {
+                //TODO discover why this is needed for shadows
                 this._passes[this._numPasses - 1].iDeactivate(this, stage);
             };
 
@@ -31477,9 +31479,7 @@ var away;
             * Listener for when a pass's shader code changes. It recalculates the render order id.
             */
             MaterialBase.prototype.onPassChange = function (event) {
-                var len = this._renderOrderData.length;
-                for (var i = 0; i < len; i++)
-                    this._renderOrderData[i].reset();
+                this.pResetRenderOrder();
             };
 
             /**
@@ -31489,11 +31489,18 @@ var away;
                 this._pScreenPassesInvalid = true;
             };
 
+            MaterialBase.prototype.pResetRenderOrder = function () {
+                var len = this._renderOrderData.length;
+                for (var i = 0; i < len; i++)
+                    this._renderOrderData[i].reset();
+            };
+
             /**
             * Called when the light picker's configuration changed.
             */
             MaterialBase.prototype.onLightsChange = function (event) {
                 this.pInvalidateScreenPasses();
+                this.pResetRenderOrder();
             };
 
             MaterialBase.prototype._iAddRenderOrderData = function (renderOrderData) {

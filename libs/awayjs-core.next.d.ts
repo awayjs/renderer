@@ -15039,6 +15039,7 @@ declare module away.materials {
         * Flags that the screen passes have become invalid.
         */
         public pInvalidateScreenPasses(): void;
+        public pResetRenderOrder(): void;
         /**
         * Called when the light picker's configuration changed.
         */

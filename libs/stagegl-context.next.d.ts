@@ -1378,7 +1378,7 @@ declare module away.stagegl {
         private _vertexShader;
         private _fragmentShader;
         constructor(gl: WebGLRenderingContext);
-        public upload(vertexProgram: utils.ByteArray, fragmentProgram: utils.ByteArray): any;
+        public upload(vertexProgram: utils.ByteArray, fragmentProgram: utils.ByteArray): void;
         public dispose(): void;
         public focusProgram(): void;
         public glProgram : WebGLProgram;
