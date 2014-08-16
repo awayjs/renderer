@@ -5522,13 +5522,18 @@ var away;
                             this.vertexConstantData[l++] = this._pInverseSceneMatrix[0] * x + this._pInverseSceneMatrix[4] * y + this._pInverseSceneMatrix[8] * z + this._pInverseSceneMatrix[12];
                             this.vertexConstantData[l++] = this._pInverseSceneMatrix[1] * x + this._pInverseSceneMatrix[5] * y + this._pInverseSceneMatrix[9] * z + this._pInverseSceneMatrix[13];
                             this.vertexConstantData[l++] = this._pInverseSceneMatrix[2] * x + this._pInverseSceneMatrix[6] * y + this._pInverseSceneMatrix[10] * z + this._pInverseSceneMatrix[14];
-                        } else {
+                            this.vertexConstantData[l++] = 1;
+                        } else if (!this.usesGlobalPosFragment) {
                             this.vertexConstantData[l++] = dirPos.x;
                             this.vertexConstantData[l++] = dirPos.y;
                             this.vertexConstantData[l++] = dirPos.z;
+                            this.vertexConstantData[l++] = 1;
+                        } else {
+                            this.fragmentConstantData[k++] = dirPos.x;
+                            this.fragmentConstantData[k++] = dirPos.y;
+                            this.fragmentConstantData[k++] = dirPos.z;
+                            this.fragmentConstantData[k++] = 1;
                         }
-
-                        this.vertexConstantData[l++] = 1;
 
                         this.fragmentConstantData[k++] = pointLight._iDiffuseR;
                         this.fragmentConstantData[k++] = pointLight._iDiffuseG;
@@ -9267,7 +9272,9 @@ var away;
             * @inheritDoc
             */
             LineBasicPass.prototype._iGetFragmentCode = function (shaderObject, regCache, sharedReg) {
-                return "mov oc, v0\n";
+                var targetReg = sharedReg.shadedTarget;
+
+                return "mov " + targetReg + ", v0\n";
             };
 
             /**
@@ -12521,7 +12528,7 @@ var away;
                 if (typeof scissorRect === "undefined") { scissorRect = null; }
                 if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
                 //TODO refactor setTarget so that rendertextures are created before this check
-                if (!this._pStage || !this._pContext || (!entityCollector.entityHead && !target))
+                if (!this._pStage || !this._pContext)
                     return;
 
                 this._pRttViewProjectionMatrix.copyFrom(entityCollector.camera.viewProjection);
