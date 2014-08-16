@@ -1,7 +1,7 @@
 ///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 //<reference path="../../../src/Away3D.ts" />
-var demos;
-(function (demos) {
+var tests;
+(function (tests) {
     (function (parsers) {
         var View = away.containers.View;
 
@@ -138,7 +138,7 @@ var demos;
             return AWDSuzanne;
         })();
         parsers.AWDSuzanne = AWDSuzanne;
-    })(demos.parsers || (demos.parsers = {}));
-    var parsers = demos.parsers;
-})(demos || (demos = {}));
+    })(tests.parsers || (tests.parsers = {}));
+    var parsers = tests.parsers;
+})(tests || (tests = {}));
 //# sourceMappingURL=AWDSuzanne.js.map

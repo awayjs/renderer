@@ -1,6 +1,6 @@
-///<reference path="../../../build/stagegl-renderer.next.d.ts" />
-var demos;
-(function (demos) {
+///<reference path="../../build/stagegl-renderer.next.d.ts" />
+var tests;
+(function (tests) {
     (function (materials) {
         var View = away.containers.View;
 
@@ -11,7 +11,7 @@ var demos;
         var AssetType = away.library.AssetType;
         var DirectionalLight = away.entities.DirectionalLight;
         var StaticLightPicker = away.materials.StaticLightPicker;
-        var TriangleMaterial = away.materials.TriangleMaterial;
+        var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
 
         var URLRequest = away.net.URLRequest;
         var OBJParser = away.parsers.OBJParser;
@@ -135,7 +135,7 @@ var demos;
                             this.staticLightPicker = new StaticLightPicker([this.light, this.lightB]);
 
                             // Material for loaded mesh
-                            this.loadedMeshMaterial = new TriangleMaterial(tx, true, true, false);
+                            this.loadedMeshMaterial = new TriangleMethodMaterial(tx, true, true, false);
                             this.loadedMeshMaterial.lightPicker = this.staticLightPicker;
                             this.loadedMeshMaterial.alpha = 1;
                             this.loadedMeshMaterial.bothSides = true;
@@ -147,7 +147,7 @@ var demos;
                             var torus = new PrimitiveTorusPrefab(150, 50, 64, 64);
 
                             // Torus Texture Material
-                            this.torusTextureMaterial = new TriangleMaterial(tx, true, true, false);
+                            this.torusTextureMaterial = new TriangleMethodMaterial(tx, true, true, false);
                             this.torusTextureMaterial.lightPicker = this.staticLightPicker;
                             this.torusTextureMaterial.bothSides = true;
                             this.torusTextureMaterial.alpha = .8;
@@ -164,7 +164,7 @@ var demos;
                             var cube = new PrimitiveCubePrefab(300, 300, 300, 20, 20, 20);
 
                             // Torus Color Material
-                            this.cubeColorMaterial = new TriangleMaterial(0x0090ff);
+                            this.cubeColorMaterial = new TriangleMethodMaterial(0x0090ff);
                             this.cubeColorMaterial.lightPicker = this.staticLightPicker;
                             this.cubeColorMaterial.alpha = .8;
                             this.cubeColorMaterial.bothSides = true;
@@ -178,7 +178,7 @@ var demos;
                             this.meshes.push(cubeMesh);
                             this.view.scene.addChild(cubeMesh);
 
-                            this.capsuleColorMaterial = new TriangleMaterial(0x00ffff);
+                            this.capsuleColorMaterial = new TriangleMethodMaterial(0x00ffff);
                             this.capsuleColorMaterial.lightPicker = this.staticLightPicker;
 
                             var capsule = new PrimitiveCapsulePrefab(100, 200);
@@ -208,7 +208,7 @@ var demos;
             return MaterialAlphaTest;
         })();
         materials.MaterialAlphaTest = MaterialAlphaTest;
-    })(demos.materials || (demos.materials = {}));
-    var materials = demos.materials;
-})(demos || (demos = {}));
+    })(tests.materials || (tests.materials = {}));
+    var materials = tests.materials;
+})(tests || (tests = {}));
 //# sourceMappingURL=MaterialAlphaTest.js.map

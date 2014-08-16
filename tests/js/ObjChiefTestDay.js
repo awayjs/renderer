@@ -1,7 +1,7 @@
 ///<reference path="../../../build/stagegl-renderer.next.d.ts" />
 //<reference path="../../../src/Away3D.ts" />
-var demos;
-(function (demos) {
+var tests;
+(function (tests) {
     (function (parsers) {
         var DisplayObjectContainer = away.containers.DisplayObjectContainer;
 
@@ -14,7 +14,7 @@ var demos;
         var AssetType = away.library.AssetType;
 
         var DirectionalLight = away.entities.DirectionalLight;
-        var TriangleMaterial = away.materials.TriangleMaterial;
+        var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
         var StaticLightPicker = away.materials.StaticLightPicker;
         var URLRequest = away.net.URLRequest;
         var OBJParser = away.parsers.OBJParser;
@@ -123,10 +123,10 @@ var demos;
                             break;
                         case AssetType.TEXTURE:
                             if (event.url == 'assets/masterchief_base.png') {
-                                this.mat = new TriangleMaterial(d, true, true, false);
+                                this.mat = new TriangleMethodMaterial(d, true, true, false);
                                 this.mat.lightPicker = new StaticLightPicker([this.light]);
                             } else if (event.url == 'assets/stone_tx.jpg') {
-                                this.terrainMaterial = new TriangleMaterial(d, true, true, false);
+                                this.terrainMaterial = new TriangleMethodMaterial(d, true, true, false);
                                 this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
                             }
 
@@ -158,7 +158,7 @@ var demos;
             return ObjChiefTestDay;
         })();
         parsers.ObjChiefTestDay = ObjChiefTestDay;
-    })(demos.parsers || (demos.parsers = {}));
-    var parsers = demos.parsers;
-})(demos || (demos = {}));
+    })(tests.parsers || (tests.parsers = {}));
+    var parsers = tests.parsers;
+})(tests || (tests = {}));
 //# sourceMappingURL=ObjChiefTestDay.js.map

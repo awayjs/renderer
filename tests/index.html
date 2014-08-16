@@ -22,119 +22,36 @@
             var harness = new away.AppHarness();
 
             //---------------------------------------------------------------------------
-            // Demos
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Demos' );
-            harness.addTest( 'Demo.AWDParser'                       , 'demos.parsers.AWDSuzanne'            , 'js/AWDSuzanne.js'         , 'demos/parsers/AWDSuzanne.ts' );
-            harness.addTest( 'Demo.OBJParser'                       , 'demos.parsers.ObjChiefTestDay'       , 'js/ObjChiefTestDay.js'    , 'demos/parsers/ObjChiefTest.ts' );
-            harness.addTest( 'Demo.TorusVortex'                     , 'demos.object3d.TorusVortex'                , 'js/TorusVortex.js'           , 'demos/Object3D/TorusVortex.ts' );
-            harness.addTest( 'Demo.TorusObject3DDemo'               , 'demos.object3d.TorusObject3DDemo'    , 'js/TorusObject3DDemo.js'  , 'demos/Object3D/TorusObject3DDemo.ts'  );
-            harness.addTest( 'Demo.Materials - Alpha'               , 'demos.materials.MaterialAlphaTest'   , 'js/MaterialAlphaTest.js'     , 'demos/materials/MaterialAlphaTest.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Primitives
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Primitives' );
-            harness.addTest( 'Primitives.WireframePrimitives'  , 'tests.primitives.WireframePrimitiveTest'  , 'js/WireframePrimitive.js' , 'away/primitives/WireframePrimitive.ts'  );
-            harness.addTest( 'Primitives.PrimitivesTest'       , 'tests.primitives.PrimitivesTest'          , 'js/PrimitivesTest.js'     , 'away/primitives/PrimitivesTest.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Scene
-            //--------------------------------------------------------------------------
-
-            harness.addSeperator( 'Scene' );
-            //harness.addTest( 'Scene.RotatingTorus'  ,  'scene.RotatingTorus'      , 'js/RotatingTorus.js'     , 'js/RotatingTorus.js'  );
-            harness.addTest( '(GLSL) Scene.PhongTorus'     ,  'scene.PhongTorus'      , 'js/PhongTorus.js'     , 'scene/PhongTorus.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Utils
+            // Test - Parsers
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Parsers' );
-            harness.addTest( 'Parsers.AWDShadow'                       , 'demos.parsers.AWDShadowTest'           , 'js/AWDShadowTest.js'        , 'demos/parsers/AWDShadowTest.ts'  );
-            harness.addTest( 'Parsers.AWDEnvMap / SkyBox'              , 'tests.library.AWDParserTestEnvMap'     , 'js/AWDParserTestEnvMap.js'  , 'demos/parsers/AWDParserTestEnvMap.ts'  );
+            harness.addTest( 'Parsers.AWDParserTest'                       , 'tests.parsers.AWDParserTest'            , 'js/AWDParserTest.js'         , 'parsers/AWDParserTest.ts' );
+            harness.addTest( 'Parsers.ObjParserTest'                       , 'tests.parsers.ObjParserTest'            , 'js/ObjParserTest.js'         , 'parsers/ObjParserTest.ts' );
+            harness.addTest( 'Parsers.AWDSuzanne'                       , 'tests.parsers.AWDSuzanne'            , 'js/AWDSuzanne.js'         , 'parsers/AWDSuzanne.ts' );
+            harness.addTest( 'Parsers.ObjChiefTestDay'                       , 'tests.parsers.ObjChiefTestDay'       , 'js/ObjChiefTestDay.js'    , 'parsers/ObjChiefTestDay.ts' );
+
 
             //---------------------------------------------------------------------------
-            // Test - Textures
+            // Test - Lights
             //---------------------------------------------------------------------------
 
-            harness.addSeperator( 'Textures' );
-            harness.addTest( 'Textures.CubeTextures'       , 'tests.textures.CubeTextures'  , 'js/CubeTextures.js'    , 'away/textures/CubeTextures.ts'  );
+            harness.addSeperator( 'Lights' );
+            harness.addTest( 'Lights.LightsShadowTest'              , 'tests.lights.LightsShadowTest'     , 'js/LightsShadowTest.js'  , 'lights/LightsShadowTest.ts'  );
+
 
             //---------------------------------------------------------------------------
-            // Test - Render
+            // Test - Material
             //---------------------------------------------------------------------------
 
-            harness.addSeperator( 'Render' );
-            harness.addTest( '(Console) Render.DefaultRenderer'       , 'tests.render.RenderTest'  , 'js/RenderTest.js' , 'away/render/RenderTest.ts'  );
+            harness.addSeperator( 'Parsers' );
+            harness.addTest( 'Materials.MaterialAlphaTest'              , 'tests.materials.MaterialAlphaTest'     , 'js/MaterialAlphaTest.js'  , 'materials/MaterialAlphaTest.ts'  );
+            harness.addTest( 'Materials.MaterialEnvMapTest'              , 'tests.materials.MaterialEnvMapTest'     , 'js/MaterialEnvMapTest.js'  , 'materials/MaterialEnvMapTest.ts'  );
 
-            //---------------------------------------------------------------------------
-            // Test - Pick
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Pick' );
-            harness.addTest( '(Console) Pick.Test'       , 'tests.pick.PickingTests'  , 'js/PickingTests.js' , 'away/pick/PickingTests.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Materials
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Materials' );
-            harness.addTest( '(Console) Materials.ColorMaterialTest'    ,  'tests.materials.ColorMaterialTest'          , 'js/ColorMaterialTest.js'          , 'away/materials/ColorMaterialTest.ts'  );
-            harness.addTest( 'Materials.ColorMultiPassMatTest'          , 'tests.materials.ColorMultiPassMatTest'       , 'js/ColorMultiPassMatTest.js'      , 'away/materials/ColorMultiPassMatTest.ts'  );
-            harness.addTest( 'Materials.TextureMultiPassMatTest'        , 'tests.materials.TextureMultiPassMatTest'     , 'js/TextureMultiPassMatTest.js'    , 'away/materials/TextureMultiPassMatTest.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Library
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Library' );
-            harness.addTest( 'Library.AWDParserTest'        ,  'tests.library.AWDParserTest'  , 'js/AWDParserTest.js'        , 'away/library/AWDParserTest.ts'  );
-            harness.addTest( 'Library.ObjLibLoaderTest'     ,  'tests.library.ObjLibLoaderTest'  , 'js/ObjLibLoaderTest.js'  , 'away/library/ObjLibLoaderTest.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Entities
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Entities' );
-            harness.addTest( '(Console) EntityTest'   ,  'tests.entities.EntityTest', 'js/EntityTest.js' , 'away/entities/EntityTest.ts'  );
-            harness.addTest( '(Console) MeshTest'     ,  'tests.entities.MeshTest'  , 'js/MeshTest.js'   , 'away/entities/MeshTest.ts'  );
-            harness.addTest( 'Billboard'             ,  'tests.entities.BillboardTest'  , 'js/BillboardTest.js'   ,  'away/entities/BillboardTest.ts'  );
-            harness.addTest( 'Layout Test'             ,  'tests.entities.LayoutTest'  , 'js/LayoutTest.js'   ,  'away/entities/LayoutTest.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Display
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Display' );
-            harness.addTest( 'Display.BitmapDataTest 2'  ,  'tests.display.BitmapDataReflectionTest'      , 'js/BitmapDataReflectionTest.js'     , 'away/display/BitmapDataReflectionTest.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Controllers
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Controllers' );
-            harness.addTest( 'Controllers.HoverControllerTest'  ,  'tests.controllers.HoverControllerTest'      , 'js/HoverControllerTest.js'     , 'away/controllers/HoverControllerTest.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Containers
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Containers' );
-            harness.addTest( 'Containers.View3DTest'  ,  'tests.containers.View3DTest'      , 'js/View3DTest.js'     , 'away/containers/View3DTest.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Base
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Base' );
-            harness.addTest( 'Base.View3DTest'  ,  'tests.base.Object3DTestV2'      , 'js/Object3DTest_v2.js'     , 'away/base/Object3DTest_v2.ts'  );
 
             //---------------------------------------------------------------------------
             // Load a default
-            harness.load( 'demos.object3d.TorusObject3DDemo' , 'js/TorusObject3DDemo.js'    , 'demos/Object3D/TorusObject3DDemo.ts'  );
+            harness.load( 'tests.parsers.AWDParserTest' , 'js/AWDParserTest.js'    , 'parsers/AWDParserTest.ts'  );
             harness.start(); // Start
 
         }
