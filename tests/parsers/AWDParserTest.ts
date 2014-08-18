@@ -1,4 +1,4 @@
-///<reference path="../../build/stagegl-renderer.next.d.ts" />
+///<reference path="../../build/stagegl-extensions.next.d.ts" />
 
 module tests.parsers
 {

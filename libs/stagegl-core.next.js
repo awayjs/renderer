@@ -14821,6 +14821,6 @@ var away;
         }
         return StageGLContext;
     })(away.events.EventDispatcher);
-    away.StageGLContext = StageGLContext;
+    away.StageGLCore = StageGLContext;
 })(away || (away = {}));
-//# sourceMappingURL=stagegl-context.next.js.map
+//# sourceMappingURL=stagegl-core.next.js.map

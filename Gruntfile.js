@@ -67,11 +67,11 @@ module.exports = function(grunt) {
 
         meta: {
 
-            tsFile: 'src/StageGLRenderer.ts',                                     // TypeScript export source
+            tsFile: 'src/StageGLExtensions.ts',                                     // TypeScript export source
             tsPath: 'src/',                                              // TypeScript source folder
 
-            tsExportFile: 'build/stagegl-renderer.' + version + '.js',             // JavaScript export target
-            tsExportUglyFile: 'build/stagegl-renderer.' + version + '.min.js',     // JavaScript minified target
+            tsExportFile: 'build/stagegl-extensions.' + version + '.js',             // JavaScript export target
+            tsExportUglyFile: 'build/stagegl-extensions.' + version + '.min.js',     // JavaScript minified target
 
             tsExportFolder: 'build/',                                    // Export folder
             docsPath: 'docs/'                                            // Documentation export path

@@ -19609,4 +19609,4 @@ var away;
     })(away.events.EventDispatcher);
     away.StageGLRenderer = StageGLRenderer;
 })(away || (away = {}));
-//# sourceMappingURL=stagegl-renderer.next.js.map
+//# sourceMappingURL=stagegl-extensions.next.js.map

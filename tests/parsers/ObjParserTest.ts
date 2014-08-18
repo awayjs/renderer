@@ -1,4 +1,4 @@
-///<reference path="../../build/stagegl-renderer.next.d.ts" />
+///<reference path="../../build/stagegl-extensions.next.d.ts" />
 //<reference path="../../../src/Away3D.ts" />
 
 module tests.parsers
