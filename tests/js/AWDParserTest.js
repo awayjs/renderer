@@ -1,5 +1,4 @@
-///<reference path="../../build/stagegl-renderer.next.d.ts" />
-//<reference path="../../../src/Away3D.ts" />
+///<reference path="../../build/stagegl-extensions.next.d.ts" />
 var tests;
 (function (tests) {
     (function (parsers) {

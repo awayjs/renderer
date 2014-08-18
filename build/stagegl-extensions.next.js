@@ -19471,7 +19471,7 @@ var away;
 *********************************************************************************************************************************************************************************************************/
 ///<reference path="../../libs/ref/js.d.ts"/>
 ///<reference path="../../libs/awayjs-core.next.d.ts"/>
-///<reference path="../../libs/stagegl-context.next.d.ts"/>
+///<reference path="../../libs/stagegl-core.next.d.ts"/>
 ///<reference path="events/AnimationStateEvent.ts" />
 ///<reference path="core/base/ParticleGeometry.ts"/>
 ///<reference path="core/pick/PickingColliderBase.ts" />

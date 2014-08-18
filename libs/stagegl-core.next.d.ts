@@ -4751,7 +4751,7 @@ declare module away.filters {
     }
 }
 declare module away {
-    class StageGLContext extends events.EventDispatcher {
+    class StageGLCore extends events.EventDispatcher {
         constructor();
     }
 }

@@ -1,6 +1,6 @@
 /// <reference path="../libs/ref/js.d.ts" />
 /// <reference path="../libs/awayjs-core.next.d.ts" />
-/// <reference path="../libs/stagegl-context.next.d.ts" />
+/// <reference path="../libs/stagegl-core.next.d.ts" />
 declare module away.events {
     /**
     * Dispatched to notify changes in an animation state's state.

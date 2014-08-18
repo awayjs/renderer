@@ -14814,13 +14814,13 @@ away.Debug.LOG_PI_ERRORS = false;
 
 var away;
 (function (away) {
-    var StageGLContext = (function (_super) {
-        __extends(StageGLContext, _super);
-        function StageGLContext() {
+    var StageGLCore = (function (_super) {
+        __extends(StageGLCore, _super);
+        function StageGLCore() {
             _super.call(this);
         }
-        return StageGLContext;
+        return StageGLCore;
     })(away.events.EventDispatcher);
-    away.StageGLCore = StageGLContext;
+    away.StageGLCore = StageGLCore;
 })(away || (away = {}));
 //# sourceMappingURL=stagegl-core.next.js.map
