@@ -6507,6 +6507,9 @@ var away;
                 this._pShaderObject.usesUVTransform = this._pMaterial.animateUVs;
                 this._pShaderObject.alphaThreshold = this._pMaterial.alphaThreshold;
 
+                //TODO: fragment animtion should be compatible with lighting pass
+                this._pShaderObject.usesFragmentAnimation = Boolean(this._pMaterialPass.passMode == materials.MaterialPassMode.SUPER_SHADER);
+
                 this._pMaterialPass._iIncludeDependencies(this._pShaderObject);
             };
 
@@ -6859,10 +6862,6 @@ var away;
                 this._shaderLightingObject.usesProbesForSpecular = numLightProbes > 0 && (specularLightSources & materials.LightSources.PROBES) != 0;
                 this._shaderLightingObject.usesLightsForDiffuse = numAllLights > 0 && (diffuseLightSources & materials.LightSources.LIGHTS) != 0;
                 this._shaderLightingObject.usesProbesForDiffuse = numLightProbes > 0 && (diffuseLightSources & materials.LightSources.PROBES) != 0;
-
-                // todo: add spotlights to count check
-                this._shaderLightingObject.usesFragmentAnimation = Boolean(this._pMaterialPass.passMode == materials.MaterialPassMode.SUPER_SHADER);
-
                 this._shaderLightingObject.usesShadows = this._materialLightingPass._iUsesShadows();
 
                 _super.prototype.pCalculateDependencies.call(this);

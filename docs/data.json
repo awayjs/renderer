@@ -1486,21 +1486,21 @@
             "namespaces": {}
         },
         "src/away/materials/MaterialBase.ts": {
-            "name": "src/away/materials/MaterialBase.ts",
+            "name": "src/away/materials/ShadowMaterialBase.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/MultiPassMaterialBase.ts": {
-            "name": "src/away/materials/MultiPassMaterialBase.ts",
+            "name": "src/away/materials/TriangleMaterial.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/SegmentMaterial.ts": {
-            "name": "src/away/materials/SegmentMaterial.ts",
+            "name": "src/away/materials/LineMaterial.ts",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -15305,7 +15305,7 @@
             "line": 23,
             "description": "LightingPass is a shader pass that uses shader methods to compile a complete program. It only includes the lighting\nmethods. It's used by multipass materials to accumulate lighting passes.",
             "see": [
-                "away3d.materials.MultiPassMaterialBase"
+                "away3d.materials.TriangleMaterial"
             ],
             "class": "",
             "module": "away.events"
@@ -16227,28 +16227,28 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 23,
-            "description": "MaterialBase forms an abstract base class for any material.\nA material consists of several passes, each of which constitutes at least one render call. Several passes could\nbe used for special effects (render lighting for many lights in several passes, render an outline in a separate\npass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space\nsubsurface scattering, or rendering a depth map for specialized self-shadowing).\n\nAway3D provides default materials trough SinglePassMaterialBase and MultiPassMaterialBase, which use modular\nmethods to build the shader code. MaterialBase can be extended to build specific and high-performant custom\nshaders, or entire new material frameworks.",
+            "description": "MaterialBase forms an abstract base class for any material.\nA material consists of several passes, each of which constitutes at least one render call. Several passes could\nbe used for special effects (render lighting for many lights in several passes, render an outline in a separate\npass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space\nsubsurface scattering, or rendering a depth map for specialized self-shadowing).\n\nAway3D provides default materials trough SinglePassMaterialBase and TriangleMaterial, which use modular\nmethods to build the shader code. MaterialBase can be extended to build specific and high-performant custom\nshaders, or entire new material frameworks.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 36,
             "description": "A counter used to assign unique ids per material, which is used to sort per material while rendering.\nThis reduces state changes.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 42,
             "description": "An object to contain any extra data.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 47,
             "description": "A value that can be used by materials that only work with a given type of renderer. The renderer can test the\nclassification to choose which render path to use. For example, a deferred material could set this value so\nthat the deferred renderer knows not to take the forward rendering path.",
             "access": "private",
@@ -16257,7 +16257,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 56,
             "description": "An id for this material used to sort the renderables by material, which reduces render state changes across\nmaterials using the same Program.",
             "access": "private",
@@ -16266,7 +16266,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 64,
             "description": "An id for this material used to sort the renderables by shader program, which reduces Program state changes.",
             "access": "private",
@@ -16275,7 +16275,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 71,
             "description": "The same as _renderOrderId, but applied to the depth shader passes.",
             "access": "private",
@@ -16284,28 +16284,28 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 81,
             "description": "A list of material owners, renderables or custom Entities.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 108,
             "description": "Creates a new MaterialBase object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 132,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 140,
             "description": "The light picker used by the material to provide lights to the material if it supports lighting.",
             "see": [
@@ -16316,21 +16316,21 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 168,
             "description": "Indicates whether or not any used textures should use mipmapping. Defaults to true.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 191,
             "description": "Indicates whether or not any used textures should use smoothing.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 207,
             "description": "The depth compare mode used to render the renderables using this material.",
             "see": [
@@ -16340,56 +16340,56 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 228,
             "description": "Indicates whether or not any used textures should be tiled. If set to false, texture samples are clamped to\nthe texture's borders when the uv coordinates are outside the [0, 1] interval.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 245,
             "description": "Cleans up resources owned by the material, including passes. Textures are not owned by the material since they\ncould be used by other materials and will not be disposed.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 264,
             "description": "Defines whether or not the material should cull triangles facing away from the camera.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 284,
             "description": "The blend mode to use when drawing this renderable. The following blend modes are supported:\n<ul>\n<li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>\n<li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>\n<li>BlendMode.MULTIPLY</li>\n<li>BlendMode.ADD</li>\n<li>BlendMode.ALPHA</li>\n</ul>",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 314,
             "description": "Indicates whether visible textures (or other pixels) used by this material have\nalready been premultiplied. Toggle this if you are seeing black halos around your\nblended alpha edges.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 332,
             "description": "Indicates whether or not the material requires alpha blending during rendering.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 346,
             "description": "An id for this material used to sort the renderables by material, which reduces render state changes across\nmaterials using the same Program.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 355,
             "description": "The amount of passes used by the material.",
             "access": "private",
@@ -16398,7 +16398,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 365,
             "description": "Indicates that the depth pass uses transparency testing to discard pixels.",
             "access": "private",
@@ -16407,7 +16407,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 376,
             "description": "Sets the render state for the depth pass that is independent of the rendered object. Used when rendering\ndepth or distances (fe: shadow maps, depth pre-pass).",
             "params": [
@@ -16430,7 +16430,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 397,
             "description": "Clears the render state for the depth pass.",
             "params": [
@@ -16445,7 +16445,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 412,
             "description": "Renders a renderable using the depth pass.",
             "params": [
@@ -16472,7 +16472,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 440,
             "description": "Indicates whether or not the pass with the given index renders to texture or not.",
             "params": [
@@ -16490,7 +16490,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 453,
             "description": "Sets the render state for a pass that is independent of the rendered object. This needs to be called before\ncalling renderPass. Before activating a pass, the previously used pass needs to be deactivated.",
             "params": [
@@ -16513,7 +16513,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 467,
             "description": "Clears the render state for a pass. This needs to be called before activating another pass.",
             "params": [
@@ -16532,7 +16532,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 480,
             "description": "Renders the current pass. Before calling renderPass, activatePass needs to be called with the same index.",
             "params": [
@@ -16561,7 +16561,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 506,
             "description": "Mark an IMaterialOwner as owner of this material.\nAssures we're not using the same material across renderables with different animations, since the\nPrograms depend on animation. This method needs to be called when a material is assigned.",
             "params": [
@@ -16576,7 +16576,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 539,
             "description": "Removes an IMaterialOwner as owner.",
             "params": [
@@ -16591,7 +16591,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 560,
             "description": "A list of the IMaterialOwners that use this material",
             "access": "private",
@@ -16600,7 +16600,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 570,
             "description": "Performs any processing that needs to occur before any of its passes are used.",
             "access": "private",
@@ -16609,7 +16609,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 580,
             "description": "Deactivates the last pass of the material.",
             "access": "private",
@@ -16618,7 +16618,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 590,
             "description": "Marks the shader programs for all passes as invalid, so they will be recompiled before the next use.",
             "params": [
@@ -16633,7 +16633,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 648,
             "description": "Removes a pass from the material.",
             "params": [
@@ -16646,14 +16646,14 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 658,
             "description": "Removes all passes from the material",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 670,
             "description": "Adds a pass to the material",
             "params": [
@@ -16666,77 +16666,77 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 690,
             "description": "Listener for when a pass's shader code changes. It recalculates the render order id.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 717,
             "description": "Listener for when the distance pass's shader code changes. It recalculates the depth pass id.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MaterialBase.ts",
+            "file": "src/away/materials/ShadowMaterialBase.ts",
             "line": 735,
             "description": "Listener for when the depth pass's shader code changes. It recalculates the depth pass id.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 10,
-            "description": "MultiPassMaterialBase forms an abstract base class for the default multi-pass materials provided by Away3D,\nusing material methods to define their appearance.",
+            "description": "TriangleMaterial forms an abstract base class for the default multi-pass materials provided by Away3D,\nusing material methods to define their appearance.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 34,
-            "description": "Creates a new MultiPassMaterialBase object.",
+            "description": "Creates a new TriangleMaterial object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 44,
             "description": "Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and\ncompatibility for constrained mode.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 62,
             "description": "The minimum alpha value for which pixels should be drawn. This is used for transparency that is either\ninvisible or entirely opaque, often used with textures for foliage, etc.\nRecommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 80,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 89,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 98,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 111,
             "description": "Define which light source types to use for specular reflections. This allows choosing between regular lights\nand/or light probes for specular reflections.",
             "see": [
@@ -16746,7 +16746,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 127,
             "description": "Define which light source types to use for diffuse reflections. This allows choosing between regular lights\nand/or light probes for diffuse reflections.",
             "see": [
@@ -16756,70 +16756,70 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 143,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 159,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 167,
             "description": "The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 182,
             "description": "The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 199,
             "description": "The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 214,
             "description": "The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 231,
             "description": "The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 246,
             "description": "Appends an \"effect\" shading method to the shader. Effect methods are those that do not influence the lighting\nbut modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the\nmethods added prior.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 260,
             "description": "The number of \"effect\" methods added to the material.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 268,
             "description": "Queries whether a given effect method was added to the material.",
             "params": [
@@ -16835,7 +16835,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 279,
             "description": "Returns the method added at the given index.",
             "params": [
@@ -16851,14 +16851,14 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 289,
             "description": "Adds an effect method at the specified index amongst the methods already added to the material. Effect\nmethods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,\netc. The method will be applied to the result of the methods with a lower index.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 303,
             "description": "Removes an effect method from the material.",
             "params": [
@@ -16871,70 +16871,70 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 319,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 331,
             "description": "The normal map to modulate the direction of the surface for each texel. The default normal method expects\ntangent-space normal maps, but others could expect object-space maps.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 345,
             "description": "A specular map that defines the strength of specular reflections for each texel in the red channel,\nand the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set\nspecular and gloss maps from grayscale images, but correctly authored images are preferred.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 362,
             "description": "The glossiness of the material (sharpness of the specular highlight).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 376,
             "description": "The strength of the ambient reflection.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 389,
             "description": "The overall strength of the specular reflection.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 403,
             "description": "The colour of the ambient reflection.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 416,
             "description": "The colour of the specular reflection.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 429,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 467,
             "description": "Adds a compiled pass that renders to the screen.",
             "params": [
@@ -16947,7 +16947,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 479,
             "description": "Tests if any pass that renders to the screen is invalid. This would trigger a new setup of the multiple passes.",
             "return": {
@@ -16957,7 +16957,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 498,
             "description": "Adds any additional passes on which the given pass is dependent.",
             "params": [
@@ -16970,72 +16970,72 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 516,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 527,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 537,
             "description": "Updates screen passes when they were found to be invalid.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 548,
             "description": "Initializes all the passes and their dependent passes.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 572,
             "description": "Sets up the various blending modes for all screen passes, based on whether or not there are previous passes.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 750,
             "description": "The maximum total number of lights provided by the light picker.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 758,
             "description": "The amount of lights that don't cast shadows.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 766,
             "description": "Flags that the screen passes have become invalid.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/MultiPassMaterialBase.ts",
+            "file": "src/away/materials/TriangleMaterial.ts",
             "line": 774,
             "description": "Called when the light picker's configuration changed.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/SegmentMaterial.ts",
+            "file": "src/away/materials/LineMaterial.ts",
             "line": 6,
-            "description": "SegmentMaterial is a material exclusively used to render wireframe objects",
+            "description": "LineMaterial is a material exclusively used to render wireframe objects",
             "see": [
                 "away3d.entities.Lines"
             ],
@@ -17043,9 +17043,9 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/SegmentMaterial.ts",
+            "file": "src/away/materials/LineMaterial.ts",
             "line": 15,
-            "description": "Creates a new SegmentMaterial object.",
+            "description": "Creates a new LineMaterial object.",
             "params": [
                 {
                     "name": "thickness",
@@ -21553,43 +21553,43 @@
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/MaterialBase.ts:132"
+            "line": " src/away/materials/ShadowMaterialBase.ts:132"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:80"
+            "line": " src/away/materials/TriangleMaterial.ts:80"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:89"
+            "line": " src/away/materials/TriangleMaterial.ts:89"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:98"
+            "line": " src/away/materials/TriangleMaterial.ts:98"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:143"
+            "line": " src/away/materials/TriangleMaterial.ts:143"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:159"
+            "line": " src/away/materials/TriangleMaterial.ts:159"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:319"
+            "line": " src/away/materials/TriangleMaterial.ts:319"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:429"
+            "line": " src/away/materials/TriangleMaterial.ts:429"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:516"
+            "line": " src/away/materials/TriangleMaterial.ts:516"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:527"
+            "line": " src/away/materials/TriangleMaterial.ts:527"
         },
         {
             "message": "unknown tag: inheritdoc",
@@ -28356,352 +28356,352 @@
             "line": " src/away/materials/LightSources.ts:29"
         },
         {
-            "message": "Missing item type\nMaterialBase forms an abstract base class for any material.\nA material consists of several passes, each of which constitutes at least one render call. Several passes could\nbe used for special effects (render lighting for many lights in several passes, render an outline in a separate\npass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space\nsubsurface scattering, or rendering a depth map for specialized self-shadowing).\n\nAway3D provides default materials trough SinglePassMaterialBase and MultiPassMaterialBase, which use modular\nmethods to build the shader code. MaterialBase can be extended to build specific and high-performant custom\nshaders, or entire new material frameworks.",
-            "line": " src/away/materials/MaterialBase.ts:23"
+            "message": "Missing item type\nMaterialBase forms an abstract base class for any material.\nA material consists of several passes, each of which constitutes at least one render call. Several passes could\nbe used for special effects (render lighting for many lights in several passes, render an outline in a separate\npass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space\nsubsurface scattering, or rendering a depth map for specialized self-shadowing).\n\nAway3D provides default materials trough SinglePassMaterialBase and TriangleMaterial, which use modular\nmethods to build the shader code. MaterialBase can be extended to build specific and high-performant custom\nshaders, or entire new material frameworks.",
+            "line": " src/away/materials/ShadowMaterialBase.ts:23"
         },
         {
             "message": "Missing item type\nA counter used to assign unique ids per material, which is used to sort per material while rendering.\nThis reduces state changes.",
-            "line": " src/away/materials/MaterialBase.ts:36"
+            "line": " src/away/materials/ShadowMaterialBase.ts:36"
         },
         {
             "message": "Missing item type\nAn object to contain any extra data.",
-            "line": " src/away/materials/MaterialBase.ts:42"
+            "line": " src/away/materials/ShadowMaterialBase.ts:42"
         },
         {
             "message": "Missing item type\nA value that can be used by materials that only work with a given type of renderer. The renderer can test the\nclassification to choose which render path to use. For example, a deferred material could set this value so\nthat the deferred renderer knows not to take the forward rendering path.",
-            "line": " src/away/materials/MaterialBase.ts:47"
+            "line": " src/away/materials/ShadowMaterialBase.ts:47"
         },
         {
             "message": "Missing item type\nAn id for this material used to sort the renderables by material, which reduces render state changes across\nmaterials using the same Program.",
-            "line": " src/away/materials/MaterialBase.ts:56"
+            "line": " src/away/materials/ShadowMaterialBase.ts:56"
         },
         {
             "message": "Missing item type\nAn id for this material used to sort the renderables by shader program, which reduces Program state changes.",
-            "line": " src/away/materials/MaterialBase.ts:64"
+            "line": " src/away/materials/ShadowMaterialBase.ts:64"
         },
         {
             "message": "Missing item type\nThe same as _renderOrderId, but applied to the depth shader passes.",
-            "line": " src/away/materials/MaterialBase.ts:71"
+            "line": " src/away/materials/ShadowMaterialBase.ts:71"
         },
         {
             "message": "Missing item type\nA list of material owners, renderables or custom Entities.",
-            "line": " src/away/materials/MaterialBase.ts:81"
+            "line": " src/away/materials/ShadowMaterialBase.ts:81"
         },
         {
             "message": "Missing item type\nCreates a new MaterialBase object.",
-            "line": " src/away/materials/MaterialBase.ts:108"
+            "line": " src/away/materials/ShadowMaterialBase.ts:108"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/MaterialBase.ts:132"
+            "line": " src/away/materials/ShadowMaterialBase.ts:132"
         },
         {
             "message": "Missing item type\nThe light picker used by the material to provide lights to the material if it supports lighting.",
-            "line": " src/away/materials/MaterialBase.ts:140"
+            "line": " src/away/materials/ShadowMaterialBase.ts:140"
         },
         {
             "message": "Missing item type\nIndicates whether or not any used textures should use mipmapping. Defaults to true.",
-            "line": " src/away/materials/MaterialBase.ts:168"
+            "line": " src/away/materials/ShadowMaterialBase.ts:168"
         },
         {
             "message": "Missing item type\nIndicates whether or not any used textures should use smoothing.",
-            "line": " src/away/materials/MaterialBase.ts:191"
+            "line": " src/away/materials/ShadowMaterialBase.ts:191"
         },
         {
             "message": "Missing item type\nThe depth compare mode used to render the renderables using this material.",
-            "line": " src/away/materials/MaterialBase.ts:207"
+            "line": " src/away/materials/ShadowMaterialBase.ts:207"
         },
         {
             "message": "Missing item type\nIndicates whether or not any used textures should be tiled. If set to false, texture samples are clamped to\nthe texture's borders when the uv coordinates are outside the [0, 1] interval.",
-            "line": " src/away/materials/MaterialBase.ts:228"
+            "line": " src/away/materials/ShadowMaterialBase.ts:228"
         },
         {
             "message": "Missing item type\nCleans up resources owned by the material, including passes. Textures are not owned by the material since they\ncould be used by other materials and will not be disposed.",
-            "line": " src/away/materials/MaterialBase.ts:245"
+            "line": " src/away/materials/ShadowMaterialBase.ts:245"
         },
         {
             "message": "Missing item type\nDefines whether or not the material should cull triangles facing away from the camera.",
-            "line": " src/away/materials/MaterialBase.ts:264"
+            "line": " src/away/materials/ShadowMaterialBase.ts:264"
         },
         {
             "message": "Missing item type\nThe blend mode to use when drawing this renderable. The following blend modes are supported:\n<ul>\n<li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>\n<li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>\n<li>BlendMode.MULTIPLY</li>\n<li>BlendMode.ADD</li>\n<li>BlendMode.ALPHA</li>\n</ul>",
-            "line": " src/away/materials/MaterialBase.ts:284"
+            "line": " src/away/materials/ShadowMaterialBase.ts:284"
         },
         {
             "message": "Missing item type\nIndicates whether visible textures (or other pixels) used by this material have\nalready been premultiplied. Toggle this if you are seeing black halos around your\nblended alpha edges.",
-            "line": " src/away/materials/MaterialBase.ts:314"
+            "line": " src/away/materials/ShadowMaterialBase.ts:314"
         },
         {
             "message": "Missing item type\nIndicates whether or not the material requires alpha blending during rendering.",
-            "line": " src/away/materials/MaterialBase.ts:332"
+            "line": " src/away/materials/ShadowMaterialBase.ts:332"
         },
         {
             "message": "Missing item type\nAn id for this material used to sort the renderables by material, which reduces render state changes across\nmaterials using the same Program.",
-            "line": " src/away/materials/MaterialBase.ts:346"
+            "line": " src/away/materials/ShadowMaterialBase.ts:346"
         },
         {
             "message": "Missing item type\nThe amount of passes used by the material.",
-            "line": " src/away/materials/MaterialBase.ts:355"
+            "line": " src/away/materials/ShadowMaterialBase.ts:355"
         },
         {
             "message": "Missing item type\nIndicates that the depth pass uses transparency testing to discard pixels.",
-            "line": " src/away/materials/MaterialBase.ts:365"
+            "line": " src/away/materials/ShadowMaterialBase.ts:365"
         },
         {
             "message": "Missing item type\nSets the render state for the depth pass that is independent of the rendered object. Used when rendering\ndepth or distances (fe: shadow maps, depth pre-pass).",
-            "line": " src/away/materials/MaterialBase.ts:376"
+            "line": " src/away/materials/ShadowMaterialBase.ts:376"
         },
         {
             "message": "Missing item type\nClears the render state for the depth pass.",
-            "line": " src/away/materials/MaterialBase.ts:397"
+            "line": " src/away/materials/ShadowMaterialBase.ts:397"
         },
         {
             "message": "Missing item type\nRenders a renderable using the depth pass.",
-            "line": " src/away/materials/MaterialBase.ts:412"
+            "line": " src/away/materials/ShadowMaterialBase.ts:412"
         },
         {
             "message": "Missing item type\nIndicates whether or not the pass with the given index renders to texture or not.",
-            "line": " src/away/materials/MaterialBase.ts:440"
+            "line": " src/away/materials/ShadowMaterialBase.ts:440"
         },
         {
             "message": "Missing item type\nSets the render state for a pass that is independent of the rendered object. This needs to be called before\ncalling renderPass. Before activating a pass, the previously used pass needs to be deactivated.",
-            "line": " src/away/materials/MaterialBase.ts:453"
+            "line": " src/away/materials/ShadowMaterialBase.ts:453"
         },
         {
             "message": "Missing item type\nClears the render state for a pass. This needs to be called before activating another pass.",
-            "line": " src/away/materials/MaterialBase.ts:467"
+            "line": " src/away/materials/ShadowMaterialBase.ts:467"
         },
         {
             "message": "Missing item type\nRenders the current pass. Before calling renderPass, activatePass needs to be called with the same index.",
-            "line": " src/away/materials/MaterialBase.ts:480"
+            "line": " src/away/materials/ShadowMaterialBase.ts:480"
         },
         {
             "message": "Missing item type\nMark an IMaterialOwner as owner of this material.\nAssures we're not using the same material across renderables with different animations, since the\nPrograms depend on animation. This method needs to be called when a material is assigned.",
-            "line": " src/away/materials/MaterialBase.ts:506"
+            "line": " src/away/materials/ShadowMaterialBase.ts:506"
         },
         {
             "message": "Missing item type\nRemoves an IMaterialOwner as owner.",
-            "line": " src/away/materials/MaterialBase.ts:539"
+            "line": " src/away/materials/ShadowMaterialBase.ts:539"
         },
         {
             "message": "Missing item type\nA list of the IMaterialOwners that use this material",
-            "line": " src/away/materials/MaterialBase.ts:560"
+            "line": " src/away/materials/ShadowMaterialBase.ts:560"
         },
         {
             "message": "Missing item type\nPerforms any processing that needs to occur before any of its passes are used.",
-            "line": " src/away/materials/MaterialBase.ts:570"
+            "line": " src/away/materials/ShadowMaterialBase.ts:570"
         },
         {
             "message": "Missing item type\nDeactivates the last pass of the material.",
-            "line": " src/away/materials/MaterialBase.ts:580"
+            "line": " src/away/materials/ShadowMaterialBase.ts:580"
         },
         {
             "message": "Missing item type\nMarks the shader programs for all passes as invalid, so they will be recompiled before the next use.",
-            "line": " src/away/materials/MaterialBase.ts:590"
+            "line": " src/away/materials/ShadowMaterialBase.ts:590"
         },
         {
             "message": "Missing item type\nRemoves a pass from the material.",
-            "line": " src/away/materials/MaterialBase.ts:648"
+            "line": " src/away/materials/ShadowMaterialBase.ts:648"
         },
         {
             "message": "Missing item type\nRemoves all passes from the material",
-            "line": " src/away/materials/MaterialBase.ts:658"
+            "line": " src/away/materials/ShadowMaterialBase.ts:658"
         },
         {
             "message": "Missing item type\nAdds a pass to the material",
-            "line": " src/away/materials/MaterialBase.ts:670"
+            "line": " src/away/materials/ShadowMaterialBase.ts:670"
         },
         {
             "message": "Missing item type\nListener for when a pass's shader code changes. It recalculates the render order id.",
-            "line": " src/away/materials/MaterialBase.ts:690"
+            "line": " src/away/materials/ShadowMaterialBase.ts:690"
         },
         {
             "message": "Missing item type\nListener for when the distance pass's shader code changes. It recalculates the depth pass id.",
-            "line": " src/away/materials/MaterialBase.ts:717"
+            "line": " src/away/materials/ShadowMaterialBase.ts:717"
         },
         {
             "message": "Missing item type\nListener for when the depth pass's shader code changes. It recalculates the depth pass id.",
-            "line": " src/away/materials/MaterialBase.ts:735"
+            "line": " src/away/materials/ShadowMaterialBase.ts:735"
         },
         {
-            "message": "Missing item type\nMultiPassMaterialBase forms an abstract base class for the default multi-pass materials provided by Away3D,\nusing material methods to define their appearance.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:10"
+            "message": "Missing item type\nTriangleMaterial forms an abstract base class for the default multi-pass materials provided by Away3D,\nusing material methods to define their appearance.",
+            "line": " src/away/materials/TriangleMaterial.ts:10"
         },
         {
-            "message": "Missing item type\nCreates a new MultiPassMaterialBase object.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:34"
+            "message": "Missing item type\nCreates a new TriangleMaterial object.",
+            "line": " src/away/materials/TriangleMaterial.ts:34"
         },
         {
             "message": "Missing item type\nWhether or not to use fallOff and radius properties for lights. This can be used to improve performance and\ncompatibility for constrained mode.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:44"
+            "line": " src/away/materials/TriangleMaterial.ts:44"
         },
         {
             "message": "Missing item type\nThe minimum alpha value for which pixels should be drawn. This is used for transparency that is either\ninvisible or entirely opaque, often used with textures for foliage, etc.\nRecommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:62"
+            "line": " src/away/materials/TriangleMaterial.ts:62"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:80"
+            "line": " src/away/materials/TriangleMaterial.ts:80"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:89"
+            "line": " src/away/materials/TriangleMaterial.ts:89"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:98"
+            "line": " src/away/materials/TriangleMaterial.ts:98"
         },
         {
             "message": "Missing item type\nDefine which light source types to use for specular reflections. This allows choosing between regular lights\nand/or light probes for specular reflections.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:111"
+            "line": " src/away/materials/TriangleMaterial.ts:111"
         },
         {
             "message": "Missing item type\nDefine which light source types to use for diffuse reflections. This allows choosing between regular lights\nand/or light probes for diffuse reflections.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:127"
+            "line": " src/away/materials/TriangleMaterial.ts:127"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:143"
+            "line": " src/away/materials/TriangleMaterial.ts:143"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:159"
+            "line": " src/away/materials/TriangleMaterial.ts:159"
         },
         {
             "message": "Missing item type\nThe method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:167"
+            "line": " src/away/materials/TriangleMaterial.ts:167"
         },
         {
             "message": "Missing item type\nThe method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:182"
+            "line": " src/away/materials/TriangleMaterial.ts:182"
         },
         {
             "message": "Missing item type\nThe method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:199"
+            "line": " src/away/materials/TriangleMaterial.ts:199"
         },
         {
             "message": "Missing item type\nThe method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:214"
+            "line": " src/away/materials/TriangleMaterial.ts:214"
         },
         {
             "message": "Missing item type\nThe method used to generate the per-pixel normals. Defaults to NormalBasicMethod.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:231"
+            "line": " src/away/materials/TriangleMaterial.ts:231"
         },
         {
             "message": "Missing item type\nAppends an \"effect\" shading method to the shader. Effect methods are those that do not influence the lighting\nbut modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the\nmethods added prior.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:246"
+            "line": " src/away/materials/TriangleMaterial.ts:246"
         },
         {
             "message": "Missing item type\nThe number of \"effect\" methods added to the material.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:260"
+            "line": " src/away/materials/TriangleMaterial.ts:260"
         },
         {
             "message": "Missing item type\nQueries whether a given effect method was added to the material.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:268"
+            "line": " src/away/materials/TriangleMaterial.ts:268"
         },
         {
             "message": "Missing item type\nReturns the method added at the given index.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:279"
+            "line": " src/away/materials/TriangleMaterial.ts:279"
         },
         {
             "message": "Missing item type\nAdds an effect method at the specified index amongst the methods already added to the material. Effect\nmethods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,\netc. The method will be applied to the result of the methods with a lower index.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:289"
+            "line": " src/away/materials/TriangleMaterial.ts:289"
         },
         {
             "message": "Missing item type\nRemoves an effect method from the material.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:303"
+            "line": " src/away/materials/TriangleMaterial.ts:303"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:319"
+            "line": " src/away/materials/TriangleMaterial.ts:319"
         },
         {
             "message": "Missing item type\nThe normal map to modulate the direction of the surface for each texel. The default normal method expects\ntangent-space normal maps, but others could expect object-space maps.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:331"
+            "line": " src/away/materials/TriangleMaterial.ts:331"
         },
         {
             "message": "Missing item type\nA specular map that defines the strength of specular reflections for each texel in the red channel,\nand the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set\nspecular and gloss maps from grayscale images, but correctly authored images are preferred.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:345"
+            "line": " src/away/materials/TriangleMaterial.ts:345"
         },
         {
             "message": "Missing item type\nThe glossiness of the material (sharpness of the specular highlight).",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:362"
+            "line": " src/away/materials/TriangleMaterial.ts:362"
         },
         {
             "message": "Missing item type\nThe strength of the ambient reflection.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:376"
+            "line": " src/away/materials/TriangleMaterial.ts:376"
         },
         {
             "message": "Missing item type\nThe overall strength of the specular reflection.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:389"
+            "line": " src/away/materials/TriangleMaterial.ts:389"
         },
         {
             "message": "Missing item type\nThe colour of the ambient reflection.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:403"
+            "line": " src/away/materials/TriangleMaterial.ts:403"
         },
         {
             "message": "Missing item type\nThe colour of the specular reflection.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:416"
+            "line": " src/away/materials/TriangleMaterial.ts:416"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:429"
+            "line": " src/away/materials/TriangleMaterial.ts:429"
         },
         {
             "message": "Missing item type\nAdds a compiled pass that renders to the screen.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:467"
+            "line": " src/away/materials/TriangleMaterial.ts:467"
         },
         {
             "message": "Missing item type\nTests if any pass that renders to the screen is invalid. This would trigger a new setup of the multiple passes.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:479"
+            "line": " src/away/materials/TriangleMaterial.ts:479"
         },
         {
             "message": "Missing item type\nAdds any additional passes on which the given pass is dependent.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:498"
+            "line": " src/away/materials/TriangleMaterial.ts:498"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:516"
+            "line": " src/away/materials/TriangleMaterial.ts:516"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:527"
+            "line": " src/away/materials/TriangleMaterial.ts:527"
         },
         {
             "message": "Missing item type\nUpdates screen passes when they were found to be invalid.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:537"
+            "line": " src/away/materials/TriangleMaterial.ts:537"
         },
         {
             "message": "Missing item type\nInitializes all the passes and their dependent passes.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:548"
+            "line": " src/away/materials/TriangleMaterial.ts:548"
         },
         {
             "message": "Missing item type\nSets up the various blending modes for all screen passes, based on whether or not there are previous passes.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:572"
+            "line": " src/away/materials/TriangleMaterial.ts:572"
         },
         {
             "message": "Missing item type\nThe maximum total number of lights provided by the light picker.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:750"
+            "line": " src/away/materials/TriangleMaterial.ts:750"
         },
         {
             "message": "Missing item type\nThe amount of lights that don't cast shadows.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:758"
+            "line": " src/away/materials/TriangleMaterial.ts:758"
         },
         {
             "message": "Missing item type\nFlags that the screen passes have become invalid.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:766"
+            "line": " src/away/materials/TriangleMaterial.ts:766"
         },
         {
             "message": "Missing item type\nCalled when the light picker's configuration changed.",
-            "line": " src/away/materials/MultiPassMaterialBase.ts:774"
+            "line": " src/away/materials/TriangleMaterial.ts:774"
         },
         {
-            "message": "Missing item type\nSegmentMaterial is a material exclusively used to render wireframe objects",
-            "line": " src/away/materials/SegmentMaterial.ts:6"
+            "message": "Missing item type\nLineMaterial is a material exclusively used to render wireframe objects",
+            "line": " src/away/materials/LineMaterial.ts:6"
         },
         {
-            "message": "Missing item type\nCreates a new SegmentMaterial object.",
-            "line": " src/away/materials/SegmentMaterial.ts:15"
+            "message": "Missing item type\nCreates a new LineMaterial object.",
+            "line": " src/away/materials/LineMaterial.ts:15"
         },
         {
             "message": "Missing item type\nSinglePassMaterialBase forms an abstract base class for the default single-pass materials provided by Away3D,\nusing material methods to define their appearance.",
