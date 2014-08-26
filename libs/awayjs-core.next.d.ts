@@ -8830,12 +8830,12 @@ declare module away.pool {
 */
 declare module away.pool {
     /**
-    * IRenderOrderData is an interface for classes that are used in the rendering pipeline to render the
+    * IMaterialData is an interface for classes that are used in the rendering pipeline to render the
     * contents of a texture
     *
-    * @class away.pool.IRenderOrderData
+    * @class away.pool.IMaterialData
     */
-    interface IRenderOrderData {
+    interface IMaterialData {
         /**
         *
         */
@@ -8843,7 +8843,32 @@ declare module away.pool {
         /**
         *
         */
-        reset(): any;
+        invalidateMaterial(): any;
+        /**
+        *
+        */
+        invalidateAnimation(): any;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    * IMaterialPassData is an interface for classes that are used in the rendering pipeline to render the
+    * contents of a material pass
+    *
+    * @class away.pool.IMaterialPassData
+    */
+    interface IMaterialPassData {
+        /**
+        *
+        */
+        materialPass: materials.IMaterialPass;
+        /**
+        *
+        */
+        dispose(): any;
         /**
         *
         */
@@ -14615,7 +14640,7 @@ declare module away.materials {
         /**
         * Updates set of lights for a given renderable and EntityCollector. Always call super.collectLights() after custom overridden code.
         */
-        public collectLights(renderable: pool.IRenderable, entityCollector: traverse.ICollector): void;
+        public collectLights(renderable: pool.IRenderable): void;
         /**
         * Updates the weights for the light probes, based on the renderable's position relative to them.
         * @param renderable The renderble for which to calculate the light probes' influence.
@@ -14666,18 +14691,6 @@ declare module away.materials {
     */
     interface IMaterialPass extends events.IEventDispatcher {
         /**
-        *
-        */
-        _iPasses: IMaterialPass[];
-        /**
-        * Indicate whether this pass should write to the depth buffer or not. Ignored when blending is enabled.
-        */
-        writeDepth: boolean;
-        /**
-        * Specifies whether this pass renders to texture
-        */
-        renderToTexture: boolean;
-        /**
         * Cleans up any resources used by the current object.
         * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
         */
@@ -14687,7 +14700,7 @@ declare module away.materials {
         *
         * @private
         */
-        iRender(renderable: pool.IRenderable, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): any;
+        _iRender(pass: pool.IMaterialPassData, renderable: pool.IRenderable, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): any;
         /**
         * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
         * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
@@ -14695,20 +14708,14 @@ declare module away.materials {
         * @param camera The camera from which the scene is viewed.
         * @private
         */
-        iActivate(material: MaterialBase, stage: base.Stage, camera: entities.Camera): any;
+        _iActivate(pass: pool.IMaterialPassData, stage: base.Stage, camera: entities.Camera): any;
         /**
         * Clears the render state for the pass. This needs to be called before activating another pass.
         * @param stage The Stage used for rendering
         *
         * @private
         */
-        iDeactivate(material: MaterialBase, stage: base.Stage): any;
-        /**
-        * Marks the shader program as invalid, so it will be recompiled before the next render.
-        *
-        * @param updateMaterial Indicates whether the invalidation should be performed on the entire material. Should always pass "true" unless it's called from the material itself.
-        */
-        iInvalidateShaderProgram(updateMaterial?: boolean): any;
+        _iDeactivate(pass: pool.IMaterialPassData, stage: base.Stage): any;
         /**
         * The light picker used by the material to provide lights to the material if it supports lighting.
         *
@@ -14716,8 +14723,6 @@ declare module away.materials {
         * @see away.materials.StaticLightPicker
         */
         lightPicker: LightPickerBase;
-        _iAddOwner(material: MaterialBase): any;
-        _iRemoveOwner(material: MaterialBase): any;
     }
 }
 declare module away.materials {
@@ -14763,7 +14768,8 @@ declare module away.materials {
     * shaders, or entire new material frameworks.
     */
     class MaterialBase extends library.NamedAssetBase implements library.IAsset {
-        private _renderOrderData;
+        private _materialPassData;
+        private _materialData;
         public _pAlphaThreshold: number;
         public _pAnimateUVs: boolean;
         private _enableLightFallOff;
@@ -14787,12 +14793,6 @@ declare module away.materials {
         * @private
         */
         public _iMaterialId: number;
-        /**
-        * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
-        *
-        * @private
-        */
-        private _renderOrderId;
         public _iBaseScreenPassIndex: number;
         private _bothSides;
         private _animationSet;
@@ -14805,9 +14805,11 @@ declare module away.materials {
         public _pBlendMode: string;
         private _numPasses;
         private _passes;
-        public _pMipmap: boolean;
+        private _mipmap;
         private _smooth;
         private _repeat;
+        private _color;
+        public _pTexture: textures.Texture2DBase;
         public _pLightPicker: LightPickerBase;
         public _pHeight: number;
         public _pWidth: number;
@@ -14850,6 +14852,14 @@ declare module away.materials {
         * the texture's borders when the uv coordinates are outside the [0, 1] interval.
         */
         public repeat : boolean;
+        /**
+        * The diffuse reflectivity color of the surface.
+        */
+        public color : number;
+        /**
+        * The texture object to use for the albedo colour.
+        */
+        public texture : textures.Texture2DBase;
         /**
         * Specifies whether or not the UV coordinates should be animated using a transformation matrix.
         */
@@ -14914,45 +14924,25 @@ declare module away.materials {
         */
         public width : number;
         /**
-        * The amount of passes used by the material.
-        *
-        * @private
-        */
-        public getNumPasses(): number;
-        /**
-        *
-        * @param index
-        * @returns {IMaterialPass}
-        */
-        public getPass(index: number): IMaterialPass;
-        /**
-        * Indicates whether or not the pass with the given index renders to texture or not.
-        * @param index The index of the pass.
-        * @return True if the pass renders to texture, false otherwise.
-        *
-        * @internal
-        */
-        public iPassRendersToTexture(index: number): boolean;
-        /**
         * Sets the render state for a pass that is independent of the rendered object. This needs to be called before
         * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
-        * @param index The index of the pass to activate.
+        * @param pass The pass data to activate.
         * @param stage The Stage object which is currently used for rendering.
         * @param camera The camera from which the scene is viewed.
         * @private
         */
-        public iActivatePass(index: number, stage: base.Stage, camera: entities.Camera): void;
+        public _iActivatePass(pass: pool.IMaterialPassData, stage: base.Stage, camera: entities.Camera): void;
         /**
         * Clears the render state for a pass. This needs to be called before activating another pass.
-        * @param index The index of the pass to deactivate.
+        * @param pass The pass to deactivate.
         * @param stage The Stage used for rendering
         *
         * @internal
         */
-        public iDeactivatePass(index: number, stage: base.Stage): void;
+        public _iDeactivatePass(pass: pool.IMaterialPassData, stage: base.Stage): void;
         /**
         * Renders the current pass. Before calling renderPass, activatePass needs to be called with the same index.
-        * @param index The index of the pass used to render the renderable.
+        * @param pass The pass used to render the renderable.
         * @param renderable The IRenderable object to draw.
         * @param stage The Stage object used for rendering.
         * @param entityCollector The EntityCollector object that contains the visible scene data.
@@ -14961,7 +14951,7 @@ declare module away.materials {
         *
         * @internal
         */
-        public iRenderPass(index: number, renderable: pool.IRenderable, stage: base.Stage, entityCollector: traverse.ICollector, viewProjection: geom.Matrix3D): void;
+        public _iRenderPass(pass: pool.IMaterialPassData, renderable: pool.IRenderable, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
         /**
         * Mark an IMaterialOwner as owner of this material.
         * Assures we're not using the same material across renderables with different animations, since the
@@ -14986,66 +14976,61 @@ declare module away.materials {
         */
         public iOwners : base.IMaterialOwner[];
         /**
-        * A list of the passes used in this material
+        * The amount of passes used by the material.
         *
         * @private
         */
-        public iPasses : IMaterialPass[];
+        public _iNumScreenPasses(): number;
+        /**
+        * A list of the screen passes used in this material
+        *
+        * @private
+        */
+        public _iScreenPasses : IMaterialPass[];
+        /**
+        * Marks the shader programs for all passes as invalid, so they will be recompiled before the next use.
+        *
+        * @private
+        */
+        public _pInvalidatePasses(): void;
+        /**
+        * Flags that the screen passes have become invalid and need possible re-ordering / adding / deleting
+        */
+        public _pInvalidateScreenPasses(): void;
+        /**
+        * Removes a pass from the material.
+        * @param pass The pass to be removed.
+        */
+        public _pRemoveScreenPass(pass: IMaterialPass): void;
+        /**
+        * Removes all passes from the material
+        */
+        public _pClearScreenPasses(): void;
+        /**
+        * Adds a pass to the material
+        * @param pass
+        */
+        public _pAddScreenPass(pass: IMaterialPass): void;
+        public _iAddMaterialData(materialData: pool.IMaterialData): pool.IMaterialData;
+        public _iRemoveMaterialData(materialData: pool.IMaterialData): pool.IMaterialData;
         /**
         * Performs any processing that needs to occur before any of its passes are used.
         *
         * @private
         */
-        public iUpdateMaterial(): void;
-        /**
-        * Deactivates the last pass of the material.
-        *
-        * @private
-        */
-        public iDeactivate(stage: base.Stage): void;
-        /**
-        * Marks the shader programs for all passes as invalid, so they will be recompiled before the next use.
-        * @param triggerPass The pass triggering the invalidation, if any. This is passed to prevent invalidating the
-        * triggering pass, which would result in an infinite loop.
-        *
-        * @private
-        */
-        public iInvalidatePasses(triggerPass: IMaterialPass): void;
-        public iInvalidateAnimation(): void;
-        /**
-        * Removes a pass from the material.
-        * @param pass The pass to be removed.
-        */
-        public pRemovePass(pass: IMaterialPass): void;
-        /**
-        * Removes all passes from the material
-        */
-        public pClearPasses(): void;
-        /**
-        * Adds a pass to the material
-        * @param pass
-        */
-        public pAddPass(pass: IMaterialPass): void;
-        /**
-        * Adds any additional passes on which the given pass is dependent.
-        * @param pass The pass that my need additional passes.
-        */
-        public pAddChildPassesFor(pass: IMaterialPass): void;
+        public _iUpdateMaterial(): void;
         /**
         * Listener for when a pass's shader code changes. It recalculates the render order id.
         */
         private onPassChange(event);
-        /**
-        * Flags that the screen passes have become invalid.
-        */
-        public pInvalidateScreenPasses(): void;
-        public pResetRenderOrder(): void;
+        private invalidateAnimation();
+        private invalidateMaterial();
         /**
         * Called when the light picker's configuration changed.
         */
         private onLightsChange(event);
-        public _iAddRenderOrderData(renderOrderData: pool.IRenderOrderData): pool.IRenderOrderData;
-        public _iRemoveRenderOrderData(renderOrderData: pool.IRenderOrderData): pool.IRenderOrderData;
+        public _iAddMaterialPassData(materialPassData: pool.IMaterialPassData): pool.IMaterialPassData;
+        public _iRemoveMaterialPassData(materialPassData: pool.IMaterialPassData): pool.IMaterialPassData;
     }
 }
 declare module away.materials {
@@ -15064,7 +15049,6 @@ declare module away.materials {
         private _sizeChanged;
         private _imageElement;
         private _imageStyle;
-        private _texture;
         public imageElement : HTMLImageElement;
         public imageStyle : MSStyleCSSProperties;
         /**

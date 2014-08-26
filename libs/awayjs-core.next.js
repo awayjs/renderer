@@ -19993,6 +19993,17 @@ var away;
 ///<reference path="../../_definitions.ts"/>
 ///<reference path="../../_definitions.ts"/>
 ///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.pool
+    */
+    (function (pool) {
+        
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
@@ -30564,7 +30575,7 @@ var away;
             /**
             * Updates set of lights for a given renderable and EntityCollector. Always call super.collectLights() after custom overridden code.
             */
-            LightPickerBase.prototype.collectLights = function (renderable, entityCollector) {
+            LightPickerBase.prototype.collectLights = function (renderable) {
                 this.updateProbeWeights(renderable);
             };
 
@@ -30843,7 +30854,8 @@ var away;
             function MaterialBase() {
                 var _this = this;
                 _super.call(this);
-                this._renderOrderData = new Array();
+                this._materialPassData = new Array();
+                this._materialData = new Array();
                 this._pAlphaThreshold = 0;
                 this._pAnimateUVs = false;
                 this._enableLightFallOff = true;
@@ -30855,20 +30867,15 @@ var away;
                 * @private
                 */
                 this._iMaterialId = 0;
-                /**
-                * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
-                *
-                * @private
-                */
-                this._renderOrderId = new Array(0, 0, 0, 0, 0, 0, 0, 0);
                 this._iBaseScreenPassIndex = 0;
                 this._bothSides = false;
                 this._pScreenPassesInvalid = true;
                 this._pBlendMode = BlendMode.NORMAL;
                 this._numPasses = 0;
-                this._pMipmap = false;
+                this._mipmap = false;
                 this._smooth = true;
                 this._repeat = false;
+                this._color = 0xFFFFFF;
                 this._pHeight = 1;
                 this._pWidth = 1;
                 this._pRequiresBlending = false;
@@ -30942,8 +30949,7 @@ var away;
                     if (this._pLightPicker)
                         this._pLightPicker.addEventListener(Event.CHANGE, this._onLightChangeDelegate);
 
-                    this.pInvalidateScreenPasses();
-                    this.pResetRenderOrder();
+                    this._pInvalidateScreenPasses();
                 },
                 enumerable: true,
                 configurable: true
@@ -30955,15 +30961,15 @@ var away;
                 * Indicates whether or not any used textures should use mipmapping. Defaults to true.
                 */
                 get: function () {
-                    return this._pMipmap;
+                    return this._mipmap;
                 },
                 set: function (value) {
-                    if (this._pMipmap == value)
+                    if (this._mipmap == value)
                         return;
 
-                    this._pMipmap = value;
+                    this._mipmap = value;
 
-                    this.iInvalidatePasses(null);
+                    this._pInvalidatePasses();
                 },
                 enumerable: true,
                 configurable: true
@@ -30983,7 +30989,7 @@ var away;
 
                     this._smooth = value;
 
-                    this.iInvalidatePasses(null);
+                    this._pInvalidatePasses();
                 },
                 enumerable: true,
                 configurable: true
@@ -31004,7 +31010,47 @@ var away;
 
                     this._repeat = value;
 
-                    this.iInvalidatePasses(null);
+                    this._pInvalidatePasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MaterialBase.prototype, "color", {
+                /**
+                * The diffuse reflectivity color of the surface.
+                */
+                get: function () {
+                    return this._color;
+                },
+                set: function (value) {
+                    if (this._color == value)
+                        return;
+
+                    this._color = value;
+
+                    this._pInvalidatePasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MaterialBase.prototype, "texture", {
+                /**
+                * The texture object to use for the albedo colour.
+                */
+                get: function () {
+                    return this._pTexture;
+                },
+                set: function (value) {
+                    if (this._pTexture == value)
+                        return;
+
+                    this._pTexture = value;
+
+                    this._pInvalidatePasses();
                 },
                 enumerable: true,
                 configurable: true
@@ -31024,7 +31070,7 @@ var away;
 
                     this._pAnimateUVs = value;
 
-                    this.iInvalidatePasses(null);
+                    this._pInvalidatePasses();
                 },
                 enumerable: true,
                 configurable: true
@@ -31045,7 +31091,7 @@ var away;
 
                     this._enableLightFallOff = value;
 
-                    this.iInvalidatePasses(null);
+                    this._pInvalidatePasses();
                 },
                 enumerable: true,
                 configurable: true
@@ -31068,7 +31114,7 @@ var away;
 
                     this._diffuseLightSources = value;
 
-                    this.iInvalidatePasses(null);
+                    this._pInvalidatePasses();
                 },
                 enumerable: true,
                 configurable: true
@@ -31091,7 +31137,7 @@ var away;
 
                     this._specularLightSources = value;
 
-                    this.iInvalidatePasses(null);
+                    this._pInvalidatePasses();
                 },
                 enumerable: true,
                 configurable: true
@@ -31104,17 +31150,21 @@ var away;
             */
             MaterialBase.prototype.dispose = function () {
                 var i;
+                var len;
 
-                for (i = 0; i < this._numPasses; ++i)
-                    this._passes[i].dispose();
+                this._pClearScreenPasses();
 
-                this._passes = null;
-
-                var len = this._renderOrderData.length;
+                len = this._materialData.length;
                 for (i = 0; i < len; i++)
-                    this._renderOrderData[i].dispose();
+                    this._materialData[i].dispose();
 
-                this._renderOrderData = null;
+                this._materialData = new Array();
+
+                len = this._materialPassData.length;
+                for (i = 0; i < len; i++)
+                    this._materialPassData[i].dispose();
+
+                this._materialPassData = new Array();
             };
 
             Object.defineProperty(MaterialBase.prototype, "bothSides", {
@@ -31130,7 +31180,7 @@ var away;
 
                     this._bothSides = value;
 
-                    this.iInvalidatePasses(null);
+                    this._pInvalidatePasses();
                 },
                 enumerable: true,
                 configurable: true
@@ -31157,7 +31207,7 @@ var away;
 
                     this._pBlendMode = value;
 
-                    this.iInvalidatePasses(null);
+                    this._pInvalidatePasses();
                 },
                 enumerable: true,
                 configurable: true
@@ -31179,7 +31229,7 @@ var away;
 
                     this._alphaPremultiplied = value;
 
-                    this.iInvalidatePasses(null);
+                    this._pInvalidatePasses();
                 },
                 enumerable: true,
                 configurable: true
@@ -31206,7 +31256,7 @@ var away;
 
                     this._pAlphaThreshold = value;
 
-                    this.iInvalidatePasses(null);
+                    this._pInvalidatePasses();
                 },
                 enumerable: true,
                 configurable: true
@@ -31236,60 +31286,31 @@ var away;
             });
 
             /**
-            * The amount of passes used by the material.
-            *
-            * @private
-            */
-            MaterialBase.prototype.getNumPasses = function () {
-                return this._numPasses;
-            };
-
-            /**
-            *
-            * @param index
-            * @returns {IMaterialPass}
-            */
-            MaterialBase.prototype.getPass = function (index) {
-                return this._passes[index];
-            };
-
-            /**
-            * Indicates whether or not the pass with the given index renders to texture or not.
-            * @param index The index of the pass.
-            * @return True if the pass renders to texture, false otherwise.
-            *
-            * @internal
-            */
-            MaterialBase.prototype.iPassRendersToTexture = function (index) {
-                return this._passes[index].renderToTexture;
-            };
-
-            /**
             * Sets the render state for a pass that is independent of the rendered object. This needs to be called before
             * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
-            * @param index The index of the pass to activate.
+            * @param pass The pass data to activate.
             * @param stage The Stage object which is currently used for rendering.
             * @param camera The camera from which the scene is viewed.
             * @private
             */
-            MaterialBase.prototype.iActivatePass = function (index, stage, camera) {
-                this._passes[index].iActivate(this, stage, camera);
+            MaterialBase.prototype._iActivatePass = function (pass, stage, camera) {
+                pass.materialPass._iActivate(pass, stage, camera);
             };
 
             /**
             * Clears the render state for a pass. This needs to be called before activating another pass.
-            * @param index The index of the pass to deactivate.
+            * @param pass The pass to deactivate.
             * @param stage The Stage used for rendering
             *
             * @internal
             */
-            MaterialBase.prototype.iDeactivatePass = function (index, stage) {
-                this._passes[index].iDeactivate(this, stage);
+            MaterialBase.prototype._iDeactivatePass = function (pass, stage) {
+                pass.materialPass._iDeactivate(pass, stage);
             };
 
             /**
             * Renders the current pass. Before calling renderPass, activatePass needs to be called with the same index.
-            * @param index The index of the pass used to render the renderable.
+            * @param pass The pass used to render the renderable.
             * @param renderable The IRenderable object to draw.
             * @param stage The Stage object used for rendering.
             * @param entityCollector The EntityCollector object that contains the visible scene data.
@@ -31298,11 +31319,11 @@ var away;
             *
             * @internal
             */
-            MaterialBase.prototype.iRenderPass = function (index, renderable, stage, entityCollector, viewProjection) {
+            MaterialBase.prototype._iRenderPass = function (pass, renderable, stage, camera, viewProjection) {
                 if (this._pLightPicker)
-                    this._pLightPicker.collectLights(renderable, entityCollector);
+                    this._pLightPicker.collectLights(renderable);
 
-                this._passes[index].iRender(renderable, stage, entityCollector.camera, viewProjection);
+                pass.materialPass._iRender(pass, renderable, stage, camera, viewProjection);
             };
 
             //
@@ -31333,7 +31354,7 @@ var away;
                         if (this._animationSet != animationSet) {
                             this._animationSet = animationSet;
 
-                            this.iInvalidateAnimation();
+                            this.invalidateAnimation();
                         }
                     }
                 }
@@ -31351,7 +31372,7 @@ var away;
                 if (this._owners.length == 0) {
                     this._animationSet = null;
 
-                    this.iInvalidateAnimation();
+                    this.invalidateAnimation();
                 }
             };
 
@@ -31368,9 +31389,18 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(MaterialBase.prototype, "iPasses", {
+            /**
+            * The amount of passes used by the material.
+            *
+            * @private
+            */
+            MaterialBase.prototype._iNumScreenPasses = function () {
+                return this._numPasses;
+            };
+
+            Object.defineProperty(MaterialBase.prototype, "_iScreenPasses", {
                 /**
-                * A list of the passes used in this material
+                * A list of the screen passes used in this material
                 *
                 * @private
                 */
@@ -31382,137 +31412,115 @@ var away;
             });
 
             /**
-            * Performs any processing that needs to occur before any of its passes are used.
-            *
-            * @private
-            */
-            MaterialBase.prototype.iUpdateMaterial = function () {
-            };
-
-            /**
-            * Deactivates the last pass of the material.
-            *
-            * @private
-            */
-            MaterialBase.prototype.iDeactivate = function (stage) {
-                //TODO discover why this is needed for shadows
-                this._passes[this._numPasses - 1].iDeactivate(this, stage);
-            };
-
-            /**
             * Marks the shader programs for all passes as invalid, so they will be recompiled before the next use.
-            * @param triggerPass The pass triggering the invalidation, if any. This is passed to prevent invalidating the
-            * triggering pass, which would result in an infinite loop.
             *
             * @private
             */
-            MaterialBase.prototype.iInvalidatePasses = function (triggerPass) {
-                for (var i = 0; i < this._numPasses; ++i) {
-                    // only invalidate the pass if it wasn't the triggering pass
-                    if (this._passes[i] != triggerPass)
-                        this._passes[i].iInvalidateShaderProgram(false);
-                }
+            MaterialBase.prototype._pInvalidatePasses = function () {
+                var len = this._materialPassData.length;
+                for (var i = 0; i < len; i++)
+                    this._materialPassData[i].invalidate();
+
+                this.invalidateMaterial();
             };
 
-            MaterialBase.prototype.iInvalidateAnimation = function () {
-                var len = this._renderOrderData.length;
-                for (var i = 0; i < len; i++)
-                    this._renderOrderData[i].invalidate();
+            /**
+            * Flags that the screen passes have become invalid and need possible re-ordering / adding / deleting
+            */
+            MaterialBase.prototype._pInvalidateScreenPasses = function () {
+                this._pScreenPassesInvalid = true;
             };
 
             /**
             * Removes a pass from the material.
             * @param pass The pass to be removed.
             */
-            MaterialBase.prototype.pRemovePass = function (pass) {
+            MaterialBase.prototype._pRemoveScreenPass = function (pass) {
                 pass.removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
                 this._passes.splice(this._passes.indexOf(pass), 1);
-                pass._iRemoveOwner(this);
-                --this._numPasses;
+
+                this._numPasses--;
             };
 
             /**
             * Removes all passes from the material
             */
-            MaterialBase.prototype.pClearPasses = function () {
-                for (var i = 0; i < this._numPasses; ++i) {
+            MaterialBase.prototype._pClearScreenPasses = function () {
+                for (var i = 0; i < this._numPasses; ++i)
                     this._passes[i].removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
-                    this._passes[i]._iRemoveOwner(this);
-                }
 
-                this._passes.length = 0;
-                this._numPasses = 0;
+                this._passes.length = this._numPasses = 0;
             };
 
             /**
             * Adds a pass to the material
             * @param pass
             */
-            MaterialBase.prototype.pAddPass = function (pass) {
+            MaterialBase.prototype._pAddScreenPass = function (pass) {
                 this._passes[this._numPasses++] = pass;
 
                 pass.lightPicker = this._pLightPicker;
                 pass.addEventListener(Event.CHANGE, this._onPassChangeDelegate);
 
-                pass._iAddOwner(this);
+                this.invalidateMaterial();
+            };
 
-                this.iInvalidatePasses(null);
+            MaterialBase.prototype._iAddMaterialData = function (materialData) {
+                this._materialData.push(materialData);
+
+                return materialData;
+            };
+
+            MaterialBase.prototype._iRemoveMaterialData = function (materialData) {
+                this._materialData.splice(this._materialData.indexOf(materialData), 1);
+
+                return materialData;
             };
 
             /**
-            * Adds any additional passes on which the given pass is dependent.
-            * @param pass The pass that my need additional passes.
+            * Performs any processing that needs to occur before any of its passes are used.
+            *
+            * @private
             */
-            MaterialBase.prototype.pAddChildPassesFor = function (pass) {
-                if (!pass)
-                    return;
-
-                if (pass._iPasses) {
-                    var len = pass._iPasses.length;
-
-                    for (var i = 0; i < len; ++i)
-                        this.pAddPass(pass._iPasses[i]);
-                }
+            MaterialBase.prototype._iUpdateMaterial = function () {
             };
 
             /**
             * Listener for when a pass's shader code changes. It recalculates the render order id.
             */
             MaterialBase.prototype.onPassChange = function (event) {
-                this.pResetRenderOrder();
+                this.invalidateMaterial();
             };
 
-            /**
-            * Flags that the screen passes have become invalid.
-            */
-            MaterialBase.prototype.pInvalidateScreenPasses = function () {
-                this._pScreenPassesInvalid = true;
-            };
-
-            MaterialBase.prototype.pResetRenderOrder = function () {
-                var len = this._renderOrderData.length;
+            MaterialBase.prototype.invalidateAnimation = function () {
+                var len = this._materialData.length;
                 for (var i = 0; i < len; i++)
-                    this._renderOrderData[i].reset();
+                    this._materialData[i].invalidateAnimation();
+            };
+
+            MaterialBase.prototype.invalidateMaterial = function () {
+                var len = this._materialData.length;
+                for (var i = 0; i < len; i++)
+                    this._materialData[i].invalidateMaterial();
             };
 
             /**
             * Called when the light picker's configuration changed.
             */
             MaterialBase.prototype.onLightsChange = function (event) {
-                this.pInvalidateScreenPasses();
-                this.pResetRenderOrder();
+                this._pInvalidateScreenPasses();
             };
 
-            MaterialBase.prototype._iAddRenderOrderData = function (renderOrderData) {
-                this._renderOrderData.push(renderOrderData);
+            MaterialBase.prototype._iAddMaterialPassData = function (materialPassData) {
+                this._materialPassData.push(materialPassData);
 
-                return renderOrderData;
+                return materialPassData;
             };
 
-            MaterialBase.prototype._iRemoveRenderOrderData = function (renderOrderData) {
-                this._renderOrderData.splice(this._renderOrderData.indexOf(renderOrderData), 1);
+            MaterialBase.prototype._iRemoveMaterialPassData = function (materialPassData) {
+                this._materialPassData.splice(this._materialPassData.indexOf(materialPassData), 1);
 
-                return renderOrderData;
+                return materialPassData;
             };
             return MaterialBase;
         })(away.library.NamedAssetBase);
@@ -31576,13 +31584,13 @@ var away;
                 * The texture object to use for the albedo colour.
                 */
                 get: function () {
-                    return this._texture;
+                    return this._pTexture;
                 },
                 set: function (value) {
-                    if (this._texture == value)
+                    if (this._pTexture == value)
                         return;
 
-                    this._texture = value;
+                    this._pTexture = value;
 
                     if (value instanceof away.textures.ImageTexture) {
                         this._imageElement = value.htmlImageElement;
@@ -34823,7 +34831,8 @@ var away;
 ///<reference path="core/pool/EntityListItemPool.ts"/>
 ///<reference path="core/pool/IRenderable.ts"/>
 ///<reference path="core/pool/IRenderableClass.ts"/>
-///<reference path="core/pool/IRenderOrderData.ts"/>
+///<reference path="core/pool/IMaterialData.ts"/>
+///<reference path="core/pool/IMaterialPassData.ts"/>
 ///<reference path="core/pool/ITextureData.ts"/>
 ///<reference path="core/pool/RenderablePool.ts"/>
 ///<reference path="core/pool/CSSRenderableBase.ts"/>

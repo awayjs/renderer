@@ -586,16 +586,19 @@ declare module away.pool {
 declare module away.pool {
     /**
     *
-    * @class away.pool.RenderOrderData
+    * @class away.pool.MaterialData
     */
-    class RenderOrderData implements IRenderOrderData {
+    class MaterialData implements IMaterialData {
         private _pool;
+        private _materialPassDataPool;
+        private _passes;
         public context: stagegl.ContextGLBase;
-        public material: materials.MaterialBase;
-        public id: number;
-        public shaderObjects: ShaderObjectData[];
-        public invalid: boolean;
-        constructor(pool: RenderOrderDataPool, context: stagegl.ContextGLBase, material: materials.MaterialBase);
+        public material: materials.StageGLMaterialBase;
+        public renderOrderId: number;
+        public invalidAnimation: boolean;
+        constructor(pool: MaterialDataPool, context: stagegl.ContextGLBase, material: materials.StageGLMaterialBase);
+        public getMaterialPass(materialPass: materials.MaterialPassBase, profile: string): MaterialPassData;
+        public getMaterialPasses(profile: string): MaterialPassData[];
         /**
         *
         */
@@ -603,11 +606,11 @@ declare module away.pool {
         /**
         *
         */
-        public reset(): void;
+        public invalidateMaterial(): void;
         /**
         *
         */
-        public invalidate(): void;
+        public invalidateAnimation(): void;
     }
 }
 /**
@@ -615,9 +618,9 @@ declare module away.pool {
 */
 declare module away.pool {
     /**
-    * @class away.pool.RenderOrderDataPool
+    * @class away.pool.MaterialDataPool
     */
-    class RenderOrderDataPool {
+    class MaterialDataPool {
         private _pool;
         private _context;
         /**
@@ -632,13 +635,13 @@ declare module away.pool {
         * @param materialOwner
         * @returns ITexture
         */
-        public getItem(material: materials.MaterialBase): RenderOrderData;
+        public getItem(material: materials.StageGLMaterialBase): MaterialData;
         /**
         * //TODO
         *
         * @param materialOwner
         */
-        public disposeItem(material: materials.MaterialBase): void;
+        public disposeItem(material: materials.StageGLMaterialBase): void;
     }
 }
 /**
@@ -647,13 +650,13 @@ declare module away.pool {
 declare module away.pool {
     /**
     *
-    * @class away.pool.ShaderObjectData
+    * @class away.pool.MaterialPassData
     */
-    class ShaderObjectData {
+    class MaterialPassData implements IMaterialPassData {
         private _pool;
-        public context: stagegl.ContextGLBase;
+        public material: materials.StageGLMaterialBase;
         public shaderObject: materials.ShaderObjectBase;
-        public materialPassVO: materials.MaterialPassVO;
+        public materialPass: materials.MaterialPassBase;
         public programData: ProgramData;
         public shadedTarget: string;
         public vertexCode: string;
@@ -663,7 +666,8 @@ declare module away.pool {
         public animationFragmentCode: string;
         public key: string;
         public invalid: boolean;
-        constructor(pool: ShaderObjectDataPool, context: stagegl.ContextGLBase, materialPassVO: materials.MaterialPassVO);
+        public usesAnimation: boolean;
+        constructor(pool: MaterialPassDataPool, material: materials.StageGLMaterialBase, materialPass: materials.MaterialPassBase);
         /**
         *
         */
@@ -679,30 +683,31 @@ declare module away.pool {
 */
 declare module away.pool {
     /**
-    * @class away.pool.ShaderObjectDataPool
+    * @class away.pool.MaterialPassDataPool
     */
-    class ShaderObjectDataPool {
+    class MaterialPassDataPool {
         private _pool;
-        private _context;
+        private _material;
         /**
         * //TODO
         *
         * @param textureDataClass
         */
-        constructor(context: stagegl.ContextGLBase);
+        constructor(material: materials.StageGLMaterialBase);
         /**
         * //TODO
         *
         * @param materialOwner
         * @returns ITexture
         */
-        public getItem(materialPass: materials.MaterialPassVO): ShaderObjectData;
+        public getItem(materialPass: materials.MaterialPassBase): MaterialPassData;
         /**
         * //TODO
         *
         * @param materialOwner
         */
-        public disposeItem(materialPass: materials.MaterialPassVO): void;
+        public disposeItem(materialPass: materials.MaterialPassBase): void;
+        public disposePool(): void;
     }
 }
 /**
@@ -879,8 +884,7 @@ declare module away.stagegl {
         private _numUsedTextures;
         public _pContainer: HTMLElement;
         private _texturePool;
-        private _renderOrderPool;
-        private _shaderObjectDataPool;
+        private _materialDataPool;
         private _programDataPool;
         private _width;
         private _height;
@@ -893,13 +897,12 @@ declare module away.stagegl {
         constructor(stageIndex: number);
         public setRenderTarget(target: textures.TextureProxyBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
         public getRenderTexture(textureProxy: textures.RenderTexture): ITextureBase;
-        public getShaderObject(materialPassVO: materials.MaterialPassVO, profile: string): pool.ShaderObjectData;
-        public getProgram(shaderObjectData: pool.ShaderObjectData): pool.ProgramData;
+        public getProgram(materialPassData: pool.MaterialPassData): pool.ProgramData;
         /**
         *
         * @param material
         */
-        public getRenderOrderId(material: materials.MaterialBase, profile: string): number;
+        public getMaterial(material: materials.StageGLMaterialBase, profile: string): pool.MaterialData;
         /**
         * Assigns an attribute stream
         *
@@ -912,8 +915,8 @@ declare module away.stagegl {
         public activateBuffer(index: number, buffer: pool.VertexData, offset: number, format: string): void;
         public disposeVertexData(buffer: pool.VertexData): void;
         public activateRenderTexture(index: number, textureProxy: textures.RenderTexture): void;
-        public activateShaderObject(shaderObjectData: pool.ShaderObjectData, stage: base.Stage, camera: entities.Camera): void;
-        public deactivateShaderObject(shaderObjectData: pool.ShaderObjectData, stage: base.Stage): void;
+        public activateMaterialPass(materialPassData: pool.MaterialPassData, stage: base.Stage, camera: entities.Camera): void;
+        public deactivateMaterialPass(materialPassData: pool.MaterialPassData, stage: base.Stage): void;
         public activateTexture(index: number, textureProxy: textures.Texture2DBase): void;
         public activateCubeTexture(index: number, textureProxy: textures.CubeTextureBase): void;
         /**
@@ -946,8 +949,8 @@ declare module away.stagegl {
         * if any object using this material fails to support accelerated animations for any of the shader objects,
         * we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
         */
-        private getEnabledGPUAnimation(material, shaderObjects);
-        private calcAnimationCode(material, shaderObjectData);
+        private getEnabledGPUAnimation(material, materialDataPasses);
+        public calcAnimationCode(material: materials.StageGLMaterialBase, materialPassData: pool.MaterialPassData): void;
     }
 }
 declare module away.stagegl {
@@ -1216,13 +1219,12 @@ declare module away.stagegl {
         getRenderTexture(textureProxy: textures.RenderTexture): ITextureBase;
         activateBuffer(index: number, buffer: pool.VertexData, offset: number, format: string): any;
         disposeVertexData(buffer: pool.VertexData): any;
-        activateShaderObject(shaderObject: pool.ShaderObjectData, stage: base.Stage, camera: entities.Camera): any;
+        activateMaterialPass(materialPassData: pool.MaterialPassData, stage: base.Stage, camera: entities.Camera): any;
         activateRenderTexture(index: number, textureProxy: textures.RenderTexture): any;
         activateTexture(index: number, textureProxy: textures.Texture2DBase): any;
         activateCubeTexture(index: number, textureProxy: textures.CubeTextureBase): any;
         getIndexBuffer(buffer: pool.IndexData): IIndexBuffer;
-        getShaderObject(materialPassVO: materials.MaterialPassVO, profile: string): pool.ShaderObjectData;
-        getRenderOrderId(material: materials.MaterialBase, profile: string): number;
+        getMaterial(material: materials.MaterialBase, profile: string): pool.MaterialData;
         disposeIndexData(buffer: pool.IndexData): any;
         clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): any;
         configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): any;
@@ -1231,7 +1233,7 @@ declare module away.stagegl {
         createProgram(): IProgram;
         createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): ITexture;
         createVertexBuffer(numVertices: number, data32PerVertex: number): IVertexBuffer;
-        deactivateShaderObject(shaderObject: pool.ShaderObjectData, stage: base.Stage): any;
+        deactivateMaterialPass(materialPassData: pool.MaterialPassData, stage: base.Stage): any;
         dispose(): any;
         drawToBitmapData(destination: base.BitmapData): any;
         drawTriangles(indexBuffer: IIndexBuffer, firstIndex?: number, numTriangles?: number): any;
@@ -1249,6 +1251,7 @@ declare module away.stagegl {
         setVertexBufferAt(index: number, buffer: IVertexBuffer, bufferOffset?: number, format?: string): any;
         setRenderToTexture(target: ITextureBase, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): any;
         setRenderToBackBuffer(): any;
+        calcAnimationCode(material: materials.MaterialBase, materialPassData: pool.MaterialPassData): any;
     }
 }
 declare module away.stagegl {
@@ -1518,6 +1521,7 @@ declare module away.materials {
     * @see RegisterPool.addUsage
     */
     class ShaderObjectBase {
+        private _defaultCulling;
         public _pInverseSceneMatrix: number[];
         public animationRegisterCache: animators.AnimationRegisterCache;
         public profile: string;
@@ -1550,9 +1554,10 @@ declare module away.materials {
         public useMipmapping: boolean;
         public useSmoothTextures: boolean;
         public repeatTextures: boolean;
-        public usesAnimation: boolean;
         public usesUVTransform: boolean;
         public alphaThreshold: number;
+        public texture: textures.Texture2DBase;
+        public color: number;
         public ambientR: number;
         public ambientG: number;
         public ambientB: number;
@@ -1663,7 +1668,7 @@ declare module away.materials {
         * @param materialPassVO
         * @returns {away.materials.ShaderCompilerBase}
         */
-        public createCompiler(materialPassVO: MaterialPassVO): ShaderCompilerBase;
+        public createCompiler(material: StageGLMaterialBase, materialPass: IMaterialPassStageGL): ShaderCompilerBase;
         /**
         * Clears dependency counts for all registers. Called when recompiling a pass.
         */
@@ -1770,7 +1775,7 @@ declare module away.materials {
         * @param materialPassVO
         * @returns {away.materials.ShaderLightingCompiler}
         */
-        public createCompiler(materialPassVO: MaterialPassVO): ShaderCompilerBase;
+        public createCompiler(material: StageGLMaterialBase, materialPass: ILightingPassStageGL): ShaderCompilerBase;
         /**
         * Clears dependency counts for all registers. Called when recompiling a pass.
         */
@@ -1819,6 +1824,7 @@ declare module away.materials {
         public needsSecondaryUV: boolean;
         public needsGlobalVertexPos: boolean;
         public needsGlobalFragmentPos: boolean;
+        public usesTexture: boolean;
         /**
         * Creates a new MethodVO object.
         */
@@ -2080,7 +2086,7 @@ declare module away.materials {
         public _pSharedRegisters: ShaderRegisterData;
         public _pRegisterCache: ShaderRegisterCache;
         public _pMaterialPass: IMaterialPassStageGL;
-        public _pMaterial: MaterialBase;
+        public _pMaterial: StageGLMaterialBase;
         public _pVertexCode: string;
         public _pFragmentCode: string;
         public _pPostAnimationFragmentCode: string;
@@ -2093,7 +2099,7 @@ declare module away.materials {
         * Creates a new ShaderCompilerBase object.
         * @param profile The compatibility profile of the renderer.
         */
-        constructor(materialPassVO: MaterialPassVO, shaderObject: ShaderObjectBase);
+        constructor(material: StageGLMaterialBase, materialPass: IMaterialPassStageGL, shaderObject: ShaderObjectBase);
         /**
         * Compiles the code after all setup on the compiler has finished.
         */
@@ -2168,7 +2174,7 @@ declare module away.materials {
         * Creates a new ShaderCompilerBase object.
         * @param profile The compatibility profile of the renderer.
         */
-        constructor(materialPassVO: MaterialPassVO, shaderObject: ShaderLightingObject);
+        constructor(material: StageGLMaterialBase, materialPass: ILightingPassStageGL, shaderObject: ShaderLightingObject);
         /**
         * Compile the code for the methods.
         */
@@ -2386,8 +2392,6 @@ declare module away.materials {
     * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
     */
     class AmbientBasicMethod extends ShadingMethodBase {
-        private _useTexture;
-        private _texture;
         private _color;
         private _alpha;
         private _colorR;
@@ -2403,21 +2407,17 @@ declare module away.materials {
         */
         public iInitVO(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
         /**
+        * @inheritDoc
+        */
+        public iInitConstants(shaderObject: ShaderObjectBase, methodVO: MethodVO): void;
+        /**
         * The strength of the ambient reflection of the surface.
         */
         public ambient : number;
         /**
-        * The colour of the ambient reflection of the surface.
-        */
-        public color : number;
-        /**
         * The alpha component of the surface.
         */
         public alpha : number;
-        /**
-        * The bitmapData to use to define the diffuse reflection color per texel.
-        */
-        public texture : textures.Texture2DBase;
         /**
         * @inheritDoc
         */
@@ -2863,8 +2863,10 @@ declare module away.materials {
     * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
     * a render call per required renderable.
     */
-    class MaterialPassBase extends events.EventDispatcher implements IMaterialPass, IMaterialPassStageGL {
+    class MaterialPassBase extends library.NamedAssetBase implements IMaterialPass, IMaterialPassStageGL {
+        private _materialPassData;
         private _maxLights;
+        private _preserveAlpha;
         private _includeCasters;
         private _forceSeparateMVP;
         private _directionalLightsOffset;
@@ -2875,26 +2877,17 @@ declare module away.materials {
         public _pNumLightProbes: number;
         public _pNumLights: number;
         private _passMode;
-        public _iPasses: IMaterialPass[];
-        public _iPassesDirty: boolean;
-        public _pActiveShaderObject: pool.ShaderObjectData;
-        /**
-        * A list of material pass vos.
-        */
-        private _materialPassVOs;
         private _depthCompareMode;
         private _blendFactorSource;
         private _blendFactorDest;
         public _pEnableBlending: boolean;
         public _pLightPicker: LightPickerBase;
-        private _defaultCulling;
-        private _renderToTexture;
-        private _oldTarget;
-        private _oldSurface;
-        private _oldDepthStencil;
-        private _oldRect;
         private _writeDepth;
         private _onLightsChangeDelegate;
+        /**
+        * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
+        */
+        public preserveAlpha : boolean;
         /**
         * Indicates whether or not shadow casting lights need to be included.
         */
@@ -2945,21 +2938,16 @@ declare module away.materials {
         */
         public depthCompareMode : string;
         /**
-        * Specifies whether this pass renders to texture
-        */
-        public renderToTexture : boolean;
-        /**
         * Cleans up any resources used by the current object.
         * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
         */
         public dispose(): void;
-        public getMaterialPassVO(materialId: number): MaterialPassVO;
         /**
         * Renders an object to the current render target.
         *
         * @private
         */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
+        public _iRender(pass: pool.MaterialPassData, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
         /**
         *
         *
@@ -2967,7 +2955,7 @@ declare module away.materials {
         * @param stage
         * @param camera
         */
-        public setRenderState(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
+        public setRenderState(pass: pool.MaterialPassData, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
         /**
         * The blend mode to use when drawing this renderable. The following blend modes are supported:
         * <ul>
@@ -2986,20 +2974,20 @@ declare module away.materials {
         * @param camera The camera from which the scene is viewed.
         * @private
         */
-        public iActivate(material: MaterialBase, stage: base.Stage, camera: entities.Camera): void;
+        public _iActivate(pass: pool.MaterialPassData, stage: base.Stage, camera: entities.Camera): void;
         /**
         * Clears the render state for the pass. This needs to be called before activating another pass.
         * @param stage The Stage used for rendering
         *
         * @private
         */
-        public iDeactivate(material: MaterialBase, stage: base.Stage): void;
+        public _iDeactivate(pass: pool.MaterialPassData, stage: base.Stage): void;
         /**
         * Marks the shader program as invalid, so it will be recompiled before the next render.
         *
         * @param updateMaterial Indicates whether the invalidation should be performed on the entire material. Should always pass "true" unless it's called from the material itself.
         */
-        public iInvalidateShaderProgram(updateMaterial?: boolean): void;
+        public _pInvalidatePass(): void;
         /**
         * The light picker used by the material to provide lights to the material if it supports lighting.
         *
@@ -3017,23 +3005,8 @@ declare module away.materials {
         public pUpdateLights(): void;
         public _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
         public _iInitConstantData(shaderObject: ShaderObjectBase): void;
-        /**
-        * Mark an material as owner of this material pass.
-        *
-        * @param owner The MaterialBase that had this material pass assigned
-        *
-        * @internal
-        */
-        public _iAddOwner(owner: MaterialBase): void;
-        /**
-        * Removes a MaterialBase as owner.
-        * @param owner
-        *
-        * @internal
-        */
-        public _iRemoveOwner(owner: MaterialBase): void;
-        public _iGetPreVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-        public _iGetPreFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+        public _iGetPreLightingVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+        public _iGetPreLightingFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         public _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         public _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         public _iGetNormalVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
@@ -3081,12 +3054,14 @@ declare module away.materials {
         * @return The amount of light probes this material will support, bounded by the amount necessary.
         */
         private calculateNumProbes(numLightProbes);
+        public _iAddMaterialPassData(materialPassData: pool.MaterialPassData): pool.MaterialPassData;
+        public _iRemoveMaterialPassData(materialPassData: pool.MaterialPassData): pool.MaterialPassData;
     }
 }
 declare module away.materials {
     interface IMaterialPassStageGL extends IMaterialPass {
-        _iGetPreVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-        _iGetPreFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+        _iGetPreLightingVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+        _iGetPreLightingFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         _iGetNormalVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
@@ -3141,8 +3116,6 @@ declare module away.materials {
         lightPicker: LightPickerBase;
         _iUsesSpecular(): any;
         _iUsesShadows(): any;
-        _iGetPreLightingVertexCode(shaderObject: ShaderLightingObject, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-        _iGetPreLightingFragmentCode(shaderObject: ShaderLightingObject, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         _iGetPerLightDiffuseFragmentCode(shaderObject: ShaderLightingObject, lightDirReg: ShaderRegisterElement, diffuseColorReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         _iGetPerLightSpecularFragmentCode(shaderObject: ShaderLightingObject, lightDirReg: ShaderRegisterElement, specularColorReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         _iGetPerProbeDiffuseFragmentCode(shaderObject: ShaderLightingObject, texReg: ShaderRegisterElement, weightReg: string, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
@@ -3151,51 +3124,11 @@ declare module away.materials {
         _iGetPostLightingFragmentCode(shaderObject: ShaderLightingObject, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
-/**
-* @module away.pool
-*/
-declare module away.materials {
-    /**
-    *
-    * @class away.pool.MaterialPassDataBase
-    */
-    class MaterialPassVO {
-        public _iRenderOrderId: number;
-        private _shaderObjectData;
-        static MATERIALPASS_ID_COUNT: number;
-        /**
-        * An id for this material pass, used to identify material passes when using animation sets.
-        *
-        * @private
-        */
-        public _iUniqueId: number;
-        public material: MaterialBase;
-        public materialPass: IMaterialPassStageGL;
-        constructor(material: MaterialBase, materialPass: IMaterialPassStageGL);
-        /**
-        *
-        */
-        public invalidate(): void;
-        /**
-        *
-        */
-        public dispose(): void;
-        public _iAddShaderObjectData(shaderObjectData: pool.ShaderObjectData): pool.ShaderObjectData;
-        public _iRemoveShaderObjectData(shaderObjectData: pool.ShaderObjectData): pool.ShaderObjectData;
-        private calculateID();
-    }
-}
 declare module away.materials {
     /**
     * LineBasicPass is a material pass that draws wireframe segments.
     */
     class LineBasicPass extends MaterialPassBase {
-        static pONE_VECTOR: number[];
-        static pFRONT_VECTOR: number[];
-        private _constants;
-        private _calcMatrix;
-        private _thickness;
-        public thickness : number;
         /**
         * Creates a new SegmentPass object.
         *
@@ -3205,24 +3138,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public _iGetVertexCode(shaderObject: ShaderObjectBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
-        /**
-        * @inheritDoc
-        */
         public _iGetFragmentCode(shaderObject: ShaderObjectBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
-        /**
-        * @inheritDoc
-        * todo: keep maps in dictionary per renderable
-        */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(material: MaterialBase, stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * @inheritDoc
-        */
-        public pDeactivate(material: MaterialBase, stage: base.Stage): void;
     }
 }
 declare module away.materials {
@@ -3230,36 +3146,13 @@ declare module away.materials {
     * SkyboxPass provides a material pass exclusively used to render sky boxes from a cube texture.
     */
     class SkyboxPass extends MaterialPassBase {
-        private _cubeTexture;
-        private _texturesIndex;
-        private _vertexData;
         /**
         * Creates a new SkyboxPass object.
         *
         * @param material The material to which this pass belongs.
         */
         constructor();
-        /**
-        * The cube texture to use as the skybox.
-        */
-        public cubeTexture : textures.CubeTextureBase;
         public _iIncludeDependencies(shaderObject: ShaderLightingObject): void;
-        /**
-        * @inheritDoc
-        */
-        public _iGetPreVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-        /**
-        * @inheritDoc
-        */
-        public _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-        /**
-        * @inheritDoc
-        */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(material: MaterialBase, stage: base.Stage, camera: entities.Camera): void;
     }
 }
 declare module away.materials {
@@ -3267,31 +3160,7 @@ declare module away.materials {
     * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
     * using material methods to define their appearance.
     */
-    class TrianglePassBase extends MaterialPassBase {
-        public _preserveAlpha: boolean;
-        /**
-        * Creates a new CompiledPass object.
-        */
-        constructor(passMode?: number);
-        /**
-        * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
-        */
-        public preserveAlpha : boolean;
-        public _iGetPreVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-        /**
-        * @inheritDoc
-        */
-        public iRender(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
-    }
-}
-declare module away.materials {
-    /**
-    * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
-    * using material methods to define their appearance.
-    */
-    class TriangleBasicPass extends TrianglePassBase {
-        public _pUseTexture: boolean;
-        public _pTexture: textures.Texture2DBase;
+    class TriangleBasicPass extends MaterialPassBase {
         private _diffuseColor;
         private _diffuseR;
         private _diffuseG;
@@ -3308,10 +3177,6 @@ declare module away.materials {
         */
         public diffuseColor : number;
         /**
-        * The bitmapData to use to define the diffuse reflection color per texel.
-        */
-        public texture : textures.Texture2DBase;
-        /**
         * Creates a new CompiledPass object.
         *
         * @param material The material to which this pass belongs.
@@ -3325,7 +3190,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(material: MaterialBase, stage: base.Stage, camera: entities.Camera): void;
+        public _iActivate(pass: pool.MaterialPassData, stage: base.Stage, camera: entities.Camera): void;
     }
 }
 declare module away.materials {
@@ -3333,10 +3198,9 @@ declare module away.materials {
     * DepthMapPass is a pass that writes depth values to a depth map as a 32-bit value exploded over the 4 texture channels.
     * This is used to render shadow maps, depth maps, etc.
     */
-    class DepthMapPass extends TrianglePassBase {
+    class DepthMapPass extends MaterialPassBase {
         private _fragmentConstantsIndex;
         private _texturesIndex;
-        private _alphaMask;
         /**
         * Creates a new DepthMapPass object.
         *
@@ -3347,20 +3211,16 @@ declare module away.materials {
         * Initializes the unchanging constant data for this material.
         */
         public _iInitConstantData(shaderObject: ShaderObjectBase): void;
-        /**
-        * A texture providing alpha data to be able to prevent semi-transparent pixels to write to the alpha mask.
-        * Usually the diffuse texture when alphaThreshold is used.
-        */
-        public alphaMask : textures.Texture2DBase;
         public _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
         /**
         * @inheritDoc
         */
         public _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+        public _iRender(pass: pool.MaterialPassData, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
         /**
         * @inheritDoc
         */
-        public iActivate(material: MaterialBase, stage: base.Stage, camera: entities.Camera): void;
+        public _iActivate(pass: pool.MaterialPassData, stage: base.Stage, camera: entities.Camera): void;
     }
 }
 declare module away.materials {
@@ -3368,10 +3228,9 @@ declare module away.materials {
     * DistanceMapPass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
     * This is used to render omnidirectional shadow maps.
     */
-    class DistanceMapPass extends TrianglePassBase {
+    class DistanceMapPass extends MaterialPassBase {
         private _fragmentConstantsIndex;
         private _texturesIndex;
-        private _alphaMask;
         /**
         * Creates a new DistanceMapPass object.
         *
@@ -3382,11 +3241,6 @@ declare module away.materials {
         * Initializes the unchanging constant data for this material.
         */
         public _iInitConstantData(shaderObject: ShaderObjectBase): void;
-        /**
-        * A texture providing alpha data to be able to prevent semi-transparent pixels to write to the alpha mask.
-        * Usually the diffuse texture when alphaThreshold is used.
-        */
-        public alphaMask : textures.Texture2DBase;
         public _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
         /**
         * @inheritDoc
@@ -3395,7 +3249,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(material: MaterialBase, stage: base.Stage, camera: entities.Camera): void;
+        public _iActivate(pass: pool.MaterialPassData, stage: base.Stage, camera: entities.Camera): void;
     }
 }
 /**
@@ -3419,8 +3273,7 @@ declare module away.materials {
     * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
     * using material methods to define their appearance.
     */
-    class TriangleMethodPass extends TrianglePassBase implements ILightingPassStageGL {
-        public _iPassesDirty: boolean;
+    class TriangleMethodPass extends MaterialPassBase implements ILightingPassStageGL {
         public _iColorTransformMethodVO: MethodVO;
         public _iNormalMethodVO: MethodVO;
         public _iAmbientMethodVO: MethodVO;
@@ -3516,23 +3369,13 @@ declare module away.materials {
         */
         public dispose(): void;
         /**
-        * @inheritDoc
-        */
-        public iInvalidateShaderProgram(updateMaterial?: boolean): void;
-        /**
-        * Adds internal passes to the material.
-        *
-        * @param passes The passes to add.
-        */
-        public pAddPasses(methodVO: MethodVO): void;
-        /**
         * Called when any method's shader code is invalidated.
         */
         private onShaderInvalidated(event);
         /**
         * @inheritDoc
         */
-        public iActivate(material: MaterialBase, stage: base.Stage, camera: entities.Camera): void;
+        public _iActivate(pass: pool.MaterialPassData, stage: base.Stage, camera: entities.Camera): void;
         /**
         *
         *
@@ -3540,11 +3383,11 @@ declare module away.materials {
         * @param stage
         * @param camera
         */
-        public setRenderState(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
+        public setRenderState(pass: pool.MaterialPassData, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
         /**
         * @inheritDoc
         */
-        public iDeactivate(material: MaterialBase, stage: base.Stage): void;
+        public _iDeactivate(pass: pool.MaterialPassData, stage: base.Stage): void;
         public _iIncludeDependencies(shaderObject: ShaderLightingObject): void;
         /**
         * Counts the dependencies for a given method.
@@ -3552,10 +3395,8 @@ declare module away.materials {
         * @param methodVO The method's data for this material.
         */
         private setupAndCountDependencies(shaderObject, methodVO);
-        public _iGetPreVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-        public _iGetPreFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-        public _iGetPreLightingVertexCode(shaderObject: ShaderLightingObject, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-        public _iGetPreLightingFragmentCode(shaderObject: ShaderLightingObject, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+        public _iGetPreLightingVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+        public _iGetPreLightingFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         public _iGetPerLightDiffuseFragmentCode(shaderObject: ShaderLightingObject, lightDirReg: ShaderRegisterElement, diffuseColorReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         public _iGetPerLightSpecularFragmentCode(shaderObject: ShaderLightingObject, lightDirReg: ShaderRegisterElement, specularColorReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
         public _iGetPerProbeDiffuseFragmentCode(shaderObject: ShaderLightingObject, texReg: ShaderRegisterElement, weightReg: string, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
@@ -3596,61 +3437,9 @@ declare module away.materials {
     }
 }
 declare module away.materials {
-    /**
-    * MaterialBase forms an abstract base class for any material.
-    * A material consists of several passes, each of which constitutes at least one render call. Several passes could
-    * be used for special effects (render lighting for many lights in several passes, render an outline in a separate
-    * pass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space
-    * subsurface scattering, or rendering a depth map for specialized self-shadowing).
-    *
-    * Away3D provides default materials trough SinglePassMaterialBase and TriangleMethodMaterial, which use modular
-    * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
-    * shaders, or entire new material frameworks.
-    */
-    class DepthMaterialBase extends MaterialBase {
-        public _pDepthPass: DepthMapPass;
-        public _pDistancePass: DistanceMapPass;
-        private _distanceBasedDepthRender;
-        public _pHeight: number;
-        public _pWidth: number;
-        public _pRequiresBlending: boolean;
-        /**
-        * Creates a new MaterialBase object.
-        */
-        constructor();
-        public pAddDepthPasses(): void;
-        /**
-        * Sets the render state for the depth pass that is independent of the rendered object. Used when rendering
-        * depth or distances (fe: shadow maps, depth pre-pass).
-        *
-        * @param stage The Stage used for rendering.
-        * @param camera The camera from which the scene is viewed.
-        * @param distanceBased Whether or not the depth pass or distance pass should be activated. The distance pass
-        * is required for shadow cube maps.
-        *
-        * @internal
-        */
-        public iActivateForDepth(stage: base.Stage, camera: entities.Camera, distanceBased?: boolean): void;
-        /**
-        * Clears the render state for the depth pass.
-        *
-        * @param stage The Stage used for rendering.
-        *
-        * @internal
-        */
-        public iDeactivateForDepth(stage: base.Stage): void;
-        /**
-        * Renders a renderable using the depth pass.
-        *
-        * @param renderable The RenderableBase instance that needs to be rendered.
-        * @param stage The Stage used for rendering.
-        * @param camera The camera from which the scene is viewed.
-        * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
-        * camera.viewProjection as it includes the scaling factors when rendering to textures.
-        *
-        * @internal
-        */
-        public iRenderDepth(renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
+    class StageGLMaterialBase extends MaterialBase {
+        public _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+        public _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
     }
 }
 declare module away.materials {
@@ -3659,7 +3448,12 @@ declare module away.materials {
     *
     * @see away.entities.Lines
     */
-    class LineBasicMaterial extends DepthMaterialBase {
+    class LineBasicMaterial extends StageGLMaterialBase {
+        static pONE_VECTOR: number[];
+        static pFRONT_VECTOR: number[];
+        private _constants;
+        private _calcMatrix;
+        private _thickness;
         private _screenPass;
         /**
         * Creates a new LineMaterial object.
@@ -3667,6 +3461,18 @@ declare module away.materials {
         * @param thickness The thickness of the wireframe lines.
         */
         constructor(thickness?: number);
+        /**
+        * @inheritDoc
+        */
+        public _iGetVertexCode(shaderObject: ShaderObjectBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
+        /**
+        * @inheritDoc
+        */
+        public _iActivatePass(pass: pool.MaterialPassData, stage: base.Stage, camera: entities.Camera): void;
+        /**
+        * @inheritDoc
+        */
+        public _iRenderPass(pass: pool.MaterialPassData, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
     }
 }
 declare module away.materials {
@@ -3675,7 +3481,8 @@ declare module away.materials {
     *
     * @see away3d.primitives.Skybox
     */
-    class SkyboxMaterial extends MaterialBase {
+    class SkyboxMaterial extends StageGLMaterialBase {
+        private _vertexData;
         private _cubeMap;
         private _skyboxPass;
         /**
@@ -3687,6 +3494,35 @@ declare module away.materials {
         * The cube texture to use as the skybox.
         */
         public cubeMap : textures.CubeTextureBase;
+        /**
+        * @inheritDoc
+        */
+        public _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+        /**
+        * @inheritDoc
+        */
+        public _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+        /**
+        * @inheritDoc
+        */
+        public _iActivatePass(pass: pool.MaterialPassData, stage: base.Stage, camera: entities.Camera): void;
+        /**
+        * @inheritDoc
+        */
+        public _iRenderPass(pass: pool.MaterialPassData, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
+    }
+}
+declare module away.materials {
+    /**
+    * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
+    * using material methods to define their appearance.
+    */
+    class TriangleMaterialBase extends StageGLMaterialBase {
+        public _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+        /**
+        * @inheritDoc
+        */
+        public _iRenderPass(pass: pool.MaterialPassData, renderable: pool.RenderableBase, stage: base.Stage, camera: entities.Camera, viewProjection: geom.Matrix3D): void;
     }
 }
 declare module away.materials {
@@ -3694,13 +3530,10 @@ declare module away.materials {
     * TriangleMaterial forms an abstract base class for the default shaded materials provided by Stage,
     * using material methods to define their appearance.
     */
-    class TriangleBasicMaterial extends DepthMaterialBase {
+    class TriangleBasicMaterial extends TriangleMaterialBase {
         private _screenPass;
-        private _color;
-        private _texture;
         private _alphaBlending;
         private _alpha;
-        private _alphaThreshold;
         private _depthCompareMode;
         /**
         * Creates a new TriangleMaterial object.
@@ -3723,58 +3556,18 @@ declare module away.materials {
         */
         public alpha : number;
         /**
-        * The diffuse reflectivity color of the surface.
-        */
-        public color : number;
-        /**
-        * The texture object to use for the albedo colour.
-        */
-        public texture : textures.Texture2DBase;
-        /**
         * Indicates whether or not the material has transparency. If binary transparency is sufficient, for
         * example when using textures of foliage, consider using alphaThreshold instead.
         */
         public alphaBlending : boolean;
         /**
-        * Sets the render state for the depth pass that is independent of the rendered object. Used when rendering
-        * depth or distances (fe: shadow maps, depth pre-pass).
-        *
-        * @param stage The Stage used for rendering.
-        * @param camera The camera from which the scene is viewed.
-        * @param distanceBased Whether or not the depth pass or distance pass should be activated. The distance pass
-        * is required for shadow cube maps.
-        *
-        * @internal
-        */
-        public iActivateForDepth(stage: base.Stage, camera: entities.Camera, distanceBased?: boolean): void;
-        /**
         * @inheritDoc
         */
         public iUpdateMaterial(): void;
         /**
-        * Adds a compiled pass that renders to the screen.
-        * @param pass The pass to be added.
-        */
-        private addScreenPass(pass);
-        /**
-        * Tests if any pass that renders to the screen is invalid. This would trigger a new setup of the multiple passes.
-        * @return
-        */
-        private isAnyScreenPassInvalid();
-        /**
-        * @inheritDoc
-        */
-        public iActivatePass(index: number, stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * @inheritDoc
-        */
-        public iDeactivate(stage: base.Stage): void;
-        /**
         * Updates screen passes when they were found to be invalid.
         */
         public pUpdateScreenPasses(): void;
-        public _pUpdateColor(): void;
-        public _pUpdateTexture(): void;
         /**
         * Initializes all the passes and their dependent passes.
         */
@@ -3805,7 +3598,7 @@ declare module away.materials {
     * TriangleMethodMaterial forms an abstract base class for the default shaded materials provided by Stage,
     * using material methods to define their appearance.
     */
-    class TriangleMethodMaterial extends DepthMaterialBase {
+    class TriangleMethodMaterial extends TriangleMaterialBase {
         private _alphaBlending;
         private _alpha;
         private _colorTransform;
@@ -3844,14 +3637,6 @@ declare module away.materials {
         * The ColorTransform object to transform the colour of the material with. Defaults to null.
         */
         public colorTransform : geom.ColorTransform;
-        /**
-        * The diffuse reflectivity color of the surface.
-        */
-        public color : number;
-        /**
-        * The texture object to use for the albedo colour.
-        */
-        public texture : textures.Texture2DBase;
         /**
         * The texture object to use for the ambient colour.
         */
@@ -3953,29 +3738,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iUpdateMaterial(): void;
-        /**
-        * Adds a compiled pass that renders to the screen.
-        * @param pass The pass to be added.
-        */
-        private addScreenPass(pass);
-        /**
-        * Tests if any pass that renders to the screen is invalid. This would trigger a new setup of the multiple passes.
-        * @return
-        */
-        private isAnyScreenPassInvalid();
-        /**
-        * @inheritDoc
-        */
-        public iActivatePass(index: number, stage: base.Stage, camera: entities.Camera): void;
-        /**
-        * @inheritDoc
-        */
-        public iDeactivate(stage: base.Stage): void;
-        /**
-        * Updates screen passes when they were found to be invalid.
-        */
-        public pUpdateScreenPasses(): void;
+        public _iUpdateMaterial(): void;
         /**
         * Initializes all the passes and their dependent passes.
         */
@@ -4251,10 +4014,6 @@ declare module away.render {
     class DefaultRenderer extends RendererBase implements IRenderer {
         public _pRequireDepthRender: boolean;
         private _skyboxRenderablePool;
-        private static RTT_PASSES;
-        private static SCREEN_PASSES;
-        private static ALL_PASSES;
-        private _activeMaterial;
         private _pDistanceRenderer;
         private _pDepthRenderer;
         private _skyboxProjection;
@@ -4298,7 +4057,7 @@ declare module away.render {
         * @param renderables The renderables to draw.
         * @param entityCollector The EntityCollector containing all potentially visible information.
         */
-        private drawRenderables(renderable, entityCollector, which);
+        private drawRenderables(renderable, entityCollector);
         public dispose(): void;
         /**
         *
@@ -4329,16 +4088,15 @@ declare module away.render {
     * @class away.render.DepthRenderer
     */
     class DepthRenderer extends RendererBase {
-        private _activeMaterial;
+        private _pass;
         private _renderBlended;
-        private _distanceBased;
         private _disableColor;
         /**
         * Creates a new DepthRenderer object.
         * @param renderBlended Indicates whether semi-transparent objects should be rendered.
         * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
         */
-        constructor(renderBlended?: boolean, distanceBased?: boolean);
+        constructor(pass: materials.MaterialPassBase, renderBlended?: boolean);
         public disableColor : boolean;
         public _iRenderCascades(entityCollector: traverse.ShadowCasterCollector, target: textures.TextureProxyBase, numCascades: number, scissorRects: geom.Rectangle[], cameras: entities.Camera[]): void;
         private drawCascadeRenderables(renderable, camera, cullPlanes);
