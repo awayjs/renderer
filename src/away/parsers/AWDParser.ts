@@ -529,8 +529,26 @@ module away.parsers
 			}
 
 			this._blocks[this._cur_block_id] = block;
-
-			if ((this._version[0] == 2) && (this._version[1] == 1)) {
+            if ((this._version[0] == 3) && (this._version[1] == 0)) {
+                switch (type) {
+                    case 2:// just because i used blockID 2 in first exporter earlier
+                    case 131:
+                        this.parseShape2D(this._cur_block_id);
+                        isParsed = true;
+                        break;
+                    case 3:// just because i used blockID 3 in first exporter earlier
+                    case 132:
+                        this.parseShape2DFill(this._cur_block_id);
+                        isParsed = true;
+                        break;
+                    case 4:// just because i used blockID 4 in first exporter earlier
+                    case 133:
+                        this.parseTimeLine(this._cur_block_id);
+                        isParsed = true;
+                        break;
+                }
+            }
+			else if ((this._version[0] == 2) && (this._version[1] == 1)) {
 
 				switch (type) {
 					case 11:
@@ -679,6 +697,399 @@ module away.parsers
 
 
 		//--Parser Blocks---------------------------------------------------------------------------
+
+        //Block ID = 2
+        private parseShape2D(blockID:number):void
+        {
+
+            var geom:away.base.Geometry = new away.base.Geometry();
+
+            // Read name and sub count
+            var name:string = this.parseVarStr();
+            var num_subs:number = this._newBlockBytes.readUnsignedShort();
+
+            // Read optional properties
+            var props:AWDProperties = this.parseProperties({1:this._geoNrType, 2:this._geoNrType});
+
+
+            // Loop through sub meshes
+            var subs_parsed:number = 0;
+            while (subs_parsed < num_subs) {
+                var i:number;
+                var sm_len:number, sm_end:number;
+                var sub_geom:TriangleSubGeometry;
+                var w_indices:Array<number>;
+                var weights:Array<number>;
+
+                sm_len = this._newBlockBytes.readUnsignedInt();
+                sm_end = this._newBlockBytes.position + sm_len;
+
+                // Ignore for now (read uv for subshapes later)"
+                var subProps:AWDProperties = this.parseProperties({1:this._geoNrType, 2:this._geoNrType});
+                // Loop through data streams
+                var indices:Array<number> = new Array<number>();
+                var i_idx:number = 0;
+                while (this._newBlockBytes.position < sm_end) {
+                    var idx:number = 0;
+                    var uv_idx:number = 0;
+                    var n_idx:number = 0;
+                    var t_idx:number = 0;
+                    var str_ftype:number, str_type:number, str_len:number, str_end:number;
+
+                    // Type, field type, length
+                    str_type = this._newBlockBytes.readUnsignedByte();
+                    str_ftype = this._newBlockBytes.readUnsignedByte();
+                    str_len = this._newBlockBytes.readUnsignedInt();
+                    str_end = this._newBlockBytes.position + str_len;
+
+                    var x:number, y:number, z:number;
+                    var type:number;
+                    var r:number, g:number, b:number,a:number;
+                    var u:number, v:number;
+
+                    if (str_type == 1) {
+                        var verts:Array<number> = new Array<number>();
+                        var uvs:Array<number> = new Array<number>();
+                        var normals:Array<number> = new Array<number>();
+                        var tangents:Array<number> = new Array<number>();
+
+                        while (this._newBlockBytes.position < str_end) {
+
+                            x = this.readNumber(this._accuracyGeo);
+                            y = this.readNumber(this._accuracyGeo);
+                            z = this.readNumber(this._accuracyGeo);
+                            //z = subs_parsed;
+                            //z = (blockID*0.001) + subs_parsed
+                            type = this.readNumber(this._accuracyGeo);
+                            this.readNumber(this._accuracyGeo);
+                            this.readNumber(this._accuracyGeo);
+                            u = this.readNumber(this._accuracyGeo);
+                            v = this.readNumber(this._accuracyGeo);
+                            r = this.readNumber(this._accuracyGeo);
+                            g = this.readNumber(this._accuracyGeo);
+                            b = this.readNumber(this._accuracyGeo);
+                            a = this.readNumber(this._accuracyGeo);
+
+                            // while this is true, be parse the vertex-data, so it can be rendered as "normal" 3d-geometry
+                            if (true) {
+                                uvs[idx] = 0.0;
+                                normals[idx] = 0.0;
+                                verts[idx++] = x;
+                                uvs[idx] = 0.0;
+                                normals[idx] = 0.0;
+                                verts[idx++] = y;
+                                normals[idx] = 1.0;
+                                verts[idx++] = z;
+                            }
+                            else{
+                                // parse and set-data, so the 3d-geometry contains all data (but is no longer valid for normal 3d-render)
+                                // away3d-vertexdata    |   awayJS-shape-data
+                                // -----------------------------------------------------------------------
+                                // pos.x                |   pos.x
+                                // pos.y                |   pos.y
+                                // pos.z                |   not used
+                                // normal.x             |   curve-type (0:notCurved, 1: convex, 2:concave)
+                                // normal.y             |   alpha
+                                // normal.z             |   not used
+                                // uv.u                 |   curve.u
+                                // uv.v                 |   curve.v
+                                // tangent.x            |   red
+                                // tangent.y            |   green
+                                // tangent.z            |   blue
+                                verts[idx++] = x;
+                                //uv2[idx] = x;
+                                verts[idx++] = y;
+                                //uv2[idx] = y;
+                                verts[idx++] = z;
+                                uvs[uv_idx++] = u;
+                                uvs[uv_idx++] = v;
+                                normals[n_idx++] = type;
+                                normals[n_idx++] = a;
+                                normals[n_idx++] = 0;
+                                // trace("r=" + r + " g=" + g + " b=" + b + " a=" + a);
+                                tangents[t_idx++] = r;
+                                tangents[t_idx++] = g;
+                                tangents[t_idx++] = b;
+                            }
+                        }
+                    }
+                    // in future we will only have one stream for all face-indicies
+                    // only keeping it split up for the moment,
+                    // so we can debug by choosing what kind of triangles are added to subGeo.
+                    else if (str_type == 2) {
+                        while (this._newBlockBytes.position < str_end) {
+                            var thisVal:number= this._newBlockBytes.readUnsignedShort();
+                            indices[i_idx++] = thisVal;
+                        }
+
+                    } else if (str_type == 3) {
+
+                        while (this._newBlockBytes.position < str_end) {
+                            var thisVal:number= this._newBlockBytes.readUnsignedShort();
+                            indices[i_idx++] = thisVal;
+                        }
+
+                    }else if (str_type == 4) {
+
+                        while (this._newBlockBytes.position < str_end) {
+                            var thisVal:number= this._newBlockBytes.readUnsignedShort();
+                            indices[i_idx++] = thisVal;
+                        }
+
+                    }else if (str_type == 5) {
+
+                        while (this._newBlockBytes.position < str_end) {
+                            var thisVal:number= this._newBlockBytes.readUnsignedShort();
+                            indices[i_idx++] = thisVal;
+                        }
+
+                    }
+                    else {
+                        this._newBlockBytes.position = str_end;
+                    }
+
+                }
+
+                this.parseUserAttributes(); // Ignore sub-mesh attributes for now
+
+                sub_geom = new TriangleSubGeometry(true);
+                sub_geom.autoDeriveNormals = false;
+                // when rendering as "normal" 3d-geometry, we need to autoDerive tangents
+                if(true){
+                    sub_geom.autoDeriveTangents = true;
+                }
+                // if using the geometry as data-holder, we explicit set tangents (as they contain color)
+                else{
+                    sub_geom.updateVertexTangents(tangents);
+                }
+                sub_geom.updateIndices(indices);
+                sub_geom.updatePositions(verts);
+                sub_geom.updateUVs(uvs);
+                sub_geom.updateVertexNormals(normals);
+
+                geom.addSubGeometry(sub_geom);
+
+                subs_parsed++;
+            }
+            this.parseUserAttributes();
+            this._pFinalizeAsset(<away.library.IAsset> geom, name);
+            this._blocks[blockID].data = geom;
+
+            if (this._debug) {
+                console.log("Parsed a TriangleGeometry: Name = " + name + "| Id = " + sub_geom.id);
+            }
+
+        }
+        //Block ID = 3
+        private parseShape2DFill(blockID:number):void {
+
+            var name:string = this.parseVarStr();
+            var fill_type:number = this._newBlockBytes.readUnsignedByte();
+            var fill_props:AWDProperties = this.parseProperties({1:AWDParser.UINT32});// { 1:UINT32, 6:AWDSTRING }  ); //; , 2:UINT32, 3:UINT32, 5:BOOL } );
+
+            switch (fill_type) {
+                // to do, not all properties are set on all primitives
+
+                case 0:
+                    console.log("Parsed a Solid FILL: Name = " + name);
+                    var material:TriangleMethodMaterial=new TriangleMethodMaterial(fill_props.get(1, 0xcccccc));
+                    material.bothSides=true;
+                    this._pFinalizeAsset(<away.library.IAsset> material, name);
+                    this._blocks[blockID].data = material;
+                    //prefab = new away.prefabs.PrimitivePlanePrefab(props.get(101, 100), props.get(102, 100), props.get(301, 1), props.get(302, 1), props.get(701, true), props.get(702, false));
+                    break;
+
+                case 1:
+                    console.log("Parsed a bitmap FILL: Name = " + name);
+                    break;
+                case 2:
+                    console.log("Parsed a linear gradient FILL: Name = " + name);
+                    break;
+                case 3:
+                    console.log("Parsed a radial gradient FILL: Name = " + name);
+                    break;
+                default:
+                    console.log("Parsed a unknown fillstyle: Name = " + name);
+                    break;
+            }
+            this.parseUserAttributes();
+        }
+        //Block ID = 4
+        private parseTimeLine(blockID:number):void {
+
+            // every Timeline gets parsed into a ObjectContainer3D for now.
+            // only the Commands for the first frame are executed for now.
+            var timeLineContainer:away.containers.DisplayObjectContainer=new away.containers.DisplayObjectContainer();
+            var frame_name:string;
+            var name:string = this.parseVarStr();
+            var isScene:Boolean = Boolean(this._newBlockBytes.readUnsignedByte());
+            var sceneID:number = this._newBlockBytes.readUnsignedByte();
+            var num_frames:number = this._newBlockBytes.readUnsignedShort();
+            var i:number, k:number;
+            // var fill_props:AWDProperties = this.parseProperties({1:AWDParser.UINT32});// { 1:UINT32, 6:AWDSTRING }  ); //; , 2:UINT32, 3:UINT32, 5:BOOL } );
+
+            if (this._debug)
+                console.log("Parsed a TIMELINE: Name = " + name + "| isScene = " + isScene + "| sceneID = " + sceneID + "| num_frames = " + num_frames);
+
+
+            i = 0;
+            while (i < num_frames) {
+                var traceString:string = "frame = " + i;
+                var frame_duration:number = this._newBlockBytes.readUnsignedInt();
+                var num_labels:number = this._newBlockBytes.readUnsignedShort();
+                k=0;
+                while (k < num_labels) {
+                    var label_type:number = this._newBlockBytes.readUnsignedByte();
+                    var frame_name:string = this.parseVarStr();
+                    traceString += "\n     frame_name = " + frame_name + " - label_type = " + label_type;
+                    k++;
+                }
+                var num_commands:number = this._newBlockBytes.readUnsignedShort();
+                var commandString:string = "\n      Commands " + num_commands;
+                for (k = 0; k < num_commands; k++) {
+                    var command_type:number = this._newBlockBytes.readUnsignedShort();
+                    if (command_type == 1) {
+                        var z:number;
+                        var hasRessource:Boolean = Boolean(this._newBlockBytes.readByte());
+                        var hasDisplayMatrix:Boolean = Boolean(this._newBlockBytes.readByte());
+                        var hasColorMatrix:Boolean = Boolean(this._newBlockBytes.readByte());
+                        var hasDepthChange:Boolean = Boolean(this._newBlockBytes.readByte());
+                        var hasFilterChange:Boolean = Boolean(this._newBlockBytes.readByte());
+                        var hasBlendModeChange:Boolean = Boolean(this._newBlockBytes.readByte());
+                        var hasDepthClipChange:Boolean = Boolean(this._newBlockBytes.readByte());
+                        var hasVisiblityChange:Boolean = Boolean(this._newBlockBytes.readByte());
+
+                        var objectID:number = this._newBlockBytes.readUnsignedInt();
+
+                        if (hasRessource) {
+                            var ressourceID:number = this._newBlockBytes.readUnsignedInt();
+                            commandString += "\n      - Add new Ressource = " + ressourceID + " as object_id = " + objectID;
+                        }
+                        else {
+                            commandString += "\n      - Update object_id = " + objectID;
+                        }
+                        var transformArray:Array<number> = new Array<number>();
+                        if (hasDisplayMatrix) {
+                            transformArray = new Array<number>();
+                            for (z = 0; z < 6; z++) {
+                                transformArray.push(this._newBlockBytes.readFloat());
+                            }
+                            commandString += "\n                transformArray = " + transformArray;
+                        }
+                        var colorArray:Array<number> = new Array<number>();
+                        if (hasColorMatrix) {
+                            for (z = 0; z < 20; z++) {
+                                colorArray.push(this._newBlockBytes.readFloat());
+                            }
+                            commandString += "\n                colorArray = " + colorArray;
+                        }
+                        if (hasDepthChange) {
+                            var newDepth:number = this._newBlockBytes.readUnsignedInt();
+                            commandString += "\n                Depth = " + newDepth;
+                        }
+                        if (hasFilterChange) {
+                            //TODO:ADD FILTER
+                        }
+                        if (hasBlendModeChange) {
+                            var newBlendMode:number = this._newBlockBytes.readUnsignedByte();
+                            commandString += "\n                BlendMode = " + newBlendMode;
+                        }
+                        if (hasDepthClipChange) {
+                            var newClipDepth:number = this._newBlockBytes.readUnsignedInt();
+                            commandString += "\n                ClipDepth = " + newClipDepth;
+                        }
+                        if (hasVisiblityChange) {
+                            var newVisibitily:boolean = Boolean(this._newBlockBytes.readByte());
+                            commandString += "\n                Visibitily = " + newVisibitily;
+                        }
+
+                        var numFills:number = this._newBlockBytes.readUnsignedShort();
+                        var s:number = 0;
+                        commandString += "\n                number of fills = " + numFills;
+                        var fillsIDs:Array<number> = new Array<number>();
+                        for (s = 0; s < numFills; s++) {
+                            fillsIDs.push(this._newBlockBytes.readUnsignedInt());
+                            commandString += "\n                    id of fill = " + fillsIDs[s];
+                        }
+                        var instanceName:string = this.parseVarStr();
+                        commandString += "\n                instanceName = " + instanceName;
+
+                        // if this is a "ADD NEW OBJECT"-command,
+                        // we need to lookup the new object by AWD ID.
+                        // For now, we only do this for first frame (i==0)
+                        if ((hasRessource)&&(i==0)) {
+                            // sound is added to timeline with dedicated Command, as it is no display-object (has no matrix etc)
+
+                            // check if a Geometry can be found at the ressourceID (AWD-ID)
+                            var returnedArray:Array<any> = this.getAssetByID(ressourceID, [AssetType.GEOMETRY]);
+                            if(returnedArray[0]==true) {
+                                // create a mesh, and add it to the timeLine-Container
+                                // adding the fill-colors as normal ColorMaterials...
+                                var newMesh:Mesh = new Mesh(returnedArray[1]);
+                                newMesh.name=instanceName;
+                                s = 0;
+                                while (s < numFills) {
+                                    var returnedArray2:Array<any> = this.getAssetByID(fillsIDs[s], [AssetType.MATERIAL]);
+                                    if (returnedArray[0]) {
+                                        if (returnedArray2[0]) {
+                                            if (newMesh.subMeshes.length > s) {
+                                                newMesh.subMeshes[s].material = returnedArray2[1];
+                                            }
+                                        }
+                                    }
+                                    s++;
+                                }
+                                timeLineContainer.addChild(newMesh);
+                            }
+                            else{
+                                // no geometry found, so we check for Container (already parsed Timeline)
+                                var returnedArray:Array<any> = this.getAssetByID(ressourceID, [AssetType.CONTAINER]);
+                                if(returnedArray[0]==true) {
+                                    var newContainer:away.containers.DisplayObjectContainer = <away.containers.DisplayObjectContainer>returnedArray[1];
+                                    var newContainerClone:away.containers.DisplayObjectContainer =  <away.containers.DisplayObjectContainer>newContainer.clone();
+                                    if(newContainerClone){
+                                        newContainerClone.name=instanceName;
+                                        timeLineContainer.addChild(newContainerClone);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (command_type == 2) {
+                        // Remove Command
+                        var objectID:number = this._newBlockBytes.readUnsignedInt();
+                        commandString += "\n       - Remove object with ID: " + objectID;
+                    }
+                    else if (command_type == 3) {
+                        // add sound
+                        var objectID:number = this._newBlockBytes.readUnsignedInt();
+                        var ressourceID:number = this._newBlockBytes.readUnsignedInt();
+                        commandString += "\n      - Add new Sound AWD-ID = " + ressourceID.toString() + " as object_id = " + objectID.toString();
+                    }
+                    else {
+                        commandString += "\n       - Unknown Command Type = " + command_type;
+                    }
+                }
+                var frame_code:string = "";
+                var length_code:number = this._newBlockBytes.readUnsignedInt();
+                if (length_code > 0) {
+                    frame_code = this._newBlockBytes.readUTFBytes(length_code);
+                    traceString += "\nframe-code = " + frame_code;
+                }
+                traceString += commandString;
+                //trace("length_code = "+length_code+" frame_code = "+frame_code);
+                this._newBlockBytes.readUnsignedInt();
+                //this.parseUserAttributes(); // Ignore sub-mesh attributes for now
+                i++;
+                console.log(traceString);
+
+            }
+
+            this._pFinalizeAsset(<away.library.IAsset> timeLineContainer, name);
+            this._blocks[blockID].data = timeLineContainer;
+            var timeLineProps:AWDProperties = this.parseProperties(null);
+            this.parseUserAttributes();
+        }
 
 		//Block ID = 1
 		private parseTriangleGeometrieBlock(blockID:number):void

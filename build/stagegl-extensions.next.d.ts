@@ -4538,6 +4538,9 @@ declare module away.parsers {
         public _pStartParsing(frameLimit: number): void;
         private dispose();
         private parseNextBlock();
+        private parseShape2D(blockID);
+        private parseShape2DFill(blockID);
+        private parseTimeLine(blockID);
         private parseTriangleGeometrieBlock(blockID);
         private parsePrimitves(blockID);
         private parseContainer(blockID);
