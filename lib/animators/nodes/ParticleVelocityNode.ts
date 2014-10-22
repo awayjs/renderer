@@ -1,0 +1,84 @@
+import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
+
+import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
+import AnimationRegisterCache			= require("awayjs-stagegl/lib/animators/data/AnimationRegisterCache");
+import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
+import ShaderRegisterElement			= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
+
+import ParticleProperties				= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
+import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
+import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
+import ParticleVelocityState			= require("awayjs-renderergl/lib/animators/states/ParticleVelocityState");
+
+/**
+ * A particle animation node used to set the starting velocity of a particle.
+ */
+class ParticleVelocityNode extends ParticleNodeBase
+{
+	/** @private */
+	public _iVelocity:Vector3D;
+
+	/**
+	 * Reference for velocity node properties on a single particle (when in local property mode).
+	 * Expects a <code>Vector3D</code> object representing the direction of movement on the particle.
+	 */
+	public static VELOCITY_VECTOR3D:string = "VelocityVector3D";
+
+	/**
+	 * Creates a new <code>ParticleVelocityNode</code>
+	 *
+	 * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+	 * @param    [optional] velocity        Defines the default velocity vector of the node, used when in global mode.
+	 */
+	constructor(mode:number /*uint*/, velocity:Vector3D = null)
+	{
+		super("ParticleVelocity", mode, 3);
+
+		this._pStateClass = ParticleVelocityState;
+
+		this._iVelocity = velocity || new Vector3D();
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public getAGALVertexCode(shaderObject:ShaderObjectBase, animationRegisterCache:AnimationRegisterCache):string
+	{
+		var velocityValue:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+		animationRegisterCache.setRegisterIndex(this, ParticleVelocityState.VELOCITY_INDEX, velocityValue.index);
+
+		var distance:ShaderRegisterElement = animationRegisterCache.getFreeVertexVectorTemp();
+		var code:string = "";
+		code += "mul " + distance + "," + animationRegisterCache.vertexTime + "," + velocityValue + "\n";
+		code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + "," + animationRegisterCache.positionTarget + ".xyz\n";
+
+		if (animationRegisterCache.needVelocity)
+			code += "add " + animationRegisterCache.velocityTarget + ".xyz," + velocityValue + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+
+		return code;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public getAnimationState(animator:AnimatorBase):ParticleVelocityState
+	{
+		return <ParticleVelocityState> animator.getAnimationState(this);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public _iGeneratePropertyOfOneParticle(param:ParticleProperties)
+	{
+		var _tempVelocity:Vector3D = param[ParticleVelocityNode.VELOCITY_VECTOR3D];
+		if (!_tempVelocity)
+			throw new Error("there is no " + ParticleVelocityNode.VELOCITY_VECTOR3D + " in param!");
+
+		this._pOneData[0] = _tempVelocity.x;
+		this._pOneData[1] = _tempVelocity.y;
+		this._pOneData[2] = _tempVelocity.z;
+	}
+}
+
+export = ParticleVelocityNode;
