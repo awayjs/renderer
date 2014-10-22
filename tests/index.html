@@ -12,7 +12,7 @@
 
     </style>
 
-    <script type="text/javascript" language="javascript" src="js/AppHarness.js"></script>
+    <script type="text/javascript" language="javascript" src="AppHarness.js"></script>
 
     <script type="text/javascript">
 
@@ -26,10 +26,10 @@
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Parsers' );
-            harness.addTest( 'Parsers.AWDParserTest'                       , 'tests.parsers.AWDParserTest'            , 'js/AWDParserTest.js'         , 'parsers/AWDParserTest.ts' );
-            harness.addTest( 'Parsers.ObjParserTest'                       , 'tests.parsers.ObjParserTest'            , 'js/ObjParserTest.js'         , 'parsers/ObjParserTest.ts' );
-            harness.addTest( 'Parsers.AWDSuzanne'                       , 'tests.parsers.AWDSuzanne'            , 'js/AWDSuzanne.js'         , 'parsers/AWDSuzanne.ts' );
-            harness.addTest( 'Parsers.ObjChiefTestDay'                       , 'tests.parsers.ObjChiefTestDay'       , 'js/ObjChiefTestDay.js'    , 'parsers/ObjChiefTestDay.ts' );
+            harness.addTest( 'Parsers.AWDParserTest'                       , 'parsers.AWDParserTest'            , 'parsers/AWDParserTest.js'         , 'parsers/AWDParserTest.ts' );
+            harness.addTest( 'Parsers.ObjParserTest'                       , 'parsers.ObjParserTest'            , 'parsers/ObjParserTest.js'         , 'parsers/ObjParserTest.ts' );
+            harness.addTest( 'Parsers.AWDSuzanne'                       , 'parsers.AWDSuzanne'            , 'parsers/AWDSuzanne.js'         , 'parsers/AWDSuzanne.ts' );
+            harness.addTest( 'Parsers.ObjChiefTestDay'                       , 'parsers.ObjChiefTestDay'       , 'parsers/ObjChiefTestDay.js'    , 'parsers/ObjChiefTestDay.ts' );
 
 
             //---------------------------------------------------------------------------
@@ -37,7 +37,7 @@
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Lights' );
-            harness.addTest( 'Lights.LightsShadowTest'              , 'tests.lights.LightsShadowTest'     , 'js/LightsShadowTest.js'  , 'lights/LightsShadowTest.ts'  );
+            harness.addTest( 'Lights.LightsShadowTest'              , 'lights.LightsShadowTest'     , 'lights/LightsShadowTest.js'  , 'lights/LightsShadowTest.ts'  );
 
 
             //---------------------------------------------------------------------------
@@ -45,13 +45,13 @@
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Parsers' );
-            harness.addTest( 'Materials.MaterialAlphaTest'              , 'tests.materials.MaterialAlphaTest'     , 'js/MaterialAlphaTest.js'  , 'materials/MaterialAlphaTest.ts'  );
-            harness.addTest( 'Materials.MaterialEnvMapTest'              , 'tests.materials.MaterialEnvMapTest'     , 'js/MaterialEnvMapTest.js'  , 'materials/MaterialEnvMapTest.ts'  );
+            harness.addTest( 'Materials.MaterialAlphaTest'              , 'materials.MaterialAlphaTest'     , 'materials/MaterialAlphaTest.js'  , 'materials/MaterialAlphaTest.ts'  );
+            harness.addTest( 'Materials.MaterialEnvMapTest'              , 'materials.MaterialEnvMapTest'     , 'materials/MaterialEnvMapTest.js'  , 'materials/MaterialEnvMapTest.ts'  );
 
 
             //---------------------------------------------------------------------------
             // Load a default
-            harness.load( 'tests.parsers.AWDParserTest' , 'js/AWDParserTest.js'    , 'parsers/AWDParserTest.ts'  );
+            harness.load( 'parsers.AWDParserTest' , 'parsers/AWDParserTest.js'    , 'parsers/AWDParserTest.ts'  );
             harness.start(); // Start
 
         }
