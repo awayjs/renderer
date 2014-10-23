@@ -1,9 +1,10 @@
-import DisplayObjectContainer			= require("awayjs-core/lib/containers/DisplayObjectContainer");
-import Geometry							= require("awayjs-core/lib/core/base/Geometry");
-import TriangleSubGeometry				= require("awayjs-core/lib/core/base/TriangleSubGeometry");
-import Matrix3DUtils					= require("awayjs-core/lib/core/geom/Matrix3DUtils");
-import Mesh								= require("awayjs-core/lib/entities/Mesh");
-import MaterialBase						= require("awayjs-core/lib/materials/MaterialBase");
+import Matrix3DUtils					= require("awayjs-core/lib/geom/Matrix3DUtils");
+
+import DisplayObjectContainer			= require("awayjs-display/lib/containers/DisplayObjectContainer");
+import Geometry							= require("awayjs-display/lib/base/Geometry");
+import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
+import Mesh								= require("awayjs-display/lib/entities/Mesh");
+import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
 /**
  *  Class Merge merges two or more static meshes into one.<code>Merge</code>

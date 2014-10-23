@@ -1,9 +1,10 @@
-import BitmapData						= require("awayjs-core/lib/core/base/BitmapData");
-import DirectionalLight					= require("awayjs-core/lib/entities/DirectionalLight");
+import BitmapData						= require("awayjs-core/lib/base/BitmapData");
 import BitmapTexture					= require("awayjs-core/lib/textures/BitmapTexture");
 
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
-import IContextStageGL					= require("awayjs-stagegl/lib/core/stagegl/IContextStageGL");
+import DirectionalLight					= require("awayjs-display/lib/entities/DirectionalLight");
+
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
 import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
 import ShaderLightingObject				= require("awayjs-stagegl/lib/materials/compilation/ShaderLightingObject");
 import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");

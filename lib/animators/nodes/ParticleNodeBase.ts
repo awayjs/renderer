@@ -1,4 +1,4 @@
-import AnimationNodeBase				= require("awayjs-core/lib/animators/nodes/AnimationNodeBase");
+import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 
 import AnimationRegisterCache			= require("awayjs-stagegl/lib/animators/data/AnimationRegisterCache");
 import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");

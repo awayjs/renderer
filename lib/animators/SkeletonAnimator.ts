@@ -1,17 +1,18 @@
-import ISubMesh							= require("awayjs-core/lib/core/base/ISubMesh");
-import TriangleSubGeometry				= require("awayjs-core/lib/core/base/TriangleSubGeometry");
-import TriangleSubMesh					= require("awayjs-core/lib/core/base/TriangleSubMesh");
-import Quaternion						= require("awayjs-core/lib/core/geom/Quaternion");
-import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
-import Camera							= require("awayjs-core/lib/entities/Camera");
-import SubGeometryEvent					= require("awayjs-core/lib/events/SubGeometryEvent");
+import Quaternion						= require("awayjs-core/lib/geom/Quaternion");
+import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+
+import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
+import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
+import TriangleSubMesh					= require("awayjs-display/lib/base/TriangleSubMesh");
+import Camera							= require("awayjs-display/lib/entities/Camera");
+import SubGeometryEvent					= require("awayjs-display/lib/events/SubGeometryEvent");
 
 import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
-import RenderableBase					= require("awayjs-stagegl/lib/core/pool/RenderableBase");
-import TriangleSubMeshRenderable		= require("awayjs-stagegl/lib/core/pool/TriangleSubMeshRenderable");
-import ContextGLProgramType				= require("awayjs-stagegl/lib/core/stagegl/ContextGLProgramType");
-import IContextStageGL					= require("awayjs-stagegl/lib/core/stagegl/IContextStageGL");
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
+import TriangleSubMeshRenderable		= require("awayjs-stagegl/lib/pool/TriangleSubMeshRenderable");
+import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
+import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
 import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
 
 import SkeletonAnimationSet				= require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");

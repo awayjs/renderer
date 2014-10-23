@@ -1,15 +1,15 @@
-import Geometry							= require("awayjs-core/lib/core/base/Geometry");
-import TriangleSubGeometry				= require("awayjs-core/lib/core/base/TriangleSubGeometry");
-import Matrix							= require("awayjs-core/lib/core/geom/Matrix");
-import Matrix3D							= require("awayjs-core/lib/core/geom/Matrix3D");
-import Point							= require("awayjs-core/lib/core/geom/Point");
-import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
+import Matrix							= require("awayjs-core/lib/geom/Matrix");
+import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
+import Point							= require("awayjs-core/lib/geom/Point");
+import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
-import Mesh								= require("awayjs-core/lib/entities/Mesh");
-import MaterialBase						= require("awayjs-core/lib/materials/MaterialBase");
+import Geometry							= require("awayjs-display/lib/base/Geometry");
+import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
+import Mesh								= require("awayjs-display/lib/entities/Mesh");
+import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
 import ParticleData						= require("awayjs-renderergl/lib/animators/data/ParticleData");
-import ParticleGeometry					= require("awayjs-renderergl/lib/core/base/ParticleGeometry");
+import ParticleGeometry					= require("awayjs-renderergl/lib/base/ParticleGeometry");
 import ParticleGeometryTransform		= require("awayjs-renderergl/lib/tools/data/ParticleGeometryTransform");
 
 /**

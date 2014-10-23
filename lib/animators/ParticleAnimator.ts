@@ -1,14 +1,14 @@
-import ISubMesh							= require("awayjs-core/lib/core/base/ISubMesh");
-import SubGeometryBase					= require("awayjs-core/lib/core/base/SubGeometryBase");
-import Camera							= require("awayjs-core/lib/entities/Camera");
+import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
+import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
+import Camera							= require("awayjs-display/lib/entities/Camera");
 
 import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
 import AnimationRegisterCache			= require("awayjs-stagegl/lib/animators/data/AnimationRegisterCache");
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
-import RenderableBase					= require("awayjs-stagegl/lib/core/pool/RenderableBase");
-import TriangleSubMeshRenderable		= require("awayjs-stagegl/lib/core/pool/TriangleSubMeshRenderable");
-import ContextGLProgramType				= require("awayjs-stagegl/lib/core/stagegl/ContextGLProgramType");
-import IContextStageGL					= require("awayjs-stagegl/lib/core/stagegl/IContextStageGL");
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
+import TriangleSubMeshRenderable		= require("awayjs-stagegl/lib/pool/TriangleSubMeshRenderable");
+import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
+import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
 import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
 
 import ParticleAnimationSet				= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");

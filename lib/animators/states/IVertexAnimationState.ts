@@ -1,4 +1,4 @@
-import Geometry							= require("awayjs-core/lib/core/base/Geometry");
+import Geometry							= require("awayjs-display/lib/base/Geometry");
 
 import IAnimationState					= require("awayjs-stagegl/lib/animators/states/IAnimationState");
 

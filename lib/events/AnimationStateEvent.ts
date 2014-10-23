@@ -1,4 +1,5 @@
-import AnimationNodeBase				= require("awayjs-core/lib/animators/nodes/AnimationNodeBase");
+import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+
 import Event							= require("awayjs-core/lib/events/Event");
 
 import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");

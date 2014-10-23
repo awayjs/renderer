@@ -1,4 +1,4 @@
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
 import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
 import ShaderLightingObject				= require("awayjs-stagegl/lib/materials/compilation/ShaderLightingObject");
 import ShaderRegisterCache				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterCache");

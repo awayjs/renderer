@@ -1,6 +1,6 @@
-import Camera							= require("awayjs-core/lib/entities/Camera");
+import Camera							= require("awayjs-display/lib/entities/Camera");
 
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
 import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
 import ShaderLightingObject				= require("awayjs-stagegl/lib/materials/compilation/ShaderLightingObject");
 import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");

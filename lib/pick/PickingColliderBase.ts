@@ -1,15 +1,16 @@
-import ISubMesh							= require("awayjs-core/lib/core/base/ISubMesh");
-import PickingCollisionVO				= require("awayjs-core/lib/core/pick/PickingCollisionVO");
-import RenderablePool					= require("awayjs-core/lib/core/pool/RenderablePool");
-import Point							= require("awayjs-core/lib/core/geom/Point");
-import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
-import Billboard						= require("awayjs-core/lib/entities/Billboard");
-import Mesh								= require("awayjs-core/lib/entities/Mesh");
+import Point							= require("awayjs-core/lib/geom/Point");
+import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 import AbstractMethodError				= require("awayjs-core/lib/errors/AbstractMethodError");
 
-import BillboardRenderable				= require("awayjs-stagegl/lib/core/pool/BillboardRenderable");
-import RenderableBase					= require("awayjs-stagegl/lib/core/pool/RenderableBase");
-import TriangleSubMeshRenderable		= require("awayjs-stagegl/lib/core/pool/TriangleSubMeshRenderable");
+import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
+import PickingCollisionVO				= require("awayjs-display/lib/pick/PickingCollisionVO");
+import RenderablePool					= require("awayjs-display/lib/pool/RenderablePool");
+import Billboard						= require("awayjs-display/lib/entities/Billboard");
+import Mesh								= require("awayjs-display/lib/entities/Mesh");
+
+import BillboardRenderable				= require("awayjs-stagegl/lib/pool/BillboardRenderable");
+import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
+import TriangleSubMeshRenderable		= require("awayjs-stagegl/lib/pool/TriangleSubMeshRenderable");
 
 /**
  * An abstract base class for all picking collider classes. It should not be instantiated directly.

@@ -1,7 +1,7 @@
-import IAnimationSet					= require("awayjs-core/lib/animators/IAnimationSet");
+import IAnimationSet					= require("awayjs-display/lib/animators/IAnimationSet");
 
 import AnimationSetBase					= require("awayjs-stagegl/lib/animators/AnimationSetBase");
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
 import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
 
 /**

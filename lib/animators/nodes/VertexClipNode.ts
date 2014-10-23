@@ -1,5 +1,6 @@
-import Geometry							= require("awayjs-core/lib/core/base/Geometry");
-import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
+import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+
+import Geometry							= require("awayjs-display/lib/base/Geometry");
 
 import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
 

@@ -1,8 +1,9 @@
+import AssetType						= require("awayjs-core/lib/library/AssetType");
+import IAsset							= require("awayjs-core/lib/library/IAsset");
+import NamedAssetBase					= require("awayjs-core/lib/library/NamedAssetBase");
+
 import JointPose						= require("awayjs-renderergl/lib/animators/data/JointPose");
 
-import AssetType						= require("awayjs-core/lib/core/library/AssetType");
-import IAsset							= require("awayjs-core/lib/core/library/IAsset");
-import NamedAssetBase					= require("awayjs-core/lib/core/library/NamedAssetBase");
 
 /**
  * A collection of pose objects, determining the pose for an entire skeleton.

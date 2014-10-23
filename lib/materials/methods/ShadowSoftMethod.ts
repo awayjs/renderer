@@ -1,7 +1,8 @@
-import PoissonLookup					= require("awayjs-core/lib/core/geom/PoissonLookup");
-import DirectionalLight					= require("awayjs-core/lib/entities/DirectionalLight");
+import PoissonLookup					= require("awayjs-core/lib/geom/PoissonLookup");
 
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
+import DirectionalLight					= require("awayjs-display/lib/entities/DirectionalLight");
+
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
 import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
 import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
 import ShaderRegisterCache				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterCache");

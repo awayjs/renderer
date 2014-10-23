@@ -1,8 +1,9 @@
 import Texture2DBase					= require("awayjs-core/lib/textures/Texture2DBase");
-import Camera							= require("awayjs-core/lib/entities/Camera");
 
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
-import RenderableBase					= require("awayjs-stagegl/lib/core/pool/RenderableBase");
+import Camera							= require("awayjs-display/lib/entities/Camera");
+
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
 import ShadingMethodEvent				= require("awayjs-stagegl/lib/events/ShadingMethodEvent");
 import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
 import ShaderLightingObject				= require("awayjs-stagegl/lib/materials/compilation/ShaderLightingObject");

@@ -1,11 +1,12 @@
-import Matrix3D							= require("awayjs-core/lib/core/geom/Matrix3D");
-import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
-import Camera							= require("awayjs-core/lib/entities/Camera");
+import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
+import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+
+import Camera							= require("awayjs-display/lib/entities/Camera");
 
 import AnimationRegisterCache			= require("awayjs-stagegl/lib/animators/data/AnimationRegisterCache");
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
-import RenderableBase					= require("awayjs-stagegl/lib/core/pool/RenderableBase");
-import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
+import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 
 import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");

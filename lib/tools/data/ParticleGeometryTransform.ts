@@ -1,5 +1,5 @@
-import Matrix							= require("awayjs-core/lib/core/geom/Matrix");
-import Matrix3D							= require("awayjs-core/lib/core/geom/Matrix3D");
+import Matrix							= require("awayjs-core/lib/geom/Matrix");
+import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 
 /**
  * ...

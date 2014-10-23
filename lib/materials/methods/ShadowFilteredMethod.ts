@@ -1,6 +1,6 @@
-import DirectionalLight					= require("awayjs-core/lib/entities/DirectionalLight");
+import DirectionalLight					= require("awayjs-display/lib/entities/DirectionalLight");
 
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
 import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
 import ShaderLightingObject				= require("awayjs-stagegl/lib/materials/compilation/ShaderLightingObject");
 import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");

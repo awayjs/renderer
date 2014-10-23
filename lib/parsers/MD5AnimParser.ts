@@ -1,6 +1,6 @@
-import Quaternion						= require("awayjs-core/lib/core/geom/Quaternion");
-import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
-import URLLoaderDataFormat				= require("awayjs-core/lib/core/net/URLLoaderDataFormat");
+import Quaternion						= require("awayjs-core/lib/geom/Quaternion");
+import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import URLLoaderDataFormat				= require("awayjs-core/lib/net/URLLoaderDataFormat");
 import ParserBase						= require("awayjs-core/lib/parsers/ParserBase");
 
 import JointPose						= require("awayjs-renderergl/lib/animators/data/JointPose");

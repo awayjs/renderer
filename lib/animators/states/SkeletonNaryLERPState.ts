@@ -1,5 +1,5 @@
-import Quaternion						= require("awayjs-core/lib/core/geom/Quaternion");
-import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
+import Quaternion						= require("awayjs-core/lib/geom/Quaternion");
+import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
 import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
 

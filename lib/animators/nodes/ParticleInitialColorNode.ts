@@ -1,5 +1,5 @@
-import ColorTransform					= require("awayjs-core/lib/core/geom/ColorTransform");
-import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
+import ColorTransform					= require("awayjs-core/lib/geom/ColorTransform");
+import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
 import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
 import AnimationRegisterCache			= require("awayjs-stagegl/lib/animators/data/AnimationRegisterCache");

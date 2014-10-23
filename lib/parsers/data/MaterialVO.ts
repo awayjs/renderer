@@ -1,4 +1,4 @@
-import MaterialBase						= require("awayjs-core/lib/materials/MaterialBase");
+import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
 import TextureVO						= require("awayjs-renderergl/lib/parsers/data/TextureVO");
 

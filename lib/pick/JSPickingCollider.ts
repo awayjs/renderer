@@ -1,12 +1,13 @@
-import TriangleSubGeometry				= require("awayjs-core/lib/core/base/TriangleSubGeometry");
-import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
-import PickingCollisionVO				= require("awayjs-core/lib/core/pick/PickingCollisionVO");
-import IPickingCollider					= require("awayjs-core/lib/core/pick/IPickingCollider");
-import MaterialBase						= require("awayjs-core/lib/materials/MaterialBase");
+import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
-import RenderableBase					= require("awayjs-stagegl/lib/core/pool/RenderableBase");
+import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
+import PickingCollisionVO				= require("awayjs-display/lib/pick/PickingCollisionVO");
+import IPickingCollider					= require("awayjs-display/lib/pick/IPickingCollider");
+import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
-import PickingColliderBase				= require("awayjs-renderergl/lib/core/pick/PickingColliderBase");
+import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
+
+import PickingColliderBase				= require("awayjs-renderergl/lib/pick/PickingColliderBase");
 
 /**
  * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.

@@ -1,12 +1,13 @@
-import Camera							= require("awayjs-core/lib/entities/Camera");
-import DirectionalLight					= require("awayjs-core/lib/entities/DirectionalLight");
 import Event							= require("awayjs-core/lib/events/Event");
-import CascadeShadowMapper				= require("awayjs-core/lib/materials/shadowmappers/CascadeShadowMapper");
 import Texture2DBase					= require("awayjs-core/lib/textures/Texture2DBase");
 
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
-import RenderableBase					= require("awayjs-stagegl/lib/core/pool/RenderableBase");
-import IContextStageGL					= require("awayjs-stagegl/lib/core/stagegl/IContextStageGL");
+import Camera							= require("awayjs-display/lib/entities/Camera");
+import DirectionalLight					= require("awayjs-display/lib/entities/DirectionalLight");
+import CascadeShadowMapper				= require("awayjs-display/lib/materials/shadowmappers/CascadeShadowMapper");
+
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
+import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
 import ShadingMethodEvent				= require("awayjs-stagegl/lib/events/ShadingMethodEvent");
 import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
 import ShaderLightingObject				= require("awayjs-stagegl/lib/materials/compilation/ShaderLightingObject");

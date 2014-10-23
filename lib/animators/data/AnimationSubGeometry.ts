@@ -1,6 +1,6 @@
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
-import IContextStageGL					= require("awayjs-stagegl/lib/core/stagegl/IContextStageGL");
-import IVertexBuffer					= require("awayjs-stagegl/lib/core/stagegl/IVertexBuffer");
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IVertexBuffer					= require("awayjs-stagegl/lib/base/IVertexBuffer");
 
 import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
 

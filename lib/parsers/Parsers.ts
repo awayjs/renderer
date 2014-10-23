@@ -1,4 +1,4 @@
-import AssetLoader						= require("awayjs-core/lib/core/library/AssetLoader");
+import AssetLoader						= require("awayjs-core/lib/library/AssetLoader");
 
 import AWDParser						= require("awayjs-renderergl/lib/parsers/AWDParser");
 import Max3DSParser						= require("awayjs-renderergl/lib/parsers/Max3DSParser");

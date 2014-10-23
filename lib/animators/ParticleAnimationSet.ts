@@ -1,13 +1,13 @@
-import IAnimationSet					= require("awayjs-core/lib/animators/IAnimationSet");
-import AnimationNodeBase				= require("awayjs-core/lib/animators/nodes/AnimationNodeBase");
-import ISubMesh							= require("awayjs-core/lib/core/base/ISubMesh");
-import SubGeometryBase					= require("awayjs-core/lib/core/base/SubGeometryBase");
-import Mesh								= require("awayjs-core/lib/entities/Mesh");
+import IAnimationSet					= require("awayjs-display/lib/animators/IAnimationSet");
+import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
+import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
+import Mesh								= require("awayjs-display/lib/entities/Mesh");
 
 import AnimationSetBase					= require("awayjs-stagegl/lib/animators/AnimationSetBase");
 import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
 import AnimationRegisterCache			= require("awayjs-stagegl/lib/animators/data/AnimationRegisterCache");
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
 import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
 
 import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
@@ -17,7 +17,7 @@ import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/
 import ParticleData						= require("awayjs-renderergl/lib/animators/data/ParticleData");
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleTimeNode					= require("awayjs-renderergl/lib/animators/nodes/ParticleTimeNode");
-import ParticleGeometry					= require("awayjs-renderergl/lib/core/base/ParticleGeometry");
+import ParticleGeometry					= require("awayjs-renderergl/lib/base/ParticleGeometry");
 
 /**
  * The animation data set used by particle-based animators, containing particle animation data.

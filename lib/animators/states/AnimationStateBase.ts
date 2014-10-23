@@ -1,5 +1,6 @@
-import AnimationNodeBase				= require("awayjs-core/lib/animators/nodes/AnimationNodeBase");
-import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
+import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+
+import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 
 import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
 import IAnimationState					= require("awayjs-stagegl/lib/animators/states/IAnimationState");

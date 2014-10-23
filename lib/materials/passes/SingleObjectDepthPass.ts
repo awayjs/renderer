@@ -1,15 +1,16 @@
-import LightBase						= require("awayjs-core/lib/core/base/LightBase");
-import TriangleSubGeometry				= require("awayjs-core/lib/core/base/TriangleSubGeometry");
-import Matrix3D							= require("awayjs-core/lib/core/geom/Matrix3D");
-import Camera							= require("awayjs-core/lib/entities/Camera");
-import MaterialBase						= require("awayjs-core/lib/materials/MaterialBase");
+import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 import RenderTexture					= require("awayjs-core/lib/textures/RenderTexture");
 
-import Stage							= require("awayjs-stagegl/lib/core/base/Stage");
-import MaterialPassData					= require("awayjs-stagegl/lib/core/pool/MaterialPassData");
-import RenderableBase					= require("awayjs-stagegl/lib/core/pool/RenderableBase");
-import ContextGLProgramType				= require("awayjs-stagegl/lib/core/stagegl/ContextGLProgramType");
-import IContextStageGL					= require("awayjs-stagegl/lib/core/stagegl/IContextStageGL");
+import LightBase						= require("awayjs-display/lib/base/LightBase");
+import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
+import Camera							= require("awayjs-display/lib/entities/Camera");
+import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
+
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import MaterialPassData					= require("awayjs-stagegl/lib/pool/MaterialPassData");
+import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
+import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
+import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
 import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
 import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
 import ShaderRegisterCache				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterCache");

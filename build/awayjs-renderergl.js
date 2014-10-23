@@ -308,7 +308,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var AnimatorBase = require("awayjs-stagegl/lib/animators/AnimatorBase");
-var ContextGLProgramType = require("awayjs-stagegl/lib/core/stagegl/ContextGLProgramType");
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var AnimationSubGeometry = require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 /**
@@ -429,7 +429,7 @@ var ParticleAnimator = (function (_super) {
 module.exports = ParticleAnimator;
 
 
-},{"awayjs-renderergl/lib/animators/data/AnimationSubGeometry":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-stagegl/lib/animators/AnimatorBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/SkeletonAnimationSet":[function(require,module,exports){
+},{"awayjs-renderergl/lib/animators/data/AnimationSubGeometry":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-stagegl/lib/animators/AnimatorBase":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/SkeletonAnimationSet":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -540,10 +540,10 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var TriangleSubGeometry = require("awayjs-core/lib/core/base/TriangleSubGeometry");
-var SubGeometryEvent = require("awayjs-core/lib/events/SubGeometryEvent");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
 var AnimatorBase = require("awayjs-stagegl/lib/animators/AnimatorBase");
-var ContextGLProgramType = require("awayjs-stagegl/lib/core/stagegl/ContextGLProgramType");
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var JointPose = require("awayjs-renderergl/lib/animators/data/JointPose");
 var SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
 var AnimationStateEvent = require("awayjs-renderergl/lib/events/AnimationStateEvent");
@@ -1067,7 +1067,7 @@ var SkeletonAnimator = (function (_super) {
 module.exports = SkeletonAnimator;
 
 
-},{"awayjs-core/lib/core/base/TriangleSubGeometry":undefined,"awayjs-core/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/events/AnimationStateEvent":undefined,"awayjs-stagegl/lib/animators/AnimatorBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
+},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/events/AnimationStateEvent":undefined,"awayjs-stagegl/lib/animators/AnimatorBase":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -1239,10 +1239,10 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var TriangleSubGeometry = require("awayjs-core/lib/core/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var AnimatorBase = require("awayjs-stagegl/lib/animators/AnimatorBase");
-var VertexDataPool = require("awayjs-stagegl/lib/core/pool/VertexDataPool");
-var ContextGLProgramType = require("awayjs-stagegl/lib/core/stagegl/ContextGLProgramType");
+var VertexDataPool = require("awayjs-stagegl/lib/pool/VertexDataPool");
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var VertexAnimationMode = require("awayjs-renderergl/lib/animators/data/VertexAnimationMode");
 /**
  * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
@@ -1377,7 +1377,7 @@ var VertexAnimator = (function (_super) {
 module.exports = VertexAnimator;
 
 
-},{"awayjs-core/lib/core/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/animators/data/VertexAnimationMode":undefined,"awayjs-stagegl/lib/animators/AnimatorBase":undefined,"awayjs-stagegl/lib/core/pool/VertexDataPool":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/data/AnimationSubGeometry":[function(require,module,exports){
+},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/animators/data/VertexAnimationMode":undefined,"awayjs-stagegl/lib/animators/AnimatorBase":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/pool/VertexDataPool":undefined}],"awayjs-renderergl/lib/animators/data/AnimationSubGeometry":[function(require,module,exports){
 /**
  * ...
  */
@@ -1480,9 +1480,9 @@ module.exports = ColorSegmentPoint;
 
 
 },{}],"awayjs-renderergl/lib/animators/data/JointPose":[function(require,module,exports){
-var Matrix3D = require("awayjs-core/lib/core/geom/Matrix3D");
-var Quaternion = require("awayjs-core/lib/core/geom/Quaternion");
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var Quaternion = require("awayjs-core/lib/geom/Quaternion");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 /**
  * Contains transformation data for a skeleton joint, used for skeleton animation.
  *
@@ -1537,7 +1537,7 @@ var JointPose = (function () {
 module.exports = JointPose;
 
 
-},{"awayjs-core/lib/core/geom/Matrix3D":undefined,"awayjs-core/lib/core/geom/Quaternion":undefined,"awayjs-core/lib/core/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/data/ParticleAnimationData":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Quaternion":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/data/ParticleAnimationData":[function(require,module,exports){
 /**
  * ...
  */
@@ -1632,9 +1632,9 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var AssetType = require("awayjs-core/lib/library/AssetType");
+var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
 var JointPose = require("awayjs-renderergl/lib/animators/data/JointPose");
-var AssetType = require("awayjs-core/lib/core/library/AssetType");
-var NamedAssetBase = require("awayjs-core/lib/core/library/NamedAssetBase");
 /**
  * A collection of pose objects, determining the pose for an entire skeleton.
  * The <code>jointPoses</code> vector object corresponds to a skeleton's <code>joints</code> vector object, however, there is no
@@ -1739,15 +1739,15 @@ var SkeletonPose = (function (_super) {
 module.exports = SkeletonPose;
 
 
-},{"awayjs-core/lib/core/library/AssetType":undefined,"awayjs-core/lib/core/library/NamedAssetBase":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined}],"awayjs-renderergl/lib/animators/data/Skeleton":[function(require,module,exports){
+},{"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/library/NamedAssetBase":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined}],"awayjs-renderergl/lib/animators/data/Skeleton":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var AssetType = require("awayjs-core/lib/core/library/AssetType");
-var NamedAssetBase = require("awayjs-core/lib/core/library/NamedAssetBase");
+var AssetType = require("awayjs-core/lib/library/AssetType");
+var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
 /**
  * A Skeleton object is a hierarchical grouping of joint objects that can be used for skeletal animation.
  *
@@ -1834,7 +1834,7 @@ var Skeleton = (function (_super) {
 module.exports = Skeleton;
 
 
-},{"awayjs-core/lib/core/library/AssetType":undefined,"awayjs-core/lib/core/library/NamedAssetBase":undefined}],"awayjs-renderergl/lib/animators/data/VertexAnimationMode":[function(require,module,exports){
+},{"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/library/NamedAssetBase":undefined}],"awayjs-renderergl/lib/animators/data/VertexAnimationMode":[function(require,module,exports){
 /**
  * Options for setting the animation mode of a vertex animator object.
  *
@@ -1863,8 +1863,8 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var AnimationNodeBase = require("awayjs-core/lib/animators/nodes/AnimationNodeBase");
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 /**
  * Provides an abstract base class for nodes with time-based animation data in an animation blend tree.
  */
@@ -1973,14 +1973,14 @@ var AnimationClipNodeBase = (function (_super) {
 module.exports = AnimationClipNodeBase;
 
 
-},{"awayjs-core/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-core/lib/core/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 var ParticleAccelerationState = require("awayjs-renderergl/lib/animators/states/ParticleAccelerationState");
@@ -2047,14 +2047,14 @@ var ParticleAccelerationNode = (function (_super) {
 module.exports = ParticleAccelerationNode;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleAccelerationState":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleAccelerationState":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var ShaderRegisterElement = require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
@@ -2153,7 +2153,7 @@ var ParticleBezierCurveNode = (function (_super) {
 module.exports = ParticleBezierCurveNode;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState":undefined,"awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState":undefined,"awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -2219,7 +2219,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ColorTransform = require("awayjs-core/lib/core/geom/ColorTransform");
+var ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 var ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
@@ -2391,7 +2391,7 @@ var ParticleColorNode = (function (_super) {
 module.exports = ParticleColorNode;
 
 
-},{"awayjs-core/lib/core/geom/ColorTransform":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleColorState":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleFollowNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleColorState":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleFollowNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -2526,7 +2526,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ColorTransform = require("awayjs-core/lib/core/geom/ColorTransform");
+var ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 var ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
@@ -2607,14 +2607,14 @@ var ParticleInitialColorNode = (function (_super) {
 module.exports = ParticleInitialColorNode;
 
 
-},{"awayjs-core/lib/core/geom/ColorTransform":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleInitialColorState":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":[function(require,module,exports){
+},{"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleInitialColorState":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var AnimationNodeBase = require("awayjs-core/lib/animators/nodes/AnimationNodeBase");
+var AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 /**
  * Provides an abstract base class for particle animation nodes.
  */
@@ -2735,14 +2735,14 @@ var ParticleNodeBase = (function (_super) {
 module.exports = ParticleNodeBase;
 
 
-},{"awayjs-core/lib/animators/nodes/AnimationNodeBase":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleOrbitNode":[function(require,module,exports){
+},{"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleOrbitNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var ShaderRegisterElement = require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
@@ -2866,14 +2866,14 @@ var ParticleOrbitNode = (function (_super) {
 module.exports = ParticleOrbitNode;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleOrbitState":undefined,"awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleOrbitState":undefined,"awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var ShaderRegisterElement = require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
@@ -2952,14 +2952,14 @@ var ParticleOscillatorNode = (function (_super) {
 module.exports = ParticleOscillatorNode;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleOscillatorState":undefined,"awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleOscillatorState":undefined,"awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 var ParticlePositionState = require("awayjs-renderergl/lib/animators/states/ParticlePositionState");
@@ -3015,7 +3015,7 @@ var ParticlePositionNode = (function (_super) {
 module.exports = ParticlePositionNode;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticlePositionState":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticlePositionState":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -3186,7 +3186,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var ShaderRegisterElement = require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
@@ -3362,14 +3362,14 @@ var ParticleRotateToPositionNode = (function (_super) {
 module.exports = ParticleRotateToPositionNode;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState":undefined,"awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState":undefined,"awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var ShaderRegisterElement = require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
@@ -3490,7 +3490,7 @@ var ParticleRotationalVelocityNode = (function (_super) {
 module.exports = ParticleRotationalVelocityNode;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState":undefined,"awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState":undefined,"awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -4004,7 +4004,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var ShaderRegisterElement = require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
 var ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
@@ -4121,14 +4121,14 @@ var ParticleUVNode = (function (_super) {
 module.exports = ParticleUVNode;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleUVState":undefined,"awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleUVState":undefined,"awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 var ParticleVelocityState = require("awayjs-renderergl/lib/animators/states/ParticleVelocityState");
@@ -4190,14 +4190,14 @@ var ParticleVelocityNode = (function (_super) {
 module.exports = ParticleVelocityNode;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleVelocityState":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":undefined,"awayjs-renderergl/lib/animators/states/ParticleVelocityState":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var AnimationNodeBase = require("awayjs-core/lib/animators/nodes/AnimationNodeBase");
+var AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 var SkeletonBinaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
 /**
  * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
@@ -4222,7 +4222,7 @@ var SkeletonBinaryLERPNode = (function (_super) {
 module.exports = SkeletonBinaryLERPNode;
 
 
-},{"awayjs-core/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":[function(require,module,exports){
+},{"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -4315,7 +4315,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var AnimationNodeBase = require("awayjs-core/lib/animators/nodes/AnimationNodeBase");
+var AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 var SkeletonDifferenceState = require("awayjs-renderergl/lib/animators/states/SkeletonDifferenceState");
 /**
  * A skeleton animation node that uses a difference input pose with a base input pose to blend a linearly interpolated output of a skeleton pose.
@@ -4340,14 +4340,14 @@ var SkeletonDifferenceNode = (function (_super) {
 module.exports = SkeletonDifferenceNode;
 
 
-},{"awayjs-core/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode":[function(require,module,exports){
+},{"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var AnimationNodeBase = require("awayjs-core/lib/animators/nodes/AnimationNodeBase");
+var AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 var SkeletonDirectionalState = require("awayjs-renderergl/lib/animators/states/SkeletonDirectionalState");
 /**
  * A skeleton animation node that uses four directional input poses with an input direction to blend a linearly interpolated output of a skeleton pose.
@@ -4369,14 +4369,14 @@ var SkeletonDirectionalNode = (function (_super) {
 module.exports = SkeletonDirectionalNode;
 
 
-},{"awayjs-core/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode":[function(require,module,exports){
+},{"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var AnimationNodeBase = require("awayjs-core/lib/animators/nodes/AnimationNodeBase");
+var AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 var SkeletonNaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState");
 /**
  * A skeleton animation node that uses an n-dimensional array of animation node inputs to blend a lineraly interpolated output of a skeleton pose.
@@ -4431,14 +4431,14 @@ var SkeletonNaryLERPNode = (function (_super) {
 module.exports = SkeletonNaryLERPNode;
 
 
-},{"awayjs-core/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState":undefined}],"awayjs-renderergl/lib/animators/nodes/VertexClipNode":[function(require,module,exports){
+},{"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState":undefined}],"awayjs-renderergl/lib/animators/nodes/VertexClipNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var AnimationClipNodeBase = require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
 var VertexClipState = require("awayjs-renderergl/lib/animators/states/VertexClipState");
 /**
@@ -4511,7 +4511,7 @@ var VertexClipNode = (function (_super) {
 module.exports = VertexClipNode;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase":undefined,"awayjs-renderergl/lib/animators/states/VertexClipState":undefined}],"awayjs-renderergl/lib/animators/states/AnimationClipState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase":undefined,"awayjs-renderergl/lib/animators/states/VertexClipState":undefined}],"awayjs-renderergl/lib/animators/states/AnimationClipState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -4665,7 +4665,7 @@ module.exports = AnimationClipState;
 
 
 },{"awayjs-renderergl/lib/animators/states/AnimationStateBase":undefined,"awayjs-renderergl/lib/events/AnimationStateEvent":undefined}],"awayjs-renderergl/lib/animators/states/AnimationStateBase":[function(require,module,exports){
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 /**
  *
  */
@@ -4738,7 +4738,7 @@ var AnimationStateBase = (function () {
 module.exports = AnimationStateBase;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/states/ISkeletonAnimationState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/states/ISkeletonAnimationState":[function(require,module,exports){
 
 
 
@@ -4753,8 +4753,8 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
@@ -4805,14 +4805,14 @@ var ParticleAccelerationState = (function (_super) {
 module.exports = ParticleAccelerationState;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
@@ -4873,16 +4873,16 @@ var ParticleBezierCurveState = (function (_super) {
 module.exports = ParticleBezierCurveState;
 
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleBillboardState":[function(require,module,exports){
+},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleBillboardState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var MathConsts = require("awayjs-core/lib/core/geom/MathConsts");
-var Matrix3D = require("awayjs-core/lib/core/geom/Matrix3D");
-var Orientation3D = require("awayjs-core/lib/core/geom/Orientation3D");
+var MathConsts = require("awayjs-core/lib/geom/MathConsts");
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var Orientation3D = require("awayjs-core/lib/geom/Orientation3D");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
  * ...
@@ -4950,15 +4950,15 @@ var ParticleBillboardState = (function (_super) {
 module.exports = ParticleBillboardState;
 
 
-},{"awayjs-core/lib/core/geom/MathConsts":undefined,"awayjs-core/lib/core/geom/Matrix3D":undefined,"awayjs-core/lib/core/geom/Orientation3D":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined}],"awayjs-renderergl/lib/animators/states/ParticleColorState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Orientation3D":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined}],"awayjs-renderergl/lib/animators/states/ParticleColorState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
@@ -5111,16 +5111,16 @@ var ParticleColorState = (function (_super) {
 module.exports = ParticleColorState;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleFollowState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleFollowState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var MathConsts = require("awayjs-core/lib/core/geom/MathConsts");
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var MathConsts = require("awayjs-core/lib/geom/MathConsts");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
  * ...
@@ -5331,15 +5331,15 @@ var ParticleFollowState = (function (_super) {
 module.exports = ParticleFollowState;
 
 
-},{"awayjs-core/lib/core/geom/MathConsts":undefined,"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleInitialColorState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleInitialColorState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
@@ -5410,16 +5410,16 @@ var ParticleInitialColorState = (function (_super) {
 module.exports = ParticleInitialColorState;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleOrbitState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleOrbitState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Matrix3D = require("awayjs-core/lib/core/geom/Matrix3D");
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
@@ -5535,15 +5535,15 @@ var ParticleOrbitState = (function (_super) {
 module.exports = ParticleOrbitState;
 
 
-},{"awayjs-core/lib/core/geom/Matrix3D":undefined,"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleOscillatorState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleOscillatorState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
@@ -5600,14 +5600,14 @@ var ParticleOscillatorState = (function (_super) {
 module.exports = ParticleOscillatorState;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticlePositionState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticlePositionState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
@@ -5663,14 +5663,14 @@ var ParticlePositionState = (function (_super) {
 module.exports = ParticlePositionState;
 
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState":[function(require,module,exports){
+},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Matrix3D = require("awayjs-core/lib/core/geom/Matrix3D");
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
  * ...
@@ -5695,15 +5695,15 @@ var ParticleRotateToHeadingState = (function (_super) {
 module.exports = ParticleRotateToHeadingState;
 
 
-},{"awayjs-core/lib/core/geom/Matrix3D":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Matrix3D = require("awayjs-core/lib/core/geom/Matrix3D");
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
@@ -5753,15 +5753,15 @@ var ParticleRotateToPositionState = (function (_super) {
 module.exports = ParticleRotateToPositionState;
 
 
-},{"awayjs-core/lib/core/geom/Matrix3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
@@ -5831,15 +5831,15 @@ var ParticleRotationalVelocityState = (function (_super) {
 module.exports = ParticleRotationalVelocityState;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleScaleState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleScaleState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
@@ -5947,7 +5947,7 @@ var ParticleScaleState = (function (_super) {
 module.exports = ParticleScaleState;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -6108,7 +6108,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
@@ -6196,7 +6196,7 @@ var ParticleSpriteSheetState = (function (_super) {
 module.exports = ParticleSpriteSheetState;
 
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleStateBase":[function(require,module,exports){
+},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleStateBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -6278,7 +6278,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
  * ...
@@ -6303,7 +6303,7 @@ var ParticleTimeState = (function (_super) {
 module.exports = ParticleTimeState;
 
 
-},{"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleUVState":[function(require,module,exports){
+},{"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleUVState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -6341,7 +6341,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat");
+var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleStateBase = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 /**
@@ -6393,7 +6393,7 @@ var ParticleVelocityState = (function (_super) {
 module.exports = ParticleVelocityState;
 
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState":[function(require,module,exports){
+},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -6518,7 +6518,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var JointPose = require("awayjs-renderergl/lib/animators/data/JointPose");
 var SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
 var AnimationClipState = require("awayjs-renderergl/lib/animators/states/AnimationClipState");
@@ -6674,14 +6674,14 @@ var SkeletonClipState = (function (_super) {
 module.exports = SkeletonClipState;
 
 
-},{"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/states/AnimationClipState":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/states/AnimationClipState":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Quaternion = require("awayjs-core/lib/core/geom/Quaternion");
+var Quaternion = require("awayjs-core/lib/geom/Quaternion");
 var JointPose = require("awayjs-renderergl/lib/animators/data/JointPose");
 var SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
 var AnimationStateBase = require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
@@ -6795,7 +6795,7 @@ var SkeletonDifferenceState = (function (_super) {
 module.exports = SkeletonDifferenceState;
 
 
-},{"awayjs-core/lib/core/geom/Quaternion":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/states/AnimationStateBase":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Quaternion":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/states/AnimationStateBase":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -7295,14 +7295,14 @@ module.exports = CrossfadeTransition;
 
 
 
-},{}],"awayjs-renderergl/lib/core/base/ParticleGeometry":[function(require,module,exports){
+},{}],"awayjs-renderergl/lib/base/ParticleGeometry":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Geometry = require("awayjs-core/lib/core/base/Geometry");
+var Geometry = require("awayjs-display/lib/base/Geometry");
 /**
  * @class away.base.ParticleGeometry
  */
@@ -7316,664 +7316,7 @@ var ParticleGeometry = (function (_super) {
 module.exports = ParticleGeometry;
 
 
-},{"awayjs-core/lib/core/base/Geometry":undefined}],"awayjs-renderergl/lib/core/pick/JSPickingCollider":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var TriangleSubGeometry = require("awayjs-core/lib/core/base/TriangleSubGeometry");
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var PickingColliderBase = require("awayjs-renderergl/lib/core/pick/PickingColliderBase");
-/**
- * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
- *
- * @see away.base.DisplayObject#pickingCollider
- * @see away.pick.RaycastPicker
- *
- * @class away.pick.JSPickingCollider
- */
-var JSPickingCollider = (function (_super) {
-    __extends(JSPickingCollider, _super);
-    /**
-     * Creates a new <code>JSPickingCollider</code> object.
-     *
-     * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
-     */
-    function JSPickingCollider(findClosestCollision) {
-        if (findClosestCollision === void 0) { findClosestCollision = false; }
-        _super.call(this);
-        this._findClosestCollision = findClosestCollision;
-    }
-    /**
-     * @inheritDoc
-     */
-    JSPickingCollider.prototype._pTestRenderableCollision = function (renderable, pickingCollisionVO, shortestCollisionDistance) {
-        var t;
-        var i0, i1, i2;
-        var rx, ry, rz;
-        var nx, ny, nz;
-        var cx, cy, cz;
-        var coeff, u, v, w;
-        var p0x, p0y, p0z;
-        var p1x, p1y, p1z;
-        var p2x, p2y, p2z;
-        var s0x, s0y, s0z;
-        var s1x, s1y, s1z;
-        var nl, nDotV, D, disToPlane;
-        var Q1Q2, Q1Q1, Q2Q2, RQ1, RQ2;
-        var indexData = renderable.getIndexData().data;
-        var collisionTriangleIndex = -1;
-        var bothSides = renderable.materialOwner.material.bothSides;
-        var positionData = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).data;
-        var positionStride = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).dataPerVertex;
-        var positionOffset = renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA);
-        var uvData = renderable.getVertexData(TriangleSubGeometry.UV_DATA).data;
-        var uvStride = renderable.getVertexData(TriangleSubGeometry.UV_DATA).dataPerVertex;
-        var uvOffset = renderable.getVertexOffset(TriangleSubGeometry.UV_DATA);
-        var numIndices = indexData.length;
-        for (var index = 0; index < numIndices; index += 3) {
-            // evaluate triangle indices
-            i0 = positionOffset + indexData[index] * positionStride;
-            i1 = positionOffset + indexData[(index + 1)] * positionStride;
-            i2 = positionOffset + indexData[(index + 2)] * positionStride;
-            // evaluate triangle positions
-            p0x = positionData[i0];
-            p0y = positionData[(i0 + 1)];
-            p0z = positionData[(i0 + 2)];
-            p1x = positionData[i1];
-            p1y = positionData[(i1 + 1)];
-            p1z = positionData[(i1 + 2)];
-            p2x = positionData[i2];
-            p2y = positionData[(i2 + 1)];
-            p2z = positionData[(i2 + 2)];
-            // evaluate sides and triangle normal
-            s0x = p1x - p0x; // s0 = p1 - p0
-            s0y = p1y - p0y;
-            s0z = p1z - p0z;
-            s1x = p2x - p0x; // s1 = p2 - p0
-            s1y = p2y - p0y;
-            s1z = p2z - p0z;
-            nx = s0y * s1z - s0z * s1y; // n = s0 x s1
-            ny = s0z * s1x - s0x * s1z;
-            nz = s0x * s1y - s0y * s1x;
-            nl = 1 / Math.sqrt(nx * nx + ny * ny + nz * nz); // normalize n
-            nx *= nl;
-            ny *= nl;
-            nz *= nl;
-            // -- plane intersection test --
-            nDotV = nx * this.rayDirection.x + ny * +this.rayDirection.y + nz * this.rayDirection.z; // rayDirection . normal
-            if ((!bothSides && nDotV < 0.0) || (bothSides && nDotV != 0.0)) {
-                // find collision t
-                D = -(nx * p0x + ny * p0y + nz * p0z);
-                disToPlane = -(nx * this.rayPosition.x + ny * this.rayPosition.y + nz * this.rayPosition.z + D);
-                t = disToPlane / nDotV;
-                // find collision point
-                cx = this.rayPosition.x + t * this.rayDirection.x;
-                cy = this.rayPosition.y + t * this.rayDirection.y;
-                cz = this.rayPosition.z + t * this.rayDirection.z;
-                // collision point inside triangle? ( using barycentric coordinates )
-                Q1Q2 = s0x * s1x + s0y * s1y + s0z * s1z;
-                Q1Q1 = s0x * s0x + s0y * s0y + s0z * s0z;
-                Q2Q2 = s1x * s1x + s1y * s1y + s1z * s1z;
-                rx = cx - p0x;
-                ry = cy - p0y;
-                rz = cz - p0z;
-                RQ1 = rx * s0x + ry * s0y + rz * s0z;
-                RQ2 = rx * s1x + ry * s1y + rz * s1z;
-                coeff = 1 / (Q1Q1 * Q2Q2 - Q1Q2 * Q1Q2);
-                v = coeff * (Q2Q2 * RQ1 - Q1Q2 * RQ2);
-                w = coeff * (-Q1Q2 * RQ1 + Q1Q1 * RQ2);
-                if (v < 0)
-                    continue;
-                if (w < 0)
-                    continue;
-                u = 1 - v - w;
-                if (!(u < 0) && t > 0 && t < shortestCollisionDistance) {
-                    shortestCollisionDistance = t;
-                    collisionTriangleIndex = index / 3;
-                    pickingCollisionVO.rayEntryDistance = t;
-                    pickingCollisionVO.localPosition = new Vector3D(cx, cy, cz);
-                    pickingCollisionVO.localNormal = new Vector3D(nx, ny, nz);
-                    pickingCollisionVO.uv = this._pGetCollisionUV(indexData, uvData, index, v, w, u, uvOffset, uvStride);
-                    pickingCollisionVO.index = index;
-                    //						pickingCollisionVO.subGeometryIndex = this.pGetMeshSubMeshIndex(renderable);
-                    // if not looking for best hit, first found will do...
-                    if (!this._findClosestCollision)
-                        return true;
-                }
-            }
-        }
-        if (collisionTriangleIndex >= 0)
-            return true;
-        return false;
-    };
-    return JSPickingCollider;
-})(PickingColliderBase);
-module.exports = JSPickingCollider;
-
-
-},{"awayjs-core/lib/core/base/TriangleSubGeometry":undefined,"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/core/pick/PickingColliderBase":undefined}],"awayjs-renderergl/lib/core/pick/PickingColliderBase":[function(require,module,exports){
-var RenderablePool = require("awayjs-core/lib/core/pool/RenderablePool");
-var Point = require("awayjs-core/lib/core/geom/Point");
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var BillboardRenderable = require("awayjs-stagegl/lib/core/pool/BillboardRenderable");
-var TriangleSubMeshRenderable = require("awayjs-stagegl/lib/core/pool/TriangleSubMeshRenderable");
-/**
- * An abstract base class for all picking collider classes. It should not be instantiated directly.
- *
- * @class away.pick.PickingColliderBase
- */
-var PickingColliderBase = (function () {
-    function PickingColliderBase() {
-        this._billboardRenderablePool = RenderablePool.getPool(BillboardRenderable);
-        this._subMeshRenderablePool = RenderablePool.getPool(TriangleSubMeshRenderable);
-    }
-    PickingColliderBase.prototype._pPetCollisionNormal = function (indexData /*uint*/, vertexData, triangleIndex) {
-        var normal = new Vector3D();
-        var i0 = indexData[triangleIndex] * 3;
-        var i1 = indexData[triangleIndex + 1] * 3;
-        var i2 = indexData[triangleIndex + 2] * 3;
-        var p0 = new Vector3D(vertexData[i0], vertexData[i0 + 1], vertexData[i0 + 2]);
-        var p1 = new Vector3D(vertexData[i1], vertexData[i1 + 1], vertexData[i1 + 2]);
-        var p2 = new Vector3D(vertexData[i2], vertexData[i2 + 1], vertexData[i2 + 2]);
-        var side0 = p1.subtract(p0);
-        var side1 = p2.subtract(p0);
-        normal = side0.crossProduct(side1);
-        normal.normalize();
-        return normal;
-    };
-    PickingColliderBase.prototype._pGetCollisionUV = function (indexData /*uint*/, uvData, triangleIndex, v, w, u, uvOffset, uvStride) {
-        var uv = new Point();
-        var uIndex = indexData[triangleIndex] * uvStride + uvOffset;
-        var uv0 = new Vector3D(uvData[uIndex], uvData[uIndex + 1]);
-        uIndex = indexData[triangleIndex + 1] * uvStride + uvOffset;
-        var uv1 = new Vector3D(uvData[uIndex], uvData[uIndex + 1]);
-        uIndex = indexData[triangleIndex + 2] * uvStride + uvOffset;
-        var uv2 = new Vector3D(uvData[uIndex], uvData[uIndex + 1]);
-        uv.x = u * uv0.x + v * uv1.x + w * uv2.x;
-        uv.y = u * uv0.y + v * uv1.y + w * uv2.y;
-        return uv;
-    };
-    /**
-     * @inheritDoc
-     */
-    PickingColliderBase.prototype._pTestRenderableCollision = function (renderable, pickingCollisionVO, shortestCollisionDistance) {
-        throw new AbstractMethodError();
-    };
-    /**
-     * @inheritDoc
-     */
-    PickingColliderBase.prototype.setLocalRay = function (localPosition, localDirection) {
-        this.rayPosition = localPosition;
-        this.rayDirection = localDirection;
-    };
-    /**
-     * Tests a <code>Billboard</code> object for a collision with the picking ray.
-     *
-     * @param billboard The billboard instance to be tested.
-     * @param pickingCollisionVO The collision object used to store the collision results
-     * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
-     * @param findClosest
-     */
-    PickingColliderBase.prototype.testBillboardCollision = function (billboard, pickingCollisionVO, shortestCollisionDistance) {
-        this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
-        pickingCollisionVO.materialOwner = null;
-        if (this._pTestRenderableCollision(this._billboardRenderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
-            shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-            pickingCollisionVO.materialOwner = billboard;
-            return true;
-        }
-        return false;
-    };
-    /**
-     * Tests a <code>Mesh</code> object for a collision with the picking ray.
-     *
-     * @param mesh The mesh instance to be tested.
-     * @param pickingCollisionVO The collision object used to store the collision results
-     * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
-     * @param findClosest
-     */
-    PickingColliderBase.prototype.testMeshCollision = function (mesh, pickingCollisionVO, shortestCollisionDistance, findClosest) {
-        this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
-        pickingCollisionVO.materialOwner = null;
-        var subMesh;
-        var len = mesh.subMeshes.length;
-        for (var i = 0; i < len; ++i) {
-            subMesh = mesh.subMeshes[i];
-            if (this._pTestRenderableCollision(this._subMeshRenderablePool.getItem(subMesh), pickingCollisionVO, shortestCollisionDistance)) {
-                shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-                pickingCollisionVO.materialOwner = subMesh;
-                if (!findClosest)
-                    return true;
-            }
-        }
-        return pickingCollisionVO.materialOwner != null;
-    };
-    return PickingColliderBase;
-})();
-module.exports = PickingColliderBase;
-
-
-},{"awayjs-core/lib/core/geom/Point":undefined,"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-core/lib/core/pool/RenderablePool":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-stagegl/lib/core/pool/BillboardRenderable":undefined,"awayjs-stagegl/lib/core/pool/TriangleSubMeshRenderable":undefined}],"awayjs-renderergl/lib/core/pick/ShaderPicker":[function(require,module,exports){
-var Debug = require("awayjs-core/lib/utils/Debug");
-var BitmapData = require("awayjs-core/lib/core/base/BitmapData");
-var TriangleSubGeometry = require("awayjs-core/lib/core/base/TriangleSubGeometry");
-var Matrix3DUtils = require("awayjs-core/lib/core/geom/Matrix3DUtils");
-var Point = require("awayjs-core/lib/core/geom/Point");
-var Rectangle = require("awayjs-core/lib/core/geom/Rectangle");
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
-var ContextGLBlendFactor = require("awayjs-stagegl/lib/core/stagegl/ContextGLBlendFactor");
-var ContextGLClearMask = require("awayjs-stagegl/lib/core/stagegl/ContextGLClearMask");
-var ContextGLCompareMode = require("awayjs-stagegl/lib/core/stagegl/ContextGLCompareMode");
-var ContextGLProgramType = require("awayjs-stagegl/lib/core/stagegl/ContextGLProgramType");
-var ContextGLTriangleFace = require("awayjs-stagegl/lib/core/stagegl/ContextGLTriangleFace");
-/**
- * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
- * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
- * on an entity that has its shaderPickingDetails property set to true.
- *
- * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
- *
- * @see away.entities.Entity#shaderPickingDetails
- *
- * @class away.pick.ShaderPicker
- */
-var ShaderPicker = (function () {
-    /**
-     * Creates a new <code>ShaderPicker</code> object.
-     *
-     * @param shaderPickingDetails Determines whether the picker includes a second pass to calculate extra
-     * properties such as uv and normal coordinates.
-     */
-    function ShaderPicker(shaderPickingDetails) {
-        if (shaderPickingDetails === void 0) { shaderPickingDetails = false; }
-        this._onlyMouseEnabled = true;
-        this._interactives = new Array();
-        this._localHitPosition = new Vector3D();
-        this._hitUV = new Point();
-        this._localHitNormal = new Vector3D();
-        this._rayPos = new Vector3D();
-        this._rayDir = new Vector3D();
-        this._shaderPickingDetails = shaderPickingDetails;
-        this._id = new Array(4);
-        this._viewportData = new Array(4); // first 2 contain scale, last 2 translation
-        this._boundOffsetScale = new Array(8); // first 2 contain scale, last 2 translation
-        this._boundOffsetScale[3] = 0;
-        this._boundOffsetScale[7] = 1;
-    }
-    Object.defineProperty(ShaderPicker.prototype, "onlyMouseEnabled", {
-        /**
-         * @inheritDoc
-         */
-        get: function () {
-            return this._onlyMouseEnabled;
-        },
-        set: function (value) {
-            this._onlyMouseEnabled = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    ShaderPicker.prototype.getViewCollision = function (x, y, view) {
-        var collector = view.iEntityCollector;
-        this._stage = view.renderer.stage;
-        if (!this._stage)
-            return null;
-        this._context = this._stage.context;
-        this._viewportData[0] = view.width;
-        this._viewportData[1] = view.height;
-        this._viewportData[2] = -(this._projX = 2 * x / view.width - 1);
-        this._viewportData[3] = this._projY = 2 * y / view.height - 1;
-        // _potentialFound will be set to true if any object is actually rendered
-        this._potentialFound = false;
-        //reset head values
-        this._blendedRenderableHead = null;
-        this._opaqueRenderableHead = null;
-        this.pDraw(collector, null);
-        // clear buffers
-        this._context.setVertexBufferAt(0, null);
-        if (!this._context || !this._potentialFound)
-            return null;
-        if (!this._bitmapData)
-            this._bitmapData = new BitmapData(1, 1, false, 0);
-        this._context.drawToBitmapData(this._bitmapData);
-        this._hitColor = this._bitmapData.getPixel(0, 0);
-        if (!this._hitColor) {
-            this._context.present();
-            return null;
-        }
-        this._hitRenderable = this._interactives[this._hitColor - 1];
-        this._hitEntity = this._hitRenderable.sourceEntity;
-        if (this._onlyMouseEnabled && !this._hitEntity._iIsMouseEnabled())
-            return null;
-        var _collisionVO = this._hitEntity._iPickingCollisionVO;
-        if (this._shaderPickingDetails) {
-            this.getHitDetails(view.camera);
-            _collisionVO.localPosition = this._localHitPosition;
-            _collisionVO.localNormal = this._localHitNormal;
-            _collisionVO.uv = this._hitUV;
-            _collisionVO.index = this._faceIndex;
-        }
-        else {
-            _collisionVO.localPosition = null;
-            _collisionVO.localNormal = null;
-            _collisionVO.uv = null;
-            _collisionVO.index = 0;
-        }
-        return _collisionVO;
-    };
-    //*/
-    /**
-     * @inheritDoc
-     */
-    ShaderPicker.prototype.getSceneCollision = function (position, direction, scene) {
-        return null;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShaderPicker.prototype.pDraw = function (entityCollector, target) {
-        var camera = entityCollector.camera;
-        this._context.clear(0, 0, 0, 1);
-        this._stage.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
-        this._interactives.length = this._interactiveId = 0;
-        if (!this._objectProgram)
-            this.initObjectProgram();
-        this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-        this._context.setDepthTest(true, ContextGLCompareMode.LESS);
-        this._context.setProgram(this._objectProgram);
-        this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
-        //this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
-        //this.drawRenderables(entityCollector.blendedRenderableHead, camera);
-        //TODO: reimplement ShaderPicker inheriting from RendererBase
-    };
-    /**
-     * Draw a list of renderables.
-     * @param renderables The renderables to draw.
-     * @param camera The camera for which to render.
-     */
-    ShaderPicker.prototype.drawRenderables = function (renderable, camera) {
-        var matrix = Matrix3DUtils.CALCULATION_MATRIX;
-        var viewProjection = camera.viewProjection;
-        while (renderable) {
-            // it's possible that the renderable was already removed from the scene
-            if (!renderable.sourceEntity.scene || !renderable.sourceEntity._iIsMouseEnabled()) {
-                renderable = renderable.next;
-                continue;
-            }
-            this._potentialFound = true;
-            this._context.setCulling(renderable.materialOwner.material.bothSides ? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
-            this._interactives[this._interactiveId++] = renderable;
-            // color code so that reading from bitmapdata will contain the correct value
-            this._id[1] = (this._interactiveId >> 8) / 255; // on green channel
-            this._id[2] = (this._interactiveId & 0xff) / 255; // on blue channel
-            matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
-            matrix.append(viewProjection);
-            this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
-            this._context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._id, 1);
-            this._context.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-            this._context.drawTriangles(this._context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
-            renderable = renderable.next;
-        }
-    };
-    ShaderPicker.prototype.updateRay = function (camera) {
-        this._rayPos = camera.scenePosition;
-        this._rayDir = camera.getRay(this._projX, this._projY, 1);
-        this._rayDir.normalize();
-    };
-    /**
-     * Creates the Program that color-codes objects.
-     */
-    ShaderPicker.prototype.initObjectProgram = function () {
-        var vertexCode;
-        var fragmentCode;
-        this._objectProgram = this._context.createProgram();
-        vertexCode = "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
-        fragmentCode = "mov oc, fc0"; // write identifier
-        Debug.throwPIR('ShaderPicker', 'initTriangleProgram', 'Dependency: initObjectProgram');
-        //_objectProgram.upload(new AGALMiniAssembler().assemble(ContextGLProgramType.VERTEX, vertexCode),new AGALMiniAssembler().assemble(ContextGLProgramType.FRAGMENT, fragmentCode));
-    };
-    /**
-     * Creates the Program that renders positions.
-     */
-    ShaderPicker.prototype.initTriangleProgram = function () {
-        var vertexCode;
-        var fragmentCode;
-        this._triangleProgram = this._context.createProgram();
-        // todo: add animation code
-        vertexCode = "add vt0, va0, vc5 			\n" + "mul vt0, vt0, vc6 			\n" + "mov v0, vt0				\n" + "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
-        fragmentCode = "mov oc, v0"; // write identifier
-        var vertexByteCode = (new AGALMiniAssembler().assemble("part vertex 1\n" + vertexCode + "endpart"))['vertex'].data;
-        var fragmentByteCode = (new AGALMiniAssembler().assemble("part fragment 1\n" + fragmentCode + "endpart"))['fragment'].data;
-        this._triangleProgram.upload(vertexByteCode, fragmentByteCode);
-    };
-    /**
-     * Gets more detailed information about the hir position, if required.
-     * @param camera The camera used to view the hit object.
-     */
-    ShaderPicker.prototype.getHitDetails = function (camera) {
-        this.getApproximatePosition(camera);
-        this.getPreciseDetails(camera);
-    };
-    /**
-     * Finds a first-guess approximate position about the hit position.
-     *
-     * @param camera The camera used to view the hit object.
-     */
-    ShaderPicker.prototype.getApproximatePosition = function (camera) {
-        var bounds = this._hitRenderable.sourceEntity.bounds.aabb;
-        var col;
-        var scX, scY, scZ;
-        var offsX, offsY, offsZ;
-        var localViewProjection = Matrix3DUtils.CALCULATION_MATRIX;
-        localViewProjection.copyFrom(this._hitRenderable.sourceEntity.getRenderSceneTransform(camera));
-        localViewProjection.append(camera.viewProjection);
-        if (!this._triangleProgram) {
-            this.initTriangleProgram();
-        }
-        this._boundOffsetScale[4] = 1 / (scX = bounds.width);
-        this._boundOffsetScale[5] = 1 / (scY = bounds.height);
-        this._boundOffsetScale[6] = 1 / (scZ = bounds.depth);
-        this._boundOffsetScale[0] = offsX = -bounds.x;
-        this._boundOffsetScale[1] = offsY = -bounds.y;
-        this._boundOffsetScale[2] = offsZ = -bounds.z;
-        this._context.setProgram(this._triangleProgram);
-        this._context.clear(0, 0, 0, 0, 1, 0, ContextGLClearMask.DEPTH);
-        this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
-        this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, localViewProjection, true);
-        this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
-        this._context.activateBuffer(0, this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-        this._context.drawTriangles(this._context.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
-        this._context.drawToBitmapData(this._bitmapData);
-        col = this._bitmapData.getPixel(0, 0);
-        this._localHitPosition.x = ((col >> 16) & 0xff) * scX / 255 - offsX;
-        this._localHitPosition.y = ((col >> 8) & 0xff) * scY / 255 - offsY;
-        this._localHitPosition.z = (col & 0xff) * scZ / 255 - offsZ;
-    };
-    /**
-     * Use the approximate position info to find the face under the mouse position from which we can derive the precise
-     * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
-     * @param camera The camera used to view the hit object.
-     */
-    ShaderPicker.prototype.getPreciseDetails = function (camera) {
-        var len = indices.length;
-        var x1, y1, z1;
-        var x2, y2, z2;
-        var x3, y3, z3;
-        var i = 0, j = 1, k = 2;
-        var t1, t2, t3;
-        var v0x, v0y, v0z;
-        var v1x, v1y, v1z;
-        var v2x, v2y, v2z;
-        var ni1, ni2, ni3;
-        var n1, n2, n3, nLength;
-        var dot00, dot01, dot02, dot11, dot12;
-        var s, t, invDenom;
-        var x = this._localHitPosition.x, y = this._localHitPosition.y, z = this._localHitPosition.z;
-        var u, v;
-        var ui1, ui2, ui3;
-        var s0x, s0y, s0z;
-        var s1x, s1y, s1z;
-        var nl;
-        var indices = this._hitRenderable.getIndexData().data;
-        var positions = this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA).data;
-        var positionStride = this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA).dataPerVertex;
-        var positionOffset = this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA);
-        var uvs = this._hitRenderable.getVertexData(TriangleSubGeometry.UV_DATA).data;
-        var uvStride = this._hitRenderable.getVertexData(TriangleSubGeometry.UV_DATA).dataPerVertex;
-        var uvOffset = this._hitRenderable.getVertexOffset(TriangleSubGeometry.UV_DATA);
-        var normals = this._hitRenderable.getVertexData(TriangleSubGeometry.NORMAL_DATA).data;
-        var normalStride = this._hitRenderable.getVertexData(TriangleSubGeometry.NORMAL_DATA).dataPerVertex;
-        var normalOffset = this._hitRenderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA);
-        this.updateRay(camera);
-        while (i < len) {
-            t1 = positionOffset + indices[i] * positionStride;
-            t2 = positionOffset + indices[j] * positionStride;
-            t3 = positionOffset + indices[k] * positionStride;
-            x1 = positions[t1];
-            y1 = positions[t1 + 1];
-            z1 = positions[t1 + 2];
-            x2 = positions[t2];
-            y2 = positions[t2 + 1];
-            z2 = positions[t2 + 2];
-            x3 = positions[t3];
-            y3 = positions[t3 + 1];
-            z3 = positions[t3 + 2];
-            // if within bounds
-            if (!((x < x1 && x < x2 && x < x3) || (y < y1 && y < y2 && y < y3) || (z < z1 && z < z2 && z < z3) || (x > x1 && x > x2 && x > x3) || (y > y1 && y > y2 && y > y3) || (z > z1 && z > z2 && z > z3))) {
-                // calculate barycentric coords for approximated position
-                v0x = x3 - x1;
-                v0y = y3 - y1;
-                v0z = z3 - z1;
-                v1x = x2 - x1;
-                v1y = y2 - y1;
-                v1z = z2 - z1;
-                v2x = x - x1;
-                v2y = y - y1;
-                v2z = z - z1;
-                dot00 = v0x * v0x + v0y * v0y + v0z * v0z;
-                dot01 = v0x * v1x + v0y * v1y + v0z * v1z;
-                dot02 = v0x * v2x + v0y * v2y + v0z * v2z;
-                dot11 = v1x * v1x + v1y * v1y + v1z * v1z;
-                dot12 = v1x * v2x + v1y * v2y + v1z * v2z;
-                invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-                s = (dot11 * dot02 - dot01 * dot12) * invDenom;
-                t = (dot00 * dot12 - dot01 * dot02) * invDenom;
-                // if inside the current triangle, fetch details hit information
-                if (s >= 0 && t >= 0 && (s + t) <= 1) {
-                    ni1 = normalOffset + indices[i] * normalStride;
-                    ni2 = normalOffset + indices[j] * normalStride;
-                    ni3 = normalOffset + indices[k] * normalStride;
-                    n1 = indices[ni1] + indices[ni2] + indices[ni3];
-                    n2 = indices[ni1 + 1] + indices[ni2 + 1] + indices[ni3 + 1];
-                    n3 = indices[ni1 + 2] + indices[ni2 + 2] + indices[ni3 + 2];
-                    nLength = Math.sqrt(n1 * n1 + n2 * n2 + n3 * n3);
-                    n1 /= nLength;
-                    n2 /= nLength;
-                    n3 /= nLength;
-                    // this is def the triangle, now calculate precise coords
-                    this.getPrecisePosition(this._hitRenderable.sourceEntity.inverseSceneTransform, n1, n2, n3, x1, y1, z1);
-                    v2x = this._localHitPosition.x - x1;
-                    v2y = this._localHitPosition.y - y1;
-                    v2z = this._localHitPosition.z - z1;
-                    s0x = x2 - x1; // s0 = p1 - p0
-                    s0y = y2 - y1;
-                    s0z = z2 - z1;
-                    s1x = x3 - x1; // s1 = p2 - p0
-                    s1y = y3 - y1;
-                    s1z = z3 - z1;
-                    this._localHitNormal.x = s0y * s1z - s0z * s1y; // n = s0 x s1
-                    this._localHitNormal.y = s0z * s1x - s0x * s1z;
-                    this._localHitNormal.z = s0x * s1y - s0y * s1x;
-                    nl = 1 / Math.sqrt(this._localHitNormal.x * this._localHitNormal.x + this._localHitNormal.y * this._localHitNormal.y + this._localHitNormal.z * this._localHitNormal.z); // normalize n
-                    this._localHitNormal.x *= nl;
-                    this._localHitNormal.y *= nl;
-                    this._localHitNormal.z *= nl;
-                    dot02 = v0x * v2x + v0y * v2y + v0z * v2z;
-                    dot12 = v1x * v2x + v1y * v2y + v1z * v2z;
-                    s = (dot11 * dot02 - dot01 * dot12) * invDenom;
-                    t = (dot00 * dot12 - dot01 * dot02) * invDenom;
-                    ui1 = uvOffset + indices[i] * uvStride;
-                    ui2 = uvOffset + indices[j] * uvStride;
-                    ui3 = uvOffset + indices[k] * uvStride;
-                    u = uvs[ui1];
-                    v = uvs[ui1 + 1];
-                    this._hitUV.x = u + t * (uvs[ui2] - u) + s * (uvs[ui3] - u);
-                    this._hitUV.y = v + t * (uvs[ui2 + 1] - v) + s * (uvs[ui3 + 1] - v);
-                    this._faceIndex = i;
-                    //TODO add back subGeometryIndex value
-                    //this._subGeometryIndex = away.utils.GeometryUtils.getMeshSubGeometryIndex(subGeom);
-                    return;
-                }
-            }
-            i += 3;
-            j += 3;
-            k += 3;
-        }
-    };
-    /**
-     * Finds the precise hit position by unprojecting the screen coordinate back unto the hit face's plane and
-     * calculating the intersection point.
-     * @param camera The camera used to render the object.
-     * @param invSceneTransform The inverse scene transformation of the hit object.
-     * @param nx The x-coordinate of the face's plane normal.
-     * @param ny The y-coordinate of the face plane normal.
-     * @param nz The z-coordinate of the face plane normal.
-     * @param px The x-coordinate of a point on the face's plane (ie a face vertex)
-     * @param py The y-coordinate of a point on the face's plane (ie a face vertex)
-     * @param pz The z-coordinate of a point on the face's plane (ie a face vertex)
-     */
-    ShaderPicker.prototype.getPrecisePosition = function (invSceneTransform, nx, ny, nz, px, py, pz) {
-        // calculate screen ray and find exact intersection position with triangle
-        var rx, ry, rz;
-        var ox, oy, oz;
-        var t;
-        var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
-        var cx = this._rayPos.x, cy = this._rayPos.y, cz = this._rayPos.z;
-        // unprojected projection point, gives ray dir in cam space
-        ox = this._rayDir.x;
-        oy = this._rayDir.y;
-        oz = this._rayDir.z;
-        // transform ray dir and origin (cam pos) to object space
-        //invSceneTransform.copyRawDataTo( raw  );
-        invSceneTransform.copyRawDataTo(raw);
-        rx = raw[0] * ox + raw[4] * oy + raw[8] * oz;
-        ry = raw[1] * ox + raw[5] * oy + raw[9] * oz;
-        rz = raw[2] * ox + raw[6] * oy + raw[10] * oz;
-        ox = raw[0] * cx + raw[4] * cy + raw[8] * cz + raw[12];
-        oy = raw[1] * cx + raw[5] * cy + raw[9] * cz + raw[13];
-        oz = raw[2] * cx + raw[6] * cy + raw[10] * cz + raw[14];
-        t = ((px - ox) * nx + (py - oy) * ny + (pz - oz) * nz) / (rx * nx + ry * ny + rz * nz);
-        this._localHitPosition.x = ox + rx * t;
-        this._localHitPosition.y = oy + ry * t;
-        this._localHitPosition.z = oz + rz * t;
-    };
-    ShaderPicker.prototype.dispose = function () {
-        this._bitmapData.dispose();
-        if (this._triangleProgram)
-            this._triangleProgram.dispose();
-        if (this._objectProgram)
-            this._objectProgram.dispose();
-        this._triangleProgram = null;
-        this._objectProgram = null;
-        this._bitmapData = null;
-        this._hitRenderable = null;
-        this._hitEntity = null;
-    };
-    ShaderPicker.MOUSE_SCISSOR_RECT = new Rectangle(0, 0, 1, 1);
-    return ShaderPicker;
-})();
-module.exports = ShaderPicker;
-
-
-},{"awayjs-core/lib/core/base/BitmapData":undefined,"awayjs-core/lib/core/base/TriangleSubGeometry":undefined,"awayjs-core/lib/core/geom/Matrix3DUtils":undefined,"awayjs-core/lib/core/geom/Point":undefined,"awayjs-core/lib/core/geom/Rectangle":undefined,"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLClearMask":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLProgramType":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/events/AnimationStateEvent":[function(require,module,exports){
+},{"awayjs-display/lib/base/Geometry":undefined}],"awayjs-renderergl/lib/events/AnimationStateEvent":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10277,8 +9620,8 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var DirectionalLight = require("awayjs-core/lib/entities/DirectionalLight");
 var Event = require("awayjs-core/lib/events/Event");
+var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
 var ShadingMethodEvent = require("awayjs-stagegl/lib/events/ShadingMethodEvent");
 var MethodVO = require("awayjs-stagegl/lib/materials/compilation/MethodVO");
 var ShadowMapMethodBase = require("awayjs-stagegl/lib/materials/methods/ShadowMapMethodBase");
@@ -10471,14 +9814,14 @@ var ShadowCascadeMethod = (function (_super) {
 module.exports = ShadowCascadeMethod;
 
 
-},{"awayjs-core/lib/entities/DirectionalLight":undefined,"awayjs-core/lib/events/Event":undefined,"awayjs-stagegl/lib/events/ShadingMethodEvent":undefined,"awayjs-stagegl/lib/materials/compilation/MethodVO":undefined,"awayjs-stagegl/lib/materials/methods/ShadowMapMethodBase":undefined}],"awayjs-renderergl/lib/materials/methods/ShadowDitheredMethod":[function(require,module,exports){
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-stagegl/lib/events/ShadingMethodEvent":undefined,"awayjs-stagegl/lib/materials/compilation/MethodVO":undefined,"awayjs-stagegl/lib/materials/methods/ShadowMapMethodBase":undefined}],"awayjs-renderergl/lib/materials/methods/ShadowDitheredMethod":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BitmapData = require("awayjs-core/lib/core/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/base/BitmapData");
 var BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
 var ShadowMethodBase = require("awayjs-stagegl/lib/materials/methods/ShadowMethodBase");
 /**
@@ -10708,7 +10051,7 @@ var ShadowDitheredMethod = (function (_super) {
 module.exports = ShadowDitheredMethod;
 
 
-},{"awayjs-core/lib/core/base/BitmapData":undefined,"awayjs-core/lib/textures/BitmapTexture":undefined,"awayjs-stagegl/lib/materials/methods/ShadowMethodBase":undefined}],"awayjs-renderergl/lib/materials/methods/ShadowFilteredMethod":[function(require,module,exports){
+},{"awayjs-core/lib/base/BitmapData":undefined,"awayjs-core/lib/textures/BitmapTexture":undefined,"awayjs-stagegl/lib/materials/methods/ShadowMethodBase":undefined}],"awayjs-renderergl/lib/materials/methods/ShadowFilteredMethod":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10989,7 +10332,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var PoissonLookup = require("awayjs-core/lib/core/geom/PoissonLookup");
+var PoissonLookup = require("awayjs-core/lib/geom/PoissonLookup");
 var ShadowMethodBase = require("awayjs-stagegl/lib/materials/methods/ShadowMethodBase");
 /**
  * ShadowSoftMethod provides a soft shadowing technique by randomly distributing sample points.
@@ -11155,7 +10498,7 @@ var ShadowSoftMethod = (function (_super) {
 module.exports = ShadowSoftMethod;
 
 
-},{"awayjs-core/lib/core/geom/PoissonLookup":undefined,"awayjs-stagegl/lib/materials/methods/ShadowMethodBase":undefined}],"awayjs-renderergl/lib/materials/methods/SpecularAnisotropicMethod":[function(require,module,exports){
+},{"awayjs-core/lib/geom/PoissonLookup":undefined,"awayjs-stagegl/lib/materials/methods/ShadowMethodBase":undefined}],"awayjs-renderergl/lib/materials/methods/SpecularAnisotropicMethod":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11698,10 +11041,10 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var TriangleSubGeometry = require("awayjs-core/lib/core/base/TriangleSubGeometry");
-var Matrix3D = require("awayjs-core/lib/core/geom/Matrix3D");
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var RenderTexture = require("awayjs-core/lib/textures/RenderTexture");
-var ContextGLProgramType = require("awayjs-stagegl/lib/core/stagegl/ContextGLProgramType");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var MaterialPassBase = require("awayjs-stagegl/lib/materials/passes/MaterialPassBase");
 /**
  * The SingleObjectDepthPass provides a material pass that renders a single object to a depth map from the point
@@ -11856,39 +11199,19 @@ var SingleObjectDepthPass = (function (_super) {
 module.exports = SingleObjectDepthPass;
 
 
-},{"awayjs-core/lib/core/base/TriangleSubGeometry":undefined,"awayjs-core/lib/core/geom/Matrix3D":undefined,"awayjs-core/lib/textures/RenderTexture":undefined,"awayjs-stagegl/lib/core/stagegl/ContextGLProgramType":undefined,"awayjs-stagegl/lib/materials/passes/MaterialPassBase":undefined}],"awayjs-renderergl/lib/parsers/AWDParser":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/textures/RenderTexture":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/materials/passes/MaterialPassBase":undefined}],"awayjs-renderergl/lib/parsers/AWDParser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var DisplayObjectContainer = require("awayjs-core/lib/containers/DisplayObjectContainer");
-var BlendMode = require("awayjs-core/lib/core/base/BlendMode");
-var Geometry = require("awayjs-core/lib/core/base/Geometry");
-var TriangleSubGeometry = require("awayjs-core/lib/core/base/TriangleSubGeometry");
-var ColorTransform = require("awayjs-core/lib/core/geom/ColorTransform");
-var Matrix3D = require("awayjs-core/lib/core/geom/Matrix3D");
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var URLLoaderDataFormat = require("awayjs-core/lib/core/net/URLLoaderDataFormat");
-var URLRequest = require("awayjs-core/lib/core/net/URLRequest");
-var AssetType = require("awayjs-core/lib/core/library/AssetType");
-var DirectionalLight = require("awayjs-core/lib/entities/DirectionalLight");
-var PointLight = require("awayjs-core/lib/entities/PointLight");
-var Camera = require("awayjs-core/lib/entities/Camera");
-var Mesh = require("awayjs-core/lib/entities/Mesh");
-var Skybox = require("awayjs-core/lib/entities/Skybox");
-var StaticLightPicker = require("awayjs-core/lib/materials/lightpickers/StaticLightPicker");
-var CubeMapShadowMapper = require("awayjs-core/lib/materials/shadowmappers/CubeMapShadowMapper");
-var DirectionalShadowMapper = require("awayjs-core/lib/materials/shadowmappers/DirectionalShadowMapper");
-var PrefabBase = require("awayjs-core/lib/prefabs/PrefabBase");
-var PrimitiveCapsulePrefab = require("awayjs-core/lib/prefabs/PrimitiveCapsulePrefab");
-var PrimitiveConePrefab = require("awayjs-core/lib/prefabs/PrimitiveConePrefab");
-var PrimitiveCubePrefab = require("awayjs-core/lib/prefabs/PrimitiveCubePrefab");
-var PrimitiveCylinderPrefab = require("awayjs-core/lib/prefabs/PrimitiveCylinderPrefab");
-var PrimitivePlanePrefab = require("awayjs-core/lib/prefabs/PrimitivePlanePrefab");
-var PrimitiveSpherePrefab = require("awayjs-core/lib/prefabs/PrimitiveSpherePrefab");
-var PrimitiveTorusPrefab = require("awayjs-core/lib/prefabs/PrimitiveTorusPrefab");
+var ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
+var URLRequest = require("awayjs-core/lib/net/URLRequest");
+var AssetType = require("awayjs-core/lib/library/AssetType");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
 var PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
@@ -11898,6 +11221,26 @@ var BitmapCubeTexture = require("awayjs-core/lib/textures/BitmapCubeTexture");
 var ImageCubeTexture = require("awayjs-core/lib/textures/ImageCubeTexture");
 var ImageTexture = require("awayjs-core/lib/textures/ImageTexture");
 var ByteArray = require("awayjs-core/lib/utils/ByteArray");
+var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
+var BlendMode = require("awayjs-display/lib/base/BlendMode");
+var Geometry = require("awayjs-display/lib/base/Geometry");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
+var PointLight = require("awayjs-display/lib/entities/PointLight");
+var Camera = require("awayjs-display/lib/entities/Camera");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
+var Skybox = require("awayjs-display/lib/entities/Skybox");
+var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
+var CubeMapShadowMapper = require("awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper");
+var DirectionalShadowMapper = require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
+var PrefabBase = require("awayjs-display/lib/prefabs/PrefabBase");
+var PrimitiveCapsulePrefab = require("awayjs-display/lib/prefabs/PrimitiveCapsulePrefab");
+var PrimitiveConePrefab = require("awayjs-display/lib/prefabs/PrimitiveConePrefab");
+var PrimitiveCubePrefab = require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
+var PrimitiveCylinderPrefab = require("awayjs-display/lib/prefabs/PrimitiveCylinderPrefab");
+var PrimitivePlanePrefab = require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+var PrimitiveSpherePrefab = require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
+var PrimitiveTorusPrefab = require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 var SkyboxMaterial = require("awayjs-stagegl/lib/materials/SkyboxMaterial");
 var TriangleMaterialMode = require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
 var TriangleMethodMaterial = require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
@@ -14059,21 +13402,21 @@ var AWDParser = (function (_super) {
 module.exports = AWDParser;
 
 
-},{"awayjs-core/lib/containers/DisplayObjectContainer":undefined,"awayjs-core/lib/core/base/BlendMode":undefined,"awayjs-core/lib/core/base/Geometry":undefined,"awayjs-core/lib/core/base/TriangleSubGeometry":undefined,"awayjs-core/lib/core/geom/ColorTransform":undefined,"awayjs-core/lib/core/geom/Matrix3D":undefined,"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-core/lib/core/library/AssetType":undefined,"awayjs-core/lib/core/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/core/net/URLRequest":undefined,"awayjs-core/lib/entities/Camera":undefined,"awayjs-core/lib/entities/DirectionalLight":undefined,"awayjs-core/lib/entities/Mesh":undefined,"awayjs-core/lib/entities/PointLight":undefined,"awayjs-core/lib/entities/Skybox":undefined,"awayjs-core/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-core/lib/materials/shadowmappers/CubeMapShadowMapper":undefined,"awayjs-core/lib/materials/shadowmappers/DirectionalShadowMapper":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/prefabs/PrefabBase":undefined,"awayjs-core/lib/prefabs/PrimitiveCapsulePrefab":undefined,"awayjs-core/lib/prefabs/PrimitiveConePrefab":undefined,"awayjs-core/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-core/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-core/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-core/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-core/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-core/lib/projections/OrthographicOffCenterProjection":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/textures/BitmapCubeTexture":undefined,"awayjs-core/lib/textures/ImageCubeTexture":undefined,"awayjs-core/lib/textures/ImageTexture":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined,"awayjs-renderergl/lib/materials/methods/AmbientEnvMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseCelMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseDepthMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseGradientMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseLightMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseWrapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectAlphaMaskMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectColorMatrixMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectEnvMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectFogMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectFresnelEnvMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectLightMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectRimLightMethod":undefined,"awayjs-renderergl/lib/materials/methods/NormalSimpleWaterMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowDitheredMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowFilteredMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowNearMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowSoftMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularAnisotropicMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularCelMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularFresnelMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularPhongMethod":undefined,"awayjs-renderergl/lib/parsers/data/AWDBlock":undefined,"awayjs-renderergl/lib/parsers/data/AWDProperties":undefined,"awayjs-renderergl/lib/parsers/data/BitFlags":undefined,"awayjs-stagegl/lib/materials/SkyboxMaterial":undefined,"awayjs-stagegl/lib/materials/TriangleMaterialMode":undefined,"awayjs-stagegl/lib/materials/TriangleMethodMaterial":undefined,"awayjs-stagegl/lib/materials/methods/EffectColorTransformMethod":undefined,"awayjs-stagegl/lib/materials/methods/ShadowHardMethod":undefined,"awayjs-stagegl/lib/materials/utils/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/parsers/MD2Parser":[function(require,module,exports){
+},{"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/OrthographicOffCenterProjection":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/textures/BitmapCubeTexture":undefined,"awayjs-core/lib/textures/ImageCubeTexture":undefined,"awayjs-core/lib/textures/ImageTexture":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-display/lib/base/BlendMode":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":undefined,"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrefabBase":undefined,"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveConePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined,"awayjs-renderergl/lib/materials/methods/AmbientEnvMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseCelMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseDepthMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseGradientMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseLightMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseWrapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectAlphaMaskMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectColorMatrixMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectEnvMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectFogMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectFresnelEnvMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectLightMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectRimLightMethod":undefined,"awayjs-renderergl/lib/materials/methods/NormalSimpleWaterMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowDitheredMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowFilteredMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowNearMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowSoftMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularAnisotropicMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularCelMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularFresnelMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularPhongMethod":undefined,"awayjs-renderergl/lib/parsers/data/AWDBlock":undefined,"awayjs-renderergl/lib/parsers/data/AWDProperties":undefined,"awayjs-renderergl/lib/parsers/data/BitFlags":undefined,"awayjs-stagegl/lib/materials/SkyboxMaterial":undefined,"awayjs-stagegl/lib/materials/TriangleMaterialMode":undefined,"awayjs-stagegl/lib/materials/TriangleMethodMaterial":undefined,"awayjs-stagegl/lib/materials/methods/EffectColorTransformMethod":undefined,"awayjs-stagegl/lib/materials/methods/ShadowHardMethod":undefined,"awayjs-stagegl/lib/materials/utils/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/parsers/MD2Parser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var DisplayObjectContainer = require("awayjs-core/lib/containers/DisplayObjectContainer");
-var Geometry = require("awayjs-core/lib/core/base/Geometry");
-var TriangleSubGeometry = require("awayjs-core/lib/core/base/TriangleSubGeometry");
-var URLLoaderDataFormat = require("awayjs-core/lib/core/net/URLLoaderDataFormat");
-var URLRequest = require("awayjs-core/lib/core/net/URLRequest");
-var Mesh = require("awayjs-core/lib/entities/Mesh");
+var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
+var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
+var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
+var Geometry = require("awayjs-display/lib/base/Geometry");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
 var DefaultMaterialManager = require("awayjs-stagegl/lib/materials/utils/DefaultMaterialManager");
 var TriangleMethodMaterial = require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
 var TriangleMaterialMode = require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
@@ -14450,16 +13793,16 @@ var MD2Parser = (function (_super) {
 module.exports = MD2Parser;
 
 
-},{"awayjs-core/lib/containers/DisplayObjectContainer":undefined,"awayjs-core/lib/core/base/Geometry":undefined,"awayjs-core/lib/core/base/TriangleSubGeometry":undefined,"awayjs-core/lib/core/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/core/net/URLRequest":undefined,"awayjs-core/lib/entities/Mesh":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined,"awayjs-stagegl/lib/materials/TriangleMaterialMode":undefined,"awayjs-stagegl/lib/materials/TriangleMethodMaterial":undefined,"awayjs-stagegl/lib/materials/utils/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/parsers/MD5AnimParser":[function(require,module,exports){
+},{"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined,"awayjs-stagegl/lib/materials/TriangleMaterialMode":undefined,"awayjs-stagegl/lib/materials/TriangleMethodMaterial":undefined,"awayjs-stagegl/lib/materials/utils/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/parsers/MD5AnimParser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Quaternion = require("awayjs-core/lib/core/geom/Quaternion");
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var URLLoaderDataFormat = require("awayjs-core/lib/core/net/URLLoaderDataFormat");
+var Quaternion = require("awayjs-core/lib/geom/Quaternion");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var JointPose = require("awayjs-renderergl/lib/animators/data/JointPose");
 var SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
@@ -14943,21 +14286,21 @@ var MD5AnimParser = (function (_super) {
 module.exports = MD5AnimParser;
 
 
-},{"awayjs-core/lib/core/geom/Quaternion":undefined,"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-core/lib/core/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/parsers/data/BaseFrameData":undefined,"awayjs-renderergl/lib/parsers/data/BoundsData":undefined,"awayjs-renderergl/lib/parsers/data/FrameData":undefined,"awayjs-renderergl/lib/parsers/data/HierarchyData":undefined}],"awayjs-renderergl/lib/parsers/MD5MeshParser":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Quaternion":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/parsers/data/BaseFrameData":undefined,"awayjs-renderergl/lib/parsers/data/BoundsData":undefined,"awayjs-renderergl/lib/parsers/data/FrameData":undefined,"awayjs-renderergl/lib/parsers/data/HierarchyData":undefined}],"awayjs-renderergl/lib/parsers/MD5MeshParser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var DisplayObjectContainer = require("awayjs-core/lib/containers/DisplayObjectContainer");
-var Geometry = require("awayjs-core/lib/core/base/Geometry");
-var TriangleSubGeometry = require("awayjs-core/lib/core/base/TriangleSubGeometry");
-var Quaternion = require("awayjs-core/lib/core/geom/Quaternion");
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var URLLoaderDataFormat = require("awayjs-core/lib/core/net/URLLoaderDataFormat");
-var Mesh = require("awayjs-core/lib/entities/Mesh");
+var Quaternion = require("awayjs-core/lib/geom/Quaternion");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
+var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
+var Geometry = require("awayjs-display/lib/base/Geometry");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
 var SkeletonAnimationSet = require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
 var Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
 var SkeletonJoint = require("awayjs-renderergl/lib/animators/data/SkeletonJoint");
@@ -15493,24 +14836,24 @@ var MeshData = (function () {
 module.exports = MD5MeshParser;
 
 
-},{"awayjs-core/lib/containers/DisplayObjectContainer":undefined,"awayjs-core/lib/core/base/Geometry":undefined,"awayjs-core/lib/core/base/TriangleSubGeometry":undefined,"awayjs-core/lib/core/geom/Quaternion":undefined,"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-core/lib/core/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/entities/Mesh":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined}],"awayjs-renderergl/lib/parsers/Max3DSParser":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Quaternion":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined}],"awayjs-renderergl/lib/parsers/Max3DSParser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var DisplayObjectContainer = require("awayjs-core/lib/containers/DisplayObjectContainer");
-var Geometry = require("awayjs-core/lib/core/base/Geometry");
-var TriangleSubGeometry = require("awayjs-core/lib/core/base/TriangleSubGeometry");
-var Matrix3D = require("awayjs-core/lib/core/geom/Matrix3D");
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
-var AssetType = require("awayjs-core/lib/core/library/AssetType");
-var URLLoaderDataFormat = require("awayjs-core/lib/core/net/URLLoaderDataFormat");
-var URLRequest = require("awayjs-core/lib/core/net/URLRequest");
-var Mesh = require("awayjs-core/lib/entities/Mesh");
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var AssetType = require("awayjs-core/lib/library/AssetType");
+var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
+var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
+var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
+var Geometry = require("awayjs-display/lib/base/Geometry");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
 var DefaultMaterialManager = require("awayjs-stagegl/lib/materials/utils/DefaultMaterialManager");
 var TriangleMethodMaterial = require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
 var TriangleMaterialMode = require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
@@ -16145,22 +15488,22 @@ var Max3DSParser = (function (_super) {
 module.exports = Max3DSParser;
 
 
-},{"awayjs-core/lib/containers/DisplayObjectContainer":undefined,"awayjs-core/lib/core/base/Geometry":undefined,"awayjs-core/lib/core/base/TriangleSubGeometry":undefined,"awayjs-core/lib/core/geom/Matrix3D":undefined,"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-core/lib/core/library/AssetType":undefined,"awayjs-core/lib/core/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/core/net/URLRequest":undefined,"awayjs-core/lib/entities/Mesh":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-renderergl/lib/parsers/data/FaceVO":undefined,"awayjs-renderergl/lib/parsers/data/MaterialVO":undefined,"awayjs-renderergl/lib/parsers/data/ObjectVO":undefined,"awayjs-renderergl/lib/parsers/data/TextureVO":undefined,"awayjs-renderergl/lib/parsers/data/VertexVO":undefined,"awayjs-stagegl/lib/materials/TriangleMaterialMode":undefined,"awayjs-stagegl/lib/materials/TriangleMethodMaterial":undefined,"awayjs-stagegl/lib/materials/utils/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/parsers/OBJParser":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-renderergl/lib/parsers/data/FaceVO":undefined,"awayjs-renderergl/lib/parsers/data/MaterialVO":undefined,"awayjs-renderergl/lib/parsers/data/ObjectVO":undefined,"awayjs-renderergl/lib/parsers/data/TextureVO":undefined,"awayjs-renderergl/lib/parsers/data/VertexVO":undefined,"awayjs-stagegl/lib/materials/TriangleMaterialMode":undefined,"awayjs-stagegl/lib/materials/TriangleMethodMaterial":undefined,"awayjs-stagegl/lib/materials/utils/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/parsers/OBJParser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var DisplayObjectContainer = require("awayjs-core/lib/containers/DisplayObjectContainer");
-var TriangleSubGeometry = require("awayjs-core/lib/core/base/TriangleSubGeometry");
-var Geometry = require("awayjs-core/lib/core/base/Geometry");
-var AssetType = require("awayjs-core/lib/core/library/AssetType");
-var URLLoaderDataFormat = require("awayjs-core/lib/core/net/URLLoaderDataFormat");
-var URLRequest = require("awayjs-core/lib/core/net/URLRequest");
-var Mesh = require("awayjs-core/lib/entities/Mesh");
+var AssetType = require("awayjs-core/lib/library/AssetType");
+var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
+var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
+var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var Geometry = require("awayjs-display/lib/base/Geometry");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
 var DefaultMaterialManager = require("awayjs-stagegl/lib/materials/utils/DefaultMaterialManager");
 var SpecularBasicMethod = require("awayjs-stagegl/lib/materials/methods/SpecularBasicMethod");
 var TriangleMethodMaterial = require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
@@ -17057,8 +16400,8 @@ var Vertex = (function () {
 module.exports = OBJParser;
 
 
-},{"awayjs-core/lib/containers/DisplayObjectContainer":undefined,"awayjs-core/lib/core/base/Geometry":undefined,"awayjs-core/lib/core/base/TriangleSubGeometry":undefined,"awayjs-core/lib/core/library/AssetType":undefined,"awayjs-core/lib/core/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/core/net/URLRequest":undefined,"awayjs-core/lib/entities/Mesh":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-stagegl/lib/materials/TriangleMaterialMode":undefined,"awayjs-stagegl/lib/materials/TriangleMethodMaterial":undefined,"awayjs-stagegl/lib/materials/methods/SpecularBasicMethod":undefined,"awayjs-stagegl/lib/materials/utils/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/parsers/Parsers":[function(require,module,exports){
-var AssetLoader = require("awayjs-core/lib/core/library/AssetLoader");
+},{"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-stagegl/lib/materials/TriangleMaterialMode":undefined,"awayjs-stagegl/lib/materials/TriangleMethodMaterial":undefined,"awayjs-stagegl/lib/materials/methods/SpecularBasicMethod":undefined,"awayjs-stagegl/lib/materials/utils/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/parsers/Parsers":[function(require,module,exports){
+var AssetLoader = require("awayjs-core/lib/library/AssetLoader");
 var AWDParser = require("awayjs-renderergl/lib/parsers/AWDParser");
 var Max3DSParser = require("awayjs-renderergl/lib/parsers/Max3DSParser");
 var MD2Parser = require("awayjs-renderergl/lib/parsers/MD2Parser");
@@ -17120,7 +16463,7 @@ var Parsers = (function () {
 module.exports = Parsers;
 
 
-},{"awayjs-core/lib/core/library/AssetLoader":undefined,"awayjs-renderergl/lib/parsers/AWDParser":undefined,"awayjs-renderergl/lib/parsers/MD2Parser":undefined,"awayjs-renderergl/lib/parsers/Max3DSParser":undefined,"awayjs-renderergl/lib/parsers/OBJParser":undefined}],"awayjs-renderergl/lib/parsers/data/AWDBlock":[function(require,module,exports){
+},{"awayjs-core/lib/library/AssetLoader":undefined,"awayjs-renderergl/lib/parsers/AWDParser":undefined,"awayjs-renderergl/lib/parsers/MD2Parser":undefined,"awayjs-renderergl/lib/parsers/Max3DSParser":undefined,"awayjs-renderergl/lib/parsers/OBJParser":undefined}],"awayjs-renderergl/lib/parsers/data/AWDBlock":[function(require,module,exports){
 /**
  *
  */
@@ -17296,11 +16639,668 @@ var VertexVO = (function () {
 module.exports = VertexVO;
 
 
-},{}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
-var Geometry = require("awayjs-core/lib/core/base/Geometry");
-var TriangleSubGeometry = require("awayjs-core/lib/core/base/TriangleSubGeometry");
-var Matrix3DUtils = require("awayjs-core/lib/core/geom/Matrix3DUtils");
-var Mesh = require("awayjs-core/lib/entities/Mesh");
+},{}],"awayjs-renderergl/lib/pick/JSPickingCollider":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var PickingColliderBase = require("awayjs-renderergl/lib/pick/PickingColliderBase");
+/**
+ * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
+ *
+ * @see away.base.DisplayObject#pickingCollider
+ * @see away.pick.RaycastPicker
+ *
+ * @class away.pick.JSPickingCollider
+ */
+var JSPickingCollider = (function (_super) {
+    __extends(JSPickingCollider, _super);
+    /**
+     * Creates a new <code>JSPickingCollider</code> object.
+     *
+     * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
+     */
+    function JSPickingCollider(findClosestCollision) {
+        if (findClosestCollision === void 0) { findClosestCollision = false; }
+        _super.call(this);
+        this._findClosestCollision = findClosestCollision;
+    }
+    /**
+     * @inheritDoc
+     */
+    JSPickingCollider.prototype._pTestRenderableCollision = function (renderable, pickingCollisionVO, shortestCollisionDistance) {
+        var t;
+        var i0, i1, i2;
+        var rx, ry, rz;
+        var nx, ny, nz;
+        var cx, cy, cz;
+        var coeff, u, v, w;
+        var p0x, p0y, p0z;
+        var p1x, p1y, p1z;
+        var p2x, p2y, p2z;
+        var s0x, s0y, s0z;
+        var s1x, s1y, s1z;
+        var nl, nDotV, D, disToPlane;
+        var Q1Q2, Q1Q1, Q2Q2, RQ1, RQ2;
+        var indexData = renderable.getIndexData().data;
+        var collisionTriangleIndex = -1;
+        var bothSides = renderable.materialOwner.material.bothSides;
+        var positionData = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).data;
+        var positionStride = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).dataPerVertex;
+        var positionOffset = renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA);
+        var uvData = renderable.getVertexData(TriangleSubGeometry.UV_DATA).data;
+        var uvStride = renderable.getVertexData(TriangleSubGeometry.UV_DATA).dataPerVertex;
+        var uvOffset = renderable.getVertexOffset(TriangleSubGeometry.UV_DATA);
+        var numIndices = indexData.length;
+        for (var index = 0; index < numIndices; index += 3) {
+            // evaluate triangle indices
+            i0 = positionOffset + indexData[index] * positionStride;
+            i1 = positionOffset + indexData[(index + 1)] * positionStride;
+            i2 = positionOffset + indexData[(index + 2)] * positionStride;
+            // evaluate triangle positions
+            p0x = positionData[i0];
+            p0y = positionData[(i0 + 1)];
+            p0z = positionData[(i0 + 2)];
+            p1x = positionData[i1];
+            p1y = positionData[(i1 + 1)];
+            p1z = positionData[(i1 + 2)];
+            p2x = positionData[i2];
+            p2y = positionData[(i2 + 1)];
+            p2z = positionData[(i2 + 2)];
+            // evaluate sides and triangle normal
+            s0x = p1x - p0x; // s0 = p1 - p0
+            s0y = p1y - p0y;
+            s0z = p1z - p0z;
+            s1x = p2x - p0x; // s1 = p2 - p0
+            s1y = p2y - p0y;
+            s1z = p2z - p0z;
+            nx = s0y * s1z - s0z * s1y; // n = s0 x s1
+            ny = s0z * s1x - s0x * s1z;
+            nz = s0x * s1y - s0y * s1x;
+            nl = 1 / Math.sqrt(nx * nx + ny * ny + nz * nz); // normalize n
+            nx *= nl;
+            ny *= nl;
+            nz *= nl;
+            // -- plane intersection test --
+            nDotV = nx * this.rayDirection.x + ny * +this.rayDirection.y + nz * this.rayDirection.z; // rayDirection . normal
+            if ((!bothSides && nDotV < 0.0) || (bothSides && nDotV != 0.0)) {
+                // find collision t
+                D = -(nx * p0x + ny * p0y + nz * p0z);
+                disToPlane = -(nx * this.rayPosition.x + ny * this.rayPosition.y + nz * this.rayPosition.z + D);
+                t = disToPlane / nDotV;
+                // find collision point
+                cx = this.rayPosition.x + t * this.rayDirection.x;
+                cy = this.rayPosition.y + t * this.rayDirection.y;
+                cz = this.rayPosition.z + t * this.rayDirection.z;
+                // collision point inside triangle? ( using barycentric coordinates )
+                Q1Q2 = s0x * s1x + s0y * s1y + s0z * s1z;
+                Q1Q1 = s0x * s0x + s0y * s0y + s0z * s0z;
+                Q2Q2 = s1x * s1x + s1y * s1y + s1z * s1z;
+                rx = cx - p0x;
+                ry = cy - p0y;
+                rz = cz - p0z;
+                RQ1 = rx * s0x + ry * s0y + rz * s0z;
+                RQ2 = rx * s1x + ry * s1y + rz * s1z;
+                coeff = 1 / (Q1Q1 * Q2Q2 - Q1Q2 * Q1Q2);
+                v = coeff * (Q2Q2 * RQ1 - Q1Q2 * RQ2);
+                w = coeff * (-Q1Q2 * RQ1 + Q1Q1 * RQ2);
+                if (v < 0)
+                    continue;
+                if (w < 0)
+                    continue;
+                u = 1 - v - w;
+                if (!(u < 0) && t > 0 && t < shortestCollisionDistance) {
+                    shortestCollisionDistance = t;
+                    collisionTriangleIndex = index / 3;
+                    pickingCollisionVO.rayEntryDistance = t;
+                    pickingCollisionVO.localPosition = new Vector3D(cx, cy, cz);
+                    pickingCollisionVO.localNormal = new Vector3D(nx, ny, nz);
+                    pickingCollisionVO.uv = this._pGetCollisionUV(indexData, uvData, index, v, w, u, uvOffset, uvStride);
+                    pickingCollisionVO.index = index;
+                    //						pickingCollisionVO.subGeometryIndex = this.pGetMeshSubMeshIndex(renderable);
+                    // if not looking for best hit, first found will do...
+                    if (!this._findClosestCollision)
+                        return true;
+                }
+            }
+        }
+        if (collisionTriangleIndex >= 0)
+            return true;
+        return false;
+    };
+    return JSPickingCollider;
+})(PickingColliderBase);
+module.exports = JSPickingCollider;
+
+
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pick/PickingColliderBase":undefined}],"awayjs-renderergl/lib/pick/PickingColliderBase":[function(require,module,exports){
+var Point = require("awayjs-core/lib/geom/Point");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
+var RenderablePool = require("awayjs-display/lib/pool/RenderablePool");
+var BillboardRenderable = require("awayjs-stagegl/lib/pool/BillboardRenderable");
+var TriangleSubMeshRenderable = require("awayjs-stagegl/lib/pool/TriangleSubMeshRenderable");
+/**
+ * An abstract base class for all picking collider classes. It should not be instantiated directly.
+ *
+ * @class away.pick.PickingColliderBase
+ */
+var PickingColliderBase = (function () {
+    function PickingColliderBase() {
+        this._billboardRenderablePool = RenderablePool.getPool(BillboardRenderable);
+        this._subMeshRenderablePool = RenderablePool.getPool(TriangleSubMeshRenderable);
+    }
+    PickingColliderBase.prototype._pPetCollisionNormal = function (indexData /*uint*/, vertexData, triangleIndex) {
+        var normal = new Vector3D();
+        var i0 = indexData[triangleIndex] * 3;
+        var i1 = indexData[triangleIndex + 1] * 3;
+        var i2 = indexData[triangleIndex + 2] * 3;
+        var p0 = new Vector3D(vertexData[i0], vertexData[i0 + 1], vertexData[i0 + 2]);
+        var p1 = new Vector3D(vertexData[i1], vertexData[i1 + 1], vertexData[i1 + 2]);
+        var p2 = new Vector3D(vertexData[i2], vertexData[i2 + 1], vertexData[i2 + 2]);
+        var side0 = p1.subtract(p0);
+        var side1 = p2.subtract(p0);
+        normal = side0.crossProduct(side1);
+        normal.normalize();
+        return normal;
+    };
+    PickingColliderBase.prototype._pGetCollisionUV = function (indexData /*uint*/, uvData, triangleIndex, v, w, u, uvOffset, uvStride) {
+        var uv = new Point();
+        var uIndex = indexData[triangleIndex] * uvStride + uvOffset;
+        var uv0 = new Vector3D(uvData[uIndex], uvData[uIndex + 1]);
+        uIndex = indexData[triangleIndex + 1] * uvStride + uvOffset;
+        var uv1 = new Vector3D(uvData[uIndex], uvData[uIndex + 1]);
+        uIndex = indexData[triangleIndex + 2] * uvStride + uvOffset;
+        var uv2 = new Vector3D(uvData[uIndex], uvData[uIndex + 1]);
+        uv.x = u * uv0.x + v * uv1.x + w * uv2.x;
+        uv.y = u * uv0.y + v * uv1.y + w * uv2.y;
+        return uv;
+    };
+    /**
+     * @inheritDoc
+     */
+    PickingColliderBase.prototype._pTestRenderableCollision = function (renderable, pickingCollisionVO, shortestCollisionDistance) {
+        throw new AbstractMethodError();
+    };
+    /**
+     * @inheritDoc
+     */
+    PickingColliderBase.prototype.setLocalRay = function (localPosition, localDirection) {
+        this.rayPosition = localPosition;
+        this.rayDirection = localDirection;
+    };
+    /**
+     * Tests a <code>Billboard</code> object for a collision with the picking ray.
+     *
+     * @param billboard The billboard instance to be tested.
+     * @param pickingCollisionVO The collision object used to store the collision results
+     * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
+     * @param findClosest
+     */
+    PickingColliderBase.prototype.testBillboardCollision = function (billboard, pickingCollisionVO, shortestCollisionDistance) {
+        this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
+        pickingCollisionVO.materialOwner = null;
+        if (this._pTestRenderableCollision(this._billboardRenderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
+            shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+            pickingCollisionVO.materialOwner = billboard;
+            return true;
+        }
+        return false;
+    };
+    /**
+     * Tests a <code>Mesh</code> object for a collision with the picking ray.
+     *
+     * @param mesh The mesh instance to be tested.
+     * @param pickingCollisionVO The collision object used to store the collision results
+     * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
+     * @param findClosest
+     */
+    PickingColliderBase.prototype.testMeshCollision = function (mesh, pickingCollisionVO, shortestCollisionDistance, findClosest) {
+        this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
+        pickingCollisionVO.materialOwner = null;
+        var subMesh;
+        var len = mesh.subMeshes.length;
+        for (var i = 0; i < len; ++i) {
+            subMesh = mesh.subMeshes[i];
+            if (this._pTestRenderableCollision(this._subMeshRenderablePool.getItem(subMesh), pickingCollisionVO, shortestCollisionDistance)) {
+                shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+                pickingCollisionVO.materialOwner = subMesh;
+                if (!findClosest)
+                    return true;
+            }
+        }
+        return pickingCollisionVO.materialOwner != null;
+    };
+    return PickingColliderBase;
+})();
+module.exports = PickingColliderBase;
+
+
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/pool/RenderablePool":undefined,"awayjs-stagegl/lib/pool/BillboardRenderable":undefined,"awayjs-stagegl/lib/pool/TriangleSubMeshRenderable":undefined}],"awayjs-renderergl/lib/pick/ShaderPicker":[function(require,module,exports){
+var Debug = require("awayjs-core/lib/utils/Debug");
+var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
+var Point = require("awayjs-core/lib/geom/Point");
+var Rectangle = require("awayjs-core/lib/geom/Rectangle");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
+var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
+var ContextGLClearMask = require("awayjs-stagegl/lib/base/ContextGLClearMask");
+var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
+var ContextGLTriangleFace = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
+/**
+ * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
+ * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
+ * on an entity that has its shaderPickingDetails property set to true.
+ *
+ * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
+ *
+ * @see away.entities.Entity#shaderPickingDetails
+ *
+ * @class away.pick.ShaderPicker
+ */
+var ShaderPicker = (function () {
+    /**
+     * Creates a new <code>ShaderPicker</code> object.
+     *
+     * @param shaderPickingDetails Determines whether the picker includes a second pass to calculate extra
+     * properties such as uv and normal coordinates.
+     */
+    function ShaderPicker(shaderPickingDetails) {
+        if (shaderPickingDetails === void 0) { shaderPickingDetails = false; }
+        this._onlyMouseEnabled = true;
+        this._interactives = new Array();
+        this._localHitPosition = new Vector3D();
+        this._hitUV = new Point();
+        this._localHitNormal = new Vector3D();
+        this._rayPos = new Vector3D();
+        this._rayDir = new Vector3D();
+        this._shaderPickingDetails = shaderPickingDetails;
+        this._id = new Array(4);
+        this._viewportData = new Array(4); // first 2 contain scale, last 2 translation
+        this._boundOffsetScale = new Array(8); // first 2 contain scale, last 2 translation
+        this._boundOffsetScale[3] = 0;
+        this._boundOffsetScale[7] = 1;
+    }
+    Object.defineProperty(ShaderPicker.prototype, "onlyMouseEnabled", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return this._onlyMouseEnabled;
+        },
+        set: function (value) {
+            this._onlyMouseEnabled = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @inheritDoc
+     */
+    ShaderPicker.prototype.getViewCollision = function (x, y, view) {
+        var collector = view.iEntityCollector;
+        this._stage = view.renderer.stage;
+        if (!this._stage)
+            return null;
+        this._context = this._stage.context;
+        this._viewportData[0] = view.width;
+        this._viewportData[1] = view.height;
+        this._viewportData[2] = -(this._projX = 2 * x / view.width - 1);
+        this._viewportData[3] = this._projY = 2 * y / view.height - 1;
+        // _potentialFound will be set to true if any object is actually rendered
+        this._potentialFound = false;
+        //reset head values
+        this._blendedRenderableHead = null;
+        this._opaqueRenderableHead = null;
+        this.pDraw(collector, null);
+        // clear buffers
+        this._context.setVertexBufferAt(0, null);
+        if (!this._context || !this._potentialFound)
+            return null;
+        if (!this._bitmapData)
+            this._bitmapData = new BitmapData(1, 1, false, 0);
+        this._context.drawToBitmapData(this._bitmapData);
+        this._hitColor = this._bitmapData.getPixel(0, 0);
+        if (!this._hitColor) {
+            this._context.present();
+            return null;
+        }
+        this._hitRenderable = this._interactives[this._hitColor - 1];
+        this._hitEntity = this._hitRenderable.sourceEntity;
+        if (this._onlyMouseEnabled && !this._hitEntity._iIsMouseEnabled())
+            return null;
+        var _collisionVO = this._hitEntity._iPickingCollisionVO;
+        if (this._shaderPickingDetails) {
+            this.getHitDetails(view.camera);
+            _collisionVO.localPosition = this._localHitPosition;
+            _collisionVO.localNormal = this._localHitNormal;
+            _collisionVO.uv = this._hitUV;
+            _collisionVO.index = this._faceIndex;
+        }
+        else {
+            _collisionVO.localPosition = null;
+            _collisionVO.localNormal = null;
+            _collisionVO.uv = null;
+            _collisionVO.index = 0;
+        }
+        return _collisionVO;
+    };
+    //*/
+    /**
+     * @inheritDoc
+     */
+    ShaderPicker.prototype.getSceneCollision = function (position, direction, scene) {
+        return null;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShaderPicker.prototype.pDraw = function (entityCollector, target) {
+        var camera = entityCollector.camera;
+        this._context.clear(0, 0, 0, 1);
+        this._stage.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
+        this._interactives.length = this._interactiveId = 0;
+        if (!this._objectProgram)
+            this.initObjectProgram();
+        this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+        this._context.setDepthTest(true, ContextGLCompareMode.LESS);
+        this._context.setProgram(this._objectProgram);
+        this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
+        //this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
+        //this.drawRenderables(entityCollector.blendedRenderableHead, camera);
+        //TODO: reimplement ShaderPicker inheriting from RendererBase
+    };
+    /**
+     * Draw a list of renderables.
+     * @param renderables The renderables to draw.
+     * @param camera The camera for which to render.
+     */
+    ShaderPicker.prototype.drawRenderables = function (renderable, camera) {
+        var matrix = Matrix3DUtils.CALCULATION_MATRIX;
+        var viewProjection = camera.viewProjection;
+        while (renderable) {
+            // it's possible that the renderable was already removed from the scene
+            if (!renderable.sourceEntity.scene || !renderable.sourceEntity._iIsMouseEnabled()) {
+                renderable = renderable.next;
+                continue;
+            }
+            this._potentialFound = true;
+            this._context.setCulling(renderable.materialOwner.material.bothSides ? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
+            this._interactives[this._interactiveId++] = renderable;
+            // color code so that reading from bitmapdata will contain the correct value
+            this._id[1] = (this._interactiveId >> 8) / 255; // on green channel
+            this._id[2] = (this._interactiveId & 0xff) / 255; // on blue channel
+            matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
+            matrix.append(viewProjection);
+            this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
+            this._context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._id, 1);
+            this._context.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+            this._context.drawTriangles(this._context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+            renderable = renderable.next;
+        }
+    };
+    ShaderPicker.prototype.updateRay = function (camera) {
+        this._rayPos = camera.scenePosition;
+        this._rayDir = camera.getRay(this._projX, this._projY, 1);
+        this._rayDir.normalize();
+    };
+    /**
+     * Creates the Program that color-codes objects.
+     */
+    ShaderPicker.prototype.initObjectProgram = function () {
+        var vertexCode;
+        var fragmentCode;
+        this._objectProgram = this._context.createProgram();
+        vertexCode = "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
+        fragmentCode = "mov oc, fc0"; // write identifier
+        Debug.throwPIR('ShaderPicker', 'initTriangleProgram', 'Dependency: initObjectProgram');
+        //_objectProgram.upload(new AGALMiniAssembler().assemble(ContextGLProgramType.VERTEX, vertexCode),new AGALMiniAssembler().assemble(ContextGLProgramType.FRAGMENT, fragmentCode));
+    };
+    /**
+     * Creates the Program that renders positions.
+     */
+    ShaderPicker.prototype.initTriangleProgram = function () {
+        var vertexCode;
+        var fragmentCode;
+        this._triangleProgram = this._context.createProgram();
+        // todo: add animation code
+        vertexCode = "add vt0, va0, vc5 			\n" + "mul vt0, vt0, vc6 			\n" + "mov v0, vt0				\n" + "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
+        fragmentCode = "mov oc, v0"; // write identifier
+        var vertexByteCode = (new AGALMiniAssembler().assemble("part vertex 1\n" + vertexCode + "endpart"))['vertex'].data;
+        var fragmentByteCode = (new AGALMiniAssembler().assemble("part fragment 1\n" + fragmentCode + "endpart"))['fragment'].data;
+        this._triangleProgram.upload(vertexByteCode, fragmentByteCode);
+    };
+    /**
+     * Gets more detailed information about the hir position, if required.
+     * @param camera The camera used to view the hit object.
+     */
+    ShaderPicker.prototype.getHitDetails = function (camera) {
+        this.getApproximatePosition(camera);
+        this.getPreciseDetails(camera);
+    };
+    /**
+     * Finds a first-guess approximate position about the hit position.
+     *
+     * @param camera The camera used to view the hit object.
+     */
+    ShaderPicker.prototype.getApproximatePosition = function (camera) {
+        var bounds = this._hitRenderable.sourceEntity.bounds.aabb;
+        var col;
+        var scX, scY, scZ;
+        var offsX, offsY, offsZ;
+        var localViewProjection = Matrix3DUtils.CALCULATION_MATRIX;
+        localViewProjection.copyFrom(this._hitRenderable.sourceEntity.getRenderSceneTransform(camera));
+        localViewProjection.append(camera.viewProjection);
+        if (!this._triangleProgram) {
+            this.initTriangleProgram();
+        }
+        this._boundOffsetScale[4] = 1 / (scX = bounds.width);
+        this._boundOffsetScale[5] = 1 / (scY = bounds.height);
+        this._boundOffsetScale[6] = 1 / (scZ = bounds.depth);
+        this._boundOffsetScale[0] = offsX = -bounds.x;
+        this._boundOffsetScale[1] = offsY = -bounds.y;
+        this._boundOffsetScale[2] = offsZ = -bounds.z;
+        this._context.setProgram(this._triangleProgram);
+        this._context.clear(0, 0, 0, 0, 1, 0, ContextGLClearMask.DEPTH);
+        this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
+        this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, localViewProjection, true);
+        this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
+        this._context.activateBuffer(0, this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+        this._context.drawTriangles(this._context.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
+        this._context.drawToBitmapData(this._bitmapData);
+        col = this._bitmapData.getPixel(0, 0);
+        this._localHitPosition.x = ((col >> 16) & 0xff) * scX / 255 - offsX;
+        this._localHitPosition.y = ((col >> 8) & 0xff) * scY / 255 - offsY;
+        this._localHitPosition.z = (col & 0xff) * scZ / 255 - offsZ;
+    };
+    /**
+     * Use the approximate position info to find the face under the mouse position from which we can derive the precise
+     * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
+     * @param camera The camera used to view the hit object.
+     */
+    ShaderPicker.prototype.getPreciseDetails = function (camera) {
+        var len = indices.length;
+        var x1, y1, z1;
+        var x2, y2, z2;
+        var x3, y3, z3;
+        var i = 0, j = 1, k = 2;
+        var t1, t2, t3;
+        var v0x, v0y, v0z;
+        var v1x, v1y, v1z;
+        var v2x, v2y, v2z;
+        var ni1, ni2, ni3;
+        var n1, n2, n3, nLength;
+        var dot00, dot01, dot02, dot11, dot12;
+        var s, t, invDenom;
+        var x = this._localHitPosition.x, y = this._localHitPosition.y, z = this._localHitPosition.z;
+        var u, v;
+        var ui1, ui2, ui3;
+        var s0x, s0y, s0z;
+        var s1x, s1y, s1z;
+        var nl;
+        var indices = this._hitRenderable.getIndexData().data;
+        var positions = this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA).data;
+        var positionStride = this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA).dataPerVertex;
+        var positionOffset = this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA);
+        var uvs = this._hitRenderable.getVertexData(TriangleSubGeometry.UV_DATA).data;
+        var uvStride = this._hitRenderable.getVertexData(TriangleSubGeometry.UV_DATA).dataPerVertex;
+        var uvOffset = this._hitRenderable.getVertexOffset(TriangleSubGeometry.UV_DATA);
+        var normals = this._hitRenderable.getVertexData(TriangleSubGeometry.NORMAL_DATA).data;
+        var normalStride = this._hitRenderable.getVertexData(TriangleSubGeometry.NORMAL_DATA).dataPerVertex;
+        var normalOffset = this._hitRenderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA);
+        this.updateRay(camera);
+        while (i < len) {
+            t1 = positionOffset + indices[i] * positionStride;
+            t2 = positionOffset + indices[j] * positionStride;
+            t3 = positionOffset + indices[k] * positionStride;
+            x1 = positions[t1];
+            y1 = positions[t1 + 1];
+            z1 = positions[t1 + 2];
+            x2 = positions[t2];
+            y2 = positions[t2 + 1];
+            z2 = positions[t2 + 2];
+            x3 = positions[t3];
+            y3 = positions[t3 + 1];
+            z3 = positions[t3 + 2];
+            // if within bounds
+            if (!((x < x1 && x < x2 && x < x3) || (y < y1 && y < y2 && y < y3) || (z < z1 && z < z2 && z < z3) || (x > x1 && x > x2 && x > x3) || (y > y1 && y > y2 && y > y3) || (z > z1 && z > z2 && z > z3))) {
+                // calculate barycentric coords for approximated position
+                v0x = x3 - x1;
+                v0y = y3 - y1;
+                v0z = z3 - z1;
+                v1x = x2 - x1;
+                v1y = y2 - y1;
+                v1z = z2 - z1;
+                v2x = x - x1;
+                v2y = y - y1;
+                v2z = z - z1;
+                dot00 = v0x * v0x + v0y * v0y + v0z * v0z;
+                dot01 = v0x * v1x + v0y * v1y + v0z * v1z;
+                dot02 = v0x * v2x + v0y * v2y + v0z * v2z;
+                dot11 = v1x * v1x + v1y * v1y + v1z * v1z;
+                dot12 = v1x * v2x + v1y * v2y + v1z * v2z;
+                invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+                s = (dot11 * dot02 - dot01 * dot12) * invDenom;
+                t = (dot00 * dot12 - dot01 * dot02) * invDenom;
+                // if inside the current triangle, fetch details hit information
+                if (s >= 0 && t >= 0 && (s + t) <= 1) {
+                    ni1 = normalOffset + indices[i] * normalStride;
+                    ni2 = normalOffset + indices[j] * normalStride;
+                    ni3 = normalOffset + indices[k] * normalStride;
+                    n1 = indices[ni1] + indices[ni2] + indices[ni3];
+                    n2 = indices[ni1 + 1] + indices[ni2 + 1] + indices[ni3 + 1];
+                    n3 = indices[ni1 + 2] + indices[ni2 + 2] + indices[ni3 + 2];
+                    nLength = Math.sqrt(n1 * n1 + n2 * n2 + n3 * n3);
+                    n1 /= nLength;
+                    n2 /= nLength;
+                    n3 /= nLength;
+                    // this is def the triangle, now calculate precise coords
+                    this.getPrecisePosition(this._hitRenderable.sourceEntity.inverseSceneTransform, n1, n2, n3, x1, y1, z1);
+                    v2x = this._localHitPosition.x - x1;
+                    v2y = this._localHitPosition.y - y1;
+                    v2z = this._localHitPosition.z - z1;
+                    s0x = x2 - x1; // s0 = p1 - p0
+                    s0y = y2 - y1;
+                    s0z = z2 - z1;
+                    s1x = x3 - x1; // s1 = p2 - p0
+                    s1y = y3 - y1;
+                    s1z = z3 - z1;
+                    this._localHitNormal.x = s0y * s1z - s0z * s1y; // n = s0 x s1
+                    this._localHitNormal.y = s0z * s1x - s0x * s1z;
+                    this._localHitNormal.z = s0x * s1y - s0y * s1x;
+                    nl = 1 / Math.sqrt(this._localHitNormal.x * this._localHitNormal.x + this._localHitNormal.y * this._localHitNormal.y + this._localHitNormal.z * this._localHitNormal.z); // normalize n
+                    this._localHitNormal.x *= nl;
+                    this._localHitNormal.y *= nl;
+                    this._localHitNormal.z *= nl;
+                    dot02 = v0x * v2x + v0y * v2y + v0z * v2z;
+                    dot12 = v1x * v2x + v1y * v2y + v1z * v2z;
+                    s = (dot11 * dot02 - dot01 * dot12) * invDenom;
+                    t = (dot00 * dot12 - dot01 * dot02) * invDenom;
+                    ui1 = uvOffset + indices[i] * uvStride;
+                    ui2 = uvOffset + indices[j] * uvStride;
+                    ui3 = uvOffset + indices[k] * uvStride;
+                    u = uvs[ui1];
+                    v = uvs[ui1 + 1];
+                    this._hitUV.x = u + t * (uvs[ui2] - u) + s * (uvs[ui3] - u);
+                    this._hitUV.y = v + t * (uvs[ui2 + 1] - v) + s * (uvs[ui3 + 1] - v);
+                    this._faceIndex = i;
+                    //TODO add back subGeometryIndex value
+                    //this._subGeometryIndex = away.utils.GeometryUtils.getMeshSubGeometryIndex(subGeom);
+                    return;
+                }
+            }
+            i += 3;
+            j += 3;
+            k += 3;
+        }
+    };
+    /**
+     * Finds the precise hit position by unprojecting the screen coordinate back unto the hit face's plane and
+     * calculating the intersection point.
+     * @param camera The camera used to render the object.
+     * @param invSceneTransform The inverse scene transformation of the hit object.
+     * @param nx The x-coordinate of the face's plane normal.
+     * @param ny The y-coordinate of the face plane normal.
+     * @param nz The z-coordinate of the face plane normal.
+     * @param px The x-coordinate of a point on the face's plane (ie a face vertex)
+     * @param py The y-coordinate of a point on the face's plane (ie a face vertex)
+     * @param pz The z-coordinate of a point on the face's plane (ie a face vertex)
+     */
+    ShaderPicker.prototype.getPrecisePosition = function (invSceneTransform, nx, ny, nz, px, py, pz) {
+        // calculate screen ray and find exact intersection position with triangle
+        var rx, ry, rz;
+        var ox, oy, oz;
+        var t;
+        var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
+        var cx = this._rayPos.x, cy = this._rayPos.y, cz = this._rayPos.z;
+        // unprojected projection point, gives ray dir in cam space
+        ox = this._rayDir.x;
+        oy = this._rayDir.y;
+        oz = this._rayDir.z;
+        // transform ray dir and origin (cam pos) to object space
+        //invSceneTransform.copyRawDataTo( raw  );
+        invSceneTransform.copyRawDataTo(raw);
+        rx = raw[0] * ox + raw[4] * oy + raw[8] * oz;
+        ry = raw[1] * ox + raw[5] * oy + raw[9] * oz;
+        rz = raw[2] * ox + raw[6] * oy + raw[10] * oz;
+        ox = raw[0] * cx + raw[4] * cy + raw[8] * cz + raw[12];
+        oy = raw[1] * cx + raw[5] * cy + raw[9] * cz + raw[13];
+        oz = raw[2] * cx + raw[6] * cy + raw[10] * cz + raw[14];
+        t = ((px - ox) * nx + (py - oy) * ny + (pz - oz) * nz) / (rx * nx + ry * ny + rz * nz);
+        this._localHitPosition.x = ox + rx * t;
+        this._localHitPosition.y = oy + ry * t;
+        this._localHitPosition.z = oz + rz * t;
+    };
+    ShaderPicker.prototype.dispose = function () {
+        this._bitmapData.dispose();
+        if (this._triangleProgram)
+            this._triangleProgram.dispose();
+        if (this._objectProgram)
+            this._objectProgram.dispose();
+        this._triangleProgram = null;
+        this._objectProgram = null;
+        this._bitmapData = null;
+        this._hitRenderable = null;
+        this._hitEntity = null;
+    };
+    ShaderPicker.MOUSE_SCISSOR_RECT = new Rectangle(0, 0, 1, 1);
+    return ShaderPicker;
+})();
+module.exports = ShaderPicker;
+
+
+},{"awayjs-core/lib/base/BitmapData":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
+var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
+var Geometry = require("awayjs-display/lib/base/Geometry");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
 /**
  *  Class Merge merges two or more static meshes into one.<code>Merge</code>
  */
@@ -17590,7 +17590,7 @@ var GeometryVO = (function () {
 module.exports = Merge;
 
 
-},{"awayjs-core/lib/core/base/Geometry":undefined,"awayjs-core/lib/core/base/TriangleSubGeometry":undefined,"awayjs-core/lib/core/geom/Matrix3DUtils":undefined,"awayjs-core/lib/entities/Mesh":undefined}],"awayjs-renderergl/lib/tools/data/ParticleGeometryTransform":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/entities/Mesh":undefined}],"awayjs-renderergl/lib/tools/data/ParticleGeometryTransform":[function(require,module,exports){
 /**
  * ...
  */
@@ -17633,11 +17633,11 @@ module.exports = ParticleGeometryTransform;
 
 
 },{}],"awayjs-renderergl/lib/tools/helpers/ParticleGeometryHelper":[function(require,module,exports){
-var TriangleSubGeometry = require("awayjs-core/lib/core/base/TriangleSubGeometry");
-var Point = require("awayjs-core/lib/core/geom/Point");
-var Vector3D = require("awayjs-core/lib/core/geom/Vector3D");
+var Point = require("awayjs-core/lib/geom/Point");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
-var ParticleGeometry = require("awayjs-renderergl/lib/core/base/ParticleGeometry");
+var ParticleGeometry = require("awayjs-renderergl/lib/base/ParticleGeometry");
 /**
  * ...
  */
@@ -17813,14 +17813,14 @@ var ParticleGeometryHelper = (function () {
 module.exports = ParticleGeometryHelper;
 
 
-},{"awayjs-core/lib/core/base/TriangleSubGeometry":undefined,"awayjs-core/lib/core/geom/Point":undefined,"awayjs-core/lib/core/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticleData":undefined,"awayjs-renderergl/lib/core/base/ParticleGeometry":undefined}],"awayjs-renderergl/lib/utils/PerspectiveMatrix3D":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/animators/data/ParticleData":undefined,"awayjs-renderergl/lib/base/ParticleGeometry":undefined}],"awayjs-renderergl/lib/utils/PerspectiveMatrix3D":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Matrix3D = require("awayjs-core/lib/core/geom/Matrix3D");
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 /**
  *
  */
@@ -17840,7 +17840,7 @@ var PerspectiveMatrix3D = (function (_super) {
 module.exports = PerspectiveMatrix3D;
 
 
-},{"awayjs-core/lib/core/geom/Matrix3D":undefined}]},{},[])
+},{"awayjs-core/lib/geom/Matrix3D":undefined}]},{},[])
 
 
 //# sourceMappingURL=awayjs-renderergl.js.map

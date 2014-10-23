@@ -1,12 +1,13 @@
-import DisplayObjectContainer			= require("awayjs-core/lib/containers/DisplayObjectContainer");
-import Geometry							= require("awayjs-core/lib/core/base/Geometry");
-import TriangleSubGeometry				= require("awayjs-core/lib/core/base/TriangleSubGeometry");
-import Matrix3D							= require("awayjs-core/lib/core/geom/Matrix3D");
-import Quaternion						= require("awayjs-core/lib/core/geom/Quaternion");
-import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
-import URLLoaderDataFormat				= require("awayjs-core/lib/core/net/URLLoaderDataFormat");
-import Mesh								= require("awayjs-core/lib/entities/Mesh");
+import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
+import Quaternion						= require("awayjs-core/lib/geom/Quaternion");
+import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import URLLoaderDataFormat				= require("awayjs-core/lib/net/URLLoaderDataFormat");
 import ParserBase						= require("awayjs-core/lib/parsers/ParserBase");
+
+import DisplayObjectContainer			= require("awayjs-display/lib/containers/DisplayObjectContainer");
+import Geometry							= require("awayjs-display/lib/base/Geometry");
+import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
+import Mesh								= require("awayjs-display/lib/entities/Mesh");
 
 import SkeletonAnimationSet				= require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
 import Skeleton							= require("awayjs-renderergl/lib/animators/data/Skeleton");
