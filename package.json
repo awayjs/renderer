@@ -1,26 +1,26 @@
 {
-    "name": "awayjs-renderergl",
-    "version": "0.1.0",
-    "description": "GL Renderer for AwayJS",
-    "url": "http://www.away3d.com",
-    "dependencies": {
-      "awayjs-core": "^0.2.0",
-      "awayjs-display": "^0.1.0",
-      "awayjs-stagegl": "^0.3.1"
-    },
-    "devDependencies": {
-      "browserify": "^5.12.0",
-      "exorcist": "^0.1.6",
-      "glob": "^4.0.6",
-      "gulp": "^3.8.8",
-      "gulp-changed": "^1.0.0",
-      "gulp-concat": "^2.4.1",
-      "gulp-sourcemaps": "git://github.com/rob-bateman/gulp-sourcemaps.git",
-      "gulp-typescript": "^2.0.0",
-      "path": "^0.4.9",
-      "uglify-js": "~2.3.5",
-      "vinyl-map": "^1.0.1",
-      "vinyl-source-stream": "^1.0.0",
-      "watchify": "^1.0.6"
-    }
+  "name": "awayjs-renderergl",
+  "version": "0.2.0",
+  "description": "GL Renderer for AwayJS",
+  "url": "http://www.away3d.com",
+  "dependencies": {
+    "awayjs-core": "^0.2.0",
+    "awayjs-display": "^0.1.0",
+    "awayjs-stagegl": "^0.3.1"
+  },
+  "devDependencies": {
+    "browserify": "^5.12.0",
+    "exorcist": "^0.1.6",
+    "glob": "^4.0.6",
+    "gulp": "^3.8.8",
+    "gulp-changed": "^1.0.0",
+    "gulp-concat": "^2.4.1",
+    "gulp-sourcemaps": "git://github.com/rob-bateman/gulp-sourcemaps.git",
+    "gulp-typescript": "^2.0.0",
+    "path": "^0.4.9",
+    "uglify-js": "~2.3.5",
+    "vinyl-map": "^1.0.1",
+    "vinyl-source-stream": "^1.0.0",
+    "watchify": "^1.0.6"
+  }
 }
