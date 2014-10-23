@@ -1,28 +1,3 @@
-//var gulp = require('gulp');
-//var browserify = require('browserify');
-//var source = require('vinyl-source-stream');
-//
-
-
-//var gulp = require('gulp');
-//var glob = require('glob');
-//var browserify  = require('browserify');
-//var source = require('vinyl-source-stream');
-//
-//gulp.task('browserify', function(){
-//    var testFiles = glob.sync('./build/away/**/*.js');
-//    return browserify({
-//        debug: true,
-//        entries: testFiles,
-//        paths: ['./build/away']
-//    })
-//        .bundle()
-//        .pipe(source('away.js'))
-//        .pipe(gulp.dest('./build'));
-//});
-//
-//gulp.task('default', ['browserify']);
-
 var concat = require('gulp-concat');
 var gulp = require('gulp');
 var changed = require('gulp-changed');
@@ -36,31 +11,13 @@ var sourcemaps = require('gulp-sourcemaps');
 
 var typescript = require('gulp-typescript');
 
-//var project = {
-//    declaration: true,
-//    sourcemap: true,
-//    noResolve: false,
-//    target: 'ES5',
-//    module: 'commonjs'
-//};
-//
-//gulp.task('compile', function() {
-//    return gulp.src(['./lib/**/*.ts'])
-//        //.pipe(changed('./out/', {extension:'.js', hasChanged: changed.compareLastModifiedTime}))
-//        .pipe(tsc(project))
-//        .pipe(gulp.dest('out/'));
-//});
-//
-//gulp.task('watch', ['scripts'], function() {
-//    gulp.watch('lib/**/*.ts', ['scripts']);
-//});
-
 gulp.task('compile', function() {
     var tsProject = typescript.createProject({
         declarationFiles: true,
         noExternalResolve: true,
         target: 'ES5',
-        module: 'commonjs'
+        module: 'commonjs',
+        sourceRoot: './awayjs-renderergl/lib/'
     });
 
     var ambientWrap = map(function(code, filename) {
@@ -81,7 +38,7 @@ gulp.task('compile', function() {
         .pipe(gulp.dest('./build'));
 
     return tsResult.js
-        .pipe(sourcemaps.write())
+        .pipe(sourcemaps.write({sourceRoot: '../'}))
         .pipe(gulp.dest('./lib'));
 });
 
@@ -122,7 +79,8 @@ gulp.task('tests', function () {
         declarationFiles: true,
         noExternalResolve: true,
         target: 'ES5',
-        module: 'commonjs'
+        module: 'commonjs',
+        sourceRoot: './'
     });
 
     var tsResult = gulp.src(['./tests/**/*.ts', './node_modules/awayjs-**/build/*.d.ts', './build/awayjs-renderergl.d.ts'])
@@ -131,6 +89,6 @@ gulp.task('tests', function () {
         .pipe(typescript(tsProject));
 
     return tsResult.js
-        .pipe(sourcemaps.write())
+        .pipe(sourcemaps.write({sourceRoot: './tests'}))
         .pipe(gulp.dest('./tests'));
 });
