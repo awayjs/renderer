@@ -9,66 +9,6 @@ declare module "awayjs-renderergl/lib/animators/data/ParticleData" {
 	export = ParticleData;
 	
 }
-declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
-	import Geometry = require("awayjs-display/lib/base/Geometry");
-	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
-	/**
-	 * @class away.base.ParticleGeometry
-	 */
-	class ParticleGeometry extends Geometry {
-	    particles: ParticleData[];
-	    numParticles: number;
-	}
-	export = ParticleGeometry;
-	
-}
-declare module "awayjs-renderergl/lib/events/AnimationStateEvent" {
-	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-	import Event = require("awayjs-core/lib/events/Event");
-	import AnimatorBase = require("awayjs-stagegl/lib/animators/AnimatorBase");
-	import IAnimationState = require("awayjs-stagegl/lib/animators/states/IAnimationState");
-	/**
-	 * Dispatched to notify changes in an animation state's state.
-	 */
-	class AnimationStateEvent extends Event {
-	    /**
-	     * Dispatched when a non-looping clip node inside an animation state reaches the end of its timeline.
-	     */
-	    static PLAYBACK_COMPLETE: string;
-	    static TRANSITION_COMPLETE: string;
-	    private _animator;
-	    private _animationState;
-	    private _animationNode;
-	    /**
-	     * Create a new <code>AnimatonStateEvent</code>
-	     *
-	     * @param type The event type.
-	     * @param animator The animation state object that is the subject of this event.
-	     * @param animationNode The animation node inside the animation state from which the event originated.
-	     */
-	    constructor(type: string, animator: AnimatorBase, animationState: IAnimationState, animationNode: AnimationNodeBase);
-	    /**
-	     * The animator object that is the subject of this event.
-	     */
-	    animator: AnimatorBase;
-	    /**
-	     * The animation state object that is the subject of this event.
-	     */
-	    animationState: IAnimationState;
-	    /**
-	     * The animation node inside the animation state from which the event originated.
-	     */
-	    animationNode: AnimationNodeBase;
-	    /**
-	     * Clones the event.
-	     *
-	     * @return An exact duplicate of the current object.
-	     */
-	    clone(): Event;
-	}
-	export = AnimationStateEvent;
-	
-}
 declare module "awayjs-renderergl/lib/animators/data/ParticleAnimationData" {
 	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
 	/**
@@ -258,6 +198,53 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase" {
 	    _iProcessAnimationSetting(particleAnimationSet: ParticleAnimationSet): void;
 	}
 	export = ParticleNodeBase;
+	
+}
+declare module "awayjs-renderergl/lib/events/AnimationStateEvent" {
+	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+	import Event = require("awayjs-core/lib/events/Event");
+	import AnimatorBase = require("awayjs-stagegl/lib/animators/AnimatorBase");
+	import IAnimationState = require("awayjs-stagegl/lib/animators/states/IAnimationState");
+	/**
+	 * Dispatched to notify changes in an animation state's state.
+	 */
+	class AnimationStateEvent extends Event {
+	    /**
+	     * Dispatched when a non-looping clip node inside an animation state reaches the end of its timeline.
+	     */
+	    static PLAYBACK_COMPLETE: string;
+	    static TRANSITION_COMPLETE: string;
+	    private _animator;
+	    private _animationState;
+	    private _animationNode;
+	    /**
+	     * Create a new <code>AnimatonStateEvent</code>
+	     *
+	     * @param type The event type.
+	     * @param animator The animation state object that is the subject of this event.
+	     * @param animationNode The animation node inside the animation state from which the event originated.
+	     */
+	    constructor(type: string, animator: AnimatorBase, animationState: IAnimationState, animationNode: AnimationNodeBase);
+	    /**
+	     * The animator object that is the subject of this event.
+	     */
+	    animator: AnimatorBase;
+	    /**
+	     * The animation state object that is the subject of this event.
+	     */
+	    animationState: IAnimationState;
+	    /**
+	     * The animation node inside the animation state from which the event originated.
+	     */
+	    animationNode: AnimationNodeBase;
+	    /**
+	     * Clones the event.
+	     *
+	     * @return An exact duplicate of the current object.
+	     */
+	    clone(): Event;
+	}
+	export = AnimationStateEvent;
 	
 }
 declare module "awayjs-renderergl/lib/animators/states/AnimationStateBase" {
@@ -462,6 +449,19 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleTimeNode" {
 	    _iGeneratePropertyOfOneParticle(param: ParticleProperties): void;
 	}
 	export = ParticleTimeNode;
+	
+}
+declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
+	import Geometry = require("awayjs-display/lib/base/Geometry");
+	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
+	/**
+	 * @class away.base.ParticleGeometry
+	 */
+	class ParticleGeometry extends Geometry {
+	    particles: ParticleData[];
+	    numParticles: number;
+	}
+	export = ParticleGeometry;
 	
 }
 declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
