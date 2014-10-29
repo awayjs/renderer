@@ -3,7 +3,8 @@ node_modules/
 
 # Dev files
 npm-debug.log
-
+tests/
+docs/
 
 # Project property files
 .actionScriptProperties
