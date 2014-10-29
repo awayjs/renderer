@@ -1,6 +1,6 @@
 {
   "name": "awayjs-renderergl",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "GL Renderer for AwayJS",
   "url": "http://www.away3d.com",
   "dependencies": {
