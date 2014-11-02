@@ -4,14 +4,14 @@ import BitmapTexture					= require("awayjs-core/lib/textures/BitmapTexture");
 import DirectionalLight					= require("awayjs-display/lib/entities/DirectionalLight");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
-import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
-import ShaderLightingObject				= require("awayjs-stagegl/lib/materials/compilation/ShaderLightingObject");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterCache				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterData				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterData");
-import ShaderRegisterElement			= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
-import ShadowMethodBase					= require("awayjs-stagegl/lib/materials/methods/ShadowMethodBase");
+
+import MethodVO							= require("awayjs-renderergl/lib/materials/compilation/MethodVO");
+import ShaderLightingObject				= require("awayjs-renderergl/lib/materials/compilation/ShaderLightingObject");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderRegisterCache				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
+import ShaderRegisterData				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterData");
+import ShaderRegisterElement			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterElement");
+import ShadowMethodBase					= require("awayjs-renderergl/lib/materials/methods/ShadowMethodBase");
 
 /**
  * ShadowDitheredMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
@@ -156,7 +156,7 @@ class ShadowDitheredMethod extends ShadowMethodBase
 		data[index + 10] = (stage.height - 1)/63;
 		data[index + 11] = 2*this._range/this._depthMapSize;
 
-		(<IContextStageGL> stage.context).activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
+		stage.context.activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
 	}
 
 	/**
@@ -278,7 +278,7 @@ class ShadowDitheredMethod extends ShadowMethodBase
 		data[index + 2] = (stage.height - 1)/63;
 		data[index + 3] = 2*this._range/this._depthMapSize;
 
-		(<IContextStageGL> stage.context).activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
+		stage.context.activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
 	}
 
 	/**

@@ -1,18 +1,17 @@
 import Camera							= require("awayjs-display/lib/entities/Camera");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
-import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
-import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
-import ShaderLightingObject				= require("awayjs-stagegl/lib/materials/compilation/ShaderLightingObject");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterCache				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterData				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterData");
-import ShaderRegisterElement			= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
-import DiffuseBasicMethod				= require("awayjs-stagegl/lib/materials/methods/DiffuseBasicMethod");
-import MaterialPassBase					= require("awayjs-stagegl/lib/materials/passes/MaterialPassBase");
 
+import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
+import MethodVO							= require("awayjs-renderergl/lib/materials/compilation/MethodVO");
+import ShaderLightingObject				= require("awayjs-renderergl/lib/materials/compilation/ShaderLightingObject");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderRegisterCache				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
+import ShaderRegisterData				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterData");
+import ShaderRegisterElement			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterElement");
+import DiffuseBasicMethod				= require("awayjs-renderergl/lib/materials/methods/DiffuseBasicMethod");
 import DiffuseCompositeMethod			= require("awayjs-renderergl/lib/materials/methods/DiffuseCompositeMethod");
+import MaterialPassBase					= require("awayjs-renderergl/lib/materials/passes/MaterialPassBase");
 import SingleObjectDepthPass			= require("awayjs-renderergl/lib/materials/passes/SingleObjectDepthPass");
 
 /**
@@ -229,7 +228,7 @@ class DiffuseSubSurfaceMethod extends DiffuseCompositeMethod
 	 */
 	public iSetRenderState(shaderObject:ShaderObjectBase, methodVO:MethodVO, renderable:RenderableBase, stage:Stage, camera:Camera)
 	{
-		(<IContextStageGL> stage.context).activateTexture(methodVO.secondaryTexturesIndex, this._depthPass._iGetDepthMap(renderable));
+		stage.context.activateTexture(methodVO.secondaryTexturesIndex, this._depthPass._iGetDepthMap(renderable));
 
 		this._depthPass._iGetProjection(renderable).copyRawDataTo(shaderObject.vertexConstantData, methodVO.secondaryVertexConstantsIndex + 4, true);
 	}

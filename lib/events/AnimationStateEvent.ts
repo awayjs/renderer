@@ -2,8 +2,8 @@ import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/Animat
 
 import Event							= require("awayjs-core/lib/events/Event");
 
-import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
-import IAnimationState					= require("awayjs-stagegl/lib/animators/states/IAnimationState");
+import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
+import IAnimationState					= require("awayjs-renderergl/lib/animators/states/IAnimationState");
 
 /**
  * Dispatched to notify changes in an animation state's state.

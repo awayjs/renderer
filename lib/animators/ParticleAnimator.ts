@@ -2,21 +2,21 @@ import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
 import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
 import Camera							= require("awayjs-display/lib/entities/Camera");
 
-import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
-import AnimationRegisterCache			= require("awayjs-stagegl/lib/animators/data/AnimationRegisterCache");
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
-import TriangleSubMeshRenderable		= require("awayjs-stagegl/lib/pool/TriangleSubMeshRenderable");
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
+import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
+import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 import ParticleAnimationSet				= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
 import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
+import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
 
 /**
  * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects

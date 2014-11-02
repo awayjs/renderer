@@ -16,10 +16,10 @@ import Geometry							= require("awayjs-display/lib/base/Geometry");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
-import DefaultMaterialManager			= require("awayjs-stagegl/lib/materials/utils/DefaultMaterialManager");
-import SpecularBasicMethod				= require("awayjs-stagegl/lib/materials/methods/SpecularBasicMethod");
-import TriangleMethodMaterial			= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import TriangleMaterialMode				= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
+import TriangleMethodMaterial			= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import TriangleMaterialMode				= require("awayjs-renderergl/lib/materials/TriangleMaterialMode");
+import SpecularBasicMethod				= require("awayjs-renderergl/lib/materials/methods/SpecularBasicMethod");
+import DefaultMaterialManager			= require("awayjs-renderergl/lib/materials/utils/DefaultMaterialManager");
 
 /**
  * OBJParser provides a parser for the OBJ data type.

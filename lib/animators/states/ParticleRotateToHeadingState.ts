@@ -2,15 +2,15 @@ import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 
 import Camera							= require("awayjs-display/lib/entities/Camera");
 
-import AnimationRegisterCache			= require("awayjs-stagegl/lib/animators/data/AnimationRegisterCache");
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
 
 import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
+import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleRotateToHeadingNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
 
 /**
  * ...

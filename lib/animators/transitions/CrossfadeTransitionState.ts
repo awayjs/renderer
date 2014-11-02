@@ -1,5 +1,4 @@
-import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
-
+import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import SkeletonBinaryLERPNode			= require("awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode");
 import SkeletonBinaryLERPState			= require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
 import CrossfadeTransitionNode			= require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode");

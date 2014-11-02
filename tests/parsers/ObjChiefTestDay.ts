@@ -16,8 +16,8 @@ import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLig
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 
-import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
+import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
 
 import OBJParser					= require("awayjs-renderergl/lib/parsers/OBJParser");
 

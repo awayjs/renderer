@@ -5,19 +5,19 @@ import TriangleSubMesh					= require("awayjs-display/lib/base/TriangleSubMesh");
 import Camera							= require("awayjs-display/lib/entities/Camera");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 
-import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import TriangleSubMeshRenderable		= require("awayjs-stagegl/lib/pool/TriangleSubMeshRenderable");
-import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
-import VertexDataPool					= require("awayjs-stagegl/lib/pool/VertexDataPool");
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
+import VertexDataPool					= require("awayjs-stagegl/lib/pool/VertexDataPool");
 
+import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import VertexAnimationSet				= require("awayjs-renderergl/lib/animators/VertexAnimationSet");
 import VertexAnimationMode				= require("awayjs-renderergl/lib/animators/data/VertexAnimationMode");
 import IVertexAnimationState			= require("awayjs-renderergl/lib/animators/states/IVertexAnimationState");
 import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
+import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
+import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
 
 /**
  * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects

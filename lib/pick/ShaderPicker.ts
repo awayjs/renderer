@@ -20,8 +20,6 @@ import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
 import AGALMiniAssembler				= require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
-import DefaultRenderer					= require("awayjs-stagegl/lib/render/DefaultRenderer");
 import ContextGLBlendFactor				= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 import ContextGLClearMask				= require("awayjs-stagegl/lib/base/ContextGLClearMask");
 import ContextGLCompareMode				= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
@@ -30,6 +28,9 @@ import ContextGLTriangleFace			= require("awayjs-stagegl/lib/base/ContextGLTrian
 import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
 import IProgram							= require("awayjs-stagegl/lib/base/IProgram");
 import ITextureBase						= require("awayjs-stagegl/lib/base/ITextureBase");
+
+import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
+import DefaultRenderer					= require("awayjs-renderergl/lib/render/DefaultRenderer");
 
 /**
  * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,

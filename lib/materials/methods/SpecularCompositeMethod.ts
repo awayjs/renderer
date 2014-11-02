@@ -3,16 +3,17 @@ import Camera							= require("awayjs-display/lib/entities/Camera");
 import Texture2DBase					= require("awayjs-core/lib/textures/Texture2DBase");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
-import ShadingMethodEvent				= require("awayjs-stagegl/lib/events/ShadingMethodEvent");
-import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
-import ShaderLightingObject				= require("awayjs-stagegl/lib/materials/compilation/ShaderLightingObject");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterCache				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterData				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterData");
-import ShaderRegisterElement			= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
-import SpecularBasicMethod				= require("awayjs-stagegl/lib/materials/methods/SpecularBasicMethod");
-import MaterialPassBase					= require("awayjs-stagegl/lib/materials/passes/MaterialPassBase");
+
+import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
+import ShadingMethodEvent				= require("awayjs-renderergl/lib/events/ShadingMethodEvent");
+import MethodVO							= require("awayjs-renderergl/lib/materials/compilation/MethodVO");
+import ShaderLightingObject				= require("awayjs-renderergl/lib/materials/compilation/ShaderLightingObject");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderRegisterCache				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
+import ShaderRegisterData				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterData");
+import ShaderRegisterElement			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterElement");
+import SpecularBasicMethod				= require("awayjs-renderergl/lib/materials/methods/SpecularBasicMethod");
+import MaterialPassBase					= require("awayjs-renderergl/lib/materials/passes/MaterialPassBase");
 
 /**
  * SpecularCompositeMethod provides a base class for specular methods that wrap a specular method to alter the

@@ -48,13 +48,8 @@ import PrimitivePlanePrefab				= require("awayjs-display/lib/prefabs/PrimitivePl
 import PrimitiveSpherePrefab			= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
 import PrimitiveTorusPrefab				= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 
-import AnimationSetBase					= require("awayjs-stagegl/lib/animators/AnimationSetBase");
-import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
-import SkyboxMaterial					= require("awayjs-stagegl/lib/materials/SkyboxMaterial");
-import TriangleMaterialMode				= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
-import TriangleMethodMaterial			= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import DefaultMaterialManager			= require("awayjs-stagegl/lib/materials/utils/DefaultMaterialManager");
-
+import AnimationSetBase					= require("awayjs-renderergl/lib/animators/AnimationSetBase");
+import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import VertexAnimationSet				= require("awayjs-renderergl/lib/animators/VertexAnimationSet");
 import VertexAnimator					= require("awayjs-renderergl/lib/animators/VertexAnimator");
 import SkeletonAnimationSet				= require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
@@ -65,6 +60,10 @@ import SkeletonPose						= require("awayjs-renderergl/lib/animators/data/Skeleto
 import SkeletonJoint					= require("awayjs-renderergl/lib/animators/data/SkeletonJoint");
 import SkeletonClipNode					= require("awayjs-renderergl/lib/animators/nodes/SkeletonClipNode");
 import VertexClipNode					= require("awayjs-renderergl/lib/animators/nodes/VertexClipNode");
+import SkyboxMaterial					= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
+import TriangleMaterialMode				= require("awayjs-renderergl/lib/materials/TriangleMaterialMode");
+import TriangleMethodMaterial			= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import DefaultMaterialManager			= require("awayjs-renderergl/lib/materials/utils/DefaultMaterialManager");
 import AmbientEnvMapMethod				= require("awayjs-renderergl/lib/materials/methods/AmbientEnvMapMethod");
 import DiffuseDepthMethod				= require("awayjs-renderergl/lib/materials/methods/DiffuseDepthMethod");
 import DiffuseCelMethod					= require("awayjs-renderergl/lib/materials/methods/DiffuseCelMethod");
@@ -73,28 +72,24 @@ import DiffuseLightMapMethod			= require("awayjs-renderergl/lib/materials/method
 import DiffuseWrapMethod				= require("awayjs-renderergl/lib/materials/methods/DiffuseWrapMethod");
 import EffectAlphaMaskMethod			= require("awayjs-renderergl/lib/materials/methods/EffectAlphaMaskMethod");
 import EffectColorMatrixMethod			= require("awayjs-renderergl/lib/materials/methods/EffectColorMatrixMethod");
-import EffectColorTransformMethod		= require("awayjs-stagegl/lib/materials/methods/EffectColorTransformMethod");
+import EffectColorTransformMethod		= require("awayjs-renderergl/lib/materials/methods/EffectColorTransformMethod");
 import EffectEnvMapMethod				= require("awayjs-renderergl/lib/materials/methods/EffectEnvMapMethod");
 import EffectFogMethod					= require("awayjs-renderergl/lib/materials/methods/EffectFogMethod");
 import EffectFresnelEnvMapMethod		= require("awayjs-renderergl/lib/materials/methods/EffectFresnelEnvMapMethod");
 import EffectLightMapMethod				= require("awayjs-renderergl/lib/materials/methods/EffectLightMapMethod");
-import EffectMethodBase					= require("awayjs-stagegl/lib/materials/methods/EffectMethodBase");
+import EffectMethodBase					= require("awayjs-renderergl/lib/materials/methods/EffectMethodBase");
 import EffectRimLightMethod				= require("awayjs-renderergl/lib/materials/methods/EffectRimLightMethod");
 import NormalSimpleWaterMethod			= require("awayjs-renderergl/lib/materials/methods/NormalSimpleWaterMethod");
 import ShadowDitheredMethod				= require("awayjs-renderergl/lib/materials/methods/ShadowDitheredMethod");
 import ShadowFilteredMethod				= require("awayjs-renderergl/lib/materials/methods/ShadowFilteredMethod");
-import ShadowMethodBase					= require("awayjs-stagegl/lib/materials/methods/ShadowMethodBase");
+import ShadowMethodBase					= require("awayjs-renderergl/lib/materials/methods/ShadowMethodBase");
 import SpecularFresnelMethod			= require("awayjs-renderergl/lib/materials/methods/SpecularFresnelMethod");
-import ShadowHardMethod					= require("awayjs-stagegl/lib/materials/methods/ShadowHardMethod");
+import ShadowHardMethod					= require("awayjs-renderergl/lib/materials/methods/ShadowHardMethod");
 import SpecularAnisotropicMethod		= require("awayjs-renderergl/lib/materials/methods/SpecularAnisotropicMethod");
 import SpecularCelMethod				= require("awayjs-renderergl/lib/materials/methods/SpecularCelMethod");
 import SpecularPhongMethod				= require("awayjs-renderergl/lib/materials/methods/SpecularPhongMethod");
 import ShadowNearMethod					= require("awayjs-renderergl/lib/materials/methods/ShadowNearMethod");
 import ShadowSoftMethod					= require("awayjs-renderergl/lib/materials/methods/ShadowSoftMethod");
-
-import AWDBlock							= require("awayjs-renderergl/lib/parsers/data/AWDBlock");
-import AWDProperties					= require("awayjs-renderergl/lib/parsers/data/AWDProperties");
-import BitFlags							= require("awayjs-renderergl/lib/parsers/data/BitFlags");
 
 /**
  * AWDParser provides a parser for the AWD data type.
@@ -2819,3 +2814,83 @@ class AWDParser extends ParserBase
 }
 
 export = AWDParser;
+
+class AWDBlock
+{
+	public id:number;
+	public name:string;
+	public data:any;
+	public len:any;
+	public geoID:number;
+	public extras:Object;
+	public bytes:ByteArray;
+	public errorMessages:Array<string>;
+	public uvsForVertexAnimation:Array<Array<number>>;
+
+	constructor()
+	{
+	}
+
+	public dispose()
+	{
+
+		this.id = null;
+		this.bytes = null;
+		this.errorMessages = null;
+		this.uvsForVertexAnimation = null;
+
+	}
+
+	public addError(errorMsg:string):void
+	{
+		if (!this.errorMessages)
+			this.errorMessages = new Array<string>();
+
+		this.errorMessages.push(errorMsg);
+	}
+}
+
+class AWDProperties
+{
+	public set(key:number, value:any):void
+	{
+		this[ key.toString() ] = value;
+	}
+
+	public get(key:number, fallback:any):any
+	{
+		if (this.hasOwnProperty(key.toString())) {
+			return this[key.toString()];
+		} else {
+			return fallback;
+		}
+	}
+}
+
+/**
+ *
+ */
+class BitFlags
+{
+	public static FLAG1:number = 1;
+	public static FLAG2:number = 2;
+	public static FLAG3:number = 4;
+	public static FLAG4:number = 8;
+	public static FLAG5:number = 16;
+	public static FLAG6:number = 32;
+	public static FLAG7:number = 64;
+	public static FLAG8:number = 128;
+	public static FLAG9:number = 256;
+	public static FLAG10:number = 512;
+	public static FLAG11:number = 1024;
+	public static FLAG12:number = 2048;
+	public static FLAG13:number = 4096;
+	public static FLAG14:number = 8192;
+	public static FLAG15:number = 16384;
+	public static FLAG16:number = 32768;
+
+	public static test(flags:number, testFlag:number):boolean
+	{
+		return (flags & testFlag) == testFlag;
+	}
+}

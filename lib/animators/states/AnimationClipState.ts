@@ -1,4 +1,4 @@
-import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
+import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 
 import AnimationClipNodeBase			= require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
 import AnimationStateBase				= require("awayjs-renderergl/lib/animators/states/AnimationStateBase");

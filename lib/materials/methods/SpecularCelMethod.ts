@@ -1,12 +1,12 @@
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
-import ShaderLightingObject				= require("awayjs-stagegl/lib/materials/compilation/ShaderLightingObject");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterCache				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterData				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterData");
-import ShaderRegisterElement			= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
-import SpecularBasicMethod				= require("awayjs-stagegl/lib/materials/methods/SpecularBasicMethod");
 
+import MethodVO							= require("awayjs-renderergl/lib/materials/compilation/MethodVO");
+import ShaderLightingObject				= require("awayjs-renderergl/lib/materials/compilation/ShaderLightingObject");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderRegisterCache				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
+import ShaderRegisterData				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterData");
+import ShaderRegisterElement			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterElement");
+import SpecularBasicMethod				= require("awayjs-renderergl/lib/materials/methods/SpecularBasicMethod");
 import SpecularCompositeMethod			= require("awayjs-renderergl/lib/materials/methods/SpecularCompositeMethod");
 
 /**

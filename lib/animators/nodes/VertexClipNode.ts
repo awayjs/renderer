@@ -2,7 +2,7 @@ import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
 import Geometry							= require("awayjs-display/lib/base/Geometry");
 
-import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
+import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 
 import AnimationClipNodeBase			= require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
 import VertexClipState					= require("awayjs-renderergl/lib/animators/states/VertexClipState");

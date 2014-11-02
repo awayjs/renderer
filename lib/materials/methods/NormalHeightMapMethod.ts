@@ -1,13 +1,13 @@
 import Texture2DBase					= require("awayjs-core/lib/textures/Texture2DBase");
 
-import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterCache				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterData				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterData");
-import ShaderRegisterElement			= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
-import NormalBasicMethod				= require("awayjs-stagegl/lib/materials/methods/NormalBasicMethod");
-import ShadingMethodBase				= require("awayjs-stagegl/lib/materials/methods/ShadingMethodBase");
-import ShaderCompilerHelper				= require("awayjs-stagegl/lib/materials/utils/ShaderCompilerHelper");
+import MethodVO							= require("awayjs-renderergl/lib/materials/compilation/MethodVO");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderRegisterCache				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
+import ShaderRegisterData				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterData");
+import ShaderRegisterElement			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterElement");
+import NormalBasicMethod				= require("awayjs-renderergl/lib/materials/methods/NormalBasicMethod");
+import ShadingMethodBase				= require("awayjs-renderergl/lib/materials/methods/ShadingMethodBase");
+import ShaderCompilerHelper				= require("awayjs-renderergl/lib/materials/utils/ShaderCompilerHelper");
 
 /**
  * NormalHeightMapMethod provides a normal map method that uses a height map to calculate the normals.

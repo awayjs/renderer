@@ -17,15 +17,9 @@ import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeom
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
-import DefaultMaterialManager			= require("awayjs-stagegl/lib/materials/utils/DefaultMaterialManager");
-import TriangleMethodMaterial			= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import TriangleMaterialMode				= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
-
-import FaceVO							= require("awayjs-renderergl/lib/parsers/data/FaceVO");
-import MaterialVO						= require("awayjs-renderergl/lib/parsers/data/MaterialVO");
-import ObjectVO							= require("awayjs-renderergl/lib/parsers/data/ObjectVO");
-import TextureVO						= require("awayjs-renderergl/lib/parsers/data/TextureVO");
-import VertexVO							= require("awayjs-renderergl/lib/parsers/data/VertexVO");
+import DefaultMaterialManager			= require("awayjs-renderergl/lib/materials/utils/DefaultMaterialManager");
+import TriangleMethodMaterial			= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import TriangleMaterialMode				= require("awayjs-renderergl/lib/materials/TriangleMaterialMode");
 
 /**
  * Max3DSParser provides a parser for the 3ds data type.
@@ -828,4 +822,70 @@ class Max3DSParser extends ParserBase
 
 export = Max3DSParser;
 
+/**
+ *
+ */
+class FaceVO
+{
+	public a:number /*int*/;
+	public b:number /*int*/;
+	public c:number /*int*/;
+	public smoothGroup:number /*int*/;
+}
 
+/**
+ *
+ */
+class MaterialVO
+{
+	public name:string;
+	public ambientColor:number /*int*/;
+	public diffuseColor:number /*int*/;
+	public specularColor:number /*int*/;
+	public twoSided:boolean;
+	public colorMap:TextureVO;
+	public specularMap:TextureVO;
+	public material:MaterialBase;
+}
+
+/**
+ *
+ */
+class ObjectVO
+{
+	public name:string;
+	public type:string;
+	public pivotX:number;
+	public pivotY:number;
+	public pivotZ:number;
+	public transform:Array<number>;
+	public verts:Array<number>;
+	public indices:Array<number> /*int*/;
+	public uvs:Array<number>;
+	public materialFaces:Object;
+	public materials:Array<string>;
+	public smoothingGroups:Array<number> /*int*/;
+}
+
+/**
+ *
+ */
+class TextureVO
+{
+	public url:string;
+	public texture:Texture2DBase;
+}
+
+/**
+ *
+ */
+class VertexVO
+{
+	public x:number;
+	public y:number;
+	public z:number;
+	public u:number;
+	public v:number;
+	public normal:Vector3D;
+	public tangent:Vector3D;
+}

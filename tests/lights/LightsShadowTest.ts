@@ -15,7 +15,7 @@ import HoverController				= require("awayjs-display/lib/controllers/HoverControl
 import LightBase					= require("awayjs-display/lib/base/LightBase");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 
-import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
+import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
 
 import AWDParser					= require("awayjs-renderergl/lib/parsers/AWDParser");
 

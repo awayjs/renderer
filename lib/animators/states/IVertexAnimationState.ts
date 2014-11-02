@@ -1,6 +1,6 @@
 import Geometry							= require("awayjs-display/lib/base/Geometry");
 
-import IAnimationState					= require("awayjs-stagegl/lib/animators/states/IAnimationState");
+import IAnimationState					= require("awayjs-renderergl/lib/animators/states/IAnimationState");
 
 /**
  * Provides an interface for animation node classes that hold animation data for use in the Vertex animator class.

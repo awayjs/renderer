@@ -7,14 +7,11 @@ import TriangleSubMesh					= require("awayjs-display/lib/base/TriangleSubMesh");
 import Camera							= require("awayjs-display/lib/entities/Camera");
 import SubGeometryEvent					= require("awayjs-display/lib/events/SubGeometryEvent");
 
-import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
-import TriangleSubMeshRenderable		= require("awayjs-stagegl/lib/pool/TriangleSubMeshRenderable");
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
+import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL")
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
+import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import SkeletonAnimationSet				= require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
 import JointPose						= require("awayjs-renderergl/lib/animators/data/JointPose");
 import Skeleton							= require("awayjs-renderergl/lib/animators/data/Skeleton");
@@ -23,6 +20,9 @@ import SkeletonPose						= require("awayjs-renderergl/lib/animators/data/Skeleto
 import ISkeletonAnimationState			= require("awayjs-renderergl/lib/animators/states/ISkeletonAnimationState");
 import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
 import AnimationStateEvent				= require("awayjs-renderergl/lib/events/AnimationStateEvent");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
+import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
 
 /**
  * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects

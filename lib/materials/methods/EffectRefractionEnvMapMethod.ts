@@ -1,14 +1,14 @@
 import CubeTextureBase					= require("awayjs-core/lib/textures/CubeTextureBase");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
-import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterCache				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterData				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterData");
-import ShaderRegisterElement			= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
-import EffectMethodBase					= require("awayjs-stagegl/lib/materials/methods/EffectMethodBase");
-import ShaderCompilerHelper				= require("awayjs-stagegl/lib/materials/utils/ShaderCompilerHelper");
+
+import MethodVO							= require("awayjs-renderergl/lib/materials/compilation/MethodVO");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderRegisterCache				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
+import ShaderRegisterData				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterData");
+import ShaderRegisterElement			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterElement");
+import EffectMethodBase					= require("awayjs-renderergl/lib/materials/methods/EffectMethodBase");
+import ShaderCompilerHelper				= require("awayjs-renderergl/lib/materials/utils/ShaderCompilerHelper");
 
 /**
  * EffectRefractionEnvMapMethod provides a method to add refracted transparency based on cube maps.
@@ -178,7 +178,7 @@ class EffectRefractionEnvMapMethod extends EffectMethodBase
 		}
 		data[index + 3] = this._alpha;
 
-		(<IContextStageGL> stage.context).activateCubeTexture(methodVO.texturesIndex, this._envMap);
+		stage.context.activateCubeTexture(methodVO.texturesIndex, this._envMap);
 	}
 
 	/**

@@ -1,6 +1,6 @@
 import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 
-import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
+import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 
 import SkeletonDirectionalState			= require("awayjs-renderergl/lib/animators/states/SkeletonDirectionalState");
 

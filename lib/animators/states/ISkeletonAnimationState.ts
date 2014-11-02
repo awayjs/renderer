@@ -1,4 +1,4 @@
-import IAnimationState					= require("awayjs-stagegl/lib/animators/states/IAnimationState");
+import IAnimationState					= require("awayjs-renderergl/lib/animators/states/IAnimationState");
 
 import Skeleton							= require("awayjs-renderergl/lib/animators/data/Skeleton");
 import SkeletonPose						= require("awayjs-renderergl/lib/animators/data/SkeletonPose");

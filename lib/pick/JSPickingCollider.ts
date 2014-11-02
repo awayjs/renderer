@@ -5,9 +5,8 @@ import PickingCollisionVO				= require("awayjs-display/lib/pick/PickingCollision
 import IPickingCollider					= require("awayjs-display/lib/pick/IPickingCollider");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
-import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
-
 import PickingColliderBase				= require("awayjs-renderergl/lib/pick/PickingColliderBase");
+import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
 
 /**
  * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.

@@ -6,16 +6,18 @@ import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeom
 import Camera							= require("awayjs-display/lib/entities/Camera");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import MaterialPassData					= require("awayjs-stagegl/lib/pool/MaterialPassData");
-import RenderableBase					= require("awayjs-stagegl/lib/pool/RenderableBase");
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
-import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterCache				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterData				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterData");
-import MaterialPassBase					= require("awayjs-stagegl/lib/materials/passes/MaterialPassBase");
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
+
+import MaterialPassData					= require("awayjs-renderergl/lib/pool/MaterialPassData");
+import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
+import MethodVO							= require("awayjs-renderergl/lib/materials/compilation/MethodVO");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderRegisterCache				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
+import ShaderRegisterData				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterData");
+import MaterialPassBase					= require("awayjs-renderergl/lib/materials/passes/MaterialPassBase");
+import RendererBase						= require("awayjs-renderergl/lib/render/RendererBase");
 
 /**
  * The SingleObjectDepthPass provides a material pass that renders a single object to a depth map from the point
@@ -198,15 +200,15 @@ class SingleObjectDepthPass extends MaterialPassBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(pass:MaterialPassData, stage:Stage, camera:Camera)
+	public _iActivate(pass:MaterialPassData, renderer:RendererBase, camera:Camera)
 	{
 		if (this._projectionTexturesInvalid)
 			this.updateProjectionTextures();
 
 		// never scale
-		super._iActivate(pass, stage, camera);
+		super._iActivate(pass, renderer, camera);
 
-		(<IContextStageGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
+		renderer.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
 	}
 }
 

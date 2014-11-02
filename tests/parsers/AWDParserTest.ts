@@ -13,8 +13,8 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import View							= require("awayjs-display/lib/containers/View");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 
-import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
+import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
 
 import AWDParser					= require("awayjs-renderergl/lib/parsers/AWDParser");
 

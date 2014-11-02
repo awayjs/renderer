@@ -1,14 +1,14 @@
 import Texture2DBase					= require("awayjs-core/lib/textures/Texture2DBase");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
-import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterCache				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterData				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterData");
-import ShaderRegisterElement			= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
-import NormalBasicMethod				= require("awayjs-stagegl/lib/materials/methods/NormalBasicMethod");
-import ShaderCompilerHelper				= require("awayjs-stagegl/lib/materials/utils/ShaderCompilerHelper");
+
+import MethodVO							= require("awayjs-renderergl/lib/materials/compilation/MethodVO");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderRegisterCache				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
+import ShaderRegisterData				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterData");
+import ShaderRegisterElement			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterElement");
+import NormalBasicMethod				= require("awayjs-renderergl/lib/materials/methods/NormalBasicMethod");
+import ShaderCompilerHelper				= require("awayjs-renderergl/lib/materials/utils/ShaderCompilerHelper");
 
 /**
  * NormalSimpleWaterMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
@@ -158,7 +158,7 @@ class NormalSimpleWaterMethod extends NormalBasicMethod
 
 		//if (this._useSecondNormalMap >= 0)
 		if (this._useSecondNormalMap)
-			(<IContextStageGL> stage.context).activateTexture(methodVO.texturesIndex + 1, this._texture2);
+			stage.context.activateTexture(methodVO.texturesIndex + 1, this._texture2);
 	}
 
 	/**

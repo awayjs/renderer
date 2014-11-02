@@ -4,12 +4,11 @@ import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
 import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 
-import AnimationSetBase					= require("awayjs-stagegl/lib/animators/AnimationSetBase");
-import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
-import AnimationRegisterCache			= require("awayjs-stagegl/lib/animators/data/AnimationRegisterCache");
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
 
+import AnimationSetBase					= require("awayjs-renderergl/lib/animators/AnimationSetBase");
+import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
+import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
 import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
 import ParticleProperties				= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
@@ -18,6 +17,8 @@ import ParticleData						= require("awayjs-renderergl/lib/animators/data/Particl
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleTimeNode					= require("awayjs-renderergl/lib/animators/nodes/ParticleTimeNode");
 import ParticleGeometry					= require("awayjs-renderergl/lib/base/ParticleGeometry");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+
 
 /**
  * The animation data set used by particle-based animators, containing particle animation data.

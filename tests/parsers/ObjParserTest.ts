@@ -11,7 +11,7 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import View							= require("awayjs-display/lib/containers/View");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 
-import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
+import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
 
 import OBJParser					= require("awayjs-renderergl/lib/parsers/OBJParser");
 

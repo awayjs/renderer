@@ -1,0 +1,28 @@
+{
+  "data":[
+     {
+        "id":"posX",
+        "image":"sky_posX.jpg"
+     },
+     {
+        "id":"negX",
+        "image":"sky_negX.jpg"
+     },
+     {
+        "id":"posY",
+        "image":"sky_posY.jpg"
+     },
+     {
+        "id":"negY",
+        "image":"sky_negY.jpg"
+     },
+     {
+        "id":"posZ",
+        "image":"sky_posZ.jpg"
+     },
+     {
+        "id":"negZ",
+        "image":"sky_negZ.jpg"
+     }
+  ]
+}

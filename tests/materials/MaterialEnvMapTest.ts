@@ -14,7 +14,7 @@ import View							= require("awayjs-display/lib/containers/View");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 
-import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
+import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
 
 import AWDParser					= require("awayjs-renderergl/lib/parsers/AWDParser");
 

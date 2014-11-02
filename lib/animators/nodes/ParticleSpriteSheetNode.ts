@@ -1,9 +1,9 @@
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
-import AnimatorBase						= require("awayjs-stagegl/lib/animators/AnimatorBase");
-import AnimationRegisterCache			= require("awayjs-stagegl/lib/animators/data/AnimationRegisterCache");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterElement			= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
+import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
+import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderRegisterElement			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterElement");
 
 import ParticleAnimationSet				= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 import ParticleProperties				= require("awayjs-renderergl/lib/animators/data/ParticleProperties");

@@ -15,12 +15,11 @@ import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeom
 import Camera							= require("awayjs-display/lib/entities/Camera");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 
-import DefaultMaterialManager			= require("awayjs-stagegl/lib/materials/utils/DefaultMaterialManager");
-import TriangleMethodMaterial			= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import TriangleMaterialMode				= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
-
 import VertexClipNode					= require("awayjs-renderergl/lib/animators/nodes/VertexClipNode");
 import VertexAnimationSet				= require("awayjs-renderergl/lib/animators/VertexAnimationSet");
+import TriangleMethodMaterial			= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import TriangleMaterialMode				= require("awayjs-renderergl/lib/materials/TriangleMaterialMode");
+import DefaultMaterialManager			= require("awayjs-renderergl/lib/materials/utils/DefaultMaterialManager");
 
 /**
  * MD2Parser provides a parser for the MD2 data type.

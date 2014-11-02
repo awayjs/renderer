@@ -2,14 +2,14 @@ import CubeTextureBase					= require("awayjs-core/lib/textures/CubeTextureBase")
 import Texture2DBase					= require("awayjs-core/lib/textures/Texture2DBase");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
-import MethodVO							= require("awayjs-stagegl/lib/materials/compilation/MethodVO");
-import ShaderObjectBase					= require("awayjs-stagegl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterCache				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterData				= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterData");
-import ShaderRegisterElement			= require("awayjs-stagegl/lib/materials/compilation/ShaderRegisterElement");
-import EffectMethodBase					= require("awayjs-stagegl/lib/materials/methods/EffectMethodBase");
-import ShaderCompilerHelper				= require("awayjs-stagegl/lib/materials/utils/ShaderCompilerHelper");
+
+import MethodVO							= require("awayjs-renderergl/lib/materials/compilation/MethodVO");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderRegisterCache				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
+import ShaderRegisterData				= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterData");
+import ShaderRegisterElement			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterElement");
+import EffectMethodBase					= require("awayjs-renderergl/lib/materials/methods/EffectMethodBase");
+import ShaderCompilerHelper				= require("awayjs-renderergl/lib/materials/utils/ShaderCompilerHelper");
 
 /**
  * EffectFresnelEnvMapMethod provides a method to add fresnel-based reflectivity to an object using cube maps, which gets
@@ -135,10 +135,10 @@ class EffectFresnelEnvMapMethod extends EffectMethodBase
 		data[index + 1] = this._normalReflectance;
 		data[index + 2] = this._fresnelPower;
 
-		(<IContextStageGL> stage.context).activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
+		stage.context.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
 
 		if (this._mask)
-			(<IContextStageGL> stage.context).activateTexture(methodVO.texturesIndex + 1, this._mask);
+			stage.context.activateTexture(methodVO.texturesIndex + 1, this._mask);
 	}
 
 	/**
