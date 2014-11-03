@@ -1,27 +1,3 @@
-declare module "awayjs-renderergl/lib/animators/data/ParticleData" {
-	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
-	class ParticleData {
-	    particleIndex: number;
-	    numVertices: number;
-	    startVertexIndex: number;
-	    subGeometry: TriangleSubGeometry;
-	}
-	export = ParticleData;
-	
-}
-declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
-	import Geometry = require("awayjs-display/lib/base/Geometry");
-	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
-	/**
-	 * @class away.base.ParticleGeometry
-	 */
-	class ParticleGeometry extends Geometry {
-	    particles: ParticleData[];
-	    numParticles: number;
-	}
-	export = ParticleGeometry;
-	
-}
 declare module "awayjs-renderergl/lib/errors/AnimationSetError" {
 	import Error = require("awayjs-core/lib/errors/Error");
 	class AnimationSetError extends Error {
@@ -1255,6 +1231,17 @@ declare module "awayjs-renderergl/lib/animators/AnimationSetBase" {
 	export = AnimationSetBase;
 	
 }
+declare module "awayjs-renderergl/lib/animators/data/ParticleData" {
+	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+	class ParticleData {
+	    particleIndex: number;
+	    numVertices: number;
+	    startVertexIndex: number;
+	    subGeometry: TriangleSubGeometry;
+	}
+	export = ParticleData;
+	
+}
 declare module "awayjs-renderergl/lib/animators/data/ParticleAnimationData" {
 	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
 	/**
@@ -1695,6 +1682,19 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleTimeNode" {
 	    _iGeneratePropertyOfOneParticle(param: ParticleProperties): void;
 	}
 	export = ParticleTimeNode;
+	
+}
+declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
+	import Geometry = require("awayjs-display/lib/base/Geometry");
+	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
+	/**
+	 * @class away.base.ParticleGeometry
+	 */
+	class ParticleGeometry extends Geometry {
+	    particles: ParticleData[];
+	    numParticles: number;
+	}
+	export = ParticleGeometry;
 	
 }
 declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
@@ -6661,6 +6661,9 @@ declare module "awayjs-renderergl/lib/parsers/AWDParser" {
 	    _pStartParsing(frameLimit: number): void;
 	    private dispose();
 	    private parseNextBlock();
+	    private parseShape2D(blockID);
+	    private parseShape2DFill(blockID);
+	    private parseTimeLine(blockID);
 	    private parseTriangleGeometrieBlock(blockID);
 	    private parsePrimitves(blockID);
 	    private parseContainer(blockID);

@@ -18069,6 +18069,11 @@ var SpecularCelMethod = require("awayjs-renderergl/lib/materials/methods/Specula
 var SpecularPhongMethod = require("awayjs-renderergl/lib/materials/methods/SpecularPhongMethod");
 var ShadowNearMethod = require("awayjs-renderergl/lib/materials/methods/ShadowNearMethod");
 var ShadowSoftMethod = require("awayjs-renderergl/lib/materials/methods/ShadowSoftMethod");
+var TimeLine = require("awayjs-display/lib/entities/TimeLine");
+var TimeLineFrame = require("awayjs-display/lib/entities/timelinedata/TimeLineFrame");
+var TimeLineObject = require("awayjs-display/lib/entities/timelinedata/TimeLineObject");
+var FrameCommand = require("awayjs-display/lib/entities/timelinedata/FrameCommand");
+var CommandPropsDisplayObject = require("awayjs-display/lib/entities/timelinedata/CommandPropsDisplayObject");
 /**
  * AWDParser provides a parser for the AWD data type.
  */
@@ -18348,7 +18353,26 @@ var AWDParser = (function (_super) {
             console.log("AWDBlock:  ID = " + this._cur_block_id + " | TypeID = " + type + " | Compression = " + blockCompression + " | Matrix-Precision = " + this._accuracyMatrix + " | Geometry-Precision = " + this._accuracyGeo + " | Properties-Precision = " + this._accuracyProps);
         }
         this._blocks[this._cur_block_id] = block;
-        if ((this._version[0] == 2) && (this._version[1] == 1)) {
+        if ((this._version[0] == 3) && (this._version[1] == 0)) {
+            switch (type) {
+                case 2:
+                case 131:
+                    this.parseShape2D(this._cur_block_id);
+                    isParsed = true;
+                    break;
+                case 3:
+                case 132:
+                    this.parseShape2DFill(this._cur_block_id);
+                    isParsed = true;
+                    break;
+                case 4:
+                case 133:
+                    this.parseTimeLine(this._cur_block_id);
+                    isParsed = true;
+                    break;
+            }
+        }
+        else if ((this._version[0] == 2) && (this._version[1] == 1)) {
             switch (type) {
                 case 11:
                     this.parsePrimitves(this._cur_block_id);
@@ -18480,6 +18504,379 @@ var AWDParser = (function (_super) {
         this._newBlockBytes = null;
     };
     //--Parser Blocks---------------------------------------------------------------------------
+    //Block ID = 2
+    AWDParser.prototype.parseShape2D = function (blockID) {
+        var geom = new Geometry();
+        // Read name and sub count
+        var name = this.parseVarStr();
+        var num_subs = this._newBlockBytes.readUnsignedShort();
+        // Read optional properties
+        var props = this.parseProperties({ 1: this._geoNrType, 2: this._geoNrType });
+        // Loop through sub meshes
+        var subs_parsed = 0;
+        while (subs_parsed < num_subs) {
+            var i;
+            var sm_len, sm_end;
+            var sub_geom;
+            var w_indices;
+            var weights;
+            sm_len = this._newBlockBytes.readUnsignedInt();
+            sm_end = this._newBlockBytes.position + sm_len;
+            //console.log("        (!) PARSE SUBMESH");
+            // Ignore for now (read uv for subshapes later)"
+            var subProps = this.parseProperties({ 1: this._geoNrType, 2: this._geoNrType });
+            // Loop through data streams
+            var indices = new Array();
+            var i_idx = 0;
+            while (this._newBlockBytes.position < sm_end) {
+                var idx = 0;
+                var uv_idx = 0;
+                var n_idx = 0;
+                var t_idx = 0;
+                var str_ftype, str_type, str_len, str_end;
+                // Type, field type, length
+                str_type = this._newBlockBytes.readUnsignedByte();
+                str_ftype = this._newBlockBytes.readUnsignedByte();
+                str_len = this._newBlockBytes.readUnsignedInt();
+                str_end = this._newBlockBytes.position + str_len;
+                var x, y, z;
+                var type;
+                var r, g, b, a;
+                var u, v;
+                if (str_type == 1) {
+                    var verts = new Array();
+                    var uvs = new Array();
+                    var normals = new Array();
+                    var tangents = new Array();
+                    while (this._newBlockBytes.position < str_end) {
+                        x = this.readNumber(this._accuracyGeo);
+                        y = this.readNumber(this._accuracyGeo);
+                        z = -0.1 * subs_parsed;
+                        //z = subs_parsed;
+                        //z = (blockID*0.001) + subs_parsed
+                        type = this.readNumber(this._accuracyGeo);
+                        u = this.readNumber(this._accuracyGeo);
+                        v = this.readNumber(this._accuracyGeo);
+                        r = this.readNumber(this._accuracyGeo);
+                        g = this.readNumber(this._accuracyGeo);
+                        b = this.readNumber(this._accuracyGeo);
+                        a = this.readNumber(this._accuracyGeo);
+                        // while this is true, be parse the vertex-data, so it can be rendered as "normal" 3d-geometry
+                        if (true) {
+                            uvs[idx] = 0.0;
+                            normals[idx] = 0.0;
+                            verts[idx++] = x;
+                            uvs[idx] = 0.0;
+                            normals[idx] = 0.0;
+                            verts[idx++] = y;
+                            normals[idx] = 1.0;
+                            verts[idx++] = z;
+                        }
+                        else {
+                            // parse and set-data, so the 3d-geometry contains all data (but is no longer valid for normal 3d-render)
+                            // away3d-vertexdata    |   awayJS-shape-data
+                            // -----------------------------------------------------------------------
+                            // pos.x                |   pos.x
+                            // pos.y                |   pos.y
+                            // pos.z                |   not used
+                            // normal.x             |   curve-type (0:notCurved, 1: convex, 2:concave)
+                            // normal.y             |   alpha
+                            // normal.z             |   not used
+                            // uv.u                 |   curve.u
+                            // uv.v                 |   curve.v
+                            // tangent.x            |   red
+                            // tangent.y            |   green
+                            // tangent.z            |   blue
+                            verts[idx++] = x;
+                            //uv2[idx] = x;
+                            verts[idx++] = y;
+                            //uv2[idx] = y;
+                            verts[idx++] = z;
+                            uvs[uv_idx++] = u;
+                            uvs[uv_idx++] = v;
+                            normals[n_idx++] = type;
+                            normals[n_idx++] = a;
+                            normals[n_idx++] = 0;
+                            // trace("r=" + r + " g=" + g + " b=" + b + " a=" + a);
+                            tangents[t_idx++] = r;
+                            tangents[t_idx++] = g;
+                            tangents[t_idx++] = b;
+                        }
+                    }
+                }
+                else if (str_type == 2) {
+                    while (this._newBlockBytes.position < str_end) {
+                        var thisVal = this._newBlockBytes.readUnsignedShort();
+                        indices[i_idx++] = thisVal;
+                    }
+                }
+                else if (str_type == 3) {
+                    while (this._newBlockBytes.position < str_end) {
+                        var thisVal = this._newBlockBytes.readUnsignedShort();
+                        indices[i_idx++] = thisVal;
+                    }
+                }
+                else if (str_type == 4) {
+                    while (this._newBlockBytes.position < str_end) {
+                        var thisVal = this._newBlockBytes.readUnsignedShort();
+                        indices[i_idx++] = thisVal;
+                    }
+                }
+                else if (str_type == 5) {
+                    while (this._newBlockBytes.position < str_end) {
+                        var thisVal = this._newBlockBytes.readUnsignedShort();
+                        indices[i_idx++] = thisVal;
+                    }
+                }
+                else {
+                    this._newBlockBytes.position = str_end;
+                }
+            }
+            this.parseUserAttributes(); // Ignore sub-mesh attributes for now
+            sub_geom = new TriangleSubGeometry(true);
+            sub_geom.autoDeriveNormals = false;
+            // when rendering as "normal" 3d-geometry, we need to autoDerive tangents
+            if (true) {
+                sub_geom.autoDeriveTangents = true;
+            }
+            else {
+                sub_geom.updateVertexTangents(tangents);
+            }
+            sub_geom.updateIndices(indices);
+            sub_geom.updatePositions(verts);
+            sub_geom.updateUVs(uvs);
+            sub_geom.updateVertexNormals(normals);
+            geom.addSubGeometry(sub_geom);
+            subs_parsed++;
+        }
+        this.parseUserAttributes();
+        this._pFinalizeAsset(geom, name);
+        this._blocks[blockID].data = geom;
+        if (this._debug)
+            console.log("Parsed a TriangleGeometry: Name = " + name + "| Id = " + sub_geom.id);
+    };
+    //Block ID = 3
+    AWDParser.prototype.parseShape2DFill = function (blockID) {
+        var name = this.parseVarStr();
+        var fill_type = this._newBlockBytes.readUnsignedByte();
+        var fill_props = this.parseProperties({ 1: AWDParser.UINT32 }); // { 1:UINT32, 6:AWDSTRING }  ); //; , 2:UINT32, 3:UINT32, 5:BOOL } );
+        switch (fill_type) {
+            case 0:
+                //console.log("Parsed a Solid FILL: Name = " + name);
+                var material = new TriangleMethodMaterial(fill_props.get(1, 0xcccccc));
+                material.bothSides = true;
+                this._pFinalizeAsset(material, name);
+                this._blocks[blockID].data = material;
+                break;
+            case 1:
+                console.log("Parsed a bitmap FILL: Name = " + name);
+                break;
+            case 2:
+                console.log("Parsed a linear gradient FILL: Name = " + name);
+                break;
+            case 3:
+                console.log("Parsed a radial gradient FILL: Name = " + name);
+                break;
+            default:
+                console.log("Parsed a unknown fillstyle: Name = " + name);
+                break;
+        }
+        this.parseUserAttributes();
+    };
+    //Block ID = 4
+    AWDParser.prototype.parseTimeLine = function (blockID) {
+        var frame_name;
+        var i, k;
+        var timeLineContainer = new TimeLine();
+        var name = this.parseVarStr();
+        var isScene = Boolean(this._newBlockBytes.readUnsignedByte());
+        var sceneID = this._newBlockBytes.readUnsignedByte();
+        var num_frames = this._newBlockBytes.readUnsignedShort();
+        var previousTimeLine;
+        // var fill_props:AWDProperties = this.parseProperties({1:AWDParser.UINT32});// { 1:UINT32, 6:AWDSTRING }  ); //; , 2:UINT32, 3:UINT32, 5:BOOL } );
+        if (this._debug)
+            console.log("Parsed a TIMELINE: Name = " + name + "| isScene = " + isScene + "| sceneID = " + sceneID + "| num_frames = " + num_frames);
+        var totalDuration = 0;
+        for (i = 0; i < num_frames; i++) {
+            var newFrame = new TimeLineFrame();
+            var traceString = "frame = " + i;
+            var frame_duration = this._newBlockBytes.readUnsignedInt();
+            newFrame.setFrameTime(totalDuration, frame_duration);
+            totalDuration += frame_duration;
+            //console.log("duration = "+frame_duration);
+            var num_labels = this._newBlockBytes.readUnsignedShort();
+            for (k = 0; k < num_labels; k++) {
+                var label_type = this._newBlockBytes.readUnsignedByte();
+                var newLabel = this.parseVarStr();
+                newFrame.addLabel(newLabel, label_type);
+                traceString += "\n     frame_name = " + frame_name + " - label_type = " + label_type;
+            }
+            var num_commands = this._newBlockBytes.readUnsignedShort();
+            var commandString = "\n      Commands " + num_commands;
+            for (k = 0; k < num_commands; k++) {
+                var command_type = this._newBlockBytes.readUnsignedShort();
+                if ((command_type == 1) || (command_type == 2)) {
+                    var newObjectProps = new CommandPropsDisplayObject();
+                    var z;
+                    var hasRessource = Boolean(this._newBlockBytes.readByte());
+                    var hasDisplayMatrix = Boolean(this._newBlockBytes.readByte());
+                    var hasColorMatrix = Boolean(this._newBlockBytes.readByte());
+                    var hasDepthChange = Boolean(this._newBlockBytes.readByte());
+                    var hasFilterChange = Boolean(this._newBlockBytes.readByte());
+                    var hasBlendModeChange = Boolean(this._newBlockBytes.readByte());
+                    var hasDepthClipChange = Boolean(this._newBlockBytes.readByte());
+                    var hasVisiblityChange = Boolean(this._newBlockBytes.readByte());
+                    var objectID = this._newBlockBytes.readUnsignedInt();
+                    if (hasRessource) {
+                        var ressourceID = this._newBlockBytes.readUnsignedInt();
+                        commandString += "\n      - Add new Ressource = " + ressourceID + " as object_id = " + objectID;
+                    }
+                    else {
+                        commandString += "\n      - Update object_id = " + objectID;
+                    }
+                    var transformArray = new Array();
+                    if (hasDisplayMatrix) {
+                        transformArray = new Array();
+                        var thisMatrix = new Matrix3D();
+                        // todo: implement this in exporter (make transform optional 3d):
+                        var is3d = false; //Boolean(this._newBlockBytes.readByte());
+                        if (is3d) {
+                            thisMatrix = this.parseMatrix3D();
+                        }
+                        else {
+                            for (z = 0; z < 6; z++) {
+                                transformArray.push(this._newBlockBytes.readFloat());
+                            }
+                            thisMatrix.position = new Vector3D(transformArray[4], transformArray[5], 0);
+                        }
+                        newObjectProps.setDisplaymatrix(thisMatrix);
+                        //todo: set rotation and scale
+                        commandString += "\n                transformArray = " + transformArray;
+                    }
+                    var colorArray = new Array();
+                    if (hasColorMatrix) {
+                        for (z = 0; z < 20; z++) {
+                            colorArray.push(this._newBlockBytes.readFloat());
+                        }
+                        //todo: set ColorTranform on objectProps
+                        commandString += "\n                colorArray = " + colorArray;
+                    }
+                    if (hasDepthChange) {
+                        var newDepth = this._newBlockBytes.readUnsignedInt();
+                        commandString += "\n                Depth = " + newDepth;
+                    }
+                    if (hasFilterChange) {
+                    }
+                    if (hasBlendModeChange) {
+                        var newBlendMode = this._newBlockBytes.readUnsignedByte();
+                        commandString += "\n                BlendMode = " + newBlendMode;
+                    }
+                    if (hasDepthClipChange) {
+                        var newClipDepth = this._newBlockBytes.readUnsignedInt();
+                        commandString += "\n                ClipDepth = " + newClipDepth;
+                    }
+                    if (hasVisiblityChange) {
+                        var newVisibitily = Boolean(this._newBlockBytes.readByte());
+                        commandString += "\n                Visibitily = " + newVisibitily;
+                    }
+                    var numFills = this._newBlockBytes.readUnsignedShort();
+                    var s = 0;
+                    commandString += "\n                number of fills = " + numFills;
+                    var fillsIDs = new Array();
+                    for (s = 0; s < numFills; s++) {
+                        fillsIDs.push(this._newBlockBytes.readUnsignedInt());
+                        commandString += "\n                    id of fill = " + fillsIDs[s];
+                    }
+                    var instanceName = this.parseVarStr();
+                    if (instanceName.length > 0) {
+                        newObjectProps.setInstancename(instanceName);
+                        commandString += "\n                instanceName = " + instanceName;
+                    }
+                    // if this is a "ADD NEW OBJECT"-command,
+                    // we need to lookup the new object by AWD ID.
+                    if (hasRessource) {
+                        // sound is added to timeline with dedicated Command, as it is no display-object (has no matrix etc)
+                        // check if a Geometry can be found at the ressourceID (AWD-ID)
+                        var returnedArray = this.getAssetByID(ressourceID, [AssetType.GEOMETRY]);
+                        if (returnedArray[0] == true) {
+                            var geom = returnedArray[1];
+                            var newMesh = new Mesh(geom);
+                            for (s = 0; s < numFills; s++) {
+                                var returnedArray2 = this.getAssetByID(fillsIDs[s], [AssetType.MATERIAL]);
+                                if (returnedArray2[0]) {
+                                    if (newMesh.subMeshes.length > s) {
+                                        newMesh.subMeshes[s].material = returnedArray2[1];
+                                    }
+                                }
+                            }
+                            var newTimeLineMesh = new TimeLineObject(newMesh, objectID, new CommandPropsDisplayObject());
+                            timeLineContainer.addTimeLineObject(newTimeLineMesh);
+                            var newCommandaddMesh = new FrameCommand(newTimeLineMesh);
+                            newCommandaddMesh.commandProps = newObjectProps;
+                            newFrame.addCommand(newCommandaddMesh);
+                        }
+                        else {
+                            var returnedArray = this.getAssetByID(ressourceID, [AssetType.TIMELINE]);
+                            if (returnedArray[0] == true) {
+                                // timeline found. create command and add it to the frame
+                                var newTimeLineTimeLine = new TimeLineObject(returnedArray[1], objectID, new CommandPropsDisplayObject());
+                                timeLineContainer.addTimeLineObject(newTimeLineTimeLine);
+                                var newCommandAddTimeLine = new FrameCommand(newTimeLineTimeLine);
+                                newCommandAddTimeLine.commandProps = newObjectProps;
+                                newFrame.addCommand(newCommandAddTimeLine);
+                            }
+                        }
+                    }
+                    else {
+                        // get the existing TimeLineobject fronm the timeline
+                        var newTimeLineUpdate = timeLineContainer.getTimeLineObjectByID(objectID);
+                        var newCommandupdate = new FrameCommand(newTimeLineUpdate);
+                        //newCommandupdate.commandProps=newObjectProps;
+                        //todo:
+                        newFrame.addCommand(newCommandupdate);
+                    }
+                }
+                else if (command_type == 3) {
+                    // Remove Command
+                    var objectID = this._newBlockBytes.readUnsignedInt();
+                    var newTimeLineUpdate = timeLineContainer.getTimeLineObjectByID(objectID);
+                    var newCommandupdate = new FrameCommand(newTimeLineUpdate);
+                    newCommandupdate.activateObj = false;
+                    newFrame.addCommand(newCommandupdate);
+                    //newCommandupdate.commandProps=newObjectProps;
+                    commandString += "\n       - Remove object with ID: " + objectID;
+                }
+                else if (command_type == 4) {
+                    // add sound
+                    //todo: create CommandPropsSound and check wich asset to use
+                    var objectID = this._newBlockBytes.readUnsignedInt();
+                    var ressourceID = this._newBlockBytes.readUnsignedInt();
+                    //todo: implement sound in timeline
+                    commandString += "\n      - Add new Sound AWD-ID = " + ressourceID.toString() + " as object_id = " + objectID.toString();
+                }
+                else {
+                    commandString += "\n       - Unknown Command Type = " + command_type;
+                }
+            }
+            var frame_code = "";
+            var length_code = this._newBlockBytes.readUnsignedInt();
+            if (length_code > 0) {
+                frame_code = this._newBlockBytes.readUTFBytes(length_code);
+                newFrame.addToScript(frame_code);
+                traceString += "\nframe-code = " + frame_code;
+            }
+            traceString += commandString;
+            //trace("length_code = "+length_code+" frame_code = "+frame_code);
+            this._newBlockBytes.readUnsignedInt(); // user attributes - skip for now
+            //this.parseUserAttributes(); // Ignore sub-mesh attributes for now
+            //console.log(traceString);
+            timeLineContainer.addFrame(newFrame);
+        }
+        this._pFinalizeAsset(timeLineContainer, name);
+        this._blocks[blockID].data = timeLineContainer;
+        var timeLineProps = this.parseProperties(null);
+        this.parseUserAttributes();
+    };
     //Block ID = 1
     AWDParser.prototype.parseTriangleGeometrieBlock = function (blockID) {
         var geom = new Geometry();
@@ -20248,7 +20645,7 @@ var BitFlags = (function () {
 module.exports = AWDParser;
 
 
-},{"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/OrthographicOffCenterProjection":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/textures/BitmapCubeTexture":undefined,"awayjs-core/lib/textures/ImageCubeTexture":undefined,"awayjs-core/lib/textures/ImageTexture":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-display/lib/base/BlendMode":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":undefined,"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrefabBase":undefined,"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveConePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined,"awayjs-renderergl/lib/materials/SkyboxMaterial":undefined,"awayjs-renderergl/lib/materials/TriangleMaterialMode":undefined,"awayjs-renderergl/lib/materials/TriangleMethodMaterial":undefined,"awayjs-renderergl/lib/materials/methods/AmbientEnvMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseCelMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseDepthMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseGradientMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseLightMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseWrapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectAlphaMaskMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectColorMatrixMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectColorTransformMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectEnvMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectFogMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectFresnelEnvMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectLightMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectRimLightMethod":undefined,"awayjs-renderergl/lib/materials/methods/NormalSimpleWaterMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowDitheredMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowFilteredMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowHardMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowNearMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowSoftMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularAnisotropicMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularCelMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularFresnelMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularPhongMethod":undefined,"awayjs-renderergl/lib/materials/utils/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/parsers/MD2Parser":[function(require,module,exports){
+},{"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/OrthographicOffCenterProjection":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/textures/BitmapCubeTexture":undefined,"awayjs-core/lib/textures/ImageCubeTexture":undefined,"awayjs-core/lib/textures/ImageTexture":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-display/lib/base/BlendMode":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/entities/TimeLine":undefined,"awayjs-display/lib/entities/timelinedata/CommandPropsDisplayObject":undefined,"awayjs-display/lib/entities/timelinedata/FrameCommand":undefined,"awayjs-display/lib/entities/timelinedata/TimeLineFrame":undefined,"awayjs-display/lib/entities/timelinedata/TimeLineObject":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":undefined,"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrefabBase":undefined,"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveConePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined,"awayjs-renderergl/lib/materials/SkyboxMaterial":undefined,"awayjs-renderergl/lib/materials/TriangleMaterialMode":undefined,"awayjs-renderergl/lib/materials/TriangleMethodMaterial":undefined,"awayjs-renderergl/lib/materials/methods/AmbientEnvMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseCelMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseDepthMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseGradientMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseLightMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/DiffuseWrapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectAlphaMaskMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectColorMatrixMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectColorTransformMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectEnvMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectFogMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectFresnelEnvMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectLightMapMethod":undefined,"awayjs-renderergl/lib/materials/methods/EffectRimLightMethod":undefined,"awayjs-renderergl/lib/materials/methods/NormalSimpleWaterMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowDitheredMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowFilteredMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowHardMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowNearMethod":undefined,"awayjs-renderergl/lib/materials/methods/ShadowSoftMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularAnisotropicMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularCelMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularFresnelMethod":undefined,"awayjs-renderergl/lib/materials/methods/SpecularPhongMethod":undefined,"awayjs-renderergl/lib/materials/utils/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/parsers/MD2Parser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
