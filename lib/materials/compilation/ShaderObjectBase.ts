@@ -8,7 +8,7 @@ import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
-import IContextStageGL				= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 import ContextGLTriangleFace		= require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
@@ -345,7 +345,7 @@ class ShaderObjectBase
 	 */
 	public setRenderState(renderable:RenderableBase, stage:Stage, camera:Camera, viewProjection:Matrix3D)
 	{
-		var context:IContextStageGL = stage.context;
+		var context:IContextGL = stage.context;
 
 		if (renderable.materialOwner.animator)
 			(<AnimatorBase> renderable.materialOwner.animator).setRenderState(this, renderable, stage, camera, this.numUsedVertexConstants, this.numUsedStreams);

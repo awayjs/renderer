@@ -91,7 +91,7 @@ class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet
 	public deactivate(shaderObject:ShaderObjectBase, stage:Stage)
 	{
 //			var streamOffset:number /*uint*/ = pass.numUsedStreams;
-//			var context:IContextStageGL = <IContextStageGL> stage.context;
+//			var context:IContextGL = <IContextGL> stage.context;
 //			context.setVertexBufferAt(streamOffset, null);
 //			context.setVertexBufferAt(streamOffset + 1, null);
 	}

@@ -25,7 +25,7 @@ import ContextGLClearMask				= require("awayjs-stagegl/lib/base/ContextGLClearMa
 import ContextGLCompareMode				= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import ContextGLTriangleFace			= require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
-import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import IProgram							= require("awayjs-stagegl/lib/base/IProgram");
 import ITextureBase						= require("awayjs-stagegl/lib/base/ITextureBase");
 
@@ -49,7 +49,7 @@ class ShaderPicker implements IPicker
 	private _blendedRenderableHead:RenderableBase;
 
 	private _stage:Stage;
-	private _context:IContextStageGL;
+	private _context:IContextGL;
 	private _onlyMouseEnabled:boolean = true;
 
 	private _objectProgram:IProgram;
@@ -123,7 +123,7 @@ class ShaderPicker implements IPicker
 		if (!this._stage)
 			return null;
 
-		this._context = <IContextStageGL> this._stage.context;
+		this._context = <IContextGL> this._stage.context;
 
 		this._viewportData[0] = view.width;
 		this._viewportData[1] = view.height;

@@ -4,7 +4,7 @@ import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
 import TextureUtils					= require("awayjs-core/lib/utils/TextureUtils");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import IContextStageGL				= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 import IIndexBuffer					= require("awayjs-stagegl/lib/base/IIndexBuffer");
 import IVertexBuffer				= require("awayjs-stagegl/lib/base/IVertexBuffer");
 
@@ -222,7 +222,7 @@ class RTTBufferManager extends EventDispatcher
 	// needs to be stored per view of course
 	private updateRTTBuffers()
 	{
-		var context:IContextStageGL = this._stage.context;
+		var context:IContextGL = this._stage.context;
 		var textureVerts:number[];
 		var screenVerts:number[];
 

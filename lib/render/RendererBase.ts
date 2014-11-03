@@ -29,7 +29,7 @@ import ShadowCasterCollector		= require("awayjs-display/lib/traverse/ShadowCaste
 
 import AGALMiniAssembler			= require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-import IContextStageGL				= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
 
@@ -64,7 +64,7 @@ class RendererBase extends EventDispatcher
 	private _triangleSubMeshRenderablePool:RenderablePool;
 	private _lineSubMeshRenderablePool:RenderablePool;
 
-	public _pContext:IContextStageGL;
+	public _pContext:IContextGL;
 	public _pStage:Stage;
 
 	public _pCamera:Camera;
@@ -429,7 +429,7 @@ class RendererBase extends EventDispatcher
 		this._pBackBufferInvalid = true;
 	}
 
-	public get context():IContextStageGL
+	public get context():IContextGL
 	{
 		return this._pContext;
 	}
@@ -472,7 +472,7 @@ class RendererBase extends EventDispatcher
 			 _backgroundImageRenderer.stage = value;
 			 */
 			if (this._pStage.context)
-				this._pContext = <IContextStageGL> this._pStage.context;
+				this._pContext = <IContextGL> this._pStage.context;
 		}
 
 		this._pBackBufferInvalid = true;
@@ -651,7 +651,7 @@ class RendererBase extends EventDispatcher
 	 */
 	private onContextUpdate(event:Event)
 	{
-		this._pContext = <IContextStageGL> this._pStage.context;
+		this._pContext = <IContextGL> this._pStage.context;
 	}
 
 	public get _iBackgroundAlpha():number

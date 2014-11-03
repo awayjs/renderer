@@ -20,10 +20,10 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import ContextGLClearMask			= require("awayjs-stagegl/lib/base/ContextGLClearMask");
-import IContextStageGL				= require("awayjs-stagegl/lib/base/IContextStageGL");
-import Filter3DBase					= require("awayjs-stagegl/lib/filters/Filter3DBase");
+import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 import StageManager					= require("awayjs-stagegl/lib/managers/StageManager");
 
+import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
 import MaterialData					= require("awayjs-renderergl/lib/pool/MaterialData");
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
@@ -333,7 +333,7 @@ class DefaultRenderer extends RendererBase implements IRenderer
 		var passes:Array<IMaterialPass>;
 		var activePass:MaterialPassData;
 		var activeMaterial:MaterialData;
-		var context:IContextStageGL = <IContextStageGL> this._pStage.context;
+		var context:IContextGL = <IContextGL> this._pStage.context;
 		var camera:Camera = entityCollector.camera;
 		var renderable2:RenderableBase;
 
@@ -407,7 +407,7 @@ class DefaultRenderer extends RendererBase implements IRenderer
 	public pRenderSceneDepthToTexture(entityCollector:EntityCollector)
 	{
 		if (this._pDepthTextureInvalid || !this._pDepthRender)
-			this.initDepthTexture(<IContextStageGL> this._pStage.context);
+			this.initDepthTexture(<IContextGL> this._pStage.context);
 
 		this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
 		this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
@@ -442,7 +442,7 @@ class DefaultRenderer extends RendererBase implements IRenderer
 	/**
 	 *
 	 */
-	private initDepthTexture(context:IContextStageGL):void
+	private initDepthTexture(context:IContextGL):void
 	{
 		this._pDepthTextureInvalid = false;
 

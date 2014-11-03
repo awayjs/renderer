@@ -4,7 +4,7 @@ import LineSubGeometry				= require("awayjs-display/lib/base/LineSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import IContextStageGL				= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
@@ -126,7 +126,7 @@ class LineBasicMaterial extends StageGLMaterialBase
 	{
 		super._iActivatePass(pass, renderer, camera);
 
-		var context:IContextStageGL = renderer.context;
+		var context:IContextGL = renderer.context;
 		var stage:Stage = renderer.stage;
 
 		this._constants[0] = this._thickness/((stage.scissorRect)? Math.min(stage.scissorRect.width, stage.scissorRect.height) : Math.min(stage.width, stage.height));
@@ -149,7 +149,7 @@ class LineBasicMaterial extends StageGLMaterialBase
 	{
 		super._iRenderPass(pass, renderable, stage, camera, viewProjection);
 
-		var context:IContextStageGL = <IContextStageGL> stage.context;
+		var context:IContextGL = <IContextGL> stage.context;
 		this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
 		this._calcMatrix.append(camera.inverseSceneTransform);
 

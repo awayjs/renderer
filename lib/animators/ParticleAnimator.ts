@@ -3,7 +3,7 @@ import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
 import Camera							= require("awayjs-display/lib/entities/Camera");
 
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
 import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -99,10 +99,10 @@ class ParticleAnimator extends AnimatorBase
 		for (i = 0; i < this._animatorParticleStates.length; i++)
 			this._animatorParticleStates[i].setRenderState(stage, renderable, animatorSubGeometry, animationRegisterCache, camera);
 
-		(<IContextStageGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, animationRegisterCache.vertexConstantOffset, animationRegisterCache.vertexConstantData, animationRegisterCache.numVertexConstant);
+		(<IContextGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, animationRegisterCache.vertexConstantOffset, animationRegisterCache.vertexConstantData, animationRegisterCache.numVertexConstant);
 
 		if (animationRegisterCache.numFragmentConstant > 0)
-			(<IContextStageGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, animationRegisterCache.fragmentConstantOffset, animationRegisterCache.fragmentConstantData, animationRegisterCache.numFragmentConstant);
+			(<IContextGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, animationRegisterCache.fragmentConstantOffset, animationRegisterCache.fragmentConstantData, animationRegisterCache.numFragmentConstant);
 	}
 
 	/**

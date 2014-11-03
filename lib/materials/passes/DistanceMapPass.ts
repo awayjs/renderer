@@ -7,7 +7,7 @@ import Camera						= require("awayjs-display/lib/entities/Camera");
 import ContextGLMipFilter			= require("awayjs-stagegl/lib/base/ContextGLMipFilter");
 import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
 import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-import IContextStageGL				= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
@@ -115,7 +115,7 @@ class DistanceMapPass extends MaterialPassBase
 	{
 		super._iActivate(pass, renderer, camera);
 
-		var context:IContextStageGL = renderer.context;
+		var context:IContextGL = renderer.context;
 		var shaderObject:ShaderObjectBase = pass.shaderObject;
 
 		var f:number = camera.projection.far;

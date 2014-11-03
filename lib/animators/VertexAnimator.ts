@@ -7,7 +7,7 @@ import Mesh								= require("awayjs-display/lib/entities/Mesh");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import VertexDataPool					= require("awayjs-stagegl/lib/pool/VertexDataPool");
 
 import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -141,7 +141,7 @@ class VertexAnimator extends AnimatorBase
 		var i:number /*uint*/;
 		var len:number /*uint*/ = this._numPoses;
 
-		(<IContextStageGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+		(<IContextGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
 		if (this._blendMode == VertexAnimationMode.ABSOLUTE)
 			i = 1;
@@ -151,24 +151,24 @@ class VertexAnimator extends AnimatorBase
 		for (; i < len; ++i) {
 			subGeom = this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
 
-			(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.POSITION_DATA), subGeom.getOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+			(<IContextGL> stage.context).activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.POSITION_DATA), subGeom.getOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
 			if (shaderObject.normalDependencies > 0)
-				(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.NORMAL_DATA), subGeom.getOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+				(<IContextGL> stage.context).activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.NORMAL_DATA), subGeom.getOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 		}
 	}
 
 	private setNullPose(shaderObject:ShaderObjectBase, renderable:RenderableBase, stage:Stage, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 	{
-		(<IContextStageGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+		(<IContextGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
 		if (this._blendMode == VertexAnimationMode.ABSOLUTE) {
 			var len:number /*uint*/ = this._numPoses;
 			for (var i:number /*uint*/ = 1; i < len; ++i) {
-				(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+				(<IContextGL> stage.context).activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
 				if (shaderObject.normalDependencies > 0)
-					(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+					(<IContextGL> stage.context).activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 			}
 		}
 		// todo: set temp data for additive?

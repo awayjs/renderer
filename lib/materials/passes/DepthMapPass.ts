@@ -10,7 +10,7 @@ import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextu
 import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import ContextGLTextureFormat		= require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
-import IContextStageGL				= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
@@ -128,7 +128,7 @@ class DepthMapPass extends MaterialPassBase
 	{
 		super._iActivate(pass, renderer, camera);
 
-		var context:IContextStageGL = renderer.context;
+		var context:IContextGL = renderer.context;
 		var shaderObject:ShaderObjectBase = pass.shaderObject;
 
 		if (shaderObject.alphaThreshold > 0) {

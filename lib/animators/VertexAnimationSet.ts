@@ -84,7 +84,7 @@ class VertexAnimationSet extends AnimationSetBase implements IAnimationSet
 	{
 //			var uID:number = pass._iUniqueId;
 //			var index:number /*uint*/ = this._streamIndices[uID];
-//			var context:IContextStageGL = <IContextStageGL> stage.context;
+//			var context:IContextGL = <IContextGL> stage.context;
 //			context.setVertexBufferAt(index, null);
 //			if (this._uploadNormals)
 //				context.setVertexBufferAt(index + 1, null);

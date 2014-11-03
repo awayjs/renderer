@@ -5,14 +5,14 @@ import Camera						= require("awayjs-display/lib/entities/Camera");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 import ContextGLVertexBufferFormat	= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-import IContextStageGL				= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 import IIndexBuffer					= require("awayjs-stagegl/lib/base/IIndexBuffer");
 import ITexture						= require("awayjs-stagegl/lib/base/ITexture");
 import IVertexBuffer				= require("awayjs-stagegl/lib/base/IVertexBuffer");
-import Filter3DBase					= require("awayjs-stagegl/lib/filters/Filter3DBase");
-import Filter3DTaskBase				= require("awayjs-stagegl/lib/filters/tasks/Filter3DTaskBase");
 
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
+import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
+import Filter3DTaskBase				= require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
 
 /**
  * @class away.render.Filter3DRenderer
@@ -139,7 +139,7 @@ class Filter3DRenderer
 		var len:number;
 		var i:number;
 		var task:Filter3DTaskBase;
-		var context:IContextStageGL = <IContextStageGL> stage.context;
+		var context:IContextGL = <IContextGL> stage.context;
 
 		var indexBuffer:IIndexBuffer = this._rttManager.indexBuffer;
 

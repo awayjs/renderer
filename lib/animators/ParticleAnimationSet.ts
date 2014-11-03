@@ -143,7 +143,7 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 	 */
 	public deactivate(shaderObject:ShaderObjectBase, stage:Stage)
 	{
-//			var context:IContextStageGL = <IContextStageGL> stage.context;
+//			var context:IContextGL = <IContextGL> stage.context;
 //			var offset:number /*int*/ = this._iAnimationRegisterCache.vertexAttributesOffset;
 //			var used:number /*int*/ = this._iAnimationRegisterCache.numUsedStreams;
 //			for (var i:number /*int*/ = offset; i < used; i++)

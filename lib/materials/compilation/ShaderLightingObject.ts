@@ -8,7 +8,7 @@ import PointLight					= require("awayjs-display/lib/entities/PointLight");
 import LightPickerBase				= require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import IContextStageGL				= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import StageGLMaterialBase			= require("awayjs-renderergl/lib/materials/StageGLMaterialBase");
@@ -347,10 +347,10 @@ class ShaderLightingObject extends ShaderObjectBase
 			probe = lightProbes[ this.lightProbesOffset + i];
 
 			if (addDiff)
-				(<IContextStageGL> stage.context).activateCubeTexture(this.lightProbeDiffuseIndices[i], probe.diffuseMap);
+				(<IContextGL> stage.context).activateCubeTexture(this.lightProbeDiffuseIndices[i], probe.diffuseMap);
 
 			if (addSpec)
-				(<IContextStageGL> stage.context).activateCubeTexture(this.lightProbeSpecularIndices[i], probe.specularMap);
+				(<IContextGL> stage.context).activateCubeTexture(this.lightProbeSpecularIndices[i], probe.specularMap);
 		}
 
 		for (i = 0; i < len; ++i)

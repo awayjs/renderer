@@ -7,7 +7,7 @@ import Camera							= require("awayjs-display/lib/entities/Camera");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
 import MaterialPassData					= require("awayjs-renderergl/lib/pool/MaterialPassData");
@@ -168,7 +168,7 @@ class SingleObjectDepthPass extends MaterialPassBase
 	public _iRender(pass:MaterialPassData, renderable:RenderableBase, stage:Stage, camera:Camera, viewProjection:Matrix3D)
 	{
 		var matrix:Matrix3D;
-		var context:IContextStageGL = <IContextStageGL> stage.context;
+		var context:IContextGL = <IContextGL> stage.context;
 		var len:number /*uint*/;
 		var light:LightBase;
 		var lights:Array<LightBase> = this._pLightPicker.allPickedLights;

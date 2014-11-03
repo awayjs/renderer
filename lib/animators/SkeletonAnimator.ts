@@ -8,7 +8,7 @@ import Camera							= require("awayjs-display/lib/entities/Camera");
 import SubGeometryEvent					= require("awayjs-display/lib/events/SubGeometryEvent");
 
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL")
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL")
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
 import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -214,7 +214,7 @@ class SkeletonAnimator extends AnimatorBase
 		if (this._useCondensedIndices) {
 			// using a condensed data set
 			this.updateCondensedMatrices(subGeometry.condensedIndexLookUp, subGeometry.numCondensedJoints);
-			(<IContextStageGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, subGeometry.numCondensedJoints*3);
+			(<IContextGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, subGeometry.numCondensedJoints*3);
 		} else {
 			if (this._pAnimationSet.usesCPU) {
 				if (this._morphedSubGeometryDirty[subGeometry.id])
@@ -222,11 +222,11 @@ class SkeletonAnimator extends AnimatorBase
 
 				return
 			}
-			(<IContextStageGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints*3);
+			(<IContextGL> stage.context).setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints*3);
 		}
 
-		(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset, renderable.getVertexData(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.JOINT_INDEX_FORMAT);
-		(<IContextStageGL> stage.context).activateBuffer(vertexStreamOffset + 1, renderable.getVertexData(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.JOINT_WEIGHT_FORMAT);
+		(<IContextGL> stage.context).activateBuffer(vertexStreamOffset, renderable.getVertexData(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.JOINT_INDEX_FORMAT);
+		(<IContextGL> stage.context).activateBuffer(vertexStreamOffset + 1, renderable.getVertexData(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.JOINT_WEIGHT_FORMAT);
 	}
 
 	/**

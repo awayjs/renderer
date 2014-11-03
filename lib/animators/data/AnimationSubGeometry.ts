@@ -1,5 +1,5 @@
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import IContextStageGL					= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import IVertexBuffer					= require("awayjs-stagegl/lib/base/IVertexBuffer");
 
 import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
@@ -14,7 +14,7 @@ class AnimationSubGeometry
 	public _pVertexData:Array<number>;
 
 	public _pVertexBuffer:Array<IVertexBuffer> = new Array<IVertexBuffer>(8);
-	public _pBufferContext:Array<IContextStageGL> = new Array<IContextStageGL>(8);
+	public _pBufferContext:Array<IContextGL> = new Array<IContextGL>(8);
 	public _pBufferDirty:Array<boolean> = new Array<boolean>(8);
 
 	private _numVertices:number /*uint*/;
@@ -52,7 +52,7 @@ class AnimationSubGeometry
 	public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stage:Stage, format:string)
 	{
 		var contextIndex:number /*int*/ = stage.stageIndex;
-		var context:IContextStageGL = <IContextStageGL> stage.context;
+		var context:IContextGL = <IContextGL> stage.context;
 
 		var buffer:IVertexBuffer = this._pVertexBuffer[contextIndex];
 		if (!buffer || this._pBufferContext[contextIndex] != context) {

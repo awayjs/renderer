@@ -8,7 +8,7 @@ import Camera						= require("awayjs-display/lib/entities/Camera");
 
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import IContextStageGL				= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
@@ -73,7 +73,7 @@ class TriangleMaterialBase extends StageGLMaterialBase
 			matrix3D.copyRawDataTo(shaderObject.vertexConstantData, shaderObject.viewMatrixIndex, true);
 		}
 
-		var context:IContextStageGL = <IContextStageGL> stage.context;
+		var context:IContextGL = <IContextGL> stage.context;
 
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shaderObject.vertexConstantData, shaderObject.numUsedVertexConstants);
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shaderObject.fragmentConstantData, shaderObject.numUsedFragmentConstants);

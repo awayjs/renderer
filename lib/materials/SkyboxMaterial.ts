@@ -10,7 +10,7 @@ import ContextGLMipFilter			= require("awayjs-stagegl/lib/base/ContextGLMipFilte
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
 import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-import IContextStageGL				= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
@@ -102,7 +102,7 @@ class SkyboxMaterial extends StageGLMaterialBase
 	{
 		super._iActivatePass(pass, renderer, camera);
 
-		var context:IContextStageGL = renderer.context;
+		var context:IContextGL = renderer.context;
 		context.setSamplerStateAt(0, ContextGLWrapMode.CLAMP, ContextGLTextureFilter.LINEAR, this._cubeMap.hasMipmaps? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
 		context.setDepthTest(false, ContextGLCompareMode.LESS);
 		context.activateCubeTexture(0, this._cubeMap);
@@ -115,7 +115,7 @@ class SkyboxMaterial extends StageGLMaterialBase
 	{
 		super._iRenderPass(pass, renderable, stage, camera, viewProjection);
 
-		var context:IContextStageGL = <IContextStageGL> stage.context;
+		var context:IContextGL = <IContextGL> stage.context;
 		var pos:Vector3D = camera.scenePosition;
 		this._vertexData[0] = pos.x;
 		this._vertexData[1] = pos.y;

@@ -4,7 +4,7 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLMipFilter			= require("awayjs-stagegl/lib/base/ContextGLMipFilter");
 import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
 import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-import IContextStageGL				= require("awayjs-stagegl/lib/base/IContextStageGL");
+import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 
 import MethodVO						= require("awayjs-renderergl/lib/materials/compilation/MethodVO");
 import ShaderLightingObject			= require("awayjs-renderergl/lib/materials/compilation/ShaderLightingObject");
