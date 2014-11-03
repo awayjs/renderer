@@ -4,7 +4,6 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLMipFilter			= require("awayjs-stagegl/lib/base/ContextGLMipFilter");
 import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
 import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import ShadingMethodEvent			= require("awayjs-renderergl/lib/events/ShadingMethodEvent");
@@ -124,7 +123,7 @@ class TriangleBasicPass extends MaterialPassBase
 
 		if (shaderObject.texture != null) {
 			renderer.context.setSamplerStateAt(this._texturesIndex, shaderObject.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-			renderer.context.activateTexture(this._texturesIndex, shaderObject.texture);
+			renderer.stage.activateTexture(this._texturesIndex, shaderObject.texture);
 
 			if (shaderObject.alphaThreshold > 0)
 				shaderObject.fragmentConstantData[this._fragmentConstantsIndex] = shaderObject.alphaThreshold;

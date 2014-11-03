@@ -10,7 +10,7 @@ import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextu
 import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import ContextGLTextureFormat		= require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
-import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
@@ -133,7 +133,7 @@ class DepthMapPass extends MaterialPassBase
 
 		if (shaderObject.alphaThreshold > 0) {
 			context.setSamplerStateAt(this._texturesIndex, shaderObject.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-			context.activateTexture(this._texturesIndex, shaderObject.texture);
+			renderer.stage.activateTexture(this._texturesIndex, shaderObject.texture);
 
 			shaderObject.fragmentConstantData[this._fragmentConstantsIndex + 8] = pass.shaderObject.alphaThreshold;
 		}

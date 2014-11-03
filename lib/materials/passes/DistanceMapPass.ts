@@ -7,7 +7,7 @@ import Camera						= require("awayjs-display/lib/entities/Camera");
 import ContextGLMipFilter			= require("awayjs-stagegl/lib/base/ContextGLMipFilter");
 import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
 import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
@@ -131,7 +131,7 @@ class DistanceMapPass extends MaterialPassBase
 
 		if (shaderObject.alphaThreshold > 0) {
 			context.setSamplerStateAt(this._texturesIndex, shaderObject.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-			context.activateTexture(this._texturesIndex, shaderObject.texture);
+			renderer.stage.activateTexture(this._texturesIndex, shaderObject.texture);
 
 			data[index + 8] = pass.shaderObject.alphaThreshold;
 		}

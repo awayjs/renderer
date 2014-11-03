@@ -12,7 +12,6 @@ import IMaterialPass				= require("awayjs-display/lib/materials/passes/IMaterial
 import Stage						= require("awayjs-stagegl/lib/base/Stage")
 import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
 
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");

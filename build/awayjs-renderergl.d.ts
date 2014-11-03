@@ -1275,7 +1275,7 @@ declare module "awayjs-renderergl/lib/animators/data/ParticleAnimationData" {
 }
 declare module "awayjs-renderergl/lib/animators/data/AnimationSubGeometry" {
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import IContextStageGL = require("awayjs-stagegl/lib/base/IContextStageGL");
+	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
 	import IVertexBuffer = require("awayjs-stagegl/lib/base/IVertexBuffer");
 	import ParticleAnimationData = require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
 	/**
@@ -1285,7 +1285,7 @@ declare module "awayjs-renderergl/lib/animators/data/AnimationSubGeometry" {
 	    static SUBGEOM_ID_COUNT: number;
 	    _pVertexData: number[];
 	    _pVertexBuffer: IVertexBuffer[];
-	    _pBufferContext: IContextStageGL[];
+	    _pBufferContext: IContextGL[];
 	    _pBufferDirty: boolean[];
 	    private _numVertices;
 	    private _totalLenOfOneVertex;
@@ -2368,6 +2368,70 @@ declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
 	export = ShadingMethodEvent;
 	
 }
+declare module "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase" {
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import IProgram = require("awayjs-stagegl/lib/base/IProgram");
+	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
+	class Filter3DTaskBase {
+	    private _mainInputTexture;
+	    private _scaledTextureWidth;
+	    private _scaledTextureHeight;
+	    private _textureWidth;
+	    private _textureHeight;
+	    private _textureDimensionsInvalid;
+	    private _program3DInvalid;
+	    private _program3D;
+	    private _target;
+	    private _requireDepthRender;
+	    private _textureScale;
+	    constructor(requireDepthRender?: boolean);
+	    /**
+	     * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
+	     */
+	    textureScale: number;
+	    target: ITexture;
+	    textureWidth: number;
+	    textureHeight: number;
+	    getMainInputTexture(stage: Stage): ITexture;
+	    dispose(): void;
+	    pInvalidateProgram(): void;
+	    pUpdateProgram(stage: Stage): void;
+	    pGetVertexCode(): string;
+	    pGetFragmentCode(): string;
+	    pUpdateTextures(stage: Stage): void;
+	    getProgram(stage: Stage): IProgram;
+	    activate(stage: Stage, camera: Camera, depthTexture: ITexture): void;
+	    deactivate(stage: Stage): void;
+	    requireDepthRender: boolean;
+	}
+	export = Filter3DTaskBase;
+	
+}
+declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
+	import Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+	class Filter3DBase {
+	    private _tasks;
+	    private _requireDepthRender;
+	    private _textureWidth;
+	    private _textureHeight;
+	    constructor();
+	    requireDepthRender: boolean;
+	    pAddTask(filter: Filter3DTaskBase): void;
+	    tasks: Filter3DTaskBase[];
+	    getMainInputTexture(stage: Stage): ITexture;
+	    textureWidth: number;
+	    textureHeight: number;
+	    setRenderTargets(mainTarget: ITexture, stage: Stage): void;
+	    dispose(): void;
+	    update(stage: Stage, camera: Camera): void;
+	}
+	export = Filter3DBase;
+	
+}
 declare module "awayjs-renderergl/lib/managers/RTTBufferManager" {
 	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
 	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
@@ -2764,7 +2828,7 @@ declare module "awayjs-renderergl/lib/render/RendererBase" {
 	import MaterialBase = require("awayjs-display/lib/materials/MaterialBase");
 	import ICollector = require("awayjs-display/lib/traverse/ICollector");
 	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
-	import IContextStageGL = require("awayjs-stagegl/lib/base/IContextStageGL");
+	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ProgramData = require("awayjs-stagegl/lib/pool/ProgramData");
 	import MaterialData = require("awayjs-renderergl/lib/pool/MaterialData");
@@ -2785,7 +2849,7 @@ declare module "awayjs-renderergl/lib/render/RendererBase" {
 	    private _billboardRenderablePool;
 	    private _triangleSubMeshRenderablePool;
 	    private _lineSubMeshRenderablePool;
-	    _pContext: IContextStageGL;
+	    _pContext: IContextGL;
 	    _pStage: Stage;
 	    _pCamera: Camera;
 	    _iEntryPoint: Vector3D;
@@ -2882,7 +2946,7 @@ declare module "awayjs-renderergl/lib/render/RendererBase" {
 	     * @private
 	     */
 	    _iBackgroundB: number;
-	    context: IContextStageGL;
+	    context: IContextGL;
 	    /**
 	     * The Stage that will provide the ContextGL used for rendering.
 	     */
@@ -7550,7 +7614,7 @@ declare module "awayjs-renderergl/lib/render/Filter3DRenderer" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
-	import Filter3DBase = require("awayjs-stagegl/lib/filters/Filter3DBase");
+	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
 	/**
 	 * @class away.render.Filter3DRenderer
 	 */
@@ -7664,7 +7728,7 @@ declare module "awayjs-renderergl/lib/render/DefaultRenderer" {
 	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
 	import ICollector = require("awayjs-display/lib/traverse/ICollector");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import Filter3DBase = require("awayjs-stagegl/lib/filters/Filter3DBase");
+	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
 	import Filter3DRenderer = require("awayjs-renderergl/lib/render/Filter3DRenderer");
 	import RendererBase = require("awayjs-renderergl/lib/render/RendererBase");
 	/**

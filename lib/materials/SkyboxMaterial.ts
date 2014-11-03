@@ -10,7 +10,7 @@ import ContextGLMipFilter			= require("awayjs-stagegl/lib/base/ContextGLMipFilte
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
 import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
@@ -105,7 +105,7 @@ class SkyboxMaterial extends StageGLMaterialBase
 		var context:IContextGL = renderer.context;
 		context.setSamplerStateAt(0, ContextGLWrapMode.CLAMP, ContextGLTextureFilter.LINEAR, this._cubeMap.hasMipmaps? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
 		context.setDepthTest(false, ContextGLCompareMode.LESS);
-		context.activateCubeTexture(0, this._cubeMap);
+		renderer.stage.activateCubeTexture(0, this._cubeMap);
 	}
 
 	/**
@@ -115,7 +115,7 @@ class SkyboxMaterial extends StageGLMaterialBase
 	{
 		super._iRenderPass(pass, renderable, stage, camera, viewProjection);
 
-		var context:IContextGL = <IContextGL> stage.context;
+		var context:IContextGL = stage.context;
 		var pos:Vector3D = camera.scenePosition;
 		this._vertexData[0] = pos.x;
 		this._vertexData[1] = pos.y;
@@ -124,8 +124,8 @@ class SkyboxMaterial extends StageGLMaterialBase
 		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, viewProjection, true);
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
 
-		context.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-		context.drawTriangles(context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+		stage.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+		context.drawTriangles(stage.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 	}
 }
 

@@ -99,9 +99,9 @@ class EffectEnvMapMethod extends EffectMethodBase
 	{
 		shaderObject.fragmentConstantData[methodVO.fragmentConstantsIndex] = this._alpha;
 
-		stage.context.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
+		stage.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
 		if (this._mask)
-			stage.context.activateTexture(methodVO.texturesIndex + 1, this._mask);
+			stage.activateTexture(methodVO.texturesIndex + 1, this._mask);
 	}
 
 	/**

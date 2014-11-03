@@ -101,7 +101,7 @@ class EffectLightMapMethod extends EffectMethodBase
 	 */
 	public iActivate(shaderObject:ShaderObjectBase, methodVO:MethodVO, stage:Stage)
 	{
-		stage.context.activateTexture(methodVO.texturesIndex, this._texture);
+		stage.activateTexture(methodVO.texturesIndex, this._texture);
 
 		super.iActivate(shaderObject, methodVO, stage);
 	}

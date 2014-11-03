@@ -59,7 +59,7 @@ class AmbientEnvMapMethod extends AmbientBasicMethod
 	{
 		super.iActivate(shaderObject, methodVO, stage);
 
-		stage.context.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
+		stage.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
 	}
 	
 	/**

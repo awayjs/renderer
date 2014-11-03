@@ -6,7 +6,7 @@ import Camera						= require("awayjs-display/lib/entities/Camera");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import AGALMiniAssembler			= require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
 import ContextGLTextureFormat		= require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
-import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import IProgram						= require("awayjs-stagegl/lib/base/IProgram");
 import ITexture						= require("awayjs-stagegl/lib/base/ITexture");
 
@@ -118,7 +118,7 @@ class Filter3DTaskBase
 		if (this._program3D)
 			this._program3D.dispose();
 
-		this._program3D = (<IContextGL> stage.context).createProgram();
+		this._program3D = stage.context.createProgram();
 
 		var vertexByteCode:ByteArray = (new AGALMiniAssembler().assemble("part vertex 1\n" + this.pGetVertexCode() + "endpart"))['vertex'].data;
 		var fragmentByteCode:ByteArray = (new AGALMiniAssembler().assemble("part fragment 1\n" + this.pGetFragmentCode() + "endpart"))['fragment'].data;
@@ -145,7 +145,7 @@ class Filter3DTaskBase
 		if (this._mainInputTexture)
 			this._mainInputTexture.dispose();
 
-		this._mainInputTexture = (<IContextGL> stage.context).createTexture(this._scaledTextureWidth, this._scaledTextureHeight, ContextGLTextureFormat.BGRA, true);
+		this._mainInputTexture = stage.context.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, ContextGLTextureFormat.BGRA, true);
 
 		this._textureDimensionsInvalid = false;
 	}

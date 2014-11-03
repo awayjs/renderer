@@ -1,5 +1,3 @@
-import ContextGLBase				= require("awayjs-stagegl/lib/base/ContextGLBase");
-
 import MaterialData					= require("awayjs-renderergl/lib/pool/MaterialData");
 import StageGLMaterialBase			= require("awayjs-renderergl/lib/materials/StageGLMaterialBase");
 

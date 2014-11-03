@@ -158,7 +158,7 @@ class NormalSimpleWaterMethod extends NormalBasicMethod
 
 		//if (this._useSecondNormalMap >= 0)
 		if (this._useSecondNormalMap)
-			stage.context.activateTexture(methodVO.texturesIndex + 1, this._texture2);
+			stage.activateTexture(methodVO.texturesIndex + 1, this._texture2);
 	}
 
 	/**

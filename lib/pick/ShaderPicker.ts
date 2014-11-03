@@ -25,7 +25,7 @@ import ContextGLClearMask				= require("awayjs-stagegl/lib/base/ContextGLClearMa
 import ContextGLCompareMode				= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import ContextGLTriangleFace			= require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
+import IContextGL						= require("awayjs-stagegl/lib/base/IContextGL");
 import IProgram							= require("awayjs-stagegl/lib/base/IProgram");
 import ITextureBase						= require("awayjs-stagegl/lib/base/ITextureBase");
 
@@ -246,8 +246,8 @@ class ShaderPicker implements IPicker
 			matrix.append(viewProjection);
 			this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
 			this._context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._id, 1);
-			this._context.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-			this._context.drawTriangles(this._context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+			this._stage.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+			this._context.drawTriangles(this._stage.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 
 			renderable = renderable.next;
 		}
@@ -341,8 +341,8 @@ class ShaderPicker implements IPicker
 		this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, localViewProjection, true);
 		this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
 
-		this._context.activateBuffer(0, this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-		this._context.drawTriangles(this._context.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
+		this._stage.activateBuffer(0, this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+		this._context.drawTriangles(this._stage.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
 
 		this._context.drawToBitmapData(this._bitmapData);
 

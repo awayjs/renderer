@@ -178,7 +178,7 @@ class EffectRefractionEnvMapMethod extends EffectMethodBase
 		}
 		data[index + 3] = this._alpha;
 
-		stage.context.activateCubeTexture(methodVO.texturesIndex, this._envMap);
+		stage.activateCubeTexture(methodVO.texturesIndex, this._envMap);
 	}
 
 	/**

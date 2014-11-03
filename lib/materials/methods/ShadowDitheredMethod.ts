@@ -156,7 +156,7 @@ class ShadowDitheredMethod extends ShadowMethodBase
 		data[index + 10] = (stage.height - 1)/63;
 		data[index + 11] = 2*this._range/this._depthMapSize;
 
-		stage.context.activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
+		stage.activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
 	}
 
 	/**
@@ -278,7 +278,7 @@ class ShadowDitheredMethod extends ShadowMethodBase
 		data[index + 2] = (stage.height - 1)/63;
 		data[index + 3] = 2*this._range/this._depthMapSize;
 
-		stage.context.activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
+		stage.activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
 	}
 
 	/**

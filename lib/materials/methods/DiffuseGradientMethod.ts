@@ -130,7 +130,7 @@ class DiffuseGradientMethod extends DiffuseBasicMethod
 	{
 		super.iActivate(shaderObject, methodVO, stage);
 
-		stage.context.activateTexture(methodVO.secondaryTexturesIndex, this._gradient);
+		stage.activateTexture(methodVO.secondaryTexturesIndex, this._gradient);
 	}
 }
 

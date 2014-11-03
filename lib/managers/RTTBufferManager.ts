@@ -4,7 +4,7 @@ import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
 import TextureUtils					= require("awayjs-core/lib/utils/TextureUtils");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import IIndexBuffer					= require("awayjs-stagegl/lib/base/IIndexBuffer");
 import IVertexBuffer				= require("awayjs-stagegl/lib/base/IVertexBuffer");
 

@@ -87,7 +87,7 @@ class DiffuseBasicMethod extends LightingMethodBase
 	public generateMip(stage:Stage)
 	{
 		if (this._pUseTexture)
-			stage.context.activateTexture(0, this._texture);
+			stage.activateTexture(0, this._texture);
 	}
 
 	/**
@@ -331,7 +331,7 @@ class DiffuseBasicMethod extends LightingMethodBase
 	{
 		if (this._pUseTexture) {
 			stage.context.setSamplerStateAt(methodVO.texturesIndex, shaderObject.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-			stage.context.activateTexture(methodVO.texturesIndex, this._texture);
+			stage.activateTexture(methodVO.texturesIndex, this._texture);
 		} else {
 			var index:number = methodVO.fragmentConstantsIndex;
 			var data:Array<number> = shaderObject.fragmentConstantData;

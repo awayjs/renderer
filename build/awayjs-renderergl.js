@@ -580,7 +580,7 @@ var ParticleAnimationSet = (function (_super) {
      * @inheritDoc
      */
     ParticleAnimationSet.prototype.deactivate = function (shaderObject, stage) {
-        //			var context:IContextStageGL = <IContextStageGL> stage.context;
+        //			var context:IContextGL = <IContextGL> stage.context;
         //			var offset:number /*int*/ = this._iAnimationRegisterCache.vertexAttributesOffset;
         //			var used:number /*int*/ = this._iAnimationRegisterCache.numUsedStreams;
         //			for (var i:number /*int*/ = offset; i < used; i++)
@@ -1007,7 +1007,7 @@ var SkeletonAnimationSet = (function (_super) {
      */
     SkeletonAnimationSet.prototype.deactivate = function (shaderObject, stage) {
         //			var streamOffset:number /*uint*/ = pass.numUsedStreams;
-        //			var context:IContextStageGL = <IContextStageGL> stage.context;
+        //			var context:IContextGL = <IContextGL> stage.context;
         //			context.setVertexBufferAt(streamOffset, null);
         //			context.setVertexBufferAt(streamOffset + 1, null);
     };
@@ -1221,8 +1221,8 @@ var SkeletonAnimator = (function (_super) {
             }
             stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints * 3);
         }
-        stage.context.activateBuffer(vertexStreamOffset, renderable.getVertexData(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.JOINT_INDEX_FORMAT);
-        stage.context.activateBuffer(vertexStreamOffset + 1, renderable.getVertexData(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.JOINT_WEIGHT_FORMAT);
+        stage.activateBuffer(vertexStreamOffset, renderable.getVertexData(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.JOINT_INDEX_FORMAT);
+        stage.activateBuffer(vertexStreamOffset + 1, renderable.getVertexData(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.JOINT_WEIGHT_FORMAT);
     };
     /**
      * @inheritDoc
@@ -1648,7 +1648,7 @@ var VertexAnimationSet = (function (_super) {
     VertexAnimationSet.prototype.deactivate = function (shaderObject, stage) {
         //			var uID:number = pass._iUniqueId;
         //			var index:number /*uint*/ = this._streamIndices[uID];
-        //			var context:IContextStageGL = <IContextStageGL> stage.context;
+        //			var context:IContextGL = <IContextGL> stage.context;
         //			context.setVertexBufferAt(index, null);
         //			if (this._uploadNormals)
         //				context.setVertexBufferAt(index + 1, null);
@@ -1843,9 +1843,9 @@ var VertexAnimator = (function (_super) {
             i = 0;
         for (; i < len; ++i) {
             subGeom = this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
-            stage.context.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.POSITION_DATA), subGeom.getOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+            stage.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.POSITION_DATA), subGeom.getOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
             if (shaderObject.normalDependencies > 0)
-                stage.context.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.NORMAL_DATA), subGeom.getOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+                stage.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.NORMAL_DATA), subGeom.getOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
         }
     };
     VertexAnimator.prototype.setNullPose = function (shaderObject, renderable, stage, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
@@ -1853,9 +1853,9 @@ var VertexAnimator = (function (_super) {
         if (this._blendMode == VertexAnimationMode.ABSOLUTE) {
             var len = this._numPoses;
             for (var i = 1; i < len; ++i) {
-                stage.context.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+                stage.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
                 if (shaderObject.normalDependencies > 0)
-                    stage.context.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+                    stage.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
             }
         }
         // todo: set temp data for additive?
@@ -8183,7 +8183,203 @@ var ShadingMethodEvent = (function (_super) {
 module.exports = ShadingMethodEvent;
 
 
-},{"awayjs-core/lib/events/Event":undefined}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
+},{"awayjs-core/lib/events/Event":undefined}],"awayjs-renderergl/lib/filters/Filter3DBase":[function(require,module,exports){
+var Filter3DBase = (function () {
+    function Filter3DBase() {
+        this._tasks = new Array();
+    }
+    Object.defineProperty(Filter3DBase.prototype, "requireDepthRender", {
+        get: function () {
+            return this._requireDepthRender;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Filter3DBase.prototype.pAddTask = function (filter) {
+        this._tasks.push(filter);
+        if (this._requireDepthRender == null)
+            this._requireDepthRender = filter.requireDepthRender;
+    };
+    Object.defineProperty(Filter3DBase.prototype, "tasks", {
+        get: function () {
+            return this._tasks;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Filter3DBase.prototype.getMainInputTexture = function (stage) {
+        return this._tasks[0].getMainInputTexture(stage);
+    };
+    Object.defineProperty(Filter3DBase.prototype, "textureWidth", {
+        get: function () {
+            return this._textureWidth;
+        },
+        set: function (value) {
+            this._textureWidth = value;
+            for (var i = 0; i < this._tasks.length; ++i)
+                this._tasks[i].textureWidth = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filter3DBase.prototype, "textureHeight", {
+        get: function () {
+            return this._textureHeight;
+        },
+        set: function (value) {
+            this._textureHeight = value;
+            for (var i = 0; i < this._tasks.length; ++i)
+                this._tasks[i].textureHeight = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    // link up the filters correctly with the next filter
+    Filter3DBase.prototype.setRenderTargets = function (mainTarget, stage) {
+        this._tasks[this._tasks.length - 1].target = mainTarget;
+    };
+    Filter3DBase.prototype.dispose = function () {
+        for (var i = 0; i < this._tasks.length; ++i)
+            this._tasks[i].dispose();
+    };
+    Filter3DBase.prototype.update = function (stage, camera) {
+    };
+    return Filter3DBase;
+})();
+module.exports = Filter3DBase;
+
+
+},{}],"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":[function(require,module,exports){
+var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
+var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
+var ContextGLTextureFormat = require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
+var Filter3DTaskBase = (function () {
+    function Filter3DTaskBase(requireDepthRender) {
+        if (requireDepthRender === void 0) { requireDepthRender = false; }
+        this._scaledTextureWidth = -1;
+        this._scaledTextureHeight = -1;
+        this._textureWidth = -1;
+        this._textureHeight = -1;
+        this._textureDimensionsInvalid = true;
+        this._program3DInvalid = true;
+        this._textureScale = 0;
+        this._requireDepthRender = requireDepthRender;
+    }
+    Object.defineProperty(Filter3DTaskBase.prototype, "textureScale", {
+        /**
+         * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
+         */
+        get: function () {
+            return this._textureScale;
+        },
+        set: function (value) {
+            if (this._textureScale == value)
+                return;
+            this._textureScale = value;
+            this._scaledTextureWidth = this._textureWidth >> this._textureScale;
+            this._scaledTextureHeight = this._textureHeight >> this._textureScale;
+            this._textureDimensionsInvalid = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filter3DTaskBase.prototype, "target", {
+        get: function () {
+            return this._target;
+        },
+        set: function (value) {
+            this._target = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filter3DTaskBase.prototype, "textureWidth", {
+        get: function () {
+            return this._textureWidth;
+        },
+        set: function (value) {
+            if (this._textureWidth == value)
+                return;
+            this._textureWidth = value;
+            this._scaledTextureWidth = this._textureWidth >> this._textureScale;
+            this._textureDimensionsInvalid = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filter3DTaskBase.prototype, "textureHeight", {
+        get: function () {
+            return this._textureHeight;
+        },
+        set: function (value) {
+            if (this._textureHeight == value)
+                return;
+            this._textureHeight = value;
+            this._scaledTextureHeight = this._textureHeight >> this._textureScale;
+            this._textureDimensionsInvalid = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Filter3DTaskBase.prototype.getMainInputTexture = function (stage) {
+        if (this._textureDimensionsInvalid)
+            this.pUpdateTextures(stage);
+        return this._mainInputTexture;
+    };
+    Filter3DTaskBase.prototype.dispose = function () {
+        if (this._mainInputTexture)
+            this._mainInputTexture.dispose();
+        if (this._program3D)
+            this._program3D.dispose();
+    };
+    Filter3DTaskBase.prototype.pInvalidateProgram = function () {
+        this._program3DInvalid = true;
+    };
+    Filter3DTaskBase.prototype.pUpdateProgram = function (stage) {
+        if (this._program3D)
+            this._program3D.dispose();
+        this._program3D = stage.context.createProgram();
+        var vertexByteCode = (new AGALMiniAssembler().assemble("part vertex 1\n" + this.pGetVertexCode() + "endpart"))['vertex'].data;
+        var fragmentByteCode = (new AGALMiniAssembler().assemble("part fragment 1\n" + this.pGetFragmentCode() + "endpart"))['fragment'].data;
+        this._program3D.upload(vertexByteCode, fragmentByteCode);
+        this._program3DInvalid = false;
+    };
+    Filter3DTaskBase.prototype.pGetVertexCode = function () {
+        // TODO: imeplement AGAL <> GLSL
+        return "mov op, va0\n" + "mov v0, va1\n";
+    };
+    Filter3DTaskBase.prototype.pGetFragmentCode = function () {
+        throw new AbstractMethodError();
+        return null;
+    };
+    Filter3DTaskBase.prototype.pUpdateTextures = function (stage) {
+        if (this._mainInputTexture)
+            this._mainInputTexture.dispose();
+        this._mainInputTexture = stage.context.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, ContextGLTextureFormat.BGRA, true);
+        this._textureDimensionsInvalid = false;
+    };
+    Filter3DTaskBase.prototype.getProgram = function (stage) {
+        if (this._program3DInvalid)
+            this.pUpdateProgram(stage);
+        return this._program3D;
+    };
+    Filter3DTaskBase.prototype.activate = function (stage, camera, depthTexture) {
+    };
+    Filter3DTaskBase.prototype.deactivate = function (stage) {
+    };
+    Object.defineProperty(Filter3DTaskBase.prototype, "requireDepthRender", {
+        get: function () {
+            return this._requireDepthRender;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Filter3DTaskBase;
+})();
+module.exports = Filter3DTaskBase;
+
+
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8470,11 +8666,11 @@ var LineBasicMaterial = (function (_super) {
         this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
         this._calcMatrix.append(camera.inverseSceneTransform);
         context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
-        context.activateBuffer(0, renderable.getVertexData(LineSubGeometry.START_POSITION_DATA), renderable.getVertexOffset(LineSubGeometry.START_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
-        context.activateBuffer(1, renderable.getVertexData(LineSubGeometry.END_POSITION_DATA), renderable.getVertexOffset(LineSubGeometry.END_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
-        context.activateBuffer(2, renderable.getVertexData(LineSubGeometry.THICKNESS_DATA), renderable.getVertexOffset(LineSubGeometry.THICKNESS_DATA), LineSubGeometry.THICKNESS_FORMAT);
-        context.activateBuffer(3, renderable.getVertexData(LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(LineSubGeometry.COLOR_DATA), LineSubGeometry.COLOR_FORMAT);
-        context.drawTriangles(context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+        stage.activateBuffer(0, renderable.getVertexData(LineSubGeometry.START_POSITION_DATA), renderable.getVertexOffset(LineSubGeometry.START_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
+        stage.activateBuffer(1, renderable.getVertexData(LineSubGeometry.END_POSITION_DATA), renderable.getVertexOffset(LineSubGeometry.END_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
+        stage.activateBuffer(2, renderable.getVertexData(LineSubGeometry.THICKNESS_DATA), renderable.getVertexOffset(LineSubGeometry.THICKNESS_DATA), LineSubGeometry.THICKNESS_FORMAT);
+        stage.activateBuffer(3, renderable.getVertexData(LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(LineSubGeometry.COLOR_DATA), LineSubGeometry.COLOR_FORMAT);
+        context.drawTriangles(stage.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
     };
     LineBasicMaterial.pONE_VECTOR = Array(1, 1, 1, 1);
     LineBasicMaterial.pFRONT_VECTOR = Array(0, 0, -1, 0);
@@ -8560,7 +8756,7 @@ var SkyboxMaterial = (function (_super) {
         var context = renderer.context;
         context.setSamplerStateAt(0, ContextGLWrapMode.CLAMP, ContextGLTextureFilter.LINEAR, this._cubeMap.hasMipmaps ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
         context.setDepthTest(false, ContextGLCompareMode.LESS);
-        context.activateCubeTexture(0, this._cubeMap);
+        renderer.stage.activateCubeTexture(0, this._cubeMap);
     };
     /**
      * @inheritDoc
@@ -8575,8 +8771,8 @@ var SkyboxMaterial = (function (_super) {
         this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.projection.far / Math.sqrt(3);
         context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, viewProjection, true);
         context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
-        context.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-        context.drawTriangles(context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+        stage.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+        context.drawTriangles(stage.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
     };
     return SkyboxMaterial;
 })(StageGLMaterialBase);
@@ -8803,8 +8999,8 @@ var TriangleMaterialBase = (function (_super) {
         var context = stage.context;
         context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shaderObject.vertexConstantData, shaderObject.numUsedVertexConstants);
         context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shaderObject.fragmentConstantData, shaderObject.numUsedFragmentConstants);
-        context.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-        context.drawTriangles(context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+        stage.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+        context.drawTriangles(stage.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
     };
     return TriangleMaterialBase;
 })(StageGLMaterialBase);
@@ -10414,9 +10610,9 @@ var ShaderLightingObject = (function (_super) {
         for (var i = 0; i < len; ++i) {
             probe = lightProbes[this.lightProbesOffset + i];
             if (addDiff)
-                stage.context.activateCubeTexture(this.lightProbeDiffuseIndices[i], probe.diffuseMap);
+                stage.activateCubeTexture(this.lightProbeDiffuseIndices[i], probe.diffuseMap);
             if (addSpec)
-                stage.context.activateCubeTexture(this.lightProbeSpecularIndices[i], probe.specularMap);
+                stage.activateCubeTexture(this.lightProbeSpecularIndices[i], probe.specularMap);
         }
         for (i = 0; i < len; ++i)
             this.fragmentConstantData[this.probeWeightsIndex + i] = weights[this.lightProbesOffset + i];
@@ -10566,13 +10762,13 @@ var ShaderObjectBase = (function () {
         if (renderable.materialOwner.animator)
             renderable.materialOwner.animator.setRenderState(this, renderable, stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
         if (this.uvBufferIndex >= 0)
-            context.activateBuffer(this.uvBufferIndex, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
+            stage.activateBuffer(this.uvBufferIndex, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
         if (this.secondaryUVBufferIndex >= 0)
-            context.activateBuffer(this.secondaryUVBufferIndex, renderable.getVertexData(TriangleSubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.SECONDARY_UV_DATA), TriangleSubGeometry.SECONDARY_UV_FORMAT);
+            stage.activateBuffer(this.secondaryUVBufferIndex, renderable.getVertexData(TriangleSubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.SECONDARY_UV_DATA), TriangleSubGeometry.SECONDARY_UV_FORMAT);
         if (this.normalBufferIndex >= 0)
-            context.activateBuffer(this.normalBufferIndex, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+            stage.activateBuffer(this.normalBufferIndex, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
         if (this.tangentBufferIndex >= 0)
-            context.activateBuffer(this.tangentBufferIndex, renderable.getVertexData(TriangleSubGeometry.TANGENT_DATA), renderable.getVertexOffset(TriangleSubGeometry.TANGENT_DATA), TriangleSubGeometry.TANGENT_FORMAT);
+            stage.activateBuffer(this.tangentBufferIndex, renderable.getVertexData(TriangleSubGeometry.TANGENT_DATA), renderable.getVertexOffset(TriangleSubGeometry.TANGENT_DATA), TriangleSubGeometry.TANGENT_FORMAT);
         if (this.usesUVTransform) {
             var uvTransform = renderable.materialOwner.uvTransform.matrix;
             if (uvTransform) {
@@ -11066,7 +11262,7 @@ var AmbientBasicMethod = (function (_super) {
     AmbientBasicMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
         if (methodVO.needsUV) {
             stage.context.setSamplerStateAt(methodVO.texturesIndex, shaderObject.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            stage.context.activateTexture(methodVO.texturesIndex, shaderObject.texture);
+            stage.activateTexture(methodVO.texturesIndex, shaderObject.texture);
             if (shaderObject.alphaThreshold > 0)
                 shaderObject.fragmentConstantData[methodVO.fragmentConstantsIndex] = shaderObject.alphaThreshold;
         }
@@ -11141,7 +11337,7 @@ var AmbientEnvMapMethod = (function (_super) {
      */
     AmbientEnvMapMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
         _super.prototype.iActivate.call(this, shaderObject, methodVO, stage);
-        stage.context.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
+        stage.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
     };
     /**
      * @inheritDoc
@@ -11225,7 +11421,7 @@ var DiffuseBasicMethod = (function (_super) {
      */
     DiffuseBasicMethod.prototype.generateMip = function (stage) {
         if (this._pUseTexture)
-            stage.context.activateTexture(0, this._texture);
+            stage.activateTexture(0, this._texture);
     };
     Object.defineProperty(DiffuseBasicMethod.prototype, "diffuseColor", {
         /**
@@ -11409,7 +11605,7 @@ var DiffuseBasicMethod = (function (_super) {
     DiffuseBasicMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
         if (this._pUseTexture) {
             stage.context.setSamplerStateAt(methodVO.texturesIndex, shaderObject.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            stage.context.activateTexture(methodVO.texturesIndex, this._texture);
+            stage.activateTexture(methodVO.texturesIndex, this._texture);
         }
         else {
             var index = methodVO.fragmentConstantsIndex;
@@ -11910,7 +12106,7 @@ var DiffuseGradientMethod = (function (_super) {
      */
     DiffuseGradientMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
         _super.prototype.iActivate.call(this, shaderObject, methodVO, stage);
-        stage.context.activateTexture(methodVO.secondaryTexturesIndex, this._gradient);
+        stage.activateTexture(methodVO.secondaryTexturesIndex, this._gradient);
     };
     return DiffuseGradientMethod;
 })(DiffuseBasicMethod);
@@ -11995,7 +12191,7 @@ var DiffuseLightMapMethod = (function (_super) {
      * @inheritDoc
      */
     DiffuseLightMapMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
-        stage.context.activateTexture(methodVO.secondaryTexturesIndex, this._lightMapTexture);
+        stage.activateTexture(methodVO.secondaryTexturesIndex, this._lightMapTexture);
         _super.prototype.iActivate.call(this, shaderObject, methodVO, stage);
     };
     /**
@@ -12213,7 +12409,7 @@ var DiffuseSubSurfaceMethod = (function (_super) {
      * @inheritDoc
      */
     DiffuseSubSurfaceMethod.prototype.iSetRenderState = function (shaderObject, methodVO, renderable, stage, camera) {
-        stage.context.activateTexture(methodVO.secondaryTexturesIndex, this._depthPass._iGetDepthMap(renderable));
+        stage.activateTexture(methodVO.secondaryTexturesIndex, this._depthPass._iGetDepthMap(renderable));
         this._depthPass._iGetProjection(renderable).copyRawDataTo(shaderObject.vertexConstantData, methodVO.secondaryVertexConstantsIndex + 4, true);
     };
     /**
@@ -12409,7 +12605,7 @@ var EffectAlphaMaskMethod = (function (_super) {
      * @inheritDoc
      */
     EffectAlphaMaskMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
-        stage.context.activateTexture(methodVO.texturesIndex, this._texture);
+        stage.activateTexture(methodVO.texturesIndex, this._texture);
     };
     /**
      * @inheritDoc
@@ -12666,9 +12862,9 @@ var EffectEnvMapMethod = (function (_super) {
      */
     EffectEnvMapMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
         shaderObject.fragmentConstantData[methodVO.fragmentConstantsIndex] = this._alpha;
-        stage.context.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
+        stage.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
         if (this._mask)
-            stage.context.activateTexture(methodVO.texturesIndex + 1, this._mask);
+            stage.activateTexture(methodVO.texturesIndex + 1, this._mask);
     };
     /**
      * @inheritDoc
@@ -12933,9 +13129,9 @@ var EffectFresnelEnvMapMethod = (function (_super) {
         data[index] = this._alpha;
         data[index + 1] = this._normalReflectance;
         data[index + 2] = this._fresnelPower;
-        stage.context.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
+        stage.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
         if (this._mask)
-            stage.context.activateTexture(methodVO.texturesIndex + 1, this._mask);
+            stage.activateTexture(methodVO.texturesIndex + 1, this._mask);
     };
     /**
      * @inheritDoc
@@ -13047,7 +13243,7 @@ var EffectLightMapMethod = (function (_super) {
      * @inheritDoc
      */
     EffectLightMapMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
-        stage.context.activateTexture(methodVO.texturesIndex, this._texture);
+        stage.activateTexture(methodVO.texturesIndex, this._texture);
         _super.prototype.iActivate.call(this, shaderObject, methodVO, stage);
     };
     /**
@@ -13290,7 +13486,7 @@ var EffectRefractionEnvMapMethod = (function (_super) {
             data[index + 2] = this._dispersionB + this._refractionIndex;
         }
         data[index + 3] = this._alpha;
-        stage.context.activateCubeTexture(methodVO.texturesIndex, this._envMap);
+        stage.activateCubeTexture(methodVO.texturesIndex, this._envMap);
     };
     /**
      * @inheritDoc
@@ -13637,7 +13833,7 @@ var NormalBasicMethod = (function (_super) {
     NormalBasicMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
         if (methodVO.texturesIndex >= 0) {
             stage.context.setSamplerStateAt(methodVO.texturesIndex, shaderObject.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            stage.context.activateTexture(methodVO.texturesIndex, this._texture);
+            stage.activateTexture(methodVO.texturesIndex, this._texture);
         }
     };
     /**
@@ -13868,7 +14064,7 @@ var NormalSimpleWaterMethod = (function (_super) {
         data[index + 7] = this._water2OffsetY;
         //if (this._useSecondNormalMap >= 0)
         if (this._useSecondNormalMap)
-            stage.context.activateTexture(methodVO.texturesIndex + 1, this._texture2);
+            stage.activateTexture(methodVO.texturesIndex + 1, this._texture2);
     };
     /**
      * @inheritDoc
@@ -14191,7 +14387,7 @@ var ShadowCascadeMethod = (function (_super) {
      * @inheritDoc
      */
     ShadowCascadeMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
-        stage.context.activateTexture(methodVO.texturesIndex, this._pCastingLight.shadowMapper.depthMap);
+        stage.activateTexture(methodVO.texturesIndex, this._pCastingLight.shadowMapper.depthMap);
         var vertexData = shaderObject.vertexConstantData;
         var vertexIndex = methodVO.vertexConstantsIndex;
         shaderObject.vertexConstantData[methodVO.vertexConstantsIndex + 3] = -1 / (this._cascadeShadowMapper.depth * this._pEpsilon);
@@ -14364,7 +14560,7 @@ var ShadowDitheredMethod = (function (_super) {
         data[index + 9] = (stage.width - 1) / 63;
         data[index + 10] = (stage.height - 1) / 63;
         data[index + 11] = 2 * this._range / this._depthMapSize;
-        stage.context.activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
+        stage.activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
     };
     /**
      * @inheritDoc
@@ -14453,7 +14649,7 @@ var ShadowDitheredMethod = (function (_super) {
         data[index + 1] = (stage.width - 1) / 63;
         data[index + 2] = (stage.height - 1) / 63;
         data[index + 3] = 2 * this._range / this._depthMapSize;
-        stage.context.activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
+        stage.activateTexture(methodVO.texturesIndex + 1, ShadowDitheredMethod._grainTexture);
     };
     /**
      * @inheritDoc
@@ -14891,9 +15087,9 @@ var ShadowMethodBase = (function (_super) {
             fragmentData[index + 11] = 1 / (2 * f * f);
         }
         if (!this._pUsePoint)
-            stage.context.activateRenderTexture(methodVO.texturesIndex, this._pCastingLight.shadowMapper.depthMap);
+            stage.activateRenderTexture(methodVO.texturesIndex, this._pCastingLight.shadowMapper.depthMap);
         //else
-        //	stage.context.activateCubeRenderTexture(methodVO.texturesIndex, <CubeTextureBase> this._pCastingLight.shadowMapper.depthMap);
+        //	stage.activateCubeRenderTexture(methodVO.texturesIndex, <CubeTextureBase> this._pCastingLight.shadowMapper.depthMap);
     };
     /**
      * Sets the method state for cascade shadow mapping.
@@ -15572,7 +15768,7 @@ var SpecularBasicMethod = (function (_super) {
     SpecularBasicMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
         if (this._pUseTexture) {
             stage.context.setSamplerStateAt(methodVO.texturesIndex, shaderObject.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            stage.context.activateTexture(methodVO.texturesIndex, this._texture);
+            stage.activateTexture(methodVO.texturesIndex, this._texture);
         }
         var index = methodVO.fragmentConstantsIndex;
         var data = shaderObject.fragmentConstantData;
@@ -16152,7 +16348,7 @@ var DepthMapPass = (function (_super) {
         var shaderObject = pass.shaderObject;
         if (shaderObject.alphaThreshold > 0) {
             context.setSamplerStateAt(this._texturesIndex, shaderObject.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            context.activateTexture(this._texturesIndex, shaderObject.texture);
+            renderer.stage.activateTexture(this._texturesIndex, shaderObject.texture);
             shaderObject.fragmentConstantData[this._fragmentConstantsIndex + 8] = pass.shaderObject.alphaThreshold;
         }
     };
@@ -16251,7 +16447,7 @@ var DistanceMapPass = (function (_super) {
         data[index + 3] = 16581375.0 * f;
         if (shaderObject.alphaThreshold > 0) {
             context.setSamplerStateAt(this._texturesIndex, shaderObject.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            context.activateTexture(this._texturesIndex, shaderObject.texture);
+            renderer.stage.activateTexture(this._texturesIndex, shaderObject.texture);
             data[index + 8] = pass.shaderObject.alphaThreshold;
         }
     };
@@ -16930,13 +17126,13 @@ var SingleObjectDepthPass = (function (_super) {
         // local position = enough
         light = lights[0];
         matrix = light.iGetObjectProjectionMatrix(renderable.sourceEntity, camera, this._projections[rId]);
-        context.setRenderTarget(this._textures[rId], true);
+        stage.setRenderTarget(this._textures[rId], true);
         context.clear(1.0, 1.0, 1.0);
         context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
         context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
-        context.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-        context.activateBuffer(1, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
-        context.drawTriangles(context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+        stage.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+        stage.activateBuffer(1, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+        context.drawTriangles(stage.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
     };
     /**
      * @inheritDoc
@@ -17078,7 +17274,7 @@ var TriangleBasicPass = (function (_super) {
         var shaderObject = pass.shaderObject;
         if (shaderObject.texture != null) {
             renderer.context.setSamplerStateAt(this._texturesIndex, shaderObject.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            renderer.context.activateTexture(this._texturesIndex, shaderObject.texture);
+            renderer.stage.activateTexture(this._texturesIndex, shaderObject.texture);
             if (shaderObject.alphaThreshold > 0)
                 shaderObject.fragmentConstantData[this._fragmentConstantsIndex] = shaderObject.alphaThreshold;
         }
@@ -23726,8 +23922,8 @@ var ShaderPicker = (function () {
             matrix.append(viewProjection);
             this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
             this._context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._id, 1);
-            this._context.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-            this._context.drawTriangles(this._context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+            this._stage.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+            this._context.drawTriangles(this._stage.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
             renderable = renderable.next;
         }
     };
@@ -23797,8 +23993,8 @@ var ShaderPicker = (function () {
         this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
         this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, localViewProjection, true);
         this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
-        this._context.activateBuffer(0, this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-        this._context.drawTriangles(this._context.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
+        this._stage.activateBuffer(0, this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+        this._context.drawTriangles(this._stage.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
         this._context.drawToBitmapData(this._bitmapData);
         col = this._bitmapData.getPixel(0, 0);
         this._localHitPosition.x = ((col >> 16) & 0xff) * scX / 255 - offsX;
@@ -25041,7 +25237,7 @@ var DepthRenderer = (function (_super) {
     });
     DepthRenderer.prototype._iRenderCascades = function (entityCollector, target, numCascades, scissorRects, cameras) {
         this.pCollectRenderables(entityCollector);
-        this._pContext.setRenderTarget(target, true, 0);
+        this._pStage.setRenderTarget(target, true, 0);
         this._pContext.clear(1, 1, 1, 1, 1, 0);
         this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
         this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
@@ -25458,7 +25654,7 @@ var RendererBase = (function (_super) {
         else {
             return materialPassData.programData;
         }
-        var programData = this._pContext.getProgramData(materialPassData.key);
+        var programData = this._pStage.getProgramData(materialPassData.key);
         //check program data hasn't changed, keep count of program usages
         if (materialPassData.programData != programData) {
             if (materialPassData.programData)
@@ -25724,7 +25920,7 @@ var RendererBase = (function (_super) {
         if (target === void 0) { target = null; }
         if (scissorRect === void 0) { scissorRect = null; }
         if (surfaceSelector === void 0) { surfaceSelector = 0; }
-        this._pContext.setRenderTarget(target, true, surfaceSelector);
+        this._pStage.setRenderTarget(target, true, surfaceSelector);
         if ((target || !this._shareContext) && !this._depthPrepass)
             this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
         this._pContext.setDepthTest(false, ContextGLCompareMode.ALWAYS);

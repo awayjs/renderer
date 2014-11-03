@@ -20,7 +20,7 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import ContextGLClearMask			= require("awayjs-stagegl/lib/base/ContextGLClearMask");
-import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import StageManager					= require("awayjs-stagegl/lib/managers/StageManager");
 
 import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");

@@ -29,7 +29,7 @@ import ShadowCasterCollector		= require("awayjs-display/lib/traverse/ShadowCaste
 
 import AGALMiniAssembler			= require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
 
@@ -264,7 +264,7 @@ class RendererBase extends EventDispatcher
 			return materialPassData.programData;
 		}
 
-		var programData:ProgramData = this._pContext.getProgramData(materialPassData.key);
+		var programData:ProgramData = this._pStage.getProgramData(materialPassData.key);
 
 		//check program data hasn't changed, keep count of program usages
 		if (materialPassData.programData != programData) {
@@ -599,7 +599,7 @@ class RendererBase extends EventDispatcher
 	 */
 	public pExecuteRender(entityCollector:ICollector, target:TextureProxyBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 	{
-		this._pContext.setRenderTarget(target, true, surfaceSelector);
+		this._pStage.setRenderTarget(target, true, surfaceSelector);
 
 		if ((target || !this._shareContext) && !this._depthPrepass)
 			this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);

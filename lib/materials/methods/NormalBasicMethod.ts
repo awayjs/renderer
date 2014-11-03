@@ -111,7 +111,7 @@ class NormalBasicMethod extends ShadingMethodBase
 	{
 		if (methodVO.texturesIndex >= 0) {
 			stage.context.setSamplerStateAt(methodVO.texturesIndex, shaderObject.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-			stage.context.activateTexture(methodVO.texturesIndex, this._texture);
+			stage.activateTexture(methodVO.texturesIndex, this._texture);
 		}
 	}
 

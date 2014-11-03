@@ -135,10 +135,10 @@ class EffectFresnelEnvMapMethod extends EffectMethodBase
 		data[index + 1] = this._normalReflectance;
 		data[index + 2] = this._fresnelPower;
 
-		stage.context.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
+		stage.activateCubeTexture(methodVO.texturesIndex, this._cubeTexture);
 
 		if (this._mask)
-			stage.context.activateTexture(methodVO.texturesIndex + 1, this._mask);
+			stage.activateTexture(methodVO.texturesIndex + 1, this._mask);
 	}
 
 	/**

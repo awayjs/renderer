@@ -237,9 +237,9 @@ class ShadowMethodBase extends ShadowMapMethodBase
 		}
 
 		if (!this._pUsePoint)
-			stage.context.activateRenderTexture(methodVO.texturesIndex, <Texture2DBase> this._pCastingLight.shadowMapper.depthMap);
+			stage.activateRenderTexture(methodVO.texturesIndex, <Texture2DBase> this._pCastingLight.shadowMapper.depthMap);
 		//else
-		//	stage.context.activateCubeRenderTexture(methodVO.texturesIndex, <CubeTextureBase> this._pCastingLight.shadowMapper.depthMap);
+		//	stage.activateCubeRenderTexture(methodVO.texturesIndex, <CubeTextureBase> this._pCastingLight.shadowMapper.depthMap);
 	}
 
 	/**

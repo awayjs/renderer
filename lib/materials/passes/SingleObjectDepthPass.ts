@@ -7,7 +7,7 @@ import Camera							= require("awayjs-display/lib/entities/Camera");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
+import IContextGL						= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
 import MaterialPassData					= require("awayjs-renderergl/lib/pool/MaterialPassData");
@@ -168,7 +168,7 @@ class SingleObjectDepthPass extends MaterialPassBase
 	public _iRender(pass:MaterialPassData, renderable:RenderableBase, stage:Stage, camera:Camera, viewProjection:Matrix3D)
 	{
 		var matrix:Matrix3D;
-		var context:IContextGL = <IContextGL> stage.context;
+		var context:IContextGL = stage.context;
 		var len:number /*uint*/;
 		var light:LightBase;
 		var lights:Array<LightBase> = this._pLightPicker.allPickedLights;
@@ -187,14 +187,14 @@ class SingleObjectDepthPass extends MaterialPassBase
 
 		matrix = light.iGetObjectProjectionMatrix(renderable.sourceEntity, camera, this._projections[rId]);
 
-		context.setRenderTarget(this._textures[rId], true);
+		stage.setRenderTarget(this._textures[rId], true);
 		context.clear(1.0, 1.0, 1.0);
 		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
 
-		context.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-		context.activateBuffer(1, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
-		context.drawTriangles(context.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+		stage.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+		stage.activateBuffer(1, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+		context.drawTriangles(stage.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
 	}
 
 	/**

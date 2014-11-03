@@ -140,7 +140,7 @@ class AmbientBasicMethod extends ShadingMethodBase
 	{
 		if (methodVO.needsUV) {
 			stage.context.setSamplerStateAt(methodVO.texturesIndex, shaderObject.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures? ContextGLTextureFilter.LINEAR:ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping? ContextGLMipFilter.MIPLINEAR:ContextGLMipFilter.MIPNONE);
-			stage.context.activateTexture(methodVO.texturesIndex, shaderObject.texture);
+			stage.activateTexture(methodVO.texturesIndex, shaderObject.texture);
 
 			if (shaderObject.alphaThreshold > 0)
 				shaderObject.fragmentConstantData[methodVO.fragmentConstantsIndex] = shaderObject.alphaThreshold;

@@ -4,7 +4,7 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLMipFilter			= require("awayjs-stagegl/lib/base/ContextGLMipFilter");
 import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
 import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 
 import MethodVO						= require("awayjs-renderergl/lib/materials/compilation/MethodVO");
 import ShaderLightingObject			= require("awayjs-renderergl/lib/materials/compilation/ShaderLightingObject");
@@ -316,7 +316,7 @@ class SpecularBasicMethod extends LightingMethodBase
 	{
 		if (this._pUseTexture) {
 			stage.context.setSamplerStateAt(methodVO.texturesIndex, shaderObject.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures? ContextGLTextureFilter.LINEAR:ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping? ContextGLMipFilter.MIPLINEAR:ContextGLMipFilter.MIPNONE);
-			stage.context.activateTexture(methodVO.texturesIndex, this._texture);
+			stage.activateTexture(methodVO.texturesIndex, this._texture);
 		}
 
 		var index:number = methodVO.fragmentConstantsIndex;

@@ -9,7 +9,7 @@ import ShadowCasterCollector		= require("awayjs-display/lib/traverse/ShadowCaste
 
 import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-import IContextGL				= require("awayjs-stagegl/lib/base/IContextGL");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 
 import MaterialData					= require("awayjs-renderergl/lib/pool/MaterialData");
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
@@ -61,7 +61,7 @@ class DepthRenderer extends RendererBase
 	{
 		this.pCollectRenderables(entityCollector);
 
-		this._pContext.setRenderTarget(target, true, 0);
+		this._pStage.setRenderTarget(target, true, 0);
 		this._pContext.clear(1, 1, 1, 1, 1, 0);
 
 		this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
