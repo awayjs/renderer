@@ -6,7 +6,7 @@
   "dependencies": {
     "awayjs-core": "^0.2.0",
     "awayjs-display": "^0.2.0",
-    "awayjs-stagegl": "^0.4.0"
+    "awayjs-stagegl": "^0.5.1"
   },
   "devDependencies": {
     "browserify": "^5.12.0",
