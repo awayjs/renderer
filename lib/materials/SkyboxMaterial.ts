@@ -15,12 +15,12 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import StageGLMaterialBase			= require("awayjs-renderergl/lib/materials/StageGLMaterialBase");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterData");
-import SkyboxPass					= require("awayjs-renderergl/lib/materials/passes/SkyboxPass");
-import ShaderCompilerHelper			= require("awayjs-renderergl/lib/materials/utils/ShaderCompilerHelper");
+import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
+import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+import SkyboxPass					= require("awayjs-renderergl/lib/passes/SkyboxPass");
+import ShaderCompilerHelper			= require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
 import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
 
 /**
@@ -28,7 +28,7 @@ import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
  *
  * @see away3d.primitives.Skybox
  */
-class SkyboxMaterial extends StageGLMaterialBase
+class SkyboxMaterial extends MaterialGLBase
 {
 	private _vertexData:Array<number>;
 	private _cubeMap:CubeTextureBase;

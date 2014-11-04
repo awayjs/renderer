@@ -1,6 +1,6 @@
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
-import StageGLMaterialBase			= require("awayjs-renderergl/lib/materials/StageGLMaterialBase");
-import MaterialPassBase				= require("awayjs-renderergl/lib/materials/passes/MaterialPassBase");
+import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
+import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
 
 /**
  * @class away.pool.MaterialPassDataPool
@@ -8,14 +8,14 @@ import MaterialPassBase				= require("awayjs-renderergl/lib/materials/passes/Mat
 class MaterialPassDataPool
 {
 	private _pool:Object = new Object();
-	private _material:StageGLMaterialBase;
+	private _material:MaterialGLBase;
 
 	/**
 	 * //TODO
 	 *
 	 * @param textureDataClass
 	 */
-	constructor(material:StageGLMaterialBase)
+	constructor(material:MaterialGLBase)
 	{
 		this._material = material;
 	}
@@ -26,7 +26,7 @@ class MaterialPassDataPool
 	 * @param materialOwner
 	 * @returns ITexture
 	 */
-	public getItem(materialPass:MaterialPassBase):MaterialPassData
+	public getItem(materialPass:MaterialPassGLBase):MaterialPassData
 	{
 		return (this._pool[materialPass.id] || (this._pool[materialPass.id] = this._material._iAddMaterialPassData(materialPass._iAddMaterialPassData(new MaterialPassData(this, this._material, materialPass)))));
 	}
@@ -36,7 +36,7 @@ class MaterialPassDataPool
 	 *
 	 * @param materialOwner
 	 */
-	public disposeItem(materialPass:MaterialPassBase)
+	public disposeItem(materialPass:MaterialPassGLBase)
 	{
 		materialPass._iRemoveMaterialPassData(this._pool[materialPass.id]);
 

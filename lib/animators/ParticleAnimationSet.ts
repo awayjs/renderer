@@ -17,7 +17,7 @@ import ParticleData						= require("awayjs-renderergl/lib/animators/data/Particl
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleTimeNode					= require("awayjs-renderergl/lib/animators/nodes/ParticleTimeNode");
 import ParticleGeometry					= require("awayjs-renderergl/lib/base/ParticleGeometry");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 
 
 /**

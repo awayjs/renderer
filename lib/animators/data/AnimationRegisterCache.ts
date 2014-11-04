@@ -2,8 +2,8 @@ import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 
 import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterElement");
+import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 
 
 /**

@@ -8,8 +8,8 @@ import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/Animati
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import AnimationSetError			= require("awayjs-renderergl/lib/errors/AnimationSetError");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterElement");
+import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 
 /**
  * Provides an abstract base class for data set classes that hold animation data for use in animator classes.

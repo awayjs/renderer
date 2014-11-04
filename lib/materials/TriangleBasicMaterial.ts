@@ -5,7 +5,7 @@ import BlendMode					= require("awayjs-display/lib/base/BlendMode");
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 
 import TriangleMaterialBase			= require("awayjs-renderergl/lib/materials/TriangleMaterialBase");
-import TriangleBasicPass			= require("awayjs-renderergl/lib/materials/passes/TriangleBasicPass");
+import TriangleBasicPass			= require("awayjs-renderergl/lib/passes/TriangleBasicPass");
 
 /**
  * TriangleMaterial forms an abstract base class for the default shaded materials provided by Stage,
@@ -114,40 +114,18 @@ class TriangleBasicMaterial extends TriangleMaterialBase
 	/**
 	 * @inheritDoc
 	 */
-	public iUpdateMaterial()
+	public _iUpdateMaterial()
 	{
-		var passesInvalid:boolean;
-
 		if (this._pScreenPassesInvalid) {
-			this.pUpdateScreenPasses();
-			passesInvalid = true;
-		}
+			//Updates screen passes when they were found to be invalid.
+			this._pScreenPassesInvalid = false;
 
-		if (passesInvalid) {
+			this.setBlendAndCompareModes();
+
 			this._pClearScreenPasses();
 
 			this._pAddScreenPass(this._screenPass);
 		}
-	}
-
-	/**
-	 * Updates screen passes when they were found to be invalid.
-	 */
-	public pUpdateScreenPasses()
-	{
-		this.initPasses();
-
-		this.setBlendAndCompareModes();
-
-		this._pScreenPassesInvalid = false;
-	}
-
-	/**
-	 * Initializes all the passes and their dependent passes.
-	 */
-	private initPasses()
-	{
-		//
 	}
 
 	/**

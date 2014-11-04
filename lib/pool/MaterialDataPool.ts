@@ -1,5 +1,5 @@
 import MaterialData					= require("awayjs-renderergl/lib/pool/MaterialData");
-import StageGLMaterialBase			= require("awayjs-renderergl/lib/materials/StageGLMaterialBase");
+import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
 
 /**
  * @class away.pool.MaterialDataPool
@@ -23,7 +23,7 @@ class MaterialDataPool
 	 * @param materialOwner
 	 * @returns ITexture
 	 */
-	public getItem(material:StageGLMaterialBase):MaterialData
+	public getItem(material:MaterialGLBase):MaterialData
 	{
 		return (this._pool[material.id] || (this._pool[material.id] = material._iAddMaterialData(new MaterialData(this, material))))
 	}
@@ -33,7 +33,7 @@ class MaterialDataPool
 	 *
 	 * @param materialOwner
 	 */
-	public disposeItem(material:StageGLMaterialBase)
+	public disposeItem(material:MaterialGLBase)
 	{
 		material._iRemoveMaterialData(this._pool[material.id]);
 

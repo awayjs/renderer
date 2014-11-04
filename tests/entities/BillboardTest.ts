@@ -15,7 +15,7 @@ import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import TriangleBasicMaterial		= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
 
 class BillboardTest
 {
@@ -115,7 +115,7 @@ class BillboardTest
 
 				case "assets/130909wall_big.png":
 
-					var material:TriangleMethodMaterial = new TriangleMethodMaterial();
+					var material:TriangleBasicMaterial = new TriangleBasicMaterial();
 						material.texture = <Texture2DBase> AssetLibrary.getAsset(asset.name);
 
 					var s:Billboard;

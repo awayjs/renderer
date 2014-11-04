@@ -18,7 +18,7 @@ import IAnimationState				= require("awayjs-renderergl/lib/animators/states/IAni
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import TriangleSubMeshRenderable	= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
 import AnimatorEvent				= require("awayjs-renderergl/lib/events/AnimatorEvent");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 
 /**
  * Dispatched when playback of an animation inside the animator object starts.

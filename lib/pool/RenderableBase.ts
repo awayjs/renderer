@@ -14,7 +14,7 @@ import IndexDataPool				= require("awayjs-stagegl/lib/pool/IndexDataPool");
 import VertexData					= require("awayjs-stagegl/lib/pool/VertexData");
 import VertexDataPool				= require("awayjs-stagegl/lib/pool/VertexDataPool");
 
-import StageGLMaterialBase			= require("awayjs-renderergl/lib/materials/StageGLMaterialBase");
+import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
 
 /**
  * @class RenderableListItem
@@ -109,7 +109,7 @@ class RenderableBase implements IRenderable
 	/**
 	 *
 	 */
-	public material:StageGLMaterialBase;
+	public material:MaterialGLBase;
 
 	/**
 	 *

@@ -16,7 +16,7 @@ import IVertexAnimationState			= require("awayjs-renderergl/lib/animators/states
 import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
 import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
 import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 
 /**
  * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects

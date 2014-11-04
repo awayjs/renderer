@@ -19,7 +19,7 @@ import SkeletonPose						= require("awayjs-renderergl/lib/animators/data/Skeleto
 import ISkeletonAnimationState			= require("awayjs-renderergl/lib/animators/states/ISkeletonAnimationState");
 import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
 import AnimationStateEvent				= require("awayjs-renderergl/lib/events/AnimationStateEvent");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
 import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
 

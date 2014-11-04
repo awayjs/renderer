@@ -32,10 +32,10 @@ import DepthRenderer				= require("awayjs-renderergl/lib/render/DepthRenderer");
 import Filter3DRenderer				= require("awayjs-renderergl/lib/render/Filter3DRenderer");
 import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
-import DepthMapPass					= require("awayjs-renderergl/lib/materials/passes/DepthMapPass");
-import DistanceMapPass				= require("awayjs-renderergl/lib/materials/passes/DistanceMapPass");
-import MaterialPassBase				= require("awayjs-renderergl/lib/materials/passes/MaterialPassBase");
-import StageGLMaterialBase			= require("awayjs-renderergl/lib/materials/StageGLMaterialBase");
+import DepthMapPass					= require("awayjs-renderergl/lib/passes/DepthMapPass");
+import DistanceMapPass				= require("awayjs-renderergl/lib/passes/DistanceMapPass");
+import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
+import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -276,13 +276,13 @@ class DefaultRenderer extends RendererBase implements IRenderer
 	{
 		var skyBox:SkyboxRenderable = <SkyboxRenderable> this._skyboxRenderablePool.getItem(entityCollector.skyBox);
 
-		var material:StageGLMaterialBase = <StageGLMaterialBase> entityCollector.skyBox.material;
+		var material:MaterialGLBase = <MaterialGLBase> entityCollector.skyBox.material;
 
 		var camera:Camera = entityCollector.camera;
 
 		this.updateSkyboxProjection(camera);
 
-		var activePass:MaterialPassData = this.getMaterial(material, this._pStage.profile).getMaterialPass(<MaterialPassBase> material._iScreenPasses[0], this._pStage.profile);
+		var activePass:MaterialPassData = this.getMaterial(material, this._pStage.profile).getMaterialPass(<MaterialPassGLBase> material._iScreenPasses[0], this._pStage.profile);
 
 		material._iActivatePass(activePass, this, camera);
 		material._iRenderPass(activePass, skyBox, this._pStage, camera, this._skyboxProjection);
@@ -346,7 +346,7 @@ class DefaultRenderer extends RendererBase implements IRenderer
 			for (i = 0; i < len; i++) {
 				renderable2 = renderable;
 
-				activePass = activeMaterial.getMaterialPass(<MaterialPassBase> passes[i], this._pStage.profile);
+				activePass = activeMaterial.getMaterialPass(<MaterialPassGLBase> passes[i], this._pStage.profile);
 
 				renderable.material._iActivatePass(activePass, this, camera);
 

@@ -13,8 +13,7 @@ import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePla
 import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
-import DefaultMaterialManager		= require("awayjs-renderergl/lib/materials/utils/DefaultMaterialManager");
+import TriangleBasicMaterial		= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
 
 class WireframePrimitiveTest
 {

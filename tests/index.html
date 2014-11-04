@@ -26,7 +26,6 @@
             //---------------------------------------------------------------------------
 
             harness.addSeperator("Objects");
-            harness.addTest("Objects.TorusObject3DDemo", "tests.object3d.TorusObject3DDemo", "object3d/TorusObject3DDemo.js", "object3d/TorusObject3DDemo.ts");
             harness.addTest("Objects.TorusVortex", "tests.object3d.TorusVortex", "object3d/TorusVortex.js", "tests/object3d/TorusVortex.ts");
 
             //---------------------------------------------------------------------------
@@ -35,7 +34,6 @@
 
             harness.addSeperator("Primitives");
             harness.addTest("Primitives.WireframePrimitiveTest", "tests.primitives.WireframePrimitiveTest", "primitives/WireframePrimitiveTest.js", "primitives/WireframePrimitiveTest.ts");
-            harness.addTest("Primitives.PrimitivesTest", "tests.primitives.PrimitivesTest", "primitives/PrimitivesTest.js", "primitives/PrimitivesTest.ts");
 
             //---------------------------------------------------------------------------
             // Test - Textures
@@ -43,24 +41,6 @@
 
             harness.addSeperator("Textures");
             harness.addTest("Textures.CubeTextures", "tests.textures.CubeTextures", "textures/CubeTextures.js", "textures/CubeTextures.ts");
-
-            //---------------------------------------------------------------------------
-            // Test - Materials
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator("Materials");
-            harness.addTest("Materials.ColorMultiPassMatTest", "tests.materials.ColorMultiPassMatTest", "materials/ColorMultiPassMatTest.js", "materials/ColorMultiPassMatTest.ts");
-            harness.addTest("Materials.TextureMultiPassMatTest", "tests.materials.TextureMultiPassMatTest", "materials/TextureMultiPassMatTest.js", "materials/TextureMultiPassMatTest.ts");
-            harness.addTest("Materials.MaterialAlphaTest", "materials.MaterialAlphaTest", "materials/MaterialAlphaTest.js", "materials/MaterialAlphaTest.ts");
-            harness.addTest("Materials.MaterialEnvMapTest", "materials.MaterialEnvMapTest", "materials/MaterialEnvMapTest.js", "materials/MaterialEnvMapTest.ts");
-
-            //---------------------------------------------------------------------------
-            // Test - Lights
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator("Lights");
-            harness.addTest("Lights.TorusLight", "tests.lights.TorusLight", "lights/TorusLight.js", "lights/TorusLight.ts");
-            harness.addTest( "Lights.LightsShadowTest"              , "lights.LightsShadowTest"     , "lights/LightsShadowTest.js"  , "lights/LightsShadowTest.ts"  );
 
             //---------------------------------------------------------------------------
             // Test - Entities
@@ -90,21 +70,11 @@
 
             harness.addSeperator("Containers");
             harness.addTest("Containers.View3DTest", "tests.containers.View3DTest", "containers/View3DTest.js", "containers/View3DTest.ts");
-            
-            //---------------------------------------------------------------------------
-            // Test - Parsers
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( "Parsers" );
-            harness.addTest( "Parsers.AWDParserTest"                       , "parsers.AWDParserTest"            , "parsers/AWDParserTest.js"         , "parsers/AWDParserTest.ts" );
-            harness.addTest( "Parsers.ObjParserTest"                       , "parsers.ObjParserTest"            , "parsers/ObjParserTest.js"         , "parsers/ObjParserTest.ts" );
-            harness.addTest( "Parsers.AWDSuzanne"                       , "parsers.AWDSuzanne"            , "parsers/AWDSuzanne.js"         , "parsers/AWDSuzanne.ts" );
-            harness.addTest( "Parsers.ObjChiefTestDay"                       , "parsers.ObjChiefTestDay"       , "parsers/ObjChiefTestDay.js"    , "parsers/ObjChiefTestDay.ts" );
 
 
             //---------------------------------------------------------------------------
             // Load a default
-            harness.load("tests.object3d.TorusObject3DDemo", "object3d/TorusObject3DDemo.js", "object3d/TorusObject3DDemo.ts");
+            harness.load("tests.object3d.TorusVortex", "object3d/TorusVortex.js", "object3d/TorusVortex.ts");
             harness.start(); // Start
 
         }

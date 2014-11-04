@@ -9,11 +9,11 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import StageGLMaterialBase			= require("awayjs-renderergl/lib/materials/StageGLMaterialBase");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterData");
-import LineBasicPass				= require("awayjs-renderergl/lib/materials/passes/LineBasicPass");
+import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
+import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+import LineBasicPass				= require("awayjs-renderergl/lib/passes/LineBasicPass");
 import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
 
 /**
@@ -21,7 +21,7 @@ import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
  *
  * @see away.entities.Lines
  */
-class LineBasicMaterial extends StageGLMaterialBase
+class LineBasicMaterial extends MaterialGLBase
 {
 	public static pONE_VECTOR:Array<number> = Array<number>(1, 1, 1, 1);
 	public static pFRONT_VECTOR:Array<number> = Array<number>(0, 0, -1, 0);

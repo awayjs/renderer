@@ -13,7 +13,7 @@ import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/P
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
 import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
 

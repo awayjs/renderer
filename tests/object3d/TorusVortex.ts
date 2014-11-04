@@ -16,7 +16,7 @@ import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCube
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import TriangleBasicMaterial		= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
 
 class TorusVortex
 {
@@ -70,7 +70,7 @@ class TorusVortex
 
 	private onLoadComplete(event)
 	{
-		var matTx:TriangleMethodMaterial = new TriangleMethodMaterial(new ImageTexture(this._image, false), true, true, false);
+		var matTx:TriangleBasicMaterial = new TriangleBasicMaterial(new ImageTexture(this._image, false), true, true, false);
 
 		matTx.blendMode = BlendMode.ADD;
 		matTx.bothSides = true;

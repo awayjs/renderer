@@ -4,7 +4,7 @@ import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
 import AnimationSetBase					= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import VertexAnimationMode				= require("awayjs-renderergl/lib/animators/data/VertexAnimationMode");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 
 /**
  * The animation data set used by vertex-based animators, containing vertex animation state data.

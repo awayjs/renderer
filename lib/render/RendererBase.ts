@@ -44,9 +44,9 @@ import MaterialPassDataPool			= require("awayjs-renderergl/lib/pool/MaterialPass
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import TriangleSubMeshRenderable	= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
-import StageGLMaterialBase			= require("awayjs-renderergl/lib/materials/StageGLMaterialBase");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
-import DefaultMaterialManager		= require("awayjs-renderergl/lib/materials/utils/DefaultMaterialManager");
+import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
+import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import DefaultMaterialManager		= require("awayjs-renderergl/lib/managers/DefaultMaterialManager");
 
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -283,7 +283,7 @@ class RendererBase extends EventDispatcher
 	 *
 	 * @param material
 	 */
-	public getMaterial(material:StageGLMaterialBase, profile:string):MaterialData
+	public getMaterial(material:MaterialGLBase, profile:string):MaterialData
 	{
 		var materialData:MaterialData = this._materialDataPool.getItem(material);
 
@@ -810,7 +810,7 @@ class RendererBase extends EventDispatcher
 	 */
 	private _applyRenderable(renderable:RenderableBase)
 	{
-		var material:StageGLMaterialBase = <StageGLMaterialBase> renderable.materialOwner.material;
+		var material:MaterialGLBase = <MaterialGLBase> renderable.materialOwner.material;
 		var entity:IEntity = renderable.sourceEntity;
 		var position:Vector3D = entity.scenePosition;
 

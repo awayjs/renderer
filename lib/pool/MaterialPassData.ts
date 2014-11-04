@@ -3,9 +3,9 @@ import IMaterialPassData			= require("awayjs-display/lib/pool/IMaterialPassData"
 import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
 
 import MaterialPassDataPool			= require("awayjs-renderergl/lib/pool/MaterialPassDataPool");
-import StageGLMaterialBase			= require("awayjs-renderergl/lib/materials/StageGLMaterialBase");
-import MaterialPassBase				= require("awayjs-renderergl/lib/materials/passes/MaterialPassBase");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
+import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
+import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 
 /**
  *
@@ -15,11 +15,11 @@ class MaterialPassData implements IMaterialPassData
 {
 	private _pool:MaterialPassDataPool;
 
-	public material:StageGLMaterialBase;
+	public material:MaterialGLBase;
 
 	public shaderObject:ShaderObjectBase;
 
-	public materialPass:MaterialPassBase;
+	public materialPass:MaterialPassGLBase;
 
 	public programData:ProgramData;
 
@@ -41,7 +41,7 @@ class MaterialPassData implements IMaterialPassData
 
 	public usesAnimation:boolean;
 
-	constructor(pool:MaterialPassDataPool, material:StageGLMaterialBase, materialPass:MaterialPassBase)
+	constructor(pool:MaterialPassDataPool, material:MaterialGLBase, materialPass:MaterialPassGLBase)
 	{
 		this._pool = pool;
 		this.material = material;

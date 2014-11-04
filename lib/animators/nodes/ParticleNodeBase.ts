@@ -1,7 +1,7 @@
 import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
+import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 
 import ParticleAnimationSet				= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 import ParticleProperties				= require("awayjs-renderergl/lib/animators/data/ParticleProperties");

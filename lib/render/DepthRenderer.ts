@@ -15,7 +15,7 @@ import MaterialData					= require("awayjs-renderergl/lib/pool/MaterialData");
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
-import MaterialPassBase				= require("awayjs-renderergl/lib/materials/passes/MaterialPassBase");
+import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
 
 
 /**
@@ -25,7 +25,7 @@ import MaterialPassBase				= require("awayjs-renderergl/lib/materials/passes/Mat
  */
 class DepthRenderer extends RendererBase
 {
-	private _pass:MaterialPassBase;
+	private _pass:MaterialPassGLBase;
 	private _renderBlended:boolean;
 	private _disableColor:boolean;
 
@@ -34,7 +34,7 @@ class DepthRenderer extends RendererBase
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	 */
-	constructor(pass:MaterialPassBase, renderBlended:boolean = false)
+	constructor(pass:MaterialPassGLBase, renderBlended:boolean = false)
 	{
 		super();
 

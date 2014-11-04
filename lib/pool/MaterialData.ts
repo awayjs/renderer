@@ -1,9 +1,9 @@
 import IMaterialData				= require("awayjs-display/lib/pool/IMaterialData");
 
-import StageGLMaterialBase			= require("awayjs-renderergl/lib/materials/StageGLMaterialBase");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
-import MaterialPassBase				= require("awayjs-renderergl/lib/materials/passes/MaterialPassBase");
-import ShaderCompilerBase			= require("awayjs-renderergl/lib/materials/compilation/ShaderCompilerBase");
+import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
+import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
+import ShaderCompilerBase			= require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 import MaterialDataPool				= require("awayjs-renderergl/lib/pool/MaterialDataPool");
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import MaterialPassDataPool			= require("awayjs-renderergl/lib/pool/MaterialPassDataPool");
@@ -20,13 +20,13 @@ class MaterialData implements IMaterialData
 
 	private _passes:Array<MaterialPassData>;
 
-	public material:StageGLMaterialBase;
+	public material:MaterialGLBase;
 
 	public renderOrderId:number;
 
 	public invalidAnimation:boolean = true;
 
-	constructor(pool:MaterialDataPool, material:StageGLMaterialBase)
+	constructor(pool:MaterialDataPool, material:MaterialGLBase)
 	{
 		this._pool = pool;
 		this.material = material;
@@ -34,7 +34,7 @@ class MaterialData implements IMaterialData
 		this._materialPassDataPool = new MaterialPassDataPool(material);
 	}
 
-	public getMaterialPass(materialPass:MaterialPassBase, profile:string):MaterialPassData
+	public getMaterialPass(materialPass:MaterialPassGLBase, profile:string):MaterialPassData
 	{
 		var materialPassData:MaterialPassData = this._materialPassDataPool.getItem(materialPass);
 
@@ -61,7 +61,7 @@ class MaterialData implements IMaterialData
 	public getMaterialPasses(profile:string):Array<MaterialPassData>
 	{
 		if (this._passes == null) {
-			var passes:Array<MaterialPassBase> = <Array<MaterialPassBase>> this.material._iScreenPasses;
+			var passes:Array<MaterialPassGLBase> = <Array<MaterialPassGLBase>> this.material._iScreenPasses;
 			var numPasses:number = passes.length;
 
 			//reset the material passes in MaterialData
