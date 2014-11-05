@@ -18685,184 +18685,188 @@ var AWDParser = (function (_super) {
     };
     //Block ID = 4
     AWDParser.prototype.parseTimeLine = function (blockID) {
-        var frame_name;
-        var i, k;
+        var i;
+        var j;
+        var k;
         var timeLineContainer = new TimeLine();
         var name = this.parseVarStr();
-        var isScene = Boolean(this._newBlockBytes.readUnsignedByte());
+        var isScene = !!this._newBlockBytes.readUnsignedByte();
         var sceneID = this._newBlockBytes.readUnsignedByte();
-        var num_frames = this._newBlockBytes.readUnsignedShort();
-        var previousTimeLine;
+        var numFrames = this._newBlockBytes.readUnsignedShort();
+        // var previousTimeLine:TimeLineFrame;
         // var fill_props:AWDProperties = this.parseProperties({1:AWDParser.UINT32});// { 1:UINT32, 6:AWDSTRING }  ); //; , 2:UINT32, 3:UINT32, 5:BOOL } );
         if (this._debug)
-            console.log("Parsed a TIMELINE: Name = " + name + "| isScene = " + isScene + "| sceneID = " + sceneID + "| num_frames = " + num_frames);
+            console.log("Parsed a TIMELINE: Name = " + name + "| isScene = " + isScene + "| sceneID = " + sceneID + "| numFrames = " + numFrames);
         var totalDuration = 0;
-        for (i = 0; i < num_frames; i++) {
-            var newFrame = new TimeLineFrame();
+        for (i = 0; i < numFrames; i++) {
+            var frame = new TimeLineFrame();
             var traceString = "frame = " + i;
-            var frame_duration = this._newBlockBytes.readUnsignedInt();
-            newFrame.setFrameTime(totalDuration, frame_duration);
-            totalDuration += frame_duration;
-            //console.log("duration = "+frame_duration);
-            var num_labels = this._newBlockBytes.readUnsignedShort();
-            for (k = 0; k < num_labels; k++) {
-                var label_type = this._newBlockBytes.readUnsignedByte();
-                var newLabel = this.parseVarStr();
-                newFrame.addLabel(newLabel, label_type);
-                traceString += "\n     frame_name = " + frame_name + " - label_type = " + label_type;
+            var frameDuration = this._newBlockBytes.readUnsignedInt();
+            frame.setFrameTime(totalDuration, frameDuration);
+            totalDuration += frameDuration;
+            //console.log("duration = " + frameDuration);
+            var numLabels = this._newBlockBytes.readUnsignedShort();
+            for (j = 0; j < numLabels; j++) {
+                var labelType = this._newBlockBytes.readUnsignedByte();
+                var label = this.parseVarStr();
+                frame.addLabel(label, labelType);
+                traceString += "\n     label = " + label + " - labelType = " + labelType;
             }
-            var num_commands = this._newBlockBytes.readUnsignedShort();
-            var commandString = "\n      Commands " + num_commands;
-            for (k = 0; k < num_commands; k++) {
-                var command_type = this._newBlockBytes.readUnsignedShort();
-                if ((command_type == 1) || (command_type == 2)) {
-                    var newObjectProps = new CommandPropsDisplayObject();
-                    var z;
-                    var hasRessource = Boolean(this._newBlockBytes.readByte());
-                    var hasDisplayMatrix = Boolean(this._newBlockBytes.readByte());
-                    var hasColorMatrix = Boolean(this._newBlockBytes.readByte());
-                    var hasDepthChange = Boolean(this._newBlockBytes.readByte());
-                    var hasFilterChange = Boolean(this._newBlockBytes.readByte());
-                    var hasBlendModeChange = Boolean(this._newBlockBytes.readByte());
-                    var hasDepthClipChange = Boolean(this._newBlockBytes.readByte());
-                    var hasVisiblityChange = Boolean(this._newBlockBytes.readByte());
-                    var objectID = this._newBlockBytes.readUnsignedInt();
-                    if (hasRessource) {
-                        var ressourceID = this._newBlockBytes.readUnsignedInt();
-                        commandString += "\n      - Add new Ressource = " + ressourceID + " as object_id = " + objectID;
-                    }
-                    else {
-                        commandString += "\n      - Update object_id = " + objectID;
-                    }
-                    var transformArray = new Array();
-                    if (hasDisplayMatrix) {
-                        transformArray = new Array();
-                        var thisMatrix = new Matrix3D();
-                        // todo: implement this in exporter (make transform optional 3d):
-                        var is3d = false; //Boolean(this._newBlockBytes.readByte());
-                        if (is3d) {
-                            thisMatrix = this.parseMatrix3D();
+            var numCommands = this._newBlockBytes.readUnsignedShort();
+            var commandString = "\n      Commands " + numCommands;
+            for (j = 0; j < numCommands; j++) {
+                var objectID;
+                var resourceID;
+                var commandType = this._newBlockBytes.readUnsignedShort();
+                switch (commandType) {
+                    case 1:
+                    case 2:
+                        // Place Object Command
+                        var newObjectProps = new CommandPropsDisplayObject();
+                        var hasResource = !!this._newBlockBytes.readByte();
+                        var hasDisplayMatrix = !!this._newBlockBytes.readByte();
+                        var hasColorMatrix = !!this._newBlockBytes.readByte();
+                        var hasDepthChange = !!this._newBlockBytes.readByte();
+                        var hasFilterChange = !!this._newBlockBytes.readByte();
+                        var hasBlendModeChange = !!this._newBlockBytes.readByte();
+                        var hasDepthClipChange = !!this._newBlockBytes.readByte();
+                        var hasVisibilityChange = !!this._newBlockBytes.readByte();
+                        objectID = this._newBlockBytes.readUnsignedInt();
+                        if (hasResource) {
+                            resourceID = this._newBlockBytes.readUnsignedInt();
+                            commandString += "\n      - Add new Resource = " + resourceID + " as object_id = " + objectID;
                         }
                         else {
-                            for (z = 0; z < 6; z++) {
-                                transformArray.push(this._newBlockBytes.readFloat());
+                            commandString += "\n      - Update object_id = " + objectID;
+                        }
+                        if (hasDisplayMatrix) {
+                            var transformArray = [];
+                            var thisMatrix = new Matrix3D();
+                            // TODO: implement this in exporter (make transform optional 3d):
+                            var is3d = false; // !!this._newBlockBytes.readByte();
+                            if (is3d) {
+                                thisMatrix = this.parseMatrix3D();
                             }
-                            thisMatrix.position = new Vector3D(transformArray[4], transformArray[5], 0);
+                            else {
+                                for (k = 0; k < 6; k++) {
+                                    transformArray.push(this._newBlockBytes.readFloat());
+                                }
+                                // TODO: set rotation and scale
+                                thisMatrix.position = new Vector3D(transformArray[4], transformArray[5], 0);
+                            }
+                            newObjectProps.setDisplaymatrix(thisMatrix);
+                            commandString += "\n                transformArray = " + transformArray;
                         }
-                        newObjectProps.setDisplaymatrix(thisMatrix);
-                        //todo: set rotation and scale
-                        commandString += "\n                transformArray = " + transformArray;
-                    }
-                    var colorArray = new Array();
-                    if (hasColorMatrix) {
-                        for (z = 0; z < 20; z++) {
-                            colorArray.push(this._newBlockBytes.readFloat());
+                        if (hasColorMatrix) {
+                            var colorMatrix = [];
+                            for (k = 0; k < 20; k++) {
+                                colorMatrix.push(this._newBlockBytes.readFloat());
+                            }
+                            // TODO: set ColorTransform on objectProps
+                            commandString += "\n                colorMatrix = " + colorMatrix;
                         }
-                        //todo: set ColorTranform on objectProps
-                        commandString += "\n                colorArray = " + colorArray;
-                    }
-                    if (hasDepthChange) {
-                        var newDepth = this._newBlockBytes.readUnsignedInt();
-                        commandString += "\n                Depth = " + newDepth;
-                    }
-                    if (hasFilterChange) {
-                    }
-                    if (hasBlendModeChange) {
-                        var newBlendMode = this._newBlockBytes.readUnsignedByte();
-                        commandString += "\n                BlendMode = " + newBlendMode;
-                    }
-                    if (hasDepthClipChange) {
-                        var newClipDepth = this._newBlockBytes.readUnsignedInt();
-                        commandString += "\n                ClipDepth = " + newClipDepth;
-                    }
-                    if (hasVisiblityChange) {
-                        var newVisibitily = Boolean(this._newBlockBytes.readByte());
-                        commandString += "\n                Visibitily = " + newVisibitily;
-                    }
-                    var numFills = this._newBlockBytes.readUnsignedShort();
-                    var s = 0;
-                    commandString += "\n                number of fills = " + numFills;
-                    var fillsIDs = new Array();
-                    for (s = 0; s < numFills; s++) {
-                        fillsIDs.push(this._newBlockBytes.readUnsignedInt());
-                        commandString += "\n                    id of fill = " + fillsIDs[s];
-                    }
-                    var instanceName = this.parseVarStr();
-                    if (instanceName.length > 0) {
-                        newObjectProps.setInstancename(instanceName);
-                        commandString += "\n                instanceName = " + instanceName;
-                    }
-                    // if this is a "ADD NEW OBJECT"-command,
-                    // we need to lookup the new object by AWD ID.
-                    if (hasRessource) {
-                        // sound is added to timeline with dedicated Command, as it is no display-object (has no matrix etc)
-                        // check if a Geometry can be found at the ressourceID (AWD-ID)
-                        var returnedArray = this.getAssetByID(ressourceID, [AssetType.GEOMETRY]);
-                        if (returnedArray[0] == true) {
-                            var geom = returnedArray[1];
-                            var newMesh = new Mesh(geom);
-                            for (s = 0; s < numFills; s++) {
-                                var returnedArray2 = this.getAssetByID(fillsIDs[s], [AssetType.MATERIAL]);
-                                if (returnedArray2[0]) {
-                                    if (newMesh.subMeshes.length > s) {
-                                        newMesh.subMeshes[s].material = returnedArray2[1];
+                        if (hasDepthChange) {
+                            var newDepth = this._newBlockBytes.readUnsignedInt();
+                            commandString += "\n                Depth = " + newDepth;
+                        }
+                        if (hasFilterChange) {
+                        }
+                        if (hasBlendModeChange) {
+                            var newBlendMode = this._newBlockBytes.readUnsignedByte();
+                            commandString += "\n                BlendMode = " + newBlendMode;
+                        }
+                        if (hasDepthClipChange) {
+                            var newClipDepth = this._newBlockBytes.readUnsignedInt();
+                            commandString += "\n                ClipDepth = " + newClipDepth;
+                        }
+                        if (hasVisibilityChange) {
+                            var newVisibility = Boolean(this._newBlockBytes.readByte());
+                            commandString += "\n                Visibitily = " + newVisibility;
+                        }
+                        var numFills = this._newBlockBytes.readUnsignedShort();
+                        commandString += "\n                number of fills = " + numFills;
+                        var fillsIDs = [];
+                        for (k = 0; k < numFills; k++) {
+                            fillsIDs.push(this._newBlockBytes.readUnsignedInt());
+                            commandString += "\n                    id of fill = " + fillsIDs[k];
+                        }
+                        var instanceName = this.parseVarStr();
+                        if (instanceName.length) {
+                            newObjectProps.setInstancename(instanceName);
+                            commandString += "\n                instanceName = " + instanceName;
+                        }
+                        // if this is a "ADD NEW OBJECT"-command,
+                        // we need to lookup the new object by AWD ID.
+                        if (hasResource) {
+                            // sound is added to timeline with dedicated Command, as it is no display-object (has no matrix etc)
+                            // check if a Geometry can be found at the resourceID (AWD-ID)
+                            var returnedArray = this.getAssetByID(resourceID, [AssetType.GEOMETRY]);
+                            if (returnedArray[0]) {
+                                var geom = returnedArray[1];
+                                var newMesh = new Mesh(geom);
+                                for (k = 0; k < numFills; k++) {
+                                    var returnedArray2 = this.getAssetByID(fillsIDs[k], [AssetType.MATERIAL]);
+                                    if (returnedArray2[0]) {
+                                        if (newMesh.subMeshes.length > k) {
+                                            newMesh.subMeshes[k].material = returnedArray2[1];
+                                        }
                                     }
                                 }
+                                var newTimeLineMesh = new TimeLineObject(newMesh, objectID, new CommandPropsDisplayObject());
+                                timeLineContainer.addTimeLineObject(newTimeLineMesh);
+                                var newCommandaddMesh = new FrameCommand(newTimeLineMesh);
+                                newCommandaddMesh.commandProps = newObjectProps;
+                                frame.addCommand(newCommandaddMesh);
                             }
-                            var newTimeLineMesh = new TimeLineObject(newMesh, objectID, new CommandPropsDisplayObject());
-                            timeLineContainer.addTimeLineObject(newTimeLineMesh);
-                            var newCommandaddMesh = new FrameCommand(newTimeLineMesh);
-                            newCommandaddMesh.commandProps = newObjectProps;
-                            newFrame.addCommand(newCommandaddMesh);
+                            else {
+                                // no geometry found, so we check for TIMELINE.
+                                var returnedArray = this.getAssetByID(resourceID, [AssetType.TIMELINE]);
+                                if (returnedArray[0]) {
+                                    // timeline found. create command and add it to the frame
+                                    var newTimeLineTimeLine = new TimeLineObject(returnedArray[1], objectID, new CommandPropsDisplayObject());
+                                    timeLineContainer.addTimeLineObject(newTimeLineTimeLine);
+                                    var newCommandAddTimeLine = new FrameCommand(newTimeLineTimeLine);
+                                    newCommandAddTimeLine.commandProps = newObjectProps;
+                                    frame.addCommand(newCommandAddTimeLine);
+                                }
+                            }
                         }
                         else {
-                            var returnedArray = this.getAssetByID(ressourceID, [AssetType.TIMELINE]);
-                            if (returnedArray[0] == true) {
-                                // timeline found. create command and add it to the frame
-                                var newTimeLineTimeLine = new TimeLineObject(returnedArray[1], objectID, new CommandPropsDisplayObject());
-                                timeLineContainer.addTimeLineObject(newTimeLineTimeLine);
-                                var newCommandAddTimeLine = new FrameCommand(newTimeLineTimeLine);
-                                newCommandAddTimeLine.commandProps = newObjectProps;
-                                newFrame.addCommand(newCommandAddTimeLine);
-                            }
+                            // get the existing TimeLineobject fronm the timeline
+                            var newTimeLineUpdate = timeLineContainer.getTimeLineObjectByID(objectID);
+                            var newCommandupdate = new FrameCommand(newTimeLineUpdate);
+                            //newCommandupdate.commandProps=newObjectProps;
+                            // TODO:
+                            frame.addCommand(newCommandupdate);
                         }
-                    }
-                    else {
-                        // get the existing TimeLineobject fronm the timeline
+                        break;
+                    case 3:
+                        // Remove Object Command
+                        objectID = this._newBlockBytes.readUnsignedInt();
                         var newTimeLineUpdate = timeLineContainer.getTimeLineObjectByID(objectID);
                         var newCommandupdate = new FrameCommand(newTimeLineUpdate);
+                        newCommandupdate.activateObj = false;
+                        frame.addCommand(newCommandupdate);
                         //newCommandupdate.commandProps=newObjectProps;
-                        //todo:
-                        newFrame.addCommand(newCommandupdate);
-                    }
-                }
-                else if (command_type == 3) {
-                    // Remove Command
-                    var objectID = this._newBlockBytes.readUnsignedInt();
-                    var newTimeLineUpdate = timeLineContainer.getTimeLineObjectByID(objectID);
-                    var newCommandupdate = new FrameCommand(newTimeLineUpdate);
-                    newCommandupdate.activateObj = false;
-                    newFrame.addCommand(newCommandupdate);
-                    //newCommandupdate.commandProps=newObjectProps;
-                    commandString += "\n       - Remove object with ID: " + objectID;
-                }
-                else if (command_type == 4) {
-                    // add sound
-                    //todo: create CommandPropsSound and check wich asset to use
-                    var objectID = this._newBlockBytes.readUnsignedInt();
-                    var ressourceID = this._newBlockBytes.readUnsignedInt();
-                    //todo: implement sound in timeline
-                    commandString += "\n      - Add new Sound AWD-ID = " + ressourceID.toString() + " as object_id = " + objectID.toString();
-                }
-                else {
-                    commandString += "\n       - Unknown Command Type = " + command_type;
+                        commandString += "\n       - Remove object with ID: " + objectID;
+                        break;
+                    case 4:
+                        // Add Sound Command
+                        // TODO: create CommandPropsSound and check which asset to use
+                        objectID = this._newBlockBytes.readUnsignedInt();
+                        resourceID = this._newBlockBytes.readUnsignedInt();
+                        // TODO: implement sound in timeline
+                        commandString += "\n      - Add new Sound AWD-ID = " + resourceID.toString() + " as object_id = " + objectID.toString();
+                        break;
+                    default:
+                        commandString += "\n       - Unknown Command Type = " + commandType;
+                        break;
                 }
             }
-            var frame_code = "";
             var length_code = this._newBlockBytes.readUnsignedInt();
             if (length_code > 0) {
-                frame_code = this._newBlockBytes.readUTFBytes(length_code);
-                newFrame.addToScript(frame_code);
+                var frame_code = this._newBlockBytes.readUTFBytes(length_code);
+                frame.addToScript(frame_code);
                 traceString += "\nframe-code = " + frame_code;
             }
             traceString += commandString;
@@ -18870,11 +18874,11 @@ var AWDParser = (function (_super) {
             this._newBlockBytes.readUnsignedInt(); // user attributes - skip for now
             //this.parseUserAttributes(); // Ignore sub-mesh attributes for now
             //console.log(traceString);
-            timeLineContainer.addFrame(newFrame);
+            timeLineContainer.addFrame(frame);
         }
         this._pFinalizeAsset(timeLineContainer, name);
         this._blocks[blockID].data = timeLineContainer;
-        var timeLineProps = this.parseProperties(null);
+        this.parseProperties(null);
         this.parseUserAttributes();
     };
     //Block ID = 1
