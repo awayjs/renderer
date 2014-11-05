@@ -77,7 +77,7 @@ gulp.task('package', ['compile'], function(callback){
 gulp.task('package-min', ['package'], function(callback){
     return gulp.src('./build/awayjs-renderergl.js')
         .pipe(sourcemaps.init({loadMaps:true}))
-        .pipe(uglify())
+        .pipe(uglify({compress:false}))
         .pipe(rename(function (path) {
             path.basename += '.min';
         }))

@@ -4,7 +4,7 @@
   "description": "GL Renderer for AwayJS",
   "url": "http://www.away3d.com",
   "dependencies": {
-    "awayjs-core": "^0.2.0",
+    "awayjs-core": "^0.2.2",
     "awayjs-display": "^0.2.0",
     "awayjs-stagegl": "^0.5.1"
   },
