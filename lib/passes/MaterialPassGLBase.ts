@@ -13,12 +13,12 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage")
 import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 
+import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
 
 
 /**

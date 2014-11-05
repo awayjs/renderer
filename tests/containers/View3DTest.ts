@@ -6,7 +6,7 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import PointLight					= require("awayjs-display/lib/entities/PointLight");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 import TriangleBasicMaterial		= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
 
 class View3DTest

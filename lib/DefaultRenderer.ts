@@ -23,14 +23,14 @@ import ContextGLClearMask			= require("awayjs-stagegl/lib/base/ContextGLClearMas
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import StageManager					= require("awayjs-stagegl/lib/managers/StageManager");
 
+import DepthRenderer				= require("awayjs-renderergl/lib/DepthRenderer");
+import Filter3DRenderer				= require("awayjs-renderergl/lib/Filter3DRenderer");
+import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
 import MaterialData					= require("awayjs-renderergl/lib/pool/MaterialData");
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import SkyboxRenderable				= require("awayjs-renderergl/lib/pool/SkyboxRenderable");
-import DepthRenderer				= require("awayjs-renderergl/lib/render/DepthRenderer");
-import Filter3DRenderer				= require("awayjs-renderergl/lib/render/Filter3DRenderer");
-import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
 import DepthMapPass					= require("awayjs-renderergl/lib/passes/DepthMapPass");
 import DistanceMapPass				= require("awayjs-renderergl/lib/passes/DistanceMapPass");

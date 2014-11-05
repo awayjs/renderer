@@ -7,6 +7,7 @@ import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgra
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
+import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
@@ -14,7 +15,6 @@ import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderOb
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import LineBasicPass				= require("awayjs-renderergl/lib/passes/LineBasicPass");
-import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
 
 /**
  * LineMaterial is a material exclusively used to render wireframe objects

@@ -15,7 +15,7 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 import TriangleBasicMaterial		= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
 
 class TorusVortex

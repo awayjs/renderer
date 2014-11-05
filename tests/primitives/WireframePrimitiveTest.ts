@@ -12,7 +12,7 @@ import PrimitiveCylinderPrefab		= require("awayjs-display/lib/prefabs/PrimitiveC
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 import TriangleBasicMaterial		= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
 
 class WireframePrimitiveTest

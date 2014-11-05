@@ -29,8 +29,8 @@ import IContextGL						= require("awayjs-stagegl/lib/base/IContextGL");
 import IProgram							= require("awayjs-stagegl/lib/base/IProgram");
 import ITextureBase						= require("awayjs-stagegl/lib/base/ITextureBase");
 
+import DefaultRenderer					= require("awayjs-renderergl/lib/DefaultRenderer");
 import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
-import DefaultRenderer					= require("awayjs-renderergl/lib/render/DefaultRenderer");
 
 /**
  * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,

@@ -14,7 +14,7 @@ import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import AwayMouseEvent				= require("awayjs-display/lib/events/MouseEvent");
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 import TriangleBasicMaterial		= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
 
 class LayoutTest

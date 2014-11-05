@@ -13,6 +13,7 @@ import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode"
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
+import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
@@ -21,7 +22,6 @@ import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/Shader
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import SkyboxPass					= require("awayjs-renderergl/lib/passes/SkyboxPass");
 import ShaderCompilerHelper			= require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
-import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
 
 /**
  * SkyboxMaterial is a material exclusively used to render skyboxes

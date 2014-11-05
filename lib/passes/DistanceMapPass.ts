@@ -10,6 +10,7 @@ import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode"
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
+import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -18,7 +19,6 @@ import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderR
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
 import ShaderCompilerHelper			= require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
-import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
 
 /**
  * DistanceMapPass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.

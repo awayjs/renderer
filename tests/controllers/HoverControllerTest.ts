@@ -6,7 +6,7 @@ import HoverController				= require("awayjs-display/lib/controllers/HoverControl
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 class HoverControllerTest
 {

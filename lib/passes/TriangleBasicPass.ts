@@ -5,6 +5,7 @@ import ContextGLMipFilter			= require("awayjs-stagegl/lib/base/ContextGLMipFilte
 import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
 import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
 
+import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import ShadingMethodEvent			= require("awayjs-renderergl/lib/events/ShadingMethodEvent");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -13,7 +14,6 @@ import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderR
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
 import ShaderCompilerHelper			= require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
-import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
 
 /**
  * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,

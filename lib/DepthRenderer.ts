@@ -11,10 +11,10 @@ import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendF
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 
+import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 import MaterialData					= require("awayjs-renderergl/lib/pool/MaterialData");
 import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RendererBase					= require("awayjs-renderergl/lib/render/RendererBase");
 import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
 
 

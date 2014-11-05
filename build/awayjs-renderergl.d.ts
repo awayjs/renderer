@@ -871,685 +871,6 @@ declare module "awayjs-renderergl/lib/pool/MaterialPassData" {
 	export = MaterialPassData;
 	
 }
-declare module "awayjs-renderergl/lib/pool/BillboardRenderable" {
-	import SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
-	import RenderablePool = require("awayjs-display/lib/pool/RenderablePool");
-	import Billboard = require("awayjs-display/lib/entities/Billboard");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	/**
-	 * @class away.pool.RenderableListItem
-	 */
-	class BillboardRenderable extends RenderableBase {
-	    private static _materialGeometry;
-	    /**
-	     *
-	     */
-	    static id: string;
-	    /**
-	     *
-	     */
-	    private _billboard;
-	    /**
-	     * //TODO
-	     *
-	     * @param pool
-	     * @param billboard
-	     */
-	    constructor(pool: RenderablePool, billboard: Billboard);
-	    /**
-	     * //TODO
-	     *
-	     * @returns {away.base.TriangleSubGeometry}
-	     */
-	    _pGetSubGeometry(): SubGeometryBase;
-	}
-	export = BillboardRenderable;
-	
-}
-declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
-	import IMaterialOwner = require("awayjs-display/lib/base/IMaterialOwner");
-	import LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
-	import LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
-	import RenderablePool = require("awayjs-display/lib/pool/RenderablePool");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	/**
-	 * @class away.pool.LineSubMeshRenderable
-	 */
-	class LineSubMeshRenderable extends RenderableBase {
-	    /**
-	     *
-	     */
-	    static id: string;
-	    /**
-	     *
-	     */
-	    subMesh: LineSubMesh;
-	    /**
-	     * //TODO
-	     *
-	     * @param pool
-	     * @param subMesh
-	     * @param level
-	     * @param dataOffset
-	     */
-	    constructor(pool: RenderablePool, subMesh: LineSubMesh, level?: number, indexOffset?: number);
-	    /**
-	     * //TODO
-	     *
-	     * @returns {base.LineSubGeometry}
-	     * @protected
-	     */
-	    _pGetSubGeometry(): LineSubGeometry;
-	    /**
-	     * //TODO
-	     *
-	     * @param pool
-	     * @param materialOwner
-	     * @param level
-	     * @param indexOffset
-	     * @returns {away.pool.LineSubMeshRenderable}
-	     * @private
-	     */
-	    _pGetOverflowRenderable(pool: RenderablePool, materialOwner: IMaterialOwner, level: number, indexOffset: number): RenderableBase;
-	}
-	export = LineSubMeshRenderable;
-	
-}
-declare module "awayjs-renderergl/lib/pool/MaterialDataPool" {
-	import MaterialData = require("awayjs-renderergl/lib/pool/MaterialData");
-	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
-	/**
-	 * @class away.pool.MaterialDataPool
-	 */
-	class MaterialDataPool {
-	    private _pool;
-	    /**
-	     * //TODO
-	     *
-	     * @param textureDataClass
-	     */
-	    constructor();
-	    /**
-	     * //TODO
-	     *
-	     * @param materialOwner
-	     * @returns ITexture
-	     */
-	    getItem(material: MaterialGLBase): MaterialData;
-	    /**
-	     * //TODO
-	     *
-	     * @param materialOwner
-	     */
-	    disposeItem(material: MaterialGLBase): void;
-	}
-	export = MaterialDataPool;
-	
-}
-declare module "awayjs-renderergl/lib/pool/MaterialData" {
-	import IMaterialData = require("awayjs-display/lib/pool/IMaterialData");
-	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
-	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-	import MaterialDataPool = require("awayjs-renderergl/lib/pool/MaterialDataPool");
-	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
-	/**
-	 *
-	 * @class away.pool.MaterialData
-	 */
-	class MaterialData implements IMaterialData {
-	    private _pool;
-	    private _materialPassDataPool;
-	    private _passes;
-	    material: MaterialGLBase;
-	    renderOrderId: number;
-	    invalidAnimation: boolean;
-	    constructor(pool: MaterialDataPool, material: MaterialGLBase);
-	    getMaterialPass(materialPass: MaterialPassGLBase, profile: string): MaterialPassData;
-	    getMaterialPasses(profile: string): MaterialPassData[];
-	    /**
-	     *
-	     */
-	    dispose(): void;
-	    /**
-	     *
-	     */
-	    invalidateMaterial(): void;
-	    /**
-	     *
-	     */
-	    invalidateAnimation(): void;
-	}
-	export = MaterialData;
-	
-}
-declare module "awayjs-renderergl/lib/managers/RTTBufferManager" {
-	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
-	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import IIndexBuffer = require("awayjs-stagegl/lib/base/IIndexBuffer");
-	import IVertexBuffer = require("awayjs-stagegl/lib/base/IVertexBuffer");
-	class RTTBufferManager extends EventDispatcher {
-	    private static _instances;
-	    private _renderToTextureVertexBuffer;
-	    private _renderToScreenVertexBuffer;
-	    private _indexBuffer;
-	    private _stage;
-	    private _viewWidth;
-	    private _viewHeight;
-	    private _textureWidth;
-	    private _textureHeight;
-	    private _renderToTextureRect;
-	    private _buffersInvalid;
-	    private _textureRatioX;
-	    private _textureRatioY;
-	    constructor(stage: Stage);
-	    static getInstance(stage: Stage): RTTBufferManager;
-	    private static getRTTBufferManagerFromStage(stage);
-	    private static deleteRTTBufferManager(stage);
-	    textureRatioX: number;
-	    textureRatioY: number;
-	    viewWidth: number;
-	    viewHeight: number;
-	    renderToTextureVertexBuffer: IVertexBuffer;
-	    renderToScreenVertexBuffer: IVertexBuffer;
-	    indexBuffer: IIndexBuffer;
-	    renderToTextureRect: Rectangle;
-	    textureWidth: number;
-	    textureHeight: number;
-	    dispose(): void;
-	    private updateRTTBuffers();
-	}
-	export = RTTBufferManager;
-	
-}
-declare module "awayjs-renderergl/lib/passes/LineBasicPass" {
-	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-	/**
-	 * LineBasicPass is a material pass that draws wireframe segments.
-	 */
-	class LineBasicPass extends MaterialPassGLBase {
-	    /**
-	     * Creates a new SegmentPass object.
-	     *
-	     * @param material The material to which this pass belongs.
-	     */
-	    constructor();
-	    /**
-	     * @inheritDoc
-	     */
-	    _iGetFragmentCode(shaderObject: ShaderObjectBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
-	}
-	export = LineBasicPass;
-	
-}
-declare module "awayjs-renderergl/lib/materials/LineBasicMaterial" {
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
-	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import RendererBase = require("awayjs-renderergl/lib/render/RendererBase");
-	/**
-	 * LineMaterial is a material exclusively used to render wireframe objects
-	 *
-	 * @see away.entities.Lines
-	 */
-	class LineBasicMaterial extends MaterialGLBase {
-	    static pONE_VECTOR: number[];
-	    static pFRONT_VECTOR: number[];
-	    private _constants;
-	    private _calcMatrix;
-	    private _thickness;
-	    private _screenPass;
-	    /**
-	     * Creates a new LineMaterial object.
-	     *
-	     * @param thickness The thickness of the wireframe lines.
-	     */
-	    constructor(thickness?: number);
-	    /**
-	     * @inheritDoc
-	     */
-	    _iGetVertexCode(shaderObject: ShaderObjectBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iActivatePass(pass: MaterialPassData, renderer: RendererBase, camera: Camera): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iRenderPass(pass: MaterialPassData, renderable: RenderableBase, stage: Stage, camera: Camera, viewProjection: Matrix3D): void;
-	}
-	export = LineBasicMaterial;
-	
-}
-declare module "awayjs-renderergl/lib/materials/TriangleMaterialBase" {
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
-	/**
-	 * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
-	 * using material methods to define their appearance.
-	 */
-	class TriangleMaterialBase extends MaterialGLBase {
-	    _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iRenderPass(pass: MaterialPassData, renderable: RenderableBase, stage: Stage, camera: Camera, viewProjection: Matrix3D): void;
-	}
-	export = TriangleMaterialBase;
-	
-}
-declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
-	import Event = require("awayjs-core/lib/events/Event");
-	class ShadingMethodEvent extends Event {
-	    static SHADER_INVALIDATED: string;
-	    constructor(type: string);
-	}
-	export = ShadingMethodEvent;
-	
-}
-declare module "awayjs-renderergl/lib/utils/ShaderCompilerHelper" {
-	import TextureProxyBase = require("awayjs-core/lib/textures/TextureProxyBase");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-	class ShaderCompilerHelper {
-	    /**
-	     * A helper method that generates standard code for sampling from a texture using the normal uv coordinates.
-	     * @param vo The MethodVO object linking this method with the pass currently being compiled.
-	     * @param sharedReg The shared register object for the shader.
-	     * @param inputReg The texture stream register.
-	     * @param texture The texture which will be assigned to the given slot.
-	     * @param uvReg An optional uv register if coordinates different from the primary uv coordinates are to be used.
-	     * @param forceWrap If true, texture wrapping is enabled regardless of the material setting.
-	     * @return The fragment code that performs the sampling.
-	     *
-	     * @protected
-	     */
-	    static getTex2DSampleCode(targetReg: ShaderRegisterElement, sharedReg: ShaderRegisterData, inputReg: ShaderRegisterElement, texture: TextureProxyBase, smooth: boolean, repeat: boolean, mipmaps: boolean, uvReg?: ShaderRegisterElement, forceWrap?: string): string;
-	    /**
-	     * A helper method that generates standard code for sampling from a cube texture.
-	     * @param vo The MethodVO object linking this method with the pass currently being compiled.
-	     * @param targetReg The register in which to store the sampled colour.
-	     * @param inputReg The texture stream register.
-	     * @param texture The cube map which will be assigned to the given slot.
-	     * @param uvReg The direction vector with which to sample the cube map.
-	     *
-	     * @protected
-	     */
-	    static getTexCubeSampleCode(targetReg: ShaderRegisterElement, inputReg: ShaderRegisterElement, texture: TextureProxyBase, smooth: boolean, mipmaps: boolean, uvReg: ShaderRegisterElement): string;
-	    /**
-	     * Generates a texture format string for the sample instruction.
-	     * @param texture The texture for which to get the format string.
-	     * @return
-	     *
-	     * @protected
-	     */
-	    static getFormatStringForTexture(texture: TextureProxyBase): string;
-	}
-	export = ShaderCompilerHelper;
-	
-}
-declare module "awayjs-renderergl/lib/passes/TriangleBasicPass" {
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
-	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-	import RendererBase = require("awayjs-renderergl/lib/render/RendererBase");
-	/**
-	 * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
-	 * using material methods to define their appearance.
-	 */
-	class TriangleBasicPass extends MaterialPassGLBase {
-	    private _diffuseColor;
-	    private _diffuseR;
-	    private _diffuseG;
-	    private _diffuseB;
-	    private _diffuseA;
-	    private _fragmentConstantsIndex;
-	    private _texturesIndex;
-	    /**
-	     * The alpha component of the diffuse reflection.
-	     */
-	    diffuseAlpha: number;
-	    /**
-	     * The color of the diffuse reflection when not using a texture.
-	     */
-	    diffuseColor: number;
-	    /**
-	     * Creates a new CompiledPass object.
-	     *
-	     * @param material The material to which this pass belongs.
-	     */
-	    constructor();
-	    /**
-	     * @inheritDoc
-	     */
-	    _iGetFragmentCode(shaderObject: ShaderObjectBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
-	    _iIncludeDependencies(dependencyCounter: ShaderObjectBase): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iActivate(pass: MaterialPassData, renderer: RendererBase, camera: Camera): void;
-	}
-	export = TriangleBasicPass;
-	
-}
-declare module "awayjs-renderergl/lib/materials/TriangleBasicMaterial" {
-	import Texture2DBase = require("awayjs-core/lib/textures/Texture2DBase");
-	import TriangleMaterialBase = require("awayjs-renderergl/lib/materials/TriangleMaterialBase");
-	/**
-	 * TriangleMaterial forms an abstract base class for the default shaded materials provided by Stage,
-	 * using material methods to define their appearance.
-	 */
-	class TriangleBasicMaterial extends TriangleMaterialBase {
-	    private _screenPass;
-	    private _alphaBlending;
-	    private _alpha;
-	    private _depthCompareMode;
-	    /**
-	     * Creates a new TriangleMaterial object.
-	     *
-	     * @param texture The texture used for the material's albedo color.
-	     * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
-	     * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
-	     * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
-	     */
-	    constructor(texture?: Texture2DBase, smooth?: boolean, repeat?: boolean, mipmap?: boolean);
-	    constructor(color?: number, alpha?: number);
-	    /**
-	     * The depth compare mode used to render the renderables using this material.
-	     *
-	     * @see away.stagegl.ContextGLCompareMode
-	     */
-	    depthCompareMode: string;
-	    /**
-	     * The alpha of the surface.
-	     */
-	    alpha: number;
-	    /**
-	     * Indicates whether or not the material has transparency. If binary transparency is sufficient, for
-	     * example when using textures of foliage, consider using alphaThreshold instead.
-	     */
-	    alphaBlending: boolean;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iUpdateMaterial(): void;
-	    /**
-	     * Sets up the various blending modes for all screen passes, based on whether or not there are previous passes.
-	     */
-	    private setBlendAndCompareModes();
-	}
-	export = TriangleBasicMaterial;
-	
-}
-declare module "awayjs-renderergl/lib/managers/DefaultMaterialManager" {
-	import BitmapData = require("awayjs-core/lib/base/BitmapData");
-	import BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
-	import IMaterialOwner = require("awayjs-display/lib/base/IMaterialOwner");
-	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
-	class DefaultMaterialManager {
-	    private static _defaultBitmapData;
-	    private static _defaultTriangleMaterial;
-	    private static _defaultLineMaterial;
-	    private static _defaultTexture;
-	    static getDefaultMaterial(materialOwner?: IMaterialOwner): MaterialGLBase;
-	    static getDefaultTexture(materialOwner?: IMaterialOwner): BitmapTexture;
-	    private static createDefaultTexture();
-	    static createCheckeredBitmapData(): BitmapData;
-	    private static createDefaultTriangleMaterial();
-	    private static createDefaultLineMaterial();
-	}
-	export = DefaultMaterialManager;
-	
-}
-declare module "awayjs-renderergl/lib/render/RendererBase" {
-	import BitmapData = require("awayjs-core/lib/base/BitmapData");
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
-	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
-	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-	import TextureProxyBase = require("awayjs-core/lib/textures/TextureProxyBase");
-	import LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
-	import TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
-	import IEntitySorter = require("awayjs-display/lib/sort/IEntitySorter");
-	import Billboard = require("awayjs-display/lib/entities/Billboard");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import StageEvent = require("awayjs-display/lib/events/StageEvent");
-	import MaterialBase = require("awayjs-display/lib/materials/MaterialBase");
-	import ICollector = require("awayjs-display/lib/traverse/ICollector");
-	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
-	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ProgramData = require("awayjs-stagegl/lib/pool/ProgramData");
-	import MaterialData = require("awayjs-renderergl/lib/pool/MaterialData");
-	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
-	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
-	/**
-	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
-	 * contents of a partition
-	 *
-	 * @class away.render.RendererBase
-	 */
-	class RendererBase extends EventDispatcher {
-	    private _numUsedStreams;
-	    private _numUsedTextures;
-	    private _materialDataPool;
-	    private _billboardRenderablePool;
-	    private _triangleSubMeshRenderablePool;
-	    private _lineSubMeshRenderablePool;
-	    _pContext: IContextGL;
-	    _pStage: Stage;
-	    _pCamera: Camera;
-	    _iEntryPoint: Vector3D;
-	    _pCameraForward: Vector3D;
-	    _pRttBufferManager: RTTBufferManager;
-	    private _viewPort;
-	    private _viewportDirty;
-	    private _scissorDirty;
-	    _pBackBufferInvalid: boolean;
-	    _pDepthTextureInvalid: boolean;
-	    _depthPrepass: boolean;
-	    private _backgroundR;
-	    private _backgroundG;
-	    private _backgroundB;
-	    private _backgroundAlpha;
-	    _shareContext: boolean;
-	    _width: number;
-	    _height: number;
-	    textureRatioX: number;
-	    textureRatioY: number;
-	    private _snapshotBitmapData;
-	    private _snapshotRequired;
-	    _pRttViewProjectionMatrix: Matrix3D;
-	    private _localPos;
-	    private _globalPos;
-	    _pScissorRect: Rectangle;
-	    private _scissorUpdated;
-	    private _viewPortUpdated;
-	    private _onContextUpdateDelegate;
-	    private _onViewportUpdatedDelegate;
-	    _pNumTriangles: number;
-	    _pOpaqueRenderableHead: RenderableBase;
-	    _pBlendedRenderableHead: RenderableBase;
-	    /**
-	     *
-	     */
-	    numTriangles: number;
-	    /**
-	     *
-	     */
-	    renderableSorter: IEntitySorter;
-	    /**
-	     * A viewPort rectangle equivalent of the Stage size and position.
-	     */
-	    viewPort: Rectangle;
-	    /**
-	     * A scissor rectangle equivalent of the view size and position.
-	     */
-	    scissorRect: Rectangle;
-	    /**
-	     *
-	     */
-	    x: number;
-	    /**
-	     *
-	     */
-	    y: number;
-	    /**
-	     *
-	     */
-	    width: number;
-	    /**
-	     *
-	     */
-	    height: number;
-	    /**
-	     * Creates a new RendererBase object.
-	     */
-	    constructor();
-	    getProgram(materialPassData: MaterialPassData): ProgramData;
-	    /**
-	     *
-	     * @param material
-	     */
-	    getMaterial(material: MaterialGLBase, profile: string): MaterialData;
-	    activateMaterialPass(materialPassData: MaterialPassData, camera: Camera): void;
-	    deactivateMaterialPass(materialPassData: MaterialPassData): void;
-	    _iCreateEntityCollector(): ICollector;
-	    /**
-	     * The background color's red component, used when clearing.
-	     *
-	     * @private
-	     */
-	    _iBackgroundR: number;
-	    /**
-	     * The background color's green component, used when clearing.
-	     *
-	     * @private
-	     */
-	    _iBackgroundG: number;
-	    /**
-	     * The background color's blue component, used when clearing.
-	     *
-	     * @private
-	     */
-	    _iBackgroundB: number;
-	    context: IContextGL;
-	    /**
-	     * The Stage that will provide the ContextGL used for rendering.
-	     */
-	    stage: Stage;
-	    iSetStage(value: Stage): void;
-	    /**
-	     * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
-	     * to share the same ContextGL object.
-	     */
-	    shareContext: boolean;
-	    /**
-	     * Disposes the resources used by the RendererBase.
-	     */
-	    dispose(): void;
-	    render(entityCollector: ICollector): void;
-	    /**
-	     * Renders the potentially visible geometry to the back buffer or texture.
-	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-	     * @param target An option target texture to render to.
-	     * @param surfaceSelector The index of a CubeTexture's face to render to.
-	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
-	     */
-	    _iRender(entityCollector: ICollector, target?: TextureProxyBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
-	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: TextureProxyBase, numCascades: number, scissorRects: Rectangle[], cameras: Camera[]): void;
-	    pCollectRenderables(entityCollector: ICollector): void;
-	    /**
-	     * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
-	     *
-	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-	     * @param target An option target texture to render to.
-	     * @param surfaceSelector The index of a CubeTexture's face to render to.
-	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
-	     */
-	    pExecuteRender(entityCollector: ICollector, target?: TextureProxyBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
-	    queueSnapshot(bmd: BitmapData): void;
-	    /**
-	     * Performs the actual drawing of geometry to the target.
-	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-	     */
-	    pDraw(entityCollector: ICollector, target: TextureProxyBase): void;
-	    /**
-	     * Assign the context once retrieved
-	     */
-	    private onContextUpdate(event);
-	    _iBackgroundAlpha: number;
-	    /**
-	     * @private
-	     */
-	    private notifyScissorUpdate();
-	    /**
-	     * @private
-	     */
-	    private notifyViewportUpdate();
-	    /**
-	     *
-	     */
-	    onViewportUpdated(event: StageEvent): void;
-	    /**
-	     *
-	     */
-	    updateGlobalPos(): void;
-	    /**
-	     *
-	     * @param billboard
-	     * @protected
-	     */
-	    applyBillboard(billboard: Billboard): void;
-	    /**
-	     *
-	     * @param triangleSubMesh
-	     */
-	    applyTriangleSubMesh(triangleSubMesh: TriangleSubMesh): void;
-	    /**
-	     *
-	     * @param lineSubMesh
-	     */
-	    applyLineSubMesh(lineSubMesh: LineSubMesh): void;
-	    /**
-	     *
-	     * @param renderable
-	     * @protected
-	     */
-	    private _applyRenderable(renderable);
-	    /**
-	     * test if animation will be able to run on gpu BEFORE compiling materials
-	     * test if the shader objects supports animating the animation set in the vertex shader
-	     * if any object using this material fails to support accelerated animations for any of the shader objects,
-	     * we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
-	     */
-	    private getEnabledGPUAnimation(material, materialDataPasses);
-	    calcAnimationCode(material: MaterialBase, materialPassData: MaterialPassData): void;
-	}
-	export = RendererBase;
-	
-}
 declare module "awayjs-renderergl/lib/passes/MaterialPassGLBase" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
@@ -1557,12 +878,12 @@ declare module "awayjs-renderergl/lib/passes/MaterialPassGLBase" {
 	import LightPickerBase = require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
 	import IMaterialPass = require("awayjs-display/lib/materials/passes/IMaterialPass");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
 	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import RendererBase = require("awayjs-renderergl/lib/render/RendererBase");
 	/**
 	 * MaterialPassGLBase provides an abstract base class for material shader passes. A material pass constitutes at least
 	 * a render call per required renderable.
@@ -2087,6 +1408,1020 @@ declare module "awayjs-renderergl/lib/animators/AnimationSetBase" {
 	    dispose(): void;
 	}
 	export = AnimationSetBase;
+	
+}
+declare module "awayjs-renderergl/lib/pool/BillboardRenderable" {
+	import SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
+	import RenderablePool = require("awayjs-display/lib/pool/RenderablePool");
+	import Billboard = require("awayjs-display/lib/entities/Billboard");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	/**
+	 * @class away.pool.RenderableListItem
+	 */
+	class BillboardRenderable extends RenderableBase {
+	    private static _materialGeometry;
+	    /**
+	     *
+	     */
+	    static id: string;
+	    /**
+	     *
+	     */
+	    private _billboard;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param billboard
+	     */
+	    constructor(pool: RenderablePool, billboard: Billboard);
+	    /**
+	     * //TODO
+	     *
+	     * @returns {away.base.TriangleSubGeometry}
+	     */
+	    _pGetSubGeometry(): SubGeometryBase;
+	}
+	export = BillboardRenderable;
+	
+}
+declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
+	import IMaterialOwner = require("awayjs-display/lib/base/IMaterialOwner");
+	import LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
+	import LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
+	import RenderablePool = require("awayjs-display/lib/pool/RenderablePool");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	/**
+	 * @class away.pool.LineSubMeshRenderable
+	 */
+	class LineSubMeshRenderable extends RenderableBase {
+	    /**
+	     *
+	     */
+	    static id: string;
+	    /**
+	     *
+	     */
+	    subMesh: LineSubMesh;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param subMesh
+	     * @param level
+	     * @param dataOffset
+	     */
+	    constructor(pool: RenderablePool, subMesh: LineSubMesh, level?: number, indexOffset?: number);
+	    /**
+	     * //TODO
+	     *
+	     * @returns {base.LineSubGeometry}
+	     * @protected
+	     */
+	    _pGetSubGeometry(): LineSubGeometry;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param materialOwner
+	     * @param level
+	     * @param indexOffset
+	     * @returns {away.pool.LineSubMeshRenderable}
+	     * @private
+	     */
+	    _pGetOverflowRenderable(pool: RenderablePool, materialOwner: IMaterialOwner, level: number, indexOffset: number): RenderableBase;
+	}
+	export = LineSubMeshRenderable;
+	
+}
+declare module "awayjs-renderergl/lib/pool/MaterialDataPool" {
+	import MaterialData = require("awayjs-renderergl/lib/pool/MaterialData");
+	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
+	/**
+	 * @class away.pool.MaterialDataPool
+	 */
+	class MaterialDataPool {
+	    private _pool;
+	    /**
+	     * //TODO
+	     *
+	     * @param textureDataClass
+	     */
+	    constructor();
+	    /**
+	     * //TODO
+	     *
+	     * @param materialOwner
+	     * @returns ITexture
+	     */
+	    getItem(material: MaterialGLBase): MaterialData;
+	    /**
+	     * //TODO
+	     *
+	     * @param materialOwner
+	     */
+	    disposeItem(material: MaterialGLBase): void;
+	}
+	export = MaterialDataPool;
+	
+}
+declare module "awayjs-renderergl/lib/pool/MaterialData" {
+	import IMaterialData = require("awayjs-display/lib/pool/IMaterialData");
+	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
+	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
+	import MaterialDataPool = require("awayjs-renderergl/lib/pool/MaterialDataPool");
+	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
+	/**
+	 *
+	 * @class away.pool.MaterialData
+	 */
+	class MaterialData implements IMaterialData {
+	    private _pool;
+	    private _materialPassDataPool;
+	    private _passes;
+	    material: MaterialGLBase;
+	    renderOrderId: number;
+	    invalidAnimation: boolean;
+	    constructor(pool: MaterialDataPool, material: MaterialGLBase);
+	    getMaterialPass(materialPass: MaterialPassGLBase, profile: string): MaterialPassData;
+	    getMaterialPasses(profile: string): MaterialPassData[];
+	    /**
+	     *
+	     */
+	    dispose(): void;
+	    /**
+	     *
+	     */
+	    invalidateMaterial(): void;
+	    /**
+	     *
+	     */
+	    invalidateAnimation(): void;
+	}
+	export = MaterialData;
+	
+}
+declare module "awayjs-renderergl/lib/managers/RTTBufferManager" {
+	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
+	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import IIndexBuffer = require("awayjs-stagegl/lib/base/IIndexBuffer");
+	import IVertexBuffer = require("awayjs-stagegl/lib/base/IVertexBuffer");
+	class RTTBufferManager extends EventDispatcher {
+	    private static _instances;
+	    private _renderToTextureVertexBuffer;
+	    private _renderToScreenVertexBuffer;
+	    private _indexBuffer;
+	    private _stage;
+	    private _viewWidth;
+	    private _viewHeight;
+	    private _textureWidth;
+	    private _textureHeight;
+	    private _renderToTextureRect;
+	    private _buffersInvalid;
+	    private _textureRatioX;
+	    private _textureRatioY;
+	    constructor(stage: Stage);
+	    static getInstance(stage: Stage): RTTBufferManager;
+	    private static getRTTBufferManagerFromStage(stage);
+	    private static deleteRTTBufferManager(stage);
+	    textureRatioX: number;
+	    textureRatioY: number;
+	    viewWidth: number;
+	    viewHeight: number;
+	    renderToTextureVertexBuffer: IVertexBuffer;
+	    renderToScreenVertexBuffer: IVertexBuffer;
+	    indexBuffer: IIndexBuffer;
+	    renderToTextureRect: Rectangle;
+	    textureWidth: number;
+	    textureHeight: number;
+	    dispose(): void;
+	    private updateRTTBuffers();
+	}
+	export = RTTBufferManager;
+	
+}
+declare module "awayjs-renderergl/lib/passes/LineBasicPass" {
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
+	/**
+	 * LineBasicPass is a material pass that draws wireframe segments.
+	 */
+	class LineBasicPass extends MaterialPassGLBase {
+	    /**
+	     * Creates a new SegmentPass object.
+	     *
+	     * @param material The material to which this pass belongs.
+	     */
+	    constructor();
+	    /**
+	     * @inheritDoc
+	     */
+	    _iGetFragmentCode(shaderObject: ShaderObjectBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
+	}
+	export = LineBasicPass;
+	
+}
+declare module "awayjs-renderergl/lib/materials/LineBasicMaterial" {
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
+	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+	/**
+	 * LineMaterial is a material exclusively used to render wireframe objects
+	 *
+	 * @see away.entities.Lines
+	 */
+	class LineBasicMaterial extends MaterialGLBase {
+	    static pONE_VECTOR: number[];
+	    static pFRONT_VECTOR: number[];
+	    private _constants;
+	    private _calcMatrix;
+	    private _thickness;
+	    private _screenPass;
+	    /**
+	     * Creates a new LineMaterial object.
+	     *
+	     * @param thickness The thickness of the wireframe lines.
+	     */
+	    constructor(thickness?: number);
+	    /**
+	     * @inheritDoc
+	     */
+	    _iGetVertexCode(shaderObject: ShaderObjectBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iActivatePass(pass: MaterialPassData, renderer: RendererBase, camera: Camera): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iRenderPass(pass: MaterialPassData, renderable: RenderableBase, stage: Stage, camera: Camera, viewProjection: Matrix3D): void;
+	}
+	export = LineBasicMaterial;
+	
+}
+declare module "awayjs-renderergl/lib/materials/TriangleMaterialBase" {
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
+	/**
+	 * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
+	 * using material methods to define their appearance.
+	 */
+	class TriangleMaterialBase extends MaterialGLBase {
+	    _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iRenderPass(pass: MaterialPassData, renderable: RenderableBase, stage: Stage, camera: Camera, viewProjection: Matrix3D): void;
+	}
+	export = TriangleMaterialBase;
+	
+}
+declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
+	import Event = require("awayjs-core/lib/events/Event");
+	class ShadingMethodEvent extends Event {
+	    static SHADER_INVALIDATED: string;
+	    constructor(type: string);
+	}
+	export = ShadingMethodEvent;
+	
+}
+declare module "awayjs-renderergl/lib/utils/ShaderCompilerHelper" {
+	import TextureProxyBase = require("awayjs-core/lib/textures/TextureProxyBase");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+	class ShaderCompilerHelper {
+	    /**
+	     * A helper method that generates standard code for sampling from a texture using the normal uv coordinates.
+	     * @param vo The MethodVO object linking this method with the pass currently being compiled.
+	     * @param sharedReg The shared register object for the shader.
+	     * @param inputReg The texture stream register.
+	     * @param texture The texture which will be assigned to the given slot.
+	     * @param uvReg An optional uv register if coordinates different from the primary uv coordinates are to be used.
+	     * @param forceWrap If true, texture wrapping is enabled regardless of the material setting.
+	     * @return The fragment code that performs the sampling.
+	     *
+	     * @protected
+	     */
+	    static getTex2DSampleCode(targetReg: ShaderRegisterElement, sharedReg: ShaderRegisterData, inputReg: ShaderRegisterElement, texture: TextureProxyBase, smooth: boolean, repeat: boolean, mipmaps: boolean, uvReg?: ShaderRegisterElement, forceWrap?: string): string;
+	    /**
+	     * A helper method that generates standard code for sampling from a cube texture.
+	     * @param vo The MethodVO object linking this method with the pass currently being compiled.
+	     * @param targetReg The register in which to store the sampled colour.
+	     * @param inputReg The texture stream register.
+	     * @param texture The cube map which will be assigned to the given slot.
+	     * @param uvReg The direction vector with which to sample the cube map.
+	     *
+	     * @protected
+	     */
+	    static getTexCubeSampleCode(targetReg: ShaderRegisterElement, inputReg: ShaderRegisterElement, texture: TextureProxyBase, smooth: boolean, mipmaps: boolean, uvReg: ShaderRegisterElement): string;
+	    /**
+	     * Generates a texture format string for the sample instruction.
+	     * @param texture The texture for which to get the format string.
+	     * @return
+	     *
+	     * @protected
+	     */
+	    static getFormatStringForTexture(texture: TextureProxyBase): string;
+	}
+	export = ShaderCompilerHelper;
+	
+}
+declare module "awayjs-renderergl/lib/passes/TriangleBasicPass" {
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
+	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
+	/**
+	 * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
+	 * using material methods to define their appearance.
+	 */
+	class TriangleBasicPass extends MaterialPassGLBase {
+	    private _diffuseColor;
+	    private _diffuseR;
+	    private _diffuseG;
+	    private _diffuseB;
+	    private _diffuseA;
+	    private _fragmentConstantsIndex;
+	    private _texturesIndex;
+	    /**
+	     * The alpha component of the diffuse reflection.
+	     */
+	    diffuseAlpha: number;
+	    /**
+	     * The color of the diffuse reflection when not using a texture.
+	     */
+	    diffuseColor: number;
+	    /**
+	     * Creates a new CompiledPass object.
+	     *
+	     * @param material The material to which this pass belongs.
+	     */
+	    constructor();
+	    /**
+	     * @inheritDoc
+	     */
+	    _iGetFragmentCode(shaderObject: ShaderObjectBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
+	    _iIncludeDependencies(dependencyCounter: ShaderObjectBase): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iActivate(pass: MaterialPassData, renderer: RendererBase, camera: Camera): void;
+	}
+	export = TriangleBasicPass;
+	
+}
+declare module "awayjs-renderergl/lib/materials/TriangleBasicMaterial" {
+	import Texture2DBase = require("awayjs-core/lib/textures/Texture2DBase");
+	import TriangleMaterialBase = require("awayjs-renderergl/lib/materials/TriangleMaterialBase");
+	/**
+	 * TriangleMaterial forms an abstract base class for the default shaded materials provided by Stage,
+	 * using material methods to define their appearance.
+	 */
+	class TriangleBasicMaterial extends TriangleMaterialBase {
+	    private _screenPass;
+	    private _alphaBlending;
+	    private _alpha;
+	    private _depthCompareMode;
+	    /**
+	     * Creates a new TriangleMaterial object.
+	     *
+	     * @param texture The texture used for the material's albedo color.
+	     * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
+	     * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to false.
+	     * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to false.
+	     */
+	    constructor(texture?: Texture2DBase, smooth?: boolean, repeat?: boolean, mipmap?: boolean);
+	    constructor(color?: number, alpha?: number);
+	    /**
+	     * The depth compare mode used to render the renderables using this material.
+	     *
+	     * @see away.stagegl.ContextGLCompareMode
+	     */
+	    depthCompareMode: string;
+	    /**
+	     * The alpha of the surface.
+	     */
+	    alpha: number;
+	    /**
+	     * Indicates whether or not the material has transparency. If binary transparency is sufficient, for
+	     * example when using textures of foliage, consider using alphaThreshold instead.
+	     */
+	    alphaBlending: boolean;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iUpdateMaterial(): void;
+	    /**
+	     * Sets up the various blending modes for all screen passes, based on whether or not there are previous passes.
+	     */
+	    private setBlendAndCompareModes();
+	}
+	export = TriangleBasicMaterial;
+	
+}
+declare module "awayjs-renderergl/lib/managers/DefaultMaterialManager" {
+	import BitmapData = require("awayjs-core/lib/base/BitmapData");
+	import BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
+	import IMaterialOwner = require("awayjs-display/lib/base/IMaterialOwner");
+	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
+	class DefaultMaterialManager {
+	    private static _defaultBitmapData;
+	    private static _defaultTriangleMaterial;
+	    private static _defaultLineMaterial;
+	    private static _defaultTexture;
+	    static getDefaultMaterial(materialOwner?: IMaterialOwner): MaterialGLBase;
+	    static getDefaultTexture(materialOwner?: IMaterialOwner): BitmapTexture;
+	    private static createDefaultTexture();
+	    static createCheckeredBitmapData(): BitmapData;
+	    private static createDefaultTriangleMaterial();
+	    private static createDefaultLineMaterial();
+	}
+	export = DefaultMaterialManager;
+	
+}
+declare module "awayjs-renderergl/lib/base/RendererBase" {
+	import BitmapData = require("awayjs-core/lib/base/BitmapData");
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
+	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
+	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+	import TextureProxyBase = require("awayjs-core/lib/textures/TextureProxyBase");
+	import LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
+	import TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
+	import IEntitySorter = require("awayjs-display/lib/sort/IEntitySorter");
+	import Billboard = require("awayjs-display/lib/entities/Billboard");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import StageEvent = require("awayjs-display/lib/events/StageEvent");
+	import MaterialBase = require("awayjs-display/lib/materials/MaterialBase");
+	import ICollector = require("awayjs-display/lib/traverse/ICollector");
+	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
+	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ProgramData = require("awayjs-stagegl/lib/pool/ProgramData");
+	import MaterialData = require("awayjs-renderergl/lib/pool/MaterialData");
+	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
+	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
+	/**
+	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
+	 * contents of a partition
+	 *
+	 * @class away.render.RendererBase
+	 */
+	class RendererBase extends EventDispatcher {
+	    private _numUsedStreams;
+	    private _numUsedTextures;
+	    private _materialDataPool;
+	    private _billboardRenderablePool;
+	    private _triangleSubMeshRenderablePool;
+	    private _lineSubMeshRenderablePool;
+	    _pContext: IContextGL;
+	    _pStage: Stage;
+	    _pCamera: Camera;
+	    _iEntryPoint: Vector3D;
+	    _pCameraForward: Vector3D;
+	    _pRttBufferManager: RTTBufferManager;
+	    private _viewPort;
+	    private _viewportDirty;
+	    private _scissorDirty;
+	    _pBackBufferInvalid: boolean;
+	    _pDepthTextureInvalid: boolean;
+	    _depthPrepass: boolean;
+	    private _backgroundR;
+	    private _backgroundG;
+	    private _backgroundB;
+	    private _backgroundAlpha;
+	    _shareContext: boolean;
+	    _width: number;
+	    _height: number;
+	    textureRatioX: number;
+	    textureRatioY: number;
+	    private _snapshotBitmapData;
+	    private _snapshotRequired;
+	    _pRttViewProjectionMatrix: Matrix3D;
+	    private _localPos;
+	    private _globalPos;
+	    _pScissorRect: Rectangle;
+	    private _scissorUpdated;
+	    private _viewPortUpdated;
+	    private _onContextUpdateDelegate;
+	    private _onViewportUpdatedDelegate;
+	    _pNumTriangles: number;
+	    _pOpaqueRenderableHead: RenderableBase;
+	    _pBlendedRenderableHead: RenderableBase;
+	    /**
+	     *
+	     */
+	    numTriangles: number;
+	    /**
+	     *
+	     */
+	    renderableSorter: IEntitySorter;
+	    /**
+	     * A viewPort rectangle equivalent of the Stage size and position.
+	     */
+	    viewPort: Rectangle;
+	    /**
+	     * A scissor rectangle equivalent of the view size and position.
+	     */
+	    scissorRect: Rectangle;
+	    /**
+	     *
+	     */
+	    x: number;
+	    /**
+	     *
+	     */
+	    y: number;
+	    /**
+	     *
+	     */
+	    width: number;
+	    /**
+	     *
+	     */
+	    height: number;
+	    /**
+	     * Creates a new RendererBase object.
+	     */
+	    constructor();
+	    getProgram(materialPassData: MaterialPassData): ProgramData;
+	    /**
+	     *
+	     * @param material
+	     */
+	    getMaterial(material: MaterialGLBase, profile: string): MaterialData;
+	    activateMaterialPass(materialPassData: MaterialPassData, camera: Camera): void;
+	    deactivateMaterialPass(materialPassData: MaterialPassData): void;
+	    _iCreateEntityCollector(): ICollector;
+	    /**
+	     * The background color's red component, used when clearing.
+	     *
+	     * @private
+	     */
+	    _iBackgroundR: number;
+	    /**
+	     * The background color's green component, used when clearing.
+	     *
+	     * @private
+	     */
+	    _iBackgroundG: number;
+	    /**
+	     * The background color's blue component, used when clearing.
+	     *
+	     * @private
+	     */
+	    _iBackgroundB: number;
+	    context: IContextGL;
+	    /**
+	     * The Stage that will provide the ContextGL used for rendering.
+	     */
+	    stage: Stage;
+	    iSetStage(value: Stage): void;
+	    /**
+	     * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
+	     * to share the same ContextGL object.
+	     */
+	    shareContext: boolean;
+	    /**
+	     * Disposes the resources used by the RendererBase.
+	     */
+	    dispose(): void;
+	    render(entityCollector: ICollector): void;
+	    /**
+	     * Renders the potentially visible geometry to the back buffer or texture.
+	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+	     * @param target An option target texture to render to.
+	     * @param surfaceSelector The index of a CubeTexture's face to render to.
+	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
+	     */
+	    _iRender(entityCollector: ICollector, target?: TextureProxyBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: TextureProxyBase, numCascades: number, scissorRects: Rectangle[], cameras: Camera[]): void;
+	    pCollectRenderables(entityCollector: ICollector): void;
+	    /**
+	     * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
+	     *
+	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+	     * @param target An option target texture to render to.
+	     * @param surfaceSelector The index of a CubeTexture's face to render to.
+	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
+	     */
+	    pExecuteRender(entityCollector: ICollector, target?: TextureProxyBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    queueSnapshot(bmd: BitmapData): void;
+	    /**
+	     * Performs the actual drawing of geometry to the target.
+	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+	     */
+	    pDraw(entityCollector: ICollector, target: TextureProxyBase): void;
+	    /**
+	     * Assign the context once retrieved
+	     */
+	    private onContextUpdate(event);
+	    _iBackgroundAlpha: number;
+	    /**
+	     * @private
+	     */
+	    private notifyScissorUpdate();
+	    /**
+	     * @private
+	     */
+	    private notifyViewportUpdate();
+	    /**
+	     *
+	     */
+	    onViewportUpdated(event: StageEvent): void;
+	    /**
+	     *
+	     */
+	    updateGlobalPos(): void;
+	    /**
+	     *
+	     * @param billboard
+	     * @protected
+	     */
+	    applyBillboard(billboard: Billboard): void;
+	    /**
+	     *
+	     * @param triangleSubMesh
+	     */
+	    applyTriangleSubMesh(triangleSubMesh: TriangleSubMesh): void;
+	    /**
+	     *
+	     * @param lineSubMesh
+	     */
+	    applyLineSubMesh(lineSubMesh: LineSubMesh): void;
+	    /**
+	     *
+	     * @param renderable
+	     * @protected
+	     */
+	    private _applyRenderable(renderable);
+	    /**
+	     * test if animation will be able to run on gpu BEFORE compiling materials
+	     * test if the shader objects supports animating the animation set in the vertex shader
+	     * if any object using this material fails to support accelerated animations for any of the shader objects,
+	     * we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
+	     */
+	    private getEnabledGPUAnimation(material, materialDataPasses);
+	    calcAnimationCode(material: MaterialBase, materialPassData: MaterialPassData): void;
+	}
+	export = RendererBase;
+	
+}
+declare module "awayjs-renderergl/lib/DepthRenderer" {
+	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
+	import TextureProxyBase = require("awayjs-core/lib/textures/TextureProxyBase");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
+	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
+	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
+	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
+	/**
+	 * The DepthRenderer class renders 32-bit depth information encoded as RGBA
+	 *
+	 * @class away.render.DepthRenderer
+	 */
+	class DepthRenderer extends RendererBase {
+	    private _pass;
+	    private _renderBlended;
+	    private _disableColor;
+	    /**
+	     * Creates a new DepthRenderer object.
+	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
+	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
+	     */
+	    constructor(pass: MaterialPassGLBase, renderBlended?: boolean);
+	    disableColor: boolean;
+	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: TextureProxyBase, numCascades: number, scissorRects: Rectangle[], cameras: Camera[]): void;
+	    private drawCascadeRenderables(renderable, camera, cullPlanes);
+	    /**
+	     * @inheritDoc
+	     */
+	    pDraw(entityCollector: EntityCollector, target: TextureProxyBase): void;
+	    /**
+	     * Draw a list of renderables.
+	     * @param renderables The renderables to draw.
+	     * @param entityCollector The EntityCollector containing all potentially visible information.
+	     */
+	    private drawRenderables(renderable, entityCollector);
+	}
+	export = DepthRenderer;
+	
+}
+declare module "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase" {
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import IProgram = require("awayjs-stagegl/lib/base/IProgram");
+	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
+	class Filter3DTaskBase {
+	    private _mainInputTexture;
+	    private _scaledTextureWidth;
+	    private _scaledTextureHeight;
+	    private _textureWidth;
+	    private _textureHeight;
+	    private _textureDimensionsInvalid;
+	    private _program3DInvalid;
+	    private _program3D;
+	    private _target;
+	    private _requireDepthRender;
+	    private _textureScale;
+	    constructor(requireDepthRender?: boolean);
+	    /**
+	     * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
+	     */
+	    textureScale: number;
+	    target: ITexture;
+	    textureWidth: number;
+	    textureHeight: number;
+	    getMainInputTexture(stage: Stage): ITexture;
+	    dispose(): void;
+	    pInvalidateProgram(): void;
+	    pUpdateProgram(stage: Stage): void;
+	    pGetVertexCode(): string;
+	    pGetFragmentCode(): string;
+	    pUpdateTextures(stage: Stage): void;
+	    getProgram(stage: Stage): IProgram;
+	    activate(stage: Stage, camera: Camera, depthTexture: ITexture): void;
+	    deactivate(stage: Stage): void;
+	    requireDepthRender: boolean;
+	}
+	export = Filter3DTaskBase;
+	
+}
+declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
+	import Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+	class Filter3DBase {
+	    private _tasks;
+	    private _requireDepthRender;
+	    private _textureWidth;
+	    private _textureHeight;
+	    constructor();
+	    requireDepthRender: boolean;
+	    pAddTask(filter: Filter3DTaskBase): void;
+	    tasks: Filter3DTaskBase[];
+	    getMainInputTexture(stage: Stage): ITexture;
+	    textureWidth: number;
+	    textureHeight: number;
+	    setRenderTargets(mainTarget: ITexture, stage: Stage): void;
+	    dispose(): void;
+	    update(stage: Stage, camera: Camera): void;
+	}
+	export = Filter3DBase;
+	
+}
+declare module "awayjs-renderergl/lib/Filter3DRenderer" {
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
+	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+	/**
+	 * @class away.render.Filter3DRenderer
+	 */
+	class Filter3DRenderer {
+	    private _filters;
+	    private _tasks;
+	    private _filterTasksInvalid;
+	    private _mainInputTexture;
+	    private _requireDepthRender;
+	    private _rttManager;
+	    private _stage;
+	    private _filterSizesInvalid;
+	    private _onRTTResizeDelegate;
+	    constructor(stage: Stage);
+	    private onRTTResize(event);
+	    requireDepthRender: boolean;
+	    getMainInputTexture(stage: Stage): ITexture;
+	    filters: Filter3DBase[];
+	    private updateFilterTasks(stage);
+	    render(stage: Stage, camera: Camera, depthTexture: ITexture): void;
+	    private updateFilterSizes();
+	    dispose(): void;
+	}
+	export = Filter3DRenderer;
+	
+}
+declare module "awayjs-renderergl/lib/pool/SkyboxRenderable" {
+	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+	import RenderablePool = require("awayjs-display/lib/pool/RenderablePool");
+	import Skybox = require("awayjs-display/lib/entities/Skybox");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	/**
+	 * @class away.pool.SkyboxRenderable
+	 */
+	class SkyboxRenderable extends RenderableBase {
+	    /**
+	     *
+	     */
+	    static id: string;
+	    /**
+	     *
+	     */
+	    private static _geometry;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param skybox
+	     */
+	    constructor(pool: RenderablePool, skybox: Skybox);
+	    /**
+	     * //TODO
+	     *
+	     * @returns {away.base.TriangleSubGeometry}
+	     * @private
+	     */
+	    _pGetSubGeometry(): TriangleSubGeometry;
+	}
+	export = SkyboxRenderable;
+	
+}
+declare module "awayjs-renderergl/lib/passes/DepthMapPass" {
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
+	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
+	/**
+	 * DepthMapPass is a pass that writes depth values to a depth map as a 32-bit value exploded over the 4 texture channels.
+	 * This is used to render shadow maps, depth maps, etc.
+	 */
+	class DepthMapPass extends MaterialPassGLBase {
+	    private _fragmentConstantsIndex;
+	    private _texturesIndex;
+	    /**
+	     * Creates a new DepthMapPass object.
+	     *
+	     * @param material The material to which this pass belongs.
+	     */
+	    constructor();
+	    /**
+	     * Initializes the unchanging constant data for this material.
+	     */
+	    _iInitConstantData(shaderObject: ShaderObjectBase): void;
+	    _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iRender(pass: MaterialPassData, renderable: RenderableBase, stage: Stage, camera: Camera, viewProjection: Matrix3D): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iActivate(pass: MaterialPassData, renderer: RendererBase, camera: Camera): void;
+	}
+	export = DepthMapPass;
+	
+}
+declare module "awayjs-renderergl/lib/passes/DistanceMapPass" {
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
+	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
+	/**
+	 * DistanceMapPass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
+	 * This is used to render omnidirectional shadow maps.
+	 */
+	class DistanceMapPass extends MaterialPassGLBase {
+	    private _fragmentConstantsIndex;
+	    private _texturesIndex;
+	    /**
+	     * Creates a new DistanceMapPass object.
+	     *
+	     * @param material The material to which this pass belongs.
+	     */
+	    constructor();
+	    /**
+	     * Initializes the unchanging constant data for this material.
+	     */
+	    _iInitConstantData(shaderObject: ShaderObjectBase): void;
+	    _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iActivate(pass: MaterialPassData, renderer: RendererBase, camera: Camera): void;
+	}
+	export = DistanceMapPass;
+	
+}
+declare module "awayjs-renderergl/lib/DefaultRenderer" {
+	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
+	import TextureProxyBase = require("awayjs-core/lib/textures/TextureProxyBase");
+	import IRenderer = require("awayjs-display/lib/render/IRenderer");
+	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
+	import ICollector = require("awayjs-display/lib/traverse/ICollector");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
+	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
+	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+	/**
+	 * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
+	 * materials assigned to them.
+	 *
+	 * @class away.render.DefaultRenderer
+	 */
+	class DefaultRenderer extends RendererBase implements IRenderer {
+	    _pRequireDepthRender: boolean;
+	    private _skyboxRenderablePool;
+	    private _pDistanceRenderer;
+	    private _pDepthRenderer;
+	    private _skyboxProjection;
+	    _pFilter3DRenderer: Filter3DRenderer;
+	    _pDepthRender: TextureProxyBase;
+	    private _antiAlias;
+	    antiAlias: number;
+	    /**
+	     *
+	     */
+	    depthPrepass: boolean;
+	    /**
+	     *
+	     * @returns {*}
+	     */
+	    filters3d: Filter3DBase[];
+	    /**
+	     * Creates a new DefaultRenderer object.
+	     *
+	     * @param antiAlias The amount of anti-aliasing to use.
+	     * @param renderMode The render mode to use.
+	     */
+	    constructor(forceSoftware?: boolean, profile?: string, mode?: string);
+	    render(entityCollector: ICollector): void;
+	    pExecuteRender(entityCollector: EntityCollector, target?: TextureProxyBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    private updateLights(entityCollector);
+	    /**
+	     * @inheritDoc
+	     */
+	    pDraw(entityCollector: EntityCollector, target: TextureProxyBase): void;
+	    /**
+	     * Draw the skybox if present.
+	     *
+	     * @param entityCollector The EntityCollector containing all potentially visible information.
+	     */
+	    private drawSkybox(entityCollector);
+	    private updateSkyboxProjection(camera);
+	    /**
+	     * Draw a list of renderables.
+	     *
+	     * @param renderables The renderables to draw.
+	     * @param entityCollector The EntityCollector containing all potentially visible information.
+	     */
+	    private drawRenderables(renderable, entityCollector);
+	    dispose(): void;
+	    /**
+	     *
+	     */
+	    pRenderDepthPrepass(entityCollector: EntityCollector): void;
+	    /**
+	     *
+	     */
+	    pRenderSceneDepthToTexture(entityCollector: EntityCollector): void;
+	    /**
+	     * Updates the backbuffer dimensions.
+	     */
+	    pUpdateBackBuffer(): void;
+	    iSetStage(value: Stage): void;
+	    /**
+	     *
+	     */
+	    private initDepthTexture(context);
+	}
+	export = DefaultRenderer;
 	
 }
 declare module "awayjs-renderergl/lib/animators/data/ParticleData" {
@@ -3444,70 +3779,6 @@ declare module "awayjs-renderergl/lib/compilation/ShaderLightingCompiler" {
 	export = ShaderLightingCompiler;
 	
 }
-declare module "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase" {
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import IProgram = require("awayjs-stagegl/lib/base/IProgram");
-	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
-	class Filter3DTaskBase {
-	    private _mainInputTexture;
-	    private _scaledTextureWidth;
-	    private _scaledTextureHeight;
-	    private _textureWidth;
-	    private _textureHeight;
-	    private _textureDimensionsInvalid;
-	    private _program3DInvalid;
-	    private _program3D;
-	    private _target;
-	    private _requireDepthRender;
-	    private _textureScale;
-	    constructor(requireDepthRender?: boolean);
-	    /**
-	     * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
-	     */
-	    textureScale: number;
-	    target: ITexture;
-	    textureWidth: number;
-	    textureHeight: number;
-	    getMainInputTexture(stage: Stage): ITexture;
-	    dispose(): void;
-	    pInvalidateProgram(): void;
-	    pUpdateProgram(stage: Stage): void;
-	    pGetVertexCode(): string;
-	    pGetFragmentCode(): string;
-	    pUpdateTextures(stage: Stage): void;
-	    getProgram(stage: Stage): IProgram;
-	    activate(stage: Stage, camera: Camera, depthTexture: ITexture): void;
-	    deactivate(stage: Stage): void;
-	    requireDepthRender: boolean;
-	}
-	export = Filter3DTaskBase;
-	
-}
-declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
-	import Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
-	class Filter3DBase {
-	    private _tasks;
-	    private _requireDepthRender;
-	    private _textureWidth;
-	    private _textureHeight;
-	    constructor();
-	    requireDepthRender: boolean;
-	    pAddTask(filter: Filter3DTaskBase): void;
-	    tasks: Filter3DTaskBase[];
-	    getMainInputTexture(stage: Stage): ITexture;
-	    textureWidth: number;
-	    textureHeight: number;
-	    setRenderTargets(mainTarget: ITexture, stage: Stage): void;
-	    dispose(): void;
-	    update(stage: Stage, camera: Camera): void;
-	}
-	export = Filter3DBase;
-	
-}
 declare module "awayjs-renderergl/lib/passes/SkyboxPass" {
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
@@ -3531,13 +3802,13 @@ declare module "awayjs-renderergl/lib/materials/SkyboxMaterial" {
 	import CubeTextureBase = require("awayjs-core/lib/textures/CubeTextureBase");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
 	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 	import MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import RendererBase = require("awayjs-renderergl/lib/render/RendererBase");
 	/**
 	 * SkyboxMaterial is a material exclusively used to render skyboxes
 	 *
@@ -3574,86 +3845,6 @@ declare module "awayjs-renderergl/lib/materials/SkyboxMaterial" {
 	    _iRenderPass(pass: MaterialPassData, renderable: RenderableBase, stage: Stage, camera: Camera, viewProjection: Matrix3D): void;
 	}
 	export = SkyboxMaterial;
-	
-}
-declare module "awayjs-renderergl/lib/passes/DepthMapPass" {
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-	import RendererBase = require("awayjs-renderergl/lib/render/RendererBase");
-	/**
-	 * DepthMapPass is a pass that writes depth values to a depth map as a 32-bit value exploded over the 4 texture channels.
-	 * This is used to render shadow maps, depth maps, etc.
-	 */
-	class DepthMapPass extends MaterialPassGLBase {
-	    private _fragmentConstantsIndex;
-	    private _texturesIndex;
-	    /**
-	     * Creates a new DepthMapPass object.
-	     *
-	     * @param material The material to which this pass belongs.
-	     */
-	    constructor();
-	    /**
-	     * Initializes the unchanging constant data for this material.
-	     */
-	    _iInitConstantData(shaderObject: ShaderObjectBase): void;
-	    _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iRender(pass: MaterialPassData, renderable: RenderableBase, stage: Stage, camera: Camera, viewProjection: Matrix3D): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iActivate(pass: MaterialPassData, renderer: RendererBase, camera: Camera): void;
-	}
-	export = DepthMapPass;
-	
-}
-declare module "awayjs-renderergl/lib/passes/DistanceMapPass" {
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
-	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-	import RendererBase = require("awayjs-renderergl/lib/render/RendererBase");
-	/**
-	 * DistanceMapPass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
-	 * This is used to render omnidirectional shadow maps.
-	 */
-	class DistanceMapPass extends MaterialPassGLBase {
-	    private _fragmentConstantsIndex;
-	    private _texturesIndex;
-	    /**
-	     * Creates a new DistanceMapPass object.
-	     *
-	     * @param material The material to which this pass belongs.
-	     */
-	    constructor();
-	    /**
-	     * Initializes the unchanging constant data for this material.
-	     */
-	    _iInitConstantData(shaderObject: ShaderObjectBase): void;
-	    _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iActivate(pass: MaterialPassData, renderer: RendererBase, camera: Camera): void;
-	}
-	export = DistanceMapPass;
 	
 }
 declare module "awayjs-renderergl/lib/pick/PickingColliderBase" {
@@ -3733,197 +3924,6 @@ declare module "awayjs-renderergl/lib/pick/JSPickingCollider" {
 	    _pTestRenderableCollision(renderable: RenderableBase, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number): boolean;
 	}
 	export = JSPickingCollider;
-	
-}
-declare module "awayjs-renderergl/lib/pool/SkyboxRenderable" {
-	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
-	import RenderablePool = require("awayjs-display/lib/pool/RenderablePool");
-	import Skybox = require("awayjs-display/lib/entities/Skybox");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	/**
-	 * @class away.pool.SkyboxRenderable
-	 */
-	class SkyboxRenderable extends RenderableBase {
-	    /**
-	     *
-	     */
-	    static id: string;
-	    /**
-	     *
-	     */
-	    private static _geometry;
-	    /**
-	     * //TODO
-	     *
-	     * @param pool
-	     * @param skybox
-	     */
-	    constructor(pool: RenderablePool, skybox: Skybox);
-	    /**
-	     * //TODO
-	     *
-	     * @returns {away.base.TriangleSubGeometry}
-	     * @private
-	     */
-	    _pGetSubGeometry(): TriangleSubGeometry;
-	}
-	export = SkyboxRenderable;
-	
-}
-declare module "awayjs-renderergl/lib/render/DepthRenderer" {
-	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
-	import TextureProxyBase = require("awayjs-core/lib/textures/TextureProxyBase");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
-	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
-	import RendererBase = require("awayjs-renderergl/lib/render/RendererBase");
-	import MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-	/**
-	 * The DepthRenderer class renders 32-bit depth information encoded as RGBA
-	 *
-	 * @class away.render.DepthRenderer
-	 */
-	class DepthRenderer extends RendererBase {
-	    private _pass;
-	    private _renderBlended;
-	    private _disableColor;
-	    /**
-	     * Creates a new DepthRenderer object.
-	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
-	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
-	     */
-	    constructor(pass: MaterialPassGLBase, renderBlended?: boolean);
-	    disableColor: boolean;
-	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: TextureProxyBase, numCascades: number, scissorRects: Rectangle[], cameras: Camera[]): void;
-	    private drawCascadeRenderables(renderable, camera, cullPlanes);
-	    /**
-	     * @inheritDoc
-	     */
-	    pDraw(entityCollector: EntityCollector, target: TextureProxyBase): void;
-	    /**
-	     * Draw a list of renderables.
-	     * @param renderables The renderables to draw.
-	     * @param entityCollector The EntityCollector containing all potentially visible information.
-	     */
-	    private drawRenderables(renderable, entityCollector);
-	}
-	export = DepthRenderer;
-	
-}
-declare module "awayjs-renderergl/lib/render/Filter3DRenderer" {
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
-	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
-	/**
-	 * @class away.render.Filter3DRenderer
-	 */
-	class Filter3DRenderer {
-	    private _filters;
-	    private _tasks;
-	    private _filterTasksInvalid;
-	    private _mainInputTexture;
-	    private _requireDepthRender;
-	    private _rttManager;
-	    private _stage;
-	    private _filterSizesInvalid;
-	    private _onRTTResizeDelegate;
-	    constructor(stage: Stage);
-	    private onRTTResize(event);
-	    requireDepthRender: boolean;
-	    getMainInputTexture(stage: Stage): ITexture;
-	    filters: Filter3DBase[];
-	    private updateFilterTasks(stage);
-	    render(stage: Stage, camera: Camera, depthTexture: ITexture): void;
-	    private updateFilterSizes();
-	    dispose(): void;
-	}
-	export = Filter3DRenderer;
-	
-}
-declare module "awayjs-renderergl/lib/render/DefaultRenderer" {
-	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
-	import TextureProxyBase = require("awayjs-core/lib/textures/TextureProxyBase");
-	import IRenderer = require("awayjs-display/lib/render/IRenderer");
-	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
-	import ICollector = require("awayjs-display/lib/traverse/ICollector");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
-	import Filter3DRenderer = require("awayjs-renderergl/lib/render/Filter3DRenderer");
-	import RendererBase = require("awayjs-renderergl/lib/render/RendererBase");
-	/**
-	 * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
-	 * materials assigned to them.
-	 *
-	 * @class away.render.DefaultRenderer
-	 */
-	class DefaultRenderer extends RendererBase implements IRenderer {
-	    _pRequireDepthRender: boolean;
-	    private _skyboxRenderablePool;
-	    private _pDistanceRenderer;
-	    private _pDepthRenderer;
-	    private _skyboxProjection;
-	    _pFilter3DRenderer: Filter3DRenderer;
-	    _pDepthRender: TextureProxyBase;
-	    private _antiAlias;
-	    antiAlias: number;
-	    /**
-	     *
-	     */
-	    depthPrepass: boolean;
-	    /**
-	     *
-	     * @returns {*}
-	     */
-	    filters3d: Filter3DBase[];
-	    /**
-	     * Creates a new DefaultRenderer object.
-	     *
-	     * @param antiAlias The amount of anti-aliasing to use.
-	     * @param renderMode The render mode to use.
-	     */
-	    constructor(forceSoftware?: boolean, profile?: string, mode?: string);
-	    render(entityCollector: ICollector): void;
-	    pExecuteRender(entityCollector: EntityCollector, target?: TextureProxyBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
-	    private updateLights(entityCollector);
-	    /**
-	     * @inheritDoc
-	     */
-	    pDraw(entityCollector: EntityCollector, target: TextureProxyBase): void;
-	    /**
-	     * Draw the skybox if present.
-	     *
-	     * @param entityCollector The EntityCollector containing all potentially visible information.
-	     */
-	    private drawSkybox(entityCollector);
-	    private updateSkyboxProjection(camera);
-	    /**
-	     * Draw a list of renderables.
-	     *
-	     * @param renderables The renderables to draw.
-	     * @param entityCollector The EntityCollector containing all potentially visible information.
-	     */
-	    private drawRenderables(renderable, entityCollector);
-	    dispose(): void;
-	    /**
-	     *
-	     */
-	    pRenderDepthPrepass(entityCollector: EntityCollector): void;
-	    /**
-	     *
-	     */
-	    pRenderSceneDepthToTexture(entityCollector: EntityCollector): void;
-	    /**
-	     * Updates the backbuffer dimensions.
-	     */
-	    pUpdateBackBuffer(): void;
-	    iSetStage(value: Stage): void;
-	    /**
-	     *
-	     */
-	    private initDepthTexture(context);
-	}
-	export = DefaultRenderer;
 	
 }
 declare module "awayjs-renderergl/lib/pick/ShaderPicker" {
