@@ -235,7 +235,7 @@ class ShaderPicker implements IPicker
 
 			this._potentialFound = true;
 
-			this._context.setCulling((<MaterialBase> renderable.materialOwner.material).bothSides? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
+			this._context.setCulling((<MaterialBase> renderable.renderObjectOwner).bothSides? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
 
 			this._interactives[this._interactiveId++] = renderable;
 			// color code so that reading from bitmapdata will contain the correct value

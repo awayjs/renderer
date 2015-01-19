@@ -3,23 +3,33 @@ import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import Event						= require("awayjs-core/lib/events/Event");
+import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
+import ArgumentError				= require("awayjs-core/lib/errors/ArgumentError");
 import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 
+import BlendMode					= require("awayjs-display/lib/base/BlendMode");
+import LineSubGeometry				= require("awayjs-display/lib/base/LineSubGeometry");
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
+import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
+import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import ContextGLTriangleFace		= require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
+import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
 
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import AnimationRegisterCache		= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
+import IRenderObjectBase			= require("awayjs-renderergl/lib/compilation/IRenderObjectBase");
 import ShaderCompilerBase			= require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
+import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
+import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 
 /**
  * ShaderObjectBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -29,16 +39,44 @@ import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPass
  *
  * @see RegisterPool.addUsage
  */
-class ShaderObjectBase
+class ShaderObjectBase extends EventDispatcher
 {
+	private _renderObjectOwner:IRenderObjectOwner;
+	private _renderableClass:IRenderableClass;
+	private _renderObject:IRenderObjectBase;
+	public _stage:Stage;
+	private _programData:ProgramData;
+
+	public depthCompareMode:string = ContextGLCompareMode.LESS_EQUAL;
+
+	private _invalidShader:boolean = true;
+	private _invalidProgram:boolean = true;
+	private _animationVertexCode:string = "";
+	private _animationFragmentCode:string = "";
+
+	private _enableBlending:boolean = false;
+	private _blendFactorSource:string = ContextGLBlendFactor.ONE;
+	private _blendFactorDest:string = ContextGLBlendFactor.ZERO;
+
+	public writeDepth:boolean = true;
+	
+	public get programData():ProgramData
+	{
+		if (this._invalidProgram)
+			this._updateProgram();
+
+		return this._programData;
+	}
+
+	public profile:string;
+
+	public usesAnimation:boolean;
 
 	private _defaultCulling:string = ContextGLTriangleFace.BACK;
 
 	public _pInverseSceneMatrix:Array<number> = new Array<number>();
 
 	public animationRegisterCache:AnimationRegisterCache;
-
-	public profile:string;
 
 	/**
 	 * The amount of used vertex constants in the vertex code. Used by the animation code generation to know from which index on registers are available.
@@ -102,6 +140,11 @@ class ShaderObjectBase
 	public normalDependencies:number;
 
 	/**
+	 * The amount of dependencies on the vertex color.
+	 */
+	public colorDependencies:number;
+
+	/**
 	 * The amount of dependencies on the view direction.
 	 */
 	public viewDirDependencies:number;
@@ -137,6 +180,11 @@ class ShaderObjectBase
 	 *
 	 */
 	public outputsNormals:boolean;
+
+	/**
+	 *
+	 */
+	public outputsColors:boolean;
 
 	/**
 	 * Indicates whether or not normal calculations are expected in tangent space. This is only the case if no world-space
@@ -178,6 +226,11 @@ class ShaderObjectBase
 	public normalBufferIndex:number;
 
 	/**
+	 * The index for the color attribute stream.
+	 */
+	public colorBufferIndex:number;
+
+	/**
 	 * The index for the vertex tangent attribute stream.
 	 */
 	public tangentBufferIndex:number;
@@ -210,20 +263,35 @@ class ShaderObjectBase
 	/**
 	 * Creates a new MethodCompilerVO object.
 	 */
-	constructor(profile)
+	constructor(renderObjectOwner:IRenderObjectOwner, renderableClass:IRenderableClass, renderObject:IRenderObjectBase, stage:Stage)
 	{
-		this.profile = profile;
+		super();
+
+		this._renderObjectOwner = renderObjectOwner;
+		this._renderableClass = renderableClass;
+		this._renderObject = renderObject;
+		this._stage = stage;
+		this.profile = this._stage.profile;
+	}
+
+	public _iIncludeDependencies()
+	{
+		this.alphaThreshold = this._renderObjectOwner.alphaThreshold;
+		this.useMipmapping = this._renderObjectOwner.mipmap;
+		this.useSmoothTextures = this._renderObjectOwner.smooth;
 	}
 
 	/**
 	 * Factory method to create a concrete compiler object for this object
 	 *
-	 * @param materialPassVO
-	 * @returns {away.materials.ShaderCompilerBase}
+	 * @param renderableClass
+	 * @param renderObject
+	 * @param stage
+	 * @returns {ShaderCompilerBase}
 	 */
-	public createCompiler(material:MaterialGLBase, materialPass:MaterialPassGLBase):ShaderCompilerBase
+	public createCompiler(renderableClass:IRenderableClass, renderObject:IRenderObjectBase):ShaderCompilerBase
 	{
-		return new ShaderCompilerBase(material, materialPass, this);
+		return new ShaderCompilerBase(renderableClass, renderObject, this);
 	}
 
 	/**
@@ -233,6 +301,7 @@ class ShaderObjectBase
 	{
 		this.projectionDependencies = 0;
 		this.normalDependencies = 0;
+		this.colorDependencies = 0;
 		this.viewDirDependencies = 0;
 		this.uvDependencies = 0;
 		this.secondaryUVDependencies = 0;
@@ -253,6 +322,7 @@ class ShaderObjectBase
 		this.uvTransformIndex = -1;
 		this.secondaryUVBufferIndex = -1;
 		this.normalBufferIndex = -1;
+		this.colorBufferIndex = -1;
 		this.tangentBufferIndex = -1;
 		this.sceneMatrixIndex = -1;
 		this.sceneNormalMatrixIndex = -1;
@@ -305,9 +375,17 @@ class ShaderObjectBase
 	/**
 	 * @inheritDoc
 	 */
-	public iActivate(stage:Stage, camera:Camera)
+	public _iActivate(camera:Camera)
 	{
-		stage.context.setCulling(this.useBothSides? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
+		if (this.usesAnimation)
+			(<AnimationSetBase> this._renderObjectOwner.animationSet).activate(this, this._stage);
+
+		this._stage.context.setDepthTest(( this.writeDepth && !this._enableBlending ), this.depthCompareMode);
+
+		if (this._enableBlending)
+			this._stage.context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
+
+		this._stage.context.setCulling(this.useBothSides? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
 
 		if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
 			var pos:Vector3D = camera.scenePosition;
@@ -321,9 +399,12 @@ class ShaderObjectBase
 	/**
 	 * @inheritDoc
 	 */
-	public iDeactivate(stage:Stage)
+	public _iDeactivate()
 	{
+		if (this.usesAnimation)
+			(<AnimationSetBase> this._renderObjectOwner.animationSet).deactivate(this, this._stage);
 
+		this._stage.context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
 	}
 
 
@@ -334,28 +415,29 @@ class ShaderObjectBase
 	 * @param stage
 	 * @param camera
 	 */
-	public setRenderState(renderable:RenderableBase, stage:Stage, camera:Camera, viewProjection:Matrix3D)
+	public _iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		var context:IContextGL = stage.context;
-
-		if (renderable.materialOwner.animator)
-			(<AnimatorBase> renderable.materialOwner.animator).setRenderState(this, renderable, stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
+		if (renderable.renderableOwner.animator)
+			(<AnimatorBase> renderable.renderableOwner.animator).setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
 
 		if (this.uvBufferIndex >= 0)
-			stage.activateBuffer(this.uvBufferIndex, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
+			this._stage.activateBuffer(this.uvBufferIndex, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
 
 		if (this.secondaryUVBufferIndex >= 0)
-			stage.activateBuffer(this.secondaryUVBufferIndex, renderable.getVertexData(TriangleSubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.SECONDARY_UV_DATA), TriangleSubGeometry.SECONDARY_UV_FORMAT);
+			this._stage.activateBuffer(this.secondaryUVBufferIndex, renderable.getVertexData(TriangleSubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.SECONDARY_UV_DATA), TriangleSubGeometry.SECONDARY_UV_FORMAT);
 
 		if (this.normalBufferIndex >= 0)
-			stage.activateBuffer(this.normalBufferIndex, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+			this._stage.activateBuffer(this.normalBufferIndex, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 
 		if (this.tangentBufferIndex >= 0)
-			stage.activateBuffer(this.tangentBufferIndex, renderable.getVertexData(TriangleSubGeometry.TANGENT_DATA), renderable.getVertexOffset(TriangleSubGeometry.TANGENT_DATA), TriangleSubGeometry.TANGENT_FORMAT);
+			this._stage.activateBuffer(this.tangentBufferIndex, renderable.getVertexData(TriangleSubGeometry.TANGENT_DATA), renderable.getVertexOffset(TriangleSubGeometry.TANGENT_DATA), TriangleSubGeometry.TANGENT_FORMAT);
+
+		if (this.colorBufferIndex >= 0)
+			this._stage.activateBuffer(this.colorBufferIndex, renderable.getVertexData(LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(LineSubGeometry.COLOR_DATA), LineSubGeometry.COLOR_FORMAT);
 
 
 		if (this.usesUVTransform) {
-			var uvTransform:Matrix = renderable.materialOwner.uvTransform.matrix;
+			var uvTransform:Matrix = renderable.renderableOwner.uvTransform.matrix;
 
 			if (uvTransform) {
 				this.vertexConstantData[this.uvTransformIndex] = uvTransform.a;
@@ -391,9 +473,127 @@ class ShaderObjectBase
 		}
 	}
 
+	/**
+	 * The blend mode to use when drawing this renderable. The following blend modes are supported:
+	 * <ul>
+	 * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
+	 * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
+	 * <li>BlendMode.MULTIPLY</li>
+	 * <li>BlendMode.ADD</li>
+	 * <li>BlendMode.ALPHA</li>
+	 * </ul>
+	 */
+	public setBlendMode(value:string)
+	{
+		switch (value) {
+			case BlendMode.NORMAL:
+				this._blendFactorSource = ContextGLBlendFactor.ONE;
+				this._blendFactorDest = ContextGLBlendFactor.ZERO;
+				this._enableBlending = false;
+				break;
+			case BlendMode.LAYER:
+				this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
+				this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+				this._enableBlending = true;
+				break;
+			case BlendMode.MULTIPLY:
+				this._blendFactorSource = ContextGLBlendFactor.ZERO;
+				this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
+				this._enableBlending = true;
+				break;
+			case BlendMode.ADD:
+				this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
+				this._blendFactorDest = ContextGLBlendFactor.ONE;
+				this._enableBlending = true;
+				break;
+			case BlendMode.ALPHA:
+				this._blendFactorSource = ContextGLBlendFactor.ZERO;
+				this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
+				this._enableBlending = true;
+				break;
+			default:
+				throw new ArgumentError("Unsupported blend mode!");
+		}
+	}
+	
+	public invalidateProgram()
+	{
+		this._invalidProgram = true;
+	}
+
+	public invalidateShader()
+	{
+		this._invalidShader = true;
+		this._invalidProgram = true;
+
+		this.dispatchEvent(new Event(Event.CHANGE))
+	}
+
 	public dispose()
 	{
-		//TODO uncount associated program data
+		this._programData.dispose();
+		this._programData = null;
+	}
+
+	private _updateProgram()
+	{
+		this._invalidProgram = false;
+
+		var compiler:ShaderCompilerBase;
+
+		if (this._invalidShader) {
+			this._invalidShader = false;
+
+			compiler = this.createCompiler(this._renderableClass, this._renderObject);
+			compiler.compile();
+		}
+
+		this._calcAnimationCode(compiler.shadedTarget);
+
+		var programData:ProgramData = this._stage.getProgramData(this._animationVertexCode + compiler.vertexCode, compiler.fragmentCode + this._animationFragmentCode + compiler.postAnimationFragmentCode);
+
+		//check program data hasn't changed, keep count of program usages
+		if (this._programData != programData) {
+			if (this._programData)
+				this._programData.dispose();
+
+			this._programData = programData;
+
+			programData.usages++;
+		}
+	}
+
+	private _calcAnimationCode(shadedTarget:string)
+	{
+		//reset code
+		this._animationVertexCode = "";
+		this._animationFragmentCode = "";
+
+		//check to see if GPU animation is used
+		if (this.usesAnimation) {
+
+			var animationSet:AnimationSetBase = <AnimationSetBase> this._renderObjectOwner.animationSet;
+
+			this._animationVertexCode += animationSet.getAGALVertexCode(this);
+
+			if (this.uvDependencies > 0 && !this.usesUVTransform)
+				this._animationVertexCode += animationSet.getAGALUVCode(this);
+
+			if (this.usesFragmentAnimation)
+				this._animationFragmentCode += animationSet.getAGALFragmentCode(this, shadedTarget);
+
+			animationSet.doneAGALCode(this);
+
+		} else {
+			// simply write attributes to targets, do not animate them
+			// projection will pick up on targets[0] to do the projection
+			var len:number = this.animatableAttributes.length;
+			for (var i:number = 0; i < len; ++i)
+				this._animationVertexCode += "mov " + this.animationTargetRegisters[i] + ", " + this.animatableAttributes[i] + "\n";
+
+			if (this.uvDependencies > 0 && !this.usesUVTransform)
+				this._animationVertexCode += "mov " + this.uvTarget + "," + this.uvSource + "\n";
+		}
 	}
 }
 

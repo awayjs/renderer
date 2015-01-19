@@ -15,14 +15,14 @@ import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 
 
 /**
- * The DepthRenderer class renders 32-bit depth information encoded as RGBA
+ * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
  *
- * @class away.render.DepthRenderer
+ * @class away.render.DistanceRenderer
  */
-class DepthRenderer extends RendererBase
+class DistanceRenderer extends RendererBase
 {
 	/**
-	 * Creates a new DepthRenderer object.
+	 * Creates a new DistanceRenderer object.
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	 */
@@ -38,8 +38,8 @@ class DepthRenderer extends RendererBase
 
 	public _pGetRenderObject(renderable:RenderableBase, renderObjectOwner:IRenderObjectOwner):RenderObjectBase
 	{
-		return renderable._pool.getDepthRenderObject(renderObjectOwner);
+		return renderable._pool.getDistanceRenderObject(renderObjectOwner);
 	}
 }
 
-export = DepthRenderer;
+export = DistanceRenderer;

@@ -6,6 +6,7 @@ import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/Shade
 class ShaderRegisterData
 {
 	public normalVarying:ShaderRegisterElement;
+	public colorVarying:ShaderRegisterElement
 	public tangentVarying:ShaderRegisterElement;
 	public bitangentVarying:ShaderRegisterElement;
 	public uvVarying:ShaderRegisterElement;
@@ -17,6 +18,7 @@ class ShaderRegisterData
 	public globalPositionVarying:ShaderRegisterElement;
 	public localPosition:ShaderRegisterElement;
 	public normalInput:ShaderRegisterElement;
+	public colorInput:ShaderRegisterElement;
 	public tangentInput:ShaderRegisterElement;
 	public animatedNormal:ShaderRegisterElement;
 	public animatedTangent:ShaderRegisterElement;

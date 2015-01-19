@@ -4,13 +4,15 @@ import AbstractMethodError				= require("awayjs-core/lib/errors/AbstractMethodEr
 
 import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
 import PickingCollisionVO				= require("awayjs-display/lib/pick/PickingCollisionVO");
-import RenderablePool					= require("awayjs-display/lib/pool/RenderablePool");
 import Billboard						= require("awayjs-display/lib/entities/Billboard");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
+
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
 import BillboardRenderable				= require("awayjs-renderergl/lib/pool/BillboardRenderable");
 import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
 import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
+import RenderablePool					= require("awayjs-renderergl/lib/pool/RenderablePool");
 
 /**
  * An abstract base class for all picking collider classes. It should not be instantiated directly.
@@ -25,10 +27,10 @@ class PickingColliderBase
 	public rayPosition:Vector3D;
 	public rayDirection:Vector3D;
 
-	constructor()
+	constructor(stage:Stage)
 	{
-		this._billboardRenderablePool = RenderablePool.getPool(BillboardRenderable);
-		this._subMeshRenderablePool = RenderablePool.getPool(TriangleSubMeshRenderable);
+		this._billboardRenderablePool = RenderablePool.getPool(BillboardRenderable, stage);
+		this._subMeshRenderablePool = RenderablePool.getPool(TriangleSubMeshRenderable, stage);
 	}
 
 	public _pPetCollisionNormal(indexData:Array<number> /*uint*/, vertexData:Array<number>, triangleIndex:number):Vector3D // PROTECTED
@@ -89,12 +91,12 @@ class PickingColliderBase
 	public testBillboardCollision(billboard:Billboard, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number)
 	{
 		this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
-		pickingCollisionVO.materialOwner = null;
+		pickingCollisionVO.renderableOwner = null;
 
 		if (this._pTestRenderableCollision(<RenderableBase> this._billboardRenderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
 			shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
 
-			pickingCollisionVO.materialOwner = billboard;
+			pickingCollisionVO.renderableOwner = billboard;
 
 			return true;
 		}
@@ -113,7 +115,7 @@ class PickingColliderBase
 	public testMeshCollision(mesh:Mesh, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number, findClosest:boolean):boolean
 	{
 		this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
-		pickingCollisionVO.materialOwner = null;
+		pickingCollisionVO.renderableOwner = null;
 
 		var subMesh:ISubMesh;
 
@@ -124,14 +126,14 @@ class PickingColliderBase
 			if (this._pTestRenderableCollision(<RenderableBase> this._subMeshRenderablePool.getItem(subMesh), pickingCollisionVO, shortestCollisionDistance)) {
 				shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
 
-				pickingCollisionVO.materialOwner = subMesh;
+				pickingCollisionVO.renderableOwner = subMesh;
 
 				if (!findClosest)
 					return true;
 			}
 		}
 
-		return pickingCollisionVO.materialOwner != null;
+		return pickingCollisionVO.renderableOwner != null;
 	}
 }
 

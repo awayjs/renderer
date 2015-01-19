@@ -1,18 +1,41 @@
-import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
-import RenderablePool				= require("awayjs-display/lib/pool/RenderablePool");
-import Skybox						= require("awayjs-display/lib/entities/Skybox");
+import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import CubeTextureBase				= require("awayjs-core/lib/textures/CubeTextureBase");
 
+import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
+import Skybox						= require("awayjs-display/lib/entities/Skybox");
+import Camera						= require("awayjs-display/lib/entities/Camera");
+
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
+import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
+import ContextGLMipFilter			= require("awayjs-stagegl/lib/base/ContextGLMipFilter");
+import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
+import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
+import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
+import Stage						= require("awayjs-stagegl/lib/base/Stage");
+
+import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
+import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
+import ShaderCompilerHelper			= require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
+import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 
 /**
  * @class away.pool.SkyboxRenderable
  */
 class SkyboxRenderable extends RenderableBase
 {
+	private _vertexArray:Array<number>;
+
 	/**
 	 *
 	 */
 	public static id:string = "skybox";
+
+	public static vertexAttributesOffset:number = 1;
 
 	/**
 	 *
@@ -25,9 +48,11 @@ class SkyboxRenderable extends RenderableBase
 	 * @param pool
 	 * @param skybox
 	 */
-	constructor(pool:RenderablePool, skybox:Skybox)
+	constructor(pool:RenderablePool, skybox:Skybox, stage:Stage)
 	{
-		super(pool, skybox, skybox);
+		super(pool, skybox, skybox, skybox, stage);
+
+		this._vertexArray = new Array<number>(0, 0, 0, 0, 1, 1, 1, 1);
 	}
 
 	/**
@@ -51,6 +76,55 @@ class SkyboxRenderable extends RenderableBase
 		this._pVertexDataDirty[TriangleSubGeometry.POSITION_DATA] = true;
 
 		return geometry;
+	}
+
+	public static _iIncludeDependencies(shaderObject:ShaderObjectBase)
+	{
+
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public static _iGetVertexCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	{
+		return "mul vt0, va0, vc5\n" +
+			"add vt0, vt0, vc4\n" +
+			"m44 op, vt0, vc0\n" +
+			"mov v0, va0\n";
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public _iActivate(shader:ShaderObjectBase, camera:Camera)
+	{
+		super._iActivate(shader, camera);
+
+		var context:IContextGL = this._stage.context;
+		//context.setSamplerStateAt(0, ContextGLWrapMode.CLAMP, ContextGLTextureFilter.LINEAR, this._cubeMap.hasMipmaps? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
+		//context.setDepthTest(false, ContextGLCompareMode.LESS);
+		//this._stage.activateCubeTexture(0, this._cubeMap);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public _iRender(shader:ShaderObjectBase, camera:Camera, viewProjection:Matrix3D)
+	{
+		super._iRender(shader, camera, viewProjection);
+
+		var context:IContextGL = this._stage.context;
+		var pos:Vector3D = camera.scenePosition;
+		this._vertexArray[0] = pos.x;
+		this._vertexArray[1] = pos.y;
+		this._vertexArray[2] = pos.z;
+		this._vertexArray[4] = this._vertexArray[5] = this._vertexArray[6] = camera.projection.far/Math.sqrt(3);
+		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, viewProjection, true);
+		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._vertexArray, 2);
+
+		this._stage.activateBuffer(0, this.getVertexData(TriangleSubGeometry.POSITION_DATA), this.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+		context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
 	}
 }
 

@@ -1,49 +1,69 @@
-﻿import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import Matrix						= require("awayjs-core/lib/geom/Matrix");
+import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 
+import BlendMode					= require("awayjs-display/lib/base/BlendMode");
+import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
+import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage")
+import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
+import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import ContextGLMipFilter			= require("awayjs-stagegl/lib/base/ContextGLMipFilter");
 import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
 import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import ContextGLTextureFormat		= require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
+import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
-import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
-import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
+import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
+import RenderObjectPool				= require("awayjs-renderergl/lib/compilation/RenderObjectPool");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
 import ShaderCompilerHelper			= require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
+import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
 
 /**
- * DepthMapPass is a pass that writes depth values to a depth map as a 32-bit value exploded over the 4 texture channels.
- * This is used to render shadow maps, depth maps, etc.
+ * DepthRenderObject forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
  */
-class DepthMapPass extends MaterialPassGLBase
+class DepthRenderObject extends RenderObjectBase
 {
+	/**
+	 *
+	 */
+	public static id:string = "depth";
+
+	private _diffuseColor:number = 0xffffff;
+	private _diffuseR:number = 1;
+	private _diffuseG:number = 1;
+	private _diffuseB:number = 1;
+	private _diffuseA:number = 1;
+
 	private _fragmentConstantsIndex:number;
 	private _texturesIndex:number;
 
-	/**
-	 * Creates a new DepthMapPass object.
-	 *
-	 * @param material The material to which this pass belongs.
-	 */
-	constructor()
+	constructor(pool:RenderObjectPool, material:MaterialBase, renderableClass:IRenderableClass, stage:Stage)
 	{
-		super();
+		super(pool, material, renderableClass, stage);
+
+		this._pAddScreenShader(new ShaderObjectBase(material, renderableClass, this, this._stage));
 	}
 
-	/**
-	 * Initializes the unchanging constant data for this material.
-	 */
+	public _iIncludeDependencies(shaderObject:ShaderObjectBase)
+	{
+		super._iIncludeDependencies(shaderObject);
+
+		shaderObject.projectionDependencies++;
+
+		if (shaderObject.alphaThreshold > 0)
+			shaderObject.uvDependencies++;
+	}
+
+
 	public _iInitConstantData(shaderObject:ShaderObjectBase)
 	{
 		super._iInitConstantData(shaderObject);
@@ -58,14 +78,6 @@ class DepthMapPass extends MaterialPassGLBase
 		data[index + 5] = 1.0/255.0;
 		data[index + 6] = 1.0/255.0;
 		data[index + 7] = 0.0;
-	}
-
-	public _iIncludeDependencies(shaderObject:ShaderObjectBase)
-	{
-		shaderObject.projectionDependencies++;
-
-		if (shaderObject.alphaThreshold > 0)
-			shaderObject.uvDependencies++;
 	}
 
 	/**
@@ -87,9 +99,9 @@ class DepthMapPass extends MaterialPassGLBase
 		registerCache.addFragmentTempUsages(temp2, 1);
 
 		code += "div " + temp1 + ", " + sharedRegisters.projectionFragment + ", " + sharedRegisters.projectionFragment + ".w\n" + //"sub ft2.z, fc0.x, ft2.z\n" +    //invert
-			"mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" +
-			"frc " + temp1 + ", " + temp1 + "\n" +
-			"mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
+		"mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" +
+		"frc " + temp1 + ", " + temp1 + "\n" +
+		"mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
 
 		//codeF += "mov ft1.w, fc1.w	\n" +
 		//    "mov ft0.w, fc0.x	\n";
@@ -105,7 +117,7 @@ class DepthMapPass extends MaterialPassGLBase
 			var cutOffReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 
 			code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" +
-				"kil " + albedo + ".w\n";
+			"kil " + albedo + ".w\n";
 		}
 
 		code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
@@ -116,28 +128,23 @@ class DepthMapPass extends MaterialPassGLBase
 		return code;
 	}
 
-	public _iRender(pass:MaterialPassData, renderable:RenderableBase, stage:Stage, camera:Camera, viewProjection:Matrix3D)
-	{
-		//this.setRenderState(pass, renderable, stage, camera, viewProjection);
-	}
-
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(pass:MaterialPassData, renderer:RendererBase, camera:Camera)
+	public _iActivate(shader:ShaderObjectBase, camera:Camera)
 	{
-		super._iActivate(pass, renderer, camera);
+		super._iActivate(shader, camera);
 
-		var context:IContextGL = renderer.context;
-		var shaderObject:ShaderObjectBase = pass.shaderObject;
+		var context:IContextGL = this._stage.context;
 
-		if (shaderObject.alphaThreshold > 0) {
-			context.setSamplerStateAt(this._texturesIndex, shaderObject.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-			renderer.stage.activateTexture(this._texturesIndex, shaderObject.texture);
+		if (shader.alphaThreshold > 0) {
+			context.setSamplerStateAt(this._texturesIndex, shader.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, shader.useSmoothTextures? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shader.useMipmapping? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
+			this._stage.activateTexture(this._texturesIndex, shader.texture);
 
-			shaderObject.fragmentConstantData[this._fragmentConstantsIndex + 8] = pass.shaderObject.alphaThreshold;
+			shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = shader.alphaThreshold;
 		}
 	}
+
 }
 
-export = DepthMapPass;
+export = DepthRenderObject;

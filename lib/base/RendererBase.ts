@@ -1,5 +1,6 @@
 import BitmapData					= require("awayjs-core/lib/base/BitmapData");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import Plane3D						= require("awayjs-core/lib/geom/Plane3D");
 import Point						= require("awayjs-core/lib/geom/Point");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -9,10 +10,9 @@ import TextureProxyBase				= require("awayjs-core/lib/textures/TextureProxyBase"
 import ByteArray					= require("awayjs-core/lib/utils/ByteArray");
 
 import LineSubMesh					= require("awayjs-display/lib/base/LineSubMesh");
-import IMaterialOwner				= require("awayjs-display/lib/base/IMaterialOwner");
+import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
 import TriangleSubMesh				= require("awayjs-display/lib/base/TriangleSubMesh");
 import EntityListItem				= require("awayjs-display/lib/pool/EntityListItem");
-import RenderablePool				= require("awayjs-display/lib/pool/RenderablePool");
 import IEntitySorter				= require("awayjs-display/lib/sort/IEntitySorter");
 import RenderableMergeSort			= require("awayjs-display/lib/sort/RenderableMergeSort");
 import IRenderer					= require("awayjs-display/lib/render/IRenderer");
@@ -26,27 +26,26 @@ import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
 import ICollector					= require("awayjs-display/lib/traverse/ICollector");
 import ShadowCasterCollector		= require("awayjs-display/lib/traverse/ShadowCasterCollector");
+import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
 
 import AGALMiniAssembler			= require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
+import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import StageManager					= require("awayjs-stagegl/lib/managers/StageManager");
 import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
 
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import BillboardRenderable			= require("awayjs-renderergl/lib/pool/BillboardRenderable");
 import LineSubMeshRenderable		= require("awayjs-renderergl/lib/pool/LineSubMeshRenderable");
-import MaterialData					= require("awayjs-renderergl/lib/pool/MaterialData");
-import MaterialDataPool				= require("awayjs-renderergl/lib/pool/MaterialDataPool");
-import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
-import MaterialPassDataPool			= require("awayjs-renderergl/lib/pool/MaterialPassDataPool");
+import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import TriangleSubMeshRenderable	= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
-import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-import DefaultMaterialManager		= require("awayjs-renderergl/lib/managers/DefaultMaterialManager");
+import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
 
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -59,7 +58,6 @@ class RendererBase extends EventDispatcher
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
 
-	private _materialDataPool:MaterialDataPool;
 	private _billboardRenderablePool:RenderablePool;
 	private _triangleSubMeshRenderablePool:RenderablePool;
 	private _lineSubMeshRenderablePool:RenderablePool;
@@ -111,6 +109,30 @@ class RendererBase extends EventDispatcher
 
 	public _pOpaqueRenderableHead:RenderableBase;
 	public _pBlendedRenderableHead:RenderableBase;
+	public _disableColor:boolean = false;
+	public _renderBlended:boolean = true;
+
+
+	public get renderBlended():boolean
+	{
+		return this._renderBlended;
+	}
+
+	public set renderBlended(value:boolean)
+	{
+		this._renderBlended = value;
+	}
+
+
+	public get disableColor():boolean
+	{
+		return this._disableColor;
+	}
+
+	public set disableColor(value:boolean)
+	{
+		this._disableColor = value;
+	}
 
 	/**
 	 *
@@ -231,137 +253,53 @@ class RendererBase extends EventDispatcher
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor()
+	constructor(stage:Stage = null)
 	{
 		super();
 
-		this._onViewportUpdatedDelegate = (event:StageEvent) => this.onViewportUpdated(event);
-
-		this._materialDataPool = new MaterialDataPool();
-
-		this._billboardRenderablePool = RenderablePool.getPool(BillboardRenderable);
-		this._triangleSubMeshRenderablePool = RenderablePool.getPool(TriangleSubMeshRenderable);
-		this._lineSubMeshRenderablePool = RenderablePool.getPool(LineSubMeshRenderable);
-
+		this._onViewportUpdatedDelegate = (event:StageEvent) => this.onViewportUpdated(event)
 		this._onContextUpdateDelegate = (event:Event) => this.onContextUpdate(event);
+
+		this.stage = stage || StageManager.getInstance().getFreeStage();
 
 		//default sorting algorithm
 		this.renderableSorter = new RenderableMergeSort();
 	}
 
-
-	public getProgram(materialPassData:MaterialPassData):ProgramData
+	public activateProgram(renderable:RenderableBase, shader:ShaderObjectBase, camera:Camera)
 	{
-		//check key doesn't need re-concatenating
-		if (!materialPassData.key.length) {
-			materialPassData.key = materialPassData.animationVertexCode +
-			materialPassData.vertexCode +
-			"---" +
-			materialPassData.fragmentCode +
-			materialPassData.animationFragmentCode +
-			materialPassData.postAnimationFragmentCode;
-		} else {
-			return materialPassData.programData;
-		}
-
-		var programData:ProgramData = this._pStage.getProgramData(materialPassData.key);
-
-		//check program data hasn't changed, keep count of program usages
-		if (materialPassData.programData != programData) {
-			if (materialPassData.programData)
-				materialPassData.programData.dispose();
-
-			materialPassData.programData = programData;
-
-			programData.usages++;
-		}
-
-		return programData;
-	}
-
-	/**
-	 *
-	 * @param material
-	 */
-	public getMaterial(material:MaterialGLBase, profile:string):MaterialData
-	{
-		var materialData:MaterialData = this._materialDataPool.getItem(material);
-
-		if (materialData.invalidAnimation) {
-			materialData.invalidAnimation = false;
-
-			var materialDataPasses:Array<MaterialPassData> = materialData.getMaterialPasses(profile);
-
-			var enabledGPUAnimation:boolean = this.getEnabledGPUAnimation(material, materialDataPasses);
-
-			var renderOrderId = 0;
-			var mult:number = 1;
-			var materialPassData:MaterialPassData;
-			var len:number = materialDataPasses.length;
-			for (var i:number = 0; i < len; i++) {
-				materialPassData = materialDataPasses[i];
-
-				if (materialPassData.usesAnimation != enabledGPUAnimation) {
-					materialPassData.usesAnimation = enabledGPUAnimation;
-					materialPassData.key == "";
-				}
-
-				if (materialPassData.key == "")
-					this.calcAnimationCode(material, materialPassData);
-
-				renderOrderId += this.getProgram(materialPassData).id*mult;
-				mult *= 1000;
-			}
-
-			materialData.renderOrderId = renderOrderId;
-		}
-
-		return materialData;
-	}
-
-	public activateMaterialPass(materialPassData:MaterialPassData, camera:Camera)
-	{
-		var shaderObject:ShaderObjectBase = materialPassData.shaderObject;
-
 		//clear unused vertex streams
-		for (var i = shaderObject.numUsedStreams; i < this._numUsedStreams; i++)
+		for (var i = shader.numUsedStreams; i < this._numUsedStreams; i++)
 			this._pContext.setVertexBufferAt(i, null);
 
 		//clear unused texture streams
-		for (var i = shaderObject.numUsedTextures; i < this._numUsedTextures; i++)
+		for (var i = shader.numUsedTextures; i < this._numUsedTextures; i++)
 			this._pContext.setTextureAt(i, null);
 
-		if (materialPassData.usesAnimation)
-			(<AnimationSetBase> materialPassData.material.animationSet).activate(shaderObject, this._pStage);
-
-		//activate shader object
-		shaderObject.iActivate(this._pStage, camera);
-
 		//check program data is uploaded
-		var programData:ProgramData = this.getProgram(materialPassData);
+		var programData:ProgramData = shader.programData;
 
 		if (!programData.program) {
 			programData.program = this._pContext.createProgram();
-			var vertexByteCode:ByteArray = (new AGALMiniAssembler().assemble("part vertex 1\n" + materialPassData.animationVertexCode + materialPassData.vertexCode + "endpart"))['vertex'].data;
-			var fragmentByteCode:ByteArray = (new AGALMiniAssembler().assemble("part fragment 1\n" + materialPassData.fragmentCode + materialPassData.animationFragmentCode + materialPassData.postAnimationFragmentCode + "endpart"))['fragment'].data;
+			var vertexByteCode:ByteArray = (new AGALMiniAssembler().assemble("part vertex 1\n" + programData.vertexString + "endpart"))['vertex'].data;
+			var fragmentByteCode:ByteArray = (new AGALMiniAssembler().assemble("part fragment 1\n" + programData.fragmentString + "endpart"))['fragment'].data;
 			programData.program.upload(vertexByteCode, fragmentByteCode);
 		}
 
 		//set program data
 		this._pContext.setProgram(programData.program);
+
+		//activate shader object through renderable
+		renderable._iActivate(shader, camera);
 	}
 
-	public deactivateMaterialPass(materialPassData:MaterialPassData)
+	public deactivateProgram(renderable:RenderableBase, shader:ShaderObjectBase)
 	{
-		var shaderObject:ShaderObjectBase = materialPassData.shaderObject;
+		//deactivate shader object
+		renderable._iDeactivate(shader);
 
-		if (materialPassData.usesAnimation)
-			(<AnimationSetBase> materialPassData.material.animationSet).deactivate(shaderObject, this._pStage);
-
-		materialPassData.shaderObject.iDeactivate(this._pStage);
-
-		this._numUsedStreams = shaderObject.numUsedStreams;
-		this._numUsedTextures = shaderObject.numUsedTextures;
+		this._numUsedStreams = shader.numUsedStreams;
+		this._numUsedTextures = shader.numUsedTextures;
 	}
 
 	public _iCreateEntityCollector():ICollector
@@ -452,20 +390,18 @@ class RendererBase extends EventDispatcher
 
 	public iSetStage(value:Stage)
 	{
-		if (this._pStage) {
-			this._pStage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-			this._pStage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-			this._pStage.removeEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-		}
+		if (this._pStage)
+			this.dispose();
 
-		if (!value) {
-			this._pStage = null;
-			this._pContext = null;
-		} else {
+		if (value) {
 			this._pStage = value;
 			this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 			this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 			this._pStage.addEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+
+			this._billboardRenderablePool = RenderablePool.getPool(BillboardRenderable, this._pStage);
+			this._triangleSubMeshRenderablePool = RenderablePool.getPool(TriangleSubMeshRenderable, this._pStage);
+			this._lineSubMeshRenderablePool = RenderablePool.getPool(LineSubMeshRenderable, this._pStage);
 
 			/*
 			 if (_backgroundImageRenderer)
@@ -504,17 +440,19 @@ class RendererBase extends EventDispatcher
 	 */
 	public dispose()
 	{
-		if (this._pRttBufferManager)
-			this._pRttBufferManager.dispose();
-
-		this._pRttBufferManager = null;
+		this._billboardRenderablePool.dispose();
+		this._triangleSubMeshRenderablePool.dispose();
+		this._lineSubMeshRenderablePool.dispose();
+		this._billboardRenderablePool = null;
+		this._triangleSubMeshRenderablePool = null;
+		this._lineSubMeshRenderablePool = null;
 
 		this._pStage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._pStage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this._pStage.removeEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
 		this._pStage = null;
-
+		this._pContext = null;
 		/*
 		 if (_backgroundImageRenderer) {
 		 _backgroundImageRenderer.dispose();
@@ -560,7 +498,28 @@ class RendererBase extends EventDispatcher
 
 	public _iRenderCascades(entityCollector:ShadowCasterCollector, target:TextureProxyBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>)
 	{
+		this.pCollectRenderables(entityCollector);
 
+		this._pStage.setRenderTarget(target, true, 0);
+		this._pContext.clear(1, 1, 1, 1, 1, 0);
+
+		this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
+
+		var head:RenderableBase = this._pOpaqueRenderableHead;
+
+		var first:boolean = true;
+
+		for (var i:number = numCascades - 1; i >= 0; --i) {
+			this._pStage.scissorRect = scissorRects[i];
+			this.drawCascadeRenderables(head, cameras[i], first? null : cameras[i].frustumPlanes);
+			first = false;
+		}
+
+		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
+		this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
+
+		this._pStage.scissorRect = null;
 	}
 
 	public pCollectRenderables(entityCollector:ICollector)
@@ -604,16 +563,17 @@ class RendererBase extends EventDispatcher
 		if ((target || !this._shareContext) && !this._depthPrepass)
 			this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
 
-		this._pContext.setDepthTest(false, ContextGLCompareMode.ALWAYS);
-
 		this._pStage.scissorRect = scissorRect;
 
 		/*
 		 if (_backgroundImageRenderer)
 		 _backgroundImageRenderer.render();
 		 */
+		this.pCollectRenderables(entityCollector);
 
-		this.pDraw(entityCollector, target);
+		this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+
+		this.pDraw(entityCollector);
 
 		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
 		//this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
@@ -641,9 +601,104 @@ class RendererBase extends EventDispatcher
 	 * Performs the actual drawing of geometry to the target.
 	 * @param entityCollector The EntityCollector object containing the potentially visible geometry.
 	 */
-	public pDraw(entityCollector:ICollector, target:TextureProxyBase)
+	public pDraw(entityCollector:ICollector)
 	{
-		throw new AbstractMethodError();
+		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+
+		if (this._disableColor)
+			this._pContext.setColorMask(false, false, false, false);
+
+		this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
+
+		if (this._renderBlended)
+			this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
+
+		if (this._disableColor)
+			this._pContext.setColorMask(true, true, true, true);
+	}
+
+	private drawCascadeRenderables(renderable:RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
+	{
+		var renderObject:RenderObjectBase;
+		var shaderObject:ShaderObjectBase;
+		var renderable2:RenderableBase;
+
+		while (renderable) {
+			renderObject = renderable.renderObject;
+
+			renderable2 = renderable;
+
+			this.activateProgram(renderable, shaderObject, camera);
+
+			do {
+				// if completely in front, it will fall in a different cascade
+				// do not use near and far planes
+				if (!cullPlanes || renderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
+					renderable2._iRender(shaderObject, camera, this._pRttViewProjectionMatrix);
+				} else {
+					renderable2.cascaded = true;
+				}
+
+				renderable2 = renderable2.next;
+
+			} while (renderable2 && renderable2.renderObject == renderObject && !renderable2.cascaded);
+
+			this.deactivateProgram(renderable, shaderObject);
+
+			renderable = renderable2;
+		}
+	}
+
+	/**
+	 * Draw a list of renderables.
+	 *
+	 * @param renderables The renderables to draw.
+	 * @param entityCollector The EntityCollector containing all potentially visible information.
+	 */
+	public drawRenderables(renderable:RenderableBase, entityCollector:ICollector)
+	{
+		var i:number;
+		var len:number;
+		var renderObject:RenderObjectBase;
+		var shaderObjects:Array<ShaderObjectBase>;
+		var shaderObject:ShaderObjectBase;
+		var camera:Camera = entityCollector.camera;
+		var renderable2:RenderableBase;
+
+		while (renderable) {
+			renderObject = renderable.renderObject;
+			shaderObjects = renderObject.shaderObjects;
+
+			// otherwise this would result in depth rendered anyway because fragment shader kil is ignored
+			if (this._disableColor && renderObject._renderObjectOwner.alphaThreshold != 0) {
+				renderable2 = renderable;
+				// fast forward
+				do {
+					renderable2 = renderable2.next;
+
+				} while (renderable2 && renderable2.renderObject == renderObject);
+			} else {
+				//iterate through each shader object
+				len = shaderObjects.length;
+				for (i = 0; i < len; i++) {
+					renderable2 = renderable;
+					shaderObject = shaderObjects[i];
+
+					this.activateProgram(renderable, shaderObject, camera);
+
+					do {
+						renderable2._iRender(shaderObject, camera, this._pRttViewProjectionMatrix);
+
+						renderable2 = renderable2.next;
+
+					} while (renderable2 && renderable2.renderObject == renderObject);
+
+					this.deactivateProgram(renderable, shaderObject);
+				}
+			}
+
+			renderable = renderable2;
+		}
 	}
 
 	/**
@@ -782,7 +837,7 @@ class RendererBase extends EventDispatcher
 	 */
 	public applyBillboard(billboard:Billboard)
 	{
-		this._applyRenderable(<RenderableBase> this._billboardRenderablePool.getItem(billboard));
+		this._applyRenderable(this._billboardRenderablePool.getItem(billboard));
 	}
 
 	/**
@@ -791,7 +846,7 @@ class RendererBase extends EventDispatcher
 	 */
 	public applyTriangleSubMesh(triangleSubMesh:TriangleSubMesh)
 	{
-		this._applyRenderable(<RenderableBase> this._triangleSubMeshRenderablePool.getItem(triangleSubMesh));
+		this._applyRenderable(this._triangleSubMeshRenderablePool.getItem(triangleSubMesh));
 	}
 
 	/**
@@ -800,7 +855,7 @@ class RendererBase extends EventDispatcher
 	 */
 	public applyLineSubMesh(lineSubMesh:LineSubMesh)
 	{
-		this._applyRenderable(<RenderableBase> this._lineSubMeshRenderablePool.getItem(lineSubMesh));
+		this._applyRenderable(this._lineSubMeshRenderablePool.getItem(lineSubMesh));
 	}
 
 	/**
@@ -810,21 +865,17 @@ class RendererBase extends EventDispatcher
 	 */
 	private _applyRenderable(renderable:RenderableBase)
 	{
-		var material:MaterialGLBase = <MaterialGLBase> renderable.materialOwner.material;
+		//set local vars for faster referencing
+		var renderObject:RenderObjectBase = this._pGetRenderObject(renderable, renderable.renderObjectOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
+
+		renderable.renderObject = renderObject;
+		renderable.renderObjectId = renderObject.renderObjectId;
+		renderable.renderOrderId = renderObject.renderOrderId;
+
+		renderable.cascaded = false;
+
 		var entity:IEntity = renderable.sourceEntity;
 		var position:Vector3D = entity.scenePosition;
-
-		if (!material)
-			material = DefaultMaterialManager.getDefaultMaterial(renderable.materialOwner);
-
-		//update material if invalidated
-		material._iUpdateMaterial();
-
-		//set ids for faster referencing
-		renderable.material = material;
-		renderable.materialId = material._iMaterialId;
-		renderable.renderOrderId = this.getMaterial(material, this._pStage.profile).renderOrderId;
-		renderable.cascaded = false;
 
 		// project onto camera's z-axis
 		position = this._iEntryPoint.subtract(position);
@@ -833,7 +884,7 @@ class RendererBase extends EventDispatcher
 		//store reference to scene transform
 		renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
 
-		if (material.requiresBlending) {
+		if (renderObject.requiresBlending) {
 			renderable.next = this._pBlendedRenderableHead;
 			this._pBlendedRenderableHead = renderable;
 		} else {
@@ -848,67 +899,9 @@ class RendererBase extends EventDispatcher
 			this._applyRenderable(renderable.overflow);
 	}
 
-
-	/**
-	 * test if animation will be able to run on gpu BEFORE compiling materials
-	 * test if the shader objects supports animating the animation set in the vertex shader
-	 * if any object using this material fails to support accelerated animations for any of the shader objects,
-	 * we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
-	 */
-	private getEnabledGPUAnimation(material:MaterialBase, materialDataPasses:Array<MaterialPassData>):boolean
+	public _pGetRenderObject(renderable:RenderableBase, renderObjectOwner:IRenderObjectOwner):RenderObjectBase
 	{
-		if (material.animationSet) {
-			material.animationSet.resetGPUCompatibility();
-
-			var owners:Array<IMaterialOwner> = material.iOwners;
-			var numOwners:number = owners.length;
-
-			var len:number = materialDataPasses.length;
-			for (var i:number = 0; i < len; i++)
-				for (var j:number = 0; j < numOwners; j++)
-					if (owners[j].animator)
-						(<AnimatorBase> owners[j].animator).testGPUCompatibility(materialDataPasses[i].shaderObject);
-
-			return !material.animationSet.usesCPU;
-		}
-
-		return false;
-	}
-
-	public calcAnimationCode(material:MaterialBase, materialPassData:MaterialPassData)
-	{
-		//reset key so that the program is re-calculated
-		materialPassData.key = "";
-		materialPassData.animationVertexCode = "";
-		materialPassData.animationFragmentCode = "";
-
-		var shaderObject:ShaderObjectBase = materialPassData.shaderObject;
-
-		//check to see if GPU animation is used
-		if (materialPassData.usesAnimation) {
-
-			var animationSet:AnimationSetBase = <AnimationSetBase> material.animationSet;
-
-			materialPassData.animationVertexCode += animationSet.getAGALVertexCode(shaderObject);
-
-			if (shaderObject.uvDependencies > 0 && !shaderObject.usesUVTransform)
-				materialPassData.animationVertexCode += animationSet.getAGALUVCode(shaderObject);
-
-			if (shaderObject.usesFragmentAnimation)
-				materialPassData.animationFragmentCode += animationSet.getAGALFragmentCode(shaderObject, materialPassData.shadedTarget);
-
-			animationSet.doneAGALCode(shaderObject);
-
-		} else {
-			// simply write attributes to targets, do not animate them
-			// projection will pick up on targets[0] to do the projection
-			var len:number = shaderObject.animatableAttributes.length;
-			for (var i:number = 0; i < len; ++i)
-				materialPassData.animationVertexCode += "mov " + shaderObject.animationTargetRegisters[i] + ", " + shaderObject.animatableAttributes[i] + "\n";
-
-			if (shaderObject.uvDependencies > 0 && !shaderObject.usesUVTransform)
-				materialPassData.animationVertexCode += "mov " + shaderObject.uvTarget + "," + shaderObject.uvSource + "\n";
-		}
+		throw new AbstractMethodError();
 	}
 }
 

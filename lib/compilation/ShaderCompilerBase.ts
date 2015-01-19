@@ -1,10 +1,11 @@
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
-import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
+import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
+import IRenderObjectBase			= require("awayjs-renderergl/lib/compilation/IRenderObjectBase");
+import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
 
 /**
  * ShaderCompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
@@ -17,8 +18,8 @@ class ShaderCompilerBase
 	public _pShaderObject:ShaderObjectBase;
 	public _pSharedRegisters:ShaderRegisterData;
 	public _pRegisterCache:ShaderRegisterCache;
-	public _pMaterialPass:MaterialPassGLBase;
-	public _pMaterial:MaterialGLBase;
+	public _pRenderableClass:IRenderableClass;
+	public _pRenderObject:IRenderObjectBase;
 
 	public _pVertexCode:string = ''; // Changed to emtpy string- AwayTS
 	public _pFragmentCode:string = '';// Changed to emtpy string - AwayTS
@@ -36,24 +37,20 @@ class ShaderCompilerBase
 	//The souce register providing the UV coordinate to animate.
 	private _uvSource:string;
 
-	public _pProfile:string;
-
 	/**
 	 * Creates a new ShaderCompilerBase object.
 	 * @param profile The compatibility profile of the renderer.
 	 */
-	constructor(material:MaterialGLBase, materialPass:MaterialPassGLBase, shaderObject:ShaderObjectBase)
+	constructor(renderableClass:IRenderableClass, renderObject:IRenderObjectBase, shaderObject:ShaderObjectBase)
 	{
-		this._pMaterial = material;
-		this._pMaterialPass = materialPass;
-
+		this._pRenderableClass = renderableClass;
+		this._pRenderObject = renderObject;
 		this._pShaderObject = shaderObject;
-		this._pProfile = shaderObject.profile;
 
 		this._pSharedRegisters = new ShaderRegisterData();
 
-		this._pRegisterCache = new ShaderRegisterCache(this._pProfile);
-		this._pRegisterCache.vertexAttributesOffset = 1;
+		this._pRegisterCache = new ShaderRegisterCache(shaderObject.profile);
+		this._pRegisterCache.vertexAttributesOffset = renderableClass.vertexAttributesOffset;
 		this._pRegisterCache.reset();
 	}
 
@@ -64,15 +61,19 @@ class ShaderCompilerBase
 	{
 		this._pShaderObject.reset();
 
-		this.pCalculateDependencies();
+		this._pShaderObject._iIncludeDependencies();
+
+		this._pRenderObject._iIncludeDependencies(this._pShaderObject);
+
+		this._pRenderableClass._iIncludeDependencies(this._pShaderObject);
 
 		this.pInitRegisterIndices();
 
 		this.pCompileDependencies();
 
 		//compile custom vertex & fragment codes
-		this._pVertexCode += this._pMaterialPass._iGetVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-		this._pPostAnimationFragmentCode += this._pMaterialPass._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pVertexCode += this._pRenderObject._iGetVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pPostAnimationFragmentCode += this._pRenderObject._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
 
 		//assign the final output color to the output register
 		this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
@@ -80,7 +81,7 @@ class ShaderCompilerBase
 
 		//initialise the required shader constants
 		this._pShaderObject.initConstantData(this._pRegisterCache, this._pAnimatableAttributes, this._pAnimationTargetRegisters, this._uvSource, this._uvTarget);
-		this._pMaterialPass._iInitConstantData(this._pShaderObject);
+		this._pRenderObject._iInitConstantData(this._pShaderObject);
 	}
 
 	/**
@@ -109,15 +110,12 @@ class ShaderCompilerBase
 			this.compileViewDirCode();
 
 		//collect code from material
-		this._pVertexCode += this._pMaterial._iGetVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-		this._pFragmentCode += this._pMaterial._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pVertexCode += this._pRenderableClass._iGetVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pFragmentCode += this._pRenderableClass._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
 
 		//collect code from pass
-		this._pVertexCode += this._pMaterialPass._iGetPreLightingVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-		this._pFragmentCode += this._pMaterialPass._iGetPreLightingFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-
-
-
+		this._pVertexCode += this._pRenderObject._iGetPreLightingVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pFragmentCode += this._pRenderObject._iGetPreLightingFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
 	}
 
 	private compileGlobalPositionCode()
@@ -216,8 +214,8 @@ class ShaderCompilerBase
 
 		//simple normal aquisition if no tangent space is being used
 		if (this._pShaderObject.outputsNormals && !this._pShaderObject.outputsTangentNormals) {
-			this._pVertexCode += this._pMaterialPass._iGetNormalVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-			this._pFragmentCode += this._pMaterialPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+			this._pVertexCode += this._pRenderObject._iGetNormalVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+			this._pFragmentCode += this._pRenderObject._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
 
 			return;
 		}
@@ -244,7 +242,7 @@ class ShaderCompilerBase
 					"nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + this._pSharedRegisters.animatedTangent + "\n" +
 					"crs " + this._pSharedRegisters.bitangent + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n";
 
-				this._pFragmentCode += this._pMaterialPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._pRenderObject._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
 			} else {
 				//Compiles the vertex shader code for tangent-space normal maps.
 				this._pSharedRegisters.tangentVarying = this._pRegisterCache.getFreeVarying();
@@ -289,7 +287,7 @@ class ShaderCompilerBase
 					"nrm " + n + ".xyz, " + this._pSharedRegisters.normalVarying + "\n";
 
 				//compile custom fragment code for normal calcs
-				this._pFragmentCode += this._pMaterialPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters) +
+				this._pFragmentCode += this._pRenderObject._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters) +
 					"m33 " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalFragment + ", " + t + "\n" +
 					"mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w\n";
 
@@ -364,24 +362,14 @@ class ShaderCompilerBase
 			this._pAnimatableAttributes.push(this._pSharedRegisters.normalInput.toString());
 			this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedNormal.toString());
 		}
-	}
 
-	/**
-	 * Figure out which named registers are required, and how often.
-	 */
-	public pCalculateDependencies()
-	{
-		this._pShaderObject.useAlphaPremultiplied = this._pMaterial.alphaPremultiplied;
-		this._pShaderObject.useBothSides = this._pMaterial.bothSides;
-		this._pShaderObject.useMipmapping = this._pMaterial.mipmap;
-		this._pShaderObject.useSmoothTextures = this._pMaterial.smooth;
-		this._pShaderObject.repeatTextures = this._pMaterial.repeat;
-		this._pShaderObject.usesUVTransform = this._pMaterial.animateUVs;
-		this._pShaderObject.alphaThreshold = this._pMaterial.alphaThreshold;
-		this._pShaderObject.texture = this._pMaterial.texture;
-		this._pShaderObject.color = this._pMaterial.color;
+		if (this._pShaderObject.colorDependencies > 0) {
+			this._pSharedRegisters.colorInput = this._pRegisterCache.getFreeVertexAttribute();
+			this._pShaderObject.colorBufferIndex = this._pSharedRegisters.colorInput.index;
 
-		this._pMaterialPass._iIncludeDependencies(this._pShaderObject);
+			this._pSharedRegisters.colorVarying = this._pRegisterCache.getFreeVarying();
+			this._pVertexCode += "mov " + this._pSharedRegisters.colorVarying + ", " + this._pSharedRegisters.colorInput + "\n";
+		}
 	}
 
 	/**

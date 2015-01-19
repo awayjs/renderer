@@ -1,26 +1,35 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
 
-import IMaterialOwner				= require("awayjs-display/lib/base/IMaterialOwner");
+import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
+import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
 import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 import IRenderable					= require("awayjs-display/lib/pool/IRenderable");
-import RenderablePool				= require("awayjs-display/lib/pool/RenderablePool");
 import IEntity						= require("awayjs-display/lib/entities/IEntity");
+import Camera						= require("awayjs-display/lib/entities/Camera");
 import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
+import IRenderer					= require("awayjs-display/lib/render/IRenderer");
+import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 
 import IndexData					= require("awayjs-stagegl/lib/pool/IndexData");
 import IndexDataPool				= require("awayjs-stagegl/lib/pool/IndexDataPool");
 import VertexData					= require("awayjs-stagegl/lib/pool/VertexData");
 import VertexDataPool				= require("awayjs-stagegl/lib/pool/VertexDataPool");
+import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
-import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
+import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
+import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 
 /**
  * @class RenderableListItem
  */
 class RenderableBase implements IRenderable
 {
+
 	private _onIndicesUpdatedDelegate:(event:SubGeometryEvent) => void;
 	private _onVerticesUpdatedDelegate:(event:SubGeometryEvent) => void;
 
@@ -32,12 +41,11 @@ class RenderableBase implements IRenderable
 	public _pVertexDataDirty:Object = new Object();
 	private _vertexOffset:Object = new Object();
 
-	private _level:number;
+	public _level:number;
 	private _indexOffset:number;
 	private _overflow:RenderableBase;
 	private _numTriangles:number;
 	private _concatenateArrays:boolean;
-
 
 	public JOINT_INDEX_FORMAT:string;
 	public JOINT_WEIGHT_FORMAT:string;
@@ -46,6 +54,8 @@ class RenderableBase implements IRenderable
 	 *
 	 */
 	public _pool:RenderablePool;
+
+	public _stage:Stage;
 
 	/**
 	 *
@@ -71,10 +81,12 @@ class RenderableBase implements IRenderable
 	 */
 	public next:RenderableBase;
 
+	public id:number;
+
 	/**
 	 *
 	 */
-	public materialId:number;
+	public renderObjectId:number;
 
 	/**
 	 *
@@ -104,12 +116,18 @@ class RenderableBase implements IRenderable
 	/**
 	 *
 	 */
-	public materialOwner:IMaterialOwner;
+	public renderableOwner:IRenderableOwner;
+
 
 	/**
 	 *
 	 */
-	public material:MaterialGLBase;
+	public renderObjectOwner:IRenderObjectOwner;
+
+	/**
+	 *
+	 */
+	public renderObject:RenderObjectBase;
 
 	/**
 	 *
@@ -153,17 +171,18 @@ class RenderableBase implements IRenderable
 	/**
 	 *
 	 * @param sourceEntity
-	 * @param materialOwner
+	 * @param renderableOwner
 	 * @param subGeometry
 	 * @param animationSubGeometry
 	 */
-	constructor(pool:RenderablePool, sourceEntity:IEntity, materialOwner:IMaterialOwner, level:number = 0, indexOffset:number = 0)
+	constructor(pool:RenderablePool, sourceEntity:IEntity, renderableOwner:IRenderableOwner, renderObjectOwner:IRenderObjectOwner, stage:Stage, level:number = 0, indexOffset:number = 0)
 	{
 		this._onIndicesUpdatedDelegate = (event:SubGeometryEvent) => this._onIndicesUpdated(event);
 		this._onVerticesUpdatedDelegate = (event:SubGeometryEvent) => this._onVerticesUpdated(event);
 
 		//store a reference to the pool for later disposal
 		this._pool = pool;
+		this._stage = stage;
 
 		//reference to level of overflow
 		this._level = level;
@@ -172,12 +191,15 @@ class RenderableBase implements IRenderable
 		this._indexOffset = indexOffset;
 
 		this.sourceEntity = sourceEntity;
-		this.materialOwner = materialOwner;
+
+		this.renderableOwner = renderableOwner;
+
+		this.renderObjectOwner = renderObjectOwner;
 	}
 
 	public dispose()
 	{
-		this._pool.disposeItem(this.materialOwner);
+		this._pool.disposeItem(this.renderableOwner);
 
 		this._indexData.dispose();
 		this._indexData = null;
@@ -228,6 +250,16 @@ class RenderableBase implements IRenderable
 		throw new AbstractMethodError();
 	}
 
+	public static _iGetVertexCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	{
+		return "";
+	}
+
+	public static _iGetFragmentCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	{
+		return "";
+	}
+
 	/**
 	 * //TODO
 	 *
@@ -249,7 +281,7 @@ class RenderableBase implements IRenderable
 		//check if there is more to split
 		if (indexOffset < this._subGeometry.indices.length) {
 			if (!this._overflow)
-				this._overflow = this._pGetOverflowRenderable(this._pool, this.materialOwner, indexOffset, this._level + 1);
+				this._overflow = this._pGetOverflowRenderable(indexOffset);
 
 			this._overflow._iFillIndexData(indexOffset);
 		} else if (this._overflow) {
@@ -258,9 +290,42 @@ class RenderableBase implements IRenderable
 		}
 	}
 
-	public _pGetOverflowRenderable(pool:RenderablePool, materialOwner:IMaterialOwner, level:number, indexOffset:number):RenderableBase
+	public _pGetOverflowRenderable(indexOffset:number):RenderableBase
 	{
 		throw new AbstractMethodError();
+	}
+
+	/**
+	 * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
+	 * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
+	 * @param stage The Stage object which is currently used for rendering.
+	 * @param camera The camera from which the scene is viewed.
+	 * @private
+	 */
+	public _iActivate(shader:ShaderObjectBase, camera:Camera)
+	{
+		this.renderObject._iActivate(shader, camera);
+	}
+
+	/**
+	 * Renders an object to the current render target.
+	 *
+	 * @private
+	 */
+	public _iRender(shader:ShaderObjectBase, camera:Camera, viewProjection:Matrix3D)
+	{
+		this.renderObject._iRender(this, shader, camera, viewProjection);
+	}
+
+	/**
+	 * Clears the render state for the pass. This needs to be called before activating another pass.
+	 * @param stage The Stage used for rendering
+	 *
+	 * @private
+	 */
+	public _iDeactivate(shader:ShaderObjectBase)
+	{
+		this.renderObject._iDeactivate(shader);
 	}
 
 	/**

@@ -1,10 +1,23 @@
+import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
+
 import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
-import RenderablePool				= require("awayjs-display/lib/pool/RenderablePool");
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
+import Camera						= require("awayjs-display/lib/entities/Camera");
 
+import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
+import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
+
+import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
+import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
+import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 
 /**
  * @class away.pool.RenderableListItem
@@ -18,6 +31,8 @@ class BillboardRenderable extends RenderableBase
 	 */
 	public static id:string = "billboard";
 
+	public static vertexAttributesOffset:number = 1;
+
 	/**
 	 *
 	 */
@@ -29,9 +44,9 @@ class BillboardRenderable extends RenderableBase
 	 * @param pool
 	 * @param billboard
 	 */
-	constructor(pool:RenderablePool, billboard:Billboard)
+	constructor(pool:RenderablePool, billboard:Billboard, stage:Stage)
 	{
-		super(pool, billboard, billboard);
+		super(pool, billboard, billboard, billboard.material, stage);
 
 		this._billboard = billboard;
 	}
@@ -66,6 +81,65 @@ class BillboardRenderable extends RenderableBase
 		this._pVertexDataDirty[TriangleSubGeometry.UV_DATA] = true;
 
 		return geometry;
+	}
+
+	public static _iIncludeDependencies(shaderObject:ShaderObjectBase)
+	{
+
+	}
+
+	public static _iGetVertexCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	{
+		var code:string = "";
+
+		//get the projection coordinates
+		var position:ShaderRegisterElement = (shaderObject.globalPosDependencies > 0)? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
+
+		//reserving vertex constants for projection matrix
+		var viewMatrixReg:ShaderRegisterElement = registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		shaderObject.viewMatrixIndex = viewMatrixReg.index*4;
+
+		if (shaderObject.projectionDependencies > 0) {
+			sharedRegisters.projectionFragment = registerCache.getFreeVarying();
+			var temp:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+			code += "m44 " + temp + ", " + position + ", " + viewMatrixReg + "\n" +
+			"mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" +
+			"mov op, " + temp + "\n";
+		} else {
+			code += "m44 op, " + position + ", " + viewMatrixReg + "\n";
+		}
+
+		return code;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public _iRender(shader:ShaderObjectBase, camera:Camera, viewProjection:Matrix3D)
+	{
+		super._iRender(shader, camera, viewProjection);
+
+		if (shader.sceneMatrixIndex >= 0) {
+			this.sourceEntity.getRenderSceneTransform(camera).copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
+			viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+		} else {
+			var matrix3D:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
+
+			matrix3D.copyFrom(this.sourceEntity.getRenderSceneTransform(camera));
+			matrix3D.append(viewProjection);
+
+			matrix3D.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+		}
+
+		var context:IContextGL = this._stage.context;
+		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shader.vertexConstantData, shader.numUsedVertexConstants);
+		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
+
+		this._stage.activateBuffer(0, this.getVertexData(TriangleSubGeometry.POSITION_DATA), this.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+		this._stage.context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
 	}
 }
 

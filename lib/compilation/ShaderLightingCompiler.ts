@@ -1,12 +1,10 @@
-import LightSources					= require("awayjs-display/lib/materials/LightSources");
-
 import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile");
 
 import ShaderLightingObject			= require("awayjs-renderergl/lib/compilation/ShaderLightingObject");
-import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
 import ShaderCompilerBase			= require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-import LightingPassGLBase			= require("awayjs-renderergl/lib/passes/LightingPassGLBase");
+import IRenderLightingObject		= require("awayjs-renderergl/lib/compilation/IRenderLightingObject");
+import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
 
 /**
  * ShaderCompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
@@ -16,8 +14,8 @@ import LightingPassGLBase			= require("awayjs-renderergl/lib/passes/LightingPass
  */
 class ShaderLightingCompiler extends ShaderCompilerBase
 {
-	private _materialLightingPass:LightingPassGLBase;
 	private _shaderLightingObject:ShaderLightingObject;
+	private _renderLightingObject:IRenderLightingObject;
 	public _pointLightFragmentConstants:Array<ShaderRegisterElement>;
 	public _pointLightVertexConstants:Array<ShaderRegisterElement>;
 	public _dirLightFragmentConstants:Array<ShaderRegisterElement>;
@@ -29,12 +27,12 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 	 * Creates a new ShaderCompilerBase object.
 	 * @param profile The compatibility profile of the renderer.
 	 */
-	constructor(material:MaterialGLBase, materialPass:LightingPassGLBase, shaderObject:ShaderLightingObject)
+	constructor(renderableClass:IRenderableClass, renderObject:IRenderLightingObject, shaderObject:ShaderLightingObject)
 	{
-		super(material, materialPass, shaderObject);
+		super(renderableClass, renderObject, shaderObject);
 
-		this._materialLightingPass = materialPass;
 		this._shaderLightingObject = shaderObject;
+		this._renderLightingObject = renderObject;
 	}
 
 	/**
@@ -56,8 +54,8 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 		if (this._shaderLightingObject.usesProbes)
 			this.compileLightProbeCode();
 
-		this._pVertexCode += this._materialLightingPass._iGetPostLightingVertexCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
-		this._pFragmentCode += this._materialLightingPass._iGetPostLightingFragmentCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pVertexCode += this._renderLightingObject._iGetPostLightingVertexCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pFragmentCode += this._renderLightingObject._iGetPostLightingFragmentCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
 	}
 
 	/**
@@ -133,7 +131,7 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 		var addDiff:boolean = this._shaderLightingObject.usesLightsForDiffuse;
 
 		//compile the shading code for directional lights.
-		for (var i:number = 0; i < this._materialLightingPass.iNumDirectionalLights; ++i) {
+		for (var i:number = 0; i < this._shaderLightingObject.numDirectionalLights; ++i) {
 			if (this._shaderLightingObject.usesTangentSpace) {
 				lightDirReg = this._dirLightVertexConstants[vertexRegIndex++];
 
@@ -156,10 +154,10 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 			specularColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
 
 			if (addDiff)
-				this._pFragmentCode += this._materialLightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._renderLightingObject._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
 
 			if (addSpec)
-				this._pFragmentCode += this._materialLightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._renderLightingObject._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
 
 			if (this._shaderLightingObject.usesTangentSpace)
 				this._pRegisterCache.removeVertexTempUsage(lightDirReg);
@@ -169,7 +167,7 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 		fragmentRegIndex = 0;
 
 		//compile the shading code for point lights
-		for (var i:number = 0; i < this._materialLightingPass.iNumPointLights; ++i) {
+		for (var i:number = 0; i < this._shaderLightingObject.numPointLights; ++i) {
 
 			if (this._shaderLightingObject.usesTangentSpace || !this._shaderLightingObject.usesGlobalPosFragment)
 				lightPosReg = this._pointLightVertexConstants[vertexRegIndex++];
@@ -216,10 +214,10 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 				this._shaderLightingObject.lightFragmentConstantIndex = lightPosReg.index*4;
 
 			if (addDiff)
-				this._pFragmentCode += this._materialLightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._renderLightingObject._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
 
 			if (addSpec)
-				this._pFragmentCode += this._materialLightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._renderLightingObject._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
 
 			this._pRegisterCache.removeFragmentTempUsage(lightDirReg);
 		}
@@ -251,19 +249,19 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 				this._shaderLightingObject.probeWeightsIndex = weightRegisters[i].index*4;
 		}
 
-		for (i = 0; i < this._materialLightingPass.iNumLightProbes; ++i) {
+		for (i = 0; i < this._shaderLightingObject.numLightProbes; ++i) {
 			weightReg = weightRegisters[Math.floor(i/4)].toString() + weightComponents[i%4];
 
 			if (addDiff) {
 				texReg = this._pRegisterCache.getFreeTextureReg();
 				this._shaderLightingObject.lightProbeDiffuseIndices[i] = texReg.index;
-				this._pFragmentCode += this._materialLightingPass._iGetPerProbeDiffuseFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._renderLightingObject._iGetPerProbeDiffuseFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
 			}
 
 			if (addSpec) {
 				texReg = this._pRegisterCache.getFreeTextureReg();
 				this._shaderLightingObject.lightProbeSpecularIndices[i] = texReg.index;
-				this._pFragmentCode += this._materialLightingPass._iGetPerProbeSpecularFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._renderLightingObject._iGetPerProbeSpecularFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
 			}
 		}
 	}
@@ -279,54 +277,22 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 		this._shaderLightingObject.lightFragmentConstantIndex = -1;
 		this._shaderLightingObject.probeWeightsIndex = -1;
 
-		this._pNumProbeRegisters = Math.ceil(this._materialLightingPass.iNumLightProbes/4);
+		this._pNumProbeRegisters = Math.ceil(this._shaderLightingObject.numLightProbes/4);
 
 		//init light data
 		if (this._shaderLightingObject.usesTangentSpace || !this._shaderLightingObject.usesGlobalPosFragment) {
-			this._pointLightVertexConstants = new Array<ShaderRegisterElement>(this._materialLightingPass.iNumPointLights);
-			this._pointLightFragmentConstants = new Array<ShaderRegisterElement>(this._materialLightingPass.iNumPointLights*2);
+			this._pointLightVertexConstants = new Array<ShaderRegisterElement>(this._shaderLightingObject.numPointLights);
+			this._pointLightFragmentConstants = new Array<ShaderRegisterElement>(this._shaderLightingObject.numPointLights*2);
 		} else {
-			this._pointLightFragmentConstants = new Array<ShaderRegisterElement>(this._materialLightingPass.iNumPointLights*3);
+			this._pointLightFragmentConstants = new Array<ShaderRegisterElement>(this._shaderLightingObject.numPointLights*3);
 		}
 
 		if (this._shaderLightingObject.usesTangentSpace) {
-			this._dirLightVertexConstants = new Array<ShaderRegisterElement>(this._materialLightingPass.iNumDirectionalLights);
-			this._dirLightFragmentConstants = new Array<ShaderRegisterElement>(this._materialLightingPass.iNumDirectionalLights*2);
+			this._dirLightVertexConstants = new Array<ShaderRegisterElement>(this._shaderLightingObject.numDirectionalLights);
+			this._dirLightFragmentConstants = new Array<ShaderRegisterElement>(this._shaderLightingObject.numDirectionalLights*2);
 		} else {
-			this._dirLightFragmentConstants = new Array<ShaderRegisterElement>(this._materialLightingPass.iNumDirectionalLights*3);
+			this._dirLightFragmentConstants = new Array<ShaderRegisterElement>(this._shaderLightingObject.numDirectionalLights*3);
 		}
-	}
-
-
-	/**
-	 * Figure out which named registers are required, and how often.
-	 */
-	public pCalculateDependencies()
-	{
-		var numAllLights:number = this._materialLightingPass.iNumPointLights + this._materialLightingPass.iNumDirectionalLights;
-		var numLightProbes:number = this._materialLightingPass.iNumLightProbes;
-		var diffuseLightSources:number = this._pMaterial.diffuseLightSources;
-		var specularLightSources:number = this._materialLightingPass._iUsesSpecular()? this._pMaterial.specularLightSources : 0x00;
-		var combinedLightSources:number = diffuseLightSources | specularLightSources;
-
-		this._shaderLightingObject.usesLightFallOff = this._pMaterial.enableLightFallOff && this._shaderLightingObject.profile != ContextGLProfile.BASELINE_CONSTRAINED;
-		this._shaderLightingObject.numLights = numAllLights + numLightProbes;
-		this._shaderLightingObject.numPointLights = this._materialLightingPass.iNumPointLights;
-		this._shaderLightingObject.numDirectionalLights = this._materialLightingPass.iNumDirectionalLights;
-		this._shaderLightingObject.numLightProbes = numLightProbes;
-		this._shaderLightingObject.pointLightsOffset = this._materialLightingPass.pointLightsOffset;
-		this._shaderLightingObject.directionalLightsOffset = this._materialLightingPass.directionalLightsOffset;
-		this._shaderLightingObject.lightProbesOffset = this._materialLightingPass.lightProbesOffset;
-		this._shaderLightingObject.lightPicker = this._materialLightingPass.lightPicker;
-		this._shaderLightingObject.usesLights = numAllLights > 0 && (combinedLightSources & LightSources.LIGHTS) != 0;
-		this._shaderLightingObject.usesProbes = numLightProbes > 0 && (combinedLightSources & LightSources.PROBES) != 0;
-		this._shaderLightingObject.usesLightsForSpecular = numAllLights > 0 && (specularLightSources & LightSources.LIGHTS) != 0;
-		this._shaderLightingObject.usesProbesForSpecular = numLightProbes > 0 && (specularLightSources & LightSources.PROBES) != 0;
-		this._shaderLightingObject.usesLightsForDiffuse = numAllLights > 0 && (diffuseLightSources & LightSources.LIGHTS) != 0;
-		this._shaderLightingObject.usesProbesForDiffuse = numLightProbes > 0 && (diffuseLightSources & LightSources.PROBES) != 0;
-		this._shaderLightingObject.usesShadows = this._materialLightingPass._iUsesShadows();
-
-		super.pCalculateDependencies();
 	}
 }
 

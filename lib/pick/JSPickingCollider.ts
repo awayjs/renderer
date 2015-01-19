@@ -5,6 +5,8 @@ import PickingCollisionVO				= require("awayjs-display/lib/pick/PickingCollision
 import IPickingCollider					= require("awayjs-display/lib/pick/IPickingCollider");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
+import Stage							= require("awayjs-stagegl/lib/base/Stage");
+
 import PickingColliderBase				= require("awayjs-renderergl/lib/pick/PickingColliderBase");
 import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
 
@@ -25,9 +27,9 @@ class JSPickingCollider extends PickingColliderBase implements IPickingCollider
 	 *
 	 * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
 	 */
-	constructor(findClosestCollision:boolean = false)
+	constructor(stage:Stage, findClosestCollision:boolean = false)
 	{
-		super();
+		super(stage);
 
 		this._findClosestCollision = findClosestCollision;
 	}
@@ -52,7 +54,7 @@ class JSPickingCollider extends PickingColliderBase implements IPickingCollider
 		var Q1Q2:number, Q1Q1:number, Q2Q2:number, RQ1:number, RQ2:number;
 		var indexData:Array<number> = renderable.getIndexData().data;
 		var collisionTriangleIndex:number = -1;
-		var bothSides:boolean = (<MaterialBase> renderable.materialOwner.material).bothSides;
+		var bothSides:boolean = (<MaterialBase> renderable.renderObjectOwner).bothSides;
 
 		var positionData:Array<number> = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).data;
 		var positionStride:number = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).dataPerVertex;

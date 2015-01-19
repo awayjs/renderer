@@ -5,7 +5,6 @@ import RenderTexture				= require("awayjs-core/lib/textures/RenderTexture");
 import TextureProxyBase				= require("awayjs-core/lib/textures/TextureProxyBase");
 
 import LightBase					= require("awayjs-display/lib/base/LightBase");
-import RenderablePool				= require("awayjs-display/lib/pool/RenderablePool");
 import IRenderer					= require("awayjs-display/lib/render/IRenderer");
 import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
 import ICollector					= require("awayjs-display/lib/traverse/ICollector");
@@ -13,7 +12,6 @@ import Camera						= require("awayjs-display/lib/entities/Camera");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
 import PointLight					= require("awayjs-display/lib/entities/PointLight");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
-import IMaterialPass				= require("awayjs-display/lib/materials/passes/IMaterialPass");
 import ShadowMapperBase				= require("awayjs-display/lib/materials/shadowmappers/ShadowMapperBase");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
@@ -21,21 +19,19 @@ import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendF
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import ContextGLClearMask			= require("awayjs-stagegl/lib/base/ContextGLClearMask");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import StageManager					= require("awayjs-stagegl/lib/managers/StageManager");
 
 import DepthRenderer				= require("awayjs-renderergl/lib/DepthRenderer");
+import DistanceRenderer				= require("awayjs-renderergl/lib/DistanceRenderer");
 import Filter3DRenderer				= require("awayjs-renderergl/lib/Filter3DRenderer");
 import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
-import MaterialData					= require("awayjs-renderergl/lib/pool/MaterialData");
-import MaterialPassData				= require("awayjs-renderergl/lib/pool/MaterialPassData");
+import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
+import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
+import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
 import SkyboxRenderable				= require("awayjs-renderergl/lib/pool/SkyboxRenderable");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
-import DepthMapPass					= require("awayjs-renderergl/lib/passes/DepthMapPass");
-import DistanceMapPass				= require("awayjs-renderergl/lib/passes/DistanceMapPass");
-import MaterialPassGLBase			= require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -48,7 +44,6 @@ class DefaultRenderer extends RendererBase implements IRenderer
 	public _pRequireDepthRender:boolean;
 	private _skyboxRenderablePool:RenderablePool;
 
-//		private _activeMaterial:MaterialBase;
 	private _pDistanceRenderer:DepthRenderer;
 	private _pDepthRenderer:DepthRenderer;
 	private _skyboxProjection:Matrix3D = new Matrix3D();
@@ -126,19 +121,9 @@ class DefaultRenderer extends RendererBase implements IRenderer
 	 * @param antiAlias The amount of anti-aliasing to use.
 	 * @param renderMode The render mode to use.
 	 */
-	constructor(forceSoftware:boolean = false, profile:string = "baseline", mode = "auto")
+	constructor(stage:Stage = null)
 	{
-		super();
-
-		this._skyboxRenderablePool = RenderablePool.getPool(SkyboxRenderable);
-
-		this._pDepthRenderer = new DepthRenderer(new DepthMapPass());
-		this._pDistanceRenderer = new DepthRenderer(new DistanceMapPass());
-
-		if (this._pStage == null)
-			this.stage = StageManager.getInstance().getFreeStage(forceSoftware, profile, mode);
-
-		this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
+		super(stage);
 
 		if (this._width == 0)
 			this.width = window.innerWidth;
@@ -205,14 +190,6 @@ class DefaultRenderer extends RendererBase implements IRenderer
 	{
 		this.updateLights(entityCollector);
 
-		// otherwise RTT will interfere with other RTTs
-		if (target) {
-			this.pCollectRenderables(entityCollector);
-
-			this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
-			this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
-		}
-
 		super.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
 	}
 
@@ -248,23 +225,20 @@ class DefaultRenderer extends RendererBase implements IRenderer
 	/**
 	 * @inheritDoc
 	 */
-	public pDraw(entityCollector:EntityCollector, target:TextureProxyBase)
+	public pDraw(entityCollector:EntityCollector)
 	{
-		if (!target)
-			this.pCollectRenderables(entityCollector);
-
-		this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-
 		if (entityCollector.skyBox) {
 			this._pContext.setDepthTest(false, ContextGLCompareMode.ALWAYS);
 
 			this.drawSkybox(entityCollector);
 		}
 
-		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+		super.pDraw(entityCollector);
+	}
 
-		this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
-		this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
+	public _pGetRenderObject(renderable:RenderableBase, renderObjectOwner:IRenderObjectOwner):RenderObjectBase
+	{
+		return <RenderObjectBase> renderObjectOwner.getRenderObject(renderable._pool);
 	}
 
 	/**
@@ -276,17 +250,16 @@ class DefaultRenderer extends RendererBase implements IRenderer
 	{
 		var skyBox:SkyboxRenderable = <SkyboxRenderable> this._skyboxRenderablePool.getItem(entityCollector.skyBox);
 
-		var material:MaterialGLBase = <MaterialGLBase> entityCollector.skyBox.material;
-
 		var camera:Camera = entityCollector.camera;
 
 		this.updateSkyboxProjection(camera);
 
-		var activePass:MaterialPassData = this.getMaterial(material, this._pStage.profile).getMaterialPass(<MaterialPassGLBase> material._iScreenPasses[0], this._pStage.profile);
+		var renderObject:RenderObjectBase = skyBox.renderObject = this._pGetRenderObject(skyBox, skyBox.renderObjectOwner);
+		var shaderObject:ShaderObjectBase = renderObject.shaderObjects[0];
 
-		material._iActivatePass(activePass, this, camera);
-		material._iRenderPass(activePass, skyBox, this._pStage, camera, this._skyboxProjection);
-		material._iDeactivatePass(activePass, this);
+		this.activateProgram(skyBox, shaderObject, camera);
+		skyBox._iRender(shaderObject, camera, this._skyboxProjection);
+		this.deactivateProgram(skyBox, shaderObject);
 	}
 
 	private updateSkyboxProjection(camera:Camera)
@@ -320,54 +293,16 @@ class DefaultRenderer extends RendererBase implements IRenderer
 		this._skyboxProjection.copyRowFrom(2, new Vector3D(cx*a, cy*a, cz*a, cw*a));
 	}
 
-	/**
-	 * Draw a list of renderables.
-	 *
-	 * @param renderables The renderables to draw.
-	 * @param entityCollector The EntityCollector containing all potentially visible information.
-	 */
-	private drawRenderables(renderable:RenderableBase, entityCollector:ICollector)
-	{
-		var i:number;
-		var len:number;
-		var passes:Array<IMaterialPass>;
-		var activePass:MaterialPassData;
-		var activeMaterial:MaterialData;
-		var context:IContextGL = <IContextGL> this._pStage.context;
-		var camera:Camera = entityCollector.camera;
-		var renderable2:RenderableBase;
-
-		while (renderable) {
-			activeMaterial = this.getMaterial(renderable.material, this._pStage.profile);
-
-			//iterate through each screen pass
-			passes = renderable.material._iScreenPasses;
-			len = renderable.material._iNumScreenPasses();
-			for (i = 0; i < len; i++) {
-				renderable2 = renderable;
-
-				activePass = activeMaterial.getMaterialPass(<MaterialPassGLBase> passes[i], this._pStage.profile);
-
-				renderable.material._iActivatePass(activePass, this, camera);
-
-				do {
-					renderable.material._iRenderPass(activePass, renderable2, this._pStage, camera, this._pRttViewProjectionMatrix);
-
-					renderable2 = renderable2.next;
-
-				} while (renderable2 && renderable2.material == renderable.material);
-
-				activeMaterial.material._iDeactivatePass(activePass, this);
-			}
-
-			renderable = renderable2;
-		}
-	}
-
 	public dispose()
 	{
 		if (!this._shareContext)
 			this._pStage.dispose();
+
+		this._skyboxRenderablePool.dispose();
+		this._skyboxRenderablePool = null;
+
+		this._pRttBufferManager.dispose();
+		this._pRttBufferManager = null;
 
 		this._pDepthRenderer.dispose();
 		this._pDistanceRenderer.dispose();
@@ -435,8 +370,14 @@ class DefaultRenderer extends RendererBase implements IRenderer
 	{
 		super.iSetStage(value);
 
-		this._pDistanceRenderer.iSetStage(value);
-		this._pDepthRenderer.iSetStage(value);
+		if (this._pStage) {
+			this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
+
+			this._pDepthRenderer = new DepthRenderer(this._pStage);
+			this._pDistanceRenderer = new DistanceRenderer(this._pStage);
+
+			this._skyboxRenderablePool = RenderablePool.getPool(SkyboxRenderable, this._pStage);
+		}
 	}
 
 	/**

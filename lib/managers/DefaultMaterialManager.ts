@@ -2,39 +2,34 @@ import BitmapData					= require("awayjs-core/lib/base/BitmapData");
 import AssetType					= require("awayjs-core/lib/library/AssetType");
 import BitmapTexture				= require("awayjs-core/lib/textures/BitmapTexture");
 
-import IMaterialOwner				= require("awayjs-display/lib/base/IMaterialOwner");
+import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
+import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
-import LineBasicMaterial			= require("awayjs-renderergl/lib/materials/LineBasicMaterial");
-import TriangleBasicMaterial		= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
-import MaterialGLBase				= require("awayjs-renderergl/lib/materials/MaterialGLBase");
 
 class DefaultMaterialManager
 {
 	private static _defaultBitmapData:BitmapData;
-	private static _defaultTriangleMaterial:TriangleBasicMaterial;
-	private static _defaultLineMaterial:LineBasicMaterial;
+	private static _defaultTriangleMaterial:BasicMaterial;
+	private static _defaultLineMaterial:BasicMaterial;
 	private static _defaultTexture:BitmapTexture;
 
-	public static getDefaultMaterial(materialOwner:IMaterialOwner = null):MaterialGLBase
+	public static getDefaultMaterial(renderableOwner:IRenderableOwner = null):BasicMaterial
 	{
-		if (materialOwner != null && materialOwner.assetType == AssetType.LINE_SUB_MESH) {
+		if (renderableOwner != null && renderableOwner.assetType == AssetType.LINE_SUB_MESH) {
 			if (!DefaultMaterialManager._defaultLineMaterial)
 				DefaultMaterialManager.createDefaultLineMaterial();
-
 			return DefaultMaterialManager._defaultLineMaterial;
 		} else {
 			if (!DefaultMaterialManager._defaultTriangleMaterial)
 				DefaultMaterialManager.createDefaultTriangleMaterial();
-
 			return DefaultMaterialManager._defaultTriangleMaterial;
 		}
 	}
 
-	public static getDefaultTexture(materialOwner:IMaterialOwner = null):BitmapTexture
+	public static getDefaultTexture(renderableOwner:IRenderableOwner = null):BitmapTexture
 	{
 		if (!DefaultMaterialManager._defaultTexture)
 			DefaultMaterialManager.createDefaultTexture();
-
 		return DefaultMaterialManager._defaultTexture;
 	}
 
@@ -48,7 +43,6 @@ class DefaultMaterialManager
 	public static createCheckeredBitmapData():BitmapData
 	{
 		var b:BitmapData = new BitmapData(8, 8, false, 0x000000);
-
 		//create chekerboard
 		var i:number, j:number;
 		for (i = 0; i < 8; i++) {
@@ -58,7 +52,6 @@ class DefaultMaterialManager
 				}
 			}
 		}
-
 		return b;
 	}
 
@@ -66,8 +59,7 @@ class DefaultMaterialManager
 	{
 		if (!DefaultMaterialManager._defaultTexture)
 			DefaultMaterialManager.createDefaultTexture();
-
-		DefaultMaterialManager._defaultTriangleMaterial = new TriangleBasicMaterial(DefaultMaterialManager._defaultTexture);
+		DefaultMaterialManager._defaultTriangleMaterial = new BasicMaterial(DefaultMaterialManager._defaultTexture);
 		DefaultMaterialManager._defaultTriangleMaterial.mipmap = false;
 		DefaultMaterialManager._defaultTriangleMaterial.smooth = false;
 		DefaultMaterialManager._defaultTriangleMaterial.name = "defaultTriangleMaterial";
@@ -75,8 +67,8 @@ class DefaultMaterialManager
 
 	private static createDefaultLineMaterial()
 	{
-		DefaultMaterialManager._defaultLineMaterial = new LineBasicMaterial();
-		DefaultMaterialManager._defaultLineMaterial.name = "defaultSegmentMaterial";
+		DefaultMaterialManager._defaultLineMaterial = new BasicMaterial();
+		DefaultMaterialManager._defaultLineMaterial.name = "defaultLineMaterial";
 	}
 }
 
