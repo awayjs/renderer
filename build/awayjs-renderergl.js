@@ -8,18 +8,15 @@ var __extends = this.__extends || function (d, b) {
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var RenderTexture = require("awayjs-core/lib/textures/RenderTexture");
-var RenderablePool = require("awayjs-display/lib/pool/RenderablePool");
-var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var ContextGLClearMask = require("awayjs-stagegl/lib/base/ContextGLClearMask");
-var StageManager = require("awayjs-stagegl/lib/managers/StageManager");
 var DepthRenderer = require("awayjs-renderergl/lib/DepthRenderer");
+var DistanceRenderer = require("awayjs-renderergl/lib/DistanceRenderer");
 var Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
 var RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
+var RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 var SkyboxRenderable = require("awayjs-renderergl/lib/pool/SkyboxRenderable");
 var RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
-var DepthMapPass = require("awayjs-renderergl/lib/passes/DepthMapPass");
-var DistanceMapPass = require("awayjs-renderergl/lib/passes/DistanceMapPass");
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
  * materials assigned to them.
@@ -34,18 +31,10 @@ var DefaultRenderer = (function (_super) {
      * @param antiAlias The amount of anti-aliasing to use.
      * @param renderMode The render mode to use.
      */
-    function DefaultRenderer(forceSoftware, profile, mode) {
-        if (forceSoftware === void 0) { forceSoftware = false; }
-        if (profile === void 0) { profile = "baseline"; }
-        if (mode === void 0) { mode = "auto"; }
-        _super.call(this);
+    function DefaultRenderer(stage) {
+        if (stage === void 0) { stage = null; }
+        _super.call(this, stage);
         this._skyboxProjection = new Matrix3D();
-        this._skyboxRenderablePool = RenderablePool.getPool(SkyboxRenderable);
-        this._pDepthRenderer = new DepthRenderer(new DepthMapPass());
-        this._pDistanceRenderer = new DepthRenderer(new DistanceMapPass());
-        if (this._pStage == null)
-            this.stage = StageManager.getInstance().getFreeStage(forceSoftware, profile, mode);
-        this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
         if (this._width == 0)
             this.width = window.innerWidth;
         else
@@ -156,12 +145,6 @@ var DefaultRenderer = (function (_super) {
         if (scissorRect === void 0) { scissorRect = null; }
         if (surfaceSelector === void 0) { surfaceSelector = 0; }
         this.updateLights(entityCollector);
-        // otherwise RTT will interfere with other RTTs
-        if (target) {
-            this.pCollectRenderables(entityCollector);
-            this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
-            this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
-        }
         _super.prototype.pExecuteRender.call(this, entityCollector, target, scissorRect, surfaceSelector);
     };
     DefaultRenderer.prototype.updateLights = function (entityCollector) {
@@ -188,17 +171,15 @@ var DefaultRenderer = (function (_super) {
     /**
      * @inheritDoc
      */
-    DefaultRenderer.prototype.pDraw = function (entityCollector, target) {
-        if (!target)
-            this.pCollectRenderables(entityCollector);
-        this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+    DefaultRenderer.prototype.pDraw = function (entityCollector) {
         if (entityCollector.skyBox) {
             this._pContext.setDepthTest(false, ContextGLCompareMode.ALWAYS);
             this.drawSkybox(entityCollector);
         }
-        this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
-        this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
-        this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
+        _super.prototype.pDraw.call(this, entityCollector);
+    };
+    DefaultRenderer.prototype._pGetRenderObject = function (renderable, renderObjectOwner) {
+        return renderObjectOwner.getRenderObject(renderable._pool);
     };
     /**
      * Draw the skybox if present.
@@ -207,13 +188,13 @@ var DefaultRenderer = (function (_super) {
      */
     DefaultRenderer.prototype.drawSkybox = function (entityCollector) {
         var skyBox = this._skyboxRenderablePool.getItem(entityCollector.skyBox);
-        var material = entityCollector.skyBox.material;
         var camera = entityCollector.camera;
         this.updateSkyboxProjection(camera);
-        var activePass = this.getMaterial(material, this._pStage.profile).getMaterialPass(material._iScreenPasses[0], this._pStage.profile);
-        material._iActivatePass(activePass, this, camera);
-        material._iRenderPass(activePass, skyBox, this._pStage, camera, this._skyboxProjection);
-        material._iDeactivatePass(activePass, this);
+        var renderObject = skyBox.renderObject = this._pGetRenderObject(skyBox, skyBox.renderObjectOwner);
+        var shaderObject = renderObject.shaderObjects[0];
+        this.activateProgram(skyBox, shaderObject, camera);
+        skyBox._iRender(shaderObject, camera, this._skyboxProjection);
+        this.deactivateProgram(skyBox, shaderObject);
     };
     DefaultRenderer.prototype.updateSkyboxProjection = function (camera) {
         var near = new Vector3D();
@@ -234,42 +215,13 @@ var DefaultRenderer = (function (_super) {
         var a = (q.x * p.x + q.y * p.y + q.z * p.z + q.w * p.w) / (cx * q.x + cy * q.y + cz * q.z + cw * q.w);
         this._skyboxProjection.copyRowFrom(2, new Vector3D(cx * a, cy * a, cz * a, cw * a));
     };
-    /**
-     * Draw a list of renderables.
-     *
-     * @param renderables The renderables to draw.
-     * @param entityCollector The EntityCollector containing all potentially visible information.
-     */
-    DefaultRenderer.prototype.drawRenderables = function (renderable, entityCollector) {
-        var i;
-        var len;
-        var passes;
-        var activePass;
-        var activeMaterial;
-        var context = this._pStage.context;
-        var camera = entityCollector.camera;
-        var renderable2;
-        while (renderable) {
-            activeMaterial = this.getMaterial(renderable.material, this._pStage.profile);
-            //iterate through each screen pass
-            passes = renderable.material._iScreenPasses;
-            len = renderable.material._iNumScreenPasses();
-            for (i = 0; i < len; i++) {
-                renderable2 = renderable;
-                activePass = activeMaterial.getMaterialPass(passes[i], this._pStage.profile);
-                renderable.material._iActivatePass(activePass, this, camera);
-                do {
-                    renderable.material._iRenderPass(activePass, renderable2, this._pStage, camera, this._pRttViewProjectionMatrix);
-                    renderable2 = renderable2.next;
-                } while (renderable2 && renderable2.material == renderable.material);
-                activeMaterial.material._iDeactivatePass(activePass, this);
-            }
-            renderable = renderable2;
-        }
-    };
     DefaultRenderer.prototype.dispose = function () {
         if (!this._shareContext)
             this._pStage.dispose();
+        this._skyboxRenderablePool.dispose();
+        this._skyboxRenderablePool = null;
+        this._pRttBufferManager.dispose();
+        this._pRttBufferManager = null;
         this._pDepthRenderer.dispose();
         this._pDistanceRenderer.dispose();
         this._pDepthRenderer = null;
@@ -317,8 +269,12 @@ var DefaultRenderer = (function (_super) {
     };
     DefaultRenderer.prototype.iSetStage = function (value) {
         _super.prototype.iSetStage.call(this, value);
-        this._pDistanceRenderer.iSetStage(value);
-        this._pDepthRenderer.iSetStage(value);
+        if (this._pStage) {
+            this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
+            this._pDepthRenderer = new DepthRenderer(this._pStage);
+            this._pDistanceRenderer = new DistanceRenderer(this._pStage);
+            this._skyboxRenderablePool = RenderablePool.getPool(SkyboxRenderable, this._pStage);
+        }
     };
     /**
      *
@@ -334,15 +290,13 @@ var DefaultRenderer = (function (_super) {
 module.exports = DefaultRenderer;
 
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/textures/RenderTexture":undefined,"awayjs-display/lib/pool/RenderablePool":undefined,"awayjs-renderergl/lib/DepthRenderer":undefined,"awayjs-renderergl/lib/Filter3DRenderer":undefined,"awayjs-renderergl/lib/base/RendererBase":undefined,"awayjs-renderergl/lib/managers/RTTBufferManager":undefined,"awayjs-renderergl/lib/passes/DepthMapPass":undefined,"awayjs-renderergl/lib/passes/DistanceMapPass":undefined,"awayjs-renderergl/lib/pool/SkyboxRenderable":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/textures/RenderTexture":undefined,"awayjs-renderergl/lib/DepthRenderer":undefined,"awayjs-renderergl/lib/DistanceRenderer":undefined,"awayjs-renderergl/lib/Filter3DRenderer":undefined,"awayjs-renderergl/lib/base/RendererBase":undefined,"awayjs-renderergl/lib/managers/RTTBufferManager":undefined,"awayjs-renderergl/lib/pool/RenderablePool":undefined,"awayjs-renderergl/lib/pool/SkyboxRenderable":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
-var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
@@ -356,127 +310,57 @@ var DepthRenderer = (function (_super) {
      * @param renderBlended Indicates whether semi-transparent objects should be rendered.
      * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
      */
-    function DepthRenderer(pass, renderBlended) {
-        if (renderBlended === void 0) { renderBlended = false; }
-        _super.call(this);
-        this._pass = pass;
-        this._renderBlended = renderBlended;
+    function DepthRenderer(stage) {
+        if (stage === void 0) { stage = null; }
+        _super.call(this, stage);
         this._iBackgroundR = 1;
         this._iBackgroundG = 1;
         this._iBackgroundB = 1;
     }
-    Object.defineProperty(DepthRenderer.prototype, "disableColor", {
-        get: function () {
-            return this._disableColor;
-        },
-        set: function (value) {
-            this._disableColor = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    DepthRenderer.prototype._iRenderCascades = function (entityCollector, target, numCascades, scissorRects, cameras) {
-        this.pCollectRenderables(entityCollector);
-        this._pStage.setRenderTarget(target, true, 0);
-        this._pContext.clear(1, 1, 1, 1, 1, 0);
-        this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-        this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
-        var head = this._pOpaqueRenderableHead;
-        var first = true;
-        for (var i = numCascades - 1; i >= 0; --i) {
-            this._pStage.scissorRect = scissorRects[i];
-            this.drawCascadeRenderables(head, cameras[i], first ? null : cameras[i].frustumPlanes);
-            first = false;
-        }
-        //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-        this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
-        this._pStage.scissorRect = null;
-    };
-    DepthRenderer.prototype.drawCascadeRenderables = function (renderable, camera, cullPlanes) {
-        var activePass;
-        var activeMaterial;
-        var context = this._pStage.context;
-        var renderable2;
-        while (renderable) {
-            activeMaterial = this.getMaterial(renderable.material, this._pStage.profile);
-            renderable2 = renderable;
-            activePass = activeMaterial.getMaterialPass(this._pass, this._pStage.profile);
-            //TODO: generalise this test
-            if (activePass.key == "")
-                this.calcAnimationCode(renderable.material, activePass);
-            renderable.material._iActivatePass(activePass, this, camera);
-            do {
-                // if completely in front, it will fall in a different cascade
-                // do not use near and far planes
-                if (!cullPlanes || renderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
-                    renderable2.material._iRenderPass(activePass, renderable2, this._pStage, camera, this._pRttViewProjectionMatrix);
-                }
-                else {
-                    renderable2.cascaded = true;
-                }
-                renderable2 = renderable2.next;
-            } while (renderable2 && renderable2.material == renderable.material && !renderable2.cascaded);
-            renderable.material._iDeactivatePass(activePass, this);
-            renderable = renderable2;
-        }
-    };
-    /**
-     * @inheritDoc
-     */
-    DepthRenderer.prototype.pDraw = function (entityCollector, target) {
-        this.pCollectRenderables(entityCollector);
-        this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-        this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
-        this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
-        if (this._disableColor)
-            this._pContext.setColorMask(false, false, false, false);
-        if (this._renderBlended)
-            this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
-        if (this._disableColor)
-            this._pContext.setColorMask(true, true, true, true);
-    };
-    /**
-     * Draw a list of renderables.
-     * @param renderables The renderables to draw.
-     * @param entityCollector The EntityCollector containing all potentially visible information.
-     */
-    DepthRenderer.prototype.drawRenderables = function (renderable, entityCollector) {
-        var activePass;
-        var activeMaterial;
-        var context = this._pStage.context;
-        var camera = entityCollector.camera;
-        var renderable2;
-        while (renderable) {
-            activeMaterial = this.getMaterial(renderable.material, this._pStage.profile);
-            // otherwise this would result in depth rendered anyway because fragment shader kil is ignored
-            if (this._disableColor && renderable.material.alphaThreshold != 0) {
-                renderable2 = renderable;
-                do {
-                    renderable2 = renderable2.next;
-                } while (renderable2 && renderable2.material == renderable.material);
-            }
-            else {
-                renderable2 = renderable;
-                activePass = activeMaterial.getMaterialPass(this._pass, this._pStage.profile);
-                //TODO: generalise this test
-                if (activePass.key == "")
-                    this.calcAnimationCode(renderable.material, activePass);
-                renderable.material._iActivatePass(activePass, this, camera);
-                do {
-                    renderable2.material._iRenderPass(activePass, renderable2, this._pStage, camera, this._pRttViewProjectionMatrix);
-                    renderable2 = renderable2.next;
-                } while (renderable2 && renderable2.material == renderable.material);
-                renderable.material._iDeactivatePass(activePass, this);
-            }
-            renderable = renderable2;
-        }
+    DepthRenderer.prototype._pGetRenderObject = function (renderable, renderObjectOwner) {
+        return renderable._pool.getDepthRenderObject(renderObjectOwner);
     };
     return DepthRenderer;
 })(RendererBase);
 module.exports = DepthRenderer;
 
 
-},{"awayjs-renderergl/lib/base/RendererBase":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
+},{"awayjs-renderergl/lib/base/RendererBase":undefined}],"awayjs-renderergl/lib/DistanceRenderer":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
+/**
+ * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
+ *
+ * @class away.render.DistanceRenderer
+ */
+var DistanceRenderer = (function (_super) {
+    __extends(DistanceRenderer, _super);
+    /**
+     * Creates a new DistanceRenderer object.
+     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
+     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
+     */
+    function DistanceRenderer(stage) {
+        if (stage === void 0) { stage = null; }
+        _super.call(this, stage);
+        this._iBackgroundR = 1;
+        this._iBackgroundG = 1;
+        this._iBackgroundB = 1;
+    }
+    DistanceRenderer.prototype._pGetRenderObject = function (renderable, renderObjectOwner) {
+        return renderable._pool.getDistanceRenderObject(renderObjectOwner);
+    };
+    return DistanceRenderer;
+})(RendererBase);
+module.exports = DistanceRenderer;
+
+
+},{"awayjs-renderergl/lib/base/RendererBase":undefined}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
 var Event = require("awayjs-core/lib/events/Event");
 var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
@@ -8648,18 +8532,19 @@ var Point = require("awayjs-core/lib/geom/Point");
 var Rectangle = require("awayjs-core/lib/geom/Rectangle");
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-var RenderablePool = require("awayjs-display/lib/pool/RenderablePool");
 var RenderableMergeSort = require("awayjs-display/lib/sort/RenderableMergeSort");
 var RendererEvent = require("awayjs-display/lib/events/RendererEvent");
 var StageEvent = require("awayjs-display/lib/events/StageEvent");
 var EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
+var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
 var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
+var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
+var StageManager = require("awayjs-stagegl/lib/managers/StageManager");
 var BillboardRenderable = require("awayjs-renderergl/lib/pool/BillboardRenderable");
 var LineSubMeshRenderable = require("awayjs-renderergl/lib/pool/LineSubMeshRenderable");
-var MaterialDataPool = require("awayjs-renderergl/lib/pool/MaterialDataPool");
 var TriangleSubMeshRenderable = require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
-var DefaultMaterialManager = require("awayjs-renderergl/lib/managers/DefaultMaterialManager");
+var RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
  * contents of a partition
@@ -8671,8 +8556,9 @@ var RendererBase = (function (_super) {
     /**
      * Creates a new RendererBase object.
      */
-    function RendererBase() {
+    function RendererBase(stage) {
         var _this = this;
+        if (stage === void 0) { stage = null; }
         _super.call(this);
         this._numUsedStreams = 0;
         this._numUsedTextures = 0;
@@ -8692,15 +8578,34 @@ var RendererBase = (function (_super) {
         this._globalPos = new Point();
         this._pScissorRect = new Rectangle();
         this._pNumTriangles = 0;
+        this._disableColor = false;
+        this._renderBlended = true;
         this._onViewportUpdatedDelegate = function (event) { return _this.onViewportUpdated(event); };
-        this._materialDataPool = new MaterialDataPool();
-        this._billboardRenderablePool = RenderablePool.getPool(BillboardRenderable);
-        this._triangleSubMeshRenderablePool = RenderablePool.getPool(TriangleSubMeshRenderable);
-        this._lineSubMeshRenderablePool = RenderablePool.getPool(LineSubMeshRenderable);
         this._onContextUpdateDelegate = function (event) { return _this.onContextUpdate(event); };
+        this.stage = stage || StageManager.getInstance().getFreeStage();
         //default sorting algorithm
         this.renderableSorter = new RenderableMergeSort();
     }
+    Object.defineProperty(RendererBase.prototype, "renderBlended", {
+        get: function () {
+            return this._renderBlended;
+        },
+        set: function (value) {
+            this._renderBlended = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "disableColor", {
+        get: function () {
+            return this._disableColor;
+        },
+        set: function (value) {
+            this._disableColor = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(RendererBase.prototype, "numTriangles", {
         /**
          *
@@ -8805,81 +8710,29 @@ var RendererBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    RendererBase.prototype.getProgram = function (materialPassData) {
-        //check key doesn't need re-concatenating
-        if (!materialPassData.key.length) {
-            materialPassData.key = materialPassData.animationVertexCode + materialPassData.vertexCode + "---" + materialPassData.fragmentCode + materialPassData.animationFragmentCode + materialPassData.postAnimationFragmentCode;
-        }
-        else {
-            return materialPassData.programData;
-        }
-        var programData = this._pStage.getProgramData(materialPassData.key);
-        //check program data hasn't changed, keep count of program usages
-        if (materialPassData.programData != programData) {
-            if (materialPassData.programData)
-                materialPassData.programData.dispose();
-            materialPassData.programData = programData;
-            programData.usages++;
-        }
-        return programData;
-    };
-    /**
-     *
-     * @param material
-     */
-    RendererBase.prototype.getMaterial = function (material, profile) {
-        var materialData = this._materialDataPool.getItem(material);
-        if (materialData.invalidAnimation) {
-            materialData.invalidAnimation = false;
-            var materialDataPasses = materialData.getMaterialPasses(profile);
-            var enabledGPUAnimation = this.getEnabledGPUAnimation(material, materialDataPasses);
-            var renderOrderId = 0;
-            var mult = 1;
-            var materialPassData;
-            var len = materialDataPasses.length;
-            for (var i = 0; i < len; i++) {
-                materialPassData = materialDataPasses[i];
-                if (materialPassData.usesAnimation != enabledGPUAnimation) {
-                    materialPassData.usesAnimation = enabledGPUAnimation;
-                    materialPassData.key == "";
-                }
-                if (materialPassData.key == "")
-                    this.calcAnimationCode(material, materialPassData);
-                renderOrderId += this.getProgram(materialPassData).id * mult;
-                mult *= 1000;
-            }
-            materialData.renderOrderId = renderOrderId;
-        }
-        return materialData;
-    };
-    RendererBase.prototype.activateMaterialPass = function (materialPassData, camera) {
-        var shaderObject = materialPassData.shaderObject;
-        for (var i = shaderObject.numUsedStreams; i < this._numUsedStreams; i++)
+    RendererBase.prototype.activateProgram = function (renderable, shader, camera) {
+        for (var i = shader.numUsedStreams; i < this._numUsedStreams; i++)
             this._pContext.setVertexBufferAt(i, null);
-        for (var i = shaderObject.numUsedTextures; i < this._numUsedTextures; i++)
+        for (var i = shader.numUsedTextures; i < this._numUsedTextures; i++)
             this._pContext.setTextureAt(i, null);
-        if (materialPassData.usesAnimation)
-            materialPassData.material.animationSet.activate(shaderObject, this._pStage);
-        //activate shader object
-        shaderObject.iActivate(this._pStage, camera);
         //check program data is uploaded
-        var programData = this.getProgram(materialPassData);
+        var programData = shader.programData;
         if (!programData.program) {
             programData.program = this._pContext.createProgram();
-            var vertexByteCode = (new AGALMiniAssembler().assemble("part vertex 1\n" + materialPassData.animationVertexCode + materialPassData.vertexCode + "endpart"))['vertex'].data;
-            var fragmentByteCode = (new AGALMiniAssembler().assemble("part fragment 1\n" + materialPassData.fragmentCode + materialPassData.animationFragmentCode + materialPassData.postAnimationFragmentCode + "endpart"))['fragment'].data;
+            var vertexByteCode = (new AGALMiniAssembler().assemble("part vertex 1\n" + programData.vertexString + "endpart"))['vertex'].data;
+            var fragmentByteCode = (new AGALMiniAssembler().assemble("part fragment 1\n" + programData.fragmentString + "endpart"))['fragment'].data;
             programData.program.upload(vertexByteCode, fragmentByteCode);
         }
         //set program data
         this._pContext.setProgram(programData.program);
+        //activate shader object through renderable
+        renderable._iActivate(shader, camera);
     };
-    RendererBase.prototype.deactivateMaterialPass = function (materialPassData) {
-        var shaderObject = materialPassData.shaderObject;
-        if (materialPassData.usesAnimation)
-            materialPassData.material.animationSet.deactivate(shaderObject, this._pStage);
-        materialPassData.shaderObject.iDeactivate(this._pStage);
-        this._numUsedStreams = shaderObject.numUsedStreams;
-        this._numUsedTextures = shaderObject.numUsedTextures;
+    RendererBase.prototype.deactivateProgram = function (renderable, shader) {
+        //deactivate shader object
+        renderable._iDeactivate(shader);
+        this._numUsedStreams = shader.numUsedStreams;
+        this._numUsedTextures = shader.numUsedTextures;
     };
     RendererBase.prototype._iCreateEntityCollector = function () {
         return new EntityCollector();
@@ -8961,20 +8814,16 @@ var RendererBase = (function (_super) {
         configurable: true
     });
     RendererBase.prototype.iSetStage = function (value) {
-        if (this._pStage) {
-            this._pStage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-            this._pStage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-            this._pStage.removeEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-        }
-        if (!value) {
-            this._pStage = null;
-            this._pContext = null;
-        }
-        else {
+        if (this._pStage)
+            this.dispose();
+        if (value) {
             this._pStage = value;
             this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
             this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
             this._pStage.addEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+            this._billboardRenderablePool = RenderablePool.getPool(BillboardRenderable, this._pStage);
+            this._triangleSubMeshRenderablePool = RenderablePool.getPool(TriangleSubMeshRenderable, this._pStage);
+            this._lineSubMeshRenderablePool = RenderablePool.getPool(LineSubMeshRenderable, this._pStage);
             /*
              if (_backgroundImageRenderer)
              _backgroundImageRenderer.stage = value;
@@ -9006,13 +8855,17 @@ var RendererBase = (function (_super) {
      * Disposes the resources used by the RendererBase.
      */
     RendererBase.prototype.dispose = function () {
-        if (this._pRttBufferManager)
-            this._pRttBufferManager.dispose();
-        this._pRttBufferManager = null;
+        this._billboardRenderablePool.dispose();
+        this._triangleSubMeshRenderablePool.dispose();
+        this._lineSubMeshRenderablePool.dispose();
+        this._billboardRenderablePool = null;
+        this._triangleSubMeshRenderablePool = null;
+        this._lineSubMeshRenderablePool = null;
         this._pStage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
         this._pStage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
         this._pStage.removeEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
         this._pStage = null;
+        this._pContext = null;
         /*
          if (_backgroundImageRenderer) {
          _backgroundImageRenderer.dispose();
@@ -9047,6 +8900,21 @@ var RendererBase = (function (_super) {
         }
     };
     RendererBase.prototype._iRenderCascades = function (entityCollector, target, numCascades, scissorRects, cameras) {
+        this.pCollectRenderables(entityCollector);
+        this._pStage.setRenderTarget(target, true, 0);
+        this._pContext.clear(1, 1, 1, 1, 1, 0);
+        this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+        this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
+        var head = this._pOpaqueRenderableHead;
+        var first = true;
+        for (var i = numCascades - 1; i >= 0; --i) {
+            this._pStage.scissorRect = scissorRects[i];
+            this.drawCascadeRenderables(head, cameras[i], first ? null : cameras[i].frustumPlanes);
+            first = false;
+        }
+        //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
+        this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
+        this._pStage.scissorRect = null;
     };
     RendererBase.prototype.pCollectRenderables = function (entityCollector) {
         //reset head values
@@ -9082,13 +8950,14 @@ var RendererBase = (function (_super) {
         this._pStage.setRenderTarget(target, true, surfaceSelector);
         if ((target || !this._shareContext) && !this._depthPrepass)
             this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
-        this._pContext.setDepthTest(false, ContextGLCompareMode.ALWAYS);
         this._pStage.scissorRect = scissorRect;
         /*
          if (_backgroundImageRenderer)
          _backgroundImageRenderer.render();
          */
-        this.pDraw(entityCollector, target);
+        this.pCollectRenderables(entityCollector);
+        this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+        this.pDraw(entityCollector);
         //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
         //this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
         if (!this._shareContext) {
@@ -9110,8 +8979,79 @@ var RendererBase = (function (_super) {
      * Performs the actual drawing of geometry to the target.
      * @param entityCollector The EntityCollector object containing the potentially visible geometry.
      */
-    RendererBase.prototype.pDraw = function (entityCollector, target) {
-        throw new AbstractMethodError();
+    RendererBase.prototype.pDraw = function (entityCollector) {
+        this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+        if (this._disableColor)
+            this._pContext.setColorMask(false, false, false, false);
+        this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
+        if (this._renderBlended)
+            this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
+        if (this._disableColor)
+            this._pContext.setColorMask(true, true, true, true);
+    };
+    RendererBase.prototype.drawCascadeRenderables = function (renderable, camera, cullPlanes) {
+        var renderObject;
+        var shaderObject;
+        var renderable2;
+        while (renderable) {
+            renderObject = renderable.renderObject;
+            renderable2 = renderable;
+            this.activateProgram(renderable, shaderObject, camera);
+            do {
+                // if completely in front, it will fall in a different cascade
+                // do not use near and far planes
+                if (!cullPlanes || renderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
+                    renderable2._iRender(shaderObject, camera, this._pRttViewProjectionMatrix);
+                }
+                else {
+                    renderable2.cascaded = true;
+                }
+                renderable2 = renderable2.next;
+            } while (renderable2 && renderable2.renderObject == renderObject && !renderable2.cascaded);
+            this.deactivateProgram(renderable, shaderObject);
+            renderable = renderable2;
+        }
+    };
+    /**
+     * Draw a list of renderables.
+     *
+     * @param renderables The renderables to draw.
+     * @param entityCollector The EntityCollector containing all potentially visible information.
+     */
+    RendererBase.prototype.drawRenderables = function (renderable, entityCollector) {
+        var i;
+        var len;
+        var renderObject;
+        var shaderObjects;
+        var shaderObject;
+        var camera = entityCollector.camera;
+        var renderable2;
+        while (renderable) {
+            renderObject = renderable.renderObject;
+            shaderObjects = renderObject.shaderObjects;
+            // otherwise this would result in depth rendered anyway because fragment shader kil is ignored
+            if (this._disableColor && renderObject._renderObjectOwner.alphaThreshold != 0) {
+                renderable2 = renderable;
+                do {
+                    renderable2 = renderable2.next;
+                } while (renderable2 && renderable2.renderObject == renderObject);
+            }
+            else {
+                //iterate through each shader object
+                len = shaderObjects.length;
+                for (i = 0; i < len; i++) {
+                    renderable2 = renderable;
+                    shaderObject = shaderObjects[i];
+                    this.activateProgram(renderable, shaderObject, camera);
+                    do {
+                        renderable2._iRender(shaderObject, camera, this._pRttViewProjectionMatrix);
+                        renderable2 = renderable2.next;
+                    } while (renderable2 && renderable2.renderObject == renderObject);
+                    this.deactivateProgram(renderable, shaderObject);
+                }
+            }
+            renderable = renderable2;
+        }
     };
     /**
      * Assign the context once retrieved
@@ -9245,24 +9185,20 @@ var RendererBase = (function (_super) {
      * @protected
      */
     RendererBase.prototype._applyRenderable = function (renderable) {
-        var material = renderable.materialOwner.material;
+        //set local vars for faster referencing
+        var renderObject = this._pGetRenderObject(renderable, renderable.renderObjectOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
+        renderable.renderObject = renderObject;
+        renderable.renderObjectId = renderObject.renderObjectId;
+        renderable.renderOrderId = renderObject.renderOrderId;
+        renderable.cascaded = false;
         var entity = renderable.sourceEntity;
         var position = entity.scenePosition;
-        if (!material)
-            material = DefaultMaterialManager.getDefaultMaterial(renderable.materialOwner);
-        //update material if invalidated
-        material._iUpdateMaterial();
-        //set ids for faster referencing
-        renderable.material = material;
-        renderable.materialId = material._iMaterialId;
-        renderable.renderOrderId = this.getMaterial(material, this._pStage.profile).renderOrderId;
-        renderable.cascaded = false;
         // project onto camera's z-axis
         position = this._iEntryPoint.subtract(position);
         renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
         //store reference to scene transform
         renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
-        if (material.requiresBlending) {
+        if (renderObject.requiresBlending) {
             renderable.next = this._pBlendedRenderableHead;
             this._pBlendedRenderableHead = renderable;
         }
@@ -9275,58 +9211,231 @@ var RendererBase = (function (_super) {
         if (renderable.overflow)
             this._applyRenderable(renderable.overflow);
     };
-    /**
-     * test if animation will be able to run on gpu BEFORE compiling materials
-     * test if the shader objects supports animating the animation set in the vertex shader
-     * if any object using this material fails to support accelerated animations for any of the shader objects,
-     * we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
-     */
-    RendererBase.prototype.getEnabledGPUAnimation = function (material, materialDataPasses) {
-        if (material.animationSet) {
-            material.animationSet.resetGPUCompatibility();
-            var owners = material.iOwners;
-            var numOwners = owners.length;
-            var len = materialDataPasses.length;
-            for (var i = 0; i < len; i++)
-                for (var j = 0; j < numOwners; j++)
-                    if (owners[j].animator)
-                        owners[j].animator.testGPUCompatibility(materialDataPasses[i].shaderObject);
-            return !material.animationSet.usesCPU;
-        }
-        return false;
-    };
-    RendererBase.prototype.calcAnimationCode = function (material, materialPassData) {
-        //reset key so that the program is re-calculated
-        materialPassData.key = "";
-        materialPassData.animationVertexCode = "";
-        materialPassData.animationFragmentCode = "";
-        var shaderObject = materialPassData.shaderObject;
-        //check to see if GPU animation is used
-        if (materialPassData.usesAnimation) {
-            var animationSet = material.animationSet;
-            materialPassData.animationVertexCode += animationSet.getAGALVertexCode(shaderObject);
-            if (shaderObject.uvDependencies > 0 && !shaderObject.usesUVTransform)
-                materialPassData.animationVertexCode += animationSet.getAGALUVCode(shaderObject);
-            if (shaderObject.usesFragmentAnimation)
-                materialPassData.animationFragmentCode += animationSet.getAGALFragmentCode(shaderObject, materialPassData.shadedTarget);
-            animationSet.doneAGALCode(shaderObject);
-        }
-        else {
-            // simply write attributes to targets, do not animate them
-            // projection will pick up on targets[0] to do the projection
-            var len = shaderObject.animatableAttributes.length;
-            for (var i = 0; i < len; ++i)
-                materialPassData.animationVertexCode += "mov " + shaderObject.animationTargetRegisters[i] + ", " + shaderObject.animatableAttributes[i] + "\n";
-            if (shaderObject.uvDependencies > 0 && !shaderObject.usesUVTransform)
-                materialPassData.animationVertexCode += "mov " + shaderObject.uvTarget + "," + shaderObject.uvSource + "\n";
-        }
+    RendererBase.prototype._pGetRenderObject = function (renderable, renderObjectOwner) {
+        throw new AbstractMethodError();
     };
     return RendererBase;
 })(EventDispatcher);
 module.exports = RendererBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/events/StageEvent":undefined,"awayjs-display/lib/pool/RenderablePool":undefined,"awayjs-display/lib/sort/RenderableMergeSort":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-renderergl/lib/managers/DefaultMaterialManager":undefined,"awayjs-renderergl/lib/pool/BillboardRenderable":undefined,"awayjs-renderergl/lib/pool/LineSubMeshRenderable":undefined,"awayjs-renderergl/lib/pool/MaterialDataPool":undefined,"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/compilation/RegisterPool":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/events/StageEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/sort/RenderableMergeSort":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-renderergl/lib/pool/BillboardRenderable":undefined,"awayjs-renderergl/lib/pool/LineSubMeshRenderable":undefined,"awayjs-renderergl/lib/pool/RenderablePool":undefined,"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/compilation/DepthRenderObject":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
+var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
+var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
+var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
+var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
+/**
+ * DepthRenderObject forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
+ */
+var DepthRenderObject = (function (_super) {
+    __extends(DepthRenderObject, _super);
+    function DepthRenderObject(pool, material, renderableClass, stage) {
+        _super.call(this, pool, material, renderableClass, stage);
+        this._diffuseColor = 0xffffff;
+        this._diffuseR = 1;
+        this._diffuseG = 1;
+        this._diffuseB = 1;
+        this._diffuseA = 1;
+        this._pAddScreenShader(new ShaderObjectBase(material, renderableClass, this, this._stage));
+    }
+    DepthRenderObject.prototype._iIncludeDependencies = function (shaderObject) {
+        _super.prototype._iIncludeDependencies.call(this, shaderObject);
+        shaderObject.projectionDependencies++;
+        if (shaderObject.alphaThreshold > 0)
+            shaderObject.uvDependencies++;
+    };
+    DepthRenderObject.prototype._iInitConstantData = function (shaderObject) {
+        _super.prototype._iInitConstantData.call(this, shaderObject);
+        var index = this._fragmentConstantsIndex;
+        var data = shaderObject.fragmentConstantData;
+        data[index] = 1.0;
+        data[index + 1] = 255.0;
+        data[index + 2] = 65025.0;
+        data[index + 3] = 16581375.0;
+        data[index + 4] = 1.0 / 255.0;
+        data[index + 5] = 1.0 / 255.0;
+        data[index + 6] = 1.0 / 255.0;
+        data[index + 7] = 0.0;
+    };
+    /**
+     * @inheritDoc
+     */
+    DepthRenderObject.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        var code = "";
+        var targetReg = sharedRegisters.shadedTarget;
+        var diffuseInputReg = registerCache.getFreeTextureReg();
+        var dataReg1 = registerCache.getFreeFragmentConstant();
+        var dataReg2 = registerCache.getFreeFragmentConstant();
+        this._fragmentConstantsIndex = dataReg1.index * 4;
+        var temp1 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp1, 1);
+        var temp2 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp2, 1);
+        code += "div " + temp1 + ", " + sharedRegisters.projectionFragment + ", " + sharedRegisters.projectionFragment + ".w\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
+        //codeF += "mov ft1.w, fc1.w	\n" +
+        //    "mov ft0.w, fc0.x	\n";
+        if (shaderObject.alphaThreshold > 0) {
+            diffuseInputReg = registerCache.getFreeTextureReg();
+            this._texturesIndex = diffuseInputReg.index;
+            var albedo = registerCache.getFreeFragmentVectorTemp();
+            code += ShaderCompilerHelper.getTex2DSampleCode(albedo, sharedRegisters, diffuseInputReg, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
+            var cutOffReg = registerCache.getFreeFragmentConstant();
+            code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
+        }
+        code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
+        registerCache.removeFragmentTempUsage(temp1);
+        registerCache.removeFragmentTempUsage(temp2);
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DepthRenderObject.prototype._iActivate = function (shader, camera) {
+        _super.prototype._iActivate.call(this, shader, camera);
+        var context = this._stage.context;
+        if (shader.alphaThreshold > 0) {
+            context.setSamplerStateAt(this._texturesIndex, shader.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shader.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shader.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
+            this._stage.activateTexture(this._texturesIndex, shader.texture);
+            shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = shader.alphaThreshold;
+        }
+    };
+    /**
+     *
+     */
+    DepthRenderObject.id = "depth";
+    return DepthRenderObject;
+})(RenderObjectBase);
+module.exports = DepthRenderObject;
+
+
+},{"awayjs-renderergl/lib/compilation/RenderObjectBase":undefined,"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFilter":undefined,"awayjs-stagegl/lib/base/ContextGLWrapMode":undefined}],"awayjs-renderergl/lib/compilation/DistanceRenderObject":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
+var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
+var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
+var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
+var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
+/**
+ * DistanceRenderObject is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
+ * This is used to render omnidirectional shadow maps.
+ */
+var DistanceRenderObject = (function (_super) {
+    __extends(DistanceRenderObject, _super);
+    /**
+     * Creates a new DistanceRenderObject object.
+     *
+     * @param material The material to which this pass belongs.
+     */
+    function DistanceRenderObject(pool, renderObjectOwner, renderableClass, stage) {
+        _super.call(this, pool, renderObjectOwner, renderableClass, stage);
+        this._pAddScreenShader(new ShaderObjectBase(renderObjectOwner, renderableClass, this, this._stage));
+    }
+    /**
+     * Initializes the unchanging constant data for this material.
+     */
+    DistanceRenderObject.prototype._iInitConstantData = function (shaderObject) {
+        _super.prototype._iInitConstantData.call(this, shaderObject);
+        var index = this._fragmentConstantsIndex;
+        var data = shaderObject.fragmentConstantData;
+        data[index + 4] = 1.0 / 255.0;
+        data[index + 5] = 1.0 / 255.0;
+        data[index + 6] = 1.0 / 255.0;
+        data[index + 7] = 0.0;
+    };
+    DistanceRenderObject.prototype._iIncludeDependencies = function (shaderObject) {
+        _super.prototype._iIncludeDependencies.call(this, shaderObject);
+        shaderObject.projectionDependencies++;
+        shaderObject.viewDirDependencies++;
+        if (shaderObject.alphaThreshold > 0)
+            shaderObject.uvDependencies++;
+        if (shaderObject.viewDirDependencies > 0)
+            shaderObject.globalPosDependencies++;
+    };
+    /**
+     * @inheritDoc
+     */
+    DistanceRenderObject.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        var code;
+        var targetReg = sharedRegisters.shadedTarget;
+        var diffuseInputReg = registerCache.getFreeTextureReg();
+        var dataReg1 = registerCache.getFreeFragmentConstant();
+        var dataReg2 = registerCache.getFreeFragmentConstant();
+        this._fragmentConstantsIndex = dataReg1.index * 4;
+        var temp1 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp1, 1);
+        var temp2 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp2, 1);
+        // squared distance to view
+        code = "dp3 " + temp1 + ".z, " + sharedRegisters.viewDirVarying + ".xyz, " + sharedRegisters.viewDirVarying + ".xyz\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
+        if (shaderObject.alphaThreshold > 0) {
+            diffuseInputReg = registerCache.getFreeTextureReg();
+            this._texturesIndex = diffuseInputReg.index;
+            var albedo = registerCache.getFreeFragmentVectorTemp();
+            code += ShaderCompilerHelper.getTex2DSampleCode(albedo, sharedRegisters, diffuseInputReg, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
+            var cutOffReg = registerCache.getFreeFragmentConstant();
+            code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
+        }
+        code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DistanceRenderObject.prototype._iActivate = function (shader, camera) {
+        _super.prototype._iActivate.call(this, shader, camera);
+        var context = this._stage.context;
+        var f = camera.projection.far;
+        f = 1 / (2 * f * f);
+        // sqrt(f*f+f*f) is largest possible distance for any frustum, so we need to divide by it. Rarely a tight fit, but with 32 bits precision, it's enough.
+        var index = this._fragmentConstantsIndex;
+        var data = shader.fragmentConstantData;
+        data[index] = 1.0 * f;
+        data[index + 1] = 255.0 * f;
+        data[index + 2] = 65025.0 * f;
+        data[index + 3] = 16581375.0 * f;
+        if (shader.alphaThreshold > 0) {
+            context.setSamplerStateAt(this._texturesIndex, shader.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shader.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shader.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
+            this._stage.activateTexture(this._texturesIndex, shader.texture);
+            data[index + 8] = shader.alphaThreshold;
+        }
+    };
+    /**
+     *
+     */
+    DistanceRenderObject.id = "distance";
+    return DistanceRenderObject;
+})(RenderObjectBase);
+module.exports = DistanceRenderObject;
+
+
+},{"awayjs-renderergl/lib/compilation/RenderObjectBase":undefined,"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFilter":undefined,"awayjs-stagegl/lib/base/ContextGLWrapMode":undefined}],"awayjs-renderergl/lib/compilation/IRenderLightingObject":[function(require,module,exports){
+
+
+
+},{}],"awayjs-renderergl/lib/compilation/IRenderObjectBase":[function(require,module,exports){
+
+
+
+},{}],"awayjs-renderergl/lib/compilation/IRenderObjectClass":[function(require,module,exports){
+
+
+
+},{}],"awayjs-renderergl/lib/compilation/RegisterPool":[function(require,module,exports){
 var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 /**
  * RegisterPool is used by the shader compilation process to keep track of which registers of a certain type are
@@ -9482,7 +9591,424 @@ var RegisterPool = (function () {
 module.exports = RegisterPool;
 
 
-},{"awayjs-renderergl/lib/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/compilation/ShaderCompilerBase":[function(require,module,exports){
+},{"awayjs-renderergl/lib/compilation/ShaderRegisterElement":undefined}],"awayjs-renderergl/lib/compilation/RenderBasicMaterialObject":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var BlendMode = require("awayjs-display/lib/base/BlendMode");
+var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
+var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
+var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
+var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
+var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
+var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
+/**
+ * RenderMaterialObject forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
+ */
+var RenderBasicMaterialObject = (function (_super) {
+    __extends(RenderBasicMaterialObject, _super);
+    function RenderBasicMaterialObject(pool, renderObjectOwner, renderableClass, stage) {
+        _super.call(this, pool, renderObjectOwner, renderableClass, stage);
+        this._diffuseColor = 0xffffff;
+        this._diffuseR = 1;
+        this._diffuseG = 1;
+        this._diffuseB = 1;
+        this._diffuseA = 1;
+        this._alphaBlending = false;
+        this._alpha = 1;
+        this._depthCompareMode = ContextGLCompareMode.LESS_EQUAL;
+        this._screenShader = new ShaderObjectBase(renderObjectOwner, renderableClass, this, this._stage);
+        this._pAddScreenShader(this._screenShader);
+    }
+    RenderBasicMaterialObject.prototype._iIncludeDependencies = function (shaderObject) {
+        _super.prototype._iIncludeDependencies.call(this, shaderObject);
+        if (shaderObject.texture != null)
+            shaderObject.uvDependencies++;
+    };
+    /**
+     * @inheritDoc
+     */
+    RenderBasicMaterialObject.prototype._iGetFragmentCode = function (shaderObject, regCache, sharedReg) {
+        var code = "";
+        var targetReg = sharedReg.shadedTarget;
+        var diffuseInputReg;
+        if (shaderObject.texture != null) {
+            diffuseInputReg = regCache.getFreeTextureReg();
+            this._texturesIndex = diffuseInputReg.index;
+            code += ShaderCompilerHelper.getTex2DSampleCode(targetReg, sharedReg, diffuseInputReg, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
+            if (shaderObject.alphaThreshold > 0) {
+                var cutOffReg = regCache.getFreeFragmentConstant();
+                this._fragmentConstantsIndex = cutOffReg.index * 4;
+                code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" + "kil " + targetReg + ".w\n" + "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
+            }
+        }
+        else if (shaderObject.colorBufferIndex != -1) {
+            code += "mov " + targetReg + ", " + sharedReg.colorVarying + "\n";
+        }
+        else {
+            diffuseInputReg = regCache.getFreeFragmentConstant();
+            this._fragmentConstantsIndex = diffuseInputReg.index * 4;
+            code += "mov " + targetReg + ", " + diffuseInputReg + "\n";
+        }
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    RenderBasicMaterialObject.prototype._iActivate = function (shader, camera) {
+        _super.prototype._iActivate.call(this, shader, camera);
+        if (shader.texture != null) {
+            this._stage.context.setSamplerStateAt(this._texturesIndex, shader.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shader.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shader.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
+            this._stage.activateTexture(this._texturesIndex, shader.texture);
+            if (shader.alphaThreshold > 0)
+                shader.fragmentConstantData[this._fragmentConstantsIndex] = shader.alphaThreshold;
+        }
+        else if (shader.colorBufferIndex == -1) {
+            var index = this._fragmentConstantsIndex;
+            var data = shader.fragmentConstantData;
+            data[index] = this._diffuseR;
+            data[index + 1] = this._diffuseG;
+            data[index + 2] = this._diffuseB;
+            data[index + 3] = this._diffuseA;
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    RenderBasicMaterialObject.prototype._pUpdateRenderObject = function () {
+        this.setBlendAndCompareModes();
+        this._pClearScreenShaders();
+        this._pAddScreenShader(this._screenShader);
+    };
+    /**
+     * Sets up the various blending modes for all screen passes, based on whether or not there are previous passes.
+     */
+    RenderBasicMaterialObject.prototype.setBlendAndCompareModes = function () {
+        this._pRequiresBlending = (this._renderObjectOwner.blendMode != BlendMode.NORMAL || this._alphaBlending || this._alpha < 1);
+        //this._screenShader.preserveAlpha = this._pRequiresBlending;
+        this._screenShader.setBlendMode((this._renderObjectOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._renderObjectOwner.blendMode);
+        //this._screenShader.forceSeparateMVP = false;
+    };
+    /**
+     *
+     */
+    RenderBasicMaterialObject.id = "basic";
+    return RenderBasicMaterialObject;
+})(RenderObjectBase);
+module.exports = RenderBasicMaterialObject;
+
+
+},{"awayjs-display/lib/base/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":undefined,"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFilter":undefined,"awayjs-stagegl/lib/base/ContextGLWrapMode":undefined}],"awayjs-renderergl/lib/compilation/RenderObjectBase":[function(require,module,exports){
+var Event = require("awayjs-core/lib/events/Event");
+var AssetType = require("awayjs-core/lib/library/AssetType");
+/**
+ *
+ * @class away.pool.ScreenPasses
+ */
+var RenderObjectBase = (function () {
+    function RenderObjectBase(pool, renderObjectOwner, renderableClass, stage) {
+        var _this = this;
+        this._forceSeparateMVP = false;
+        this._invalidAnimation = true;
+        this._invalidRenderObject = true;
+        this._shaderObjects = new Array();
+        this._pRequiresBlending = false;
+        this._pool = pool;
+        this.renderObjectId = renderObjectOwner.id;
+        this._renderObjectOwner = renderObjectOwner;
+        this._renderableClass = renderableClass;
+        this._stage = stage;
+        this._onShaderChangeDelegate = function (event) { return _this.onShaderChange(event); };
+    }
+    Object.defineProperty(RenderObjectBase.prototype, "requiresBlending", {
+        /**
+         * Indicates whether or not the renderable requires alpha blending during rendering.
+         */
+        get: function () {
+            return this._pRequiresBlending;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RenderObjectBase.prototype, "renderOrderId", {
+        get: function () {
+            if (this._invalidAnimation)
+                this._updateAnimation();
+            return this._renderOrderId;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RenderObjectBase.prototype, "shaderObjects", {
+        get: function () {
+            if (this._invalidAnimation)
+                this._updateAnimation();
+            return this._shaderObjects;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    RenderObjectBase.prototype._iIncludeDependencies = function (shaderObject) {
+        if (this._renderObjectOwner.assetType = AssetType.MATERIAL) {
+            var material = this._renderObjectOwner;
+            shaderObject.useAlphaPremultiplied = material.alphaPremultiplied;
+            shaderObject.useBothSides = material.bothSides;
+            shaderObject.repeatTextures = material.repeat;
+            shaderObject.usesUVTransform = material.animateUVs;
+            shaderObject.texture = material.texture;
+            shaderObject.color = material.color;
+        }
+        if (this._forceSeparateMVP)
+            shaderObject.globalPosDependencies++;
+        shaderObject.outputsNormals = this._pOutputsNormals(shaderObject);
+        shaderObject.outputsTangentNormals = shaderObject.outputsNormals && this._pOutputsTangentNormals(shaderObject);
+        shaderObject.usesTangentSpace = shaderObject.outputsTangentNormals && this._pUsesTangentSpace(shaderObject);
+        if (!shaderObject.usesTangentSpace && shaderObject.viewDirDependencies > 0)
+            shaderObject.globalPosDependencies++;
+    };
+    /**
+     * Renders the current pass. Before calling renderPass, activatePass needs to be called with the same index.
+     * @param pass The pass used to render the renderable.
+     * @param renderable The IRenderable object to draw.
+     * @param stage The Stage object used for rendering.
+     * @param entityCollector The EntityCollector object that contains the visible scene data.
+     * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
+     * camera.viewProjection as it includes the scaling factors when rendering to textures.
+     *
+     * @internal
+     */
+    RenderObjectBase.prototype._iRender = function (renderable, shader, camera, viewProjection) {
+        if (this._renderObjectOwner.lightPicker)
+            this._renderObjectOwner.lightPicker.collectLights(renderable);
+        shader._iRender(renderable, camera, viewProjection);
+    };
+    /**
+     *
+     */
+    RenderObjectBase.prototype.dispose = function () {
+        this._pClearScreenShaders();
+        var len = this._shaderObjects.length;
+        for (var i = 0; i < len; i++)
+            this._shaderObjects[i].dispose();
+        this._shaderObjects = null;
+        this._pool.disposeItem(this._renderObjectOwner);
+    };
+    /**
+     *
+     */
+    RenderObjectBase.prototype.invalidateRenderObject = function () {
+        this._invalidRenderObject = true;
+        this._invalidAnimation = true;
+    };
+    /**
+     *
+     */
+    RenderObjectBase.prototype.invalidateProperties = function () {
+        var len = this._shaderObjects.length;
+        for (var i = 0; i < len; i++)
+            this._shaderObjects[i].invalidateShader();
+        this._invalidAnimation = true;
+    };
+    /**
+     *
+     */
+    RenderObjectBase.prototype.invalidateAnimation = function () {
+        this._invalidAnimation = true;
+    };
+    /**
+     *
+     * @param renderObjectOwner
+     */
+    RenderObjectBase.prototype._updateAnimation = function () {
+        if (this._invalidRenderObject)
+            this._pUpdateRenderObject();
+        this._invalidAnimation = false;
+        var enabledGPUAnimation = this._getEnabledGPUAnimation();
+        var renderOrderId = 0;
+        var mult = 1;
+        var shaderObject;
+        var len = this._shaderObjects.length;
+        for (var i = 0; i < len; i++) {
+            shaderObject = this._shaderObjects[i];
+            if (shaderObject.usesAnimation != enabledGPUAnimation) {
+                shaderObject.usesAnimation = enabledGPUAnimation;
+                shaderObject.invalidateProgram();
+            }
+            renderOrderId += shaderObject.programData.id * mult;
+            mult *= 1000;
+        }
+        this._renderOrderId = renderOrderId;
+    };
+    /**
+     * Performs any processing that needs to occur before any of its passes are used.
+     *
+     * @private
+     */
+    RenderObjectBase.prototype._pUpdateRenderObject = function () {
+        this._invalidRenderObject = false;
+        //overrride to update shader object properties
+    };
+    /**
+     * Removes a pass from the renderObjectOwner.
+     * @param pass The pass to be removed.
+     */
+    RenderObjectBase.prototype._pRemoveScreenShader = function (shader) {
+        shader.removeEventListener(Event.CHANGE, this._onShaderChangeDelegate);
+        this._shaderObjects.splice(this._shaderObjects.indexOf(shader), 1);
+    };
+    /**
+     * Removes all passes from the renderObjectOwner
+     */
+    RenderObjectBase.prototype._pClearScreenShaders = function () {
+        var len = this._shaderObjects.length;
+        for (var i = 0; i < len; ++i)
+            this._shaderObjects[i].removeEventListener(Event.CHANGE, this._onShaderChangeDelegate);
+        this._shaderObjects.length = 0;
+    };
+    /**
+     * Adds a pass to the renderObjectOwner
+     * @param pass
+     */
+    RenderObjectBase.prototype._pAddScreenShader = function (shader) {
+        this._shaderObjects.push(shader);
+        shader.addEventListener(Event.CHANGE, this._onShaderChangeDelegate);
+    };
+    /**
+     * Sets the render state for a pass that is independent of the rendered object. This needs to be called before
+     * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
+     * @param pass The pass data to activate.
+     * @param stage The Stage object which is currently used for rendering.
+     * @param camera The camera from which the scene is viewed.
+     * @private
+     */
+    RenderObjectBase.prototype._iActivate = function (shader, camera) {
+        shader._iActivate(camera);
+    };
+    /**
+     * Clears the render state for a pass. This needs to be called before activating another pass.
+     * @param pass The pass to deactivate.
+     * @param stage The Stage used for rendering
+     *
+     * @internal
+     */
+    RenderObjectBase.prototype._iDeactivate = function (shader) {
+        shader._iDeactivate();
+    };
+    RenderObjectBase.prototype._iInitConstantData = function (shaderObject) {
+    };
+    RenderObjectBase.prototype._iGetPreLightingVertexCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
+    RenderObjectBase.prototype._iGetPreLightingFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
+    RenderObjectBase.prototype._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
+    RenderObjectBase.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
+    RenderObjectBase.prototype._iGetNormalVertexCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
+    RenderObjectBase.prototype._iGetNormalFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
+    /**
+     * Indicates whether or not normals are calculated at all.
+     */
+    RenderObjectBase.prototype._pOutputsNormals = function (shaderObject) {
+        return false;
+    };
+    /**
+     * Indicates whether or not normals are calculated in tangent space.
+     */
+    RenderObjectBase.prototype._pOutputsTangentNormals = function (shaderObject) {
+        return false;
+    };
+    /**
+     * Indicates whether or not normals are allowed in tangent space. This is only the case if no object-space
+     * dependencies exist.
+     */
+    RenderObjectBase.prototype._pUsesTangentSpace = function (shaderObject) {
+        return false;
+    };
+    /**
+     * Listener for when a pass's shader code changes. It recalculates the render order id.
+     */
+    RenderObjectBase.prototype.onShaderChange = function (event) {
+        this.invalidateAnimation();
+    };
+    /**
+     * test if animation will be able to run on gpu BEFORE compiling materials
+     * test if the shader objects supports animating the animation set in the vertex shader
+     * if any object using this material fails to support accelerated animations for any of the shader objects,
+     * we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
+     */
+    RenderObjectBase.prototype._getEnabledGPUAnimation = function () {
+        if (this._renderObjectOwner.animationSet) {
+            this._renderObjectOwner.animationSet.resetGPUCompatibility();
+            var owners = this._renderObjectOwner.iOwners;
+            var numOwners = owners.length;
+            var len = this._shaderObjects.length;
+            for (var i = 0; i < len; i++)
+                for (var j = 0; j < numOwners; j++)
+                    if (owners[j].animator)
+                        owners[j].animator.testGPUCompatibility(this._shaderObjects[i]);
+            return !this._renderObjectOwner.animationSet.usesCPU;
+        }
+        return false;
+    };
+    return RenderObjectBase;
+})();
+module.exports = RenderObjectBase;
+
+
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/library/AssetType":undefined}],"awayjs-renderergl/lib/compilation/RenderObjectPool":[function(require,module,exports){
+/**
+ * @class away.pool.RenderObjectPool
+ */
+var RenderObjectPool = (function () {
+    /**
+     * //TODO
+     *
+     * @param renderObjectClass
+     */
+    function RenderObjectPool(renderObjectClass, renderableClass, stage) {
+        this._renderObjectPool = new Object();
+        this._renderObjectClass = renderObjectClass;
+        this._renderableClass = renderableClass;
+        this._stage = stage;
+    }
+    /**
+     * //TODO
+     *
+     * @param renderableOwner
+     * @returns IRenderable
+     */
+    RenderObjectPool.prototype.getItem = function (renderObjectOwner) {
+        return (this._renderObjectPool[renderObjectOwner.id] || (this._renderObjectPool[renderObjectOwner.id] = renderObjectOwner._iAddRenderObject(new this._renderObjectClass(this, renderObjectOwner, this._renderableClass, this._stage))));
+    };
+    /**
+     * //TODO
+     *
+     * @param renderableOwner
+     */
+    RenderObjectPool.prototype.disposeItem = function (renderObjectOwner) {
+        renderObjectOwner._iRemoveRenderObject(this._renderObjectPool[renderObjectOwner.id]);
+        this._renderObjectPool[renderObjectOwner.id] = null;
+    };
+    return RenderObjectPool;
+})();
+module.exports = RenderObjectPool;
+
+
+},{}],"awayjs-renderergl/lib/compilation/ShaderCompilerBase":[function(require,module,exports){
 var ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 var ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 /**
@@ -9496,17 +10022,16 @@ var ShaderCompilerBase = (function () {
      * Creates a new ShaderCompilerBase object.
      * @param profile The compatibility profile of the renderer.
      */
-    function ShaderCompilerBase(material, materialPass, shaderObject) {
+    function ShaderCompilerBase(renderableClass, renderObject, shaderObject) {
         this._pVertexCode = ''; // Changed to emtpy string- AwayTS
         this._pFragmentCode = ''; // Changed to emtpy string - AwayTS
         this._pPostAnimationFragmentCode = ''; // Changed to emtpy string - AwayTS
-        this._pMaterial = material;
-        this._pMaterialPass = materialPass;
+        this._pRenderableClass = renderableClass;
+        this._pRenderObject = renderObject;
         this._pShaderObject = shaderObject;
-        this._pProfile = shaderObject.profile;
         this._pSharedRegisters = new ShaderRegisterData();
-        this._pRegisterCache = new ShaderRegisterCache(this._pProfile);
-        this._pRegisterCache.vertexAttributesOffset = 1;
+        this._pRegisterCache = new ShaderRegisterCache(shaderObject.profile);
+        this._pRegisterCache.vertexAttributesOffset = renderableClass.vertexAttributesOffset;
         this._pRegisterCache.reset();
     }
     /**
@@ -9514,18 +10039,20 @@ var ShaderCompilerBase = (function () {
      */
     ShaderCompilerBase.prototype.compile = function () {
         this._pShaderObject.reset();
-        this.pCalculateDependencies();
+        this._pShaderObject._iIncludeDependencies();
+        this._pRenderObject._iIncludeDependencies(this._pShaderObject);
+        this._pRenderableClass._iIncludeDependencies(this._pShaderObject);
         this.pInitRegisterIndices();
         this.pCompileDependencies();
         //compile custom vertex & fragment codes
-        this._pVertexCode += this._pMaterialPass._iGetVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-        this._pPostAnimationFragmentCode += this._pMaterialPass._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+        this._pVertexCode += this._pRenderObject._iGetVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+        this._pPostAnimationFragmentCode += this._pRenderObject._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
         //assign the final output color to the output register
         this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
         this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
         //initialise the required shader constants
         this._pShaderObject.initConstantData(this._pRegisterCache, this._pAnimatableAttributes, this._pAnimationTargetRegisters, this._uvSource, this._uvTarget);
-        this._pMaterialPass._iInitConstantData(this._pShaderObject);
+        this._pRenderObject._iInitConstantData(this._pShaderObject);
     };
     /**
      * Compile the code for the methods.
@@ -9546,11 +10073,11 @@ var ShaderCompilerBase = (function () {
         if (this._pShaderObject.viewDirDependencies > 0)
             this.compileViewDirCode();
         //collect code from material
-        this._pVertexCode += this._pMaterial._iGetVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-        this._pFragmentCode += this._pMaterial._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+        this._pVertexCode += this._pRenderableClass._iGetVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+        this._pFragmentCode += this._pRenderableClass._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
         //collect code from pass
-        this._pVertexCode += this._pMaterialPass._iGetPreLightingVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-        this._pFragmentCode += this._pMaterialPass._iGetPreLightingFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+        this._pVertexCode += this._pRenderObject._iGetPreLightingVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+        this._pFragmentCode += this._pRenderObject._iGetPreLightingFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
     };
     ShaderCompilerBase.prototype.compileGlobalPositionCode = function () {
         this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.globalPositionVertex = this._pRegisterCache.getFreeVertexVectorTemp(), this._pShaderObject.globalPosDependencies);
@@ -9624,8 +10151,8 @@ var ShaderCompilerBase = (function () {
         this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.normalFragment, this._pShaderObject.normalDependencies);
         //simple normal aquisition if no tangent space is being used
         if (this._pShaderObject.outputsNormals && !this._pShaderObject.outputsTangentNormals) {
-            this._pVertexCode += this._pMaterialPass._iGetNormalVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-            this._pFragmentCode += this._pMaterialPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+            this._pVertexCode += this._pRenderObject._iGetNormalVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+            this._pFragmentCode += this._pRenderObject._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
             return;
         }
         var normalMatrix;
@@ -9642,7 +10169,7 @@ var ShaderCompilerBase = (function () {
             if (this._pShaderObject.usesTangentSpace) {
                 // normalize normal + tangent vector and generate (approximated) bitangent used in m33 operation for view
                 this._pVertexCode += "nrm " + this._pSharedRegisters.animatedNormal + ".xyz, " + this._pSharedRegisters.animatedNormal + "\n" + "nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + this._pSharedRegisters.animatedTangent + "\n" + "crs " + this._pSharedRegisters.bitangent + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n";
-                this._pFragmentCode += this._pMaterialPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+                this._pFragmentCode += this._pRenderObject._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
             }
             else {
                 //Compiles the vertex shader code for tangent-space normal maps.
@@ -9663,7 +10190,7 @@ var ShaderCompilerBase = (function () {
                 this._pRegisterCache.addFragmentTempUsages(n, 1);
                 this._pFragmentCode += "nrm " + t + ".xyz, " + this._pSharedRegisters.tangentVarying + "\n" + "mov " + t + ".w, " + this._pSharedRegisters.tangentVarying + ".w	\n" + "nrm " + b + ".xyz, " + this._pSharedRegisters.bitangentVarying + "\n" + "nrm " + n + ".xyz, " + this._pSharedRegisters.normalVarying + "\n";
                 //compile custom fragment code for normal calcs
-                this._pFragmentCode += this._pMaterialPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters) + "m33 " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalFragment + ", " + t + "\n" + "mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w\n";
+                this._pFragmentCode += this._pRenderObject._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters) + "m33 " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalFragment + ", " + t + "\n" + "mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w\n";
                 this._pRegisterCache.removeFragmentTempUsage(b);
                 this._pRegisterCache.removeFragmentTempUsage(t);
                 this._pRegisterCache.removeFragmentTempUsage(n);
@@ -9717,21 +10244,12 @@ var ShaderCompilerBase = (function () {
             this._pAnimatableAttributes.push(this._pSharedRegisters.normalInput.toString());
             this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedNormal.toString());
         }
-    };
-    /**
-     * Figure out which named registers are required, and how often.
-     */
-    ShaderCompilerBase.prototype.pCalculateDependencies = function () {
-        this._pShaderObject.useAlphaPremultiplied = this._pMaterial.alphaPremultiplied;
-        this._pShaderObject.useBothSides = this._pMaterial.bothSides;
-        this._pShaderObject.useMipmapping = this._pMaterial.mipmap;
-        this._pShaderObject.useSmoothTextures = this._pMaterial.smooth;
-        this._pShaderObject.repeatTextures = this._pMaterial.repeat;
-        this._pShaderObject.usesUVTransform = this._pMaterial.animateUVs;
-        this._pShaderObject.alphaThreshold = this._pMaterial.alphaThreshold;
-        this._pShaderObject.texture = this._pMaterial.texture;
-        this._pShaderObject.color = this._pMaterial.color;
-        this._pMaterialPass._iIncludeDependencies(this._pShaderObject);
+        if (this._pShaderObject.colorDependencies > 0) {
+            this._pSharedRegisters.colorInput = this._pRegisterCache.getFreeVertexAttribute();
+            this._pShaderObject.colorBufferIndex = this._pSharedRegisters.colorInput.index;
+            this._pSharedRegisters.colorVarying = this._pRegisterCache.getFreeVarying();
+            this._pVertexCode += "mov " + this._pSharedRegisters.colorVarying + ", " + this._pSharedRegisters.colorInput + "\n";
+        }
     };
     /**
      * Disposes all resources used by the compiler.
@@ -9793,8 +10311,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var LightSources = require("awayjs-display/lib/materials/LightSources");
-var ContextGLProfile = require("awayjs-stagegl/lib/base/ContextGLProfile");
 var ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 /**
  * ShaderCompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
@@ -9808,10 +10324,10 @@ var ShaderLightingCompiler = (function (_super) {
      * Creates a new ShaderCompilerBase object.
      * @param profile The compatibility profile of the renderer.
      */
-    function ShaderLightingCompiler(material, materialPass, shaderObject) {
-        _super.call(this, material, materialPass, shaderObject);
-        this._materialLightingPass = materialPass;
+    function ShaderLightingCompiler(renderableClass, renderObject, shaderObject) {
+        _super.call(this, renderableClass, renderObject, shaderObject);
         this._shaderLightingObject = shaderObject;
+        this._renderLightingObject = renderObject;
     }
     /**
      * Compile the code for the methods.
@@ -9827,8 +10343,8 @@ var ShaderLightingCompiler = (function (_super) {
         }
         if (this._shaderLightingObject.usesProbes)
             this.compileLightProbeCode();
-        this._pVertexCode += this._materialLightingPass._iGetPostLightingVertexCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
-        this._pFragmentCode += this._materialLightingPass._iGetPostLightingFragmentCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
+        this._pVertexCode += this._renderLightingObject._iGetPostLightingVertexCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
+        this._pFragmentCode += this._renderLightingObject._iGetPostLightingFragmentCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
     };
     /**
      * Provides the code to provide shadow mapping.
@@ -9889,7 +10405,7 @@ var ShaderLightingCompiler = (function (_super) {
         var fragmentRegIndex = 0;
         var addSpec = this._shaderLightingObject.usesLightsForSpecular;
         var addDiff = this._shaderLightingObject.usesLightsForDiffuse;
-        for (var i = 0; i < this._materialLightingPass.iNumDirectionalLights; ++i) {
+        for (var i = 0; i < this._shaderLightingObject.numDirectionalLights; ++i) {
             if (this._shaderLightingObject.usesTangentSpace) {
                 lightDirReg = this._dirLightVertexConstants[vertexRegIndex++];
                 var lightVarying = this._pRegisterCache.getFreeVarying();
@@ -9904,15 +10420,15 @@ var ShaderLightingCompiler = (function (_super) {
             diffuseColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
             specularColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
             if (addDiff)
-                this._pFragmentCode += this._materialLightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
+                this._pFragmentCode += this._renderLightingObject._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
             if (addSpec)
-                this._pFragmentCode += this._materialLightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
+                this._pFragmentCode += this._renderLightingObject._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
             if (this._shaderLightingObject.usesTangentSpace)
                 this._pRegisterCache.removeVertexTempUsage(lightDirReg);
         }
         vertexRegIndex = 0;
         fragmentRegIndex = 0;
-        for (var i = 0; i < this._materialLightingPass.iNumPointLights; ++i) {
+        for (var i = 0; i < this._shaderLightingObject.numPointLights; ++i) {
             if (this._shaderLightingObject.usesTangentSpace || !this._shaderLightingObject.usesGlobalPosFragment)
                 lightPosReg = this._pointLightVertexConstants[vertexRegIndex++];
             else
@@ -9945,9 +10461,9 @@ var ShaderLightingCompiler = (function (_super) {
             if (this._shaderLightingObject.lightFragmentConstantIndex == -1)
                 this._shaderLightingObject.lightFragmentConstantIndex = lightPosReg.index * 4;
             if (addDiff)
-                this._pFragmentCode += this._materialLightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
+                this._pFragmentCode += this._renderLightingObject._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
             if (addSpec)
-                this._pFragmentCode += this._materialLightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
+                this._pFragmentCode += this._renderLightingObject._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
             this._pRegisterCache.removeFragmentTempUsage(lightDirReg);
         }
     };
@@ -9971,17 +10487,17 @@ var ShaderLightingCompiler = (function (_super) {
             if (i == 0)
                 this._shaderLightingObject.probeWeightsIndex = weightRegisters[i].index * 4;
         }
-        for (i = 0; i < this._materialLightingPass.iNumLightProbes; ++i) {
+        for (i = 0; i < this._shaderLightingObject.numLightProbes; ++i) {
             weightReg = weightRegisters[Math.floor(i / 4)].toString() + weightComponents[i % 4];
             if (addDiff) {
                 texReg = this._pRegisterCache.getFreeTextureReg();
                 this._shaderLightingObject.lightProbeDiffuseIndices[i] = texReg.index;
-                this._pFragmentCode += this._materialLightingPass._iGetPerProbeDiffuseFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
+                this._pFragmentCode += this._renderLightingObject._iGetPerProbeDiffuseFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
             }
             if (addSpec) {
                 texReg = this._pRegisterCache.getFreeTextureReg();
                 this._shaderLightingObject.lightProbeSpecularIndices[i] = texReg.index;
-                this._pFragmentCode += this._materialLightingPass._iGetPerProbeSpecularFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
+                this._pFragmentCode += this._renderLightingObject._iGetPerProbeSpecularFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
             }
         }
     };
@@ -9993,63 +10509,40 @@ var ShaderLightingCompiler = (function (_super) {
         this._shaderLightingObject.lightVertexConstantIndex = -1;
         this._shaderLightingObject.lightFragmentConstantIndex = -1;
         this._shaderLightingObject.probeWeightsIndex = -1;
-        this._pNumProbeRegisters = Math.ceil(this._materialLightingPass.iNumLightProbes / 4);
+        this._pNumProbeRegisters = Math.ceil(this._shaderLightingObject.numLightProbes / 4);
         //init light data
         if (this._shaderLightingObject.usesTangentSpace || !this._shaderLightingObject.usesGlobalPosFragment) {
-            this._pointLightVertexConstants = new Array(this._materialLightingPass.iNumPointLights);
-            this._pointLightFragmentConstants = new Array(this._materialLightingPass.iNumPointLights * 2);
+            this._pointLightVertexConstants = new Array(this._shaderLightingObject.numPointLights);
+            this._pointLightFragmentConstants = new Array(this._shaderLightingObject.numPointLights * 2);
         }
         else {
-            this._pointLightFragmentConstants = new Array(this._materialLightingPass.iNumPointLights * 3);
+            this._pointLightFragmentConstants = new Array(this._shaderLightingObject.numPointLights * 3);
         }
         if (this._shaderLightingObject.usesTangentSpace) {
-            this._dirLightVertexConstants = new Array(this._materialLightingPass.iNumDirectionalLights);
-            this._dirLightFragmentConstants = new Array(this._materialLightingPass.iNumDirectionalLights * 2);
+            this._dirLightVertexConstants = new Array(this._shaderLightingObject.numDirectionalLights);
+            this._dirLightFragmentConstants = new Array(this._shaderLightingObject.numDirectionalLights * 2);
         }
         else {
-            this._dirLightFragmentConstants = new Array(this._materialLightingPass.iNumDirectionalLights * 3);
+            this._dirLightFragmentConstants = new Array(this._shaderLightingObject.numDirectionalLights * 3);
         }
-    };
-    /**
-     * Figure out which named registers are required, and how often.
-     */
-    ShaderLightingCompiler.prototype.pCalculateDependencies = function () {
-        var numAllLights = this._materialLightingPass.iNumPointLights + this._materialLightingPass.iNumDirectionalLights;
-        var numLightProbes = this._materialLightingPass.iNumLightProbes;
-        var diffuseLightSources = this._pMaterial.diffuseLightSources;
-        var specularLightSources = this._materialLightingPass._iUsesSpecular() ? this._pMaterial.specularLightSources : 0x00;
-        var combinedLightSources = diffuseLightSources | specularLightSources;
-        this._shaderLightingObject.usesLightFallOff = this._pMaterial.enableLightFallOff && this._shaderLightingObject.profile != ContextGLProfile.BASELINE_CONSTRAINED;
-        this._shaderLightingObject.numLights = numAllLights + numLightProbes;
-        this._shaderLightingObject.numPointLights = this._materialLightingPass.iNumPointLights;
-        this._shaderLightingObject.numDirectionalLights = this._materialLightingPass.iNumDirectionalLights;
-        this._shaderLightingObject.numLightProbes = numLightProbes;
-        this._shaderLightingObject.pointLightsOffset = this._materialLightingPass.pointLightsOffset;
-        this._shaderLightingObject.directionalLightsOffset = this._materialLightingPass.directionalLightsOffset;
-        this._shaderLightingObject.lightProbesOffset = this._materialLightingPass.lightProbesOffset;
-        this._shaderLightingObject.lightPicker = this._materialLightingPass.lightPicker;
-        this._shaderLightingObject.usesLights = numAllLights > 0 && (combinedLightSources & LightSources.LIGHTS) != 0;
-        this._shaderLightingObject.usesProbes = numLightProbes > 0 && (combinedLightSources & LightSources.PROBES) != 0;
-        this._shaderLightingObject.usesLightsForSpecular = numAllLights > 0 && (specularLightSources & LightSources.LIGHTS) != 0;
-        this._shaderLightingObject.usesProbesForSpecular = numLightProbes > 0 && (specularLightSources & LightSources.PROBES) != 0;
-        this._shaderLightingObject.usesLightsForDiffuse = numAllLights > 0 && (diffuseLightSources & LightSources.LIGHTS) != 0;
-        this._shaderLightingObject.usesProbesForDiffuse = numLightProbes > 0 && (diffuseLightSources & LightSources.PROBES) != 0;
-        this._shaderLightingObject.usesShadows = this._materialLightingPass._iUsesShadows();
-        _super.prototype.pCalculateDependencies.call(this);
     };
     return ShaderLightingCompiler;
 })(ShaderCompilerBase);
 module.exports = ShaderLightingCompiler;
 
 
-},{"awayjs-display/lib/materials/LightSources":undefined,"awayjs-renderergl/lib/compilation/ShaderCompilerBase":undefined,"awayjs-stagegl/lib/base/ContextGLProfile":undefined}],"awayjs-renderergl/lib/compilation/ShaderLightingObject":[function(require,module,exports){
+},{"awayjs-renderergl/lib/compilation/ShaderCompilerBase":undefined}],"awayjs-renderergl/lib/compilation/ShaderLightingObject":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var Event = require("awayjs-core/lib/events/Event");
+var LightSources = require("awayjs-display/lib/materials/LightSources");
+var ContextGLProfile = require("awayjs-stagegl/lib/base/ContextGLProfile");
 var ShaderLightingCompiler = require("awayjs-renderergl/lib/compilation/ShaderLightingCompiler");
+var ShaderPassMode = require("awayjs-renderergl/lib/compilation/ShaderPassMode");
 var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 /**
  * ShaderObjectBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -10064,17 +10557,87 @@ var ShaderLightingObject = (function (_super) {
     /**
      * Creates a new MethodCompilerVO object.
      */
-    function ShaderLightingObject(profile) {
-        _super.call(this, profile);
+    function ShaderLightingObject(renderObjectOwner, renderableClass, renderLightingObject, stage) {
+        var _this = this;
+        _super.call(this, renderObjectOwner, renderableClass, renderLightingObject, stage);
+        this._maxLights = 3;
+        this._passMode = 0x03;
+        this._includeCasters = true;
+        this._onLightsChangeDelegate = function (event) { return _this.onLightsChange(event); };
     }
+    Object.defineProperty(ShaderLightingObject.prototype, "passMode", {
+        /**
+         *
+         */
+        get: function () {
+            return this._passMode;
+        },
+        set: function (value) {
+            if (this._passMode == value)
+                return;
+            this._passMode = value;
+            this._updateLightPicker();
+            this.invalidateShader();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderLightingObject.prototype, "includeCasters", {
+        /**
+         * Indicates whether or not shadow casting lights need to be included.
+         */
+        get: function () {
+            return this._includeCasters;
+        },
+        set: function (value) {
+            if (this._includeCasters == value)
+                return;
+            this._includeCasters = value;
+            this.invalidateShader();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderLightingObject.prototype, "lightPicker", {
+        get: function () {
+            return this._lightPicker;
+        },
+        set: function (value) {
+            if (this._lightPicker)
+                this._lightPicker.removeEventListener(Event.CHANGE, this._onLightsChangeDelegate);
+            this._lightPicker;
+            if (this._lightPicker)
+                this._lightPicker.addEventListener(Event.CHANGE, this._onLightsChangeDelegate);
+            this._updateLightPicker();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ShaderLightingObject.prototype._iIncludeDependencies = function () {
+        _super.prototype._iIncludeDependencies.call(this);
+        var numAllLights = this.numPointLights + this.numDirectionalLights;
+        var numLightProbes = this.numLightProbes;
+        var diffuseLightSources = this._renderLightingObject.diffuseLightSources;
+        var specularLightSources = this._renderLightingObject._iUsesSpecular() ? this._renderLightingObject.specularLightSources : 0x00;
+        var combinedLightSources = diffuseLightSources | specularLightSources;
+        this.usesLightFallOff = this._renderLightingObject.enableLightFallOff && this.profile != ContextGLProfile.BASELINE_CONSTRAINED;
+        this.numLights = numAllLights + numLightProbes;
+        this.usesLights = numAllLights > 0 && (combinedLightSources & LightSources.LIGHTS) != 0;
+        this.usesProbes = numLightProbes > 0 && (combinedLightSources & LightSources.PROBES) != 0;
+        this.usesLightsForSpecular = numAllLights > 0 && (specularLightSources & LightSources.LIGHTS) != 0;
+        this.usesProbesForSpecular = numLightProbes > 0 && (specularLightSources & LightSources.PROBES) != 0;
+        this.usesLightsForDiffuse = numAllLights > 0 && (diffuseLightSources & LightSources.LIGHTS) != 0;
+        this.usesProbesForDiffuse = numLightProbes > 0 && (diffuseLightSources & LightSources.PROBES) != 0;
+        this.usesShadows = this._renderLightingObject._iUsesShadows();
+    };
     /**
      * Factory method to create a concrete compiler object for this object
      *
      * @param materialPassVO
      * @returns {away.materials.ShaderLightingCompiler}
      */
-    ShaderLightingObject.prototype.createCompiler = function (material, materialPass) {
-        return new ShaderLightingCompiler(material, materialPass, this);
+    ShaderLightingObject.prototype.createCompiler = function (renderableClass, renderObject) {
+        return new ShaderLightingCompiler(renderableClass, renderObject, this);
     };
     /**
      * Clears dependency counts for all registers. Called when recompiling a pass.
@@ -10091,12 +10654,12 @@ var ShaderLightingObject = (function (_super) {
      * @param stage
      * @param camera
      */
-    ShaderLightingObject.prototype.setRenderState = function (renderable, stage, camera, viewProjection) {
-        _super.prototype.setRenderState.call(this, renderable, stage, camera, viewProjection);
+    ShaderLightingObject.prototype._iRender = function (renderable, camera, viewProjection) {
+        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
         if (this.usesLights)
             this.updateLights();
         if (this.usesProbes)
-            this.updateProbes(stage);
+            this.updateProbes();
     };
     /**
      * Updates constant data render state used by the lights. This method is optional for subclasses to implement.
@@ -10239,7 +10802,7 @@ var ShaderLightingObject = (function (_super) {
     /**
      * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
      */
-    ShaderLightingObject.prototype.updateProbes = function (stage) {
+    ShaderLightingObject.prototype.updateProbes = function () {
         var probe;
         var lightProbes = this.lightPicker.lightProbes;
         var weights = this.lightPicker.lightProbeWeights;
@@ -10253,21 +10816,90 @@ var ShaderLightingObject = (function (_super) {
         for (var i = 0; i < len; ++i) {
             probe = lightProbes[this.lightProbesOffset + i];
             if (addDiff)
-                stage.activateCubeTexture(this.lightProbeDiffuseIndices[i], probe.diffuseMap);
+                this._stage.activateCubeTexture(this.lightProbeDiffuseIndices[i], probe.diffuseMap);
             if (addSpec)
-                stage.activateCubeTexture(this.lightProbeSpecularIndices[i], probe.specularMap);
+                this._stage.activateCubeTexture(this.lightProbeSpecularIndices[i], probe.specularMap);
         }
         for (i = 0; i < len; ++i)
             this.fragmentConstantData[this.probeWeightsIndex + i] = weights[this.lightProbesOffset + i];
+    };
+    ShaderLightingObject.prototype.onLightsChange = function (event) {
+        this._updateLightPicker();
+    };
+    ShaderLightingObject.prototype._updateLightPicker = function () {
+        var numDirectionalLightsOld = this.numDirectionalLights;
+        var numPointLightsOld = this.numPointLights;
+        var numLightProbesOld = this.numLightProbes;
+        if (this._lightPicker && (this.passMode & ShaderPassMode.LIGHTING)) {
+            this.numDirectionalLights = this.calculateNumDirectionalLights(this._lightPicker.numDirectionalLights);
+            this.numPointLights = this.calculateNumPointLights(this._lightPicker.numPointLights);
+            this.numLightProbes = this.calculateNumProbes(this._lightPicker.numLightProbes);
+            if (this.includeCasters) {
+                this.numDirectionalLights += this._lightPicker.numCastingDirectionalLights;
+                this.numPointLights += this._lightPicker.numCastingPointLights;
+            }
+        }
+        else {
+            this.numDirectionalLights = 0;
+            this.numPointLights = 0;
+            this.numLightProbes = 0;
+        }
+        this.numLights = this.numDirectionalLights + this.numPointLights;
+        if (numDirectionalLightsOld != this.numDirectionalLights || numPointLightsOld != this.numPointLights || numLightProbesOld != this.numLightProbes)
+            this.invalidateShader();
+    };
+    /**
+     * Calculates the amount of directional lights this material will support.
+     * @param numDirectionalLights The maximum amount of directional lights to support.
+     * @return The amount of directional lights this material will support, bounded by the amount necessary.
+     */
+    ShaderLightingObject.prototype.calculateNumDirectionalLights = function (numDirectionalLights) {
+        return Math.min(numDirectionalLights - this.directionalLightsOffset, this._maxLights);
+    };
+    /**
+     * Calculates the amount of point lights this material will support.
+     * @param numDirectionalLights The maximum amount of point lights to support.
+     * @return The amount of point lights this material will support, bounded by the amount necessary.
+     */
+    ShaderLightingObject.prototype.calculateNumPointLights = function (numPointLights) {
+        var numFree = this._maxLights - this.numDirectionalLights;
+        return Math.min(numPointLights - this.pointLightsOffset, numFree);
+    };
+    /**
+     * Calculates the amount of light probes this material will support.
+     * @param numDirectionalLights The maximum amount of light probes to support.
+     * @return The amount of light probes this material will support, bounded by the amount necessary.
+     */
+    ShaderLightingObject.prototype.calculateNumProbes = function (numLightProbes) {
+        var numChannels = 0;
+        if ((this._renderLightingObject.specularLightSources & LightSources.PROBES) != 0)
+            ++numChannels;
+        if ((this._renderLightingObject.diffuseLightSources & LightSources.PROBES) != 0)
+            ++numChannels;
+        // 4 channels available
+        return Math.min(numLightProbes - this.lightProbesOffset, (4 / numChannels) | 0);
     };
     return ShaderLightingObject;
 })(ShaderObjectBase);
 module.exports = ShaderLightingObject;
 
 
-},{"awayjs-renderergl/lib/compilation/ShaderLightingCompiler":undefined,"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined}],"awayjs-renderergl/lib/compilation/ShaderObjectBase":[function(require,module,exports){
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-display/lib/materials/LightSources":undefined,"awayjs-renderergl/lib/compilation/ShaderLightingCompiler":undefined,"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/compilation/ShaderPassMode":undefined,"awayjs-stagegl/lib/base/ContextGLProfile":undefined}],"awayjs-renderergl/lib/compilation/ShaderObjectBase":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Event = require("awayjs-core/lib/events/Event");
+var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+var ArgumentError = require("awayjs-core/lib/errors/ArgumentError");
+var BlendMode = require("awayjs-display/lib/base/BlendMode");
+var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
 var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var ContextGLTriangleFace = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
+var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 /**
  * ShaderObjectBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -10277,11 +10909,22 @@ var ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompil
  *
  * @see RegisterPool.addUsage
  */
-var ShaderObjectBase = (function () {
+var ShaderObjectBase = (function (_super) {
+    __extends(ShaderObjectBase, _super);
     /**
      * Creates a new MethodCompilerVO object.
      */
-    function ShaderObjectBase(profile) {
+    function ShaderObjectBase(renderObjectOwner, renderableClass, renderObject, stage) {
+        _super.call(this);
+        this.depthCompareMode = ContextGLCompareMode.LESS_EQUAL;
+        this._invalidShader = true;
+        this._invalidProgram = true;
+        this._animationVertexCode = "";
+        this._animationFragmentCode = "";
+        this._enableBlending = false;
+        this._blendFactorSource = ContextGLBlendFactor.ONE;
+        this._blendFactorDest = ContextGLBlendFactor.ZERO;
+        this.writeDepth = true;
         this._defaultCulling = ContextGLTriangleFace.BACK;
         this._pInverseSceneMatrix = new Array();
         //set ambient values to default
@@ -10294,16 +10937,36 @@ var ShaderObjectBase = (function () {
         this.usesGlobalPosFragment = false;
         this.vertexConstantData = new Array();
         this.fragmentConstantData = new Array();
-        this.profile = profile;
+        this._renderObjectOwner = renderObjectOwner;
+        this._renderableClass = renderableClass;
+        this._renderObject = renderObject;
+        this._stage = stage;
+        this.profile = this._stage.profile;
     }
+    Object.defineProperty(ShaderObjectBase.prototype, "programData", {
+        get: function () {
+            if (this._invalidProgram)
+                this._updateProgram();
+            return this._programData;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ShaderObjectBase.prototype._iIncludeDependencies = function () {
+        this.alphaThreshold = this._renderObjectOwner.alphaThreshold;
+        this.useMipmapping = this._renderObjectOwner.mipmap;
+        this.useSmoothTextures = this._renderObjectOwner.smooth;
+    };
     /**
      * Factory method to create a concrete compiler object for this object
      *
-     * @param materialPassVO
-     * @returns {away.materials.ShaderCompilerBase}
+     * @param renderableClass
+     * @param renderObject
+     * @param stage
+     * @returns {ShaderCompilerBase}
      */
-    ShaderObjectBase.prototype.createCompiler = function (material, materialPass) {
-        return new ShaderCompilerBase(material, materialPass, this);
+    ShaderObjectBase.prototype.createCompiler = function (renderableClass, renderObject) {
+        return new ShaderCompilerBase(renderableClass, renderObject, this);
     };
     /**
      * Clears dependency counts for all registers. Called when recompiling a pass.
@@ -10311,6 +10974,7 @@ var ShaderObjectBase = (function () {
     ShaderObjectBase.prototype.reset = function () {
         this.projectionDependencies = 0;
         this.normalDependencies = 0;
+        this.colorDependencies = 0;
         this.viewDirDependencies = 0;
         this.uvDependencies = 0;
         this.secondaryUVDependencies = 0;
@@ -10329,6 +10993,7 @@ var ShaderObjectBase = (function () {
         this.uvTransformIndex = -1;
         this.secondaryUVBufferIndex = -1;
         this.normalBufferIndex = -1;
+        this.colorBufferIndex = -1;
         this.tangentBufferIndex = -1;
         this.sceneMatrixIndex = -1;
         this.sceneNormalMatrixIndex = -1;
@@ -10372,8 +11037,13 @@ var ShaderObjectBase = (function () {
     /**
      * @inheritDoc
      */
-    ShaderObjectBase.prototype.iActivate = function (stage, camera) {
-        stage.context.setCulling(this.useBothSides ? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
+    ShaderObjectBase.prototype._iActivate = function (camera) {
+        if (this.usesAnimation)
+            this._renderObjectOwner.animationSet.activate(this, this._stage);
+        this._stage.context.setDepthTest((this.writeDepth && !this._enableBlending), this.depthCompareMode);
+        if (this._enableBlending)
+            this._stage.context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
+        this._stage.context.setCulling(this.useBothSides ? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
         if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
             var pos = camera.scenePosition;
             this.vertexConstantData[this.cameraPositionIndex] = pos.x;
@@ -10384,7 +11054,10 @@ var ShaderObjectBase = (function () {
     /**
      * @inheritDoc
      */
-    ShaderObjectBase.prototype.iDeactivate = function (stage) {
+    ShaderObjectBase.prototype._iDeactivate = function () {
+        if (this.usesAnimation)
+            this._renderObjectOwner.animationSet.deactivate(this, this._stage);
+        this._stage.context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
     };
     /**
      *
@@ -10393,20 +11066,21 @@ var ShaderObjectBase = (function () {
      * @param stage
      * @param camera
      */
-    ShaderObjectBase.prototype.setRenderState = function (renderable, stage, camera, viewProjection) {
-        var context = stage.context;
-        if (renderable.materialOwner.animator)
-            renderable.materialOwner.animator.setRenderState(this, renderable, stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
+    ShaderObjectBase.prototype._iRender = function (renderable, camera, viewProjection) {
+        if (renderable.renderableOwner.animator)
+            renderable.renderableOwner.animator.setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
         if (this.uvBufferIndex >= 0)
-            stage.activateBuffer(this.uvBufferIndex, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
+            this._stage.activateBuffer(this.uvBufferIndex, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
         if (this.secondaryUVBufferIndex >= 0)
-            stage.activateBuffer(this.secondaryUVBufferIndex, renderable.getVertexData(TriangleSubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.SECONDARY_UV_DATA), TriangleSubGeometry.SECONDARY_UV_FORMAT);
+            this._stage.activateBuffer(this.secondaryUVBufferIndex, renderable.getVertexData(TriangleSubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.SECONDARY_UV_DATA), TriangleSubGeometry.SECONDARY_UV_FORMAT);
         if (this.normalBufferIndex >= 0)
-            stage.activateBuffer(this.normalBufferIndex, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+            this._stage.activateBuffer(this.normalBufferIndex, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
         if (this.tangentBufferIndex >= 0)
-            stage.activateBuffer(this.tangentBufferIndex, renderable.getVertexData(TriangleSubGeometry.TANGENT_DATA), renderable.getVertexOffset(TriangleSubGeometry.TANGENT_DATA), TriangleSubGeometry.TANGENT_FORMAT);
+            this._stage.activateBuffer(this.tangentBufferIndex, renderable.getVertexData(TriangleSubGeometry.TANGENT_DATA), renderable.getVertexOffset(TriangleSubGeometry.TANGENT_DATA), TriangleSubGeometry.TANGENT_FORMAT);
+        if (this.colorBufferIndex >= 0)
+            this._stage.activateBuffer(this.colorBufferIndex, renderable.getVertexData(LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(LineSubGeometry.COLOR_DATA), LineSubGeometry.COLOR_FORMAT);
         if (this.usesUVTransform) {
-            var uvTransform = renderable.materialOwner.uvTransform.matrix;
+            var uvTransform = renderable.renderableOwner.uvTransform.matrix;
             if (uvTransform) {
                 this.vertexConstantData[this.uvTransformIndex] = uvTransform.a;
                 this.vertexConstantData[this.uvTransformIndex + 1] = uvTransform.b;
@@ -10437,15 +11111,125 @@ var ShaderObjectBase = (function () {
             this.vertexConstantData[this.cameraPositionIndex + 2] = this._pInverseSceneMatrix[2] * x + this._pInverseSceneMatrix[6] * y + this._pInverseSceneMatrix[10] * z + this._pInverseSceneMatrix[14];
         }
     };
+    /**
+     * The blend mode to use when drawing this renderable. The following blend modes are supported:
+     * <ul>
+     * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
+     * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
+     * <li>BlendMode.MULTIPLY</li>
+     * <li>BlendMode.ADD</li>
+     * <li>BlendMode.ALPHA</li>
+     * </ul>
+     */
+    ShaderObjectBase.prototype.setBlendMode = function (value) {
+        switch (value) {
+            case BlendMode.NORMAL:
+                this._blendFactorSource = ContextGLBlendFactor.ONE;
+                this._blendFactorDest = ContextGLBlendFactor.ZERO;
+                this._enableBlending = false;
+                break;
+            case BlendMode.LAYER:
+                this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
+                this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+                this._enableBlending = true;
+                break;
+            case BlendMode.MULTIPLY:
+                this._blendFactorSource = ContextGLBlendFactor.ZERO;
+                this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
+                this._enableBlending = true;
+                break;
+            case BlendMode.ADD:
+                this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
+                this._blendFactorDest = ContextGLBlendFactor.ONE;
+                this._enableBlending = true;
+                break;
+            case BlendMode.ALPHA:
+                this._blendFactorSource = ContextGLBlendFactor.ZERO;
+                this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
+                this._enableBlending = true;
+                break;
+            default:
+                throw new ArgumentError("Unsupported blend mode!");
+        }
+    };
+    ShaderObjectBase.prototype.invalidateProgram = function () {
+        this._invalidProgram = true;
+    };
+    ShaderObjectBase.prototype.invalidateShader = function () {
+        this._invalidShader = true;
+        this._invalidProgram = true;
+        this.dispatchEvent(new Event(Event.CHANGE));
+    };
     ShaderObjectBase.prototype.dispose = function () {
-        //TODO uncount associated program data
+        this._programData.dispose();
+        this._programData = null;
+    };
+    ShaderObjectBase.prototype._updateProgram = function () {
+        this._invalidProgram = false;
+        var compiler;
+        if (this._invalidShader) {
+            this._invalidShader = false;
+            compiler = this.createCompiler(this._renderableClass, this._renderObject);
+            compiler.compile();
+        }
+        this._calcAnimationCode(compiler.shadedTarget);
+        var programData = this._stage.getProgramData(this._animationVertexCode + compiler.vertexCode, compiler.fragmentCode + this._animationFragmentCode + compiler.postAnimationFragmentCode);
+        //check program data hasn't changed, keep count of program usages
+        if (this._programData != programData) {
+            if (this._programData)
+                this._programData.dispose();
+            this._programData = programData;
+            programData.usages++;
+        }
+    };
+    ShaderObjectBase.prototype._calcAnimationCode = function (shadedTarget) {
+        //reset code
+        this._animationVertexCode = "";
+        this._animationFragmentCode = "";
+        //check to see if GPU animation is used
+        if (this.usesAnimation) {
+            var animationSet = this._renderObjectOwner.animationSet;
+            this._animationVertexCode += animationSet.getAGALVertexCode(this);
+            if (this.uvDependencies > 0 && !this.usesUVTransform)
+                this._animationVertexCode += animationSet.getAGALUVCode(this);
+            if (this.usesFragmentAnimation)
+                this._animationFragmentCode += animationSet.getAGALFragmentCode(this, shadedTarget);
+            animationSet.doneAGALCode(this);
+        }
+        else {
+            // simply write attributes to targets, do not animate them
+            // projection will pick up on targets[0] to do the projection
+            var len = this.animatableAttributes.length;
+            for (var i = 0; i < len; ++i)
+                this._animationVertexCode += "mov " + this.animationTargetRegisters[i] + ", " + this.animatableAttributes[i] + "\n";
+            if (this.uvDependencies > 0 && !this.usesUVTransform)
+                this._animationVertexCode += "mov " + this.uvTarget + "," + this.uvSource + "\n";
+        }
     };
     return ShaderObjectBase;
-})();
+})(EventDispatcher);
 module.exports = ShaderObjectBase;
 
 
-},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/compilation/ShaderCompilerBase":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/compilation/ShaderRegisterCache":[function(require,module,exports){
+},{"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-display/lib/base/BlendMode":undefined,"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/compilation/ShaderCompilerBase":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/compilation/ShaderPassMode":[function(require,module,exports){
+var ShaderPassMode = (function () {
+    function ShaderPassMode() {
+    }
+    ShaderPassMode.EFFECTS = 0x01;
+    /**
+     *
+     */
+    ShaderPassMode.LIGHTING = 0x02;
+    /**
+     *
+     */
+    ShaderPassMode.SUPER_SHADER = 0x03;
+    return ShaderPassMode;
+})();
+module.exports = ShaderPassMode;
+
+
+},{}],"awayjs-renderergl/lib/compilation/ShaderRegisterCache":[function(require,module,exports){
 var RegisterPool = require("awayjs-renderergl/lib/compilation/RegisterPool");
 var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 /**
@@ -10786,7 +11570,86 @@ var ShaderRegisterElement = (function () {
 module.exports = ShaderRegisterElement;
 
 
-},{}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
+},{}],"awayjs-renderergl/lib/compilation/SkyboxRenderObject":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var BlendMode = require("awayjs-display/lib/base/BlendMode");
+var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
+var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
+var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
+var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
+var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
+var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
+/**
+ * SkyboxRenderObject forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
+ */
+var SkyboxRenderObject = (function (_super) {
+    __extends(SkyboxRenderObject, _super);
+    function SkyboxRenderObject(pool, renderObjectOwner, renderableClass, stage) {
+        _super.call(this, pool, renderObjectOwner, renderableClass, stage);
+        this._alphaBlending = false;
+        this._alpha = 1;
+        this._depthCompareMode = ContextGLCompareMode.LESS_EQUAL;
+        this._skybox = renderObjectOwner;
+        this._screenShader = new ShaderObjectBase(renderObjectOwner, renderableClass, this, this._stage);
+        this._pAddScreenShader(this._screenShader);
+    }
+    /**
+    * @inheritDoc
+    */
+    SkyboxRenderObject.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        //var cubeMapReg:ShaderRegisterElement = registerCache.getFreeTextureReg();
+        //this._texturesIndex = cubeMapReg.index;
+        //ShaderCompilerHelper.getTexCubeSampleCode(sharedRegisters.shadedTarget, cubeMapReg, this._cubeTexture, shaderObject.useSmoothTextures, shaderObject.useMipmapping);
+        var mip = ",mipnone";
+        if (this._skybox.cubeMap.hasMipmaps)
+            mip = ",miplinear";
+        return "tex ft0, v0, fs0 <cube," + ShaderCompilerHelper.getFormatStringForTexture(this._skybox.cubeMap) + "linear,clamp" + mip + ">\n";
+    };
+    /**
+     * @inheritDoc
+     */
+    SkyboxRenderObject.prototype._iActivate = function (shader, camera) {
+        _super.prototype._iActivate.call(this, shader, camera);
+        var context = this._stage.context;
+        context.setSamplerStateAt(0, ContextGLWrapMode.CLAMP, ContextGLTextureFilter.LINEAR, this._skybox.cubeMap.hasMipmaps ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
+        context.setDepthTest(false, ContextGLCompareMode.LESS);
+        this._stage.activateCubeTexture(0, this._skybox.cubeMap);
+    };
+    /**
+     * @inheritDoc
+     */
+    SkyboxRenderObject.prototype._pUpdateRenderObject = function () {
+        this.setBlendAndCompareModes();
+        this._pClearScreenShaders();
+        this._pAddScreenShader(this._screenShader);
+    };
+    /**
+     * Sets up the various blending modes for all screen passes, based on whether or not there are previous passes.
+     */
+    SkyboxRenderObject.prototype.setBlendAndCompareModes = function () {
+        this._pRequiresBlending = (this._renderObjectOwner.blendMode != BlendMode.NORMAL || this._alphaBlending || this._alpha < 1);
+        //this._screenShader.depthCompareMode = this._depthCompareMode;
+        //this._screenShader.preserveAlpha = this._pRequiresBlending;
+        this._screenShader.setBlendMode((this._renderObjectOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._renderObjectOwner.blendMode);
+        //this._screenShader.forceSeparateMVP = false;
+    };
+    /**
+     *
+     */
+    SkyboxRenderObject.id = "skybox";
+    return SkyboxRenderObject;
+})(RenderObjectBase);
+module.exports = SkyboxRenderObject;
+
+
+},{"awayjs-display/lib/base/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":undefined,"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFilter":undefined,"awayjs-stagegl/lib/base/ContextGLWrapMode":undefined}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11152,14 +12015,13 @@ module.exports = Filter3DTaskBase;
 var BitmapData = require("awayjs-core/lib/base/BitmapData");
 var AssetType = require("awayjs-core/lib/library/AssetType");
 var BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
-var LineBasicMaterial = require("awayjs-renderergl/lib/materials/LineBasicMaterial");
-var TriangleBasicMaterial = require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
+var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
 var DefaultMaterialManager = (function () {
     function DefaultMaterialManager() {
     }
-    DefaultMaterialManager.getDefaultMaterial = function (materialOwner) {
-        if (materialOwner === void 0) { materialOwner = null; }
-        if (materialOwner != null && materialOwner.assetType == AssetType.LINE_SUB_MESH) {
+    DefaultMaterialManager.getDefaultMaterial = function (renderableOwner) {
+        if (renderableOwner === void 0) { renderableOwner = null; }
+        if (renderableOwner != null && renderableOwner.assetType == AssetType.LINE_SUB_MESH) {
             if (!DefaultMaterialManager._defaultLineMaterial)
                 DefaultMaterialManager.createDefaultLineMaterial();
             return DefaultMaterialManager._defaultLineMaterial;
@@ -11170,8 +12032,8 @@ var DefaultMaterialManager = (function () {
             return DefaultMaterialManager._defaultTriangleMaterial;
         }
     };
-    DefaultMaterialManager.getDefaultTexture = function (materialOwner) {
-        if (materialOwner === void 0) { materialOwner = null; }
+    DefaultMaterialManager.getDefaultTexture = function (renderableOwner) {
+        if (renderableOwner === void 0) { renderableOwner = null; }
         if (!DefaultMaterialManager._defaultTexture)
             DefaultMaterialManager.createDefaultTexture();
         return DefaultMaterialManager._defaultTexture;
@@ -11197,21 +12059,21 @@ var DefaultMaterialManager = (function () {
     DefaultMaterialManager.createDefaultTriangleMaterial = function () {
         if (!DefaultMaterialManager._defaultTexture)
             DefaultMaterialManager.createDefaultTexture();
-        DefaultMaterialManager._defaultTriangleMaterial = new TriangleBasicMaterial(DefaultMaterialManager._defaultTexture);
+        DefaultMaterialManager._defaultTriangleMaterial = new BasicMaterial(DefaultMaterialManager._defaultTexture);
         DefaultMaterialManager._defaultTriangleMaterial.mipmap = false;
         DefaultMaterialManager._defaultTriangleMaterial.smooth = false;
         DefaultMaterialManager._defaultTriangleMaterial.name = "defaultTriangleMaterial";
     };
     DefaultMaterialManager.createDefaultLineMaterial = function () {
-        DefaultMaterialManager._defaultLineMaterial = new LineBasicMaterial();
-        DefaultMaterialManager._defaultLineMaterial.name = "defaultSegmentMaterial";
+        DefaultMaterialManager._defaultLineMaterial = new BasicMaterial();
+        DefaultMaterialManager._defaultLineMaterial.name = "defaultLineMaterial";
     };
     return DefaultMaterialManager;
 })();
 module.exports = DefaultMaterialManager;
 
 
-},{"awayjs-core/lib/base/BitmapData":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/textures/BitmapTexture":undefined,"awayjs-renderergl/lib/materials/LineBasicMaterial":undefined,"awayjs-renderergl/lib/materials/TriangleBasicMaterial":undefined}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
+},{"awayjs-core/lib/base/BitmapData":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/textures/BitmapTexture":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11433,1208 +12295,7 @@ var RTTBufferManagerVO = (function () {
 module.exports = RTTBufferManager;
 
 
-},{"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/TextureUtils":undefined}],"awayjs-renderergl/lib/materials/LineBasicMaterial":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
-var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
-var LineBasicPass = require("awayjs-renderergl/lib/passes/LineBasicPass");
-/**
- * LineMaterial is a material exclusively used to render wireframe objects
- *
- * @see away.entities.Lines
- */
-var LineBasicMaterial = (function (_super) {
-    __extends(LineBasicMaterial, _super);
-    /**
-     * Creates a new LineMaterial object.
-     *
-     * @param thickness The thickness of the wireframe lines.
-     */
-    function LineBasicMaterial(thickness) {
-        if (thickness === void 0) { thickness = 1.25; }
-        _super.call(this);
-        this._constants = new Array(0, 0, 0, 0);
-        this._thickness = thickness;
-        this.bothSides = true;
-        this._pAddScreenPass(this._screenPass = new LineBasicPass());
-        this._calcMatrix = new Matrix3D();
-        this._constants[1] = 1 / 255;
-    }
-    /**
-     * @inheritDoc
-     */
-    LineBasicMaterial.prototype._iGetVertexCode = function (shaderObject, regCache, sharedReg) {
-        return "m44 vt0, va0, vc8			\n" + "m44 vt1, va1, vc8			\n" + "sub vt2, vt1, vt0 			\n" + "slt vt5.x, vt0.z, vc7.z			\n" + "sub vt5.y, vc5.x, vt5.x			\n" + "add vt4.x, vt0.z, vc7.z			\n" + "sub vt4.y, vt0.z, vt1.z			\n" + "seq vt4.z, vt4.y vc6.x			\n" + "add vt4.y, vt4.y, vt4.z			\n" + "div vt4.z, vt4.x, vt4.y			\n" + "mul vt4.xyz, vt4.zzz, vt2.xyz	\n" + "add vt3.xyz, vt0.xyz, vt4.xyz	\n" + "mov vt3.w, vc5.x			\n" + "mul vt0, vt0, vt5.yyyy			\n" + "mul vt3, vt3, vt5.xxxx			\n" + "add vt0, vt0, vt3				\n" + "sub vt2, vt1, vt0 			\n" + "nrm vt2.xyz, vt2.xyz			\n" + "nrm vt5.xyz, vt0.xyz			\n" + "mov vt5.w, vc5.x				\n" + "crs vt3.xyz, vt2, vt5			\n" + "nrm vt3.xyz, vt3.xyz			\n" + "mul vt3.xyz, vt3.xyz, va2.xxx	\n" + "mov vt3.w, vc5.x			\n" + "dp3 vt4.x, vt0, vc6			\n" + "mul vt4.x, vt4.x, vc7.x			\n" + "mul vt3.xyz, vt3.xyz, vt4.xxx	\n" + "add vt0.xyz, vt0.xyz, vt3.xyz	\n" + "m44 op, vt0, vc0			\n" + "mov v0, va3				\n";
-    };
-    /**
-     * @inheritDoc
-     */
-    LineBasicMaterial.prototype._iActivatePass = function (pass, renderer, camera) {
-        _super.prototype._iActivatePass.call(this, pass, renderer, camera);
-        var context = renderer.context;
-        var stage = renderer.stage;
-        this._constants[0] = this._thickness / ((stage.scissorRect) ? Math.min(stage.scissorRect.width, stage.scissorRect.height) : Math.min(stage.width, stage.height));
-        // value to convert distance from camera to model length per pixel width
-        this._constants[2] = camera.projection.near;
-        context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, LineBasicMaterial.pONE_VECTOR, 1);
-        context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 6, LineBasicMaterial.pFRONT_VECTOR, 1);
-        context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 7, this._constants, 1);
-        // projection matrix
-        context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
-    };
-    /**
-     * @inheritDoc
-     */
-    LineBasicMaterial.prototype._iRenderPass = function (pass, renderable, stage, camera, viewProjection) {
-        _super.prototype._iRenderPass.call(this, pass, renderable, stage, camera, viewProjection);
-        var context = stage.context;
-        this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
-        this._calcMatrix.append(camera.inverseSceneTransform);
-        context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
-        stage.activateBuffer(0, renderable.getVertexData(LineSubGeometry.START_POSITION_DATA), renderable.getVertexOffset(LineSubGeometry.START_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
-        stage.activateBuffer(1, renderable.getVertexData(LineSubGeometry.END_POSITION_DATA), renderable.getVertexOffset(LineSubGeometry.END_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
-        stage.activateBuffer(2, renderable.getVertexData(LineSubGeometry.THICKNESS_DATA), renderable.getVertexOffset(LineSubGeometry.THICKNESS_DATA), LineSubGeometry.THICKNESS_FORMAT);
-        stage.activateBuffer(3, renderable.getVertexData(LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(LineSubGeometry.COLOR_DATA), LineSubGeometry.COLOR_FORMAT);
-        context.drawTriangles(stage.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
-    };
-    LineBasicMaterial.pONE_VECTOR = Array(1, 1, 1, 1);
-    LineBasicMaterial.pFRONT_VECTOR = Array(0, 0, -1, 0);
-    return LineBasicMaterial;
-})(MaterialGLBase);
-module.exports = LineBasicMaterial;
-
-
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-renderergl/lib/materials/MaterialGLBase":undefined,"awayjs-renderergl/lib/passes/LineBasicPass":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/materials/MaterialGLBase":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var MaterialBase = require("awayjs-display/lib/materials/MaterialBase");
-var MaterialGLBase = (function (_super) {
-    __extends(MaterialGLBase, _super);
-    function MaterialGLBase() {
-        _super.apply(this, arguments);
-    }
-    MaterialGLBase.prototype._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    MaterialGLBase.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    return MaterialGLBase;
-})(MaterialBase);
-module.exports = MaterialGLBase;
-
-
-},{"awayjs-display/lib/materials/MaterialBase":undefined}],"awayjs-renderergl/lib/materials/SkyboxMaterial":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
-var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-var MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
-var SkyboxPass = require("awayjs-renderergl/lib/passes/SkyboxPass");
-var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
-/**
- * SkyboxMaterial is a material exclusively used to render skyboxes
- *
- * @see away3d.primitives.Skybox
- */
-var SkyboxMaterial = (function (_super) {
-    __extends(SkyboxMaterial, _super);
-    /**
-     * Creates a new SkyboxMaterial object.
-     * @param cubeMap The CubeMap to use as the skybox.
-     */
-    function SkyboxMaterial(cubeMap, smooth, repeat, mipmap) {
-        if (smooth === void 0) { smooth = true; }
-        if (repeat === void 0) { repeat = false; }
-        if (mipmap === void 0) { mipmap = false; }
-        _super.call(this);
-        this._cubeMap = cubeMap;
-        this._pAddScreenPass(this._skyboxPass = new SkyboxPass());
-        this._vertexData = new Array(0, 0, 0, 0, 1, 1, 1, 1);
-    }
-    Object.defineProperty(SkyboxMaterial.prototype, "cubeMap", {
-        /**
-         * The cube texture to use as the skybox.
-         */
-        get: function () {
-            return this._cubeMap;
-        },
-        set: function (value) {
-            if (value && this._cubeMap && (value.hasMipmaps != this._cubeMap.hasMipmaps || value.format != this._cubeMap.format))
-                this._pInvalidatePasses();
-            this._cubeMap = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    SkyboxMaterial.prototype._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "mul vt0, va0, vc5\n" + "add vt0, vt0, vc4\n" + "m44 op, vt0, vc0\n" + "mov v0, va0\n";
-    };
-    /**
-     * @inheritDoc
-     */
-    SkyboxMaterial.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        //var cubeMapReg:ShaderRegisterElement = registerCache.getFreeTextureReg();
-        //this._texturesIndex = cubeMapReg.index;
-        //ShaderCompilerHelper.getTexCubeSampleCode(sharedRegisters.shadedTarget, cubeMapReg, this._cubeTexture, shaderObject.useSmoothTextures, shaderObject.useMipmapping);
-        var mip = ",mipnone";
-        if (this._cubeMap.hasMipmaps)
-            mip = ",miplinear";
-        return "tex ft0, v0, fs0 <cube," + ShaderCompilerHelper.getFormatStringForTexture(this._cubeMap) + "linear,clamp" + mip + ">\n";
-    };
-    /**
-     * @inheritDoc
-     */
-    SkyboxMaterial.prototype._iActivatePass = function (pass, renderer, camera) {
-        _super.prototype._iActivatePass.call(this, pass, renderer, camera);
-        var context = renderer.context;
-        context.setSamplerStateAt(0, ContextGLWrapMode.CLAMP, ContextGLTextureFilter.LINEAR, this._cubeMap.hasMipmaps ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-        context.setDepthTest(false, ContextGLCompareMode.LESS);
-        renderer.stage.activateCubeTexture(0, this._cubeMap);
-    };
-    /**
-     * @inheritDoc
-     */
-    SkyboxMaterial.prototype._iRenderPass = function (pass, renderable, stage, camera, viewProjection) {
-        _super.prototype._iRenderPass.call(this, pass, renderable, stage, camera, viewProjection);
-        var context = stage.context;
-        var pos = camera.scenePosition;
-        this._vertexData[0] = pos.x;
-        this._vertexData[1] = pos.y;
-        this._vertexData[2] = pos.z;
-        this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.projection.far / Math.sqrt(3);
-        context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, viewProjection, true);
-        context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
-        stage.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-        context.drawTriangles(stage.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
-    };
-    return SkyboxMaterial;
-})(MaterialGLBase);
-module.exports = SkyboxMaterial;
-
-
-},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/materials/MaterialGLBase":undefined,"awayjs-renderergl/lib/passes/SkyboxPass":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFilter":undefined,"awayjs-stagegl/lib/base/ContextGLWrapMode":undefined}],"awayjs-renderergl/lib/materials/TriangleBasicMaterial":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Texture2DBase = require("awayjs-core/lib/textures/Texture2DBase");
-var BlendMode = require("awayjs-display/lib/base/BlendMode");
-var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var TriangleMaterialBase = require("awayjs-renderergl/lib/materials/TriangleMaterialBase");
-var TriangleBasicPass = require("awayjs-renderergl/lib/passes/TriangleBasicPass");
-/**
- * TriangleMaterial forms an abstract base class for the default shaded materials provided by Stage,
- * using material methods to define their appearance.
- */
-var TriangleBasicMaterial = (function (_super) {
-    __extends(TriangleBasicMaterial, _super);
-    function TriangleBasicMaterial(textureColor, smoothAlpha, repeat, mipmap) {
-        if (textureColor === void 0) { textureColor = null; }
-        if (smoothAlpha === void 0) { smoothAlpha = null; }
-        if (repeat === void 0) { repeat = false; }
-        if (mipmap === void 0) { mipmap = false; }
-        _super.call(this);
-        this._alphaBlending = false;
-        this._alpha = 1;
-        this._depthCompareMode = ContextGLCompareMode.LESS_EQUAL;
-        this._screenPass = new TriangleBasicPass();
-        if (textureColor instanceof Texture2DBase) {
-            this.texture = textureColor;
-            this.smooth = (smoothAlpha == null) ? true : false;
-            this.repeat = repeat;
-            this.mipmap = mipmap;
-        }
-        else {
-            this.color = textureColor ? Number(textureColor) : 0xCCCCCC;
-            this.alpha = (smoothAlpha == null) ? 1 : Number(smoothAlpha);
-        }
-    }
-    Object.defineProperty(TriangleBasicMaterial.prototype, "depthCompareMode", {
-        /**
-         * The depth compare mode used to render the renderables using this material.
-         *
-         * @see away.stagegl.ContextGLCompareMode
-         */
-        get: function () {
-            return this._depthCompareMode;
-        },
-        set: function (value) {
-            if (this._depthCompareMode == value)
-                return;
-            this._depthCompareMode = value;
-            this._pInvalidatePasses();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleBasicMaterial.prototype, "alpha", {
-        /**
-         * The alpha of the surface.
-         */
-        get: function () {
-            return this._alpha;
-        },
-        set: function (value) {
-            if (value > 1)
-                value = 1;
-            else if (value < 0)
-                value = 0;
-            if (this._alpha == value)
-                return;
-            this._alpha = value;
-            this._pInvalidatePasses();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleBasicMaterial.prototype, "alphaBlending", {
-        /**
-         * Indicates whether or not the material has transparency. If binary transparency is sufficient, for
-         * example when using textures of foliage, consider using alphaThreshold instead.
-         */
-        get: function () {
-            return this._alphaBlending;
-        },
-        set: function (value) {
-            if (this._alphaBlending == value)
-                return;
-            this._alphaBlending = value;
-            this._pInvalidatePasses();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    TriangleBasicMaterial.prototype._iUpdateMaterial = function () {
-        if (this._pScreenPassesInvalid) {
-            //Updates screen passes when they were found to be invalid.
-            this._pScreenPassesInvalid = false;
-            this.setBlendAndCompareModes();
-            this._pClearScreenPasses();
-            this._pAddScreenPass(this._screenPass);
-        }
-    };
-    /**
-     * Sets up the various blending modes for all screen passes, based on whether or not there are previous passes.
-     */
-    TriangleBasicMaterial.prototype.setBlendAndCompareModes = function () {
-        this._pRequiresBlending = (this._pBlendMode != BlendMode.NORMAL || this._alphaBlending || this._alpha < 1);
-        this._screenPass.depthCompareMode = this._depthCompareMode;
-        this._screenPass.preserveAlpha = this._pRequiresBlending;
-        this._screenPass.setBlendMode((this._pBlendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._pBlendMode);
-        this._screenPass.forceSeparateMVP = false;
-    };
-    return TriangleBasicMaterial;
-})(TriangleMaterialBase);
-module.exports = TriangleBasicMaterial;
-
-
-},{"awayjs-core/lib/textures/Texture2DBase":undefined,"awayjs-display/lib/base/BlendMode":undefined,"awayjs-renderergl/lib/materials/TriangleMaterialBase":undefined,"awayjs-renderergl/lib/passes/TriangleBasicPass":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/materials/TriangleMaterialBase":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
-var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var MaterialGLBase = require("awayjs-renderergl/lib/materials/MaterialGLBase");
-/**
- * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
- * using material methods to define their appearance.
- */
-var TriangleMaterialBase = (function (_super) {
-    __extends(TriangleMaterialBase, _super);
-    function TriangleMaterialBase() {
-        _super.apply(this, arguments);
-    }
-    TriangleMaterialBase.prototype._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        var code = "";
-        //get the projection coordinates
-        var position = (shaderObject.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
-        //reserving vertex constants for projection matrix
-        var viewMatrixReg = registerCache.getFreeVertexConstant();
-        registerCache.getFreeVertexConstant();
-        registerCache.getFreeVertexConstant();
-        registerCache.getFreeVertexConstant();
-        shaderObject.viewMatrixIndex = viewMatrixReg.index * 4;
-        if (shaderObject.projectionDependencies > 0) {
-            sharedRegisters.projectionFragment = registerCache.getFreeVarying();
-            var temp = registerCache.getFreeVertexVectorTemp();
-            code += "m44 " + temp + ", " + position + ", " + viewMatrixReg + "\n" + "mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" + "mov op, " + temp + "\n";
-        }
-        else {
-            code += "m44 op, " + position + ", " + viewMatrixReg + "\n";
-        }
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    TriangleMaterialBase.prototype._iRenderPass = function (pass, renderable, stage, camera, viewProjection) {
-        _super.prototype._iRenderPass.call(this, pass, renderable, stage, camera, viewProjection);
-        var shaderObject = pass.shaderObject;
-        if (shaderObject.sceneMatrixIndex >= 0) {
-            renderable.sourceEntity.getRenderSceneTransform(camera).copyRawDataTo(shaderObject.vertexConstantData, shaderObject.sceneMatrixIndex, true);
-            viewProjection.copyRawDataTo(shaderObject.vertexConstantData, shaderObject.viewMatrixIndex, true);
-        }
-        else {
-            var matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
-            matrix3D.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
-            matrix3D.append(viewProjection);
-            matrix3D.copyRawDataTo(shaderObject.vertexConstantData, shaderObject.viewMatrixIndex, true);
-        }
-        var context = stage.context;
-        context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shaderObject.vertexConstantData, shaderObject.numUsedVertexConstants);
-        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shaderObject.fragmentConstantData, shaderObject.numUsedFragmentConstants);
-        stage.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-        context.drawTriangles(stage.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
-    };
-    return TriangleMaterialBase;
-})(MaterialGLBase);
-module.exports = TriangleMaterialBase;
-
-
-},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/materials/MaterialGLBase":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/passes/DepthMapPass":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-var MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
-/**
- * DepthMapPass is a pass that writes depth values to a depth map as a 32-bit value exploded over the 4 texture channels.
- * This is used to render shadow maps, depth maps, etc.
- */
-var DepthMapPass = (function (_super) {
-    __extends(DepthMapPass, _super);
-    /**
-     * Creates a new DepthMapPass object.
-     *
-     * @param material The material to which this pass belongs.
-     */
-    function DepthMapPass() {
-        _super.call(this);
-    }
-    /**
-     * Initializes the unchanging constant data for this material.
-     */
-    DepthMapPass.prototype._iInitConstantData = function (shaderObject) {
-        _super.prototype._iInitConstantData.call(this, shaderObject);
-        var index = this._fragmentConstantsIndex;
-        var data = shaderObject.fragmentConstantData;
-        data[index] = 1.0;
-        data[index + 1] = 255.0;
-        data[index + 2] = 65025.0;
-        data[index + 3] = 16581375.0;
-        data[index + 4] = 1.0 / 255.0;
-        data[index + 5] = 1.0 / 255.0;
-        data[index + 6] = 1.0 / 255.0;
-        data[index + 7] = 0.0;
-    };
-    DepthMapPass.prototype._iIncludeDependencies = function (shaderObject) {
-        shaderObject.projectionDependencies++;
-        if (shaderObject.alphaThreshold > 0)
-            shaderObject.uvDependencies++;
-    };
-    /**
-     * @inheritDoc
-     */
-    DepthMapPass.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        var code = "";
-        var targetReg = sharedRegisters.shadedTarget;
-        var diffuseInputReg = registerCache.getFreeTextureReg();
-        var dataReg1 = registerCache.getFreeFragmentConstant();
-        var dataReg2 = registerCache.getFreeFragmentConstant();
-        this._fragmentConstantsIndex = dataReg1.index * 4;
-        var temp1 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp1, 1);
-        var temp2 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp2, 1);
-        code += "div " + temp1 + ", " + sharedRegisters.projectionFragment + ", " + sharedRegisters.projectionFragment + ".w\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
-        //codeF += "mov ft1.w, fc1.w	\n" +
-        //    "mov ft0.w, fc0.x	\n";
-        if (shaderObject.alphaThreshold > 0) {
-            diffuseInputReg = registerCache.getFreeTextureReg();
-            this._texturesIndex = diffuseInputReg.index;
-            var albedo = registerCache.getFreeFragmentVectorTemp();
-            code += ShaderCompilerHelper.getTex2DSampleCode(albedo, sharedRegisters, diffuseInputReg, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
-            var cutOffReg = registerCache.getFreeFragmentConstant();
-            code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
-        }
-        code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
-        registerCache.removeFragmentTempUsage(temp1);
-        registerCache.removeFragmentTempUsage(temp2);
-        return code;
-    };
-    DepthMapPass.prototype._iRender = function (pass, renderable, stage, camera, viewProjection) {
-        //this.setRenderState(pass, renderable, stage, camera, viewProjection);
-    };
-    /**
-     * @inheritDoc
-     */
-    DepthMapPass.prototype._iActivate = function (pass, renderer, camera) {
-        _super.prototype._iActivate.call(this, pass, renderer, camera);
-        var context = renderer.context;
-        var shaderObject = pass.shaderObject;
-        if (shaderObject.alphaThreshold > 0) {
-            context.setSamplerStateAt(this._texturesIndex, shaderObject.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            renderer.stage.activateTexture(this._texturesIndex, shaderObject.texture);
-            shaderObject.fragmentConstantData[this._fragmentConstantsIndex + 8] = pass.shaderObject.alphaThreshold;
-        }
-    };
-    return DepthMapPass;
-})(MaterialPassGLBase);
-module.exports = DepthMapPass;
-
-
-},{"awayjs-renderergl/lib/passes/MaterialPassGLBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFilter":undefined,"awayjs-stagegl/lib/base/ContextGLWrapMode":undefined}],"awayjs-renderergl/lib/passes/DistanceMapPass":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-var MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
-/**
- * DistanceMapPass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
- * This is used to render omnidirectional shadow maps.
- */
-var DistanceMapPass = (function (_super) {
-    __extends(DistanceMapPass, _super);
-    /**
-     * Creates a new DistanceMapPass object.
-     *
-     * @param material The material to which this pass belongs.
-     */
-    function DistanceMapPass() {
-        _super.call(this);
-    }
-    /**
-     * Initializes the unchanging constant data for this material.
-     */
-    DistanceMapPass.prototype._iInitConstantData = function (shaderObject) {
-        _super.prototype._iInitConstantData.call(this, shaderObject);
-        var index = this._fragmentConstantsIndex;
-        var data = shaderObject.fragmentConstantData;
-        data[index + 4] = 1.0 / 255.0;
-        data[index + 5] = 1.0 / 255.0;
-        data[index + 6] = 1.0 / 255.0;
-        data[index + 7] = 0.0;
-    };
-    DistanceMapPass.prototype._iIncludeDependencies = function (shaderObject) {
-        shaderObject.projectionDependencies++;
-        shaderObject.viewDirDependencies++;
-        if (shaderObject.alphaThreshold > 0)
-            shaderObject.uvDependencies++;
-        if (shaderObject.viewDirDependencies > 0)
-            shaderObject.globalPosDependencies++;
-    };
-    /**
-     * @inheritDoc
-     */
-    DistanceMapPass.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        var code;
-        var targetReg = sharedRegisters.shadedTarget;
-        var diffuseInputReg = registerCache.getFreeTextureReg();
-        var dataReg1 = registerCache.getFreeFragmentConstant();
-        var dataReg2 = registerCache.getFreeFragmentConstant();
-        this._fragmentConstantsIndex = dataReg1.index * 4;
-        var temp1 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp1, 1);
-        var temp2 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp2, 1);
-        // squared distance to view
-        code = "dp3 " + temp1 + ".z, " + sharedRegisters.viewDirVarying + ".xyz, " + sharedRegisters.viewDirVarying + ".xyz\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
-        if (shaderObject.alphaThreshold > 0) {
-            diffuseInputReg = registerCache.getFreeTextureReg();
-            this._texturesIndex = diffuseInputReg.index;
-            var albedo = registerCache.getFreeFragmentVectorTemp();
-            code += ShaderCompilerHelper.getTex2DSampleCode(albedo, sharedRegisters, diffuseInputReg, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
-            var cutOffReg = registerCache.getFreeFragmentConstant();
-            code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
-        }
-        code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DistanceMapPass.prototype._iActivate = function (pass, renderer, camera) {
-        _super.prototype._iActivate.call(this, pass, renderer, camera);
-        var context = renderer.context;
-        var shaderObject = pass.shaderObject;
-        var f = camera.projection.far;
-        f = 1 / (2 * f * f);
-        // sqrt(f*f+f*f) is largest possible distance for any frustum, so we need to divide by it. Rarely a tight fit, but with 32 bits precision, it's enough.
-        var index = this._fragmentConstantsIndex;
-        var data = shaderObject.fragmentConstantData;
-        data[index] = 1.0 * f;
-        data[index + 1] = 255.0 * f;
-        data[index + 2] = 65025.0 * f;
-        data[index + 3] = 16581375.0 * f;
-        if (shaderObject.alphaThreshold > 0) {
-            context.setSamplerStateAt(this._texturesIndex, shaderObject.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            renderer.stage.activateTexture(this._texturesIndex, shaderObject.texture);
-            data[index + 8] = pass.shaderObject.alphaThreshold;
-        }
-    };
-    return DistanceMapPass;
-})(MaterialPassGLBase);
-module.exports = DistanceMapPass;
-
-
-},{"awayjs-renderergl/lib/passes/MaterialPassGLBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFilter":undefined,"awayjs-stagegl/lib/base/ContextGLWrapMode":undefined}],"awayjs-renderergl/lib/passes/LightingPassGLBase":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-/**
- * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
- * using material methods to define their appearance.
- */
-var LightingPassGLBase = (function (_super) {
-    __extends(LightingPassGLBase, _super);
-    /**
-     *
-     */
-    function LightingPassGLBase() {
-        _super.call(this);
-        this._pNumPointLights = 0;
-        this._pNumDirectionalLights = 0;
-        this._pNumLightProbes = 0;
-        this._directionalLightsOffset = 0;
-        this._pointLightsOffset = 0;
-        this._lightProbesOffset = 0;
-    }
-    Object.defineProperty(LightingPassGLBase.prototype, "directionalLightsOffset", {
-        /**
-         * Indicates the offset in the light picker's directional light vector for which to start including lights.
-         * This needs to be set before the light picker is assigned.
-         */
-        get: function () {
-            return this._directionalLightsOffset;
-        },
-        set: function (value) {
-            this._directionalLightsOffset = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LightingPassGLBase.prototype, "pointLightsOffset", {
-        /**
-         * Indicates the offset in the light picker's point light vector for which to start including lights.
-         * This needs to be set before the light picker is assigned.
-         */
-        get: function () {
-            return this._pointLightsOffset;
-        },
-        set: function (value) {
-            this._pointLightsOffset = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LightingPassGLBase.prototype, "lightProbesOffset", {
-        /**
-         * Indicates the offset in the light picker's light probes vector for which to start including lights.
-         * This needs to be set before the light picker is assigned.
-         */
-        get: function () {
-            return this._lightProbesOffset;
-        },
-        set: function (value) {
-            this._lightProbesOffset = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LightingPassGLBase.prototype, "iNumPointLights", {
-        /**
-         * The amount of point lights that need to be supported.
-         */
-        get: function () {
-            return this._pNumPointLights;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LightingPassGLBase.prototype, "iNumDirectionalLights", {
-        /**
-         * The amount of directional lights that need to be supported.
-         */
-        get: function () {
-            return this._pNumDirectionalLights;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LightingPassGLBase.prototype, "iNumLightProbes", {
-        /**
-         * The amount of light probes that need to be supported.
-         */
-        get: function () {
-            return this._pNumLightProbes;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    LightingPassGLBase.prototype._iUsesSpecular = function () {
-        throw new AbstractMethodError();
-    };
-    LightingPassGLBase.prototype._iUsesShadows = function () {
-        throw new AbstractMethodError();
-    };
-    LightingPassGLBase.prototype._iGetPreLightingVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        throw new AbstractMethodError();
-    };
-    LightingPassGLBase.prototype._iGetPreLightingFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        throw new AbstractMethodError();
-    };
-    LightingPassGLBase.prototype._iGetPerLightDiffuseFragmentCode = function (shaderObject, lightDirReg, diffuseColorReg, registerCache, sharedRegisters) {
-        throw new AbstractMethodError();
-    };
-    LightingPassGLBase.prototype._iGetPerLightSpecularFragmentCode = function (shaderObject, lightDirReg, specularColorReg, registerCache, sharedRegisters) {
-        throw new AbstractMethodError();
-    };
-    LightingPassGLBase.prototype._iGetPerProbeDiffuseFragmentCode = function (shaderObject, texReg, weightReg, registerCache, sharedRegisters) {
-        throw new AbstractMethodError();
-    };
-    LightingPassGLBase.prototype._iGetPerProbeSpecularFragmentCode = function (shaderObject, texReg, weightReg, registerCache, sharedRegisters) {
-        throw new AbstractMethodError();
-    };
-    LightingPassGLBase.prototype._iGetPostLightingVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        throw new AbstractMethodError();
-    };
-    LightingPassGLBase.prototype._iGetPostLightingFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        throw new AbstractMethodError();
-    };
-    return LightingPassGLBase;
-})(MaterialPassGLBase);
-module.exports = LightingPassGLBase;
-
-
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-renderergl/lib/passes/MaterialPassGLBase":undefined}],"awayjs-renderergl/lib/passes/LineBasicPass":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-/**
- * LineBasicPass is a material pass that draws wireframe segments.
- */
-var LineBasicPass = (function (_super) {
-    __extends(LineBasicPass, _super);
-    /**
-     * Creates a new SegmentPass object.
-     *
-     * @param material The material to which this pass belongs.
-     */
-    function LineBasicPass() {
-        _super.call(this);
-    }
-    /**
-     * @inheritDoc
-     */
-    LineBasicPass.prototype._iGetFragmentCode = function (shaderObject, regCache, sharedReg) {
-        var targetReg = sharedReg.shadedTarget;
-        return "mov " + targetReg + ", v0\n";
-    };
-    return LineBasicPass;
-})(MaterialPassGLBase);
-module.exports = LineBasicPass;
-
-
-},{"awayjs-renderergl/lib/passes/MaterialPassGLBase":undefined}],"awayjs-renderergl/lib/passes/MaterialPassGLBase":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
-var ArgumentError = require("awayjs-core/lib/errors/ArgumentError");
-var Event = require("awayjs-core/lib/events/Event");
-var BlendMode = require("awayjs-display/lib/base/BlendMode");
-var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
-var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-/**
- * MaterialPassGLBase provides an abstract base class for material shader passes. A material pass constitutes at least
- * a render call per required renderable.
- */
-var MaterialPassGLBase = (function (_super) {
-    __extends(MaterialPassGLBase, _super);
-    /**
-     * Creates a new MaterialPassGLBase object.
-     */
-    function MaterialPassGLBase() {
-        var _this = this;
-        _super.call(this);
-        this._materialPassData = new Array();
-        this._preserveAlpha = true;
-        this._forceSeparateMVP = false;
-        this._depthCompareMode = ContextGLCompareMode.LESS_EQUAL;
-        this._blendFactorSource = ContextGLBlendFactor.ONE;
-        this._blendFactorDest = ContextGLBlendFactor.ZERO;
-        this._pEnableBlending = false;
-        this._writeDepth = true;
-        this._onLightsChangeDelegate = function (event) { return _this.onLightsChange(event); };
-    }
-    Object.defineProperty(MaterialPassGLBase.prototype, "preserveAlpha", {
-        /**
-         * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
-         */
-        get: function () {
-            return this._preserveAlpha;
-        },
-        set: function (value) {
-            if (this._preserveAlpha == value)
-                return;
-            this._preserveAlpha = value;
-            this._pInvalidatePass();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(MaterialPassGLBase.prototype, "forceSeparateMVP", {
-        /**
-         * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
-         * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
-         * projection code.
-         */
-        get: function () {
-            return this._forceSeparateMVP;
-        },
-        set: function (value) {
-            if (this._forceSeparateMVP == value)
-                return;
-            this._forceSeparateMVP = value;
-            this._pInvalidatePass();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Factory method to create a concrete shader object for this pass.
-     *
-     * @param profile The compatibility profile used by the renderer.
-     */
-    MaterialPassGLBase.prototype.createShaderObject = function (profile) {
-        return new ShaderObjectBase(profile);
-    };
-    Object.defineProperty(MaterialPassGLBase.prototype, "writeDepth", {
-        /**
-         * Indicate whether this pass should write to the depth buffer or not. Ignored when blending is enabled.
-         */
-        get: function () {
-            return this._writeDepth;
-        },
-        set: function (value) {
-            this._writeDepth = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(MaterialPassGLBase.prototype, "depthCompareMode", {
-        /**
-         * The depth compare mode used to render the renderables using this material.
-         *
-         * @see away.stagegl.ContextGLCompareMode
-         */
-        get: function () {
-            return this._depthCompareMode;
-        },
-        set: function (value) {
-            this._depthCompareMode = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Cleans up any resources used by the current object.
-     * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
-     */
-    MaterialPassGLBase.prototype.dispose = function () {
-        if (this._pLightPicker)
-            this._pLightPicker.removeEventListener(Event.CHANGE, this._onLightsChangeDelegate);
-        while (this._materialPassData.length)
-            this._materialPassData[0].dispose();
-        this._materialPassData = null;
-    };
-    /**
-     * Renders an object to the current render target.
-     *
-     * @private
-     */
-    MaterialPassGLBase.prototype._iRender = function (pass, renderable, stage, camera, viewProjection) {
-        this.setRenderState(pass, renderable, stage, camera, viewProjection);
-    };
-    /**
-     *
-     *
-     * @param renderable
-     * @param stage
-     * @param camera
-     */
-    MaterialPassGLBase.prototype.setRenderState = function (pass, renderable, stage, camera, viewProjection) {
-        pass.shaderObject.setRenderState(renderable, stage, camera, viewProjection);
-    };
-    /**
-     * The blend mode to use when drawing this renderable. The following blend modes are supported:
-     * <ul>
-     * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
-     * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
-     * <li>BlendMode.MULTIPLY</li>
-     * <li>BlendMode.ADD</li>
-     * <li>BlendMode.ALPHA</li>
-     * </ul>
-     */
-    MaterialPassGLBase.prototype.setBlendMode = function (value) {
-        switch (value) {
-            case BlendMode.NORMAL:
-                this._blendFactorSource = ContextGLBlendFactor.ONE;
-                this._blendFactorDest = ContextGLBlendFactor.ZERO;
-                this._pEnableBlending = false;
-                break;
-            case BlendMode.LAYER:
-                this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
-                this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
-                this._pEnableBlending = true;
-                break;
-            case BlendMode.MULTIPLY:
-                this._blendFactorSource = ContextGLBlendFactor.ZERO;
-                this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
-                this._pEnableBlending = true;
-                break;
-            case BlendMode.ADD:
-                this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
-                this._blendFactorDest = ContextGLBlendFactor.ONE;
-                this._pEnableBlending = true;
-                break;
-            case BlendMode.ALPHA:
-                this._blendFactorSource = ContextGLBlendFactor.ZERO;
-                this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
-                this._pEnableBlending = true;
-                break;
-            default:
-                throw new ArgumentError("Unsupported blend mode!");
-        }
-    };
-    /**
-     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
-     * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
-     * @param stage The Stage object which is currently used for rendering.
-     * @param camera The camera from which the scene is viewed.
-     * @private
-     */
-    MaterialPassGLBase.prototype._iActivate = function (pass, renderer, camera) {
-        renderer.context.setDepthTest((this._writeDepth && !this._pEnableBlending), this._depthCompareMode);
-        if (this._pEnableBlending)
-            renderer.context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
-        renderer.activateMaterialPass(pass, camera);
-    };
-    /**
-     * Clears the render state for the pass. This needs to be called before activating another pass.
-     * @param stage The Stage used for rendering
-     *
-     * @private
-     */
-    MaterialPassGLBase.prototype._iDeactivate = function (pass, renderer) {
-        renderer.deactivateMaterialPass(pass);
-        renderer.context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
-    };
-    /**
-     * Marks the shader program as invalid, so it will be recompiled before the next render.
-     *
-     * @param updateMaterial Indicates whether the invalidation should be performed on the entire material. Should always pass "true" unless it's called from the material itself.
-     */
-    MaterialPassGLBase.prototype._pInvalidatePass = function () {
-        var len = this._materialPassData.length;
-        for (var i = 0; i < len; i++)
-            this._materialPassData[i].invalidate();
-        this.dispatchEvent(new Event(Event.CHANGE));
-    };
-    Object.defineProperty(MaterialPassGLBase.prototype, "lightPicker", {
-        /**
-         * The light picker used by the material to provide lights to the material if it supports lighting.
-         *
-         * @see away.materials.LightPickerBase
-         * @see away.materials.StaticLightPicker
-         */
-        get: function () {
-            return this._pLightPicker;
-        },
-        set: function (value) {
-            if (this._pLightPicker)
-                this._pLightPicker.removeEventListener(Event.CHANGE, this._onLightsChangeDelegate);
-            this._pLightPicker = value;
-            if (this._pLightPicker)
-                this._pLightPicker.addEventListener(Event.CHANGE, this._onLightsChangeDelegate);
-            this.pUpdateLights();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Called when the light picker's configuration changes.
-     */
-    MaterialPassGLBase.prototype.onLightsChange = function (event) {
-        this.pUpdateLights();
-    };
-    /**
-     * Implemented by subclasses if the pass uses lights to update the shader.
-     */
-    MaterialPassGLBase.prototype.pUpdateLights = function () {
-    };
-    MaterialPassGLBase.prototype._iIncludeDependencies = function (shaderObject) {
-        if (this._forceSeparateMVP)
-            shaderObject.globalPosDependencies++;
-        shaderObject.outputsNormals = this._pOutputsNormals(shaderObject);
-        shaderObject.outputsTangentNormals = shaderObject.outputsNormals && this._pOutputsTangentNormals(shaderObject);
-        shaderObject.usesTangentSpace = shaderObject.outputsTangentNormals && this._pUsesTangentSpace(shaderObject);
-        if (!shaderObject.usesTangentSpace && shaderObject.viewDirDependencies > 0)
-            shaderObject.globalPosDependencies++;
-    };
-    MaterialPassGLBase.prototype._iInitConstantData = function (shaderObject) {
-    };
-    MaterialPassGLBase.prototype._iGetPreLightingVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    MaterialPassGLBase.prototype._iGetPreLightingFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    MaterialPassGLBase.prototype._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    MaterialPassGLBase.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    MaterialPassGLBase.prototype._iGetNormalVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    MaterialPassGLBase.prototype._iGetNormalFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    /**
-     * Indicates whether or not normals are calculated at all.
-     */
-    MaterialPassGLBase.prototype._pOutputsNormals = function (shaderObject) {
-        return false;
-    };
-    /**
-     * Indicates whether or not normals are calculated in tangent space.
-     */
-    MaterialPassGLBase.prototype._pOutputsTangentNormals = function (shaderObject) {
-        return false;
-    };
-    /**
-     * Indicates whether or not normals are allowed in tangent space. This is only the case if no object-space
-     * dependencies exist.
-     */
-    MaterialPassGLBase.prototype._pUsesTangentSpace = function (shaderObject) {
-        return false;
-    };
-    MaterialPassGLBase.prototype._iAddMaterialPassData = function (materialPassData) {
-        this._materialPassData.push(materialPassData);
-        return materialPassData;
-    };
-    MaterialPassGLBase.prototype._iRemoveMaterialPassData = function (materialPassData) {
-        this._materialPassData.splice(this._materialPassData.indexOf(materialPassData), 1);
-        return materialPassData;
-    };
-    return MaterialPassGLBase;
-})(NamedAssetBase);
-module.exports = MaterialPassGLBase;
-
-
-},{"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/library/NamedAssetBase":undefined,"awayjs-display/lib/base/BlendMode":undefined,"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/passes/SkyboxPass":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-/**
- * SkyboxPass provides a material pass exclusively used to render sky boxes from a cube texture.
- */
-var SkyboxPass = (function (_super) {
-    __extends(SkyboxPass, _super);
-    /**
-     * Creates a new SkyboxPass object.
-     *
-     * @param material The material to which this pass belongs.
-     */
-    function SkyboxPass() {
-        _super.call(this);
-    }
-    SkyboxPass.prototype._iIncludeDependencies = function (shaderObject) {
-        shaderObject.useMipmapping = false;
-    };
-    return SkyboxPass;
-})(MaterialPassGLBase);
-module.exports = SkyboxPass;
-
-
-},{"awayjs-renderergl/lib/passes/MaterialPassGLBase":undefined}],"awayjs-renderergl/lib/passes/TriangleBasicPass":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-var MaterialPassGLBase = require("awayjs-renderergl/lib/passes/MaterialPassGLBase");
-var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
-/**
- * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
- * using material methods to define their appearance.
- */
-var TriangleBasicPass = (function (_super) {
-    __extends(TriangleBasicPass, _super);
-    /**
-     * Creates a new CompiledPass object.
-     *
-     * @param material The material to which this pass belongs.
-     */
-    function TriangleBasicPass() {
-        _super.call(this);
-        this._diffuseColor = 0xffffff;
-        this._diffuseR = 1;
-        this._diffuseG = 1;
-        this._diffuseB = 1;
-        this._diffuseA = 1;
-    }
-    Object.defineProperty(TriangleBasicPass.prototype, "diffuseAlpha", {
-        /**
-         * The alpha component of the diffuse reflection.
-         */
-        get: function () {
-            return this._diffuseA;
-        },
-        set: function (value) {
-            this._diffuseA = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleBasicPass.prototype, "diffuseColor", {
-        /**
-         * The color of the diffuse reflection when not using a texture.
-         */
-        get: function () {
-            return this._diffuseColor;
-        },
-        set: function (diffuseColor) {
-            this._diffuseColor = diffuseColor;
-            this._diffuseR = ((this._diffuseColor >> 16) & 0xff) / 0xff;
-            this._diffuseG = ((this._diffuseColor >> 8) & 0xff) / 0xff;
-            this._diffuseB = (this._diffuseColor & 0xff) / 0xff;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    TriangleBasicPass.prototype._iGetFragmentCode = function (shaderObject, regCache, sharedReg) {
-        var code = "";
-        var targetReg = sharedReg.shadedTarget;
-        var diffuseInputReg;
-        if (shaderObject.texture != null) {
-            diffuseInputReg = regCache.getFreeTextureReg();
-            this._texturesIndex = diffuseInputReg.index;
-            code += ShaderCompilerHelper.getTex2DSampleCode(targetReg, sharedReg, diffuseInputReg, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
-            if (shaderObject.alphaThreshold > 0) {
-                var cutOffReg = regCache.getFreeFragmentConstant();
-                this._fragmentConstantsIndex = cutOffReg.index * 4;
-                code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" + "kil " + targetReg + ".w\n" + "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
-            }
-        }
-        else {
-            diffuseInputReg = regCache.getFreeFragmentConstant();
-            this._fragmentConstantsIndex = diffuseInputReg.index * 4;
-            code += "mov " + targetReg + ", " + diffuseInputReg + "\n";
-        }
-        return code;
-    };
-    TriangleBasicPass.prototype._iIncludeDependencies = function (dependencyCounter) {
-        if (dependencyCounter.texture != null)
-            dependencyCounter.uvDependencies++;
-    };
-    /**
-     * @inheritDoc
-     */
-    TriangleBasicPass.prototype._iActivate = function (pass, renderer, camera) {
-        _super.prototype._iActivate.call(this, pass, renderer, camera);
-        var shaderObject = pass.shaderObject;
-        if (shaderObject.texture != null) {
-            renderer.context.setSamplerStateAt(this._texturesIndex, shaderObject.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, shaderObject.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, shaderObject.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            renderer.stage.activateTexture(this._texturesIndex, shaderObject.texture);
-            if (shaderObject.alphaThreshold > 0)
-                shaderObject.fragmentConstantData[this._fragmentConstantsIndex] = shaderObject.alphaThreshold;
-        }
-        else {
-            var index = this._fragmentConstantsIndex;
-            var data = shaderObject.fragmentConstantData;
-            data[index] = this._diffuseR;
-            data[index + 1] = this._diffuseG;
-            data[index + 2] = this._diffuseB;
-            data[index + 3] = this._diffuseA;
-        }
-    };
-    return TriangleBasicPass;
-})(MaterialPassGLBase);
-module.exports = TriangleBasicPass;
-
-
-},{"awayjs-renderergl/lib/passes/MaterialPassGLBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFilter":undefined,"awayjs-stagegl/lib/base/ContextGLWrapMode":undefined}],"awayjs-renderergl/lib/pick/JSPickingCollider":[function(require,module,exports){
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/TextureUtils":undefined}],"awayjs-renderergl/lib/pick/JSPickingCollider":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12659,9 +12320,9 @@ var JSPickingCollider = (function (_super) {
      *
      * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
      */
-    function JSPickingCollider(findClosestCollision) {
+    function JSPickingCollider(stage, findClosestCollision) {
         if (findClosestCollision === void 0) { findClosestCollision = false; }
-        _super.call(this);
+        _super.call(this, stage);
         this._findClosestCollision = findClosestCollision;
     }
     /**
@@ -12683,7 +12344,7 @@ var JSPickingCollider = (function (_super) {
         var Q1Q2, Q1Q1, Q2Q2, RQ1, RQ2;
         var indexData = renderable.getIndexData().data;
         var collisionTriangleIndex = -1;
-        var bothSides = renderable.materialOwner.material.bothSides;
+        var bothSides = renderable.renderObjectOwner.bothSides;
         var positionData = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).data;
         var positionStride = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).dataPerVertex;
         var positionOffset = renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA);
@@ -12776,18 +12437,18 @@ module.exports = JSPickingCollider;
 var Point = require("awayjs-core/lib/geom/Point");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var RenderablePool = require("awayjs-display/lib/pool/RenderablePool");
 var BillboardRenderable = require("awayjs-renderergl/lib/pool/BillboardRenderable");
 var TriangleSubMeshRenderable = require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
+var RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 /**
  * An abstract base class for all picking collider classes. It should not be instantiated directly.
  *
  * @class away.pick.PickingColliderBase
  */
 var PickingColliderBase = (function () {
-    function PickingColliderBase() {
-        this._billboardRenderablePool = RenderablePool.getPool(BillboardRenderable);
-        this._subMeshRenderablePool = RenderablePool.getPool(TriangleSubMeshRenderable);
+    function PickingColliderBase(stage) {
+        this._billboardRenderablePool = RenderablePool.getPool(BillboardRenderable, stage);
+        this._subMeshRenderablePool = RenderablePool.getPool(TriangleSubMeshRenderable, stage);
     }
     PickingColliderBase.prototype._pPetCollisionNormal = function (indexData /*uint*/, vertexData, triangleIndex) {
         var normal = new Vector3D();
@@ -12838,10 +12499,10 @@ var PickingColliderBase = (function () {
      */
     PickingColliderBase.prototype.testBillboardCollision = function (billboard, pickingCollisionVO, shortestCollisionDistance) {
         this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
-        pickingCollisionVO.materialOwner = null;
+        pickingCollisionVO.renderableOwner = null;
         if (this._pTestRenderableCollision(this._billboardRenderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
             shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-            pickingCollisionVO.materialOwner = billboard;
+            pickingCollisionVO.renderableOwner = billboard;
             return true;
         }
         return false;
@@ -12856,26 +12517,26 @@ var PickingColliderBase = (function () {
      */
     PickingColliderBase.prototype.testMeshCollision = function (mesh, pickingCollisionVO, shortestCollisionDistance, findClosest) {
         this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
-        pickingCollisionVO.materialOwner = null;
+        pickingCollisionVO.renderableOwner = null;
         var subMesh;
         var len = mesh.subMeshes.length;
         for (var i = 0; i < len; ++i) {
             subMesh = mesh.subMeshes[i];
             if (this._pTestRenderableCollision(this._subMeshRenderablePool.getItem(subMesh), pickingCollisionVO, shortestCollisionDistance)) {
                 shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-                pickingCollisionVO.materialOwner = subMesh;
+                pickingCollisionVO.renderableOwner = subMesh;
                 if (!findClosest)
                     return true;
             }
         }
-        return pickingCollisionVO.materialOwner != null;
+        return pickingCollisionVO.renderableOwner != null;
     };
     return PickingColliderBase;
 })();
 module.exports = PickingColliderBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/pool/RenderablePool":undefined,"awayjs-renderergl/lib/pool/BillboardRenderable":undefined,"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":undefined}],"awayjs-renderergl/lib/pick/ShaderPicker":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/pool/BillboardRenderable":undefined,"awayjs-renderergl/lib/pool/RenderablePool":undefined,"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":undefined}],"awayjs-renderergl/lib/pick/ShaderPicker":[function(require,module,exports){
 var Debug = require("awayjs-core/lib/utils/Debug");
 var BitmapData = require("awayjs-core/lib/base/BitmapData");
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
@@ -13027,7 +12688,7 @@ var ShaderPicker = (function () {
                 continue;
             }
             this._potentialFound = true;
-            this._context.setCulling(renderable.materialOwner.material.bothSides ? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
+            this._context.setCulling(renderable.renderObjectOwner.bothSides ? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
             this._interactives[this._interactiveId++] = renderable;
             // color code so that reading from bitmapdata will contain the correct value
             this._id[1] = (this._interactiveId >> 8) / 255; // on green channel
@@ -13298,7 +12959,9 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
  * @class away.pool.RenderableListItem
@@ -13311,8 +12974,8 @@ var BillboardRenderable = (function (_super) {
      * @param pool
      * @param billboard
      */
-    function BillboardRenderable(pool, billboard) {
-        _super.call(this, pool, billboard, billboard);
+    function BillboardRenderable(pool, billboard, stage) {
+        _super.call(this, pool, billboard, billboard, billboard.material, stage);
         this._billboard = billboard;
     }
     /**
@@ -13342,24 +13005,74 @@ var BillboardRenderable = (function (_super) {
         this._pVertexDataDirty[TriangleSubGeometry.UV_DATA] = true;
         return geometry;
     };
+    BillboardRenderable._iIncludeDependencies = function (shaderObject) {
+    };
+    BillboardRenderable._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
+        var code = "";
+        //get the projection coordinates
+        var position = (shaderObject.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
+        //reserving vertex constants for projection matrix
+        var viewMatrixReg = registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        shaderObject.viewMatrixIndex = viewMatrixReg.index * 4;
+        if (shaderObject.projectionDependencies > 0) {
+            sharedRegisters.projectionFragment = registerCache.getFreeVarying();
+            var temp = registerCache.getFreeVertexVectorTemp();
+            code += "m44 " + temp + ", " + position + ", " + viewMatrixReg + "\n" + "mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" + "mov op, " + temp + "\n";
+        }
+        else {
+            code += "m44 op, " + position + ", " + viewMatrixReg + "\n";
+        }
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    BillboardRenderable.prototype._iRender = function (shader, camera, viewProjection) {
+        _super.prototype._iRender.call(this, shader, camera, viewProjection);
+        if (shader.sceneMatrixIndex >= 0) {
+            this.sourceEntity.getRenderSceneTransform(camera).copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
+            viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+        }
+        else {
+            var matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
+            matrix3D.copyFrom(this.sourceEntity.getRenderSceneTransform(camera));
+            matrix3D.append(viewProjection);
+            matrix3D.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+        }
+        var context = this._stage.context;
+        context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shader.vertexConstantData, shader.numUsedVertexConstants);
+        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
+        this._stage.activateBuffer(0, this.getVertexData(TriangleSubGeometry.POSITION_DATA), this.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+        this._stage.context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
+    };
     BillboardRenderable._materialGeometry = new Object();
     /**
      *
      */
     BillboardRenderable.id = "billboard";
+    BillboardRenderable.vertexAttributesOffset = 1;
     return BillboardRenderable;
 })(RenderableBase);
 module.exports = BillboardRenderable;
 
 
-},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":undefined}],"awayjs-renderergl/lib/pool/LineSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/IRenderableClass":[function(require,module,exports){
+
+
+
+},{}],"awayjs-renderergl/lib/pool/LineSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
  * @class away.pool.LineSubMeshRenderable
@@ -13374,11 +13087,15 @@ var LineSubMeshRenderable = (function (_super) {
      * @param level
      * @param dataOffset
      */
-    function LineSubMeshRenderable(pool, subMesh, level, indexOffset) {
+    function LineSubMeshRenderable(pool, subMesh, stage, level, indexOffset) {
         if (level === void 0) { level = 0; }
         if (indexOffset === void 0) { indexOffset = 0; }
-        _super.call(this, pool, subMesh.parentMesh, subMesh, level, indexOffset);
+        _super.call(this, pool, subMesh.parentMesh, subMesh, subMesh.material, stage, level, indexOffset);
+        this._constants = new Array(0, 0, 0, 0);
+        this._thickness = 1.25;
         this.subMesh = subMesh;
+        this._calcMatrix = new Matrix3D();
+        this._constants[1] = 1 / 255;
     }
     /**
      * //TODO
@@ -13396,212 +13113,70 @@ var LineSubMeshRenderable = (function (_super) {
             this._pVertexDataDirty[LineSubGeometry.COLOR_DATA] = true;
         return subGeometry;
     };
+    LineSubMeshRenderable._iIncludeDependencies = function (shaderObject) {
+        shaderObject.colorDependencies++;
+    };
+    /**
+     * @inheritDoc
+     */
+    LineSubMeshRenderable._iGetVertexCode = function (shader, regCache, sharedReg) {
+        return "m44 vt0, va0, vc8			\n" + "m44 vt1, va1, vc8			\n" + "sub vt2, vt1, vt0 			\n" + "slt vt5.x, vt0.z, vc7.z			\n" + "sub vt5.y, vc5.x, vt5.x			\n" + "add vt4.x, vt0.z, vc7.z			\n" + "sub vt4.y, vt0.z, vt1.z			\n" + "seq vt4.z, vt4.y vc6.x			\n" + "add vt4.y, vt4.y, vt4.z			\n" + "div vt4.z, vt4.x, vt4.y			\n" + "mul vt4.xyz, vt4.zzz, vt2.xyz	\n" + "add vt3.xyz, vt0.xyz, vt4.xyz	\n" + "mov vt3.w, vc5.x			\n" + "mul vt0, vt0, vt5.yyyy			\n" + "mul vt3, vt3, vt5.xxxx			\n" + "add vt0, vt0, vt3				\n" + "sub vt2, vt1, vt0 			\n" + "nrm vt2.xyz, vt2.xyz			\n" + "nrm vt5.xyz, vt0.xyz			\n" + "mov vt5.w, vc5.x				\n" + "crs vt3.xyz, vt2, vt5			\n" + "nrm vt3.xyz, vt3.xyz			\n" + "mul vt3.xyz, vt3.xyz, va2.xxx	\n" + "mov vt3.w, vc5.x			\n" + "dp3 vt4.x, vt0, vc6			\n" + "mul vt4.x, vt4.x, vc7.x			\n" + "mul vt3.xyz, vt3.xyz, vt4.xxx	\n" + "add vt0.xyz, vt0.xyz, vt3.xyz	\n" + "m44 op, vt0, vc0			\n"; // transform Q0 to clip space
+    };
+    /**
+     * @inheritDoc
+     */
+    LineSubMeshRenderable.prototype._iActivate = function (shader, camera) {
+        _super.prototype._iActivate.call(this, shader, camera);
+        this._constants[0] = this._thickness / ((this._stage.scissorRect) ? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
+        // value to convert distance from camera to model length per pixel width
+        this._constants[2] = camera.projection.near;
+        var context = this._stage.context;
+        context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, LineSubMeshRenderable.pONE_VECTOR, 1);
+        context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 6, LineSubMeshRenderable.pFRONT_VECTOR, 1);
+        context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 7, this._constants, 1);
+        // projection matrix
+        context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
+    };
+    /**
+     * @inheritDoc
+     */
+    LineSubMeshRenderable.prototype._iRender = function (shader, camera, viewProjection) {
+        _super.prototype._iRender.call(this, shader, camera, viewProjection);
+        var context = this._stage.context;
+        this._calcMatrix.copyFrom(this.sourceEntity.sceneTransform);
+        this._calcMatrix.append(camera.inverseSceneTransform);
+        context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
+        this._stage.activateBuffer(0, this.getVertexData(LineSubGeometry.START_POSITION_DATA), this.getVertexOffset(LineSubGeometry.START_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
+        this._stage.activateBuffer(1, this.getVertexData(LineSubGeometry.END_POSITION_DATA), this.getVertexOffset(LineSubGeometry.END_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
+        this._stage.activateBuffer(2, this.getVertexData(LineSubGeometry.THICKNESS_DATA), this.getVertexOffset(LineSubGeometry.THICKNESS_DATA), LineSubGeometry.THICKNESS_FORMAT);
+        context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
+    };
     /**
      * //TODO
      *
      * @param pool
-     * @param materialOwner
+     * @param renderableOwner
      * @param level
      * @param indexOffset
      * @returns {away.pool.LineSubMeshRenderable}
      * @private
      */
-    LineSubMeshRenderable.prototype._pGetOverflowRenderable = function (pool, materialOwner, level, indexOffset) {
-        return new LineSubMeshRenderable(pool, materialOwner, level, indexOffset);
+    LineSubMeshRenderable.prototype._pGetOverflowRenderable = function (indexOffset) {
+        return new LineSubMeshRenderable(this._pool, this.renderableOwner, this._stage, this._level + 1, indexOffset);
     };
+    LineSubMeshRenderable.pONE_VECTOR = Array(1, 1, 1, 1);
+    LineSubMeshRenderable.pFRONT_VECTOR = Array(0, 0, -1, 0);
     /**
      *
      */
     LineSubMeshRenderable.id = "linesubmesh";
+    LineSubMeshRenderable.vertexAttributesOffset = 3;
     return LineSubMeshRenderable;
 })(RenderableBase);
 module.exports = LineSubMeshRenderable;
 
 
-},{"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":undefined}],"awayjs-renderergl/lib/pool/MaterialDataPool":[function(require,module,exports){
-var MaterialData = require("awayjs-renderergl/lib/pool/MaterialData");
-/**
- * @class away.pool.MaterialDataPool
- */
-var MaterialDataPool = (function () {
-    /**
-     * //TODO
-     *
-     * @param textureDataClass
-     */
-    function MaterialDataPool() {
-        this._pool = new Object();
-    }
-    /**
-     * //TODO
-     *
-     * @param materialOwner
-     * @returns ITexture
-     */
-    MaterialDataPool.prototype.getItem = function (material) {
-        return (this._pool[material.id] || (this._pool[material.id] = material._iAddMaterialData(new MaterialData(this, material))));
-    };
-    /**
-     * //TODO
-     *
-     * @param materialOwner
-     */
-    MaterialDataPool.prototype.disposeItem = function (material) {
-        material._iRemoveMaterialData(this._pool[material.id]);
-        this._pool[material.id] = null;
-    };
-    return MaterialDataPool;
-})();
-module.exports = MaterialDataPool;
-
-
-},{"awayjs-renderergl/lib/pool/MaterialData":undefined}],"awayjs-renderergl/lib/pool/MaterialData":[function(require,module,exports){
-var MaterialPassDataPool = require("awayjs-renderergl/lib/pool/MaterialPassDataPool");
-/**
- *
- * @class away.pool.MaterialData
- */
-var MaterialData = (function () {
-    function MaterialData(pool, material) {
-        this.invalidAnimation = true;
-        this._pool = pool;
-        this.material = material;
-        this._materialPassDataPool = new MaterialPassDataPool(material);
-    }
-    MaterialData.prototype.getMaterialPass = function (materialPass, profile) {
-        var materialPassData = this._materialPassDataPool.getItem(materialPass);
-        if (!materialPassData.shaderObject) {
-            materialPassData.shaderObject = materialPass.createShaderObject(profile);
-            materialPassData.invalid = true;
-        }
-        if (materialPassData.invalid) {
-            materialPassData.invalid = false;
-            var compiler = materialPassData.shaderObject.createCompiler(this.material, materialPass);
-            compiler.compile();
-            materialPassData.shadedTarget = compiler.shadedTarget;
-            materialPassData.vertexCode = compiler.vertexCode;
-            materialPassData.fragmentCode = compiler.fragmentCode;
-            materialPassData.postAnimationFragmentCode = compiler.postAnimationFragmentCode;
-            materialPassData.key = "";
-        }
-        return materialPassData;
-    };
-    MaterialData.prototype.getMaterialPasses = function (profile) {
-        if (this._passes == null) {
-            var passes = this.material._iScreenPasses;
-            var numPasses = passes.length;
-            //reset the material passes in MaterialData
-            this._passes = new Array(numPasses);
-            for (var i = 0; i < numPasses; i++)
-                this._passes[i] = this.getMaterialPass(passes[i], profile);
-        }
-        return this._passes;
-    };
-    /**
-     *
-     */
-    MaterialData.prototype.dispose = function () {
-        this._materialPassDataPool.disposePool();
-        this._materialPassDataPool = null;
-        this._pool.disposeItem(this.material);
-        this._passes = null;
-    };
-    /**
-     *
-     */
-    MaterialData.prototype.invalidateMaterial = function () {
-        this._passes = null;
-        this.invalidateAnimation();
-    };
-    /**
-     *
-     */
-    MaterialData.prototype.invalidateAnimation = function () {
-        this.invalidAnimation = true;
-    };
-    return MaterialData;
-})();
-module.exports = MaterialData;
-
-
-},{"awayjs-renderergl/lib/pool/MaterialPassDataPool":undefined}],"awayjs-renderergl/lib/pool/MaterialPassDataPool":[function(require,module,exports){
-var MaterialPassData = require("awayjs-renderergl/lib/pool/MaterialPassData");
-/**
- * @class away.pool.MaterialPassDataPool
- */
-var MaterialPassDataPool = (function () {
-    /**
-     * //TODO
-     *
-     * @param textureDataClass
-     */
-    function MaterialPassDataPool(material) {
-        this._pool = new Object();
-        this._material = material;
-    }
-    /**
-     * //TODO
-     *
-     * @param materialOwner
-     * @returns ITexture
-     */
-    MaterialPassDataPool.prototype.getItem = function (materialPass) {
-        return (this._pool[materialPass.id] || (this._pool[materialPass.id] = this._material._iAddMaterialPassData(materialPass._iAddMaterialPassData(new MaterialPassData(this, this._material, materialPass)))));
-    };
-    /**
-     * //TODO
-     *
-     * @param materialOwner
-     */
-    MaterialPassDataPool.prototype.disposeItem = function (materialPass) {
-        materialPass._iRemoveMaterialPassData(this._pool[materialPass.id]);
-        delete this._pool[materialPass.id];
-    };
-    MaterialPassDataPool.prototype.disposePool = function () {
-        for (var id in this._pool)
-            this._pool[id].materialPass._iRemoveMaterialPassData(this._pool[id]);
-        delete this._pool;
-    };
-    return MaterialPassDataPool;
-})();
-module.exports = MaterialPassDataPool;
-
-
-},{"awayjs-renderergl/lib/pool/MaterialPassData":undefined}],"awayjs-renderergl/lib/pool/MaterialPassData":[function(require,module,exports){
-/**
- *
- * @class away.pool.MaterialPassData
- */
-var MaterialPassData = (function () {
-    function MaterialPassData(pool, material, materialPass) {
-        this.animationVertexCode = "";
-        this.animationFragmentCode = "";
-        this._pool = pool;
-        this.material = material;
-        this.materialPass = materialPass;
-    }
-    /**
-     *
-     */
-    MaterialPassData.prototype.dispose = function () {
-        this._pool.disposeItem(this.materialPass);
-        this.shaderObject.dispose();
-        this.shaderObject = null;
-        this.programData.dispose();
-        this.programData = null;
-    };
-    /**
-     *
-     */
-    MaterialPassData.prototype.invalidate = function () {
-        this.invalid = true;
-    };
-    return MaterialPassData;
-})();
-module.exports = MaterialPassData;
-
-
-},{}],"awayjs-renderergl/lib/pool/RenderableBase":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/RenderableBase":[function(require,module,exports){
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
 var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
@@ -13615,11 +13190,11 @@ var RenderableBase = (function () {
     /**
      *
      * @param sourceEntity
-     * @param materialOwner
+     * @param renderableOwner
      * @param subGeometry
      * @param animationSubGeometry
      */
-    function RenderableBase(pool, sourceEntity, materialOwner, level, indexOffset) {
+    function RenderableBase(pool, sourceEntity, renderableOwner, renderObjectOwner, stage, level, indexOffset) {
         var _this = this;
         if (level === void 0) { level = 0; }
         if (indexOffset === void 0) { indexOffset = 0; }
@@ -13632,12 +13207,14 @@ var RenderableBase = (function () {
         this._onVerticesUpdatedDelegate = function (event) { return _this._onVerticesUpdated(event); };
         //store a reference to the pool for later disposal
         this._pool = pool;
+        this._stage = stage;
         //reference to level of overflow
         this._level = level;
         //reference to the offset on indices (if this is an overflow renderable)
         this._indexOffset = indexOffset;
         this.sourceEntity = sourceEntity;
-        this.materialOwner = materialOwner;
+        this.renderableOwner = renderableOwner;
+        this.renderObjectOwner = renderObjectOwner;
     }
     Object.defineProperty(RenderableBase.prototype, "overflow", {
         /**
@@ -13690,7 +13267,7 @@ var RenderableBase = (function () {
         return this._vertexOffset[dataType];
     };
     RenderableBase.prototype.dispose = function () {
-        this._pool.disposeItem(this.materialOwner);
+        this._pool.disposeItem(this.renderableOwner);
         this._indexData.dispose();
         this._indexData = null;
         for (var dataType in this._vertexData) {
@@ -13727,6 +13304,12 @@ var RenderableBase = (function () {
     RenderableBase.prototype._pGetSubGeometry = function () {
         throw new AbstractMethodError();
     };
+    RenderableBase._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
+    RenderableBase._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
     /**
      * //TODO
      *
@@ -13743,7 +13326,7 @@ var RenderableBase = (function () {
         //check if there is more to split
         if (indexOffset < this._subGeometry.indices.length) {
             if (!this._overflow)
-                this._overflow = this._pGetOverflowRenderable(this._pool, this.materialOwner, indexOffset, this._level + 1);
+                this._overflow = this._pGetOverflowRenderable(indexOffset);
             this._overflow._iFillIndexData(indexOffset);
         }
         else if (this._overflow) {
@@ -13751,8 +13334,35 @@ var RenderableBase = (function () {
             this._overflow = null;
         }
     };
-    RenderableBase.prototype._pGetOverflowRenderable = function (pool, materialOwner, level, indexOffset) {
+    RenderableBase.prototype._pGetOverflowRenderable = function (indexOffset) {
         throw new AbstractMethodError();
+    };
+    /**
+     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
+     * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
+     * @param stage The Stage object which is currently used for rendering.
+     * @param camera The camera from which the scene is viewed.
+     * @private
+     */
+    RenderableBase.prototype._iActivate = function (shader, camera) {
+        this.renderObject._iActivate(shader, camera);
+    };
+    /**
+     * Renders an object to the current render target.
+     *
+     * @private
+     */
+    RenderableBase.prototype._iRender = function (shader, camera, viewProjection) {
+        this.renderObject._iRender(this, shader, camera, viewProjection);
+    };
+    /**
+     * Clears the render state for the pass. This needs to be called before activating another pass.
+     * @param stage The Stage used for rendering
+     *
+     * @private
+     */
+    RenderableBase.prototype._iDeactivate = function (shader) {
+        this.renderObject._iDeactivate(shader);
     };
     /**
      * //TODO
@@ -13830,7 +13440,114 @@ var RenderableBase = (function () {
 module.exports = RenderableBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/base/SubGeometryBase":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-stagegl/lib/pool/IndexDataPool":undefined,"awayjs-stagegl/lib/pool/VertexDataPool":undefined}],"awayjs-renderergl/lib/pool/SkyboxRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/base/SubGeometryBase":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-stagegl/lib/pool/IndexDataPool":undefined,"awayjs-stagegl/lib/pool/VertexDataPool":undefined}],"awayjs-renderergl/lib/pool/RenderablePool":[function(require,module,exports){
+var RenderObjectPool = require("awayjs-renderergl/lib/compilation/RenderObjectPool");
+var RenderBasicMaterialObject = require("awayjs-renderergl/lib/compilation/RenderBasicMaterialObject");
+var SkyboxRenderObject = require("awayjs-renderergl/lib/compilation/SkyboxRenderObject");
+var DepthRenderObject = require("awayjs-renderergl/lib/compilation/DepthRenderObject");
+var DistanceRenderObject = require("awayjs-renderergl/lib/compilation/DistanceRenderObject");
+/**
+ * @class away.pool.RenderablePool
+ */
+var RenderablePool = (function () {
+    /**
+     * //TODO
+     *
+     * @param renderableClass
+     */
+    function RenderablePool(renderableClass, stage) {
+        this._renderablePool = new Object();
+        this._renderableClass = renderableClass;
+        this._stage = stage;
+        this._materialRenderObjectPool = new RenderObjectPool(RenderBasicMaterialObject, this._renderableClass, this._stage);
+        this._skyboxRenderObjectPool = new RenderObjectPool(SkyboxRenderObject, this._renderableClass, this._stage);
+        this._depthRenderObjectPool = new RenderObjectPool(DepthRenderObject, this._renderableClass, this._stage);
+        this._distanceRenderObjectPool = new RenderObjectPool(DistanceRenderObject, this._renderableClass, this._stage);
+    }
+    /**
+     * //TODO
+     *
+     * @param renderableOwner
+     * @returns IRenderable
+     */
+    RenderablePool.prototype.getItem = function (renderableOwner) {
+        return (this._renderablePool[renderableOwner.id] || (this._renderablePool[renderableOwner.id] = renderableOwner._iAddRenderable(new this._renderableClass(this, renderableOwner, this._stage))));
+    };
+    /**
+     *
+     * @param material
+     * @param renderable
+     */
+    RenderablePool.prototype.getMaterialRenderObject = function (renderObjectOwner) {
+        return this._materialRenderObjectPool.getItem(renderObjectOwner);
+    };
+    /**
+     *
+     * @param material
+     * @param renderable
+     */
+    RenderablePool.prototype.getSkyboxRenderObject = function (renderObjectOwner) {
+        return this._skyboxRenderObjectPool.getItem(renderObjectOwner);
+    };
+    /**
+     *
+     * @param material
+     * @param renderable
+     */
+    RenderablePool.prototype.getDepthRenderObject = function (renderObjectOwner) {
+        return this._depthRenderObjectPool.getItem(renderObjectOwner);
+    };
+    /**
+     *
+     * @param material
+     * @param renderable
+     */
+    RenderablePool.prototype.getDistanceRenderObject = function (renderObjectOwner) {
+        return this._distanceRenderObjectPool.getItem(renderObjectOwner);
+    };
+    /**
+     * //TODO
+     *
+     * @param renderableOwner
+     */
+    RenderablePool.prototype.disposeItem = function (renderableOwner) {
+        renderableOwner._iRemoveRenderable(this._renderablePool[renderableOwner.id]);
+        this._renderablePool[renderableOwner.id] = null;
+    };
+    RenderablePool.prototype.dispose = function () {
+        for (var id in this._renderablePool)
+            this._renderablePool[id].dispose();
+        RenderablePool.disposePool(this._renderableClass, this._stage);
+    };
+    /**
+     * //TODO
+     *
+     * @param renderableClass
+     * @returns RenderablePool
+     */
+    RenderablePool.getPool = function (renderableClass, stage) {
+        var pools = (RenderablePool._pools[stage.stageIndex] || (RenderablePool._pools[stage.stageIndex] = new Object()));
+        return (pools[renderableClass.id] || (pools[renderableClass.id] = new RenderablePool(renderableClass, stage)));
+    };
+    /**
+     * //TODO
+     *
+     * @param renderableClass
+     */
+    RenderablePool.disposePool = function (renderableClass, stage) {
+        var pools = RenderablePool._pools[stage.stageIndex];
+        if (pools == undefined)
+            return;
+        if (pools[renderableClass.id])
+            pools[renderableClass.id] = undefined;
+    };
+    RenderablePool._pools = new Object();
+    return RenderablePool;
+})();
+module.exports = RenderablePool;
+
+
+},{"awayjs-renderergl/lib/compilation/DepthRenderObject":undefined,"awayjs-renderergl/lib/compilation/DistanceRenderObject":undefined,"awayjs-renderergl/lib/compilation/RenderBasicMaterialObject":undefined,"awayjs-renderergl/lib/compilation/RenderObjectPool":undefined,"awayjs-renderergl/lib/compilation/SkyboxRenderObject":undefined}],"awayjs-renderergl/lib/pool/SkyboxRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13838,6 +13555,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
  * @class away.pool.SkyboxRenderable
@@ -13850,8 +13568,9 @@ var SkyboxRenderable = (function (_super) {
      * @param pool
      * @param skybox
      */
-    function SkyboxRenderable(pool, skybox) {
-        _super.call(this, pool, skybox, skybox);
+    function SkyboxRenderable(pool, skybox, stage) {
+        _super.call(this, pool, skybox, skybox, skybox, stage);
+        this._vertexArray = new Array(0, 0, 0, 0, 1, 1, 1, 1);
     }
     /**
      * //TODO
@@ -13871,24 +13590,61 @@ var SkyboxRenderable = (function (_super) {
         this._pVertexDataDirty[TriangleSubGeometry.POSITION_DATA] = true;
         return geometry;
     };
+    SkyboxRenderable._iIncludeDependencies = function (shaderObject) {
+    };
+    /**
+     * @inheritDoc
+     */
+    SkyboxRenderable._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "mul vt0, va0, vc5\n" + "add vt0, vt0, vc4\n" + "m44 op, vt0, vc0\n" + "mov v0, va0\n";
+    };
+    /**
+     * @inheritDoc
+     */
+    SkyboxRenderable.prototype._iActivate = function (shader, camera) {
+        _super.prototype._iActivate.call(this, shader, camera);
+        var context = this._stage.context;
+        //context.setSamplerStateAt(0, ContextGLWrapMode.CLAMP, ContextGLTextureFilter.LINEAR, this._cubeMap.hasMipmaps? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
+        //context.setDepthTest(false, ContextGLCompareMode.LESS);
+        //this._stage.activateCubeTexture(0, this._cubeMap);
+    };
+    /**
+     * @inheritDoc
+     */
+    SkyboxRenderable.prototype._iRender = function (shader, camera, viewProjection) {
+        _super.prototype._iRender.call(this, shader, camera, viewProjection);
+        var context = this._stage.context;
+        var pos = camera.scenePosition;
+        this._vertexArray[0] = pos.x;
+        this._vertexArray[1] = pos.y;
+        this._vertexArray[2] = pos.z;
+        this._vertexArray[4] = this._vertexArray[5] = this._vertexArray[6] = camera.projection.far / Math.sqrt(3);
+        context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, viewProjection, true);
+        context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._vertexArray, 2);
+        this._stage.activateBuffer(0, this.getVertexData(TriangleSubGeometry.POSITION_DATA), this.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+        context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
+    };
     /**
      *
      */
     SkyboxRenderable.id = "skybox";
+    SkyboxRenderable.vertexAttributesOffset = 1;
     return SkyboxRenderable;
 })(RenderableBase);
 module.exports = SkyboxRenderable;
 
 
-},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":undefined}],"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
  * @class away.pool.TriangleSubMeshRenderable
@@ -13903,10 +13659,10 @@ var TriangleSubMeshRenderable = (function (_super) {
      * @param level
      * @param indexOffset
      */
-    function TriangleSubMeshRenderable(pool, subMesh, level, indexOffset) {
+    function TriangleSubMeshRenderable(pool, subMesh, stage, level, indexOffset) {
         if (level === void 0) { level = 0; }
         if (indexOffset === void 0) { indexOffset = 0; }
-        _super.call(this, pool, subMesh.parentMesh, subMesh, level, indexOffset);
+        _super.call(this, pool, subMesh.parentMesh, subMesh, subMesh.material, stage, level, indexOffset);
         this.subMesh = subMesh;
     }
     /**
@@ -13950,29 +13706,73 @@ var TriangleSubMeshRenderable = (function (_super) {
         }
         return subGeometry;
     };
+    TriangleSubMeshRenderable._iIncludeDependencies = function (shaderObject) {
+    };
+    TriangleSubMeshRenderable._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
+        var code = "";
+        //get the projection coordinates
+        var position = (shaderObject.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
+        //reserving vertex constants for projection matrix
+        var viewMatrixReg = registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        shaderObject.viewMatrixIndex = viewMatrixReg.index * 4;
+        if (shaderObject.projectionDependencies > 0) {
+            sharedRegisters.projectionFragment = registerCache.getFreeVarying();
+            var temp = registerCache.getFreeVertexVectorTemp();
+            code += "m44 " + temp + ", " + position + ", " + viewMatrixReg + "\n" + "mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" + "mov op, " + temp + "\n";
+        }
+        else {
+            code += "m44 op, " + position + ", " + viewMatrixReg + "\n";
+        }
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    TriangleSubMeshRenderable.prototype._iRender = function (shader, camera, viewProjection) {
+        _super.prototype._iRender.call(this, shader, camera, viewProjection);
+        if (shader.sceneMatrixIndex >= 0) {
+            this.sourceEntity.getRenderSceneTransform(camera).copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
+            viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+        }
+        else {
+            var matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
+            matrix3D.copyFrom(this.sourceEntity.getRenderSceneTransform(camera));
+            matrix3D.append(viewProjection);
+            matrix3D.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+        }
+        var context = this._stage.context;
+        context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shader.vertexConstantData, shader.numUsedVertexConstants);
+        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
+        this._stage.activateBuffer(0, this.getVertexData(TriangleSubGeometry.POSITION_DATA), this.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+        this._stage.context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
+    };
     /**
      * //TODO
      *
      * @param pool
-     * @param materialOwner
+     * @param renderableOwner
      * @param level
      * @param indexOffset
      * @returns {away.pool.TriangleSubMeshRenderable}
      * @protected
      */
-    TriangleSubMeshRenderable.prototype._pGetOverflowRenderable = function (pool, materialOwner, level, indexOffset) {
-        return new TriangleSubMeshRenderable(pool, materialOwner, level, indexOffset);
+    TriangleSubMeshRenderable.prototype._pGetOverflowRenderable = function (indexOffset) {
+        return new TriangleSubMeshRenderable(this._pool, this.renderableOwner, this._stage, this._level + 1, indexOffset);
     };
     /**
      *
      */
     TriangleSubMeshRenderable.id = "trianglesubmesh";
+    TriangleSubMeshRenderable.vertexAttributesOffset = 1;
     return TriangleSubMeshRenderable;
 })(RenderableBase);
 module.exports = TriangleSubMeshRenderable;
 
 
-},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Geometry = require("awayjs-display/lib/base/Geometry");
 var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
