@@ -15,14 +15,14 @@ import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import SkyboxMaterial				= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
+//import SkyboxMaterial				= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
 
 class CubeTextures
 {
 	private _view:View;
 	private _timer:RequestAnimationFrame;
 	private _skyboxCubeTexture:ImageCubeTexture;
-	private _skyboxMaterial:SkyboxMaterial;
+	//private _skyboxMaterial:SkyboxMaterial;
 
 	private _skybox:Skybox;
 
@@ -57,9 +57,8 @@ class CubeTextures
 		switch(event.url) {
 			case 'assets/CubeTextureTest.cube':
 				this._skyboxCubeTexture = <ImageCubeTexture> loader.baseDependency.assets[0];
-				this._skyboxMaterial = new SkyboxMaterial(this._skyboxCubeTexture);
 
-				this._skybox = new Skybox(this._skyboxMaterial);
+				this._skybox = new Skybox(this._skyboxCubeTexture);
 				this._view.scene.addChild(this._skybox);
 
 				break;

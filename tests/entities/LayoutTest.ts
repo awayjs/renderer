@@ -13,9 +13,9 @@ import HoverController				= require("awayjs-display/lib/controllers/HoverControl
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import AwayMouseEvent				= require("awayjs-display/lib/events/MouseEvent");
+import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import TriangleBasicMaterial		= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
 
 class LayoutTest
 {
@@ -31,7 +31,7 @@ class LayoutTest
 	private _lastMouseY:number;
 
 	private _imageTexture:ImageTexture;
-	private _bitmapMaterial:TriangleBasicMaterial;
+	private _bitmapMaterial:BasicMaterial;
 	private _billboards:Array<Billboard> = new Array<Billboard>();
 
 	constructor()
@@ -66,7 +66,7 @@ class LayoutTest
 		this._projection.originY = 0;
 
 		//create a bitmap material
-		this._bitmapMaterial = new TriangleBasicMaterial(this._imageTexture);
+		this._bitmapMaterial = new BasicMaterial(this._imageTexture);
 
 		var billboard:Billboard;
 		var numHBillboards:number = 2;

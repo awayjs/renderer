@@ -13,9 +13,9 @@ import AlignmentMode				= require("awayjs-display/lib/base/AlignmentMode");
 import OrientationMode				= require("awayjs-display/lib/base/OrientationMode");
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import TriangleBasicMaterial		= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
 
 class BillboardTest
 {
@@ -115,7 +115,7 @@ class BillboardTest
 
 				case "assets/130909wall_big.png":
 
-					var material:TriangleBasicMaterial = new TriangleBasicMaterial();
+					var material:BasicMaterial = new BasicMaterial();
 						material.texture = <Texture2DBase> AssetLibrary.getAsset(asset.name);
 
 					var s:Billboard;

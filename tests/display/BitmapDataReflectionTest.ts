@@ -13,9 +13,9 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import View							= require("awayjs-display/lib/containers/View");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import TriangleBasicMaterial		= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
 
 class BitmapDataReflectionTest
 {
@@ -71,11 +71,11 @@ class BitmapDataReflectionTest
 
 					var bmpTX:BitmapTexture = new BitmapTexture(bitmapClone, false);
 
-					var material:TriangleBasicMaterial = new TriangleBasicMaterial(bmpTX);
+					var material:BasicMaterial = new BasicMaterial(bmpTX);
 					material.bothSides = true;
 					material.alphaBlending = true;
 
-					var material2:TriangleBasicMaterial = new TriangleBasicMaterial(tx);
+					var material2:BasicMaterial = new BasicMaterial(tx);
 					material2.bothSides = true;
 					material2.alphaBlending = true;
 

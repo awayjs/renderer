@@ -1,3 +1,4 @@
+import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 
@@ -26,6 +27,7 @@ class HoverControllerTest
 	constructor()
 	{
 		this._view = new View(new DefaultRenderer());
+		this._view.backgroundColor = 0x222222;
 
 		this._cube = new PrimitiveCubePrefab(400, 400, 400);
 		this._cube.geometryType = "lineSubGeometry";

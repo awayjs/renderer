@@ -5,9 +5,9 @@ import View							= require("awayjs-display/lib/containers/View");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import PointLight					= require("awayjs-display/lib/entities/PointLight");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
+import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import TriangleBasicMaterial		= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
 
 class View3DTest
 {
@@ -34,7 +34,7 @@ class View3DTest
 
 		var l:number        = 10;
 		var radius:number        = 1000;
-		var matB:TriangleBasicMaterial = new TriangleBasicMaterial();
+		var matB:BasicMaterial = new BasicMaterial();
 
 		this.torus.material = matB;
 
