@@ -3996,6 +3996,15 @@ declare module "awayjs-renderergl/lib/compilation/ShaderLightingCompiler" {
 	export = ShaderLightingCompiler;
 	
 }
+declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
+	import Event = require("awayjs-core/lib/events/Event");
+	class ShadingMethodEvent extends Event {
+	    static SHADER_INVALIDATED: string;
+	    constructor(type: string);
+	}
+	export = ShadingMethodEvent;
+	
+}
 declare module "awayjs-renderergl/lib/managers/DefaultMaterialManager" {
 	import BitmapData = require("awayjs-core/lib/base/BitmapData");
 	import BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
@@ -4259,15 +4268,6 @@ declare module "awayjs-renderergl/lib/utils/PerspectiveMatrix3D" {
 	    perspectiveFieldOfViewLH(fieldOfViewY: number, aspectRatio: number, zNear: number, zFar: number): void;
 	}
 	export = PerspectiveMatrix3D;
-	
-}
-declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
-	import Event = require("awayjs-core/lib/events/Event");
-	class ShadingMethodEvent extends Event {
-	    static SHADER_INVALIDATED: string;
-	    constructor(type: string);
-	}
-	export = ShadingMethodEvent;
 	
 }
 declare module "awayjs-renderergl/lib/animators/data/ColorSegmentPoint" {
