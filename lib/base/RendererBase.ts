@@ -38,14 +38,13 @@ import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
 
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import BillboardRenderable			= require("awayjs-renderergl/lib/pool/BillboardRenderable");
-import LineSubMeshRenderable		= require("awayjs-renderergl/lib/pool/LineSubMeshRenderable");
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import TriangleSubMeshRenderable	= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
+import IRendererPoolClass			= require("awayjs-renderergl/lib/pool/IRendererPoolClass");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
+import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
+import RendererPoolBase				= require("awayjs-renderergl/lib/pool/RendererPoolBase");
+
 
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -58,10 +57,9 @@ class RendererBase extends EventDispatcher
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
 
-	private _billboardRenderablePool:RenderablePool;
-	private _triangleSubMeshRenderablePool:RenderablePool;
-	private _lineSubMeshRenderablePool:RenderablePool;
+	private _rendererPool:RendererPoolBase;
 
+	public _pRendererPoolClass:IRendererPoolClass;
 	public _pContext:IContextGL;
 	public _pStage:Stage;
 
@@ -253,31 +251,35 @@ class RendererBase extends EventDispatcher
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(stage:Stage = null)
+	constructor(rendererPoolClass:IRendererPoolClass = null, stage:Stage = null)
 	{
 		super();
+
+		this._pRendererPoolClass = rendererPoolClass;
 
 		this._onViewportUpdatedDelegate = (event:StageEvent) => this.onViewportUpdated(event)
 		this._onContextUpdateDelegate = (event:Event) => this.onContextUpdate(event);
 
-		this.stage = stage || StageManager.getInstance().getFreeStage();
-
 		//default sorting algorithm
 		this.renderableSorter = new RenderableMergeSort();
+
+		this._rendererPool = (rendererPoolClass)? new this._pRendererPoolClass(this) : new RendererPoolBase(this);
+
+		this.stage = stage || StageManager.getInstance().getFreeStage();
 	}
 
-	public activateProgram(renderable:RenderableBase, shader:ShaderObjectBase, camera:Camera)
+	public activatePass(renderable:RenderableBase, pass:RenderPassBase, camera:Camera)
 	{
 		//clear unused vertex streams
-		for (var i = shader.numUsedStreams; i < this._numUsedStreams; i++)
+		for (var i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
 			this._pContext.setVertexBufferAt(i, null);
 
 		//clear unused texture streams
-		for (var i = shader.numUsedTextures; i < this._numUsedTextures; i++)
+		for (var i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
 			this._pContext.setTextureAt(i, null);
 
 		//check program data is uploaded
-		var programData:ProgramData = shader.programData;
+		var programData:ProgramData = pass.shader.programData;
 
 		if (!programData.program) {
 			programData.program = this._pContext.createProgram();
@@ -290,16 +292,16 @@ class RendererBase extends EventDispatcher
 		this._pContext.setProgram(programData.program);
 
 		//activate shader object through renderable
-		renderable._iActivate(shader, camera);
+		renderable._iActivate(pass, camera);
 	}
 
-	public deactivateProgram(renderable:RenderableBase, shader:ShaderObjectBase)
+	public deactivatePass(renderable:RenderableBase, pass:RenderPassBase)
 	{
 		//deactivate shader object
-		renderable._iDeactivate(shader);
+		renderable._iDeactivate(pass);
 
-		this._numUsedStreams = shader.numUsedStreams;
-		this._numUsedTextures = shader.numUsedTextures;
+		this._numUsedStreams = pass.shader.numUsedStreams;
+		this._numUsedTextures = pass.shader.numUsedTextures;
 	}
 
 	public _iCreateEntityCollector():ICollector
@@ -382,7 +384,7 @@ class RendererBase extends EventDispatcher
 
 	public set stage(value:Stage)
 	{
-		if (value == this._pStage)
+		if (this._pStage == value)
 			return;
 
 		this.iSetStage(value);
@@ -395,13 +397,12 @@ class RendererBase extends EventDispatcher
 
 		if (value) {
 			this._pStage = value;
+
+			this._rendererPool.stage = this._pStage;
+
 			this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 			this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 			this._pStage.addEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-
-			this._billboardRenderablePool = RenderablePool.getPool(BillboardRenderable, this._pStage);
-			this._triangleSubMeshRenderablePool = RenderablePool.getPool(TriangleSubMeshRenderable, this._pStage);
-			this._lineSubMeshRenderablePool = RenderablePool.getPool(LineSubMeshRenderable, this._pStage);
 
 			/*
 			 if (_backgroundImageRenderer)
@@ -440,12 +441,7 @@ class RendererBase extends EventDispatcher
 	 */
 	public dispose()
 	{
-		this._billboardRenderablePool.dispose();
-		this._triangleSubMeshRenderablePool.dispose();
-		this._lineSubMeshRenderablePool.dispose();
-		this._billboardRenderablePool = null;
-		this._triangleSubMeshRenderablePool = null;
-		this._lineSubMeshRenderablePool = null;
+		this._rendererPool.dispose();
 
 		this._pStage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._pStage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
@@ -539,7 +535,7 @@ class RendererBase extends EventDispatcher
 
 		//iterate through all entities
 		while (item) {
-			item.entity._iCollectRenderables(this);
+			item.entity._iCollectRenderables(this._rendererPool);
 			item = item.next;
 		}
 
@@ -619,22 +615,22 @@ class RendererBase extends EventDispatcher
 
 	private drawCascadeRenderables(renderable:RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
 	{
-		var renderObject:RenderObjectBase;
-		var shaderObject:ShaderObjectBase;
 		var renderable2:RenderableBase;
+		var renderObject:RenderObjectBase;
+		var pass:RenderPassBase;
 
 		while (renderable) {
-			renderObject = renderable.renderObject;
-
 			renderable2 = renderable;
+			renderObject = renderable.renderObject;
+			pass = renderObject.passes[0] //assuming only one pass per material
 
-			this.activateProgram(renderable, shaderObject, camera);
+			this.activatePass(renderable, pass, camera);
 
 			do {
 				// if completely in front, it will fall in a different cascade
 				// do not use near and far planes
 				if (!cullPlanes || renderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
-					renderable2._iRender(shaderObject, camera, this._pRttViewProjectionMatrix);
+					renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
 				} else {
 					renderable2.cascaded = true;
 				}
@@ -643,7 +639,7 @@ class RendererBase extends EventDispatcher
 
 			} while (renderable2 && renderable2.renderObject == renderObject && !renderable2.cascaded);
 
-			this.deactivateProgram(renderable, shaderObject);
+			this.deactivatePass(renderable, pass);
 
 			renderable = renderable2;
 		}
@@ -659,15 +655,16 @@ class RendererBase extends EventDispatcher
 	{
 		var i:number;
 		var len:number;
-		var renderObject:RenderObjectBase;
-		var shaderObjects:Array<ShaderObjectBase>;
-		var shaderObject:ShaderObjectBase;
-		var camera:Camera = entityCollector.camera;
 		var renderable2:RenderableBase;
+		var renderObject:RenderObjectBase;
+		var passes:Array<RenderPassBase>;
+		var pass:RenderPassBase;
+		var camera:Camera = entityCollector.camera;
+
 
 		while (renderable) {
 			renderObject = renderable.renderObject;
-			shaderObjects = renderObject.shaderObjects;
+			passes = renderObject.passes;
 
 			// otherwise this would result in depth rendered anyway because fragment shader kil is ignored
 			if (this._disableColor && renderObject._renderObjectOwner.alphaThreshold != 0) {
@@ -679,21 +676,21 @@ class RendererBase extends EventDispatcher
 				} while (renderable2 && renderable2.renderObject == renderObject);
 			} else {
 				//iterate through each shader object
-				len = shaderObjects.length;
+				len = passes.length;
 				for (i = 0; i < len; i++) {
 					renderable2 = renderable;
-					shaderObject = shaderObjects[i];
+					pass = passes[i];
 
-					this.activateProgram(renderable, shaderObject, camera);
+					this.activatePass(renderable, pass, camera);
 
 					do {
-						renderable2._iRender(shaderObject, camera, this._pRttViewProjectionMatrix);
+						renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
 
 						renderable2 = renderable2.next;
 
 					} while (renderable2 && renderable2.renderObject == renderObject);
 
-					this.deactivateProgram(renderable, shaderObject);
+					this.deactivatePass(renderable, pass);
 				}
 			}
 
@@ -829,41 +826,12 @@ class RendererBase extends EventDispatcher
 		this.notifyScissorUpdate();
 	}
 
-
-	/**
-	 *
-	 * @param billboard
-	 * @protected
-	 */
-	public applyBillboard(billboard:Billboard)
-	{
-		this._applyRenderable(this._billboardRenderablePool.getItem(billboard));
-	}
-
-	/**
-	 *
-	 * @param triangleSubMesh
-	 */
-	public applyTriangleSubMesh(triangleSubMesh:TriangleSubMesh)
-	{
-		this._applyRenderable(this._triangleSubMeshRenderablePool.getItem(triangleSubMesh));
-	}
-
-	/**
-	 *
-	 * @param lineSubMesh
-	 */
-	public applyLineSubMesh(lineSubMesh:LineSubMesh)
-	{
-		this._applyRenderable(this._lineSubMeshRenderablePool.getItem(lineSubMesh));
-	}
-
 	/**
 	 *
 	 * @param renderable
 	 * @protected
 	 */
-	private _applyRenderable(renderable:RenderableBase)
+	public applyRenderable(renderable:RenderableBase)
 	{
 		//set local vars for faster referencing
 		var renderObject:RenderObjectBase = this._pGetRenderObject(renderable, renderable.renderObjectOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
@@ -896,7 +864,7 @@ class RendererBase extends EventDispatcher
 
 		//handle any overflow for renderables with data that exceeds GPU limitations
 		if (renderable.overflow)
-			this._applyRenderable(renderable.overflow);
+			this.applyRenderable(renderable.overflow);
 	}
 
 	public _pGetRenderObject(renderable:RenderableBase, renderObjectOwner:IRenderObjectOwner):RenderObjectBase

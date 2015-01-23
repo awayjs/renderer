@@ -12,6 +12,7 @@ import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 import RenderObjectPool				= require("awayjs-renderergl/lib/compilation/RenderObjectPool");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
+import IRendererPoolClass			= require("awayjs-renderergl/lib/pool/IRendererPoolClass");
 
 
 /**
@@ -26,9 +27,9 @@ class DepthRenderer extends RendererBase
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	 */
-	constructor(stage:Stage = null)
+	constructor(rendererPoolClass:IRendererPoolClass = null, stage:Stage = null)
 	{
-		super(stage);
+		super(rendererPoolClass, stage);
 
 		this._iBackgroundR = 1;
 		this._iBackgroundG = 1;

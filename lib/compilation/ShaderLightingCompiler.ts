@@ -3,7 +3,7 @@ import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile")
 import ShaderLightingObject			= require("awayjs-renderergl/lib/compilation/ShaderLightingObject");
 import ShaderCompilerBase			= require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-import IRenderLightingObject		= require("awayjs-renderergl/lib/compilation/IRenderLightingObject");
+import IRenderLightingPass		= require("awayjs-renderergl/lib/passes/IRenderLightingPass");
 import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
 
 /**
@@ -15,7 +15,7 @@ import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClas
 class ShaderLightingCompiler extends ShaderCompilerBase
 {
 	private _shaderLightingObject:ShaderLightingObject;
-	private _renderLightingObject:IRenderLightingObject;
+	private _renderLightingPass:IRenderLightingPass;
 	public _pointLightFragmentConstants:Array<ShaderRegisterElement>;
 	public _pointLightVertexConstants:Array<ShaderRegisterElement>;
 	public _dirLightFragmentConstants:Array<ShaderRegisterElement>;
@@ -27,12 +27,12 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 	 * Creates a new ShaderCompilerBase object.
 	 * @param profile The compatibility profile of the renderer.
 	 */
-	constructor(renderableClass:IRenderableClass, renderObject:IRenderLightingObject, shaderObject:ShaderLightingObject)
+	constructor(renderableClass:IRenderableClass, renderLightingPass:IRenderLightingPass, shaderLightingObject:ShaderLightingObject)
 	{
-		super(renderableClass, renderObject, shaderObject);
+		super(renderableClass, renderLightingPass, shaderLightingObject);
 
-		this._shaderLightingObject = shaderObject;
-		this._renderLightingObject = renderObject;
+		this._shaderLightingObject = shaderLightingObject;
+		this._renderLightingPass = renderLightingPass;
 	}
 
 	/**
@@ -54,8 +54,8 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 		if (this._shaderLightingObject.usesProbes)
 			this.compileLightProbeCode();
 
-		this._pVertexCode += this._renderLightingObject._iGetPostLightingVertexCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
-		this._pFragmentCode += this._renderLightingObject._iGetPostLightingFragmentCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pVertexCode += this._renderLightingPass._iGetPostLightingVertexCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pFragmentCode += this._renderLightingPass._iGetPostLightingFragmentCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
 	}
 
 	/**
@@ -154,10 +154,10 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 			specularColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
 
 			if (addDiff)
-				this._pFragmentCode += this._renderLightingObject._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._renderLightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
 
 			if (addSpec)
-				this._pFragmentCode += this._renderLightingObject._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._renderLightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
 
 			if (this._shaderLightingObject.usesTangentSpace)
 				this._pRegisterCache.removeVertexTempUsage(lightDirReg);
@@ -214,10 +214,10 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 				this._shaderLightingObject.lightFragmentConstantIndex = lightPosReg.index*4;
 
 			if (addDiff)
-				this._pFragmentCode += this._renderLightingObject._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._renderLightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
 
 			if (addSpec)
-				this._pFragmentCode += this._renderLightingObject._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._renderLightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
 
 			this._pRegisterCache.removeFragmentTempUsage(lightDirReg);
 		}
@@ -255,13 +255,13 @@ class ShaderLightingCompiler extends ShaderCompilerBase
 			if (addDiff) {
 				texReg = this._pRegisterCache.getFreeTextureReg();
 				this._shaderLightingObject.lightProbeDiffuseIndices[i] = texReg.index;
-				this._pFragmentCode += this._renderLightingObject._iGetPerProbeDiffuseFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._renderLightingPass._iGetPerProbeDiffuseFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
 			}
 
 			if (addSpec) {
 				texReg = this._pRegisterCache.getFreeTextureReg();
 				this._shaderLightingObject.lightProbeSpecularIndices[i] = texReg.index;
-				this._pFragmentCode += this._renderLightingObject._iGetPerProbeSpecularFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._renderLightingPass._iGetPerProbeSpecularFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
 			}
 		}
 	}

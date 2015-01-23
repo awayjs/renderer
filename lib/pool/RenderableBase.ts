@@ -8,6 +8,7 @@ import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeome
 import IRenderable					= require("awayjs-display/lib/pool/IRenderable");
 import IEntity						= require("awayjs-display/lib/entities/IEntity");
 import Camera						= require("awayjs-display/lib/entities/Camera");
+import RenderableOwnerEvent			= require("awayjs-display/lib/events/RenderableOwnerEvent");
 import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
 import IRenderer					= require("awayjs-display/lib/render/IRenderer");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
@@ -21,8 +22,9 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
+import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
+import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
 /**
  * @class RenderableListItem
@@ -32,6 +34,7 @@ class RenderableBase implements IRenderable
 
 	private _onIndicesUpdatedDelegate:(event:SubGeometryEvent) => void;
 	private _onVerticesUpdatedDelegate:(event:SubGeometryEvent) => void;
+	private _onRenderObjectOwnerUpdatedDelegate:(event:RenderableOwnerEvent) => void;
 
 	private _subGeometry:SubGeometryBase;
 	private _geometryDirty:boolean = true;
@@ -53,7 +56,7 @@ class RenderableBase implements IRenderable
 	/**
 	 *
 	 */
-	public _pool:RenderablePool;
+	public _pool:RenderablePoolBase;
 
 	public _stage:Stage;
 
@@ -175,10 +178,11 @@ class RenderableBase implements IRenderable
 	 * @param subGeometry
 	 * @param animationSubGeometry
 	 */
-	constructor(pool:RenderablePool, sourceEntity:IEntity, renderableOwner:IRenderableOwner, renderObjectOwner:IRenderObjectOwner, stage:Stage, level:number = 0, indexOffset:number = 0)
+	constructor(pool:RenderablePoolBase, sourceEntity:IEntity, renderableOwner:IRenderableOwner, renderObjectOwner:IRenderObjectOwner, stage:Stage, level:number = 0, indexOffset:number = 0)
 	{
 		this._onIndicesUpdatedDelegate = (event:SubGeometryEvent) => this._onIndicesUpdated(event);
 		this._onVerticesUpdatedDelegate = (event:SubGeometryEvent) => this._onVerticesUpdated(event);
+		this._onRenderObjectOwnerUpdatedDelegate = (event:RenderableOwnerEvent) => this._onRenderObjectOwnerUpdated(event);
 
 		//store a reference to the pool for later disposal
 		this._pool = pool;
@@ -193,6 +197,8 @@ class RenderableBase implements IRenderable
 		this.sourceEntity = sourceEntity;
 
 		this.renderableOwner = renderableOwner;
+
+		this.renderableOwner.addEventListener(RenderableOwnerEvent.RENDER_OBJECT_OWNER_UPDATED, this._onRenderObjectOwnerUpdatedDelegate)
 
 		this.renderObjectOwner = renderObjectOwner;
 	}
@@ -302,9 +308,9 @@ class RenderableBase implements IRenderable
 	 * @param camera The camera from which the scene is viewed.
 	 * @private
 	 */
-	public _iActivate(shader:ShaderObjectBase, camera:Camera)
+	public _iActivate(pass:RenderPassBase, camera:Camera)
 	{
-		this.renderObject._iActivate(shader, camera);
+		pass._iActivate(camera);
 	}
 
 	/**
@@ -312,9 +318,9 @@ class RenderableBase implements IRenderable
 	 *
 	 * @private
 	 */
-	public _iRender(shader:ShaderObjectBase, camera:Camera, viewProjection:Matrix3D)
+	public _iRender(pass:RenderPassBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		this.renderObject._iRender(this, shader, camera, viewProjection);
+		pass._iRender(this, camera, viewProjection);
 	}
 
 	/**
@@ -323,9 +329,9 @@ class RenderableBase implements IRenderable
 	 *
 	 * @private
 	 */
-	public _iDeactivate(shader:ShaderObjectBase)
+	public _iDeactivate(pass:RenderPassBase)
 	{
-		this.renderObject._iDeactivate(shader);
+		pass._iDeactivate();
 	}
 
 	/**
@@ -419,6 +425,12 @@ class RenderableBase implements IRenderable
 		this._concatenateArrays = (<SubGeometryBase> event.target).concatenateArrays;
 
 		this.invalidateVertexData(event.dataType);
+	}
+
+	private _onRenderObjectOwnerUpdated(event:RenderableOwnerEvent)
+	{
+		//TODO flag unused renderObjects for deletion
+		this.renderObjectOwner = event.renderObjectOwner;
 	}
 }
 

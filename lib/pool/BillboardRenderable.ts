@@ -16,8 +16,8 @@ import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/Shader
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
-import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
+import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
 /**
  * @class away.pool.RenderableListItem
@@ -44,7 +44,7 @@ class BillboardRenderable extends RenderableBase
 	 * @param pool
 	 * @param billboard
 	 */
-	constructor(pool:RenderablePool, billboard:Billboard, stage:Stage)
+	constructor(pool:RenderablePoolBase, billboard:Billboard, stage:Stage)
 	{
 		super(pool, billboard, billboard, billboard.material, stage);
 
@@ -118,9 +118,11 @@ class BillboardRenderable extends RenderableBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iRender(shader:ShaderObjectBase, camera:Camera, viewProjection:Matrix3D)
+	public _iRender(pass:RenderPassBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		super._iRender(shader, camera, viewProjection);
+		super._iRender(pass, camera, viewProjection);
+
+		var shader:ShaderObjectBase = pass.shader;
 
 		if (shader.sceneMatrixIndex >= 0) {
 			this.sourceEntity.getRenderSceneTransform(camera).copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);

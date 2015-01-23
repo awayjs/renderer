@@ -17,15 +17,15 @@ import DistanceRenderObject			= require("awayjs-renderergl/lib/compilation/Dista
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 
 /**
- * @class away.pool.RenderablePool
+ * @class away.pool.RenderablePoolBase
  */
-class RenderablePool implements IRenderablePool
+class RenderablePoolBase implements IRenderablePool
 {
-	private static _pools:Object = new Object();
+	public static _pools:Object = new Object();
 
-	private _stage:Stage;
-	private _renderablePool:Object = new Object();
-	private _renderableClass:IRenderableClass;
+	public _stage:Stage;
+	public _renderablePool:Object = new Object();
+	public _renderableClass:IRenderableClass;
 
 	private _materialRenderObjectPool:RenderObjectPool;
 	private _skyboxRenderObjectPool:RenderObjectPool;
@@ -116,20 +116,20 @@ class RenderablePool implements IRenderablePool
 		for (var id in this._renderablePool)
 			this._renderablePool[id].dispose();
 
-		RenderablePool.disposePool(this._renderableClass, this._stage);
+		RenderablePoolBase.disposePool(this._renderableClass, this._stage);
 	}
 
 	/**
 	 * //TODO
 	 *
 	 * @param renderableClass
-	 * @returns RenderablePool
+	 * @returns RenderablePoolBase
 	 */
-	public static getPool(renderableClass:IRenderableClass, stage:Stage):RenderablePool
+	public static getPool(renderableClass:IRenderableClass, stage:Stage):RenderablePoolBase
 	{
-		var pools:Object = (RenderablePool._pools[stage.stageIndex] || (RenderablePool._pools[stage.stageIndex] = new Object()));
+		var pools:Object = (RenderablePoolBase._pools[stage.stageIndex] || (RenderablePoolBase._pools[stage.stageIndex] = new Object()));
 
-		return (pools[renderableClass.id] || (pools[renderableClass.id] = new RenderablePool(renderableClass, stage)));
+		return (pools[renderableClass.id] || (pools[renderableClass.id] = new RenderablePoolBase(renderableClass, stage)));
 	}
 
 	/**
@@ -139,7 +139,7 @@ class RenderablePool implements IRenderablePool
 	 */
 	public static disposePool(renderableClass:IRenderableClass, stage:Stage)
 	{
-		var pools:Object = RenderablePool._pools[stage.stageIndex];
+		var pools:Object = RenderablePoolBase._pools[stage.stageIndex];
 
 		if (pools == undefined)
 			return;
@@ -149,4 +149,4 @@ class RenderablePool implements IRenderablePool
 	}
 }
 
-export = RenderablePool;
+export = RenderablePoolBase;

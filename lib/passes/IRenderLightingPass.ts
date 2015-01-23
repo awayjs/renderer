@@ -1,11 +1,12 @@
-import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import IRenderObjectBase			= require("awayjs-renderergl/lib/compilation/IRenderObjectBase");
-import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
+import LightPickerBase				= require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
+
+
 import ShaderLightingObject			= require("awayjs-renderergl/lib/compilation/ShaderLightingObject");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import RenderObjectPool				= require("awayjs-renderergl/lib/compilation/RenderObjectPool");
+import IRenderPassBase				= require("awayjs-renderergl/lib/passes/IRenderPassBase");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
 
@@ -13,13 +14,27 @@ import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClas
  *
  * @class away.pool.ScreenPasses
  */
-interface IRenderLightingObject extends IRenderObjectBase
+interface IRenderLightingPass extends IRenderPassBase
 {
 	enableLightFallOff:boolean;
 
 	diffuseLightSources:number;
 
 	specularLightSources:number;
+
+	numDirectionalLights:number;
+
+	numPointLights:number;
+
+	numLightProbes:number;
+
+	pointLightsOffset:number;
+
+	directionalLightsOffset:number;
+
+	lightProbesOffset:number;
+
+	lightPicker:LightPickerBase;
 
 	_iGetPerLightDiffuseFragmentCode(shaderObject:ShaderLightingObject, lightDirReg:ShaderRegisterElement, diffuseColorReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string;
 
@@ -36,12 +51,12 @@ interface IRenderLightingObject extends IRenderObjectBase
 	/**
 	 * Indicates whether the shader uses any shadows.
 	 */
-	_iUsesShadows():boolean;
+	_iUsesShadows(shaderObject:ShaderLightingObject):boolean;
 
 	/**
 	 * Indicates whether the shader uses any specular component.
 	 */
-	_iUsesSpecular():boolean;
+	_iUsesSpecular(shaderObject:ShaderLightingObject):boolean;
 }
 
-export = IRenderLightingObject;
+export = IRenderLightingPass;

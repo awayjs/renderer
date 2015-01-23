@@ -12,7 +12,7 @@ import Stage							= require("awayjs-stagegl/lib/base/Stage");
 import BillboardRenderable				= require("awayjs-renderergl/lib/pool/BillboardRenderable");
 import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
 import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
-import RenderablePool					= require("awayjs-renderergl/lib/pool/RenderablePool");
+import RenderablePoolBase					= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
 
 /**
  * An abstract base class for all picking collider classes. It should not be instantiated directly.
@@ -21,16 +21,17 @@ import RenderablePool					= require("awayjs-renderergl/lib/pool/RenderablePool")
  */
 class PickingColliderBase
 {
-	private _billboardRenderablePool:RenderablePool;
-	private _subMeshRenderablePool:RenderablePool;
+	private _billboardRenderablePool:RenderablePoolBase;
+	private _subMeshRenderablePool:RenderablePoolBase;
 
 	public rayPosition:Vector3D;
 	public rayDirection:Vector3D;
 
 	constructor(stage:Stage)
 	{
-		this._billboardRenderablePool = RenderablePool.getPool(BillboardRenderable, stage);
-		this._subMeshRenderablePool = RenderablePool.getPool(TriangleSubMeshRenderable, stage);
+		//TODO
+		this._billboardRenderablePool = RenderablePoolBase.getPool(BillboardRenderable, stage);
+		this._subMeshRenderablePool = RenderablePoolBase.getPool(TriangleSubMeshRenderable, stage);
 	}
 
 	public _pPetCollisionNormal(indexData:Array<number> /*uint*/, vertexData:Array<number>, triangleIndex:number):Vector3D // PROTECTED

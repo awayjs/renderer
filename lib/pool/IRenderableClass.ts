@@ -6,7 +6,7 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
+import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
 
 /**
  * IRenderableClass is an interface for the constructable class definition IRenderable that is used to
@@ -26,7 +26,7 @@ interface IRenderableClass
 	/**
 	 *
 	 */
-	new(pool:RenderablePool, renderableOwner:IRenderableOwner, stage:Stage):IRenderable;
+	new(pool:RenderablePoolBase, renderableOwner:IRenderableOwner, stage:Stage):IRenderable;
 
 	_iIncludeDependencies(shaderObject:ShaderObjectBase);
 

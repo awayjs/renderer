@@ -28,10 +28,12 @@ import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
+import IRendererPoolClass			= require("awayjs-renderergl/lib/pool/IRendererPoolClass");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
+import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
 import SkyboxRenderable				= require("awayjs-renderergl/lib/pool/SkyboxRenderable");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
+import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -42,7 +44,7 @@ import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferMa
 class DefaultRenderer extends RendererBase implements IRenderer
 {
 	public _pRequireDepthRender:boolean;
-	private _skyboxRenderablePool:RenderablePool;
+	private _skyboxRenderablePool:RenderablePoolBase;
 
 	private _pDistanceRenderer:DepthRenderer;
 	private _pDepthRenderer:DepthRenderer;
@@ -121,9 +123,9 @@ class DefaultRenderer extends RendererBase implements IRenderer
 	 * @param antiAlias The amount of anti-aliasing to use.
 	 * @param renderMode The render mode to use.
 	 */
-	constructor(stage:Stage = null)
+	constructor(rendererPoolClass:IRendererPoolClass = null, stage:Stage = null)
 	{
-		super(stage);
+		super(rendererPoolClass, stage);
 
 		if (this._width == 0)
 			this.width = window.innerWidth;
@@ -255,11 +257,11 @@ class DefaultRenderer extends RendererBase implements IRenderer
 		this.updateSkyboxProjection(camera);
 
 		var renderObject:RenderObjectBase = skyBox.renderObject = this._pGetRenderObject(skyBox, skyBox.renderObjectOwner);
-		var shaderObject:ShaderObjectBase = renderObject.shaderObjects[0];
+		var pass:RenderPassBase = renderObject.passes[0];
 
-		this.activateProgram(skyBox, shaderObject, camera);
-		skyBox._iRender(shaderObject, camera, this._skyboxProjection);
-		this.deactivateProgram(skyBox, shaderObject);
+		this.activatePass(skyBox, pass, camera);
+		skyBox._iRender(pass, camera, this._skyboxProjection);
+		this.deactivatePass(skyBox, pass);
 	}
 
 	private updateSkyboxProjection(camera:Camera)
@@ -373,10 +375,10 @@ class DefaultRenderer extends RendererBase implements IRenderer
 		if (this._pStage) {
 			this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
 
-			this._pDepthRenderer = new DepthRenderer(this._pStage);
-			this._pDistanceRenderer = new DistanceRenderer(this._pStage);
+			this._pDepthRenderer = new DepthRenderer(this._pRendererPoolClass, this._pStage);
+			this._pDistanceRenderer = new DistanceRenderer(this._pRendererPoolClass, this._pStage);
 
-			this._skyboxRenderablePool = RenderablePool.getPool(SkyboxRenderable, this._pStage);
+			this._skyboxRenderablePool = RenderablePoolBase.getPool(SkyboxRenderable, this._pStage);
 		}
 	}
 

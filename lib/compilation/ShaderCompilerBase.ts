@@ -4,7 +4,7 @@ import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderOb
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-import IRenderObjectBase			= require("awayjs-renderergl/lib/compilation/IRenderObjectBase");
+import IRenderPassBase				= require("awayjs-renderergl/lib/passes/IRenderPassBase");
 import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
 
 /**
@@ -19,7 +19,7 @@ class ShaderCompilerBase
 	public _pSharedRegisters:ShaderRegisterData;
 	public _pRegisterCache:ShaderRegisterCache;
 	public _pRenderableClass:IRenderableClass;
-	public _pRenderObject:IRenderObjectBase;
+	public _pRenderPass:IRenderPassBase;
 
 	public _pVertexCode:string = ''; // Changed to emtpy string- AwayTS
 	public _pFragmentCode:string = '';// Changed to emtpy string - AwayTS
@@ -41,10 +41,10 @@ class ShaderCompilerBase
 	 * Creates a new ShaderCompilerBase object.
 	 * @param profile The compatibility profile of the renderer.
 	 */
-	constructor(renderableClass:IRenderableClass, renderObject:IRenderObjectBase, shaderObject:ShaderObjectBase)
+	constructor(renderableClass:IRenderableClass, renderPass:IRenderPassBase, shaderObject:ShaderObjectBase)
 	{
 		this._pRenderableClass = renderableClass;
-		this._pRenderObject = renderObject;
+		this._pRenderPass = renderPass;
 		this._pShaderObject = shaderObject;
 
 		this._pSharedRegisters = new ShaderRegisterData();
@@ -61,19 +61,15 @@ class ShaderCompilerBase
 	{
 		this._pShaderObject.reset();
 
-		this._pShaderObject._iIncludeDependencies();
-
-		this._pRenderObject._iIncludeDependencies(this._pShaderObject);
-
-		this._pRenderableClass._iIncludeDependencies(this._pShaderObject);
+		this.pIncludeDependencies();
 
 		this.pInitRegisterIndices();
 
 		this.pCompileDependencies();
 
 		//compile custom vertex & fragment codes
-		this._pVertexCode += this._pRenderObject._iGetVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-		this._pPostAnimationFragmentCode += this._pRenderObject._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pVertexCode += this._pRenderPass._iGetVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pPostAnimationFragmentCode += this._pRenderPass._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
 
 		//assign the final output color to the output register
 		this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
@@ -81,7 +77,19 @@ class ShaderCompilerBase
 
 		//initialise the required shader constants
 		this._pShaderObject.initConstantData(this._pRegisterCache, this._pAnimatableAttributes, this._pAnimationTargetRegisters, this._uvSource, this._uvTarget);
-		this._pRenderObject._iInitConstantData(this._pShaderObject);
+		this._pRenderPass._iInitConstantData(this._pShaderObject);
+	}
+
+	public pIncludeDependencies()
+	{
+		this._pShaderObject._iIncludeDependencies();
+
+		this._pShaderObject.outputsNormals = this._pRenderPass._pOutputsNormals(this._pShaderObject);
+		this._pShaderObject.outputsTangentNormals = this._pShaderObject.outputsNormals && this._pRenderPass._pOutputsTangentNormals(this._pShaderObject);
+		this._pShaderObject.usesTangentSpace = this._pShaderObject.outputsTangentNormals && this._pRenderPass._pUsesTangentSpace(this._pShaderObject);
+
+		if (!this._pShaderObject.usesTangentSpace && this._pShaderObject.viewDirDependencies > 0)
+			this._pShaderObject.globalPosDependencies++;
 	}
 
 	/**
@@ -114,8 +122,8 @@ class ShaderCompilerBase
 		this._pFragmentCode += this._pRenderableClass._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
 
 		//collect code from pass
-		this._pVertexCode += this._pRenderObject._iGetPreLightingVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-		this._pFragmentCode += this._pRenderObject._iGetPreLightingFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pVertexCode += this._pRenderPass._iGetPreLightingVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+		this._pFragmentCode += this._pRenderPass._iGetPreLightingFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
 	}
 
 	private compileGlobalPositionCode()
@@ -214,8 +222,8 @@ class ShaderCompilerBase
 
 		//simple normal aquisition if no tangent space is being used
 		if (this._pShaderObject.outputsNormals && !this._pShaderObject.outputsTangentNormals) {
-			this._pVertexCode += this._pRenderObject._iGetNormalVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-			this._pFragmentCode += this._pRenderObject._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+			this._pVertexCode += this._pRenderPass._iGetNormalVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+			this._pFragmentCode += this._pRenderPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
 
 			return;
 		}
@@ -242,7 +250,7 @@ class ShaderCompilerBase
 					"nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + this._pSharedRegisters.animatedTangent + "\n" +
 					"crs " + this._pSharedRegisters.bitangent + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n";
 
-				this._pFragmentCode += this._pRenderObject._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
+				this._pFragmentCode += this._pRenderPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
 			} else {
 				//Compiles the vertex shader code for tangent-space normal maps.
 				this._pSharedRegisters.tangentVarying = this._pRegisterCache.getFreeVarying();
@@ -287,7 +295,7 @@ class ShaderCompilerBase
 					"nrm " + n + ".xyz, " + this._pSharedRegisters.normalVarying + "\n";
 
 				//compile custom fragment code for normal calcs
-				this._pFragmentCode += this._pRenderObject._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters) +
+				this._pFragmentCode += this._pRenderPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters) +
 					"m33 " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalFragment + ", " + t + "\n" +
 					"mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w\n";
 

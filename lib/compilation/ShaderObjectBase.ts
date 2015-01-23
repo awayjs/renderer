@@ -4,14 +4,12 @@ import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import Event						= require("awayjs-core/lib/events/Event");
-import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
 import ArgumentError				= require("awayjs-core/lib/errors/ArgumentError");
 import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 
 import BlendMode					= require("awayjs-display/lib/base/BlendMode");
 import LineSubGeometry				= require("awayjs-display/lib/base/LineSubGeometry");
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
-import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
@@ -25,7 +23,7 @@ import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationS
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import AnimationRegisterCache		= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import IRenderObjectBase			= require("awayjs-renderergl/lib/compilation/IRenderObjectBase");
+import IRenderPassBase				= require("awayjs-renderergl/lib/passes/IRenderPassBase");
 import ShaderCompilerBase			= require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
@@ -39,27 +37,18 @@ import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
  *
  * @see RegisterPool.addUsage
  */
-class ShaderObjectBase extends EventDispatcher
+class ShaderObjectBase
 {
-	private _renderObjectOwner:IRenderObjectOwner;
 	private _renderableClass:IRenderableClass;
-	private _renderObject:IRenderObjectBase;
+	private _renderPass:IRenderPassBase;
 	public _stage:Stage;
 	private _programData:ProgramData;
-
-	public depthCompareMode:string = ContextGLCompareMode.LESS_EQUAL;
 
 	private _invalidShader:boolean = true;
 	private _invalidProgram:boolean = true;
 	private _animationVertexCode:string = "";
 	private _animationFragmentCode:string = "";
 
-	private _enableBlending:boolean = false;
-	private _blendFactorSource:string = ContextGLBlendFactor.ONE;
-	private _blendFactorDest:string = ContextGLBlendFactor.ZERO;
-
-	public writeDepth:boolean = true;
-	
 	public get programData():ProgramData
 	{
 		if (this._invalidProgram)
@@ -263,35 +252,30 @@ class ShaderObjectBase extends EventDispatcher
 	/**
 	 * Creates a new MethodCompilerVO object.
 	 */
-	constructor(renderObjectOwner:IRenderObjectOwner, renderableClass:IRenderableClass, renderObject:IRenderObjectBase, stage:Stage)
+	constructor(renderableClass:IRenderableClass, renderPass:IRenderPassBase, stage:Stage)
 	{
-		super();
-
-		this._renderObjectOwner = renderObjectOwner;
 		this._renderableClass = renderableClass;
-		this._renderObject = renderObject;
+		this._renderPass = renderPass;
 		this._stage = stage;
 		this.profile = this._stage.profile;
 	}
 
 	public _iIncludeDependencies()
 	{
-		this.alphaThreshold = this._renderObjectOwner.alphaThreshold;
-		this.useMipmapping = this._renderObjectOwner.mipmap;
-		this.useSmoothTextures = this._renderObjectOwner.smooth;
+		this._renderPass._iIncludeDependencies(this);
 	}
 
 	/**
 	 * Factory method to create a concrete compiler object for this object
 	 *
 	 * @param renderableClass
-	 * @param renderObject
+	 * @param renderPass
 	 * @param stage
 	 * @returns {ShaderCompilerBase}
 	 */
-	public createCompiler(renderableClass:IRenderableClass, renderObject:IRenderObjectBase):ShaderCompilerBase
+	public createCompiler(renderableClass:IRenderableClass, renderPass:IRenderPassBase):ShaderCompilerBase
 	{
-		return new ShaderCompilerBase(renderableClass, renderObject, this);
+		return new ShaderCompilerBase(renderableClass, renderPass, this);
 	}
 
 	/**
@@ -378,12 +362,7 @@ class ShaderObjectBase extends EventDispatcher
 	public _iActivate(camera:Camera)
 	{
 		if (this.usesAnimation)
-			(<AnimationSetBase> this._renderObjectOwner.animationSet).activate(this, this._stage);
-
-		this._stage.context.setDepthTest(( this.writeDepth && !this._enableBlending ), this.depthCompareMode);
-
-		if (this._enableBlending)
-			this._stage.context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
+			(<AnimationSetBase> this._renderPass.animationSet).activate(this, this._stage);
 
 		this._stage.context.setCulling(this.useBothSides? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
 
@@ -402,9 +381,8 @@ class ShaderObjectBase extends EventDispatcher
 	public _iDeactivate()
 	{
 		if (this.usesAnimation)
-			(<AnimationSetBase> this._renderObjectOwner.animationSet).deactivate(this, this._stage);
+			(<AnimationSetBase> this._renderPass.animationSet).deactivate(this, this._stage);
 
-		this._stage.context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
 	}
 
 
@@ -472,49 +450,6 @@ class ShaderObjectBase extends EventDispatcher
 			this.vertexConstantData[this.cameraPositionIndex + 2] = this._pInverseSceneMatrix[2]*x + this._pInverseSceneMatrix[6]*y + this._pInverseSceneMatrix[10]*z + this._pInverseSceneMatrix[14];
 		}
 	}
-
-	/**
-	 * The blend mode to use when drawing this renderable. The following blend modes are supported:
-	 * <ul>
-	 * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
-	 * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
-	 * <li>BlendMode.MULTIPLY</li>
-	 * <li>BlendMode.ADD</li>
-	 * <li>BlendMode.ALPHA</li>
-	 * </ul>
-	 */
-	public setBlendMode(value:string)
-	{
-		switch (value) {
-			case BlendMode.NORMAL:
-				this._blendFactorSource = ContextGLBlendFactor.ONE;
-				this._blendFactorDest = ContextGLBlendFactor.ZERO;
-				this._enableBlending = false;
-				break;
-			case BlendMode.LAYER:
-				this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
-				this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
-				this._enableBlending = true;
-				break;
-			case BlendMode.MULTIPLY:
-				this._blendFactorSource = ContextGLBlendFactor.ZERO;
-				this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
-				this._enableBlending = true;
-				break;
-			case BlendMode.ADD:
-				this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
-				this._blendFactorDest = ContextGLBlendFactor.ONE;
-				this._enableBlending = true;
-				break;
-			case BlendMode.ALPHA:
-				this._blendFactorSource = ContextGLBlendFactor.ZERO;
-				this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
-				this._enableBlending = true;
-				break;
-			default:
-				throw new ArgumentError("Unsupported blend mode!");
-		}
-	}
 	
 	public invalidateProgram()
 	{
@@ -525,8 +460,6 @@ class ShaderObjectBase extends EventDispatcher
 	{
 		this._invalidShader = true;
 		this._invalidProgram = true;
-
-		this.dispatchEvent(new Event(Event.CHANGE))
 	}
 
 	public dispose()
@@ -544,7 +477,7 @@ class ShaderObjectBase extends EventDispatcher
 		if (this._invalidShader) {
 			this._invalidShader = false;
 
-			compiler = this.createCompiler(this._renderableClass, this._renderObject);
+			compiler = this.createCompiler(this._renderableClass, this._renderPass);
 			compiler.compile();
 		}
 
@@ -572,7 +505,7 @@ class ShaderObjectBase extends EventDispatcher
 		//check to see if GPU animation is used
 		if (this.usesAnimation) {
 
-			var animationSet:AnimationSetBase = <AnimationSetBase> this._renderObjectOwner.animationSet;
+			var animationSet:AnimationSetBase = <AnimationSetBase> this._renderPass.animationSet;
 
 			this._animationVertexCode += animationSet.getAGALVertexCode(this);
 

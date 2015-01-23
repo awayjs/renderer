@@ -19,9 +19,9 @@ import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/Shader
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
+import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
 import ShaderCompilerHelper			= require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
-import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
+import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
 /**
  * @class away.pool.SkyboxRenderable
@@ -48,7 +48,7 @@ class SkyboxRenderable extends RenderableBase
 	 * @param pool
 	 * @param skybox
 	 */
-	constructor(pool:RenderablePool, skybox:Skybox, stage:Stage)
+	constructor(pool:RenderablePoolBase, skybox:Skybox, stage:Stage)
 	{
 		super(pool, skybox, skybox, skybox, stage);
 
@@ -97,22 +97,9 @@ class SkyboxRenderable extends RenderableBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(shader:ShaderObjectBase, camera:Camera)
+	public _iRender(pass:RenderPassBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		super._iActivate(shader, camera);
-
-		var context:IContextGL = this._stage.context;
-		//context.setSamplerStateAt(0, ContextGLWrapMode.CLAMP, ContextGLTextureFilter.LINEAR, this._cubeMap.hasMipmaps? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-		//context.setDepthTest(false, ContextGLCompareMode.LESS);
-		//this._stage.activateCubeTexture(0, this._cubeMap);
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public _iRender(shader:ShaderObjectBase, camera:Camera, viewProjection:Matrix3D)
-	{
-		super._iRender(shader, camera, viewProjection);
+		super._iRender(pass, camera, viewProjection);
 
 		var context:IContextGL = this._stage.context;
 		var pos:Vector3D = camera.scenePosition;
