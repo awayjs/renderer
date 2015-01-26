@@ -10246,7 +10246,7 @@ var ShaderLightingObject = (function (_super) {
         this.numLightProbes = this._renderLightingPass.numLightProbes;
         var numAllLights = this._renderLightingPass.numPointLights + this._renderLightingPass.numDirectionalLights;
         var numLightProbes = this._renderLightingPass.numLightProbes;
-        var diffuseLightSources = this._renderLightingPass.diffuseLightSources;
+        var diffuseLightSources = this._renderLightingPass._iUsesDiffuse(this) ? this._renderLightingPass.diffuseLightSources : 0x00;
         var specularLightSources = this._renderLightingPass._iUsesSpecular(this) ? this._renderLightingPass.specularLightSources : 0x00;
         var combinedLightSources = diffuseLightSources | specularLightSources;
         this.usesLightFallOff = this._renderLightingPass.enableLightFallOff && this.profile != ContextGLProfile.BASELINE_CONSTRAINED;
@@ -12224,6 +12224,8 @@ var RenderPassBase = (function (_super) {
      */
     RenderPassBase.prototype._iDeactivate = function () {
         this._shader._iDeactivate();
+        //For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
+        this._stage.context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
     };
     /**
      * Marks the shader program as invalid, so it will be recompiled before the next render.
