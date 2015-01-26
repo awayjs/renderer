@@ -1,5 +1,6 @@
 import BlendMode					= require("awayjs-display/lib/base/BlendMode");
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
+import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
@@ -19,18 +20,17 @@ class RenderBasicMaterialObject extends RenderObjectBase
 	 */
 	public static id:string = "basic";
 
+	private _material:BasicMaterial;
 	private _screenPass:BasicMaterialPass;
 
-	private _alphaBlending:boolean = false;
-	private _alpha:number = 1;
 
-	constructor(pool:RenderObjectPool, renderObjectOwner:IRenderObjectOwner, renderableClass:IRenderableClass, stage:Stage)
+	constructor(pool:RenderObjectPool, material:BasicMaterial, renderableClass:IRenderableClass, stage:Stage)
 	{
-		super(pool, renderObjectOwner, renderableClass, stage);
+		super(pool, material, renderableClass, stage);
 
-		this._screenPass = new BasicMaterialPass(this, renderObjectOwner, renderableClass, this._stage);
+		this._material = material;
 
-		this._pAddScreenPass(this._screenPass);
+		this._pAddScreenPass(this._screenPass = new BasicMaterialPass(this, material, renderableClass, this._stage));
 	}
 
 	/**
@@ -40,9 +40,9 @@ class RenderBasicMaterialObject extends RenderObjectBase
 	{
 		super._pUpdateRenderObject();
 
-		this._pRequiresBlending = (this._renderObjectOwner.blendMode != BlendMode.NORMAL || this._alphaBlending || this._alpha < 1);
+		this._pRequiresBlending = (this._material.blendMode != BlendMode.NORMAL || this._material.alphaBlending || (this._material.colorTransform && this._material.colorTransform.alphaMultiplier < 1));
 		//this._screenPass.preserveAlpha = this._pRequiresBlending;
-		this._screenPass.setBlendMode((this._renderObjectOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending)? BlendMode.LAYER : this._renderObjectOwner.blendMode);
+		this._screenPass.setBlendMode((this._renderObjectOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending)? BlendMode.LAYER : this._material.blendMode);
 		//this._screenPass.forceSeparateMVP = false;
 	}
 }
