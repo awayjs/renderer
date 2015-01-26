@@ -57,6 +57,11 @@ interface IRenderLightingPass extends IRenderPassBase
 	 * Indicates whether the shader uses any specular component.
 	 */
 	_iUsesSpecular(shaderObject:ShaderLightingObject):boolean;
+
+	/**
+	 * Indicates whether the shader uses any diffuse component.
+	 */
+	_iUsesDiffuse(shaderObject:ShaderLightingObject):boolean;
 }
 
 export = IRenderLightingPass;

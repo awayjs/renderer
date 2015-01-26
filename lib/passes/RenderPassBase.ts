@@ -239,6 +239,9 @@ class RenderPassBase extends EventDispatcher implements IRenderPassBase
 	public _iDeactivate()
 	{
 		this._shader._iDeactivate();
+
+		//For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
+		this._stage.context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
 	}
 
 	/**

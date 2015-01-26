@@ -117,7 +117,7 @@ class ShaderLightingObject extends ShaderObjectBase
 
 		var numAllLights:number = this._renderLightingPass.numPointLights + this._renderLightingPass.numDirectionalLights;
 		var numLightProbes:number = this._renderLightingPass.numLightProbes;
-		var diffuseLightSources:number = this._renderLightingPass.diffuseLightSources;
+		var diffuseLightSources:number = this._renderLightingPass._iUsesDiffuse(this)? this._renderLightingPass.diffuseLightSources : 0x00;
 		var specularLightSources:number = this._renderLightingPass._iUsesSpecular(this)? this._renderLightingPass.specularLightSources : 0x00;
 		var combinedLightSources:number = diffuseLightSources | specularLightSources;
 
