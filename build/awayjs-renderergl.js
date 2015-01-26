@@ -9431,21 +9431,19 @@ var BasicMaterialPass = require("awayjs-renderergl/lib/passes/BasicMaterialPass"
  */
 var RenderBasicMaterialObject = (function (_super) {
     __extends(RenderBasicMaterialObject, _super);
-    function RenderBasicMaterialObject(pool, renderObjectOwner, renderableClass, stage) {
-        _super.call(this, pool, renderObjectOwner, renderableClass, stage);
-        this._alphaBlending = false;
-        this._alpha = 1;
-        this._screenPass = new BasicMaterialPass(this, renderObjectOwner, renderableClass, this._stage);
-        this._pAddScreenPass(this._screenPass);
+    function RenderBasicMaterialObject(pool, material, renderableClass, stage) {
+        _super.call(this, pool, material, renderableClass, stage);
+        this._material = material;
+        this._pAddScreenPass(this._screenPass = new BasicMaterialPass(this, material, renderableClass, this._stage));
     }
     /**
      * @inheritDoc
      */
     RenderBasicMaterialObject.prototype._pUpdateRenderObject = function () {
         _super.prototype._pUpdateRenderObject.call(this);
-        this._pRequiresBlending = (this._renderObjectOwner.blendMode != BlendMode.NORMAL || this._alphaBlending || this._alpha < 1);
+        this._pRequiresBlending = (this._material.blendMode != BlendMode.NORMAL || this._material.alphaBlending || (this._material.colorTransform && this._material.colorTransform.alphaMultiplier < 1));
         //this._screenPass.preserveAlpha = this._pRequiresBlending;
-        this._screenPass.setBlendMode((this._renderObjectOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._renderObjectOwner.blendMode);
+        this._screenPass.setBlendMode((this._renderObjectOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._material.blendMode);
         //this._screenPass.forceSeparateMVP = false;
     };
     /**

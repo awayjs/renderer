@@ -718,7 +718,7 @@ declare module "awayjs-renderergl/lib/passes/BasicMaterialPass" {
 	
 }
 declare module "awayjs-renderergl/lib/compilation/RenderBasicMaterialObject" {
-	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
+	import BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 	import RenderObjectPool = require("awayjs-renderergl/lib/compilation/RenderObjectPool");
@@ -732,10 +732,9 @@ declare module "awayjs-renderergl/lib/compilation/RenderBasicMaterialObject" {
 	     *
 	     */
 	    static id: string;
+	    private _material;
 	    private _screenPass;
-	    private _alphaBlending;
-	    private _alpha;
-	    constructor(pool: RenderObjectPool, renderObjectOwner: IRenderObjectOwner, renderableClass: IRenderableClass, stage: Stage);
+	    constructor(pool: RenderObjectPool, material: BasicMaterial, renderableClass: IRenderableClass, stage: Stage);
 	    /**
 	     * @inheritDoc
 	     */
