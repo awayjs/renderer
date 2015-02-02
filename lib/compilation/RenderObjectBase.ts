@@ -83,6 +83,8 @@ class RenderObjectBase implements IRenderObject
 
 	public _iIncludeDependencies(shaderObject:ShaderObjectBase)
 	{
+		this._renderableClass._iIncludeDependencies(shaderObject);
+
 		shaderObject.alphaThreshold = this._renderObjectOwner.alphaThreshold;
 		shaderObject.useMipmapping = this._renderObjectOwner.mipmap;
 		shaderObject.useSmoothTextures = this._renderObjectOwner.smooth;
