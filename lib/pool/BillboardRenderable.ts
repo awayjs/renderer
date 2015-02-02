@@ -115,6 +115,14 @@ class BillboardRenderable extends RenderableBase
 		return code;
 	}
 
+	public _iActivate(pass:RenderPassBase, camera:Camera)
+	{
+		super._iActivate(pass, camera);
+
+		//buffer the same for all materials, so can set here
+		this._stage.activateBuffer(0, this.getVertexData(TriangleSubGeometry.POSITION_DATA), this.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
+	}
+
 	/**
 	 * @inheritDoc
 	 */
@@ -140,7 +148,6 @@ class BillboardRenderable extends RenderableBase
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shader.vertexConstantData, shader.numUsedVertexConstants);
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
 
-		this._stage.activateBuffer(0, this.getVertexData(TriangleSubGeometry.POSITION_DATA), this.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 		this._stage.context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
 	}
 }
