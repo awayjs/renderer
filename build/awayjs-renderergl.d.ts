@@ -1988,12 +1988,88 @@ declare module "awayjs-renderergl/lib/pool/BillboardRenderable" {
 	    _pGetSubGeometry(): SubGeometryBase;
 	    static _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
 	    static _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iActivate(pass: RenderPassBase, camera: Camera): void;
 	    /**
 	     * @inheritDoc
 	     */
 	    _iRender(pass: RenderPassBase, camera: Camera, viewProjection: Matrix3D): void;
 	}
 	export = BillboardRenderable;
+	
+}
+declare module "awayjs-renderergl/lib/pool/LineSegmentRenderable" {
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import LineSegment = require("awayjs-display/lib/entities/LineSegment");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
+	/**
+	 * @class away.pool.LineSubMeshRenderable
+	 */
+	class LineSegmentRenderable extends RenderableBase {
+	    private static _lineGeometry;
+	    static pONE_VECTOR: number[];
+	    static pFRONT_VECTOR: number[];
+	    private _constants;
+	    private _calcMatrix;
+	    private _thickness;
+	    /**
+	     *
+	     */
+	    static id: string;
+	    static vertexAttributesOffset: number;
+	    /**
+	     *
+	     */
+	    private _lineSegment;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param subMesh
+	     * @param level
+	     * @param dataOffset
+	     */
+	    constructor(pool: RenderablePoolBase, lineSegment: LineSegment, stage: Stage, level?: number, indexOffset?: number);
+	    /**
+	     * //TODO
+	     *
+	     * @returns {base.LineSubGeometry}
+	     * @protected
+	     */
+	    _pGetSubGeometry(): LineSubGeometry;
+	    static _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    static _iGetVertexCode(shader: ShaderObjectBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iActivate(pass: RenderPassBase, camera: Camera): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iRender(pass: RenderPassBase, camera: Camera, viewProjection: Matrix3D): void;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param renderableOwner
+	     * @param level
+	     * @param indexOffset
+	     * @returns {away.pool.LineSubMeshRenderable}
+	     * @private
+	     */
+	    _pGetOverflowRenderable(indexOffset: number): RenderableBase;
+	}
+	export = LineSegmentRenderable;
 	
 }
 declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
@@ -2075,6 +2151,7 @@ declare module "awayjs-renderergl/lib/pool/RendererPoolBase" {
 	import TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
 	import IRendererPool = require("awayjs-display/lib/pool/IRendererPool");
 	import Billboard = require("awayjs-display/lib/entities/Billboard");
+	import LineSegment = require("awayjs-display/lib/entities/LineSegment");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
 	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
@@ -2086,9 +2163,9 @@ declare module "awayjs-renderergl/lib/pool/RendererPoolBase" {
 	 */
 	class RendererPoolBase implements IRendererPool {
 	    _billboardRenderablePool: RenderablePoolBase;
+	    _lineSegmentRenderablePool: RenderablePoolBase;
 	    _triangleSubMeshRenderablePool: RenderablePoolBase;
 	    _lineSubMeshRenderablePool: RenderablePoolBase;
-	    _pRenderer: RendererBase;
 	    _pStage: Stage;
 	    private _renderer;
 	    /**
@@ -2110,6 +2187,11 @@ declare module "awayjs-renderergl/lib/pool/RendererPoolBase" {
 	     * @protected
 	     */
 	    applyBillboard(billboard: Billboard): void;
+	    /**
+	     *
+	     * @param lineSubMesh
+	     */
+	    applyLineSegment(lineSegment: LineSegment): void;
 	    /**
 	     *
 	     * @param triangleSubMesh
@@ -6354,56 +6436,6 @@ declare module "awayjs-renderergl/lib/animators/nodes/VertexClipNode" {
 	export = VertexClipNode;
 	
 }
-declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState" {
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import SkeletonBinaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
-	import CrossfadeTransitionNode = require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode");
-	/**
-	 *
-	 */
-	class CrossfadeTransitionState extends SkeletonBinaryLERPState {
-	    private _crossfadeTransitionNode;
-	    private _animationStateTransitionComplete;
-	    constructor(animator: AnimatorBase, skeletonAnimationNode: CrossfadeTransitionNode);
-	    /**
-	     * @inheritDoc
-	     */
-	    _pUpdateTime(time: number): void;
-	}
-	export = CrossfadeTransitionState;
-	
-}
-declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode" {
-	import SkeletonBinaryLERPNode = require("awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode");
-	/**
-	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
-	 */
-	class CrossfadeTransitionNode extends SkeletonBinaryLERPNode {
-	    blendSpeed: number;
-	    startBlend: number;
-	    /**
-	     * Creates a new <code>CrossfadeTransitionNode</code> object.
-	     */
-	    constructor();
-	}
-	export = CrossfadeTransitionNode;
-	
-}
-declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransition" {
-	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import IAnimationTransition = require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
-	/**
-	 *
-	 */
-	class CrossfadeTransition implements IAnimationTransition {
-	    blendSpeed: number;
-	    constructor(blendSpeed: number);
-	    getAnimationNode(animator: AnimatorBase, startNode: AnimationNodeBase, endNode: AnimationNodeBase, startBlend: number): AnimationNodeBase;
-	}
-	export = CrossfadeTransition;
-	
-}
 declare module "awayjs-renderergl/lib/tools/commands/Merge" {
 	import DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
 	import Mesh = require("awayjs-display/lib/entities/Mesh");
@@ -6466,5 +6498,55 @@ declare module "awayjs-renderergl/lib/tools/commands/Merge" {
 	    private parseContainer(receiver, object);
 	}
 	export = Merge;
+	
+}
+declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState" {
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import SkeletonBinaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
+	import CrossfadeTransitionNode = require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode");
+	/**
+	 *
+	 */
+	class CrossfadeTransitionState extends SkeletonBinaryLERPState {
+	    private _crossfadeTransitionNode;
+	    private _animationStateTransitionComplete;
+	    constructor(animator: AnimatorBase, skeletonAnimationNode: CrossfadeTransitionNode);
+	    /**
+	     * @inheritDoc
+	     */
+	    _pUpdateTime(time: number): void;
+	}
+	export = CrossfadeTransitionState;
+	
+}
+declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode" {
+	import SkeletonBinaryLERPNode = require("awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode");
+	/**
+	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
+	 */
+	class CrossfadeTransitionNode extends SkeletonBinaryLERPNode {
+	    blendSpeed: number;
+	    startBlend: number;
+	    /**
+	     * Creates a new <code>CrossfadeTransitionNode</code> object.
+	     */
+	    constructor();
+	}
+	export = CrossfadeTransitionNode;
+	
+}
+declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransition" {
+	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import IAnimationTransition = require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
+	/**
+	 *
+	 */
+	class CrossfadeTransition implements IAnimationTransition {
+	    blendSpeed: number;
+	    constructor(blendSpeed: number);
+	    getAnimationNode(animator: AnimatorBase, startNode: AnimationNodeBase, endNode: AnimationNodeBase, startBlend: number): AnimationNodeBase;
+	}
+	export = CrossfadeTransition;
 	
 }
