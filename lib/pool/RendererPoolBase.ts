@@ -3,11 +3,13 @@ import LineSubMesh					= require("awayjs-display/lib/base/LineSubMesh");
 import TriangleSubMesh				= require("awayjs-display/lib/base/TriangleSubMesh");
 import IRendererPool				= require("awayjs-display/lib/pool/IRendererPool");
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
+import LineSegment					= require("awayjs-display/lib/entities/LineSegment");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import BillboardRenderable			= require("awayjs-renderergl/lib/pool/BillboardRenderable");
+import LineSegmentRenderable		= require("awayjs-renderergl/lib/pool/LineSegmentRenderable");
 import LineSubMeshRenderable		= require("awayjs-renderergl/lib/pool/LineSubMeshRenderable");
 import TriangleSubMeshRenderable	= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
 import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
@@ -22,10 +24,10 @@ import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 class RendererPoolBase implements IRendererPool
 {
 	public _billboardRenderablePool:RenderablePoolBase;
+	public _lineSegmentRenderablePool:RenderablePoolBase;
 	public _triangleSubMeshRenderablePool:RenderablePoolBase;
 	public _lineSubMeshRenderablePool:RenderablePoolBase;
 
-	public _pRenderer:RendererBase;
 	public _pStage:Stage;
 
 
@@ -64,6 +66,7 @@ class RendererPoolBase implements IRendererPool
 	public _pUpdatePool()
 	{
 		this._billboardRenderablePool = RenderablePoolBase.getPool(BillboardRenderable, this._pStage);
+		this._lineSegmentRenderablePool = RenderablePoolBase.getPool(LineSegmentRenderable, this._pStage);
 		this._triangleSubMeshRenderablePool = RenderablePoolBase.getPool(TriangleSubMeshRenderable, this._pStage);
 		this._lineSubMeshRenderablePool = RenderablePoolBase.getPool(LineSubMeshRenderable, this._pStage);
 	}
@@ -75,6 +78,9 @@ class RendererPoolBase implements IRendererPool
 	{
 		this._billboardRenderablePool.dispose();
 		this._billboardRenderablePool = null;
+
+		this._lineSegmentRenderablePool.dispose();
+		this._lineSegmentRenderablePool = null;
 
 		this._triangleSubMeshRenderablePool.dispose();
 		this._triangleSubMeshRenderablePool = null;
@@ -91,6 +97,15 @@ class RendererPoolBase implements IRendererPool
 	public applyBillboard(billboard:Billboard)
 	{
 		this._renderer.applyRenderable(this._billboardRenderablePool.getItem(billboard));
+	}
+
+	/**
+	 *
+	 * @param lineSubMesh
+	 */
+	public applyLineSegment(lineSegment:LineSegment)
+	{
+		this._renderer.applyRenderable(this._lineSegmentRenderablePool.getItem(lineSegment));
 	}
 
 	/**
