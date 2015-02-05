@@ -4,9 +4,9 @@
   "description": "GL Renderer for AwayJS",
   "url": "http://www.away3d.com",
   "dependencies": {
-    "awayjs-core": "^0.2.6",
-    "awayjs-display": "^0.4.3",
-    "awayjs-stagegl": "^0.6.0"
+    "awayjs-core": "^0.3.1",
+    "awayjs-display": "^0.6.0",
+    "awayjs-stagegl": "^0.7.0"
   },
   "devDependencies": {
     "browserify": "^5.12.0",
