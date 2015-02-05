@@ -1,4 +1,4 @@
-import BlendMode					= require("awayjs-display/lib/base/BlendMode");
+import BlendMode					= require("awayjs-core/lib/base/BlendMode");
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 

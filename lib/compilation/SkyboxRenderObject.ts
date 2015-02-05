@@ -1,4 +1,4 @@
-import BlendMode					= require("awayjs-display/lib/base/BlendMode");
+import BlendMode					= require("awayjs-core/lib/base/BlendMode");
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");

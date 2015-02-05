@@ -1,3 +1,4 @@
+import BlendMode					= require("awayjs-core/lib/base/BlendMode");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import NamedAssetBase				= require("awayjs-core/lib/library/NamedAssetBase");
@@ -5,7 +6,6 @@ import ArgumentError				= require("awayjs-core/lib/errors/ArgumentError");
 import Event						= require("awayjs-core/lib/events/Event");
 import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
 
-import BlendMode					= require("awayjs-display/lib/base/BlendMode");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import LightPickerBase				= require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
