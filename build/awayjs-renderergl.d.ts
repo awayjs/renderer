@@ -2761,6 +2761,19 @@ declare module "awayjs-renderergl/lib/animators/data/ParticleData" {
 	export = ParticleData;
 	
 }
+declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
+	import Geometry = require("awayjs-display/lib/base/Geometry");
+	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
+	/**
+	 * @class away.base.ParticleGeometry
+	 */
+	class ParticleGeometry extends Geometry {
+	    particles: ParticleData[];
+	    numParticles: number;
+	}
+	export = ParticleGeometry;
+	
+}
 declare module "awayjs-renderergl/lib/animators/data/ParticleAnimationData" {
 	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
 	/**
@@ -3201,19 +3214,6 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleTimeNode" {
 	    _iGeneratePropertyOfOneParticle(param: ParticleProperties): void;
 	}
 	export = ParticleTimeNode;
-	
-}
-declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
-	import Geometry = require("awayjs-display/lib/base/Geometry");
-	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
-	/**
-	 * @class away.base.ParticleGeometry
-	 */
-	class ParticleGeometry extends Geometry {
-	    particles: ParticleData[];
-	    numParticles: number;
-	}
-	export = ParticleGeometry;
 	
 }
 declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
@@ -4355,18 +4355,6 @@ declare module "awayjs-renderergl/lib/utils/PerspectiveMatrix3D" {
 	export = PerspectiveMatrix3D;
 	
 }
-declare module "awayjs-renderergl/lib/animators/data/ColorSegmentPoint" {
-	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
-	class ColorSegmentPoint {
-	    private _color;
-	    private _life;
-	    constructor(life: number, color: ColorTransform);
-	    color: ColorTransform;
-	    life: number;
-	}
-	export = ColorSegmentPoint;
-	
-}
 declare module "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
@@ -5496,6 +5484,18 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleScaleNode" {
 	export = ParticleScaleNode;
 	
 }
+declare module "awayjs-renderergl/lib/animators/data/ColorSegmentPoint" {
+	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
+	class ColorSegmentPoint {
+	    private _color;
+	    private _life;
+	    constructor(life: number, color: ColorTransform);
+	    color: ColorTransform;
+	    life: number;
+	}
+	export = ColorSegmentPoint;
+	
+}
 declare module "awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState" {
 	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -6436,6 +6436,56 @@ declare module "awayjs-renderergl/lib/animators/nodes/VertexClipNode" {
 	export = VertexClipNode;
 	
 }
+declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState" {
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import SkeletonBinaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
+	import CrossfadeTransitionNode = require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode");
+	/**
+	 *
+	 */
+	class CrossfadeTransitionState extends SkeletonBinaryLERPState {
+	    private _crossfadeTransitionNode;
+	    private _animationStateTransitionComplete;
+	    constructor(animator: AnimatorBase, skeletonAnimationNode: CrossfadeTransitionNode);
+	    /**
+	     * @inheritDoc
+	     */
+	    _pUpdateTime(time: number): void;
+	}
+	export = CrossfadeTransitionState;
+	
+}
+declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode" {
+	import SkeletonBinaryLERPNode = require("awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode");
+	/**
+	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
+	 */
+	class CrossfadeTransitionNode extends SkeletonBinaryLERPNode {
+	    blendSpeed: number;
+	    startBlend: number;
+	    /**
+	     * Creates a new <code>CrossfadeTransitionNode</code> object.
+	     */
+	    constructor();
+	}
+	export = CrossfadeTransitionNode;
+	
+}
+declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransition" {
+	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import IAnimationTransition = require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
+	/**
+	 *
+	 */
+	class CrossfadeTransition implements IAnimationTransition {
+	    blendSpeed: number;
+	    constructor(blendSpeed: number);
+	    getAnimationNode(animator: AnimatorBase, startNode: AnimationNodeBase, endNode: AnimationNodeBase, startBlend: number): AnimationNodeBase;
+	}
+	export = CrossfadeTransition;
+	
+}
 declare module "awayjs-renderergl/lib/tools/commands/Merge" {
 	import DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
 	import Mesh = require("awayjs-display/lib/entities/Mesh");
@@ -6498,55 +6548,5 @@ declare module "awayjs-renderergl/lib/tools/commands/Merge" {
 	    private parseContainer(receiver, object);
 	}
 	export = Merge;
-	
-}
-declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState" {
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import SkeletonBinaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
-	import CrossfadeTransitionNode = require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode");
-	/**
-	 *
-	 */
-	class CrossfadeTransitionState extends SkeletonBinaryLERPState {
-	    private _crossfadeTransitionNode;
-	    private _animationStateTransitionComplete;
-	    constructor(animator: AnimatorBase, skeletonAnimationNode: CrossfadeTransitionNode);
-	    /**
-	     * @inheritDoc
-	     */
-	    _pUpdateTime(time: number): void;
-	}
-	export = CrossfadeTransitionState;
-	
-}
-declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode" {
-	import SkeletonBinaryLERPNode = require("awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode");
-	/**
-	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
-	 */
-	class CrossfadeTransitionNode extends SkeletonBinaryLERPNode {
-	    blendSpeed: number;
-	    startBlend: number;
-	    /**
-	     * Creates a new <code>CrossfadeTransitionNode</code> object.
-	     */
-	    constructor();
-	}
-	export = CrossfadeTransitionNode;
-	
-}
-declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransition" {
-	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import IAnimationTransition = require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
-	/**
-	 *
-	 */
-	class CrossfadeTransition implements IAnimationTransition {
-	    blendSpeed: number;
-	    constructor(blendSpeed: number);
-	    getAnimationNode(animator: AnimatorBase, startNode: AnimationNodeBase, endNode: AnimationNodeBase, startBlend: number): AnimationNodeBase;
-	}
-	export = CrossfadeTransition;
 	
 }

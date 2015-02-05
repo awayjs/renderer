@@ -9422,7 +9422,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-display/lib/base/BlendMode");
+var BlendMode = require("awayjs-core/lib/base/BlendMode");
 var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 var BasicMaterialPass = require("awayjs-renderergl/lib/passes/BasicMaterialPass");
 /**
@@ -9455,7 +9455,7 @@ var RenderBasicMaterialObject = (function (_super) {
 module.exports = RenderBasicMaterialObject;
 
 
-},{"awayjs-display/lib/base/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":undefined,"awayjs-renderergl/lib/passes/BasicMaterialPass":undefined}],"awayjs-renderergl/lib/compilation/RenderObjectBase":[function(require,module,exports){
+},{"awayjs-core/lib/base/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":undefined,"awayjs-renderergl/lib/passes/BasicMaterialPass":undefined}],"awayjs-renderergl/lib/compilation/RenderObjectBase":[function(require,module,exports){
 var Event = require("awayjs-core/lib/events/Event");
 var AssetType = require("awayjs-core/lib/library/AssetType");
 /**
@@ -10448,9 +10448,9 @@ var ShaderLightingObject = (function (_super) {
         for (var i = 0; i < len; ++i) {
             probe = lightProbes[this._renderLightingPass.lightProbesOffset + i];
             if (addDiff)
-                this._stage.activateCubeTexture(this.lightProbeDiffuseIndices[i], probe.diffuseMap);
+                this._stage.activateCubeTexture(this.lightProbeDiffuseIndices[i], probe.diffuseMap, this.useSmoothTextures, this.useMipmapping);
             if (addSpec)
-                this._stage.activateCubeTexture(this.lightProbeSpecularIndices[i], probe.specularMap);
+                this._stage.activateCubeTexture(this.lightProbeSpecularIndices[i], probe.specularMap, this.useSmoothTextures, this.useMipmapping);
         }
         for (i = 0; i < len; ++i)
             this.fragmentConstantData[this.probeWeightsIndex + i] = weights[this._renderLightingPass.lightProbesOffset + i];
@@ -11067,7 +11067,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-display/lib/base/BlendMode");
+var BlendMode = require("awayjs-core/lib/base/BlendMode");
 var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 var SkyboxPass = require("awayjs-renderergl/lib/passes/SkyboxPass");
 /**
@@ -11098,7 +11098,7 @@ var SkyboxRenderObject = (function (_super) {
 module.exports = SkyboxRenderObject;
 
 
-},{"awayjs-display/lib/base/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":undefined,"awayjs-renderergl/lib/passes/SkyboxPass":undefined}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
+},{"awayjs-core/lib/base/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":undefined,"awayjs-renderergl/lib/passes/SkyboxPass":undefined}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11489,7 +11489,7 @@ var DefaultMaterialManager = (function () {
     };
     DefaultMaterialManager.createDefaultTexture = function () {
         DefaultMaterialManager._defaultBitmapData = DefaultMaterialManager.createCheckeredBitmapData();
-        DefaultMaterialManager._defaultTexture = new BitmapTexture(DefaultMaterialManager._defaultBitmapData, true);
+        DefaultMaterialManager._defaultTexture = new BitmapTexture(DefaultMaterialManager._defaultBitmapData);
         DefaultMaterialManager._defaultTexture.name = "defaultTexture";
     };
     DefaultMaterialManager.createCheckeredBitmapData = function () {
@@ -11751,9 +11751,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
 var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
 var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
@@ -11809,8 +11806,7 @@ var BasicMaterialPass = (function (_super) {
     BasicMaterialPass.prototype._iActivate = function (camera) {
         _super.prototype._iActivate.call(this, camera);
         if (this._shader.texture != null) {
-            this._stage.context.setSamplerStateAt(this._texturesIndex, this._shader.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, this._shader.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, this._shader.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            this._stage.activateTexture(this._texturesIndex, this._shader.texture);
+            this._stage.activateTexture(this._texturesIndex, this._shader.texture, this._shader.repeatTextures, this._shader.useSmoothTextures, this._shader.useMipmapping);
             if (this._shader.alphaThreshold > 0)
                 this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;
         }
@@ -11828,16 +11824,13 @@ var BasicMaterialPass = (function (_super) {
 module.exports = BasicMaterialPass;
 
 
-},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/passes/RenderPassBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFilter":undefined,"awayjs-stagegl/lib/base/ContextGLWrapMode":undefined}],"awayjs-renderergl/lib/passes/DepthPass":[function(require,module,exports){
+},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/passes/RenderPassBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined}],"awayjs-renderergl/lib/passes/DepthPass":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
 var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
 var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
@@ -11887,7 +11880,7 @@ var DepthPass = (function (_super) {
         code += "div " + temp1 + ", " + sharedRegisters.projectionFragment + ", " + sharedRegisters.projectionFragment + ".w\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
         //codeF += "mov ft1.w, fc1.w	\n" +
         //    "mov ft0.w, fc0.x	\n";
-        if (shaderObject.alphaThreshold > 0) {
+        if (shaderObject.texture && shaderObject.alphaThreshold > 0) {
             diffuseInputReg = registerCache.getFreeTextureReg();
             this._texturesIndex = diffuseInputReg.index;
             var albedo = registerCache.getFreeFragmentVectorTemp();
@@ -11906,9 +11899,8 @@ var DepthPass = (function (_super) {
     DepthPass.prototype._iActivate = function (camera) {
         _super.prototype._iActivate.call(this, camera);
         var context = this._stage.context;
-        if (this._shader.alphaThreshold > 0) {
-            context.setSamplerStateAt(this._texturesIndex, this._shader.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, this._shader.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, this._shader.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            this._stage.activateTexture(this._texturesIndex, this._shader.texture);
+        if (this._shader.texture && this._shader.alphaThreshold > 0) {
+            this._stage.activateTexture(this._texturesIndex, this._shader.texture, this._shader.repeatTextures, this._shader.useSmoothTextures, this._shader.useMipmapping);
             this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
         }
     };
@@ -11917,16 +11909,13 @@ var DepthPass = (function (_super) {
 module.exports = DepthPass;
 
 
-},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/passes/RenderPassBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFilter":undefined,"awayjs-stagegl/lib/base/ContextGLWrapMode":undefined}],"awayjs-renderergl/lib/passes/DistancePass":[function(require,module,exports){
+},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/passes/RenderPassBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined}],"awayjs-renderergl/lib/passes/DistancePass":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
 var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
 var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
@@ -12009,8 +11998,7 @@ var DistancePass = (function (_super) {
         data[index + 2] = 65025.0 * f;
         data[index + 3] = 16581375.0 * f;
         if (this._shader.alphaThreshold > 0) {
-            context.setSamplerStateAt(this._texturesIndex, this._shader.repeatTextures ? ContextGLWrapMode.REPEAT : ContextGLWrapMode.CLAMP, this._shader.useSmoothTextures ? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, this._shader.useMipmapping ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-            this._stage.activateTexture(this._texturesIndex, this._shader.texture);
+            this._stage.activateTexture(this._texturesIndex, this._shader.texture, this._shader.repeatTextures, this._shader.useSmoothTextures, this._shader.useMipmapping);
             data[index + 8] = this._shader.alphaThreshold;
         }
     };
@@ -12019,7 +12007,7 @@ var DistancePass = (function (_super) {
 module.exports = DistancePass;
 
 
-},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/passes/RenderPassBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFilter":undefined,"awayjs-stagegl/lib/base/ContextGLWrapMode":undefined}],"awayjs-renderergl/lib/passes/IRenderLightingPass":[function(require,module,exports){
+},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/passes/RenderPassBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined}],"awayjs-renderergl/lib/passes/IRenderLightingPass":[function(require,module,exports){
 
 
 
@@ -12034,10 +12022,10 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var BlendMode = require("awayjs-core/lib/base/BlendMode");
 var ArgumentError = require("awayjs-core/lib/errors/ArgumentError");
 var Event = require("awayjs-core/lib/events/Event");
 var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-var BlendMode = require("awayjs-display/lib/base/BlendMode");
 var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 /**
@@ -12284,7 +12272,7 @@ var RenderPassBase = (function (_super) {
 module.exports = RenderPassBase;
 
 
-},{"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-display/lib/base/BlendMode":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/passes/SkyboxPass":[function(require,module,exports){
+},{"awayjs-core/lib/base/BlendMode":undefined,"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/passes/SkyboxPass":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12292,9 +12280,6 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
 var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
@@ -12317,7 +12302,7 @@ var SkyboxPass = (function (_super) {
         //this._texturesIndex = cubeMapReg.index;
         //ShaderCompilerHelper.getTexCubeSampleCode(sharedRegisters.shadedTarget, cubeMapReg, this._cubeTexture, shaderObject.useSmoothTextures, shaderObject.useMipmapping);
         var mip = ",mipnone";
-        if (this._skybox.cubeMap.hasMipmaps)
+        if (shaderObject.useMipmapping)
             mip = ",miplinear";
         return "tex ft0, v0, fs0 <cube," + ShaderCompilerHelper.getFormatStringForTexture(this._skybox.cubeMap) + "linear,clamp" + mip + ">\n";
     };
@@ -12327,16 +12312,15 @@ var SkyboxPass = (function (_super) {
     SkyboxPass.prototype._iActivate = function (camera) {
         _super.prototype._iActivate.call(this, camera);
         var context = this._stage.context;
-        context.setSamplerStateAt(0, ContextGLWrapMode.CLAMP, ContextGLTextureFilter.LINEAR, this._skybox.cubeMap.hasMipmaps ? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
         context.setDepthTest(false, ContextGLCompareMode.LESS);
-        this._stage.activateCubeTexture(0, this._skybox.cubeMap);
+        this._stage.activateCubeTexture(0, this._skybox.cubeMap, this._shader.useSmoothTextures, this._shader.useMipmapping);
     };
     return SkyboxPass;
 })(RenderPassBase);
 module.exports = SkyboxPass;
 
 
-},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/passes/RenderPassBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFilter":undefined,"awayjs-stagegl/lib/base/ContextGLWrapMode":undefined}],"awayjs-renderergl/lib/pick/JSPickingCollider":[function(require,module,exports){
+},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":undefined,"awayjs-renderergl/lib/passes/RenderPassBase":undefined,"awayjs-renderergl/lib/utils/ShaderCompilerHelper":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/pick/JSPickingCollider":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -14614,8 +14598,7 @@ var ShaderCompilerHelper = (function () {
         if (forceWrap === void 0) { forceWrap = null; }
         var wrap = forceWrap || (repeat ? "wrap" : "clamp");
         var format = ShaderCompilerHelper.getFormatStringForTexture(texture);
-        var enableMipMaps = mipmaps && texture.hasMipmaps;
-        var filter = (smooth) ? (enableMipMaps ? "linear,miplinear" : "linear") : (enableMipMaps ? "nearest,mipnearest" : "nearest");
+        var filter = (smooth) ? (mipmaps ? "linear,miplinear" : "linear") : (mipmaps ? "nearest,mipnearest" : "nearest");
         if (uvReg == null)
             uvReg = sharedReg.uvVarying;
         return "tex " + targetReg + ", " + uvReg + ", " + inputReg + " <2d," + filter + "," + format + wrap + ">\n";
@@ -14633,8 +14616,7 @@ var ShaderCompilerHelper = (function () {
     ShaderCompilerHelper.getTexCubeSampleCode = function (targetReg, inputReg, texture, smooth, mipmaps, uvReg) {
         var filter;
         var format = ShaderCompilerHelper.getFormatStringForTexture(texture);
-        var enableMipMaps = mipmaps && texture.hasMipmaps;
-        var filter = (smooth) ? (enableMipMaps ? "linear,miplinear" : "linear") : (enableMipMaps ? "nearest,mipnearest" : "nearest");
+        var filter = (smooth) ? (mipmaps ? "linear,miplinear" : "linear") : (mipmaps ? "nearest,mipnearest" : "nearest");
         return "tex " + targetReg + ", " + uvReg + ", " + inputReg + " <cube," + format + filter + ">\n";
     };
     /**
