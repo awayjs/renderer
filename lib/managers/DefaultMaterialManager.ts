@@ -36,7 +36,7 @@ class DefaultMaterialManager
 	private static createDefaultTexture()
 	{
 		DefaultMaterialManager._defaultBitmapData = DefaultMaterialManager.createCheckeredBitmapData();
-		DefaultMaterialManager._defaultTexture = new BitmapTexture(DefaultMaterialManager._defaultBitmapData, true);
+		DefaultMaterialManager._defaultTexture = new BitmapTexture(DefaultMaterialManager._defaultBitmapData);
 		DefaultMaterialManager._defaultTexture.name = "defaultTexture";
 	}
 

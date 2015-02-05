@@ -368,10 +368,10 @@ class ShaderLightingObject extends ShaderObjectBase
 			probe = lightProbes[ this._renderLightingPass.lightProbesOffset + i];
 
 			if (addDiff)
-				this._stage.activateCubeTexture(this.lightProbeDiffuseIndices[i], probe.diffuseMap);
+				this._stage.activateCubeTexture(this.lightProbeDiffuseIndices[i], probe.diffuseMap, this.useSmoothTextures, this.useMipmapping);
 
 			if (addSpec)
-				this._stage.activateCubeTexture(this.lightProbeSpecularIndices[i], probe.specularMap);
+				this._stage.activateCubeTexture(this.lightProbeSpecularIndices[i], probe.specularMap, this.useSmoothTextures, this.useMipmapping);
 		}
 
 		for (i = 0; i < len; ++i)

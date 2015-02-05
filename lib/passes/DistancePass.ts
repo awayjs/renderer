@@ -136,8 +136,7 @@ class DistancePass extends RenderPassBase
 		data[index + 3] = 16581375.0*f;
 
 		if (this._shader.alphaThreshold > 0) {
-			context.setSamplerStateAt(this._texturesIndex, this._shader.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, this._shader.useSmoothTextures? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, this._shader.useMipmapping? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-			this._stage.activateTexture(this._texturesIndex, this._shader.texture);
+			this._stage.activateTexture(this._texturesIndex, this._shader.texture, this._shader.repeatTextures, this._shader.useSmoothTextures, this._shader.useMipmapping);
 
 			data[index + 8] = this._shader.alphaThreshold;
 		}

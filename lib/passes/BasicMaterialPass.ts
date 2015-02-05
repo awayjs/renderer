@@ -1,9 +1,9 @@
+import BlendMode					= require("awayjs-core/lib/base/BlendMode");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 
-import BlendMode					= require("awayjs-display/lib/base/BlendMode");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
@@ -101,8 +101,7 @@ class BasicMaterialPass extends RenderPassBase
 		super._iActivate(camera);
 
 		if (this._shader.texture != null) {
-			this._stage.context.setSamplerStateAt(this._texturesIndex, this._shader.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, this._shader.useSmoothTextures? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, this._shader.useMipmapping? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-			this._stage.activateTexture(this._texturesIndex, this._shader.texture);
+			this._stage.activateTexture(this._texturesIndex, this._shader.texture, this._shader.repeatTextures, this._shader.useSmoothTextures, this._shader.useMipmapping);
 
 			if (this._shader.alphaThreshold > 0)
 				this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;

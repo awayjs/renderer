@@ -1,9 +1,9 @@
+import BlendMode					= require("awayjs-core/lib/base/BlendMode");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 
-import BlendMode					= require("awayjs-display/lib/base/BlendMode");
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
@@ -98,7 +98,7 @@ class DepthPass extends RenderPassBase
 		//codeF += "mov ft1.w, fc1.w	\n" +
 		//    "mov ft0.w, fc0.x	\n";
 
-		if (shaderObject.alphaThreshold > 0) {
+		if (shaderObject.texture && shaderObject.alphaThreshold > 0) {
 			diffuseInputReg = registerCache.getFreeTextureReg();
 
 			this._texturesIndex = diffuseInputReg.index;
@@ -129,9 +129,8 @@ class DepthPass extends RenderPassBase
 
 		var context:IContextGL = this._stage.context;
 
-		if (this._shader.alphaThreshold > 0) {
-			context.setSamplerStateAt(this._texturesIndex, this._shader.repeatTextures? ContextGLWrapMode.REPEAT:ContextGLWrapMode.CLAMP, this._shader.useSmoothTextures? ContextGLTextureFilter.LINEAR : ContextGLTextureFilter.NEAREST, this._shader.useMipmapping? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
-			this._stage.activateTexture(this._texturesIndex, this._shader.texture);
+		if (this._shader.texture && this._shader.alphaThreshold > 0) {
+			this._stage.activateTexture(this._texturesIndex, this._shader.texture, this._shader.repeatTextures, this._shader.useSmoothTextures, this._shader.useMipmapping);
 
 			this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
 		}

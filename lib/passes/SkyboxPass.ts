@@ -1,9 +1,9 @@
+import BlendMode					= require("awayjs-core/lib/base/BlendMode");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 
-import BlendMode					= require("awayjs-display/lib/base/BlendMode");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
@@ -58,7 +58,7 @@ class SkyboxPass extends RenderPassBase
 
 		var mip:string = ",mipnone";
 
-		if (this._skybox.cubeMap.hasMipmaps)
+		if (shaderObject.useMipmapping)
 			mip = ",miplinear";
 
 		return "tex ft0, v0, fs0 <cube," + ShaderCompilerHelper.getFormatStringForTexture(this._skybox.cubeMap) + "linear,clamp" + mip + ">\n";
@@ -72,9 +72,8 @@ class SkyboxPass extends RenderPassBase
 		super._iActivate(camera);
 
 		var context:IContextGL = this._stage.context;
-		context.setSamplerStateAt(0, ContextGLWrapMode.CLAMP, ContextGLTextureFilter.LINEAR, this._skybox.cubeMap.hasMipmaps? ContextGLMipFilter.MIPLINEAR : ContextGLMipFilter.MIPNONE);
 		context.setDepthTest(false, ContextGLCompareMode.LESS);
-		this._stage.activateCubeTexture(0, this._skybox.cubeMap);
+		this._stage.activateCubeTexture(0, this._skybox.cubeMap, this._shader.useSmoothTextures, this._shader.useMipmapping);
 	}
 }
 

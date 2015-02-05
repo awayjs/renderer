@@ -23,8 +23,7 @@ class ShaderCompilerHelper
 	{
 		var wrap:string = forceWrap || (repeat? "wrap":"clamp");
 		var format:string = ShaderCompilerHelper.getFormatStringForTexture(texture);
-		var enableMipMaps:boolean = mipmaps && texture.hasMipmaps;
-		var filter:string = (smooth)? (enableMipMaps? "linear,miplinear" : "linear") : (enableMipMaps? "nearest,mipnearest" : "nearest");
+		var filter:string = (smooth)? (mipmaps? "linear,miplinear" : "linear") : (mipmaps? "nearest,mipnearest" : "nearest");
 
 		if (uvReg == null)
 			uvReg = sharedReg.uvVarying;
@@ -48,8 +47,7 @@ class ShaderCompilerHelper
 	{
 		var filter:string;
 		var format:string = ShaderCompilerHelper.getFormatStringForTexture(texture);
-		var enableMipMaps:boolean = mipmaps && texture.hasMipmaps;
-		var filter:string = (smooth)? (enableMipMaps? "linear,miplinear" : "linear") : (enableMipMaps? "nearest,mipnearest" : "nearest");
+		var filter:string = (smooth)? (mipmaps? "linear,miplinear" : "linear") : (mipmaps? "nearest,mipnearest" : "nearest");
 
 		return "tex " + targetReg + ", " + uvReg + ", " + inputReg + " <cube," + format + filter + ">\n";
 	}
