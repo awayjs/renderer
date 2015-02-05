@@ -1,3 +1,4 @@
+import BlendMode					= require("awayjs-core/lib/base/BlendMode");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");
 import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
@@ -10,7 +11,6 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import Debug						= require("awayjs-core/lib/utils/Debug");
 
 import View							= require("awayjs-display/lib/containers/View");
-import BlendMode					= require("awayjs-display/lib/base/BlendMode");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
@@ -70,7 +70,7 @@ class TorusVortex
 
 	private onLoadComplete(event)
 	{
-		var matTx:BasicMaterial = new BasicMaterial(new ImageTexture(this._image, false), true, true, false);
+		var matTx:BasicMaterial = new BasicMaterial(new ImageTexture(this._image), true, true, false);
 
 		matTx.blendMode = BlendMode.ADD;
 		matTx.bothSides = true;

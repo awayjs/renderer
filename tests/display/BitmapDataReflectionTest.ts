@@ -51,29 +51,38 @@ class BitmapDataReflectionTest
 					var tx:ImageTexture = <ImageTexture> asset;
 					var bitmap:BitmapData = new BitmapData(1024, 1024, true, 0x00000000);
 
-					bitmap.context.translate(0, 1024);
-					bitmap.context.scale(1, -1);
-					bitmap.context.drawImage(tx.htmlImageElement, 0, 0, 1024, 1024);
+					var imageCanvas:HTMLCanvasElement = <HTMLCanvasElement> document.createElement("canvas");
+					imageCanvas.width = 1024;
+					imageCanvas.height = 1024;
+					var context:CanvasRenderingContext2D = imageCanvas.getContext("2d");
+					var imageData:ImageData = context.getImageData(0, 0, 1024, 1024);
 
-					var gradient = bitmap.context.createLinearGradient(0, 0, 0, 1024);
+					context.translate(0, 1024);
+					context.scale(1, -1);
+					context.drawImage(tx.htmlImageElement, 0, 0, 1024, 1024);
+
+					var gradient = context.createLinearGradient(0, 0, 0, 1024);
 					gradient.addColorStop(0.8, "rgba(255, 255, 255, 1.0)");
 					gradient.addColorStop(1, "rgba(255, 255, 255, 0.5)");
 
-					bitmap.context.fillStyle = gradient;
-					bitmap.context.rect(0, 0, 1024, 1024);
-					bitmap.context.globalCompositeOperation = "destination-out";
-					bitmap.context.fill();
+					context.fillStyle = gradient;
+					context.rect(0, 0, 1024, 1024);
+					context.globalCompositeOperation = "destination-out";
+					context.fill();
+
+					bitmap.draw(imageCanvas);
 
 					var bitmapClone:BitmapData = new BitmapData(1024, 1024, true, 0x00000000);
 					bitmapClone.copyPixels(bitmap, bitmapClone.rect, bitmapClone.rect);
 
 					document.body.appendChild(bitmap.canvas);
 
-					var bmpTX:BitmapTexture = new BitmapTexture(bitmapClone, false);
+					var bmpTX:BitmapTexture = new BitmapTexture(bitmapClone);
 
 					var material:BasicMaterial = new BasicMaterial(bmpTX);
 					material.bothSides = true;
 					material.alphaBlending = true;
+					material.mipmap = false;
 
 					var material2:BasicMaterial = new BasicMaterial(tx);
 					material2.bothSides = true;
