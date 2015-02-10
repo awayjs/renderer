@@ -316,7 +316,7 @@ class ShaderPicker implements IPicker
 	 */
 	private getApproximatePosition(camera:Camera)
 	{
-		var bounds:Box = this._hitRenderable.sourceEntity.bounds.aabb;
+		var bounds:Box = this._hitRenderable.sourceEntity.getBox();
 		var col:number;
 		var scX:number, scY:number, scZ:number;
 		var offsX:number, offsY:number, offsZ:number;

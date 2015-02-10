@@ -24,7 +24,7 @@ import RendererEvent				= require("awayjs-display/lib/events/RendererEvent");
 import StageEvent					= require("awayjs-display/lib/events/StageEvent");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
-import ICollector					= require("awayjs-display/lib/traverse/ICollector");
+import CollectorBase				= require("awayjs-display/lib/traverse/CollectorBase");
 import ShadowCasterCollector		= require("awayjs-display/lib/traverse/ShadowCasterCollector");
 import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
 
@@ -304,7 +304,7 @@ class RendererBase extends EventDispatcher
 		this._numUsedTextures = pass.shader.numUsedTextures;
 	}
 
-	public _iCreateEntityCollector():ICollector
+	public _iCreateEntityCollector():CollectorBase
 	{
 		return new EntityCollector();
 	}
@@ -457,7 +457,7 @@ class RendererBase extends EventDispatcher
 		 */
 	}
 
-	public render(entityCollector:ICollector)
+	public render(entityCollector:CollectorBase)
 	{
 		this._viewportDirty = false;
 		this._scissorDirty = false;
@@ -470,7 +470,7 @@ class RendererBase extends EventDispatcher
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public _iRender(entityCollector:ICollector, target:TextureProxyBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public _iRender(entityCollector:CollectorBase, target:TextureProxyBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 	{
 		//TODO refactor setTarget so that rendertextures are created before this check
 		if (!this._pStage || !this._pContext)
@@ -506,9 +506,10 @@ class RendererBase extends EventDispatcher
 
 		var first:boolean = true;
 
+		//TODO cascades must have separate collectors, rather than separate draw commands
 		for (var i:number = numCascades - 1; i >= 0; --i) {
 			this._pStage.scissorRect = scissorRects[i];
-			this.drawCascadeRenderables(head, cameras[i], first? null : cameras[i].frustumPlanes);
+			//this.drawCascadeRenderables(head, cameras[i], first? null : cameras[i].frustumPlanes);
 			first = false;
 		}
 
@@ -518,7 +519,7 @@ class RendererBase extends EventDispatcher
 		this._pStage.scissorRect = null;
 	}
 
-	public pCollectRenderables(entityCollector:ICollector)
+	public pCollectRenderables(entityCollector:CollectorBase)
 	{
 		//reset head values
 		this._pBlendedRenderableHead = null;
@@ -552,7 +553,7 @@ class RendererBase extends EventDispatcher
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public pExecuteRender(entityCollector:ICollector, target:TextureProxyBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public pExecuteRender(entityCollector:CollectorBase, target:TextureProxyBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 	{
 		this._pStage.setRenderTarget(target, true, surfaceSelector);
 
@@ -597,7 +598,7 @@ class RendererBase extends EventDispatcher
 	 * Performs the actual drawing of geometry to the target.
 	 * @param entityCollector The EntityCollector object containing the potentially visible geometry.
 	 */
-	public pDraw(entityCollector:ICollector)
+	public pDraw(entityCollector:CollectorBase)
 	{
 		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
 
@@ -613,37 +614,37 @@ class RendererBase extends EventDispatcher
 			this._pContext.setColorMask(true, true, true, true);
 	}
 
-	private drawCascadeRenderables(renderable:RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
-	{
-		var renderable2:RenderableBase;
-		var renderObject:RenderObjectBase;
-		var pass:RenderPassBase;
-
-		while (renderable) {
-			renderable2 = renderable;
-			renderObject = renderable.renderObject;
-			pass = renderObject.passes[0] //assuming only one pass per material
-
-			this.activatePass(renderable, pass, camera);
-
-			do {
-				// if completely in front, it will fall in a different cascade
-				// do not use near and far planes
-				if (!cullPlanes || renderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
-					renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
-				} else {
-					renderable2.cascaded = true;
-				}
-
-				renderable2 = renderable2.next;
-
-			} while (renderable2 && renderable2.renderObject == renderObject && !renderable2.cascaded);
-
-			this.deactivatePass(renderable, pass);
-
-			renderable = renderable2;
-		}
-	}
+	//private drawCascadeRenderables(renderable:RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
+	//{
+	//	var renderable2:RenderableBase;
+	//	var renderObject:RenderObjectBase;
+	//	var pass:RenderPassBase;
+	//
+	//	while (renderable) {
+	//		renderable2 = renderable;
+	//		renderObject = renderable.renderObject;
+	//		pass = renderObject.passes[0] //assuming only one pass per material
+	//
+	//		this.activatePass(renderable, pass, camera);
+	//
+	//		do {
+	//			// if completely in front, it will fall in a different cascade
+	//			// do not use near and far planes
+	//			if (!cullPlanes || renderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
+	//				renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+	//			} else {
+	//				renderable2.cascaded = true;
+	//			}
+	//
+	//			renderable2 = renderable2.next;
+	//
+	//		} while (renderable2 && renderable2.renderObject == renderObject && !renderable2.cascaded);
+	//
+	//		this.deactivatePass(renderable, pass);
+	//
+	//		renderable = renderable2;
+	//	}
+	//}
 
 	/**
 	 * Draw a list of renderables.
@@ -651,7 +652,7 @@ class RendererBase extends EventDispatcher
 	 * @param renderables The renderables to draw.
 	 * @param entityCollector The EntityCollector containing all potentially visible information.
 	 */
-	public drawRenderables(renderable:RenderableBase, entityCollector:ICollector)
+	public drawRenderables(renderable:RenderableBase, entityCollector:CollectorBase)
 	{
 		var i:number;
 		var len:number;

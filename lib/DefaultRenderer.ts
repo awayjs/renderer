@@ -7,7 +7,7 @@ import TextureProxyBase				= require("awayjs-core/lib/textures/TextureProxyBase"
 import LightBase					= require("awayjs-display/lib/base/LightBase");
 import IRenderer					= require("awayjs-display/lib/render/IRenderer");
 import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
-import ICollector					= require("awayjs-display/lib/traverse/ICollector");
+import CollectorBase				= require("awayjs-display/lib/traverse/CollectorBase");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
 import PointLight					= require("awayjs-display/lib/entities/PointLight");
@@ -138,7 +138,7 @@ class DefaultRenderer extends RendererBase implements IRenderer
 			this._pRttBufferManager.viewHeight = this._height;
 	}
 
-	public render(entityCollector:ICollector)
+	public render(entityCollector:CollectorBase)
 	{
 		super.render(entityCollector);
 
