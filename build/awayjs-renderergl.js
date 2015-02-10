@@ -8905,7 +8905,7 @@ var RendererBase = (function (_super) {
         var first = true;
         for (var i = numCascades - 1; i >= 0; --i) {
             this._pStage.scissorRect = scissorRects[i];
-            this.drawCascadeRenderables(head, cameras[i], first ? null : cameras[i].frustumPlanes);
+            //this.drawCascadeRenderables(head, cameras[i], first? null : cameras[i].frustumPlanes);
             first = false;
         }
         //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
@@ -8985,30 +8985,37 @@ var RendererBase = (function (_super) {
         if (this._disableColor)
             this._pContext.setColorMask(true, true, true, true);
     };
-    RendererBase.prototype.drawCascadeRenderables = function (renderable, camera, cullPlanes) {
-        var renderable2;
-        var renderObject;
-        var pass;
-        while (renderable) {
-            renderable2 = renderable;
-            renderObject = renderable.renderObject;
-            pass = renderObject.passes[0]; //assuming only one pass per material
-            this.activatePass(renderable, pass, camera);
-            do {
-                // if completely in front, it will fall in a different cascade
-                // do not use near and far planes
-                if (!cullPlanes || renderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
-                    renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
-                }
-                else {
-                    renderable2.cascaded = true;
-                }
-                renderable2 = renderable2.next;
-            } while (renderable2 && renderable2.renderObject == renderObject && !renderable2.cascaded);
-            this.deactivatePass(renderable, pass);
-            renderable = renderable2;
-        }
-    };
+    //private drawCascadeRenderables(renderable:RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
+    //{
+    //	var renderable2:RenderableBase;
+    //	var renderObject:RenderObjectBase;
+    //	var pass:RenderPassBase;
+    //
+    //	while (renderable) {
+    //		renderable2 = renderable;
+    //		renderObject = renderable.renderObject;
+    //		pass = renderObject.passes[0] //assuming only one pass per material
+    //
+    //		this.activatePass(renderable, pass, camera);
+    //
+    //		do {
+    //			// if completely in front, it will fall in a different cascade
+    //			// do not use near and far planes
+    //			if (!cullPlanes || renderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
+    //				renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+    //			} else {
+    //				renderable2.cascaded = true;
+    //			}
+    //
+    //			renderable2 = renderable2.next;
+    //
+    //		} while (renderable2 && renderable2.renderObject == renderObject && !renderable2.cascaded);
+    //
+    //		this.deactivatePass(renderable, pass);
+    //
+    //		renderable = renderable2;
+    //	}
+    //}
     /**
      * Draw a list of renderables.
      *
@@ -12773,7 +12780,7 @@ var ShaderPicker = (function () {
      * @param camera The camera used to view the hit object.
      */
     ShaderPicker.prototype.getApproximatePosition = function (camera) {
-        var bounds = this._hitRenderable.sourceEntity.bounds.aabb;
+        var bounds = this._hitRenderable.sourceEntity.getBox();
         var col;
         var scX, scY, scZ;
         var offsX, offsY, offsZ;

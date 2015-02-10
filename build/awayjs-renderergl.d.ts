@@ -2275,7 +2275,7 @@ declare module "awayjs-renderergl/lib/base/RendererBase" {
 	import IEntitySorter = require("awayjs-display/lib/sort/IEntitySorter");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import StageEvent = require("awayjs-display/lib/events/StageEvent");
-	import ICollector = require("awayjs-display/lib/traverse/ICollector");
+	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
 	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
 	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2371,7 +2371,7 @@ declare module "awayjs-renderergl/lib/base/RendererBase" {
 	    constructor(rendererPoolClass?: IRendererPoolClass, stage?: Stage);
 	    activatePass(renderable: RenderableBase, pass: RenderPassBase, camera: Camera): void;
 	    deactivatePass(renderable: RenderableBase, pass: RenderPassBase): void;
-	    _iCreateEntityCollector(): ICollector;
+	    _iCreateEntityCollector(): CollectorBase;
 	    /**
 	     * The background color's red component, used when clearing.
 	     *
@@ -2405,7 +2405,7 @@ declare module "awayjs-renderergl/lib/base/RendererBase" {
 	     * Disposes the resources used by the RendererBase.
 	     */
 	    dispose(): void;
-	    render(entityCollector: ICollector): void;
+	    render(entityCollector: CollectorBase): void;
 	    /**
 	     * Renders the potentially visible geometry to the back buffer or texture.
 	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
@@ -2413,9 +2413,9 @@ declare module "awayjs-renderergl/lib/base/RendererBase" {
 	     * @param surfaceSelector The index of a CubeTexture's face to render to.
 	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	     */
-	    _iRender(entityCollector: ICollector, target?: TextureProxyBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    _iRender(entityCollector: CollectorBase, target?: TextureProxyBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
 	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: TextureProxyBase, numCascades: number, scissorRects: Rectangle[], cameras: Camera[]): void;
-	    pCollectRenderables(entityCollector: ICollector): void;
+	    pCollectRenderables(entityCollector: CollectorBase): void;
 	    /**
 	     * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
 	     *
@@ -2424,21 +2424,20 @@ declare module "awayjs-renderergl/lib/base/RendererBase" {
 	     * @param surfaceSelector The index of a CubeTexture's face to render to.
 	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	     */
-	    pExecuteRender(entityCollector: ICollector, target?: TextureProxyBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    pExecuteRender(entityCollector: CollectorBase, target?: TextureProxyBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
 	    queueSnapshot(bmd: BitmapData): void;
 	    /**
 	     * Performs the actual drawing of geometry to the target.
 	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
 	     */
-	    pDraw(entityCollector: ICollector): void;
-	    private drawCascadeRenderables(renderable, camera, cullPlanes);
+	    pDraw(entityCollector: CollectorBase): void;
 	    /**
 	     * Draw a list of renderables.
 	     *
 	     * @param renderables The renderables to draw.
 	     * @param entityCollector The EntityCollector containing all potentially visible information.
 	     */
-	    drawRenderables(renderable: RenderableBase, entityCollector: ICollector): void;
+	    drawRenderables(renderable: RenderableBase, entityCollector: CollectorBase): void;
 	    /**
 	     * Assign the context once retrieved
 	     */
@@ -2672,7 +2671,7 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	import TextureProxyBase = require("awayjs-core/lib/textures/TextureProxyBase");
 	import IRenderer = require("awayjs-display/lib/render/IRenderer");
 	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
-	import ICollector = require("awayjs-display/lib/traverse/ICollector");
+	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
 	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
@@ -2713,7 +2712,7 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	     * @param renderMode The render mode to use.
 	     */
 	    constructor(rendererPoolClass?: IRendererPoolClass, stage?: Stage);
-	    render(entityCollector: ICollector): void;
+	    render(entityCollector: CollectorBase): void;
 	    pExecuteRender(entityCollector: EntityCollector, target?: TextureProxyBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
 	    private updateLights(entityCollector);
 	    /**
@@ -2759,19 +2758,6 @@ declare module "awayjs-renderergl/lib/animators/data/ParticleData" {
 	    subGeometry: TriangleSubGeometry;
 	}
 	export = ParticleData;
-	
-}
-declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
-	import Geometry = require("awayjs-display/lib/base/Geometry");
-	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
-	/**
-	 * @class away.base.ParticleGeometry
-	 */
-	class ParticleGeometry extends Geometry {
-	    particles: ParticleData[];
-	    numParticles: number;
-	}
-	export = ParticleGeometry;
 	
 }
 declare module "awayjs-renderergl/lib/animators/data/ParticleAnimationData" {
@@ -3214,6 +3200,19 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleTimeNode" {
 	    _iGeneratePropertyOfOneParticle(param: ParticleProperties): void;
 	}
 	export = ParticleTimeNode;
+	
+}
+declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
+	import Geometry = require("awayjs-display/lib/base/Geometry");
+	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
+	/**
+	 * @class away.base.ParticleGeometry
+	 */
+	class ParticleGeometry extends Geometry {
+	    particles: ParticleData[];
+	    numParticles: number;
+	}
+	export = ParticleGeometry;
 	
 }
 declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
@@ -4355,6 +4354,18 @@ declare module "awayjs-renderergl/lib/utils/PerspectiveMatrix3D" {
 	export = PerspectiveMatrix3D;
 	
 }
+declare module "awayjs-renderergl/lib/animators/data/ColorSegmentPoint" {
+	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
+	class ColorSegmentPoint {
+	    private _color;
+	    private _life;
+	    constructor(life: number, color: ColorTransform);
+	    color: ColorTransform;
+	    life: number;
+	}
+	export = ColorSegmentPoint;
+	
+}
 declare module "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
@@ -5482,18 +5493,6 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleScaleNode" {
 	    _iGeneratePropertyOfOneParticle(param: ParticleProperties): void;
 	}
 	export = ParticleScaleNode;
-	
-}
-declare module "awayjs-renderergl/lib/animators/data/ColorSegmentPoint" {
-	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
-	class ColorSegmentPoint {
-	    private _color;
-	    private _life;
-	    constructor(life: number, color: ColorTransform);
-	    color: ColorTransform;
-	    life: number;
-	}
-	export = ColorSegmentPoint;
 	
 }
 declare module "awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState" {
