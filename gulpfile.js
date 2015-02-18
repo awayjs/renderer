@@ -24,7 +24,7 @@ gulp.task('compile', function() {
 
     var ambientWrap = map(function(code, filename) {
         code = code.toString();
-        code = 'declare module "' + path.relative('../', filename.slice(0,-5)) + '" {\n\t'
+        code = 'declare module "' + path.relative('../', filename.slice(0,-5)).replace(/\\/gi, "/") + '" {\n\t'
         + code.split('declare ').join('').split('\n').join('\n\t') + "\n"
         + '}';
         return code;
