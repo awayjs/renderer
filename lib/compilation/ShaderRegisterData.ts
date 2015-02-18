@@ -16,6 +16,7 @@ class ShaderRegisterData
 	public shadedTarget:ShaderRegisterElement;
 	public globalPositionVertex:ShaderRegisterElement;
 	public globalPositionVarying:ShaderRegisterElement;
+    public localPositionVarying:ShaderRegisterElement;
 	public localPosition:ShaderRegisterElement;
 	public normalInput:ShaderRegisterElement;
 	public colorInput:ShaderRegisterElement;

@@ -104,6 +104,10 @@ class ShaderCompilerBase
 		if (this._pShaderObject.globalPosDependencies > 0)
 			this.compileGlobalPositionCode();
 
+        //compile the local-space position if required
+        if (this._pShaderObject.localPosDependencies > 0)
+            this.compileLocalPositionCode();
+
 		//Calculate the (possibly animated) UV coordinates.
 		if (this._pShaderObject.uvDependencies > 0)
 			this.compileUVCode();
@@ -144,7 +148,11 @@ class ShaderCompilerBase
 			this._pVertexCode += "mov " + this._pSharedRegisters.globalPositionVarying + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
 		}
 	}
-
+    private compileLocalPositionCode()
+    {
+        this._pSharedRegisters.localPositionVarying = this._pRegisterCache.getFreeVarying();
+        this._pVertexCode += "mov " + this._pSharedRegisters.localPositionVarying + ", " + this._pSharedRegisters.localPosition + "\n";
+    }
 	/**
 	 * Calculate the (possibly animated) UV coordinates.
 	 */

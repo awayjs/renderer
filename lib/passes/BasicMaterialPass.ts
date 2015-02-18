@@ -55,7 +55,8 @@ class BasicMaterialPass extends RenderPassBase
 
 		if (shaderObject.texture != null)
 			shaderObject.uvDependencies++;
-	}
+
+    }
 
 	/**
 	 * @inheritDoc
@@ -63,6 +64,15 @@ class BasicMaterialPass extends RenderPassBase
 	public _iGetFragmentCode(shaderObject:ShaderObjectBase, regCache:ShaderRegisterCache, sharedReg:ShaderRegisterData):string
 	{
 		var code:string = "";
+
+        var alphaReg:ShaderRegisterElement;
+
+        if (this.preserveAlpha) {
+            alphaReg = regCache.getFreeFragmentSingleTemp();
+            regCache.addFragmentTempUsages(alphaReg, 1);
+            code += "mov " + alphaReg + ", " + sharedReg.shadedTarget + ".w\n";
+        }
+
 		var targetReg:ShaderRegisterElement = sharedReg.shadedTarget;
 		var diffuseInputReg:ShaderRegisterElement;
 
@@ -89,6 +99,11 @@ class BasicMaterialPass extends RenderPassBase
 
 			code += "mov " + targetReg + ", " + diffuseInputReg + "\n";
 		}
+
+        if (this.preserveAlpha) {
+            code += "mov " + sharedReg.shadedTarget + ".w, " + alphaReg + "\n";
+            regCache.removeFragmentTempUsage(alphaReg);
+        }
 
 		return code;
 	}

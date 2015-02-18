@@ -41,7 +41,7 @@ class RenderBasicMaterialObject extends RenderObjectBase
 		super._pUpdateRenderObject();
 
 		this._pRequiresBlending = (this._material.blendMode != BlendMode.NORMAL || this._material.alphaBlending || (this._material.colorTransform && this._material.colorTransform.alphaMultiplier < 1));
-		//this._screenPass.preserveAlpha = this._pRequiresBlending;
+		this._screenPass.preserveAlpha = this._material.preserveAlpha;//this._pRequiresBlending;
 		this._screenPass.setBlendMode((this._renderObjectOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending)? BlendMode.LAYER : this._material.blendMode);
 		//this._screenPass.forceSeparateMVP = false;
 	}

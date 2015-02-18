@@ -1,6 +1,7 @@
 
 import LineSubMesh					= require("awayjs-display/lib/base/LineSubMesh");
 import TriangleSubMesh				= require("awayjs-display/lib/base/TriangleSubMesh");
+import CurveSubMesh			    	= require("awayjs-display/lib/base/CurveSubMesh");
 import IRendererPool				= require("awayjs-display/lib/pool/IRendererPool");
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import LineSegment					= require("awayjs-display/lib/entities/LineSegment");
@@ -12,6 +13,7 @@ import BillboardRenderable			= require("awayjs-renderergl/lib/pool/BillboardRend
 import LineSegmentRenderable		= require("awayjs-renderergl/lib/pool/LineSegmentRenderable");
 import LineSubMeshRenderable		= require("awayjs-renderergl/lib/pool/LineSubMeshRenderable");
 import TriangleSubMeshRenderable	= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
+import CurveSubMeshRenderable	    = require("awayjs-renderergl/lib/pool/CurveSubMeshRenderable");
 import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
 import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 
@@ -27,6 +29,7 @@ class RendererPoolBase implements IRendererPool
 	public _lineSegmentRenderablePool:RenderablePoolBase;
 	public _triangleSubMeshRenderablePool:RenderablePoolBase;
 	public _lineSubMeshRenderablePool:RenderablePoolBase;
+    public _curveSubMeshRenderablePool:RenderablePoolBase;
 
 	public _pStage:Stage;
 
@@ -69,6 +72,7 @@ class RendererPoolBase implements IRendererPool
 		this._lineSegmentRenderablePool = RenderablePoolBase.getPool(LineSegmentRenderable, this._pStage);
 		this._triangleSubMeshRenderablePool = RenderablePoolBase.getPool(TriangleSubMeshRenderable, this._pStage);
 		this._lineSubMeshRenderablePool = RenderablePoolBase.getPool(LineSubMeshRenderable, this._pStage);
+        this._curveSubMeshRenderablePool = RenderablePoolBase.getPool(CurveSubMeshRenderable, this._pStage);
 	}
 
 	/**
@@ -87,6 +91,9 @@ class RendererPoolBase implements IRendererPool
 
 		this._lineSubMeshRenderablePool.dispose();
 		this._lineSubMeshRenderablePool = null;
+
+        this._curveSubMeshRenderablePool.dispose();
+        this._curveSubMeshRenderablePool = null;
 	}
 
 	/**
@@ -116,7 +123,14 @@ class RendererPoolBase implements IRendererPool
 	{
 		this._renderer.applyRenderable(this._triangleSubMeshRenderablePool.getItem(triangleSubMesh));
 	}
-
+    /**
+     *
+     * @param curveSubMesh
+     */
+    public applyCurveSubMesh(curveSubMesh:CurveSubMesh)
+    {
+        this._renderer.applyRenderable(this._curveSubMeshRenderablePool.getItem(curveSubMesh));
+    }
 	/**
 	 *
 	 * @param lineSubMesh

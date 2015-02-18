@@ -290,6 +290,7 @@ class ShaderObjectBase
 		this.uvDependencies = 0;
 		this.secondaryUVDependencies = 0;
 		this.globalPosDependencies = 0;
+		this.localPosDependencies = 0;
 		this.tangentDependencies = 0;
 		this.usesGlobalPosFragment = false;
 		this.usesFragmentAnimation = false;
