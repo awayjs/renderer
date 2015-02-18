@@ -286,6 +286,7 @@ declare module "awayjs-renderergl/lib/compilation/ShaderRegisterData" {
 	    shadedTarget: ShaderRegisterElement;
 	    globalPositionVertex: ShaderRegisterElement;
 	    globalPositionVarying: ShaderRegisterElement;
+	    localPositionVarying: ShaderRegisterElement;
 	    localPosition: ShaderRegisterElement;
 	    normalInput: ShaderRegisterElement;
 	    colorInput: ShaderRegisterElement;
@@ -520,7 +521,7 @@ declare module "awayjs-renderergl/lib/compilation/RenderObjectBase" {
 	     */
 	    requiresBlending: boolean;
 	    renderOrderId: number;
-	    passes: RenderPassBase[];
+	    passes: Array<RenderPassBase>;
 	    constructor(pool: RenderObjectPool, renderObjectOwner: IRenderObjectOwner, renderableClass: IRenderableClass, stage: Stage);
 	    _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
 	    /**
@@ -1333,7 +1334,7 @@ declare module "awayjs-renderergl/lib/animators/AnimatorBase" {
 	    private _time;
 	    private _playbackSpeed;
 	    _pAnimationSet: IAnimationSet;
-	    _pOwners: Mesh[];
+	    _pOwners: Array<Mesh>;
 	    _pActiveNode: AnimationNodeBase;
 	    _pActiveState: IAnimationState;
 	    _pActiveAnimationName: string;
@@ -1496,11 +1497,11 @@ declare module "awayjs-renderergl/lib/animators/data/AnimationRegisterCache" {
 	    colorAddVary: ShaderRegisterElement;
 	    colorMulVary: ShaderRegisterElement;
 	    uvVar: ShaderRegisterElement;
-	    rotationRegisters: ShaderRegisterElement[];
+	    rotationRegisters: Array<ShaderRegisterElement>;
 	    needFragmentAnimation: boolean;
 	    needUVAnimation: boolean;
-	    sourceRegisters: string[];
-	    targetRegisters: string[];
+	    sourceRegisters: Array<string>;
+	    targetRegisters: Array<string>;
 	    private indexDictionary;
 	    hasUVNode: boolean;
 	    needVelocity: boolean;
@@ -1518,15 +1519,15 @@ declare module "awayjs-renderergl/lib/animators/data/AnimationRegisterCache" {
 	    getColorPassCode(): string;
 	    getColorCombinationCode(shadedTarget: string): string;
 	    private getRegisterFromString(code);
-	    vertexConstantData: number[];
-	    fragmentConstantData: number[];
+	    vertexConstantData: Array<number>;
+	    fragmentConstantData: Array<number>;
 	    private _numVertexConstant;
 	    private _numFragmentConstant;
 	    numVertexConstant: number;
 	    numFragmentConstant: number;
 	    setDataLength(): void;
 	    setVertexConst(index: number, x?: number, y?: number, z?: number, w?: number): void;
-	    setVertexConstFromArray(index: number, data: number[]): void;
+	    setVertexConstFromArray(index: number, data: Array<number>): void;
 	    setVertexConstFromMatrix(index: number, matrix: Matrix3D): void;
 	    setFragmentConst(index: number, x?: number, y?: number, z?: number, w?: number): void;
 	}
@@ -1554,8 +1555,8 @@ declare module "awayjs-renderergl/lib/compilation/ShaderCompilerBase" {
 	    _pVertexCode: string;
 	    _pFragmentCode: string;
 	    _pPostAnimationFragmentCode: string;
-	    _pAnimatableAttributes: string[];
-	    _pAnimationTargetRegisters: string[];
+	    _pAnimatableAttributes: Array<string>;
+	    _pAnimationTargetRegisters: Array<string>;
 	    private _uvTarget;
 	    private _uvSource;
 	    /**
@@ -1573,6 +1574,7 @@ declare module "awayjs-renderergl/lib/compilation/ShaderCompilerBase" {
 	     */
 	    pCompileDependencies(): void;
 	    private compileGlobalPositionCode();
+	    private compileLocalPositionCode();
 	    /**
 	     * Calculate the (possibly animated) UV coordinates.
 	     */
@@ -1650,7 +1652,7 @@ declare module "awayjs-renderergl/lib/compilation/ShaderObjectBase" {
 	    profile: string;
 	    usesAnimation: boolean;
 	    private _defaultCulling;
-	    _pInverseSceneMatrix: number[];
+	    _pInverseSceneMatrix: Array<number>;
 	    animationRegisterCache: AnimationRegisterCache;
 	    /**
 	     * The amount of used vertex constants in the vertex code. Used by the animation code generation to know from which index on registers are available.
@@ -1672,8 +1674,8 @@ declare module "awayjs-renderergl/lib/compilation/ShaderObjectBase" {
 	     *
 	     */
 	    numUsedVaryings: number;
-	    animatableAttributes: string[];
-	    animationTargetRegisters: string[];
+	    animatableAttributes: Array<string>;
+	    animationTargetRegisters: Array<string>;
 	    uvSource: string;
 	    uvTarget: string;
 	    useAlphaPremultiplied: boolean;
@@ -1751,8 +1753,8 @@ declare module "awayjs-renderergl/lib/compilation/ShaderObjectBase" {
 	     * Indicates whether there are any dependencies on the world-space position vector.
 	     */
 	    usesGlobalPosFragment: boolean;
-	    vertexConstantData: number[];
-	    fragmentConstantData: number[];
+	    vertexConstantData: Array<number>;
+	    fragmentConstantData: Array<number>;
 	    /**
 	     * The index for the common data register.
 	     */
@@ -1819,7 +1821,7 @@ declare module "awayjs-renderergl/lib/compilation/ShaderObjectBase" {
 	    /**
 	     * Initializes the unchanging constant data for this shader object.
 	     */
-	    initConstantData(registerCache: ShaderRegisterCache, animatableAttributes: string[], animationTargetRegisters: string[], uvSource: string, uvTarget: string): void;
+	    initConstantData(registerCache: ShaderRegisterCache, animatableAttributes: Array<string>, animationTargetRegisters: Array<string>, uvSource: string, uvTarget: string): void;
 	    /**
 	     * @inheritDoc
 	     */
@@ -1869,7 +1871,7 @@ declare module "awayjs-renderergl/lib/animators/AnimationSetBase" {
 	     * @param excludeAnother An additional register that's not free.
 	     * @return A temporary register that can be used.
 	     */
-	    _pFindTempReg(exclude: string[], excludeAnother?: string): string;
+	    _pFindTempReg(exclude: Array<string>, excludeAnother?: string): string;
 	    /**
 	     * Indicates whether the properties of the animation data contained within the set combined with
 	     * the vertex registers already in use on shading materials allows the animation data to utilise
@@ -1915,11 +1917,11 @@ declare module "awayjs-renderergl/lib/animators/AnimationSetBase" {
 	    /**
 	     * Returns a vector of animation state objects that make up the contents of the animation data set.
 	     */
-	    animations: AnimationNodeBase[];
+	    animations: Array<AnimationNodeBase>;
 	    /**
 	     * Returns a vector of animation state objects that make up the contents of the animation data set.
 	     */
-	    animationNames: string[];
+	    animationNames: Array<string>;
 	    /**
 	     * Check to determine whether a state is registered in the animation set under the given name.
 	     *
@@ -2014,8 +2016,8 @@ declare module "awayjs-renderergl/lib/pool/LineSegmentRenderable" {
 	 */
 	class LineSegmentRenderable extends RenderableBase {
 	    private static _lineGeometry;
-	    static pONE_VECTOR: number[];
-	    static pFRONT_VECTOR: number[];
+	    static pONE_VECTOR: Array<number>;
+	    static pFRONT_VECTOR: Array<number>;
 	    private _constants;
 	    private _calcMatrix;
 	    private _thickness;
@@ -2088,8 +2090,8 @@ declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
 	 * @class away.pool.LineSubMeshRenderable
 	 */
 	class LineSubMeshRenderable extends RenderableBase {
-	    static pONE_VECTOR: number[];
-	    static pFRONT_VECTOR: number[];
+	    static pONE_VECTOR: Array<number>;
+	    static pFRONT_VECTOR: Array<number>;
 	    private _constants;
 	    private _calcMatrix;
 	    private _thickness;
@@ -2146,9 +2148,80 @@ declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
 	export = LineSubMeshRenderable;
 	
 }
+declare module "awayjs-renderergl/lib/pool/CurveSubMeshRenderable" {
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import CurveSubMesh = require("awayjs-display/lib/base/CurveSubMesh");
+	import CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
+	/**
+	 * @class away.pool.TriangleSubMeshRenderable
+	 */
+	class CurveSubMeshRenderable extends RenderableBase {
+	    /**
+	     *
+	     */
+	    static id: string;
+	    static vertexAttributesOffset: number;
+	    /**
+	     *
+	     */
+	    subMesh: CurveSubMesh;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param subMesh
+	     * @param level
+	     * @param indexOffset
+	     */
+	    constructor(pool: RenderablePoolBase, subMesh: CurveSubMesh, stage: Stage, level?: number, indexOffset?: number);
+	    /**
+	     *
+	     * @returns {SubGeometryBase}
+	     * @protected
+	     */
+	    _pGetSubGeometry(): CurveSubGeometry;
+	    static _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
+	    static _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    static _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    private _constants;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iActivate(pass: RenderPassBase, camera: Camera): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iRender(pass: RenderPassBase, camera: Camera, viewProjection: Matrix3D): void;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param renderableOwner
+	     * @param level
+	     * @param indexOffset
+	     * @returns {away.pool.TriangleSubMeshRenderable}
+	     * @protected
+	     */
+	    _pGetOverflowRenderable(indexOffset: number): RenderableBase;
+	}
+	export = CurveSubMeshRenderable;
+	
+}
 declare module "awayjs-renderergl/lib/pool/RendererPoolBase" {
 	import LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
 	import TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
+	import CurveSubMesh = require("awayjs-display/lib/base/CurveSubMesh");
 	import IRendererPool = require("awayjs-display/lib/pool/IRendererPool");
 	import Billboard = require("awayjs-display/lib/entities/Billboard");
 	import LineSegment = require("awayjs-display/lib/entities/LineSegment");
@@ -2166,6 +2239,7 @@ declare module "awayjs-renderergl/lib/pool/RendererPoolBase" {
 	    _lineSegmentRenderablePool: RenderablePoolBase;
 	    _triangleSubMeshRenderablePool: RenderablePoolBase;
 	    _lineSubMeshRenderablePool: RenderablePoolBase;
+	    _curveSubMeshRenderablePool: RenderablePoolBase;
 	    _pStage: Stage;
 	    private _renderer;
 	    /**
@@ -2197,6 +2271,11 @@ declare module "awayjs-renderergl/lib/pool/RendererPoolBase" {
 	     * @param triangleSubMesh
 	     */
 	    applyTriangleSubMesh(triangleSubMesh: TriangleSubMesh): void;
+	    /**
+	     *
+	     * @param curveSubMesh
+	     */
+	    applyCurveSubMesh(curveSubMesh: CurveSubMesh): void;
 	    /**
 	     *
 	     * @param lineSubMesh
@@ -2414,7 +2493,7 @@ declare module "awayjs-renderergl/lib/base/RendererBase" {
 	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	     */
 	    _iRender(entityCollector: CollectorBase, target?: TextureProxyBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
-	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: TextureProxyBase, numCascades: number, scissorRects: Rectangle[], cameras: Camera[]): void;
+	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: TextureProxyBase, numCascades: number, scissorRects: Array<Rectangle>, cameras: Array<Camera>): void;
 	    pCollectRenderables(entityCollector: CollectorBase): void;
 	    /**
 	     * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
@@ -2704,7 +2783,7 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	     *
 	     * @returns {*}
 	     */
-	    filters3d: Filter3DBase[];
+	    filters3d: Array<Filter3DBase>;
 	    /**
 	     * Creates a new DefaultRenderer object.
 	     *
@@ -2788,15 +2867,15 @@ declare module "awayjs-renderergl/lib/animators/data/AnimationSubGeometry" {
 	 */
 	class AnimationSubGeometry {
 	    static SUBGEOM_ID_COUNT: number;
-	    _pVertexData: number[];
-	    _pVertexBuffer: IVertexBuffer[];
-	    _pBufferContext: IContextGL[];
-	    _pBufferDirty: boolean[];
+	    _pVertexData: Array<number>;
+	    _pVertexBuffer: Array<IVertexBuffer>;
+	    _pBufferContext: Array<IContextGL>;
+	    _pBufferDirty: Array<boolean>;
 	    private _numVertices;
 	    private _totalLenOfOneVertex;
 	    numProcessedVertices: number;
 	    previousTime: number;
-	    animationParticles: ParticleAnimationData[];
+	    animationParticles: Array<ParticleAnimationData>;
 	    /**
 	     * An id for this animation subgeometry, used to identify animation subgeometries when using animation sets.
 	     *
@@ -2808,7 +2887,7 @@ declare module "awayjs-renderergl/lib/animators/data/AnimationSubGeometry" {
 	    activateVertexBuffer(index: number, bufferOffset: number, stage: Stage, format: string): void;
 	    dispose(): void;
 	    invalidateBuffer(): void;
-	    vertexData: number[];
+	    vertexData: Array<number>;
 	    numVertices: number;
 	    totalLenOfOneVertex: number;
 	}
@@ -2883,7 +2962,7 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase" {
 	    private _priority;
 	    _pMode: number;
 	    _pDataLength: number;
-	    _pOneData: number[];
+	    _pOneData: Array<number>;
 	    _iDataOffset: number;
 	    private static GLOBAL;
 	    private static LOCAL_STATIC;
@@ -2915,7 +2994,7 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase" {
 	     * @see away.animators.ParticleAnimationSet
 	     * @see #generatePropertyOfOneParticle
 	     */
-	    oneData: number[];
+	    oneData: Array<number>;
 	    /**
 	     * Creates a new <code>ParticleNodeBase</code> object.
 	     *
@@ -3067,7 +3146,7 @@ declare module "awayjs-renderergl/lib/animators/states/ParticleStateBase" {
 	 */
 	class ParticleStateBase extends AnimationStateBase {
 	    private _particleNode;
-	    _pDynamicProperties: Vector3D[];
+	    _pDynamicProperties: Array<Vector3D>;
 	    _pDynamicPropertiesDirty: Object;
 	    _pNeedUpdateTime: boolean;
 	    constructor(animator: ParticleAnimator, particleNode: ParticleNodeBase, needUpdateTime?: boolean);
@@ -3209,7 +3288,7 @@ declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
 	 * @class away.base.ParticleGeometry
 	 */
 	class ParticleGeometry extends Geometry {
-	    particles: ParticleData[];
+	    particles: Array<ParticleData>;
 	    numParticles: number;
 	}
 	export = ParticleGeometry;
@@ -3283,7 +3362,7 @@ declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
 	    /**
 	     * Returns a vector of the particle animation nodes contained within the set.
 	     */
-	    particleNodes: ParticleNodeBase[];
+	    particleNodes: Array<ParticleNodeBase>;
 	    /**
 	     * @inheritDoc
 	     */
@@ -3442,7 +3521,7 @@ declare module "awayjs-renderergl/lib/animators/data/SkeletonJoint" {
 	    /**
 	     * The inverse bind pose matrix, as raw data, used to transform vertices to bind joint space in preparation for transformation using the joint matrix.
 	     */
-	    inverseBindPose: number[];
+	    inverseBindPose: Array<number>;
 	    /**
 	     * Creates a new <code>SkeletonJoint</code> object
 	     */
@@ -3466,7 +3545,7 @@ declare module "awayjs-renderergl/lib/animators/data/Skeleton" {
 	     * property that is an index into this list.
 	     * A child joint should always have a higher index than its parent.
 	     */
-	    joints: SkeletonJoint[];
+	    joints: Array<SkeletonJoint>;
 	    /**
 	     * The total number of joints in the skeleton.
 	     */
@@ -3524,7 +3603,7 @@ declare module "awayjs-renderergl/lib/animators/data/SkeletonPose" {
 	     *
 	     * @see away.animators.Skeleton#joints
 	     */
-	    jointPoses: JointPose[];
+	    jointPoses: Array<JointPose>;
 	    /**
 	     * The total number of joint poses in the skeleton pose.
 	     */
@@ -3630,7 +3709,7 @@ declare module "awayjs-renderergl/lib/animators/SkeletonAnimator" {
 	     *
 	     * @see #globalPose
 	     */
-	    globalMatrices: number[];
+	    globalMatrices: Array<number>;
 	    /**
 	     * returns the current skeleton pose output from the animator.
 	     *
@@ -3952,11 +4031,11 @@ declare module "awayjs-renderergl/lib/compilation/ShaderLightingObject" {
 	    /**
 	     * Indices for the light probe diffuse textures.
 	     */
-	    lightProbeDiffuseIndices: number[];
+	    lightProbeDiffuseIndices: Array<number>;
 	    /**
 	     * Indices for the light probe specular textures.
 	     */
-	    lightProbeSpecularIndices: number[];
+	    lightProbeSpecularIndices: Array<number>;
 	    /**
 	     * The index of the fragment constant containing the weights for the light probes.
 	     */
@@ -4042,10 +4121,10 @@ declare module "awayjs-renderergl/lib/compilation/ShaderLightingCompiler" {
 	class ShaderLightingCompiler extends ShaderCompilerBase {
 	    private _shaderLightingObject;
 	    private _renderLightingPass;
-	    _pointLightFragmentConstants: ShaderRegisterElement[];
-	    _pointLightVertexConstants: ShaderRegisterElement[];
-	    _dirLightFragmentConstants: ShaderRegisterElement[];
-	    _dirLightVertexConstants: ShaderRegisterElement[];
+	    _pointLightFragmentConstants: Array<ShaderRegisterElement>;
+	    _pointLightVertexConstants: Array<ShaderRegisterElement>;
+	    _dirLightFragmentConstants: Array<ShaderRegisterElement>;
+	    _dirLightVertexConstants: Array<ShaderRegisterElement>;
 	    _pNumProbeRegisters: number;
 	    /**
 	     * Creates a new ShaderCompilerBase object.
@@ -4128,8 +4207,8 @@ declare module "awayjs-renderergl/lib/pick/PickingColliderBase" {
 	    rayPosition: Vector3D;
 	    rayDirection: Vector3D;
 	    constructor(stage: Stage);
-	    _pPetCollisionNormal(indexData: number[], vertexData: number[], triangleIndex: number): Vector3D;
-	    _pGetCollisionUV(indexData: number[], uvData: number[], triangleIndex: number, v: number, w: number, u: number, uvOffset: number, uvStride: number): Point;
+	    _pPetCollisionNormal(indexData: Array<number>, vertexData: Array<number>, triangleIndex: number): Vector3D;
+	    _pGetCollisionUV(indexData: Array<number>, uvData: Array<number>, triangleIndex: number, v: number, w: number, u: number, uvOffset: number, uvStride: number): Point;
 	    /**
 	     * @inheritDoc
 	     */
@@ -4337,7 +4416,7 @@ declare module "awayjs-renderergl/lib/utils/ParticleGeometryHelper" {
 	 */
 	class ParticleGeometryHelper {
 	    static MAX_VERTEX: number;
-	    static generateGeometry(geometries: Geometry[], transforms?: ParticleGeometryTransform[]): ParticleGeometry;
+	    static generateGeometry(geometries: Array<Geometry>, transforms?: Array<ParticleGeometryTransform>): ParticleGeometry;
 	}
 	export = ParticleGeometryHelper;
 	
@@ -4348,7 +4427,7 @@ declare module "awayjs-renderergl/lib/utils/PerspectiveMatrix3D" {
 	 *
 	 */
 	class PerspectiveMatrix3D extends Matrix3D {
-	    constructor(v?: number[]);
+	    constructor(v?: Array<number>);
 	    perspectiveFieldOfViewLH(fieldOfViewY: number, aspectRatio: number, zNear: number, zFar: number): void;
 	}
 	export = PerspectiveMatrix3D;
@@ -4379,7 +4458,7 @@ declare module "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase" {
 	    _pStitchDirty: boolean;
 	    _pStitchFinalFrame: boolean;
 	    _pNumFrames: number;
-	    _pDurations: number[];
+	    _pDurations: Array<number>;
 	    _pTotalDelta: Vector3D;
 	    fixedFrameRate: boolean;
 	    /**
@@ -4397,7 +4476,7 @@ declare module "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase" {
 	    /**
 	     * Returns a vector of time values representing the duration (in milliseconds) of each animation frame in the clip.
 	     */
-	    durations: number[];
+	    durations: Array<number>;
 	    /**
 	     * Creates a new <code>AnimationClipNodeBase</code> object.
 	     */
@@ -5137,8 +5216,8 @@ declare module "awayjs-renderergl/lib/animators/states/ParticlePositionState" {
 	    /**
 	     *
 	     */
-	    getPositions(): Vector3D[];
-	    setPositions(value: Vector3D[]): void;
+	    getPositions(): Array<Vector3D>;
+	    setPositions(value: Array<Vector3D>): void;
 	    constructor(animator: ParticleAnimator, particlePositionNode: ParticlePositionNode);
 	    /**
 	     * @inheritDoc
@@ -5340,8 +5419,8 @@ declare module "awayjs-renderergl/lib/animators/states/ParticleRotationalVelocit
 	    /**
 	     *
 	     */
-	    getRotationalVelocities(): Vector3D[];
-	    setRotationalVelocities(value: Vector3D[]): void;
+	    getRotationalVelocities(): Array<Vector3D>;
+	    setRotationalVelocities(value: Array<Vector3D>): void;
 	    constructor(animator: ParticleAnimator, particleRotationNode: ParticleRotationalVelocityNode);
 	    /**
 	     * @inheritDoc
@@ -5540,7 +5619,7 @@ declare module "awayjs-renderergl/lib/animators/states/ParticleSegmentedColorSta
 	    /**
 	     * Defines the key points of color
 	     */
-	    segmentPoints: ColorSegmentPoint[];
+	    segmentPoints: Array<ColorSegmentPoint>;
 	    usesMultiplier: boolean;
 	    usesOffset: boolean;
 	    constructor(animator: ParticleAnimator, particleSegmentedColorNode: ParticleSegmentedColorNode);
@@ -5572,8 +5651,8 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode
 	    /** @private */
 	    _iNumSegmentPoint: number;
 	    /** @private */
-	    _iSegmentPoints: ColorSegmentPoint[];
-	    constructor(usesMultiplier: boolean, usesOffset: boolean, numSegmentPoint: number, startColor: ColorTransform, endColor: ColorTransform, segmentPoints: ColorSegmentPoint[]);
+	    _iSegmentPoints: Array<ColorSegmentPoint>;
+	    constructor(usesMultiplier: boolean, usesOffset: boolean, numSegmentPoint: number, startColor: ColorTransform, endColor: ColorTransform, segmentPoints: Array<ColorSegmentPoint>);
 	    /**
 	     * @inheritDoc
 	     */
@@ -5813,8 +5892,8 @@ declare module "awayjs-renderergl/lib/animators/states/ParticleVelocityState" {
 	    /**
 	     *
 	     */
-	    getVelocities(): Vector3D[];
-	    setVelocities(value: Vector3D[]): void;
+	    getVelocities(): Array<Vector3D>;
+	    setVelocities(value: Array<Vector3D>): void;
 	    constructor(animator: ParticleAnimator, particleVelocityNode: ParticleVelocityNode);
 	    setRenderState(stage: Stage, renderable: RenderableBase, animationSubGeometry: AnimationSubGeometry, animationRegisterCache: AnimationRegisterCache, camera: Camera): void;
 	}
@@ -6072,7 +6151,7 @@ declare module "awayjs-renderergl/lib/animators/nodes/SkeletonClipNode" {
 	    /**
 	     * Returns a vector of skeleton poses representing the pose of each animation frame in the clip.
 	     */
-	    frames: SkeletonPose[];
+	    frames: Array<SkeletonPose>;
 	    /**
 	     * Creates a new <code>SkeletonClipNode</code> object.
 	     */
@@ -6335,7 +6414,7 @@ declare module "awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode" {
 	 * A skeleton animation node that uses an n-dimensional array of animation node inputs to blend a lineraly interpolated output of a skeleton pose.
 	 */
 	class SkeletonNaryLERPNode extends AnimationNodeBase {
-	    _iInputs: AnimationNodeBase[];
+	    _iInputs: Array<AnimationNodeBase>;
 	    private _numInputs;
 	    numInputs: number;
 	    /**
@@ -6414,7 +6493,7 @@ declare module "awayjs-renderergl/lib/animators/nodes/VertexClipNode" {
 	    /**
 	     * Returns a vector of geometry frames representing the vertex values of each animation frame in the clip.
 	     */
-	    frames: Geometry[];
+	    frames: Array<Geometry>;
 	    /**
 	     * Creates a new <code>VertexClipNode</code> object.
 	     */
@@ -6532,7 +6611,7 @@ declare module "awayjs-renderergl/lib/tools/commands/Merge" {
 	     * @param    receiver    The Mesh to receive the merged contents of the meshes.
 	     * @param    meshes      A series of Meshes to be merged with the reciever mesh.
 	     */
-	    applyToMeshes(receiver: Mesh, meshes: Mesh[]): void;
+	    applyToMeshes(receiver: Mesh, meshes: Array<Mesh>): void;
 	    /**
 	     *  Merges 2 meshes into one. It is recommand to use apply when 2 meshes are to be merged. If more need to be merged, use either applyToMeshes or applyToContainer methods.
 	     *
