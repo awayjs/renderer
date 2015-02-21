@@ -143,7 +143,7 @@ class CurveSubMeshRenderable extends RenderableBase
       //  code += "sub "+ less + " " + less + " " + pos + ".z " + "\n";
 
         code += "mov " + out + ".w " + less + "\n";
-        console.log(code);
+
         return code;
     }
     private _constants:Array<number> = new Array<number>(0, 0, 0, 0);
