@@ -2839,6 +2839,19 @@ declare module "awayjs-renderergl/lib/animators/data/ParticleData" {
 	export = ParticleData;
 	
 }
+declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
+	import Geometry = require("awayjs-display/lib/base/Geometry");
+	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
+	/**
+	 * @class away.base.ParticleGeometry
+	 */
+	class ParticleGeometry extends Geometry {
+	    particles: Array<ParticleData>;
+	    numParticles: number;
+	}
+	export = ParticleGeometry;
+	
+}
 declare module "awayjs-renderergl/lib/animators/data/ParticleAnimationData" {
 	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
 	/**
@@ -3279,19 +3292,6 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleTimeNode" {
 	    _iGeneratePropertyOfOneParticle(param: ParticleProperties): void;
 	}
 	export = ParticleTimeNode;
-	
-}
-declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
-	import Geometry = require("awayjs-display/lib/base/Geometry");
-	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
-	/**
-	 * @class away.base.ParticleGeometry
-	 */
-	class ParticleGeometry extends Geometry {
-	    particles: Array<ParticleData>;
-	    numParticles: number;
-	}
-	export = ParticleGeometry;
 	
 }
 declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
