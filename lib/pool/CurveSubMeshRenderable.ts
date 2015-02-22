@@ -29,7 +29,7 @@ class CurveSubMeshRenderable extends RenderableBase
 	 */
 	public static id:string = "curvesubmesh";
 
-	public static vertexAttributesOffset:number = 1;
+	public static vertexAttributesOffset:number = 2;
 
 	/**
 	 *
@@ -116,7 +116,7 @@ class CurveSubMeshRenderable extends RenderableBase
      */
     public static _iGetFragmentCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
     {
-        var uv:String = "v2";//sharedRegisters.uvVarying //shaderObject.uvTarget;
+        var curve:String = "v2";//sharedRegisters.uvVarying //shaderObject.uvTarget;
         var pos:ShaderRegisterElement = sharedRegisters.localPositionVarying;
         var out:ShaderRegisterElement = sharedRegisters.shadedTarget;//registerCache.fragmentOutputRegister.toString();
 
@@ -126,9 +126,9 @@ class CurveSubMeshRenderable extends RenderableBase
         var half:String = free + ".z";//registerCache.getFreeFragmentSingleTemp().toString();
 
         var code:string = "";
-        code += "mov " + d + " " + uv + ".x\n";
+        code += "mov " + d + " " + curve + ".x\n";
         code += "mul " + d + " " + d + " " + d+"\n";
-        code += "sub " + d + " " + d + " " + uv+".y\n";
+        code += "sub " + d + " " + d + " " + curve+".y\n";
 
              // code += "mov "+ out + " " + sharedRegisters.uvVarying+"\n";
 
@@ -185,7 +185,7 @@ class CurveSubMeshRenderable extends RenderableBase
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
 
 		this._stage.activateBuffer(0, this.getVertexData(CurveSubGeometry.POSITION_DATA), this.getVertexOffset(CurveSubGeometry.POSITION_DATA), CurveSubGeometry.POSITION_FORMAT);
-        this._stage.activateBuffer(1, this.getVertexData(CurveSubGeometry.CURVE_DATA), this.getVertexOffset(CurveSubGeometry.CURVE_DATA), CurveSubGeometry.POSITION_FORMAT);
+        this._stage.activateBuffer(1, this.getVertexData(CurveSubGeometry.CURVE_DATA), this.getVertexOffset(CurveSubGeometry.CURVE_DATA), CurveSubGeometry.CURVE_FORMAT);
 
         this._stage.context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
 	}
