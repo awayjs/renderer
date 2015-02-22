@@ -305,8 +305,7 @@ class RenderPassBase extends EventDispatcher implements IRenderPassBase
 	 */
 	public _pOutputsNormals(shaderObject:ShaderObjectBase):boolean
 	{
-        //TODO - set back to false
-		return true;
+		return false;
 	}
 
 	/**

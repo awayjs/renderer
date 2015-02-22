@@ -101,7 +101,7 @@ class BasicMaterialPass extends RenderPassBase
 		}
 
         if (this.preserveAlpha) {
-            code += "mov " + sharedReg.shadedTarget + ".w, " + alphaReg + "\n";
+            code += "mul " + sharedReg.shadedTarget + ".w, " + sharedReg.shadedTarget + ".w, " + alphaReg + "\n";
             regCache.removeFragmentTempUsage(alphaReg);
         }
 
