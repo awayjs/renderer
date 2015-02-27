@@ -8,6 +8,7 @@ import Camera						= require("awayjs-display/lib/entities/Camera");
 
 import ContextGLVertexBufferFormat	= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
+import ContextWebGL					= require("awayjs-stagegl/lib/base/ContextWebGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 
@@ -117,6 +118,108 @@ class CurveSubMeshRenderable extends RenderableBase
      */
     public static _iGetFragmentCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
     {
+		var sd:boolean = (<ContextWebGL>shaderObject._stage.context).standardDerivatives;
+
+		var curve:String = "v2";
+		var curveX:String = "v2.x";//sharedRegisters.uvVarying //shaderObject.uvTarget;
+		var curveY:String = "v2.y";//sharedRegisters.uvVarying //shaderObject.uvTarget;
+		var pos:ShaderRegisterElement = sharedRegisters.localPositionVarying;
+		var out:ShaderRegisterElement = sharedRegisters.shadedTarget;//registerCache.fragmentOutputRegister.toString();
+
+		//get some free registers
+		var free:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+		registerCache.addFragmentTempUsages(free, 1);
+		var free1:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+		registerCache.addFragmentTempUsages(free1, 1);
+		var free2:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+		registerCache.addFragmentTempUsages(free2, 1);
+
+		//distance from curve
+		var d:String = free + ".x";//registerCache.getFreeFragmentConstant().toString();
+		var less:String = free + ".y";//registerCache.getFreeFragmentSingleTemp().toString();
+		var half:String = free + ".z";//registerCache.getFreeFragmentSingleTemp().toString();
+
+		var px:String = free + ".xy";
+		var pxx:String = free + ".x";
+		var pxy:String = free + ".x";
+		var py:String = free1 + ".xy";
+		var pyx:String = free1 + ".x";
+		var pyy:String = free1 + ".y";
+
+		var fx:String = free2 + ".x";
+		var fy:String = free2 + ".y";
+		var len:String = free2 + ".z";
+
+
+		var dist:String = "fc7.z";
+
+
+		var code:string = "";
+
+		//derivatives
+		code += "ddx " + px + " " + curve+"\n";
+		code += "ddy " + py + " " + curve+"\n";
+
+		code += "mul " + fx + " " + curveX + " " + pxx + "\n";
+		code += "mul " + fx + " " + fx + " " + dist + "\n";
+		code += "sub " + fx + " " + fx + " " + pxy + "\n";
+
+		code += "mul " + fy + " " + curveY + " " + pyx + "\n";
+		code += "mul " + fy + " " + fy + " " + dist + "\n";
+		code += "sub " + fy + " " + fy + " " + pyy + "\n";
+
+		//len
+		code += "mul " + fx + " " + fx + " " + fx+"\n";
+		code += "mul " + fy + " " + fy + " " + fy+"\n";
+		code += "add " + len + " " + fx + " " + fy+"\n";
+		code += "sqt " + len + " " + len+"\n";
+
+
+		//distance
+		code += "mul " + d + " " + curveX + " " + curveX+"\n";
+		code += "sub " + d + " " + d + " " + curveY+"\n";
+
+		//flip
+		code += "mul "+ d + " " + d + " " + pos + ".z " + "\n";
+		//code += "abs "+ d + " " + d + "\n";
+
+		code += "div " + d + " " + d + " " + len +"\n";
+		/*
+
+		//AA
+		code += "mul " + dx + " " + dx + " " + dx+"\n";
+		code += "mul " + dy + " " + dy + " " + dy+"\n";
+		code += "add " + t + " " + dx + " " +  dy+"\n";
+		code += "sqt " + t + " " + t+"\n";
+		*/
+
+		code += "sub "+ d + " fc7.w " + d + "\n";
+
+
+
+		//code += "add " + t + " " + t + " " +  t+"\n";
+
+	//
+
+	//	code += "add " + d + " " + d + " " + " fc7.x\n";
+
+		// code += "mov "+ out + " " + sharedRegisters.uvVarying+"\n";
+
+		// code += "mul "+ d + " " + d + " " + less + "\n";
+		//code += "sub "+ d + " " + d + " " + pos + ".z " + "\n";
+		/*
+		code += "mul "+ d + " " + d + " " + pos + ".z " + "\n";
+		code += "mov "+ half + " fc7.x\n";
+		code += "slt "+ less + " " + d + " " + half + "\n";
+		code += "mul "+ d + " " + d + " " + less + "\n";
+		code += "abs "+ d + " " + d + "\n";*/
+		//code += "ddx " + d + " " + curve + ".x\n";
+		// code += "kil " + less + "\n";
+		//  code += "sub "+ less + " " + less + " " + pos + ".z " + "\n";
+
+		code += "mov " + out + ".w " + d + "\n";
+		return code;
+		/*
         var curve:String = "v2";//sharedRegisters.uvVarying //shaderObject.uvTarget;
         var pos:ShaderRegisterElement = sharedRegisters.localPositionVarying;
         var out:ShaderRegisterElement = sharedRegisters.shadedTarget;//registerCache.fragmentOutputRegister.toString();
@@ -140,13 +243,14 @@ class CurveSubMeshRenderable extends RenderableBase
         code += "slt "+ less + " " + d + " " + half + "\n";
         code += "mul "+ d + " " + d + " " + less + "\n";
         code += "abs "+ d + " " + d + "\n";
+		code += "ddx " + d + " " + curve + ".x\n";
        // code += "kil " + less + "\n";
       //  code += "sub "+ less + " " + less + " " + pos + ".z " + "\n";
 
         code += "mov " + out + ".w " + less + "\n";
-        return code;
+        return code;*/
     }
-    private _constants:Array<number> = new Array<number>(0, 0, 0, 0);
+    private _constants:Array<number> = new Array<number>(0, 1, 2, 0.5);
     /**
      * @inheritDoc
      */
