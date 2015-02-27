@@ -4445,136 +4445,6 @@ declare module "awayjs-renderergl/lib/animators/data/ColorSegmentPoint" {
 	export = ColorSegmentPoint;
 	
 }
-declare module "awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState" {
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
-	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-	import SkeletonBinaryLERPNode = require("awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode");
-	import AnimationStateBase = require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
-	import ISkeletonAnimationState = require("awayjs-renderergl/lib/animators/states/ISkeletonAnimationState");
-	/**
-	 *
-	 */
-	class SkeletonBinaryLERPState extends AnimationStateBase implements ISkeletonAnimationState {
-	    private _blendWeight;
-	    private _skeletonAnimationNode;
-	    private _skeletonPose;
-	    private _skeletonPoseDirty;
-	    private _inputA;
-	    private _inputB;
-	    /**
-	     * Defines a fractional value between 0 and 1 representing the blending ratio between inputA (0) and inputB (1),
-	     * used to produce the skeleton pose output.
-	     *
-	     * @see inputA
-	     * @see inputB
-	     */
-	    blendWeight: number;
-	    constructor(animator: AnimatorBase, skeletonAnimationNode: SkeletonBinaryLERPNode);
-	    /**
-	     * @inheritDoc
-	     */
-	    phase(value: number): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _pUpdateTime(time: number): void;
-	    /**
-	     * Returns the current skeleton pose of the animation in the clip based on the internal playhead position.
-	     */
-	    getSkeletonPose(skeleton: Skeleton): SkeletonPose;
-	    /**
-	     * @inheritDoc
-	     */
-	    _pUpdatePositionDelta(): void;
-	    /**
-	     * Updates the output skeleton pose of the node based on the blendWeight value between input nodes.
-	     *
-	     * @param skeleton The skeleton used by the animator requesting the ouput pose.
-	     */
-	    private updateSkeletonPose(skeleton);
-	}
-	export = SkeletonBinaryLERPState;
-	
-}
-declare module "awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode" {
-	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import SkeletonBinaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
-	/**
-	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
-	 */
-	class SkeletonBinaryLERPNode extends AnimationNodeBase {
-	    /**
-	     * Defines input node A to use for the blended output.
-	     */
-	    inputA: AnimationNodeBase;
-	    /**
-	     * Defines input node B to use for the blended output.
-	     */
-	    inputB: AnimationNodeBase;
-	    /**
-	     * Creates a new <code>SkeletonBinaryLERPNode</code> object.
-	     */
-	    constructor();
-	    /**
-	     * @inheritDoc
-	     */
-	    getAnimationState(animator: AnimatorBase): SkeletonBinaryLERPState;
-	}
-	export = SkeletonBinaryLERPNode;
-	
-}
-declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState" {
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import SkeletonBinaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
-	import CrossfadeTransitionNode = require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode");
-	/**
-	 *
-	 */
-	class CrossfadeTransitionState extends SkeletonBinaryLERPState {
-	    private _crossfadeTransitionNode;
-	    private _animationStateTransitionComplete;
-	    constructor(animator: AnimatorBase, skeletonAnimationNode: CrossfadeTransitionNode);
-	    /**
-	     * @inheritDoc
-	     */
-	    _pUpdateTime(time: number): void;
-	}
-	export = CrossfadeTransitionState;
-	
-}
-declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode" {
-	import SkeletonBinaryLERPNode = require("awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode");
-	/**
-	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
-	 */
-	class CrossfadeTransitionNode extends SkeletonBinaryLERPNode {
-	    blendSpeed: number;
-	    startBlend: number;
-	    /**
-	     * Creates a new <code>CrossfadeTransitionNode</code> object.
-	     */
-	    constructor();
-	}
-	export = CrossfadeTransitionNode;
-	
-}
-declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransition" {
-	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import IAnimationTransition = require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
-	/**
-	 *
-	 */
-	class CrossfadeTransition implements IAnimationTransition {
-	    blendSpeed: number;
-	    constructor(blendSpeed: number);
-	    getAnimationNode(animator: AnimatorBase, startNode: AnimationNodeBase, endNode: AnimationNodeBase, startBlend: number): AnimationNodeBase;
-	}
-	export = CrossfadeTransition;
-	
-}
 declare module "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
@@ -6072,6 +5942,86 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode" {
 	export = ParticleVelocityNode;
 	
 }
+declare module "awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState" {
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
+	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
+	import SkeletonBinaryLERPNode = require("awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode");
+	import AnimationStateBase = require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
+	import ISkeletonAnimationState = require("awayjs-renderergl/lib/animators/states/ISkeletonAnimationState");
+	/**
+	 *
+	 */
+	class SkeletonBinaryLERPState extends AnimationStateBase implements ISkeletonAnimationState {
+	    private _blendWeight;
+	    private _skeletonAnimationNode;
+	    private _skeletonPose;
+	    private _skeletonPoseDirty;
+	    private _inputA;
+	    private _inputB;
+	    /**
+	     * Defines a fractional value between 0 and 1 representing the blending ratio between inputA (0) and inputB (1),
+	     * used to produce the skeleton pose output.
+	     *
+	     * @see inputA
+	     * @see inputB
+	     */
+	    blendWeight: number;
+	    constructor(animator: AnimatorBase, skeletonAnimationNode: SkeletonBinaryLERPNode);
+	    /**
+	     * @inheritDoc
+	     */
+	    phase(value: number): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _pUpdateTime(time: number): void;
+	    /**
+	     * Returns the current skeleton pose of the animation in the clip based on the internal playhead position.
+	     */
+	    getSkeletonPose(skeleton: Skeleton): SkeletonPose;
+	    /**
+	     * @inheritDoc
+	     */
+	    _pUpdatePositionDelta(): void;
+	    /**
+	     * Updates the output skeleton pose of the node based on the blendWeight value between input nodes.
+	     *
+	     * @param skeleton The skeleton used by the animator requesting the ouput pose.
+	     */
+	    private updateSkeletonPose(skeleton);
+	}
+	export = SkeletonBinaryLERPState;
+	
+}
+declare module "awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode" {
+	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import SkeletonBinaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
+	/**
+	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
+	 */
+	class SkeletonBinaryLERPNode extends AnimationNodeBase {
+	    /**
+	     * Defines input node A to use for the blended output.
+	     */
+	    inputA: AnimationNodeBase;
+	    /**
+	     * Defines input node B to use for the blended output.
+	     */
+	    inputB: AnimationNodeBase;
+	    /**
+	     * Creates a new <code>SkeletonBinaryLERPNode</code> object.
+	     */
+	    constructor();
+	    /**
+	     * @inheritDoc
+	     */
+	    getAnimationState(animator: AnimatorBase): SkeletonBinaryLERPState;
+	}
+	export = SkeletonBinaryLERPNode;
+	
+}
 declare module "awayjs-renderergl/lib/animators/states/AnimationClipState" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationClipNodeBase = require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
@@ -6562,6 +6512,56 @@ declare module "awayjs-renderergl/lib/animators/nodes/VertexClipNode" {
 	    _pUpdateStitch(): void;
 	}
 	export = VertexClipNode;
+	
+}
+declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState" {
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import SkeletonBinaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
+	import CrossfadeTransitionNode = require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode");
+	/**
+	 *
+	 */
+	class CrossfadeTransitionState extends SkeletonBinaryLERPState {
+	    private _crossfadeTransitionNode;
+	    private _animationStateTransitionComplete;
+	    constructor(animator: AnimatorBase, skeletonAnimationNode: CrossfadeTransitionNode);
+	    /**
+	     * @inheritDoc
+	     */
+	    _pUpdateTime(time: number): void;
+	}
+	export = CrossfadeTransitionState;
+	
+}
+declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode" {
+	import SkeletonBinaryLERPNode = require("awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode");
+	/**
+	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
+	 */
+	class CrossfadeTransitionNode extends SkeletonBinaryLERPNode {
+	    blendSpeed: number;
+	    startBlend: number;
+	    /**
+	     * Creates a new <code>CrossfadeTransitionNode</code> object.
+	     */
+	    constructor();
+	}
+	export = CrossfadeTransitionNode;
+	
+}
+declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransition" {
+	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import IAnimationTransition = require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
+	/**
+	 *
+	 */
+	class CrossfadeTransition implements IAnimationTransition {
+	    blendSpeed: number;
+	    constructor(blendSpeed: number);
+	    getAnimationNode(animator: AnimatorBase, startNode: AnimationNodeBase, endNode: AnimationNodeBase, startBlend: number): AnimationNodeBase;
+	}
+	export = CrossfadeTransition;
 	
 }
 declare module "awayjs-renderergl/lib/tools/commands/Merge" {
