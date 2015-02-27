@@ -141,7 +141,7 @@ class CurveSubMeshRenderable extends RenderableBase
 
 		var px:String = free + ".xy";
 		var pxx:String = free + ".x";
-		var pxy:String = free + ".x";
+		var pxy:String = free + ".y";
 		var py:String = free1 + ".xy";
 		var pyx:String = free1 + ".x";
 		var pyy:String = free1 + ".y";
