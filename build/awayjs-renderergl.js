@@ -13143,7 +13143,7 @@ var CurveSubMeshRenderable = (function (_super) {
         if (level === void 0) { level = 0; }
         if (indexOffset === void 0) { indexOffset = 0; }
         _super.call(this, pool, subMesh.parentMesh, subMesh, subMesh.material, stage, level, indexOffset);
-        this._constants = new Array(0, 1, 2, 0.5);
+        this._constants = new Array(0, 1, 1, 0.5);
         this.subMesh = subMesh;
     }
     /**
@@ -13192,6 +13192,69 @@ var CurveSubMeshRenderable = (function (_super) {
      * @inheritDoc
      */
     CurveSubMeshRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        var sd = shaderObject._stage.context.standardDerivatives;
+        var pos = sharedRegisters.localPositionVarying;
+        var out = sharedRegisters.shadedTarget;
+        var curve = "v2";
+        var curvex = "v2.x";
+        var curvey = "v2.y";
+        var curvez = pos + ".z";
+        //get some free registers
+        var free = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(free, 1);
+        var free1 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(free1, 1);
+        var free2 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(free2, 1);
+        //distance from curve
+        var d = free + ".x";
+        var dx = free + ".y";
+        var dy = free + ".z";
+        var t = free + ".w";
+        var d2 = free1 + ".x";
+        var fixa = free1 + ".y";
+        var fixb = free1 + ".z";
+        var _aa = "fc7.z";
+        var _1 = "fc7.y";
+        var nl = "\n";
+        var code = new Array();
+        //distance from curve
+        code.push("mul", d, curvex, curvex, nl);
+        code.push("sub", d, d, curvey, nl);
+        code.push("mul", d, d, curvez, nl); //flipper
+        code.push("kil", d, nl);
+        if (sd) {
+            //derivatives
+            code.push("ddx", dx, d, nl);
+            code.push("ddy", dy, d, nl);
+            //AA
+            code.push("mul", dx, dx, dx, nl);
+            code.push("mul", dy, dy, dy, nl);
+            code.push("add", t, dx, dy, nl);
+            code.push("sqt", t, t, nl);
+            //code.push("mul",t, t, _2);
+            code.push("div", d, d, t, nl);
+            /*LINE*/
+            code.push("mov", d2, curvey, nl);
+            code.push("ddx", dx, curvey, nl);
+            code.push("ddy", dy, curvey, nl);
+            code.push("mul", dx, dx, dx, nl);
+            code.push("mul", dy, dy, dy, nl);
+            code.push("add", t, dx, dy, nl);
+            code.push("sqt", t, t, nl);
+            //code.push("mul", t, t, _2);
+            code.push("div", d2, d2, t, nl);
+            /**/
+            code.push("sge", fixa, curvex, _1, nl);
+            code.push("slt", fixb, curvex, _1, nl);
+            code.push("mul", d2, d2, fixa, nl);
+            code.push("mul", d, d, fixb, nl);
+            code.push("add", d, d, d2, nl);
+            code.push("mov", out + ".w", d, nl);
+        }
+        return code.join(" ");
+    };
+    CurveSubMeshRenderable._iGetFragmentCodeOLD = function (shaderObject, registerCache, sharedRegisters) {
         var sd = shaderObject._stage.context.standardDerivatives;
         var curve = "v2";
         var curveX = "v2.x"; //sharedRegisters.uvVarying //shaderObject.uvTarget;
