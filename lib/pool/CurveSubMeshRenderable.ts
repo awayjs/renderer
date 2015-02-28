@@ -116,7 +116,91 @@ class CurveSubMeshRenderable extends RenderableBase
     /**
      * @inheritDoc
      */
-    public static _iGetFragmentCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	public static _iGetFragmentCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	{
+		var sd:boolean = (<ContextWebGL>shaderObject._stage.context).standardDerivatives;
+		var pos:ShaderRegisterElement = sharedRegisters.localPositionVarying;
+		var out:ShaderRegisterElement = sharedRegisters.shadedTarget;
+
+		var curve:string = "v2";
+		var curvex:string = "v2.x";
+		var curvey:string = "v2.y";
+		var curvez:string = pos + ".z";
+
+
+		//get some free registers
+		var free:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+		registerCache.addFragmentTempUsages(free, 1);
+		var free1:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+		registerCache.addFragmentTempUsages(free1, 1);
+		var free2:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+		registerCache.addFragmentTempUsages(free2, 1);
+
+		//distance from curve
+		var d:string = free + ".x";
+		var dx:string = free + ".y";
+		var dy:string = free + ".z";
+		var t:string = free + ".w";
+		var d2:string = free1 + ".x";
+		var fixa:string = free1 + ".y";
+		var fixb:string = free1 + ".z";
+
+		var _aa:string = "fc7.z";
+		var _1:string = "fc7.y";
+
+		var nl:string = "\n";
+
+		var code:Array<string> =  new Array<string>();
+
+		//distance from curve
+		code.push("mul",d, curvex, curvex, nl);
+		code.push("sub",d, d, curvey, nl);
+		code.push("mul",d, d, curvez, nl);	//flipper
+
+		code.push("kil" ,d, nl);
+
+		if(sd)
+		{
+
+			//derivatives
+			code.push("ddx", dx, d, nl);
+			code.push("ddy", dy, d, nl);
+
+			//AA
+			code.push("mul",dx, dx, dx, nl);
+			code.push("mul",dy, dy, dy, nl);
+			code.push("add",t, dx, dy, nl);
+			code.push("sqt",t, t, nl);
+
+			//code.push("mul",t, t, _2);
+			code.push("div",d, d, t, nl);
+
+
+			/*LINE*/
+			code.push("mov", d2, curvey, nl);
+			code.push("ddx", dx, curvey, nl);
+			code.push("ddy", dy, curvey, nl);
+			code.push("mul", dx, dx, dx, nl);
+			code.push("mul", dy, dy, dy, nl);
+			code.push("add", t, dx, dy, nl);
+			code.push("sqt", t, t, nl);
+			//code.push("mul", t, t, _2);
+
+			code.push("div", d2, d2, t, nl);
+			/**/
+
+			code.push("sge", fixa, curvex, _1, nl);
+			code.push("slt", fixb, curvex, _1, nl);
+			code.push("mul", d2, d2, fixa, nl);
+			code.push("mul", d, d, fixb, nl);
+
+			code.push("add", d, d, d2, nl);
+			code.push("mov", out+".w", d, nl);
+		}
+		return code.join(" ");
+	}
+
+    public static _iGetFragmentCodeOLD(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
     {
 		var sd:boolean = (<ContextWebGL>shaderObject._stage.context).standardDerivatives;
 
@@ -250,7 +334,7 @@ class CurveSubMeshRenderable extends RenderableBase
         code += "mov " + out + ".w " + less + "\n";
         return code;*/
     }
-    private _constants:Array<number> = new Array<number>(0, 1, 2, 0.5);
+    private _constants:Array<number> = new Array<number>(0, 1, 1, 0.5);
     /**
      * @inheritDoc
      */
