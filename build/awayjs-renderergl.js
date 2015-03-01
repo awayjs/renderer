@@ -13232,7 +13232,7 @@ var CurveSubMeshRenderable = (function (_super) {
             code.push("mul", dy, dy, dy, nl);
             code.push("add", t, dx, dy, nl);
             code.push("sqt", t, t, nl);
-            //code.push("mul",t, t, _2);
+            code.push("mul", t, t, _aa, nl);
             code.push("div", d, d, t, nl);
             /*LINE*/
             code.push("mov", d2, curvey, nl);
@@ -13242,124 +13242,20 @@ var CurveSubMeshRenderable = (function (_super) {
             code.push("mul", dy, dy, dy, nl);
             code.push("add", t, dx, dy, nl);
             code.push("sqt", t, t, nl);
-            //code.push("mul", t, t, _2);
+            code.push("mul", t, t, _aa, nl);
             code.push("div", d2, d2, t, nl);
             /**/
-            code.push("sge", fixa, curvex, _1, nl);
+            //code.push("sge", fixa, curvex, _1, nl);
             code.push("slt", fixb, curvex, _1, nl);
+            code.push("sub", fixa, _1, fixb, nl);
+            //code.push("sub", fixb, _1, fixa, nl);
             code.push("mul", d2, d2, fixa, nl);
             code.push("mul", d, d, fixb, nl);
             code.push("add", d, d, d2, nl);
+            code.push("abs", d, d, nl);
             code.push("mov", out + ".w", d, nl);
         }
         return code.join(" ");
-    };
-    CurveSubMeshRenderable._iGetFragmentCodeOLD = function (shaderObject, registerCache, sharedRegisters) {
-        var sd = shaderObject._stage.context.standardDerivatives;
-        var curve = "v2";
-        var curveX = "v2.x"; //sharedRegisters.uvVarying //shaderObject.uvTarget;
-        var curveY = "v2.y"; //sharedRegisters.uvVarying //shaderObject.uvTarget;
-        var pos = sharedRegisters.localPositionVarying;
-        var out = sharedRegisters.shadedTarget; //registerCache.fragmentOutputRegister.toString();
-        //get some free registers
-        var free = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(free, 1);
-        var free1 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(free1, 1);
-        var free2 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(free2, 1);
-        //distance from curve
-        var d = free + ".x"; //registerCache.getFreeFragmentConstant().toString();
-        var less = free + ".y"; //registerCache.getFreeFragmentSingleTemp().toString();
-        var half = free + ".z"; //registerCache.getFreeFragmentSingleTemp().toString();
-        var px = free + ".xy";
-        var pxx = free + ".x";
-        var pxy = free + ".y";
-        var py = free1 + ".xy";
-        var pyx = free1 + ".x";
-        var pyy = free1 + ".y";
-        var fx = free2 + ".x";
-        var fy = free2 + ".y";
-        var len = free2 + ".z";
-        var dist = "fc7.z";
-        var code = "";
-        //derivatives
-        code += "ddx " + px + " " + curve + "\n";
-        code += "ddy " + py + " " + curve + "\n";
-        code += "mul " + fx + " " + curveX + " " + pxx + "\n";
-        code += "mul " + fx + " " + fx + " " + dist + "\n";
-        code += "sub " + fx + " " + fx + " " + pxy + "\n";
-        code += "mul " + fy + " " + curveY + " " + pyx + "\n";
-        code += "mul " + fy + " " + fy + " " + dist + "\n";
-        code += "sub " + fy + " " + fy + " " + pyy + "\n";
-        //len
-        code += "mul " + fx + " " + fx + " " + fx + "\n";
-        code += "mul " + fy + " " + fy + " " + fy + "\n";
-        code += "add " + len + " " + fx + " " + fy + "\n";
-        code += "sqt " + len + " " + len + "\n";
-        //distance
-        code += "mul " + d + " " + curveX + " " + curveX + "\n";
-        code += "sub " + d + " " + d + " " + curveY + "\n";
-        //flip
-        code += "mul " + d + " " + d + " " + pos + ".z " + "\n";
-        //code += "abs "+ d + " " + d + "\n";
-        code += "div " + d + " " + d + " " + len + "\n";
-        /*
-
-        //AA
-        code += "mul " + dx + " " + dx + " " + dx+"\n";
-        code += "mul " + dy + " " + dy + " " + dy+"\n";
-        code += "add " + t + " " + dx + " " +  dy+"\n";
-        code += "sqt " + t + " " + t+"\n";
-        */
-        code += "sub " + d + " fc7.w " + d + "\n";
-        //code += "add " + t + " " + t + " " +  t+"\n";
-        //
-        //	code += "add " + d + " " + d + " " + " fc7.x\n";
-        // code += "mov "+ out + " " + sharedRegisters.uvVarying+"\n";
-        // code += "mul "+ d + " " + d + " " + less + "\n";
-        //code += "sub "+ d + " " + d + " " + pos + ".z " + "\n";
-        /*
-        code += "mul "+ d + " " + d + " " + pos + ".z " + "\n";
-        code += "mov "+ half + " fc7.x\n";
-        code += "slt "+ less + " " + d + " " + half + "\n";
-        code += "mul "+ d + " " + d + " " + less + "\n";
-        code += "abs "+ d + " " + d + "\n";*/
-        //code += "ddx " + d + " " + curve + ".x\n";
-        // code += "kil " + less + "\n";
-        //  code += "sub "+ less + " " + less + " " + pos + ".z " + "\n";
-        code += "mov " + out + ".w " + d + "\n";
-        return code;
-        /*
-        var curve:String = "v2";//sharedRegisters.uvVarying //shaderObject.uvTarget;
-        var pos:ShaderRegisterElement = sharedRegisters.localPositionVarying;
-        var out:ShaderRegisterElement = sharedRegisters.shadedTarget;//registerCache.fragmentOutputRegister.toString();
-
-        var free:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
-        var d:String = free + ".x";//registerCache.getFreeFragmentConstant().toString();
-        var less:String = free + ".y";//registerCache.getFreeFragmentSingleTemp().toString();
-        var half:String = free + ".z";//registerCache.getFreeFragmentSingleTemp().toString();
-
-        var code:string = "";
-        code += "mov " + d + " " + curve + ".x\n";
-        code += "mul " + d + " " + d + " " + d+"\n";
-        code += "sub " + d + " " + d + " " + curve+".y\n";
-
-             // code += "mov "+ out + " " + sharedRegisters.uvVarying+"\n";
-
-       // code += "mul "+ d + " " + d + " " + less + "\n";
-        //code += "sub "+ d + " " + d + " " + pos + ".z " + "\n";
-        code += "mul "+ d + " " + d + " " + pos + ".z " + "\n";
-        code += "mov "+ half + " fc7.x\n";
-        code += "slt "+ less + " " + d + " " + half + "\n";
-        code += "mul "+ d + " " + d + " " + less + "\n";
-        code += "abs "+ d + " " + d + "\n";
-        code += "ddx " + d + " " + curve + ".x\n";
-       // code += "kil " + less + "\n";
-      //  code += "sub "+ less + " " + less + " " + pos + ".z " + "\n";
-
-        code += "mov " + out + ".w " + less + "\n";
-        return code;*/
     };
     /**
      * @inheritDoc
