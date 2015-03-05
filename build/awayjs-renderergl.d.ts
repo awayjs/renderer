@@ -2852,62 +2852,6 @@ declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
 	export = ParticleGeometry;
 	
 }
-declare module "awayjs-renderergl/lib/events/AnimationStateEvent" {
-	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-	import Event = require("awayjs-core/lib/events/Event");
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import IAnimationState = require("awayjs-renderergl/lib/animators/states/IAnimationState");
-	/**
-	 * Dispatched to notify changes in an animation state's state.
-	 */
-	class AnimationStateEvent extends Event {
-	    /**
-	     * Dispatched when a non-looping clip node inside an animation state reaches the end of its timeline.
-	     */
-	    static PLAYBACK_COMPLETE: string;
-	    static TRANSITION_COMPLETE: string;
-	    private _animator;
-	    private _animationState;
-	    private _animationNode;
-	    /**
-	     * Create a new <code>AnimatonStateEvent</code>
-	     *
-	     * @param type The event type.
-	     * @param animator The animation state object that is the subject of this event.
-	     * @param animationNode The animation node inside the animation state from which the event originated.
-	     */
-	    constructor(type: string, animator: AnimatorBase, animationState: IAnimationState, animationNode: AnimationNodeBase);
-	    /**
-	     * The animator object that is the subject of this event.
-	     */
-	    animator: AnimatorBase;
-	    /**
-	     * The animation state object that is the subject of this event.
-	     */
-	    animationState: IAnimationState;
-	    /**
-	     * The animation node inside the animation state from which the event originated.
-	     */
-	    animationNode: AnimationNodeBase;
-	    /**
-	     * Clones the event.
-	     *
-	     * @return An exact duplicate of the current object.
-	     */
-	    clone(): Event;
-	}
-	export = AnimationStateEvent;
-	
-}
-declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
-	import Event = require("awayjs-core/lib/events/Event");
-	class ShadingMethodEvent extends Event {
-	    static SHADER_INVALIDATED: string;
-	    constructor(type: string);
-	}
-	export = ShadingMethodEvent;
-	
-}
 declare module "awayjs-renderergl/lib/passes/IRenderLightingPass" {
 	import LightPickerBase = require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
 	import ShaderLightingObject = require("awayjs-renderergl/lib/compilation/ShaderLightingObject");
@@ -3109,6 +3053,62 @@ declare module "awayjs-renderergl/lib/compilation/ShaderLightingCompiler" {
 	    pInitRegisterIndices(): void;
 	}
 	export = ShaderLightingCompiler;
+	
+}
+declare module "awayjs-renderergl/lib/events/AnimationStateEvent" {
+	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+	import Event = require("awayjs-core/lib/events/Event");
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import IAnimationState = require("awayjs-renderergl/lib/animators/states/IAnimationState");
+	/**
+	 * Dispatched to notify changes in an animation state's state.
+	 */
+	class AnimationStateEvent extends Event {
+	    /**
+	     * Dispatched when a non-looping clip node inside an animation state reaches the end of its timeline.
+	     */
+	    static PLAYBACK_COMPLETE: string;
+	    static TRANSITION_COMPLETE: string;
+	    private _animator;
+	    private _animationState;
+	    private _animationNode;
+	    /**
+	     * Create a new <code>AnimatonStateEvent</code>
+	     *
+	     * @param type The event type.
+	     * @param animator The animation state object that is the subject of this event.
+	     * @param animationNode The animation node inside the animation state from which the event originated.
+	     */
+	    constructor(type: string, animator: AnimatorBase, animationState: IAnimationState, animationNode: AnimationNodeBase);
+	    /**
+	     * The animator object that is the subject of this event.
+	     */
+	    animator: AnimatorBase;
+	    /**
+	     * The animation state object that is the subject of this event.
+	     */
+	    animationState: IAnimationState;
+	    /**
+	     * The animation node inside the animation state from which the event originated.
+	     */
+	    animationNode: AnimationNodeBase;
+	    /**
+	     * Clones the event.
+	     *
+	     * @return An exact duplicate of the current object.
+	     */
+	    clone(): Event;
+	}
+	export = AnimationStateEvent;
+	
+}
+declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
+	import Event = require("awayjs-core/lib/events/Event");
+	class ShadingMethodEvent extends Event {
+	    static SHADER_INVALIDATED: string;
+	    constructor(type: string);
+	}
+	export = ShadingMethodEvent;
 	
 }
 declare module "awayjs-renderergl/lib/managers/DefaultMaterialManager" {
@@ -4433,6 +4433,82 @@ declare module "awayjs-renderergl/lib/animators/VertexAnimator" {
 	export = VertexAnimator;
 	
 }
+declare module "awayjs-renderergl/lib/tools/commands/Merge" {
+	import DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
+	import Mesh = require("awayjs-display/lib/entities/Mesh");
+	/**
+	 *  Class Merge merges two or more static meshes into one.<code>Merge</code>
+	 */
+	class Merge {
+	    private _objectSpace;
+	    private _keepMaterial;
+	    private _disposeSources;
+	    private _geomVOs;
+	    private _toDispose;
+	    /**
+	     * @param    keepMaterial    [optional]    Determines if the merged object uses the recevier mesh material information or keeps its source material(s). Defaults to false.
+	     * If false and receiver object has multiple materials, the last material found in receiver submeshes is applied to the merged submesh(es).
+	     * @param    disposeSources  [optional]    Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
+	     * If true, only receiver geometry and resulting mesh are kept in  memory.
+	     * @param    objectSpace     [optional]    Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+	     */
+	    constructor(keepMaterial?: boolean, disposeSources?: boolean, objectSpace?: boolean);
+	    /**
+	     * Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
+	     */
+	    disposeSources: boolean;
+	    /**
+	     * Determines if the material source(s) used for the merging are disposed. Defaults to false.
+	     */
+	    keepMaterial: boolean;
+	    /**
+	     * Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+	     */
+	    objectSpace: boolean;
+	    /**
+	     * Merges all the children of a container into a single Mesh. If no Mesh object is found, method returns the receiver without modification.
+	     *
+	     * @param    receiver           The Mesh to receive the merged contents of the container.
+	     * @param    objectContainer    The DisplayObjectContainer holding the meshes to be mergd.
+	     *
+	     * @return The merged Mesh instance.
+	     */
+	    applyToContainer(receiver: Mesh, objectContainer: DisplayObjectContainer): void;
+	    /**
+	     * Merges all the meshes found in the Array&lt;Mesh&gt; into a single Mesh.
+	     *
+	     * @param    receiver    The Mesh to receive the merged contents of the meshes.
+	     * @param    meshes      A series of Meshes to be merged with the reciever mesh.
+	     */
+	    applyToMeshes(receiver: Mesh, meshes: Array<Mesh>): void;
+	    /**
+	     *  Merges 2 meshes into one. It is recommand to use apply when 2 meshes are to be merged. If more need to be merged, use either applyToMeshes or applyToContainer methods.
+	     *
+	     * @param    receiver    The Mesh to receive the merged contents of both meshes.
+	     * @param    mesh        The Mesh to be merged with the receiver mesh
+	     */
+	    apply(receiver: Mesh, mesh: Mesh): void;
+	    private reset();
+	    private merge(destMesh, dispose);
+	    private collect(mesh, dispose);
+	    private getSubGeomData(material);
+	    private parseContainer(receiver, object);
+	}
+	export = Merge;
+	
+}
+declare module "awayjs-renderergl/lib/animators/data/ColorSegmentPoint" {
+	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
+	class ColorSegmentPoint {
+	    private _color;
+	    private _life;
+	    constructor(life: number, color: ColorTransform);
+	    color: ColorTransform;
+	    life: number;
+	}
+	export = ColorSegmentPoint;
+	
+}
 declare module "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
@@ -5562,18 +5638,6 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleScaleNode" {
 	export = ParticleScaleNode;
 	
 }
-declare module "awayjs-renderergl/lib/animators/data/ColorSegmentPoint" {
-	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
-	class ColorSegmentPoint {
-	    private _color;
-	    private _life;
-	    constructor(life: number, color: ColorTransform);
-	    color: ColorTransform;
-	    life: number;
-	}
-	export = ColorSegmentPoint;
-	
-}
 declare module "awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState" {
 	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -6562,69 +6626,5 @@ declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransition"
 	    getAnimationNode(animator: AnimatorBase, startNode: AnimationNodeBase, endNode: AnimationNodeBase, startBlend: number): AnimationNodeBase;
 	}
 	export = CrossfadeTransition;
-	
-}
-declare module "awayjs-renderergl/lib/tools/commands/Merge" {
-	import DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-	import Mesh = require("awayjs-display/lib/entities/Mesh");
-	/**
-	 *  Class Merge merges two or more static meshes into one.<code>Merge</code>
-	 */
-	class Merge {
-	    private _objectSpace;
-	    private _keepMaterial;
-	    private _disposeSources;
-	    private _geomVOs;
-	    private _toDispose;
-	    /**
-	     * @param    keepMaterial    [optional]    Determines if the merged object uses the recevier mesh material information or keeps its source material(s). Defaults to false.
-	     * If false and receiver object has multiple materials, the last material found in receiver submeshes is applied to the merged submesh(es).
-	     * @param    disposeSources  [optional]    Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
-	     * If true, only receiver geometry and resulting mesh are kept in  memory.
-	     * @param    objectSpace     [optional]    Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
-	     */
-	    constructor(keepMaterial?: boolean, disposeSources?: boolean, objectSpace?: boolean);
-	    /**
-	     * Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
-	     */
-	    disposeSources: boolean;
-	    /**
-	     * Determines if the material source(s) used for the merging are disposed. Defaults to false.
-	     */
-	    keepMaterial: boolean;
-	    /**
-	     * Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
-	     */
-	    objectSpace: boolean;
-	    /**
-	     * Merges all the children of a container into a single Mesh. If no Mesh object is found, method returns the receiver without modification.
-	     *
-	     * @param    receiver           The Mesh to receive the merged contents of the container.
-	     * @param    objectContainer    The DisplayObjectContainer holding the meshes to be mergd.
-	     *
-	     * @return The merged Mesh instance.
-	     */
-	    applyToContainer(receiver: Mesh, objectContainer: DisplayObjectContainer): void;
-	    /**
-	     * Merges all the meshes found in the Array&lt;Mesh&gt; into a single Mesh.
-	     *
-	     * @param    receiver    The Mesh to receive the merged contents of the meshes.
-	     * @param    meshes      A series of Meshes to be merged with the reciever mesh.
-	     */
-	    applyToMeshes(receiver: Mesh, meshes: Array<Mesh>): void;
-	    /**
-	     *  Merges 2 meshes into one. It is recommand to use apply when 2 meshes are to be merged. If more need to be merged, use either applyToMeshes or applyToContainer methods.
-	     *
-	     * @param    receiver    The Mesh to receive the merged contents of both meshes.
-	     * @param    mesh        The Mesh to be merged with the receiver mesh
-	     */
-	    apply(receiver: Mesh, mesh: Mesh): void;
-	    private reset();
-	    private merge(destMesh, dispose);
-	    private collect(mesh, dispose);
-	    private getSubGeomData(material);
-	    private parseContainer(receiver, object);
-	}
-	export = Merge;
 	
 }
