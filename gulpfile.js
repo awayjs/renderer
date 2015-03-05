@@ -15,6 +15,9 @@ var livereload = require('gulp-livereload');
 
 var typescript = require('gulp-typescript');
 
+var shell = require('gulp-shell');
+var git = require('gulp-git');
+
 gulp.task('compile', function() {
     var tsProject = typescript.createProject({
         declarationFiles: true,
@@ -152,3 +155,65 @@ function bundleShare(b) {
 function unixStylePath(filePath) {
     return filePath.split(path.sep).join('/');
 }
+
+gulp.task('commit', ['package-min'], function(callback){
+
+    git.status({args:'--porcelain'}, function(err, stdout) {
+        var buildModified = false;
+        var packageModified = false;
+
+        if (err)
+            throw err;
+
+        stdout = stdout.split('\n');
+        stdout.forEach(function (line) {
+            if (line.indexOf('build/') != -1)
+                buildModified = true;
+            else if (line.indexOf(' M ') != -1)
+                packageModified = true;
+        });
+
+        if (packageModified) {
+            console.log('un-commited changes detected in package');
+            console.log('Please git commit all changes outside of build before continuing');
+        } else {
+            if (buildModified) {
+                gulp.src('./build/*')
+                    .pipe(git.commit('update build files'))
+                    .on('error', function(err) {
+                        throw err;
+                    })
+                    .on('end', callback);
+            } else {
+                callback();
+            }
+        }
+    });
+});
+
+gulp.task('version', ['commit'], function(callback){
+    gulp.src('')
+        .pipe(shell([
+            'npm version patch'
+        ])).on('error', function(err) {
+            throw err;
+        }).on('end', callback);
+});
+
+gulp.task('push', ['version'], function(callback){
+    gulp.src('')
+        .pipe(shell([
+            'git push origin dev --tags'
+        ])).on('error', function(err) {
+            throw err;
+        }).on('end', callback);
+});
+
+gulp.task('publish', ['push'], function(callback){
+    gulp.src('')
+        .pipe(shell([
+            'npm publish'
+        ])).on('error', function(err) {
+            throw err;
+        }).on('end', callback);
+});
