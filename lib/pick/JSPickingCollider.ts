@@ -1,6 +1,6 @@
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
-import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
+import TriangleSubGeometry				= require("awayjs-core/lib/data/TriangleSubGeometry");
 import PickingCollisionVO				= require("awayjs-display/lib/pick/PickingCollisionVO");
 import IPickingCollider					= require("awayjs-display/lib/pick/IPickingCollider");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");

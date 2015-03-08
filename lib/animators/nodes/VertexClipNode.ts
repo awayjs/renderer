@@ -1,6 +1,6 @@
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
-import Geometry							= require("awayjs-display/lib/base/Geometry");
+import Geometry							= require("awayjs-core/lib/data/Geometry");
 
 import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 

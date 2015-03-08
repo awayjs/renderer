@@ -1,8 +1,8 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 
-import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
-import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
+import SubGeometryBase				= require("awayjs-core/lib/data/SubGeometryBase");
+import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import Camera						= require("awayjs-display/lib/entities/Camera");

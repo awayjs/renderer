@@ -1,4 +1,4 @@
-import Geometry							= require("awayjs-display/lib/base/Geometry");
+import Geometry							= require("awayjs-core/lib/data/Geometry");
 
 import ParticleData						= require("awayjs-renderergl/lib/animators/data/ParticleData");
 

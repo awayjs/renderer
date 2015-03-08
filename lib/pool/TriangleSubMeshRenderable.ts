@@ -3,7 +3,7 @@ import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import TriangleSubMesh				= require("awayjs-display/lib/base/TriangleSubMesh");
-import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
+import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
 import ContextGLVertexBufferFormat	= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");

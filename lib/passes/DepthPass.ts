@@ -1,10 +1,10 @@
-import BlendMode					= require("awayjs-core/lib/base/BlendMode");
+import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 
-import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
+import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");

@@ -1,4 +1,4 @@
-import BitmapData					= require("awayjs-core/lib/base/BitmapData");
+import BitmapData					= require("awayjs-core/lib/data/BitmapData");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Plane3D						= require("awayjs-core/lib/geom/Plane3D");
 import Point						= require("awayjs-core/lib/geom/Point");
@@ -21,7 +21,7 @@ import Camera						= require("awayjs-display/lib/entities/Camera");
 import IEntity						= require("awayjs-display/lib/entities/IEntity");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import RendererEvent				= require("awayjs-display/lib/events/RendererEvent");
-import StageEvent					= require("awayjs-display/lib/events/StageEvent");
+import StageEvent					= require("awayjs-stagegl/lib/events/StageEvent");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
 import CollectorBase				= require("awayjs-display/lib/traverse/CollectorBase");

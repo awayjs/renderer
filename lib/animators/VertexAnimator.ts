@@ -1,6 +1,7 @@
-import Geometry							= require("awayjs-display/lib/base/Geometry");
-import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
-import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
+import Geometry							= require("awayjs-core/lib/data/Geometry");
+import SubGeometryBase					= require("awayjs-core/lib/data/SubGeometryBase");
+import TriangleSubGeometry				= require("awayjs-core/lib/data/TriangleSubGeometry");
+
 import TriangleSubMesh					= require("awayjs-display/lib/base/TriangleSubMesh");
 import Camera							= require("awayjs-display/lib/entities/Camera");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");

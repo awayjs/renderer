@@ -1,4 +1,4 @@
-import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
+import TriangleSubGeometry				= require("awayjs-core/lib/data/TriangleSubGeometry");
 
 class ParticleData
 {

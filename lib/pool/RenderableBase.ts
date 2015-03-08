@@ -3,13 +3,13 @@ import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodErr
 
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
-import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
-import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
+import SubGeometryBase				= require("awayjs-core/lib/data/SubGeometryBase");
+import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
 import IRenderable					= require("awayjs-display/lib/pool/IRenderable");
 import IEntity						= require("awayjs-display/lib/entities/IEntity");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import RenderableOwnerEvent			= require("awayjs-display/lib/events/RenderableOwnerEvent");
-import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
+import SubGeometryEvent				= require("awayjs-core/lib/events/SubGeometryEvent");
 import IRenderer					= require("awayjs-display/lib/render/IRenderer");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 
