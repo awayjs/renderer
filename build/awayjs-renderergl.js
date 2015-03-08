@@ -1546,8 +1546,8 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
-var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var SubGeometryEvent = require("awayjs-core/lib/events/SubGeometryEvent");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 var JointPose = require("awayjs-renderergl/lib/animators/data/JointPose");
@@ -2073,7 +2073,7 @@ var SkeletonAnimator = (function (_super) {
 module.exports = SkeletonAnimator;
 
 
-},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -2245,7 +2245,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var VertexDataPool = require("awayjs-stagegl/lib/pool/VertexDataPool");
 var AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -2383,7 +2383,7 @@ var VertexAnimator = (function (_super) {
 module.exports = VertexAnimator;
 
 
-},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/pool/VertexDataPool":undefined}],"awayjs-renderergl/lib/animators/data/AnimationRegisterCache":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/pool/VertexDataPool":undefined}],"awayjs-renderergl/lib/animators/data/AnimationRegisterCache":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8509,7 +8509,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Geometry = require("awayjs-display/lib/base/Geometry");
+var Geometry = require("awayjs-core/lib/data/Geometry");
 /**
  * @class away.base.ParticleGeometry
  */
@@ -8523,7 +8523,7 @@ var ParticleGeometry = (function (_super) {
 module.exports = ParticleGeometry;
 
 
-},{"awayjs-display/lib/base/Geometry":undefined}],"awayjs-renderergl/lib/base/RendererBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/Geometry":undefined}],"awayjs-renderergl/lib/base/RendererBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8537,7 +8537,7 @@ var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
 var RenderableMergeSort = require("awayjs-display/lib/sort/RenderableMergeSort");
 var RendererEvent = require("awayjs-display/lib/events/RendererEvent");
-var StageEvent = require("awayjs-display/lib/events/StageEvent");
+var StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
 var EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
 var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
 var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
@@ -9201,7 +9201,7 @@ var RendererBase = (function (_super) {
 module.exports = RendererBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/events/StageEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/sort/RenderableMergeSort":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-renderergl/lib/pool/RendererPoolBase":"awayjs-renderergl/lib/pool/RendererPoolBase","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/compilation/DepthRenderObject":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/sort/RenderableMergeSort":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-renderergl/lib/pool/RendererPoolBase":"awayjs-renderergl/lib/pool/RendererPoolBase","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/compilation/DepthRenderObject":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9429,7 +9429,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-core/lib/base/BlendMode");
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
 var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 var BasicMaterialPass = require("awayjs-renderergl/lib/passes/BasicMaterialPass");
 /**
@@ -9462,7 +9462,7 @@ var RenderBasicMaterialObject = (function (_super) {
 module.exports = RenderBasicMaterialObject;
 
 
-},{"awayjs-core/lib/base/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/BasicMaterialPass":"awayjs-renderergl/lib/passes/BasicMaterialPass"}],"awayjs-renderergl/lib/compilation/RenderObjectBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/BasicMaterialPass":"awayjs-renderergl/lib/passes/BasicMaterialPass"}],"awayjs-renderergl/lib/compilation/RenderObjectBase":[function(require,module,exports){
 var Event = require("awayjs-core/lib/events/Event");
 var AssetType = require("awayjs-core/lib/library/AssetType");
 /**
@@ -10475,8 +10475,8 @@ module.exports = ShaderLightingObject;
 
 
 },{"awayjs-display/lib/materials/LightSources":undefined,"awayjs-renderergl/lib/compilation/ShaderLightingCompiler":"awayjs-renderergl/lib/compilation/ShaderLightingCompiler","awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-stagegl/lib/base/ContextGLProfile":undefined}],"awayjs-renderergl/lib/compilation/ShaderObjectBase":[function(require,module,exports){
-var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLTriangleFace = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
 var ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 /**
@@ -10734,7 +10734,7 @@ var ShaderObjectBase = (function () {
 module.exports = ShaderObjectBase;
 
 
-},{"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/compilation/ShaderCompilerBase":"awayjs-renderergl/lib/compilation/ShaderCompilerBase","awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/compilation/ShaderRegisterCache":[function(require,module,exports){
+},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/compilation/ShaderCompilerBase":"awayjs-renderergl/lib/compilation/ShaderCompilerBase","awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/compilation/ShaderRegisterCache":[function(require,module,exports){
 var RegisterPool = require("awayjs-renderergl/lib/compilation/RegisterPool");
 var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 /**
@@ -11082,7 +11082,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-core/lib/base/BlendMode");
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
 var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 var SkyboxPass = require("awayjs-renderergl/lib/passes/SkyboxPass");
 /**
@@ -11113,7 +11113,7 @@ var SkyboxRenderObject = (function (_super) {
 module.exports = SkyboxRenderObject;
 
 
-},{"awayjs-core/lib/base/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/SkyboxPass":"awayjs-renderergl/lib/passes/SkyboxPass"}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
+},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/SkyboxPass":"awayjs-renderergl/lib/passes/SkyboxPass"}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11476,7 +11476,7 @@ module.exports = Filter3DTaskBase;
 
 
 },{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/managers/DefaultMaterialManager":[function(require,module,exports){
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
 var AssetType = require("awayjs-core/lib/library/AssetType");
 var BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
 var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
@@ -11537,7 +11537,7 @@ var DefaultMaterialManager = (function () {
 module.exports = DefaultMaterialManager;
 
 
-},{"awayjs-core/lib/base/BitmapData":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/textures/BitmapTexture":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/textures/BitmapTexture":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12047,7 +12047,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-core/lib/base/BlendMode");
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
 var ArgumentError = require("awayjs-core/lib/errors/ArgumentError");
 var Event = require("awayjs-core/lib/events/Event");
 var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
@@ -12297,7 +12297,7 @@ var RenderPassBase = (function (_super) {
 module.exports = RenderPassBase;
 
 
-},{"awayjs-core/lib/base/BlendMode":undefined,"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/passes/SkyboxPass":[function(require,module,exports){
+},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/passes/SkyboxPass":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12353,7 +12353,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var PickingColliderBase = require("awayjs-renderergl/lib/pick/PickingColliderBase");
 /**
  * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
@@ -12483,7 +12483,7 @@ var JSPickingCollider = (function (_super) {
 module.exports = JSPickingCollider;
 
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pick/PickingColliderBase":"awayjs-renderergl/lib/pick/PickingColliderBase"}],"awayjs-renderergl/lib/pick/PickingColliderBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/pick/PickingColliderBase":"awayjs-renderergl/lib/pick/PickingColliderBase"}],"awayjs-renderergl/lib/pick/PickingColliderBase":[function(require,module,exports){
 var Point = require("awayjs-core/lib/geom/Point");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
@@ -12589,12 +12589,12 @@ module.exports = PickingColliderBase;
 
 },{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/pool/BillboardRenderable":"awayjs-renderergl/lib/pool/BillboardRenderable","awayjs-renderergl/lib/pool/RenderablePoolBase":"awayjs-renderergl/lib/pool/RenderablePoolBase","awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable"}],"awayjs-renderergl/lib/pick/ShaderPicker":[function(require,module,exports){
 var Debug = require("awayjs-core/lib/utils/Debug");
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Point = require("awayjs-core/lib/geom/Point");
 var Rectangle = require("awayjs-core/lib/geom/Rectangle");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
 var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLClearMask = require("awayjs-stagegl/lib/base/ContextGLClearMask");
@@ -13003,7 +13003,7 @@ var ShaderPicker = (function () {
 module.exports = ShaderPicker;
 
 
-},{"awayjs-core/lib/base/BitmapData":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/pool/BillboardRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/pool/BillboardRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13011,7 +13011,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -13115,7 +13115,7 @@ var BillboardRenderable = (function (_super) {
 module.exports = BillboardRenderable;
 
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/CurveSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/CurveSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13123,7 +13123,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
+var CurveSubGeometry = require("awayjs-core/lib/data/CurveSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -13311,7 +13311,7 @@ var CurveSubMeshRenderable = (function (_super) {
 module.exports = CurveSubMeshRenderable;
 
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/CurveSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/IRenderableClass":[function(require,module,exports){
+},{"awayjs-core/lib/data/CurveSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/IRenderableClass":[function(require,module,exports){
 
 
 
@@ -13327,7 +13327,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
+var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -13455,7 +13455,7 @@ var LineSegmentRenderable = (function (_super) {
 module.exports = LineSegmentRenderable;
 
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/LineSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/LineSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13463,7 +13463,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
+var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -13568,12 +13568,12 @@ var LineSubMeshRenderable = (function (_super) {
 module.exports = LineSubMeshRenderable;
 
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/RenderableBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/RenderableBase":[function(require,module,exports){
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var RenderableOwnerEvent = require("awayjs-display/lib/events/RenderableOwnerEvent");
-var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
+var SubGeometryEvent = require("awayjs-core/lib/events/SubGeometryEvent");
 var IndexDataPool = require("awayjs-stagegl/lib/pool/IndexDataPool");
 var VertexDataPool = require("awayjs-stagegl/lib/pool/VertexDataPool");
 /**
@@ -13839,7 +13839,7 @@ var RenderableBase = (function () {
 module.exports = RenderableBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/base/SubGeometryBase":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/events/RenderableOwnerEvent":undefined,"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-stagegl/lib/pool/IndexDataPool":undefined,"awayjs-stagegl/lib/pool/VertexDataPool":undefined}],"awayjs-renderergl/lib/pool/RenderablePoolBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/SubGeometryBase":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/SubGeometryEvent":undefined,"awayjs-display/lib/events/RenderableOwnerEvent":undefined,"awayjs-stagegl/lib/pool/IndexDataPool":undefined,"awayjs-stagegl/lib/pool/VertexDataPool":undefined}],"awayjs-renderergl/lib/pool/RenderablePoolBase":[function(require,module,exports){
 var RenderObjectPool = require("awayjs-renderergl/lib/compilation/RenderObjectPool");
 var RenderBasicMaterialObject = require("awayjs-renderergl/lib/compilation/RenderBasicMaterialObject");
 var SkyboxRenderObject = require("awayjs-renderergl/lib/compilation/SkyboxRenderObject");
@@ -14055,7 +14055,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -14125,7 +14125,7 @@ var SkyboxRenderable = (function (_super) {
 module.exports = SkyboxRenderable;
 
 
-},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -14133,7 +14133,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
@@ -14264,10 +14264,10 @@ var TriangleSubMeshRenderable = (function (_super) {
 module.exports = TriangleSubMeshRenderable;
 
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var Geometry = require("awayjs-display/lib/base/Geometry");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var Geometry = require("awayjs-core/lib/data/Geometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
 /**
  *  Class Merge merges two or more static meshes into one.<code>Merge</code>
@@ -14558,7 +14558,7 @@ var GeometryVO = (function () {
 module.exports = Merge;
 
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/entities/Mesh":undefined}],"awayjs-renderergl/lib/tools/data/ParticleGeometryTransform":[function(require,module,exports){
+},{"awayjs-core/lib/data/Geometry":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/entities/Mesh":undefined}],"awayjs-renderergl/lib/tools/data/ParticleGeometryTransform":[function(require,module,exports){
 /**
  * ...
  */
@@ -14603,7 +14603,7 @@ module.exports = ParticleGeometryTransform;
 },{}],"awayjs-renderergl/lib/utils/ParticleGeometryHelper":[function(require,module,exports){
 var Point = require("awayjs-core/lib/geom/Point");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
 var ParticleGeometry = require("awayjs-renderergl/lib/base/ParticleGeometry");
 /**
@@ -14781,7 +14781,7 @@ var ParticleGeometryHelper = (function () {
 module.exports = ParticleGeometryHelper;
 
 
-},{"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/animators/data/ParticleData":"awayjs-renderergl/lib/animators/data/ParticleData","awayjs-renderergl/lib/base/ParticleGeometry":"awayjs-renderergl/lib/base/ParticleGeometry"}],"awayjs-renderergl/lib/utils/PerspectiveMatrix3D":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticleData":"awayjs-renderergl/lib/animators/data/ParticleData","awayjs-renderergl/lib/base/ParticleGeometry":"awayjs-renderergl/lib/base/ParticleGeometry"}],"awayjs-renderergl/lib/utils/PerspectiveMatrix3D":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }

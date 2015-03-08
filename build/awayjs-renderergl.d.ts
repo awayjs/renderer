@@ -1001,7 +1001,7 @@ declare module "awayjs-renderergl/lib/pool/RenderableBase" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
-	import SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
+	import SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
 	import IRenderable = require("awayjs-display/lib/pool/IRenderable");
 	import IEntity = require("awayjs-display/lib/entities/IEntity");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -1195,7 +1195,7 @@ declare module "awayjs-renderergl/lib/pool/RenderableBase" {
 declare module "awayjs-renderergl/lib/pool/TriangleSubMeshRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
-	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -1296,7 +1296,7 @@ declare module "awayjs-renderergl/lib/animators/AnimatorBase" {
 	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
 	import IAnimator = require("awayjs-display/lib/animators/IAnimator");
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Mesh = require("awayjs-display/lib/entities/Mesh");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -1951,7 +1951,7 @@ declare module "awayjs-renderergl/lib/animators/AnimationSetBase" {
 }
 declare module "awayjs-renderergl/lib/pool/BillboardRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
+	import SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
 	import Billboard = require("awayjs-display/lib/entities/Billboard");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2001,7 +2001,7 @@ declare module "awayjs-renderergl/lib/pool/BillboardRenderable" {
 }
 declare module "awayjs-renderergl/lib/pool/LineSegmentRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
+	import LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import LineSegment = require("awayjs-display/lib/entities/LineSegment");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2077,7 +2077,7 @@ declare module "awayjs-renderergl/lib/pool/LineSegmentRenderable" {
 declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
-	import LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
+	import LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -2151,7 +2151,7 @@ declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
 declare module "awayjs-renderergl/lib/pool/CurveSubMeshRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import CurveSubMesh = require("awayjs-display/lib/base/CurveSubMesh");
-	import CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
+	import CurveSubGeometry = require("awayjs-core/lib/data/CurveSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -2344,7 +2344,7 @@ declare module "awayjs-renderergl/lib/managers/RTTBufferManager" {
 	
 }
 declare module "awayjs-renderergl/lib/base/RendererBase" {
-	import BitmapData = require("awayjs-core/lib/base/BitmapData");
+	import BitmapData = require("awayjs-core/lib/data/BitmapData");
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
@@ -2353,7 +2353,7 @@ declare module "awayjs-renderergl/lib/base/RendererBase" {
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import IEntitySorter = require("awayjs-display/lib/sort/IEntitySorter");
 	import Camera = require("awayjs-display/lib/entities/Camera");
-	import StageEvent = require("awayjs-display/lib/events/StageEvent");
+	import StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
 	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
 	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
 	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
@@ -2694,7 +2694,7 @@ declare module "awayjs-renderergl/lib/Filter3DRenderer" {
 }
 declare module "awayjs-renderergl/lib/pool/SkyboxRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	import Skybox = require("awayjs-display/lib/entities/Skybox");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2829,7 +2829,7 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	
 }
 declare module "awayjs-renderergl/lib/animators/data/ParticleData" {
-	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	class ParticleData {
 	    particleIndex: number;
 	    numVertices: number;
@@ -2837,543 +2837,6 @@ declare module "awayjs-renderergl/lib/animators/data/ParticleData" {
 	    subGeometry: TriangleSubGeometry;
 	}
 	export = ParticleData;
-	
-}
-declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
-	import Geometry = require("awayjs-display/lib/base/Geometry");
-	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
-	/**
-	 * @class away.base.ParticleGeometry
-	 */
-	class ParticleGeometry extends Geometry {
-	    particles: Array<ParticleData>;
-	    numParticles: number;
-	}
-	export = ParticleGeometry;
-	
-}
-declare module "awayjs-renderergl/lib/passes/IRenderLightingPass" {
-	import LightPickerBase = require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
-	import ShaderLightingObject = require("awayjs-renderergl/lib/compilation/ShaderLightingObject");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-	import IRenderPassBase = require("awayjs-renderergl/lib/passes/IRenderPassBase");
-	/**
-	 *
-	 * @class away.pool.ScreenPasses
-	 */
-	interface IRenderLightingPass extends IRenderPassBase {
-	    enableLightFallOff: boolean;
-	    diffuseLightSources: number;
-	    specularLightSources: number;
-	    numDirectionalLights: number;
-	    numPointLights: number;
-	    numLightProbes: number;
-	    pointLightsOffset: number;
-	    directionalLightsOffset: number;
-	    lightProbesOffset: number;
-	    lightPicker: LightPickerBase;
-	    _iGetPerLightDiffuseFragmentCode(shaderObject: ShaderLightingObject, lightDirReg: ShaderRegisterElement, diffuseColorReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetPerLightSpecularFragmentCode(shaderObject: ShaderLightingObject, lightDirReg: ShaderRegisterElement, specularColorReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetPerProbeDiffuseFragmentCode(shaderObject: ShaderLightingObject, texReg: ShaderRegisterElement, weightReg: string, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetPerProbeSpecularFragmentCode(shaderObject: ShaderLightingObject, texReg: ShaderRegisterElement, weightReg: string, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetPostLightingVertexCode(shaderObject: ShaderLightingObject, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetPostLightingFragmentCode(shaderObject: ShaderLightingObject, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    /**
-	     * Indicates whether the shader uses any shadows.
-	     */
-	    _iUsesShadows(shaderObject: ShaderLightingObject): boolean;
-	    /**
-	     * Indicates whether the shader uses any specular component.
-	     */
-	    _iUsesSpecular(shaderObject: ShaderLightingObject): boolean;
-	    /**
-	     * Indicates whether the shader uses any diffuse component.
-	     */
-	    _iUsesDiffuse(shaderObject: ShaderLightingObject): boolean;
-	}
-	export = IRenderLightingPass;
-	
-}
-declare module "awayjs-renderergl/lib/compilation/ShaderLightingObject" {
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import IRenderLightingPass = require("awayjs-renderergl/lib/passes/IRenderLightingPass");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
-	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-	import IRenderableClass = require("awayjs-renderergl/lib/pool/IRenderableClass");
-	/**
-	 * ShaderObjectBase keeps track of the number of dependencies for "named registers" used across a pass.
-	 * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
-	 * passed on to methods. The compiler uses the results to reserve usages through RegisterPool, which can be removed
-	 * each time a method has been compiled into the shader.
-	 *
-	 * @see RegisterPool.addUsage
-	 */
-	class ShaderLightingObject extends ShaderObjectBase {
-	    _renderLightingPass: IRenderLightingPass;
-	    private _includeCasters;
-	    /**
-	     * The first index for the fragment constants containing the light data.
-	     */
-	    lightFragmentConstantIndex: number;
-	    /**
-	     * The starting index if the vertex constant to which light data needs to be uploaded.
-	     */
-	    lightVertexConstantIndex: number;
-	    /**
-	     * Indices for the light probe diffuse textures.
-	     */
-	    lightProbeDiffuseIndices: Array<number>;
-	    /**
-	     * Indices for the light probe specular textures.
-	     */
-	    lightProbeSpecularIndices: Array<number>;
-	    /**
-	     * The index of the fragment constant containing the weights for the light probes.
-	     */
-	    probeWeightsIndex: number;
-	    numLights: number;
-	    numDirectionalLights: number;
-	    numPointLights: number;
-	    numLightProbes: number;
-	    usesLightFallOff: boolean;
-	    usesShadows: boolean;
-	    /**
-	     * Indicates whether the shader uses any lights.
-	     */
-	    usesLights: boolean;
-	    /**
-	     * Indicates whether the shader uses any light probes.
-	     */
-	    usesProbes: boolean;
-	    /**
-	     * Indicates whether the lights uses any specular components.
-	     */
-	    usesLightsForSpecular: boolean;
-	    /**
-	     * Indicates whether the probes uses any specular components.
-	     */
-	    usesProbesForSpecular: boolean;
-	    /**
-	     * Indicates whether the lights uses any diffuse components.
-	     */
-	    usesLightsForDiffuse: boolean;
-	    /**
-	     * Indicates whether the probes uses any diffuse components.
-	     */
-	    usesProbesForDiffuse: boolean;
-	    /**
-	     * Creates a new MethodCompilerVO object.
-	     */
-	    constructor(renderableClass: IRenderableClass, renderLightingPass: IRenderLightingPass, stage: Stage);
-	    _iIncludeDependencies(): void;
-	    /**
-	     * Factory method to create a concrete compiler object for this object
-	     *
-	     * @param materialPassVO
-	     * @returns {away.materials.ShaderLightingCompiler}
-	     */
-	    createCompiler(renderableClass: IRenderableClass, renderPass: IRenderLightingPass): ShaderCompilerBase;
-	    /**
-	     * Clears dependency counts for all registers. Called when recompiling a pass.
-	     */
-	    reset(): void;
-	    /**
-	     *
-	     *
-	     * @param renderable
-	     * @param stage
-	     * @param camera
-	     */
-	    _iRender(renderable: RenderableBase, camera: Camera, viewProjection: Matrix3D): void;
-	    /**
-	     * Updates constant data render state used by the lights. This method is optional for subclasses to implement.
-	     */
-	    private updateLights();
-	    /**
-	     * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
-	     */
-	    private updateProbes();
-	}
-	export = ShaderLightingObject;
-	
-}
-declare module "awayjs-renderergl/lib/compilation/ShaderLightingCompiler" {
-	import ShaderLightingObject = require("awayjs-renderergl/lib/compilation/ShaderLightingObject");
-	import ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
-	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-	import IRenderLightingPass = require("awayjs-renderergl/lib/passes/IRenderLightingPass");
-	import IRenderableClass = require("awayjs-renderergl/lib/pool/IRenderableClass");
-	/**
-	 * ShaderCompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
-	 * material. Concrete subclasses are used by the default materials.
-	 *
-	 * @see away.materials.ShadingMethodBase
-	 */
-	class ShaderLightingCompiler extends ShaderCompilerBase {
-	    private _shaderLightingObject;
-	    private _renderLightingPass;
-	    _pointLightFragmentConstants: Array<ShaderRegisterElement>;
-	    _pointLightVertexConstants: Array<ShaderRegisterElement>;
-	    _dirLightFragmentConstants: Array<ShaderRegisterElement>;
-	    _dirLightVertexConstants: Array<ShaderRegisterElement>;
-	    _pNumProbeRegisters: number;
-	    /**
-	     * Creates a new ShaderCompilerBase object.
-	     * @param profile The compatibility profile of the renderer.
-	     */
-	    constructor(renderableClass: IRenderableClass, renderLightingPass: IRenderLightingPass, shaderLightingObject: ShaderLightingObject);
-	    /**
-	     * Compile the code for the methods.
-	     */
-	    pCompileDependencies(): void;
-	    /**
-	     * Provides the code to provide shadow mapping.
-	     */
-	    pCompileShadowCode(): void;
-	    /**
-	     * Initializes constant registers to contain light data.
-	     */
-	    private initLightRegisters();
-	    /**
-	     * Compiles the shading code for directional and point lights.
-	     */
-	    private compileLightCode();
-	    /**
-	     * Compiles shading code for light probes.
-	     */
-	    private compileLightProbeCode();
-	    /**
-	     * Reset all the indices to "unused".
-	     */
-	    pInitRegisterIndices(): void;
-	}
-	export = ShaderLightingCompiler;
-	
-}
-declare module "awayjs-renderergl/lib/events/AnimationStateEvent" {
-	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-	import Event = require("awayjs-core/lib/events/Event");
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import IAnimationState = require("awayjs-renderergl/lib/animators/states/IAnimationState");
-	/**
-	 * Dispatched to notify changes in an animation state's state.
-	 */
-	class AnimationStateEvent extends Event {
-	    /**
-	     * Dispatched when a non-looping clip node inside an animation state reaches the end of its timeline.
-	     */
-	    static PLAYBACK_COMPLETE: string;
-	    static TRANSITION_COMPLETE: string;
-	    private _animator;
-	    private _animationState;
-	    private _animationNode;
-	    /**
-	     * Create a new <code>AnimatonStateEvent</code>
-	     *
-	     * @param type The event type.
-	     * @param animator The animation state object that is the subject of this event.
-	     * @param animationNode The animation node inside the animation state from which the event originated.
-	     */
-	    constructor(type: string, animator: AnimatorBase, animationState: IAnimationState, animationNode: AnimationNodeBase);
-	    /**
-	     * The animator object that is the subject of this event.
-	     */
-	    animator: AnimatorBase;
-	    /**
-	     * The animation state object that is the subject of this event.
-	     */
-	    animationState: IAnimationState;
-	    /**
-	     * The animation node inside the animation state from which the event originated.
-	     */
-	    animationNode: AnimationNodeBase;
-	    /**
-	     * Clones the event.
-	     *
-	     * @return An exact duplicate of the current object.
-	     */
-	    clone(): Event;
-	}
-	export = AnimationStateEvent;
-	
-}
-declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
-	import Event = require("awayjs-core/lib/events/Event");
-	class ShadingMethodEvent extends Event {
-	    static SHADER_INVALIDATED: string;
-	    constructor(type: string);
-	}
-	export = ShadingMethodEvent;
-	
-}
-declare module "awayjs-renderergl/lib/managers/DefaultMaterialManager" {
-	import BitmapData = require("awayjs-core/lib/base/BitmapData");
-	import BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
-	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
-	import BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
-	class DefaultMaterialManager {
-	    private static _defaultBitmapData;
-	    private static _defaultTriangleMaterial;
-	    private static _defaultLineMaterial;
-	    private static _defaultTexture;
-	    static getDefaultMaterial(renderableOwner?: IRenderableOwner): BasicMaterial;
-	    static getDefaultTexture(renderableOwner?: IRenderableOwner): BitmapTexture;
-	    private static createDefaultTexture();
-	    static createCheckeredBitmapData(): BitmapData;
-	    private static createDefaultTriangleMaterial();
-	    private static createDefaultLineMaterial();
-	}
-	export = DefaultMaterialManager;
-	
-}
-declare module "awayjs-renderergl/lib/pick/PickingColliderBase" {
-	import Point = require("awayjs-core/lib/geom/Point");
-	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
-	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
-	import Billboard = require("awayjs-display/lib/entities/Billboard");
-	import Mesh = require("awayjs-display/lib/entities/Mesh");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	/**
-	 * An abstract base class for all picking collider classes. It should not be instantiated directly.
-	 *
-	 * @class away.pick.PickingColliderBase
-	 */
-	class PickingColliderBase {
-	    private _billboardRenderablePool;
-	    private _subMeshRenderablePool;
-	    rayPosition: Vector3D;
-	    rayDirection: Vector3D;
-	    constructor(stage: Stage);
-	    _pPetCollisionNormal(indexData: Array<number>, vertexData: Array<number>, triangleIndex: number): Vector3D;
-	    _pGetCollisionUV(indexData: Array<number>, uvData: Array<number>, triangleIndex: number, v: number, w: number, u: number, uvOffset: number, uvStride: number): Point;
-	    /**
-	     * @inheritDoc
-	     */
-	    _pTestRenderableCollision(renderable: RenderableBase, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number): boolean;
-	    /**
-	     * @inheritDoc
-	     */
-	    setLocalRay(localPosition: Vector3D, localDirection: Vector3D): void;
-	    /**
-	     * Tests a <code>Billboard</code> object for a collision with the picking ray.
-	     *
-	     * @param billboard The billboard instance to be tested.
-	     * @param pickingCollisionVO The collision object used to store the collision results
-	     * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
-	     * @param findClosest
-	     */
-	    testBillboardCollision(billboard: Billboard, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number): boolean;
-	    /**
-	     * Tests a <code>Mesh</code> object for a collision with the picking ray.
-	     *
-	     * @param mesh The mesh instance to be tested.
-	     * @param pickingCollisionVO The collision object used to store the collision results
-	     * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
-	     * @param findClosest
-	     */
-	    testMeshCollision(mesh: Mesh, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number, findClosest: boolean): boolean;
-	}
-	export = PickingColliderBase;
-	
-}
-declare module "awayjs-renderergl/lib/pick/JSPickingCollider" {
-	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
-	import IPickingCollider = require("awayjs-display/lib/pick/IPickingCollider");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import PickingColliderBase = require("awayjs-renderergl/lib/pick/PickingColliderBase");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	/**
-	 * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
-	 *
-	 * @see away.base.DisplayObject#pickingCollider
-	 * @see away.pick.RaycastPicker
-	 *
-	 * @class away.pick.JSPickingCollider
-	 */
-	class JSPickingCollider extends PickingColliderBase implements IPickingCollider {
-	    private _findClosestCollision;
-	    /**
-	     * Creates a new <code>JSPickingCollider</code> object.
-	     *
-	     * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
-	     */
-	    constructor(stage: Stage, findClosestCollision?: boolean);
-	    /**
-	     * @inheritDoc
-	     */
-	    _pTestRenderableCollision(renderable: RenderableBase, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number): boolean;
-	}
-	export = JSPickingCollider;
-	
-}
-declare module "awayjs-renderergl/lib/pick/ShaderPicker" {
-	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
-	import Scene = require("awayjs-display/lib/containers/Scene");
-	import View = require("awayjs-display/lib/containers/View");
-	import IPicker = require("awayjs-display/lib/pick/IPicker");
-	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
-	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
-	import ITextureBase = require("awayjs-stagegl/lib/base/ITextureBase");
-	/**
-	 * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
-	 * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
-	 * on an entity that has its shaderPickingDetails property set to true.
-	 *
-	 * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
-	 *
-	 * @see away.entities.Entity#shaderPickingDetails
-	 *
-	 * @class away.pick.ShaderPicker
-	 */
-	class ShaderPicker implements IPicker {
-	    private _opaqueRenderableHead;
-	    private _blendedRenderableHead;
-	    private _stage;
-	    private _context;
-	    private _onlyMouseEnabled;
-	    private _objectProgram;
-	    private _triangleProgram;
-	    private _bitmapData;
-	    private _viewportData;
-	    private _boundOffsetScale;
-	    private _id;
-	    private _interactives;
-	    private _interactiveId;
-	    private _hitColor;
-	    private _projX;
-	    private _projY;
-	    private _hitRenderable;
-	    private _hitEntity;
-	    private _localHitPosition;
-	    private _hitUV;
-	    private _faceIndex;
-	    private _subGeometryIndex;
-	    private _localHitNormal;
-	    private _rayPos;
-	    private _rayDir;
-	    private _potentialFound;
-	    private static MOUSE_SCISSOR_RECT;
-	    private _shaderPickingDetails;
-	    /**
-	     * @inheritDoc
-	     */
-	    onlyMouseEnabled: boolean;
-	    /**
-	     * Creates a new <code>ShaderPicker</code> object.
-	     *
-	     * @param shaderPickingDetails Determines whether the picker includes a second pass to calculate extra
-	     * properties such as uv and normal coordinates.
-	     */
-	    constructor(shaderPickingDetails?: boolean);
-	    /**
-	     * @inheritDoc
-	     */
-	    getViewCollision(x: number, y: number, view: View): PickingCollisionVO;
-	    /**
-	     * @inheritDoc
-	     */
-	    getSceneCollision(position: Vector3D, direction: Vector3D, scene: Scene): PickingCollisionVO;
-	    /**
-	     * @inheritDoc
-	     */
-	    pDraw(entityCollector: EntityCollector, target: ITextureBase): void;
-	    /**
-	     * Draw a list of renderables.
-	     * @param renderables The renderables to draw.
-	     * @param camera The camera for which to render.
-	     */
-	    private drawRenderables(renderable, camera);
-	    private updateRay(camera);
-	    /**
-	     * Creates the Program that color-codes objects.
-	     */
-	    private initObjectProgram();
-	    /**
-	     * Creates the Program that renders positions.
-	     */
-	    private initTriangleProgram();
-	    /**
-	     * Gets more detailed information about the hir position, if required.
-	     * @param camera The camera used to view the hit object.
-	     */
-	    private getHitDetails(camera);
-	    /**
-	     * Finds a first-guess approximate position about the hit position.
-	     *
-	     * @param camera The camera used to view the hit object.
-	     */
-	    private getApproximatePosition(camera);
-	    /**
-	     * Use the approximate position info to find the face under the mouse position from which we can derive the precise
-	     * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
-	     * @param camera The camera used to view the hit object.
-	     */
-	    private getPreciseDetails(camera);
-	    /**
-	     * Finds the precise hit position by unprojecting the screen coordinate back unto the hit face's plane and
-	     * calculating the intersection point.
-	     * @param camera The camera used to render the object.
-	     * @param invSceneTransform The inverse scene transformation of the hit object.
-	     * @param nx The x-coordinate of the face's plane normal.
-	     * @param ny The y-coordinate of the face plane normal.
-	     * @param nz The z-coordinate of the face plane normal.
-	     * @param px The x-coordinate of a point on the face's plane (ie a face vertex)
-	     * @param py The y-coordinate of a point on the face's plane (ie a face vertex)
-	     * @param pz The z-coordinate of a point on the face's plane (ie a face vertex)
-	     */
-	    private getPrecisePosition(invSceneTransform, nx, ny, nz, px, py, pz);
-	    dispose(): void;
-	}
-	export = ShaderPicker;
-	
-}
-declare module "awayjs-renderergl/lib/tools/data/ParticleGeometryTransform" {
-	import Matrix = require("awayjs-core/lib/geom/Matrix");
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	/**
-	 * ...
-	 */
-	class ParticleGeometryTransform {
-	    private _defaultVertexTransform;
-	    private _defaultInvVertexTransform;
-	    private _defaultUVTransform;
-	    vertexTransform: Matrix3D;
-	    UVTransform: Matrix;
-	    invVertexTransform: Matrix3D;
-	}
-	export = ParticleGeometryTransform;
-	
-}
-declare module "awayjs-renderergl/lib/utils/ParticleGeometryHelper" {
-	import Geometry = require("awayjs-display/lib/base/Geometry");
-	import ParticleGeometry = require("awayjs-renderergl/lib/base/ParticleGeometry");
-	import ParticleGeometryTransform = require("awayjs-renderergl/lib/tools/data/ParticleGeometryTransform");
-	/**
-	 * ...
-	 */
-	class ParticleGeometryHelper {
-	    static MAX_VERTEX: number;
-	    static generateGeometry(geometries: Array<Geometry>, transforms?: Array<ParticleGeometryTransform>): ParticleGeometry;
-	}
-	export = ParticleGeometryHelper;
-	
-}
-declare module "awayjs-renderergl/lib/utils/PerspectiveMatrix3D" {
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	/**
-	 *
-	 */
-	class PerspectiveMatrix3D extends Matrix3D {
-	    constructor(v?: Array<number>);
-	    perspectiveFieldOfViewLH(fieldOfViewY: number, aspectRatio: number, zNear: number, zFar: number): void;
-	}
-	export = PerspectiveMatrix3D;
 	
 }
 declare module "awayjs-renderergl/lib/animators/data/ParticleAnimationData" {
@@ -3565,6 +3028,53 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase" {
 	    _iProcessAnimationSetting(particleAnimationSet: ParticleAnimationSet): void;
 	}
 	export = ParticleNodeBase;
+	
+}
+declare module "awayjs-renderergl/lib/events/AnimationStateEvent" {
+	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+	import Event = require("awayjs-core/lib/events/Event");
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import IAnimationState = require("awayjs-renderergl/lib/animators/states/IAnimationState");
+	/**
+	 * Dispatched to notify changes in an animation state's state.
+	 */
+	class AnimationStateEvent extends Event {
+	    /**
+	     * Dispatched when a non-looping clip node inside an animation state reaches the end of its timeline.
+	     */
+	    static PLAYBACK_COMPLETE: string;
+	    static TRANSITION_COMPLETE: string;
+	    private _animator;
+	    private _animationState;
+	    private _animationNode;
+	    /**
+	     * Create a new <code>AnimatonStateEvent</code>
+	     *
+	     * @param type The event type.
+	     * @param animator The animation state object that is the subject of this event.
+	     * @param animationNode The animation node inside the animation state from which the event originated.
+	     */
+	    constructor(type: string, animator: AnimatorBase, animationState: IAnimationState, animationNode: AnimationNodeBase);
+	    /**
+	     * The animator object that is the subject of this event.
+	     */
+	    animator: AnimatorBase;
+	    /**
+	     * The animation state object that is the subject of this event.
+	     */
+	    animationState: IAnimationState;
+	    /**
+	     * The animation node inside the animation state from which the event originated.
+	     */
+	    animationNode: AnimationNodeBase;
+	    /**
+	     * Clones the event.
+	     *
+	     * @return An exact duplicate of the current object.
+	     */
+	    clone(): Event;
+	}
+	export = AnimationStateEvent;
 	
 }
 declare module "awayjs-renderergl/lib/animators/states/AnimationStateBase" {
@@ -3769,6 +3279,19 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleTimeNode" {
 	    _iGeneratePropertyOfOneParticle(param: ParticleProperties): void;
 	}
 	export = ParticleTimeNode;
+	
+}
+declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
+	import Geometry = require("awayjs-core/lib/data/Geometry");
+	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
+	/**
+	 * @class away.base.ParticleGeometry
+	 */
+	class ParticleGeometry extends Geometry {
+	    particles: Array<ParticleData>;
+	    numParticles: number;
+	}
+	export = ParticleGeometry;
 	
 }
 declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
@@ -4149,7 +3672,7 @@ declare module "awayjs-renderergl/lib/animators/transitions/IAnimationTransition
 	
 }
 declare module "awayjs-renderergl/lib/animators/SkeletonAnimator" {
-	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -4352,7 +3875,7 @@ declare module "awayjs-renderergl/lib/animators/VertexAnimationSet" {
 	
 }
 declare module "awayjs-renderergl/lib/animators/states/IVertexAnimationState" {
-	import Geometry = require("awayjs-display/lib/base/Geometry");
+	import Geometry = require("awayjs-core/lib/data/Geometry");
 	import IAnimationState = require("awayjs-renderergl/lib/animators/states/IAnimationState");
 	/**
 	 * Provides an interface for animation node classes that hold animation data for use in the Vertex animator class.
@@ -4378,7 +3901,7 @@ declare module "awayjs-renderergl/lib/animators/states/IVertexAnimationState" {
 	
 }
 declare module "awayjs-renderergl/lib/animators/VertexAnimator" {
-	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -4433,68 +3956,481 @@ declare module "awayjs-renderergl/lib/animators/VertexAnimator" {
 	export = VertexAnimator;
 	
 }
-declare module "awayjs-renderergl/lib/tools/commands/Merge" {
-	import DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-	import Mesh = require("awayjs-display/lib/entities/Mesh");
+declare module "awayjs-renderergl/lib/passes/IRenderLightingPass" {
+	import LightPickerBase = require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
+	import ShaderLightingObject = require("awayjs-renderergl/lib/compilation/ShaderLightingObject");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+	import IRenderPassBase = require("awayjs-renderergl/lib/passes/IRenderPassBase");
 	/**
-	 *  Class Merge merges two or more static meshes into one.<code>Merge</code>
+	 *
+	 * @class away.pool.ScreenPasses
 	 */
-	class Merge {
-	    private _objectSpace;
-	    private _keepMaterial;
-	    private _disposeSources;
-	    private _geomVOs;
-	    private _toDispose;
+	interface IRenderLightingPass extends IRenderPassBase {
+	    enableLightFallOff: boolean;
+	    diffuseLightSources: number;
+	    specularLightSources: number;
+	    numDirectionalLights: number;
+	    numPointLights: number;
+	    numLightProbes: number;
+	    pointLightsOffset: number;
+	    directionalLightsOffset: number;
+	    lightProbesOffset: number;
+	    lightPicker: LightPickerBase;
+	    _iGetPerLightDiffuseFragmentCode(shaderObject: ShaderLightingObject, lightDirReg: ShaderRegisterElement, diffuseColorReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetPerLightSpecularFragmentCode(shaderObject: ShaderLightingObject, lightDirReg: ShaderRegisterElement, specularColorReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetPerProbeDiffuseFragmentCode(shaderObject: ShaderLightingObject, texReg: ShaderRegisterElement, weightReg: string, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetPerProbeSpecularFragmentCode(shaderObject: ShaderLightingObject, texReg: ShaderRegisterElement, weightReg: string, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetPostLightingVertexCode(shaderObject: ShaderLightingObject, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetPostLightingFragmentCode(shaderObject: ShaderLightingObject, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 	    /**
-	     * @param    keepMaterial    [optional]    Determines if the merged object uses the recevier mesh material information or keeps its source material(s). Defaults to false.
-	     * If false and receiver object has multiple materials, the last material found in receiver submeshes is applied to the merged submesh(es).
-	     * @param    disposeSources  [optional]    Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
-	     * If true, only receiver geometry and resulting mesh are kept in  memory.
-	     * @param    objectSpace     [optional]    Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+	     * Indicates whether the shader uses any shadows.
 	     */
-	    constructor(keepMaterial?: boolean, disposeSources?: boolean, objectSpace?: boolean);
+	    _iUsesShadows(shaderObject: ShaderLightingObject): boolean;
 	    /**
-	     * Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
+	     * Indicates whether the shader uses any specular component.
 	     */
-	    disposeSources: boolean;
+	    _iUsesSpecular(shaderObject: ShaderLightingObject): boolean;
 	    /**
-	     * Determines if the material source(s) used for the merging are disposed. Defaults to false.
+	     * Indicates whether the shader uses any diffuse component.
 	     */
-	    keepMaterial: boolean;
-	    /**
-	     * Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
-	     */
-	    objectSpace: boolean;
-	    /**
-	     * Merges all the children of a container into a single Mesh. If no Mesh object is found, method returns the receiver without modification.
-	     *
-	     * @param    receiver           The Mesh to receive the merged contents of the container.
-	     * @param    objectContainer    The DisplayObjectContainer holding the meshes to be mergd.
-	     *
-	     * @return The merged Mesh instance.
-	     */
-	    applyToContainer(receiver: Mesh, objectContainer: DisplayObjectContainer): void;
-	    /**
-	     * Merges all the meshes found in the Array&lt;Mesh&gt; into a single Mesh.
-	     *
-	     * @param    receiver    The Mesh to receive the merged contents of the meshes.
-	     * @param    meshes      A series of Meshes to be merged with the reciever mesh.
-	     */
-	    applyToMeshes(receiver: Mesh, meshes: Array<Mesh>): void;
-	    /**
-	     *  Merges 2 meshes into one. It is recommand to use apply when 2 meshes are to be merged. If more need to be merged, use either applyToMeshes or applyToContainer methods.
-	     *
-	     * @param    receiver    The Mesh to receive the merged contents of both meshes.
-	     * @param    mesh        The Mesh to be merged with the receiver mesh
-	     */
-	    apply(receiver: Mesh, mesh: Mesh): void;
-	    private reset();
-	    private merge(destMesh, dispose);
-	    private collect(mesh, dispose);
-	    private getSubGeomData(material);
-	    private parseContainer(receiver, object);
+	    _iUsesDiffuse(shaderObject: ShaderLightingObject): boolean;
 	}
-	export = Merge;
+	export = IRenderLightingPass;
+	
+}
+declare module "awayjs-renderergl/lib/compilation/ShaderLightingObject" {
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import IRenderLightingPass = require("awayjs-renderergl/lib/passes/IRenderLightingPass");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	import ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import IRenderableClass = require("awayjs-renderergl/lib/pool/IRenderableClass");
+	/**
+	 * ShaderObjectBase keeps track of the number of dependencies for "named registers" used across a pass.
+	 * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
+	 * passed on to methods. The compiler uses the results to reserve usages through RegisterPool, which can be removed
+	 * each time a method has been compiled into the shader.
+	 *
+	 * @see RegisterPool.addUsage
+	 */
+	class ShaderLightingObject extends ShaderObjectBase {
+	    _renderLightingPass: IRenderLightingPass;
+	    private _includeCasters;
+	    /**
+	     * The first index for the fragment constants containing the light data.
+	     */
+	    lightFragmentConstantIndex: number;
+	    /**
+	     * The starting index if the vertex constant to which light data needs to be uploaded.
+	     */
+	    lightVertexConstantIndex: number;
+	    /**
+	     * Indices for the light probe diffuse textures.
+	     */
+	    lightProbeDiffuseIndices: Array<number>;
+	    /**
+	     * Indices for the light probe specular textures.
+	     */
+	    lightProbeSpecularIndices: Array<number>;
+	    /**
+	     * The index of the fragment constant containing the weights for the light probes.
+	     */
+	    probeWeightsIndex: number;
+	    numLights: number;
+	    numDirectionalLights: number;
+	    numPointLights: number;
+	    numLightProbes: number;
+	    usesLightFallOff: boolean;
+	    usesShadows: boolean;
+	    /**
+	     * Indicates whether the shader uses any lights.
+	     */
+	    usesLights: boolean;
+	    /**
+	     * Indicates whether the shader uses any light probes.
+	     */
+	    usesProbes: boolean;
+	    /**
+	     * Indicates whether the lights uses any specular components.
+	     */
+	    usesLightsForSpecular: boolean;
+	    /**
+	     * Indicates whether the probes uses any specular components.
+	     */
+	    usesProbesForSpecular: boolean;
+	    /**
+	     * Indicates whether the lights uses any diffuse components.
+	     */
+	    usesLightsForDiffuse: boolean;
+	    /**
+	     * Indicates whether the probes uses any diffuse components.
+	     */
+	    usesProbesForDiffuse: boolean;
+	    /**
+	     * Creates a new MethodCompilerVO object.
+	     */
+	    constructor(renderableClass: IRenderableClass, renderLightingPass: IRenderLightingPass, stage: Stage);
+	    _iIncludeDependencies(): void;
+	    /**
+	     * Factory method to create a concrete compiler object for this object
+	     *
+	     * @param materialPassVO
+	     * @returns {away.materials.ShaderLightingCompiler}
+	     */
+	    createCompiler(renderableClass: IRenderableClass, renderPass: IRenderLightingPass): ShaderCompilerBase;
+	    /**
+	     * Clears dependency counts for all registers. Called when recompiling a pass.
+	     */
+	    reset(): void;
+	    /**
+	     *
+	     *
+	     * @param renderable
+	     * @param stage
+	     * @param camera
+	     */
+	    _iRender(renderable: RenderableBase, camera: Camera, viewProjection: Matrix3D): void;
+	    /**
+	     * Updates constant data render state used by the lights. This method is optional for subclasses to implement.
+	     */
+	    private updateLights();
+	    /**
+	     * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
+	     */
+	    private updateProbes();
+	}
+	export = ShaderLightingObject;
+	
+}
+declare module "awayjs-renderergl/lib/compilation/ShaderLightingCompiler" {
+	import ShaderLightingObject = require("awayjs-renderergl/lib/compilation/ShaderLightingObject");
+	import ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+	import IRenderLightingPass = require("awayjs-renderergl/lib/passes/IRenderLightingPass");
+	import IRenderableClass = require("awayjs-renderergl/lib/pool/IRenderableClass");
+	/**
+	 * ShaderCompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
+	 * material. Concrete subclasses are used by the default materials.
+	 *
+	 * @see away.materials.ShadingMethodBase
+	 */
+	class ShaderLightingCompiler extends ShaderCompilerBase {
+	    private _shaderLightingObject;
+	    private _renderLightingPass;
+	    _pointLightFragmentConstants: Array<ShaderRegisterElement>;
+	    _pointLightVertexConstants: Array<ShaderRegisterElement>;
+	    _dirLightFragmentConstants: Array<ShaderRegisterElement>;
+	    _dirLightVertexConstants: Array<ShaderRegisterElement>;
+	    _pNumProbeRegisters: number;
+	    /**
+	     * Creates a new ShaderCompilerBase object.
+	     * @param profile The compatibility profile of the renderer.
+	     */
+	    constructor(renderableClass: IRenderableClass, renderLightingPass: IRenderLightingPass, shaderLightingObject: ShaderLightingObject);
+	    /**
+	     * Compile the code for the methods.
+	     */
+	    pCompileDependencies(): void;
+	    /**
+	     * Provides the code to provide shadow mapping.
+	     */
+	    pCompileShadowCode(): void;
+	    /**
+	     * Initializes constant registers to contain light data.
+	     */
+	    private initLightRegisters();
+	    /**
+	     * Compiles the shading code for directional and point lights.
+	     */
+	    private compileLightCode();
+	    /**
+	     * Compiles shading code for light probes.
+	     */
+	    private compileLightProbeCode();
+	    /**
+	     * Reset all the indices to "unused".
+	     */
+	    pInitRegisterIndices(): void;
+	}
+	export = ShaderLightingCompiler;
+	
+}
+declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
+	import Event = require("awayjs-core/lib/events/Event");
+	class ShadingMethodEvent extends Event {
+	    static SHADER_INVALIDATED: string;
+	    constructor(type: string);
+	}
+	export = ShadingMethodEvent;
+	
+}
+declare module "awayjs-renderergl/lib/managers/DefaultMaterialManager" {
+	import BitmapData = require("awayjs-core/lib/data/BitmapData");
+	import BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
+	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
+	import BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
+	class DefaultMaterialManager {
+	    private static _defaultBitmapData;
+	    private static _defaultTriangleMaterial;
+	    private static _defaultLineMaterial;
+	    private static _defaultTexture;
+	    static getDefaultMaterial(renderableOwner?: IRenderableOwner): BasicMaterial;
+	    static getDefaultTexture(renderableOwner?: IRenderableOwner): BitmapTexture;
+	    private static createDefaultTexture();
+	    static createCheckeredBitmapData(): BitmapData;
+	    private static createDefaultTriangleMaterial();
+	    private static createDefaultLineMaterial();
+	}
+	export = DefaultMaterialManager;
+	
+}
+declare module "awayjs-renderergl/lib/pick/PickingColliderBase" {
+	import Point = require("awayjs-core/lib/geom/Point");
+	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
+	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
+	import Billboard = require("awayjs-display/lib/entities/Billboard");
+	import Mesh = require("awayjs-display/lib/entities/Mesh");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	/**
+	 * An abstract base class for all picking collider classes. It should not be instantiated directly.
+	 *
+	 * @class away.pick.PickingColliderBase
+	 */
+	class PickingColliderBase {
+	    private _billboardRenderablePool;
+	    private _subMeshRenderablePool;
+	    rayPosition: Vector3D;
+	    rayDirection: Vector3D;
+	    constructor(stage: Stage);
+	    _pPetCollisionNormal(indexData: Array<number>, vertexData: Array<number>, triangleIndex: number): Vector3D;
+	    _pGetCollisionUV(indexData: Array<number>, uvData: Array<number>, triangleIndex: number, v: number, w: number, u: number, uvOffset: number, uvStride: number): Point;
+	    /**
+	     * @inheritDoc
+	     */
+	    _pTestRenderableCollision(renderable: RenderableBase, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number): boolean;
+	    /**
+	     * @inheritDoc
+	     */
+	    setLocalRay(localPosition: Vector3D, localDirection: Vector3D): void;
+	    /**
+	     * Tests a <code>Billboard</code> object for a collision with the picking ray.
+	     *
+	     * @param billboard The billboard instance to be tested.
+	     * @param pickingCollisionVO The collision object used to store the collision results
+	     * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
+	     * @param findClosest
+	     */
+	    testBillboardCollision(billboard: Billboard, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number): boolean;
+	    /**
+	     * Tests a <code>Mesh</code> object for a collision with the picking ray.
+	     *
+	     * @param mesh The mesh instance to be tested.
+	     * @param pickingCollisionVO The collision object used to store the collision results
+	     * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
+	     * @param findClosest
+	     */
+	    testMeshCollision(mesh: Mesh, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number, findClosest: boolean): boolean;
+	}
+	export = PickingColliderBase;
+	
+}
+declare module "awayjs-renderergl/lib/pick/JSPickingCollider" {
+	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
+	import IPickingCollider = require("awayjs-display/lib/pick/IPickingCollider");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import PickingColliderBase = require("awayjs-renderergl/lib/pick/PickingColliderBase");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	/**
+	 * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
+	 *
+	 * @see away.base.DisplayObject#pickingCollider
+	 * @see away.pick.RaycastPicker
+	 *
+	 * @class away.pick.JSPickingCollider
+	 */
+	class JSPickingCollider extends PickingColliderBase implements IPickingCollider {
+	    private _findClosestCollision;
+	    /**
+	     * Creates a new <code>JSPickingCollider</code> object.
+	     *
+	     * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
+	     */
+	    constructor(stage: Stage, findClosestCollision?: boolean);
+	    /**
+	     * @inheritDoc
+	     */
+	    _pTestRenderableCollision(renderable: RenderableBase, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number): boolean;
+	}
+	export = JSPickingCollider;
+	
+}
+declare module "awayjs-renderergl/lib/pick/ShaderPicker" {
+	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
+	import Scene = require("awayjs-display/lib/containers/Scene");
+	import View = require("awayjs-display/lib/containers/View");
+	import IPicker = require("awayjs-display/lib/pick/IPicker");
+	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
+	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
+	import ITextureBase = require("awayjs-stagegl/lib/base/ITextureBase");
+	/**
+	 * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
+	 * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
+	 * on an entity that has its shaderPickingDetails property set to true.
+	 *
+	 * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
+	 *
+	 * @see away.entities.Entity#shaderPickingDetails
+	 *
+	 * @class away.pick.ShaderPicker
+	 */
+	class ShaderPicker implements IPicker {
+	    private _opaqueRenderableHead;
+	    private _blendedRenderableHead;
+	    private _stage;
+	    private _context;
+	    private _onlyMouseEnabled;
+	    private _objectProgram;
+	    private _triangleProgram;
+	    private _bitmapData;
+	    private _viewportData;
+	    private _boundOffsetScale;
+	    private _id;
+	    private _interactives;
+	    private _interactiveId;
+	    private _hitColor;
+	    private _projX;
+	    private _projY;
+	    private _hitRenderable;
+	    private _hitEntity;
+	    private _localHitPosition;
+	    private _hitUV;
+	    private _faceIndex;
+	    private _subGeometryIndex;
+	    private _localHitNormal;
+	    private _rayPos;
+	    private _rayDir;
+	    private _potentialFound;
+	    private static MOUSE_SCISSOR_RECT;
+	    private _shaderPickingDetails;
+	    /**
+	     * @inheritDoc
+	     */
+	    onlyMouseEnabled: boolean;
+	    /**
+	     * Creates a new <code>ShaderPicker</code> object.
+	     *
+	     * @param shaderPickingDetails Determines whether the picker includes a second pass to calculate extra
+	     * properties such as uv and normal coordinates.
+	     */
+	    constructor(shaderPickingDetails?: boolean);
+	    /**
+	     * @inheritDoc
+	     */
+	    getViewCollision(x: number, y: number, view: View): PickingCollisionVO;
+	    /**
+	     * @inheritDoc
+	     */
+	    getSceneCollision(position: Vector3D, direction: Vector3D, scene: Scene): PickingCollisionVO;
+	    /**
+	     * @inheritDoc
+	     */
+	    pDraw(entityCollector: EntityCollector, target: ITextureBase): void;
+	    /**
+	     * Draw a list of renderables.
+	     * @param renderables The renderables to draw.
+	     * @param camera The camera for which to render.
+	     */
+	    private drawRenderables(renderable, camera);
+	    private updateRay(camera);
+	    /**
+	     * Creates the Program that color-codes objects.
+	     */
+	    private initObjectProgram();
+	    /**
+	     * Creates the Program that renders positions.
+	     */
+	    private initTriangleProgram();
+	    /**
+	     * Gets more detailed information about the hir position, if required.
+	     * @param camera The camera used to view the hit object.
+	     */
+	    private getHitDetails(camera);
+	    /**
+	     * Finds a first-guess approximate position about the hit position.
+	     *
+	     * @param camera The camera used to view the hit object.
+	     */
+	    private getApproximatePosition(camera);
+	    /**
+	     * Use the approximate position info to find the face under the mouse position from which we can derive the precise
+	     * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
+	     * @param camera The camera used to view the hit object.
+	     */
+	    private getPreciseDetails(camera);
+	    /**
+	     * Finds the precise hit position by unprojecting the screen coordinate back unto the hit face's plane and
+	     * calculating the intersection point.
+	     * @param camera The camera used to render the object.
+	     * @param invSceneTransform The inverse scene transformation of the hit object.
+	     * @param nx The x-coordinate of the face's plane normal.
+	     * @param ny The y-coordinate of the face plane normal.
+	     * @param nz The z-coordinate of the face plane normal.
+	     * @param px The x-coordinate of a point on the face's plane (ie a face vertex)
+	     * @param py The y-coordinate of a point on the face's plane (ie a face vertex)
+	     * @param pz The z-coordinate of a point on the face's plane (ie a face vertex)
+	     */
+	    private getPrecisePosition(invSceneTransform, nx, ny, nz, px, py, pz);
+	    dispose(): void;
+	}
+	export = ShaderPicker;
+	
+}
+declare module "awayjs-renderergl/lib/tools/data/ParticleGeometryTransform" {
+	import Matrix = require("awayjs-core/lib/geom/Matrix");
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	/**
+	 * ...
+	 */
+	class ParticleGeometryTransform {
+	    private _defaultVertexTransform;
+	    private _defaultInvVertexTransform;
+	    private _defaultUVTransform;
+	    vertexTransform: Matrix3D;
+	    UVTransform: Matrix;
+	    invVertexTransform: Matrix3D;
+	}
+	export = ParticleGeometryTransform;
+	
+}
+declare module "awayjs-renderergl/lib/utils/ParticleGeometryHelper" {
+	import Geometry = require("awayjs-core/lib/data/Geometry");
+	import ParticleGeometry = require("awayjs-renderergl/lib/base/ParticleGeometry");
+	import ParticleGeometryTransform = require("awayjs-renderergl/lib/tools/data/ParticleGeometryTransform");
+	/**
+	 * ...
+	 */
+	class ParticleGeometryHelper {
+	    static MAX_VERTEX: number;
+	    static generateGeometry(geometries: Array<Geometry>, transforms?: Array<ParticleGeometryTransform>): ParticleGeometry;
+	}
+	export = ParticleGeometryHelper;
+	
+}
+declare module "awayjs-renderergl/lib/utils/PerspectiveMatrix3D" {
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	/**
+	 *
+	 */
+	class PerspectiveMatrix3D extends Matrix3D {
+	    constructor(v?: Array<number>);
+	    perspectiveFieldOfViewLH(fieldOfViewY: number, aspectRatio: number, zNear: number, zFar: number): void;
+	}
+	export = PerspectiveMatrix3D;
 	
 }
 declare module "awayjs-renderergl/lib/animators/data/ColorSegmentPoint" {
@@ -6510,7 +6446,7 @@ declare module "awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode" {
 	
 }
 declare module "awayjs-renderergl/lib/animators/states/VertexClipState" {
-	import Geometry = require("awayjs-display/lib/base/Geometry");
+	import Geometry = require("awayjs-core/lib/data/Geometry");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import VertexClipNode = require("awayjs-renderergl/lib/animators/nodes/VertexClipNode");
 	import AnimationClipState = require("awayjs-renderergl/lib/animators/states/AnimationClipState");
@@ -6546,7 +6482,7 @@ declare module "awayjs-renderergl/lib/animators/states/VertexClipState" {
 }
 declare module "awayjs-renderergl/lib/animators/nodes/VertexClipNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
-	import Geometry = require("awayjs-display/lib/base/Geometry");
+	import Geometry = require("awayjs-core/lib/data/Geometry");
 	import AnimationClipNodeBase = require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
 	/**
 	 * A vertex animation node containing time-based animation data as individual geometry obejcts.
@@ -6626,5 +6562,69 @@ declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransition"
 	    getAnimationNode(animator: AnimatorBase, startNode: AnimationNodeBase, endNode: AnimationNodeBase, startBlend: number): AnimationNodeBase;
 	}
 	export = CrossfadeTransition;
+	
+}
+declare module "awayjs-renderergl/lib/tools/commands/Merge" {
+	import DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
+	import Mesh = require("awayjs-display/lib/entities/Mesh");
+	/**
+	 *  Class Merge merges two or more static meshes into one.<code>Merge</code>
+	 */
+	class Merge {
+	    private _objectSpace;
+	    private _keepMaterial;
+	    private _disposeSources;
+	    private _geomVOs;
+	    private _toDispose;
+	    /**
+	     * @param    keepMaterial    [optional]    Determines if the merged object uses the recevier mesh material information or keeps its source material(s). Defaults to false.
+	     * If false and receiver object has multiple materials, the last material found in receiver submeshes is applied to the merged submesh(es).
+	     * @param    disposeSources  [optional]    Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
+	     * If true, only receiver geometry and resulting mesh are kept in  memory.
+	     * @param    objectSpace     [optional]    Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+	     */
+	    constructor(keepMaterial?: boolean, disposeSources?: boolean, objectSpace?: boolean);
+	    /**
+	     * Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
+	     */
+	    disposeSources: boolean;
+	    /**
+	     * Determines if the material source(s) used for the merging are disposed. Defaults to false.
+	     */
+	    keepMaterial: boolean;
+	    /**
+	     * Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+	     */
+	    objectSpace: boolean;
+	    /**
+	     * Merges all the children of a container into a single Mesh. If no Mesh object is found, method returns the receiver without modification.
+	     *
+	     * @param    receiver           The Mesh to receive the merged contents of the container.
+	     * @param    objectContainer    The DisplayObjectContainer holding the meshes to be mergd.
+	     *
+	     * @return The merged Mesh instance.
+	     */
+	    applyToContainer(receiver: Mesh, objectContainer: DisplayObjectContainer): void;
+	    /**
+	     * Merges all the meshes found in the Array&lt;Mesh&gt; into a single Mesh.
+	     *
+	     * @param    receiver    The Mesh to receive the merged contents of the meshes.
+	     * @param    meshes      A series of Meshes to be merged with the reciever mesh.
+	     */
+	    applyToMeshes(receiver: Mesh, meshes: Array<Mesh>): void;
+	    /**
+	     *  Merges 2 meshes into one. It is recommand to use apply when 2 meshes are to be merged. If more need to be merged, use either applyToMeshes or applyToContainer methods.
+	     *
+	     * @param    receiver    The Mesh to receive the merged contents of both meshes.
+	     * @param    mesh        The Mesh to be merged with the receiver mesh
+	     */
+	    apply(receiver: Mesh, mesh: Mesh): void;
+	    private reset();
+	    private merge(destMesh, dispose);
+	    private collect(mesh, dispose);
+	    private getSubGeomData(material);
+	    private parseContainer(receiver, object);
+	}
+	export = Merge;
 	
 }
