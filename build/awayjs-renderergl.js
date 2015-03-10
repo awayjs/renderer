@@ -511,8 +511,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var AssetType = require("awayjs-core/lib/library/AssetType");
-var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
+var AssetBase = require("awayjs-core/lib/library/AssetBase");
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var AnimationSetError = require("awayjs-renderergl/lib/errors/AnimationSetError");
 /**
@@ -613,7 +612,7 @@ var AnimationSetBase = (function (_super) {
          * @inheritDoc
          */
         get: function () {
-            return AssetType.ANIMATION_SET;
+            return AnimationSetBase.assetType;
         },
         enumerable: true,
         configurable: true
@@ -672,20 +671,20 @@ var AnimationSetBase = (function (_super) {
      */
     AnimationSetBase.prototype.dispose = function () {
     };
+    AnimationSetBase.assetType = "[asset AnimationSet]";
     return AnimationSetBase;
-})(NamedAssetBase);
+})(AssetBase);
 module.exports = AnimationSetBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/library/NamedAssetBase":undefined,"awayjs-renderergl/lib/errors/AnimationSetError":"awayjs-renderergl/lib/errors/AnimationSetError"}],"awayjs-renderergl/lib/animators/AnimatorBase":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-renderergl/lib/errors/AnimationSetError":"awayjs-renderergl/lib/errors/AnimationSetError"}],"awayjs-renderergl/lib/animators/AnimatorBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var AssetType = require("awayjs-core/lib/library/AssetType");
-var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
+var AssetBase = require("awayjs-core/lib/library/AssetBase");
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var getTimer = require("awayjs-core/lib/utils/getTimer");
@@ -990,7 +989,7 @@ var AnimatorBase = (function (_super) {
          * @inheritDoc
          */
         get: function () {
-            return AssetType.ANIMATOR;
+            return AnimatorBase.assetType;
         },
         enumerable: true,
         configurable: true
@@ -999,12 +998,13 @@ var AnimatorBase = (function (_super) {
         //nothing to do here
         return sourceSubGeometry;
     };
+    AnimatorBase.assetType = "[asset Animator]";
     return AnimatorBase;
-})(NamedAssetBase);
+})(AssetBase);
 module.exports = AnimatorBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/library/NamedAssetBase":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/getTimer":undefined,"awayjs-renderergl/lib/events/AnimatorEvent":"awayjs-renderergl/lib/events/AnimatorEvent"}],"awayjs-renderergl/lib/animators/ParticleAnimationSet":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/getTimer":undefined,"awayjs-renderergl/lib/events/AnimatorEvent":"awayjs-renderergl/lib/events/AnimatorEvent"}],"awayjs-renderergl/lib/animators/ParticleAnimationSet":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -2835,8 +2835,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var AssetType = require("awayjs-core/lib/library/AssetType");
-var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
+var AssetBase = require("awayjs-core/lib/library/AssetBase");
 var JointPose = require("awayjs-renderergl/lib/animators/data/JointPose");
 /**
  * A collection of pose objects, determining the pose for an entire skeleton.
@@ -2871,7 +2870,7 @@ var SkeletonPose = (function (_super) {
          * @inheritDoc
          */
         get: function () {
-            return AssetType.SKELETON_POSE;
+            return SkeletonPose.assetType;
         },
         enumerable: true,
         configurable: true
@@ -2937,20 +2936,20 @@ var SkeletonPose = (function (_super) {
     SkeletonPose.prototype.dispose = function () {
         this.jointPoses.length = 0;
     };
+    SkeletonPose.assetType = "[asset SkeletonPose]";
     return SkeletonPose;
-})(NamedAssetBase);
+})(AssetBase);
 module.exports = SkeletonPose;
 
 
-},{"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/library/NamedAssetBase":undefined,"awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose"}],"awayjs-renderergl/lib/animators/data/Skeleton":[function(require,module,exports){
+},{"awayjs-core/lib/library/AssetBase":undefined,"awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose"}],"awayjs-renderergl/lib/animators/data/Skeleton":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var AssetType = require("awayjs-core/lib/library/AssetType");
-var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
+var AssetBase = require("awayjs-core/lib/library/AssetBase");
 /**
  * A Skeleton object is a hierarchical grouping of joint objects that can be used for skeletal animation.
  *
@@ -3027,17 +3026,18 @@ var Skeleton = (function (_super) {
          * @inheritDoc
          */
         get: function () {
-            return AssetType.SKELETON;
+            return Skeleton.assetType;
         },
         enumerable: true,
         configurable: true
     });
+    Skeleton.assetType = "[asset Skeleton]";
     return Skeleton;
-})(NamedAssetBase);
+})(AssetBase);
 module.exports = Skeleton;
 
 
-},{"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/library/NamedAssetBase":undefined}],"awayjs-renderergl/lib/animators/data/VertexAnimationMode":[function(require,module,exports){
+},{"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-renderergl/lib/animators/data/VertexAnimationMode":[function(require,module,exports){
 /**
  * Options for setting the animation mode of a vertex animator object.
  *
@@ -9464,7 +9464,7 @@ module.exports = RenderBasicMaterialObject;
 
 },{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/BasicMaterialPass":"awayjs-renderergl/lib/passes/BasicMaterialPass"}],"awayjs-renderergl/lib/compilation/RenderObjectBase":[function(require,module,exports){
 var Event = require("awayjs-core/lib/events/Event");
-var AssetType = require("awayjs-core/lib/library/AssetType");
+var MaterialBase = require("awayjs-display/lib/materials/MaterialBase");
 /**
  *
  * @class away.pool.ScreenPasses
@@ -9517,7 +9517,7 @@ var RenderObjectBase = (function () {
         shaderObject.alphaThreshold = this._renderObjectOwner.alphaThreshold;
         shaderObject.useMipmapping = this._renderObjectOwner.mipmap;
         shaderObject.useSmoothTextures = this._renderObjectOwner.smooth;
-        if (this._renderObjectOwner.assetType = AssetType.MATERIAL) {
+        if (this._renderObjectOwner.isAsset(MaterialBase)) {
             var material = this._renderObjectOwner;
             shaderObject.useAlphaPremultiplied = material.alphaPremultiplied;
             shaderObject.useBothSides = material.bothSides;
@@ -9649,7 +9649,7 @@ var RenderObjectBase = (function () {
 module.exports = RenderObjectBase;
 
 
-},{"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/library/AssetType":undefined}],"awayjs-renderergl/lib/compilation/RenderObjectPool":[function(require,module,exports){
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-display/lib/materials/MaterialBase":undefined}],"awayjs-renderergl/lib/compilation/RenderObjectPool":[function(require,module,exports){
 /**
  * @class away.pool.RenderObjectPool
  */
@@ -11475,69 +11475,7 @@ var Filter3DTaskBase = (function () {
 module.exports = Filter3DTaskBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/managers/DefaultMaterialManager":[function(require,module,exports){
-var BitmapData = require("awayjs-core/lib/data/BitmapData");
-var AssetType = require("awayjs-core/lib/library/AssetType");
-var BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
-var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
-var DefaultMaterialManager = (function () {
-    function DefaultMaterialManager() {
-    }
-    DefaultMaterialManager.getDefaultMaterial = function (renderableOwner) {
-        if (renderableOwner === void 0) { renderableOwner = null; }
-        if (renderableOwner != null && renderableOwner.assetType == AssetType.LINE_SUB_MESH) {
-            if (!DefaultMaterialManager._defaultLineMaterial)
-                DefaultMaterialManager.createDefaultLineMaterial();
-            return DefaultMaterialManager._defaultLineMaterial;
-        }
-        else {
-            if (!DefaultMaterialManager._defaultTriangleMaterial)
-                DefaultMaterialManager.createDefaultTriangleMaterial();
-            return DefaultMaterialManager._defaultTriangleMaterial;
-        }
-    };
-    DefaultMaterialManager.getDefaultTexture = function (renderableOwner) {
-        if (renderableOwner === void 0) { renderableOwner = null; }
-        if (!DefaultMaterialManager._defaultTexture)
-            DefaultMaterialManager.createDefaultTexture();
-        return DefaultMaterialManager._defaultTexture;
-    };
-    DefaultMaterialManager.createDefaultTexture = function () {
-        DefaultMaterialManager._defaultBitmapData = DefaultMaterialManager.createCheckeredBitmapData();
-        DefaultMaterialManager._defaultTexture = new BitmapTexture(DefaultMaterialManager._defaultBitmapData);
-        DefaultMaterialManager._defaultTexture.name = "defaultTexture";
-    };
-    DefaultMaterialManager.createCheckeredBitmapData = function () {
-        var b = new BitmapData(8, 8, false, 0x000000);
-        //create chekerboard
-        var i, j;
-        for (i = 0; i < 8; i++) {
-            for (j = 0; j < 8; j++) {
-                if ((j & 1) ^ (i & 1)) {
-                    b.setPixel(i, j, 0XFFFFFF);
-                }
-            }
-        }
-        return b;
-    };
-    DefaultMaterialManager.createDefaultTriangleMaterial = function () {
-        if (!DefaultMaterialManager._defaultTexture)
-            DefaultMaterialManager.createDefaultTexture();
-        DefaultMaterialManager._defaultTriangleMaterial = new BasicMaterial(DefaultMaterialManager._defaultTexture);
-        DefaultMaterialManager._defaultTriangleMaterial.mipmap = false;
-        DefaultMaterialManager._defaultTriangleMaterial.smooth = false;
-        DefaultMaterialManager._defaultTriangleMaterial.name = "defaultTriangleMaterial";
-    };
-    DefaultMaterialManager.createDefaultLineMaterial = function () {
-        DefaultMaterialManager._defaultLineMaterial = new BasicMaterial();
-        DefaultMaterialManager._defaultLineMaterial.name = "defaultLineMaterial";
-    };
-    return DefaultMaterialManager;
-})();
-module.exports = DefaultMaterialManager;
-
-
-},{"awayjs-core/lib/data/BitmapData":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/textures/BitmapTexture":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
