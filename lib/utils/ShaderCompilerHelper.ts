@@ -1,4 +1,4 @@
-import TextureProxyBase				= require("awayjs-core/lib/textures/TextureProxyBase");
+import TextureBase					= require("awayjs-core/lib/textures/TextureBase");
 
 import ContextGLTextureFormat		= require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
 
@@ -19,7 +19,7 @@ class ShaderCompilerHelper
 	 *
 	 * @protected
 	 */
-	public static getTex2DSampleCode(targetReg:ShaderRegisterElement, sharedReg:ShaderRegisterData, inputReg:ShaderRegisterElement, texture:TextureProxyBase, smooth:boolean, repeat:boolean, mipmaps:boolean, uvReg:ShaderRegisterElement = null, forceWrap:string = null):string
+	public static getTex2DSampleCode(targetReg:ShaderRegisterElement, sharedReg:ShaderRegisterData, inputReg:ShaderRegisterElement, texture:TextureBase, smooth:boolean, repeat:boolean, mipmaps:boolean, uvReg:ShaderRegisterElement = null, forceWrap:string = null):string
 	{
 		var wrap:string = forceWrap || (repeat? "wrap":"clamp");
 		var format:string = ShaderCompilerHelper.getFormatStringForTexture(texture);
@@ -43,7 +43,7 @@ class ShaderCompilerHelper
 	 *
 	 * @protected
 	 */
-	public static getTexCubeSampleCode(targetReg:ShaderRegisterElement, inputReg:ShaderRegisterElement, texture:TextureProxyBase, smooth:boolean, mipmaps:boolean, uvReg:ShaderRegisterElement):string
+	public static getTexCubeSampleCode(targetReg:ShaderRegisterElement, inputReg:ShaderRegisterElement, texture:TextureBase, smooth:boolean, mipmaps:boolean, uvReg:ShaderRegisterElement):string
 	{
 		var filter:string;
 		var format:string = ShaderCompilerHelper.getFormatStringForTexture(texture);
@@ -59,7 +59,7 @@ class ShaderCompilerHelper
 	 *
 	 * @protected
 	 */
-	public static getFormatStringForTexture(texture:TextureProxyBase):string
+	public static getFormatStringForTexture(texture:TextureBase):string
 	{
 		switch (texture.format) {
 			case ContextGLTextureFormat.COMPRESSED:

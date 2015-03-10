@@ -1,6 +1,5 @@
-import AssetType					= require("awayjs-core/lib/library/AssetType");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
-import NamedAssetBase				= require("awayjs-core/lib/library/NamedAssetBase");
+import AssetBase					= require("awayjs-core/lib/library/AssetBase");
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
 
 import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
@@ -16,8 +15,10 @@ import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/Shade
  *
  * @see away.animators.AnimatorBase
  */
-class AnimationSetBase extends NamedAssetBase implements IAsset
+class AnimationSetBase extends AssetBase implements IAsset
 {
+	public static assetType:string = "[asset AnimationSet]";
+
 	private _usesCPU:boolean;
 	private _animations:Array<AnimationNodeBase> = new Array<AnimationNodeBase>();
 	private _animationNames:Array<string> = new Array<string>();
@@ -131,7 +132,7 @@ class AnimationSetBase extends NamedAssetBase implements IAsset
 	 */
 	public get assetType():string
 	{
-		return AssetType.ANIMATION_SET;
+		return AnimationSetBase.assetType;
 	}
 
 	/**

@@ -2,7 +2,7 @@ import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import RenderTexture				= require("awayjs-core/lib/textures/RenderTexture");
-import TextureProxyBase				= require("awayjs-core/lib/textures/TextureProxyBase");
+import TextureBase					= require("awayjs-core/lib/textures/TextureBase");
 
 import LightBase					= require("awayjs-display/lib/base/LightBase");
 import IRenderer					= require("awayjs-display/lib/render/IRenderer");
@@ -51,7 +51,7 @@ class DefaultRenderer extends RendererBase implements IRenderer
 	private _skyboxProjection:Matrix3D = new Matrix3D();
 	public _pFilter3DRenderer:Filter3DRenderer;
 
-	public _pDepthRender:TextureProxyBase;
+	public _pDepthRender:TextureBase;
 
 	private _antiAlias:number;
 
@@ -188,7 +188,7 @@ class DefaultRenderer extends RendererBase implements IRenderer
 		this._pStage.bufferClear = false;
 	}
 
-	public pExecuteRender(entityCollector:EntityCollector, target:TextureProxyBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public pExecuteRender(entityCollector:EntityCollector, target:TextureBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 	{
 		this.updateLights(entityCollector);
 

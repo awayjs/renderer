@@ -6,7 +6,7 @@ import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
 import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
-import TextureProxyBase				= require("awayjs-core/lib/textures/TextureProxyBase");
+import TextureBase					= require("awayjs-core/lib/textures/TextureBase");
 import ByteArray					= require("awayjs-core/lib/utils/ByteArray");
 
 import LineSubMesh					= require("awayjs-display/lib/base/LineSubMesh");
@@ -470,7 +470,7 @@ class RendererBase extends EventDispatcher
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public _iRender(entityCollector:CollectorBase, target:TextureProxyBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public _iRender(entityCollector:CollectorBase, target:TextureBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 	{
 		//TODO refactor setTarget so that rendertextures are created before this check
 		if (!this._pStage || !this._pContext)
@@ -492,7 +492,7 @@ class RendererBase extends EventDispatcher
 		}
 	}
 
-	public _iRenderCascades(entityCollector:ShadowCasterCollector, target:TextureProxyBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>)
+	public _iRenderCascades(entityCollector:ShadowCasterCollector, target:TextureBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>)
 	{
 		this.pCollectRenderables(entityCollector);
 
@@ -553,7 +553,7 @@ class RendererBase extends EventDispatcher
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public pExecuteRender(entityCollector:CollectorBase, target:TextureProxyBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public pExecuteRender(entityCollector:CollectorBase, target:TextureBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 	{
 		this._pStage.setRenderTarget(target, true, surfaceSelector);
 

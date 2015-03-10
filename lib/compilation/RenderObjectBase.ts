@@ -1,6 +1,5 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Event						= require("awayjs-core/lib/events/Event");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
 
 import IRenderObject				= require("awayjs-display/lib/pool/IRenderObject");
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
@@ -89,7 +88,7 @@ class RenderObjectBase implements IRenderObject
 		shaderObject.useMipmapping = this._renderObjectOwner.mipmap;
 		shaderObject.useSmoothTextures = this._renderObjectOwner.smooth;
 
-		if (this._renderObjectOwner.assetType = AssetType.MATERIAL) {
+		if (this._renderObjectOwner.isAsset(MaterialBase)) {
 			var material:MaterialBase = <MaterialBase> this._renderObjectOwner;
 			shaderObject.useAlphaPremultiplied = material.alphaPremultiplied;
 			shaderObject.useBothSides = material.bothSides;

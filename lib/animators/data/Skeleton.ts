@@ -1,16 +1,17 @@
 import SkeletonJoint					= require("awayjs-renderergl/lib/animators/data/SkeletonJoint");
 
-import AssetType						= require("awayjs-core/lib/library/AssetType");
 import IAsset							= require("awayjs-core/lib/library/IAsset");
-import NamedAssetBase					= require("awayjs-core/lib/library/NamedAssetBase");
+import AssetBase						= require("awayjs-core/lib/library/AssetBase");
 
 /**
  * A Skeleton object is a hierarchical grouping of joint objects that can be used for skeletal animation.
  *
  * @see away.animators.SkeletonJoint
  */
-class Skeleton extends NamedAssetBase implements IAsset
+class Skeleton extends AssetBase implements IAsset
 {
+	public static assetType:string = "[asset Skeleton]";
+
 	/**
 	 * A flat list of joint objects that comprise the skeleton. Every joint except for the root has a parentIndex
 	 * property that is an index into this list.
@@ -94,7 +95,7 @@ class Skeleton extends NamedAssetBase implements IAsset
 	 */
 	public get assetType():string
 	{
-		return AssetType.SKELETON;
+		return Skeleton.assetType;
 	}
 }
 

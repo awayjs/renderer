@@ -1,6 +1,5 @@
-import AssetType						= require("awayjs-core/lib/library/AssetType");
 import IAsset							= require("awayjs-core/lib/library/IAsset");
-import NamedAssetBase					= require("awayjs-core/lib/library/NamedAssetBase");
+import AssetBase						= require("awayjs-core/lib/library/AssetBase");
 
 import JointPose						= require("awayjs-renderergl/lib/animators/data/JointPose");
 
@@ -14,8 +13,10 @@ import JointPose						= require("awayjs-renderergl/lib/animators/data/JointPose"
  * @see away.animators.Skeleton
  * @see away.animators.JointPose
  */
-class SkeletonPose extends NamedAssetBase implements IAsset
+class SkeletonPose extends AssetBase implements IAsset
 {
+	public static assetType:string = "[asset SkeletonPose]";
+
 	/**
 	 * A flat list of pose objects that comprise the skeleton pose. The pose indices correspond to the target skeleton's joint indices.
 	 *
@@ -46,7 +47,7 @@ class SkeletonPose extends NamedAssetBase implements IAsset
 	 */
 	public get assetType():string
 	{
-		return AssetType.SKELETON_POSE;
+		return SkeletonPose.assetType;
 	}
 
 	/**

@@ -1,6 +1,5 @@
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
-import NamedAssetBase				= require("awayjs-core/lib/library/NamedAssetBase");
+import AssetBase					= require("awayjs-core/lib/library/AssetBase");
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import getTimer						= require("awayjs-core/lib/utils/getTimer");
@@ -46,8 +45,10 @@ import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderOb
  *
  * @see away.animators.AnimationSetBase
  */
-class AnimatorBase extends NamedAssetBase implements IAnimator
+class AnimatorBase extends AssetBase implements IAnimator
 {
+	public static assetType:string = "[asset Animator]";
+
 	private _broadcaster:RequestAnimationFrame;
 	private _isPlaying:boolean;
 	private _autoUpdate:boolean = true;
@@ -382,7 +383,7 @@ class AnimatorBase extends NamedAssetBase implements IAnimator
 	 */
 	public get assetType():string
 	{
-		return AssetType.ANIMATOR;
+		return AnimatorBase.assetType;
 	}
 
 
