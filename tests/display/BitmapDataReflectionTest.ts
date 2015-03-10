@@ -2,12 +2,12 @@ import BitmapData					= require("awayjs-core/lib/data/BitmapData");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoader					= require("awayjs-core/lib/library/AssetLoader");
 import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import BitmapTexture				= require("awayjs-core/lib/textures/BitmapTexture");
 import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
+import TextureBase					= require("awayjs-core/lib/textures/TextureBase");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/containers/View");
@@ -45,7 +45,7 @@ class BitmapDataReflectionTest
 			var asset:IAsset = loader.baseDependency.assets[c];
 
 			switch (asset.assetType) {
-				case AssetType.TEXTURE:
+				case TextureBase.assetType:
 
 					var prefab:PrimitivePlanePrefab = new PrimitivePlanePrefab(500 , 500, 1, 1, false);
 					var tx:ImageTexture = <ImageTexture> asset;
