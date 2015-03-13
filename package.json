@@ -17,7 +17,6 @@
     "glob": "^4.4.0",
     "gulp": "^3.8.11",
     "gulp-git": "^1.0.1",
-    "gulp-if": "^1.2.5",
     "gulp-livereload": "^3.7.0",
     "gulp-rename": "^1.2.0",
     "gulp-shell": "^0.3.0",

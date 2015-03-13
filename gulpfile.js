@@ -14,7 +14,6 @@ var livereload = require('gulp-livereload');
 
 var shell = require('gulp-shell');
 var git = require('gulp-git');
-var gulpif = require('gulp-if');
 var watch;
 
 gulp.task('package', function(callback){
