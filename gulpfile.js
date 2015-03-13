@@ -3,7 +3,6 @@ var glob = require('glob');
 var path = require('path');
 var browserify  = require('browserify');
 var source = require('vinyl-source-stream');
-var map = require('vinyl-map');
 var transform = require('vinyl-transform');
 var exorcist = require('exorcist');
 var sourcemaps = require('gulp-sourcemaps');
@@ -11,6 +10,8 @@ var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var watchify = require('watchify');
 var livereload = require('gulp-livereload');
+
+var typescript = require('gulp-typescript');
 
 var shell = require('gulp-shell');
 var git = require('gulp-git');
