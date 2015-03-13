@@ -80,7 +80,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = DefaultRenderer;
 	
-}declare module "awayjs-renderergl/lib/DepthRenderer" {
+}
+
+declare module "awayjs-renderergl/lib/DepthRenderer" {
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
@@ -103,7 +105,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = DepthRenderer;
 	
-}declare module "awayjs-renderergl/lib/DistanceRenderer" {
+}
+
+declare module "awayjs-renderergl/lib/DistanceRenderer" {
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
@@ -126,7 +130,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = DistanceRenderer;
 	
-}declare module "awayjs-renderergl/lib/Filter3DRenderer" {
+}
+
+declare module "awayjs-renderergl/lib/Filter3DRenderer" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
@@ -156,7 +162,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = Filter3DRenderer;
 	
-}declare module "awayjs-renderergl/lib/animators/AnimationSetBase" {
+}
+
+declare module "awayjs-renderergl/lib/animators/AnimationSetBase" {
 	import IAsset = require("awayjs-core/lib/library/IAsset");
 	import AssetBase = require("awayjs-core/lib/library/AssetBase");
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
@@ -258,7 +266,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = AnimationSetBase;
 	
-}declare module "awayjs-renderergl/lib/animators/AnimatorBase" {
+}
+
+declare module "awayjs-renderergl/lib/animators/AnimatorBase" {
 	import AssetBase = require("awayjs-core/lib/library/AssetBase");
 	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
 	import IAnimator = require("awayjs-display/lib/animators/IAnimator");
@@ -439,7 +449,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = AnimatorBase;
 	
-}declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
+}
+
+declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
 	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import ISubMesh = require("awayjs-display/lib/base/ISubMesh");
@@ -551,7 +563,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleAnimationSet;
 	
-}declare module "awayjs-renderergl/lib/animators/ParticleAnimator" {
+}
+
+declare module "awayjs-renderergl/lib/animators/ParticleAnimator" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -609,7 +623,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleAnimator;
 	
-}declare module "awayjs-renderergl/lib/animators/SkeletonAnimationSet" {
+}
+
+declare module "awayjs-renderergl/lib/animators/SkeletonAnimationSet" {
 	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
@@ -659,7 +675,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonAnimationSet;
 	
-}declare module "awayjs-renderergl/lib/animators/SkeletonAnimator" {
+}
+
+declare module "awayjs-renderergl/lib/animators/SkeletonAnimator" {
 	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -773,7 +791,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonAnimator;
 	
-}declare module "awayjs-renderergl/lib/animators/VertexAnimationSet" {
+}
+
+declare module "awayjs-renderergl/lib/animators/VertexAnimationSet" {
 	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
@@ -841,7 +861,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = VertexAnimationSet;
 	
-}declare module "awayjs-renderergl/lib/animators/VertexAnimator" {
+}
+
+declare module "awayjs-renderergl/lib/animators/VertexAnimator" {
 	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -896,7 +918,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = VertexAnimator;
 	
-}declare module "awayjs-renderergl/lib/animators/data/AnimationRegisterCache" {
+}
+
+declare module "awayjs-renderergl/lib/animators/data/AnimationRegisterCache" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
@@ -957,7 +981,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = AnimationRegisterCache;
 	
-}declare module "awayjs-renderergl/lib/animators/data/AnimationSubGeometry" {
+}
+
+declare module "awayjs-renderergl/lib/animators/data/AnimationSubGeometry" {
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
 	import IVertexBuffer = require("awayjs-stagegl/lib/base/IVertexBuffer");
@@ -993,7 +1019,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = AnimationSubGeometry;
 	
-}declare module "awayjs-renderergl/lib/animators/data/ColorSegmentPoint" {
+}
+
+declare module "awayjs-renderergl/lib/animators/data/ColorSegmentPoint" {
 	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 	class ColorSegmentPoint {
 	    private _color;
@@ -1004,7 +1032,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ColorSegmentPoint;
 	
-}declare module "awayjs-renderergl/lib/animators/data/JointPose" {
+}
+
+declare module "awayjs-renderergl/lib/animators/data/JointPose" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import Quaternion = require("awayjs-core/lib/geom/Quaternion");
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
@@ -1046,7 +1076,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = JointPose;
 	
-}declare module "awayjs-renderergl/lib/animators/data/ParticleAnimationData" {
+}
+
+declare module "awayjs-renderergl/lib/animators/data/ParticleAnimationData" {
 	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
 	/**
 	 * ...
@@ -1063,7 +1095,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleAnimationData;
 	
-}declare module "awayjs-renderergl/lib/animators/data/ParticleData" {
+}
+
+declare module "awayjs-renderergl/lib/animators/data/ParticleData" {
 	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	class ParticleData {
 	    particleIndex: number;
@@ -1073,7 +1107,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleData;
 	
-}declare module "awayjs-renderergl/lib/animators/data/ParticleProperties" {
+}
+
+declare module "awayjs-renderergl/lib/animators/data/ParticleProperties" {
 	/**
 	 * Dynamic class for holding the local properties of a particle, used for processing the static properties
 	 * of particles in the particle animation set before beginning upload to the GPU.
@@ -1106,7 +1142,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleProperties;
 	
-}declare module "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode" {
 	/**
 	 * Options for setting the properties mode of a particle animation node.
 	 */
@@ -1126,7 +1164,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticlePropertiesMode;
 	
-}declare module "awayjs-renderergl/lib/animators/data/Skeleton" {
+}
+
+declare module "awayjs-renderergl/lib/animators/data/Skeleton" {
 	import SkeletonJoint = require("awayjs-renderergl/lib/animators/data/SkeletonJoint");
 	import IAsset = require("awayjs-core/lib/library/IAsset");
 	import AssetBase = require("awayjs-core/lib/library/AssetBase");
@@ -1180,7 +1220,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = Skeleton;
 	
-}declare module "awayjs-renderergl/lib/animators/data/SkeletonJoint" {
+}
+
+declare module "awayjs-renderergl/lib/animators/data/SkeletonJoint" {
 	/**
 	 * A value obect representing a single joint in a skeleton object.
 	 *
@@ -1208,7 +1250,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonJoint;
 	
-}declare module "awayjs-renderergl/lib/animators/data/SkeletonPose" {
+}
+
+declare module "awayjs-renderergl/lib/animators/data/SkeletonPose" {
 	import IAsset = require("awayjs-core/lib/library/IAsset");
 	import AssetBase = require("awayjs-core/lib/library/AssetBase");
 	import JointPose = require("awayjs-renderergl/lib/animators/data/JointPose");
@@ -1270,7 +1314,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonPose;
 	
-}declare module "awayjs-renderergl/lib/animators/data/VertexAnimationMode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/data/VertexAnimationMode" {
 	/**
 	 * Options for setting the animation mode of a vertex animator object.
 	 *
@@ -1288,7 +1334,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = VertexAnimationMode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	/**
@@ -1333,7 +1381,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = AnimationClipNodeBase;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -1374,7 +1424,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleAccelerationNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -1423,7 +1475,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleBezierCurveNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -1456,7 +1510,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleBillboardNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleColorNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleColorNode" {
 	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -1528,7 +1584,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleColorNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleFollowNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleFollowNode" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -1563,7 +1621,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleFollowNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode" {
 	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -1601,7 +1661,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleInitialColorNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase" {
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -1681,7 +1743,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleNodeBase;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleOrbitNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleOrbitNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -1740,7 +1804,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleOrbitNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -1781,7 +1847,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleOscillatorNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticlePositionNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticlePositionNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -1822,7 +1890,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticlePositionNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -1852,7 +1922,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleRotateToHeadingNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -1890,7 +1962,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleRotateToPositionNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -1930,7 +2004,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleRotationalVelocityNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleScaleNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleScaleNode" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -1985,7 +2061,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleScaleNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode" {
 	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -2020,7 +2098,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleSegmentedColorNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -2095,7 +2175,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleSpriteSheetNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleTimeNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleTimeNode" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -2135,7 +2217,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleTimeNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleUVNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleUVNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -2197,7 +2281,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleUVNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -2238,7 +2324,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleVelocityNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode" {
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import SkeletonBinaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
@@ -2265,7 +2353,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonBinaryLERPNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/SkeletonClipNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/SkeletonClipNode" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
 	import AnimationClipNodeBase = require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
@@ -2306,7 +2396,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonClipNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode" {
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import SkeletonDifferenceState = require("awayjs-renderergl/lib/animators/states/SkeletonDifferenceState");
@@ -2333,7 +2425,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonDifferenceNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode" {
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import SkeletonDirectionalState = require("awayjs-renderergl/lib/animators/states/SkeletonDirectionalState");
@@ -2365,7 +2459,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonDirectionalNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode" {
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import SkeletonNaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState");
@@ -2403,7 +2499,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonNaryLERPNode;
 	
-}declare module "awayjs-renderergl/lib/animators/nodes/VertexClipNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/VertexClipNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import Geometry = require("awayjs-core/lib/data/Geometry");
 	import AnimationClipNodeBase = require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
@@ -2436,7 +2534,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = VertexClipNode;
 	
-}declare module "awayjs-renderergl/lib/animators/states/AnimationClipState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/AnimationClipState" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationClipNodeBase = require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
 	import AnimationStateBase = require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
@@ -2493,7 +2593,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = AnimationClipState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/AnimationStateBase" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/AnimationStateBase" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -2546,7 +2648,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = AnimationStateBase;
 	
-}declare module "awayjs-renderergl/lib/animators/states/IAnimationState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/IAnimationState" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	interface IAnimationState {
 	    positionDelta: Vector3D;
@@ -2561,7 +2665,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = IAnimationState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ISkeletonAnimationState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ISkeletonAnimationState" {
 	import IAnimationState = require("awayjs-renderergl/lib/animators/states/IAnimationState");
 	import Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
 	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
@@ -2573,7 +2679,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ISkeletonAnimationState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/IVertexAnimationState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/IVertexAnimationState" {
 	import Geometry = require("awayjs-core/lib/data/Geometry");
 	import IAnimationState = require("awayjs-renderergl/lib/animators/states/IAnimationState");
 	/**
@@ -2598,7 +2706,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = IVertexAnimationState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleAccelerationState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleAccelerationState" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2630,7 +2740,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleAccelerationState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleBezierCurveState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleBezierCurveState" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2664,7 +2776,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleBezierCurveState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleBillboardState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleBillboardState" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2694,7 +2808,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleBillboardState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleColorState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleColorState" {
 	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2755,7 +2871,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleColorState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleFollowState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleFollowState" {
 	import DisplayObject = require("awayjs-display/lib/base/DisplayObject");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2794,7 +2912,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleFollowState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleInitialColorState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleInitialColorState" {
 	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2831,7 +2951,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleInitialColorState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleOrbitState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleOrbitState" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2881,7 +3003,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleOrbitState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleOscillatorState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleOscillatorState" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2913,7 +3037,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleOscillatorState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticlePositionState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticlePositionState" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -2949,7 +3075,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticlePositionState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ParticleAnimator = require("awayjs-renderergl/lib/animators/ParticleAnimator");
@@ -2970,7 +3098,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleRotateToHeadingState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -3001,7 +3131,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleRotateToPositionState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -3038,7 +3170,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleRotationalVelocityState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleScaleState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleScaleState" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ParticleAnimator = require("awayjs-renderergl/lib/animators/ParticleAnimator");
@@ -3083,7 +3217,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleScaleState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState" {
 	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -3137,7 +3273,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleSegmentedColorState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ParticleAnimator = require("awayjs-renderergl/lib/animators/ParticleAnimator");
@@ -3177,7 +3315,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleSpriteSheetState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleStateBase" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleStateBase" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -3202,7 +3342,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleStateBase;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleTimeState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleTimeState" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ParticleAnimator = require("awayjs-renderergl/lib/animators/ParticleAnimator");
@@ -3225,7 +3367,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleTimeState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleUVState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleUVState" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ParticleAnimator = require("awayjs-renderergl/lib/animators/ParticleAnimator");
@@ -3246,7 +3390,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleUVState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/ParticleVelocityState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleVelocityState" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -3278,7 +3424,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleVelocityState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
 	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
@@ -3329,7 +3477,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonBinaryLERPState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/SkeletonClipState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/SkeletonClipState" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
 	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
@@ -3381,7 +3531,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonClipState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/SkeletonDifferenceState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/SkeletonDifferenceState" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
 	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
@@ -3433,7 +3585,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonDifferenceState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/SkeletonDirectionalState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/SkeletonDirectionalState" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
 	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
@@ -3493,7 +3647,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonDirectionalState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
 	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
@@ -3548,7 +3704,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkeletonNaryLERPState;
 	
-}declare module "awayjs-renderergl/lib/animators/states/VertexClipState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/states/VertexClipState" {
 	import Geometry = require("awayjs-core/lib/data/Geometry");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import VertexClipNode = require("awayjs-renderergl/lib/animators/nodes/VertexClipNode");
@@ -3582,7 +3740,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = VertexClipState;
 	
-}declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransition" {
+}
+
+declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransition" {
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import IAnimationTransition = require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
@@ -3596,7 +3756,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = CrossfadeTransition;
 	
-}declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode" {
+}
+
+declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode" {
 	import SkeletonBinaryLERPNode = require("awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode");
 	/**
 	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
@@ -3611,7 +3773,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = CrossfadeTransitionNode;
 	
-}declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState" {
+}
+
+declare module "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import SkeletonBinaryLERPState = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
 	import CrossfadeTransitionNode = require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode");
@@ -3629,7 +3793,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = CrossfadeTransitionState;
 	
-}declare module "awayjs-renderergl/lib/animators/transitions/IAnimationTransition" {
+}
+
+declare module "awayjs-renderergl/lib/animators/transitions/IAnimationTransition" {
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	/**
@@ -3640,7 +3806,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = IAnimationTransition;
 	
-}declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
+}
+
+declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
 	import Geometry = require("awayjs-core/lib/data/Geometry");
 	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
 	/**
@@ -3652,7 +3820,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleGeometry;
 	
-}declare module "awayjs-renderergl/lib/base/RendererBase" {
+}
+
+declare module "awayjs-renderergl/lib/base/RendererBase" {
 	import BitmapData = require("awayjs-core/lib/data/BitmapData");
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
@@ -3857,7 +4027,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = RendererBase;
 	
-}declare module "awayjs-renderergl/lib/compilation/DepthRenderObject" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/DepthRenderObject" {
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
@@ -3876,7 +4048,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = DepthRenderObject;
 	
-}declare module "awayjs-renderergl/lib/compilation/DistanceRenderObject" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/DistanceRenderObject" {
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RenderObjectPool = require("awayjs-renderergl/lib/compilation/RenderObjectPool");
@@ -3900,7 +4074,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = DistanceRenderObject;
 	
-}declare module "awayjs-renderergl/lib/compilation/IRenderObjectClass" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/IRenderObjectClass" {
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
@@ -3924,7 +4100,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = IRenderObjectClass;
 	
-}declare module "awayjs-renderergl/lib/compilation/RegisterPool" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/RegisterPool" {
 	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 	/**
 	 * RegisterPool is used by the shader compilation process to keep track of which registers of a certain type are
@@ -3992,7 +4170,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = RegisterPool;
 	
-}declare module "awayjs-renderergl/lib/compilation/RenderBasicMaterialObject" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/RenderBasicMaterialObject" {
 	import BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
@@ -4017,7 +4197,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = RenderBasicMaterialObject;
 	
-}declare module "awayjs-renderergl/lib/compilation/RenderObjectBase" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/RenderObjectBase" {
 	import IRenderObject = require("awayjs-display/lib/pool/IRenderObject");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -4105,7 +4287,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = RenderObjectBase;
 	
-}declare module "awayjs-renderergl/lib/compilation/RenderObjectPool" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/RenderObjectPool" {
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import IRenderObjectClass = require("awayjs-renderergl/lib/compilation/IRenderObjectClass");
@@ -4141,7 +4325,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = RenderObjectPool;
 	
-}declare module "awayjs-renderergl/lib/compilation/ShaderCompilerBase" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/ShaderCompilerBase" {
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
@@ -4225,7 +4411,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ShaderCompilerBase;
 	
-}declare module "awayjs-renderergl/lib/compilation/ShaderLightingCompiler" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/ShaderLightingCompiler" {
 	import ShaderLightingObject = require("awayjs-renderergl/lib/compilation/ShaderLightingObject");
 	import ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
@@ -4277,7 +4465,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ShaderLightingCompiler;
 	
-}declare module "awayjs-renderergl/lib/compilation/ShaderLightingObject" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/ShaderLightingObject" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -4382,7 +4572,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ShaderLightingObject;
 	
-}declare module "awayjs-renderergl/lib/compilation/ShaderObjectBase" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/ShaderObjectBase" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import Texture2DBase = require("awayjs-core/lib/textures/Texture2DBase");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -4609,7 +4801,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ShaderObjectBase;
 	
-}declare module "awayjs-renderergl/lib/compilation/ShaderRegisterCache" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/ShaderRegisterCache" {
 	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 	/**
 	 * ShaderRegister Cache provides the usage management system for all registers during shading compilation.
@@ -4752,7 +4946,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ShaderRegisterCache;
 	
-}declare module "awayjs-renderergl/lib/compilation/ShaderRegisterData" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/ShaderRegisterData" {
 	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 	/**
 	 * ShaderRegisterData contains the "named" registers, generated by the compiler and to be passed on to the methods.
@@ -4785,7 +4981,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ShaderRegisterData;
 	
-}declare module "awayjs-renderergl/lib/compilation/ShaderRegisterElement" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/ShaderRegisterElement" {
 	/**
 	 * A single register element (an entire register or a single register's component) used by the RegisterPool.
 	 */
@@ -4818,7 +5016,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ShaderRegisterElement;
 	
-}declare module "awayjs-renderergl/lib/compilation/SkyboxRenderObject" {
+}
+
+declare module "awayjs-renderergl/lib/compilation/SkyboxRenderObject" {
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
@@ -4842,14 +5042,18 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkyboxRenderObject;
 	
-}declare module "awayjs-renderergl/lib/errors/AnimationSetError" {
+}
+
+declare module "awayjs-renderergl/lib/errors/AnimationSetError" {
 	import Error = require("awayjs-core/lib/errors/Error");
 	class AnimationSetError extends Error {
 	    constructor(message: string);
 	}
 	export = AnimationSetError;
 	
-}declare module "awayjs-renderergl/lib/events/AnimationStateEvent" {
+}
+
+declare module "awayjs-renderergl/lib/events/AnimationStateEvent" {
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import Event = require("awayjs-core/lib/events/Event");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -4895,7 +5099,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = AnimationStateEvent;
 	
-}declare module "awayjs-renderergl/lib/events/AnimatorEvent" {
+}
+
+declare module "awayjs-renderergl/lib/events/AnimatorEvent" {
 	import Event = require("awayjs-core/lib/events/Event");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	/**
@@ -4932,7 +5138,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = AnimatorEvent;
 	
-}declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
+}
+
+declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
 	import Event = require("awayjs-core/lib/events/Event");
 	class ShadingMethodEvent extends Event {
 	    static SHADER_INVALIDATED: string;
@@ -4940,7 +5148,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ShadingMethodEvent;
 	
-}declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
+}
+
+declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
@@ -4963,7 +5173,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = Filter3DBase;
 	
-}declare module "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase" {
+}
+
+declare module "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import IProgram = require("awayjs-stagegl/lib/base/IProgram");
@@ -5002,7 +5214,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = Filter3DTaskBase;
 	
-}declare module "awayjs-renderergl/lib/managers/RTTBufferManager" {
+}
+
+declare module "awayjs-renderergl/lib/managers/RTTBufferManager" {
 	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
 	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -5041,7 +5255,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = RTTBufferManager;
 	
-}declare module "awayjs-renderergl/lib/passes/BasicMaterialPass" {
+}
+
+declare module "awayjs-renderergl/lib/passes/BasicMaterialPass" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -5075,7 +5291,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = BasicMaterialPass;
 	
-}declare module "awayjs-renderergl/lib/passes/DepthPass" {
+}
+
+declare module "awayjs-renderergl/lib/passes/DepthPass" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -5106,7 +5324,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = DepthPass;
 	
-}declare module "awayjs-renderergl/lib/passes/DistancePass" {
+}
+
+declare module "awayjs-renderergl/lib/passes/DistancePass" {
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -5145,7 +5365,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = DistancePass;
 	
-}declare module "awayjs-renderergl/lib/passes/IRenderLightingPass" {
+}
+
+declare module "awayjs-renderergl/lib/passes/IRenderLightingPass" {
 	import LightPickerBase = require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
 	import ShaderLightingObject = require("awayjs-renderergl/lib/compilation/ShaderLightingObject");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
@@ -5188,7 +5410,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = IRenderLightingPass;
 	
-}declare module "awayjs-renderergl/lib/passes/IRenderPassBase" {
+}
+
+declare module "awayjs-renderergl/lib/passes/IRenderPassBase" {
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
@@ -5213,7 +5437,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = IRenderPassBase;
 	
-}declare module "awayjs-renderergl/lib/passes/RenderPassBase" {
+}
+
+declare module "awayjs-renderergl/lib/passes/RenderPassBase" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -5343,7 +5569,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = RenderPassBase;
 	
-}declare module "awayjs-renderergl/lib/passes/SkyboxPass" {
+}
+
+declare module "awayjs-renderergl/lib/passes/SkyboxPass" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Skybox = require("awayjs-display/lib/entities/Skybox");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
@@ -5372,7 +5600,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkyboxPass;
 	
-}declare module "awayjs-renderergl/lib/pick/JSPickingCollider" {
+}
+
+declare module "awayjs-renderergl/lib/pick/JSPickingCollider" {
 	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
 	import IPickingCollider = require("awayjs-display/lib/pick/IPickingCollider");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -5401,7 +5631,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = JSPickingCollider;
 	
-}declare module "awayjs-renderergl/lib/pick/PickingColliderBase" {
+}
+
+declare module "awayjs-renderergl/lib/pick/PickingColliderBase" {
 	import Point = require("awayjs-core/lib/geom/Point");
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
@@ -5451,7 +5683,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = PickingColliderBase;
 	
-}declare module "awayjs-renderergl/lib/pick/ShaderPicker" {
+}
+
+declare module "awayjs-renderergl/lib/pick/ShaderPicker" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import Scene = require("awayjs-display/lib/containers/Scene");
 	import View = require("awayjs-display/lib/containers/View");
@@ -5571,7 +5805,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ShaderPicker;
 	
-}declare module "awayjs-renderergl/lib/pool/BillboardRenderable" {
+}
+
+declare module "awayjs-renderergl/lib/pool/BillboardRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
 	import Billboard = require("awayjs-display/lib/entities/Billboard");
@@ -5620,7 +5856,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = BillboardRenderable;
 	
-}declare module "awayjs-renderergl/lib/pool/CurveSubMeshRenderable" {
+}
+
+declare module "awayjs-renderergl/lib/pool/CurveSubMeshRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import CurveSubMesh = require("awayjs-display/lib/base/CurveSubMesh");
 	import CurveSubGeometry = require("awayjs-core/lib/data/CurveSubGeometry");
@@ -5689,7 +5927,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = CurveSubMeshRenderable;
 	
-}declare module "awayjs-renderergl/lib/pool/IRenderableClass" {
+}
+
+declare module "awayjs-renderergl/lib/pool/IRenderableClass" {
 	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
 	import IRenderable = require("awayjs-display/lib/pool/IRenderable");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -5719,7 +5959,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = IRenderableClass;
 	
-}declare module "awayjs-renderergl/lib/pool/IRendererPoolClass" {
+}
+
+declare module "awayjs-renderergl/lib/pool/IRendererPoolClass" {
 	import RendererPoolBase = require("awayjs-renderergl/lib/pool/RendererPoolBase");
 	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
 	/**
@@ -5736,7 +5978,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = IRendererPoolClass;
 	
-}declare module "awayjs-renderergl/lib/pool/LineSegmentRenderable" {
+}
+
+declare module "awayjs-renderergl/lib/pool/LineSegmentRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -5810,7 +6054,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = LineSegmentRenderable;
 	
-}declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
+}
+
+declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
 	import LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
@@ -5883,7 +6129,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = LineSubMeshRenderable;
 	
-}declare module "awayjs-renderergl/lib/pool/RenderableBase" {
+}
+
+declare module "awayjs-renderergl/lib/pool/RenderableBase" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
@@ -6077,7 +6325,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = RenderableBase;
 	
-}declare module "awayjs-renderergl/lib/pool/RenderablePoolBase" {
+}
+
+declare module "awayjs-renderergl/lib/pool/RenderablePoolBase" {
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
 	import IRenderablePool = require("awayjs-display/lib/pool/IRenderablePool");
@@ -6157,7 +6407,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = RenderablePoolBase;
 	
-}declare module "awayjs-renderergl/lib/pool/RendererPoolBase" {
+}
+
+declare module "awayjs-renderergl/lib/pool/RendererPoolBase" {
 	import LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
 	import TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
 	import CurveSubMesh = require("awayjs-display/lib/base/CurveSubMesh");
@@ -6223,7 +6475,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = RendererPoolBase;
 	
-}declare module "awayjs-renderergl/lib/pool/SkyboxRenderable" {
+}
+
+declare module "awayjs-renderergl/lib/pool/SkyboxRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	import Skybox = require("awayjs-display/lib/entities/Skybox");
@@ -6275,7 +6529,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = SkyboxRenderable;
 	
-}declare module "awayjs-renderergl/lib/pool/TriangleSubMeshRenderable" {
+}
+
+declare module "awayjs-renderergl/lib/pool/TriangleSubMeshRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
 	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
@@ -6335,7 +6591,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = TriangleSubMeshRenderable;
 	
-}declare module "awayjs-renderergl/lib/tools/commands/Merge" {
+}
+
+declare module "awayjs-renderergl/lib/tools/commands/Merge" {
 	import DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
 	import Mesh = require("awayjs-display/lib/entities/Mesh");
 	/**
@@ -6398,7 +6656,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = Merge;
 	
-}declare module "awayjs-renderergl/lib/tools/data/ParticleGeometryTransform" {
+}
+
+declare module "awayjs-renderergl/lib/tools/data/ParticleGeometryTransform" {
 	import Matrix = require("awayjs-core/lib/geom/Matrix");
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	/**
@@ -6414,7 +6674,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleGeometryTransform;
 	
-}declare module "awayjs-renderergl/lib/utils/ParticleGeometryHelper" {
+}
+
+declare module "awayjs-renderergl/lib/utils/ParticleGeometryHelper" {
 	import Geometry = require("awayjs-core/lib/data/Geometry");
 	import ParticleGeometry = require("awayjs-renderergl/lib/base/ParticleGeometry");
 	import ParticleGeometryTransform = require("awayjs-renderergl/lib/tools/data/ParticleGeometryTransform");
@@ -6427,7 +6689,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = ParticleGeometryHelper;
 	
-}declare module "awayjs-renderergl/lib/utils/PerspectiveMatrix3D" {
+}
+
+declare module "awayjs-renderergl/lib/utils/PerspectiveMatrix3D" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	/**
 	 *
@@ -6438,7 +6702,9 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	}
 	export = PerspectiveMatrix3D;
 	
-}declare module "awayjs-renderergl/lib/utils/ShaderCompilerHelper" {
+}
+
+declare module "awayjs-renderergl/lib/utils/ShaderCompilerHelper" {
 	import TextureBase = require("awayjs-core/lib/textures/TextureBase");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
@@ -6479,3 +6745,4 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	export = ShaderCompilerHelper;
 	
 }
+
