@@ -199,6 +199,8 @@ class CurveSubMeshRenderable extends RenderableBase
 			code.push("add", d, d, d2, nl);
 			code.push("abs", d, d, nl);
 
+			code.push("min", d, d, _1, nl);
+
 			code.push("mov", out+".w", d, nl);
 		}
 		return code.join(" ");
