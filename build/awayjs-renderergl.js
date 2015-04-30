@@ -10416,7 +10416,7 @@ var ShaderObjectBase = (function () {
         this._renderPass = renderPass;
         this._stage = stage;
         this.profile = this._stage.profile;
-        this._textureObjectPool = TextureObjectPool.getPool(this._stage);
+        this._textureObjectPool = new TextureObjectPool(this._stage);
     }
     Object.defineProperty(ShaderObjectBase.prototype, "programData", {
         get: function () {
