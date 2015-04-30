@@ -5,15 +5,15 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var RenderTexture = require("awayjs-core/lib/textures/RenderTexture");
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var ContextGLClearMask = require("awayjs-stagegl/lib/base/ContextGLClearMask");
+var RendererBase = require("awayjs-renderergl/lib/RendererBase");
 var DepthRenderer = require("awayjs-renderergl/lib/DepthRenderer");
 var DistanceRenderer = require("awayjs-renderergl/lib/DistanceRenderer");
 var Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
-var RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
 var RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
 var SkyboxRenderable = require("awayjs-renderergl/lib/pool/SkyboxRenderable");
 var RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
@@ -284,20 +284,20 @@ var DefaultRenderer = (function (_super) {
         this._pDepthTextureInvalid = false;
         if (this._pDepthRender)
             this._pDepthRender.dispose();
-        this._pDepthRender = new RenderTexture(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
+        this._pDepthRender = new BitmapImage2D(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
     };
     return DefaultRenderer;
 })(RendererBase);
 module.exports = DefaultRenderer;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/textures/RenderTexture":undefined,"awayjs-renderergl/lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","awayjs-renderergl/lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","awayjs-renderergl/lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","awayjs-renderergl/lib/base/RendererBase":"awayjs-renderergl/lib/base/RendererBase","awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-renderergl/lib/pool/RenderablePoolBase":"awayjs-renderergl/lib/pool/RenderablePoolBase","awayjs-renderergl/lib/pool/SkyboxRenderable":"awayjs-renderergl/lib/pool/SkyboxRenderable","awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapImage2D":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","awayjs-renderergl/lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","awayjs-renderergl/lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-renderergl/lib/pool/RenderablePoolBase":"awayjs-renderergl/lib/pool/RenderablePoolBase","awayjs-renderergl/lib/pool/SkyboxRenderable":"awayjs-renderergl/lib/pool/SkyboxRenderable","awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
+var RendererBase = require("awayjs-renderergl/lib/RendererBase");
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
  *
@@ -325,14 +325,14 @@ var DepthRenderer = (function (_super) {
 })(RendererBase);
 module.exports = DepthRenderer;
 
-},{"awayjs-renderergl/lib/base/RendererBase":"awayjs-renderergl/lib/base/RendererBase"}],"awayjs-renderergl/lib/DistanceRenderer":[function(require,module,exports){
+},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase"}],"awayjs-renderergl/lib/DistanceRenderer":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
+var RendererBase = require("awayjs-renderergl/lib/RendererBase");
 /**
  * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
  *
@@ -360,7 +360,7 @@ var DistanceRenderer = (function (_super) {
 })(RendererBase);
 module.exports = DistanceRenderer;
 
-},{"awayjs-renderergl/lib/base/RendererBase":"awayjs-renderergl/lib/base/RendererBase"}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
+},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase"}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
 var Event = require("awayjs-core/lib/events/Event");
 var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
@@ -500,7 +500,684 @@ var Filter3DRenderer = (function () {
 })();
 module.exports = Filter3DRenderer;
 
-},{"awayjs-core/lib/events/Event":undefined,"awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/RendererBase":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var Point = require("awayjs-core/lib/geom/Point");
+var Rectangle = require("awayjs-core/lib/geom/Rectangle");
+var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
+var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+var RenderableMergeSort = require("awayjs-display/lib/sort/RenderableMergeSort");
+var RendererEvent = require("awayjs-display/lib/events/RendererEvent");
+var EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
+var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
+var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
+var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
+var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
+var StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
+var StageManager = require("awayjs-stagegl/lib/managers/StageManager");
+var RendererPoolBase = require("awayjs-renderergl/lib/pool/RendererPoolBase");
+/**
+ * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
+ * contents of a partition
+ *
+ * @class away.render.RendererBase
+ */
+var RendererBase = (function (_super) {
+    __extends(RendererBase, _super);
+    /**
+     * Creates a new RendererBase object.
+     */
+    function RendererBase(rendererPoolClass, stage) {
+        var _this = this;
+        if (rendererPoolClass === void 0) { rendererPoolClass = null; }
+        if (stage === void 0) { stage = null; }
+        _super.call(this);
+        this._numUsedStreams = 0;
+        this._numUsedTextures = 0;
+        this._viewPort = new Rectangle();
+        this._pBackBufferInvalid = true;
+        this._pDepthTextureInvalid = true;
+        this._depthPrepass = false;
+        this._backgroundR = 0;
+        this._backgroundG = 0;
+        this._backgroundB = 0;
+        this._backgroundAlpha = 1;
+        this._shareContext = false;
+        this.textureRatioX = 1;
+        this.textureRatioY = 1;
+        this._pRttViewProjectionMatrix = new Matrix3D();
+        this._localPos = new Point();
+        this._globalPos = new Point();
+        this._pScissorRect = new Rectangle();
+        this._pNumTriangles = 0;
+        this._disableColor = false;
+        this._renderBlended = true;
+        this._pRendererPoolClass = rendererPoolClass;
+        this._onViewportUpdatedDelegate = function (event) { return _this.onViewportUpdated(event); };
+        this._onContextUpdateDelegate = function (event) { return _this.onContextUpdate(event); };
+        //default sorting algorithm
+        this.renderableSorter = new RenderableMergeSort();
+        this._rendererPool = (rendererPoolClass) ? new this._pRendererPoolClass(this) : new RendererPoolBase(this);
+        this.stage = stage || StageManager.getInstance().getFreeStage();
+    }
+    Object.defineProperty(RendererBase.prototype, "renderBlended", {
+        get: function () {
+            return this._renderBlended;
+        },
+        set: function (value) {
+            this._renderBlended = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "disableColor", {
+        get: function () {
+            return this._disableColor;
+        },
+        set: function (value) {
+            this._disableColor = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "numTriangles", {
+        /**
+         *
+         */
+        get: function () {
+            return this._pNumTriangles;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "viewPort", {
+        /**
+         * A viewPort rectangle equivalent of the Stage size and position.
+         */
+        get: function () {
+            return this._viewPort;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "scissorRect", {
+        /**
+         * A scissor rectangle equivalent of the view size and position.
+         */
+        get: function () {
+            return this._pScissorRect;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "x", {
+        /**
+         *
+         */
+        get: function () {
+            return this._localPos.x;
+        },
+        set: function (value) {
+            if (this.x == value)
+                return;
+            this._globalPos.x = this._localPos.x = value;
+            this.updateGlobalPos();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "y", {
+        /**
+         *
+         */
+        get: function () {
+            return this._localPos.y;
+        },
+        set: function (value) {
+            if (this.y == value)
+                return;
+            this._globalPos.y = this._localPos.y = value;
+            this.updateGlobalPos();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "width", {
+        /**
+         *
+         */
+        get: function () {
+            return this._width;
+        },
+        set: function (value) {
+            if (this._width == value)
+                return;
+            this._width = value;
+            this._pScissorRect.width = value;
+            if (this._pRttBufferManager)
+                this._pRttBufferManager.viewWidth = value;
+            this._pBackBufferInvalid = true;
+            this._pDepthTextureInvalid = true;
+            this.notifyScissorUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "height", {
+        /**
+         *
+         */
+        get: function () {
+            return this._height;
+        },
+        set: function (value) {
+            if (this._height == value)
+                return;
+            this._height = value;
+            this._pScissorRect.height = value;
+            if (this._pRttBufferManager)
+                this._pRttBufferManager.viewHeight = value;
+            this._pBackBufferInvalid = true;
+            this._pDepthTextureInvalid = true;
+            this.notifyScissorUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    RendererBase.prototype.activatePass = function (renderable, pass, camera) {
+        for (var i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
+            this._pContext.setVertexBufferAt(i, null);
+        for (var i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
+            this._pContext.setTextureAt(i, null);
+        //check program data is uploaded
+        var programData = pass.shader.programData;
+        if (!programData.program) {
+            programData.program = this._pContext.createProgram();
+            var vertexByteCode = (new AGALMiniAssembler().assemble("part vertex 1\n" + programData.vertexString + "endpart"))['vertex'].data;
+            var fragmentByteCode = (new AGALMiniAssembler().assemble("part fragment 1\n" + programData.fragmentString + "endpart"))['fragment'].data;
+            programData.program.upload(vertexByteCode, fragmentByteCode);
+        }
+        //set program data
+        this._pContext.setProgram(programData.program);
+        //activate shader object through renderable
+        renderable._iActivate(pass, camera);
+    };
+    RendererBase.prototype.deactivatePass = function (renderable, pass) {
+        //deactivate shader object
+        renderable._iDeactivate(pass);
+        this._numUsedStreams = pass.shader.numUsedStreams;
+        this._numUsedTextures = pass.shader.numUsedTextures;
+    };
+    RendererBase.prototype._iCreateEntityCollector = function () {
+        return new EntityCollector();
+    };
+    Object.defineProperty(RendererBase.prototype, "_iBackgroundR", {
+        /**
+         * The background color's red component, used when clearing.
+         *
+         * @private
+         */
+        get: function () {
+            return this._backgroundR;
+        },
+        set: function (value) {
+            if (this._backgroundR == value)
+                return;
+            this._backgroundR = value;
+            this._pBackBufferInvalid = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "_iBackgroundG", {
+        /**
+         * The background color's green component, used when clearing.
+         *
+         * @private
+         */
+        get: function () {
+            return this._backgroundG;
+        },
+        set: function (value) {
+            if (this._backgroundG == value)
+                return;
+            this._backgroundG = value;
+            this._pBackBufferInvalid = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "_iBackgroundB", {
+        /**
+         * The background color's blue component, used when clearing.
+         *
+         * @private
+         */
+        get: function () {
+            return this._backgroundB;
+        },
+        set: function (value) {
+            if (this._backgroundB == value)
+                return;
+            this._backgroundB = value;
+            this._pBackBufferInvalid = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "context", {
+        get: function () {
+            return this._pContext;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "stage", {
+        /**
+         * The Stage that will provide the ContextGL used for rendering.
+         */
+        get: function () {
+            return this._pStage;
+        },
+        set: function (value) {
+            if (this._pStage == value)
+                return;
+            this.iSetStage(value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    RendererBase.prototype.iSetStage = function (value) {
+        if (this._pStage)
+            this.dispose();
+        if (value) {
+            this._pStage = value;
+            this._rendererPool.stage = this._pStage;
+            this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+            this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+            this._pStage.addEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+            /*
+             if (_backgroundImageRenderer)
+             _backgroundImageRenderer.stage = value;
+             */
+            if (this._pStage.context)
+                this._pContext = this._pStage.context;
+        }
+        this._pBackBufferInvalid = true;
+        this.updateGlobalPos();
+    };
+    Object.defineProperty(RendererBase.prototype, "shareContext", {
+        /**
+         * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
+         * to share the same ContextGL object.
+         */
+        get: function () {
+            return this._shareContext;
+        },
+        set: function (value) {
+            if (this._shareContext == value)
+                return;
+            this._shareContext = value;
+            this.updateGlobalPos();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Disposes the resources used by the RendererBase.
+     */
+    RendererBase.prototype.dispose = function () {
+        this._rendererPool.dispose();
+        this._pStage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+        this._pStage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+        this._pStage.removeEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+        this._pStage = null;
+        this._pContext = null;
+        /*
+         if (_backgroundImageRenderer) {
+         _backgroundImageRenderer.dispose();
+         _backgroundImageRenderer = null;
+         }
+         */
+    };
+    RendererBase.prototype.render = function (entityCollector) {
+        this._viewportDirty = false;
+        this._scissorDirty = false;
+    };
+    /**
+     * Renders the potentially visible geometry to the back buffer or texture.
+     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+     * @param target An option target texture to render to.
+     * @param surfaceSelector The index of a CubeTexture's face to render to.
+     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
+     */
+    RendererBase.prototype._iRender = function (entityCollector, target, scissorRect, surfaceSelector) {
+        if (target === void 0) { target = null; }
+        if (scissorRect === void 0) { scissorRect = null; }
+        if (surfaceSelector === void 0) { surfaceSelector = 0; }
+        //TODO refactor setTarget so that rendertextures are created before this check
+        if (!this._pStage || !this._pContext)
+            return;
+        this._pRttViewProjectionMatrix.copyFrom(entityCollector.camera.viewProjection);
+        this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
+        this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
+        for (var i = 0; i < 8; ++i) {
+            this._pContext.setVertexBufferAt(i, null);
+            this._pContext.setTextureAt(i, null);
+        }
+    };
+    RendererBase.prototype._iRenderCascades = function (entityCollector, target, numCascades, scissorRects, cameras) {
+        this.pCollectRenderables(entityCollector);
+        this._pStage.setRenderTarget(target, true, 0);
+        this._pContext.clear(1, 1, 1, 1, 1, 0);
+        this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+        this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
+        var head = this._pOpaqueRenderableHead;
+        var first = true;
+        for (var i = numCascades - 1; i >= 0; --i) {
+            this._pStage.scissorRect = scissorRects[i];
+            //this.drawCascadeRenderables(head, cameras[i], first? null : cameras[i].frustumPlanes);
+            first = false;
+        }
+        //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
+        this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
+        this._pStage.scissorRect = null;
+    };
+    RendererBase.prototype.pCollectRenderables = function (entityCollector) {
+        //reset head values
+        this._pBlendedRenderableHead = null;
+        this._pOpaqueRenderableHead = null;
+        this._pNumTriangles = 0;
+        //grab entity head
+        var item = entityCollector.entityHead;
+        //set temp values for entry point and camera forward vector
+        this._pCamera = entityCollector.camera;
+        this._iEntryPoint = this._pCamera.scenePosition;
+        this._pCameraForward = this._pCamera.transform.forwardVector;
+        while (item) {
+            item.entity._iCollectRenderables(this._rendererPool);
+            item = item.next;
+        }
+        //sort the resulting renderables
+        this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
+        this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+    };
+    /**
+     * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
+     *
+     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+     * @param target An option target texture to render to.
+     * @param surfaceSelector The index of a CubeTexture's face to render to.
+     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
+     */
+    RendererBase.prototype.pExecuteRender = function (entityCollector, target, scissorRect, surfaceSelector) {
+        if (target === void 0) { target = null; }
+        if (scissorRect === void 0) { scissorRect = null; }
+        if (surfaceSelector === void 0) { surfaceSelector = 0; }
+        this._pStage.setRenderTarget(target, true, surfaceSelector);
+        if ((target || !this._shareContext) && !this._depthPrepass)
+            this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
+        this._pStage.scissorRect = scissorRect;
+        /*
+         if (_backgroundImageRenderer)
+         _backgroundImageRenderer.render();
+         */
+        this.pCollectRenderables(entityCollector);
+        this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+        this.pDraw(entityCollector);
+        //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
+        //this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
+        if (!this._shareContext) {
+            if (this._snapshotRequired && this._snapshotBitmapImage2D) {
+                this._pContext.drawToBitmapImage2D(this._snapshotBitmapImage2D);
+                this._snapshotRequired = false;
+            }
+        }
+        this._pStage.scissorRect = null;
+    };
+    /*
+     * Will draw the renderer's output on next render to the provided bitmap data.
+     * */
+    RendererBase.prototype.queueSnapshot = function (bmd) {
+        this._snapshotRequired = true;
+        this._snapshotBitmapImage2D = bmd;
+    };
+    /**
+     * Performs the actual drawing of geometry to the target.
+     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+     */
+    RendererBase.prototype.pDraw = function (entityCollector) {
+        this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+        if (this._disableColor)
+            this._pContext.setColorMask(false, false, false, false);
+        this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
+        if (this._renderBlended)
+            this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
+        if (this._disableColor)
+            this._pContext.setColorMask(true, true, true, true);
+    };
+    //private drawCascadeRenderables(renderable:RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
+    //{
+    //	var renderable2:RenderableBase;
+    //	var renderObject:RenderObjectBase;
+    //	var pass:RenderPassBase;
+    //
+    //	while (renderable) {
+    //		renderable2 = renderable;
+    //		renderObject = renderable.renderObject;
+    //		pass = renderObject.passes[0] //assuming only one pass per material
+    //
+    //		this.activatePass(renderable, pass, camera);
+    //
+    //		do {
+    //			// if completely in front, it will fall in a different cascade
+    //			// do not use near and far planes
+    //			if (!cullPlanes || renderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
+    //				renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+    //			} else {
+    //				renderable2.cascaded = true;
+    //			}
+    //
+    //			renderable2 = renderable2.next;
+    //
+    //		} while (renderable2 && renderable2.renderObject == renderObject && !renderable2.cascaded);
+    //
+    //		this.deactivatePass(renderable, pass);
+    //
+    //		renderable = renderable2;
+    //	}
+    //}
+    /**
+     * Draw a list of renderables.
+     *
+     * @param renderables The renderables to draw.
+     * @param entityCollector The EntityCollector containing all potentially visible information.
+     */
+    RendererBase.prototype.drawRenderables = function (renderable, entityCollector) {
+        var i;
+        var len;
+        var renderable2;
+        var renderObject;
+        var passes;
+        var pass;
+        var camera = entityCollector.camera;
+        while (renderable) {
+            renderObject = renderable.renderObject;
+            passes = renderObject.passes;
+            // otherwise this would result in depth rendered anyway because fragment shader kil is ignored
+            if (this._disableColor && renderObject._renderObjectOwner.alphaThreshold != 0) {
+                renderable2 = renderable;
+                do {
+                    renderable2 = renderable2.next;
+                } while (renderable2 && renderable2.renderObject == renderObject);
+            }
+            else {
+                //iterate through each shader object
+                len = passes.length;
+                for (i = 0; i < len; i++) {
+                    renderable2 = renderable;
+                    pass = passes[i];
+                    this.activatePass(renderable, pass, camera);
+                    do {
+                        renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+                        renderable2 = renderable2.next;
+                    } while (renderable2 && renderable2.renderObject == renderObject);
+                    this.deactivatePass(renderable, pass);
+                }
+            }
+            renderable = renderable2;
+        }
+    };
+    /**
+     * Assign the context once retrieved
+     */
+    RendererBase.prototype.onContextUpdate = function (event) {
+        this._pContext = this._pStage.context;
+    };
+    Object.defineProperty(RendererBase.prototype, "_iBackgroundAlpha", {
+        get: function () {
+            return this._backgroundAlpha;
+        },
+        set: function (value) {
+            if (this._backgroundAlpha == value)
+                return;
+            this._backgroundAlpha = value;
+            this._pBackBufferInvalid = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /*
+     public get iBackground():Texture2DBase
+     {
+     return this._background;
+     }
+     */
+    /*
+     public set iBackground(value:Texture2DBase)
+     {
+     if (this._backgroundImageRenderer && !value) {
+     this._backgroundImageRenderer.dispose();
+     this._backgroundImageRenderer = null;
+     }
+
+     if (!this._backgroundImageRenderer && value)
+     {
+
+     this._backgroundImageRenderer = new BackgroundImageRenderer(this._pStage);
+
+     }
+
+
+     this._background = value;
+
+     if (this._backgroundImageRenderer)
+     this._backgroundImageRenderer.texture = value;
+     }
+     */
+    /*
+     public get backgroundImageRenderer():BackgroundImageRenderer
+     {
+     return _backgroundImageRenderer;
+     }
+     */
+    /**
+     * @private
+     */
+    RendererBase.prototype.notifyScissorUpdate = function () {
+        if (this._scissorDirty)
+            return;
+        this._scissorDirty = true;
+        if (!this._scissorUpdated)
+            this._scissorUpdated = new RendererEvent(RendererEvent.SCISSOR_UPDATED);
+        this.dispatchEvent(this._scissorUpdated);
+    };
+    /**
+     * @private
+     */
+    RendererBase.prototype.notifyViewportUpdate = function () {
+        if (this._viewportDirty)
+            return;
+        this._viewportDirty = true;
+        if (!this._viewPortUpdated)
+            this._viewPortUpdated = new RendererEvent(RendererEvent.VIEWPORT_UPDATED);
+        this.dispatchEvent(this._viewPortUpdated);
+    };
+    /**
+     *
+     */
+    RendererBase.prototype.onViewportUpdated = function (event) {
+        this._viewPort = this._pStage.viewPort;
+        //TODO stop firing viewport updated for every stagegl viewport change
+        if (this._shareContext) {
+            this._pScissorRect.x = this._globalPos.x - this._pStage.x;
+            this._pScissorRect.y = this._globalPos.y - this._pStage.y;
+            this.notifyScissorUpdate();
+        }
+        this.notifyViewportUpdate();
+    };
+    /**
+     *
+     */
+    RendererBase.prototype.updateGlobalPos = function () {
+        if (this._shareContext) {
+            this._pScissorRect.x = this._globalPos.x - this._viewPort.x;
+            this._pScissorRect.y = this._globalPos.y - this._viewPort.y;
+        }
+        else {
+            this._pScissorRect.x = 0;
+            this._pScissorRect.y = 0;
+            this._viewPort.x = this._globalPos.x;
+            this._viewPort.y = this._globalPos.y;
+        }
+        this.notifyScissorUpdate();
+    };
+    /**
+     *
+     * @param renderable
+     * @protected
+     */
+    RendererBase.prototype.applyRenderable = function (renderable) {
+        //set local vars for faster referencing
+        var renderObject = this._pGetRenderObject(renderable, renderable.renderObjectOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
+        renderable.renderObject = renderObject;
+        renderable.renderObjectId = renderObject.renderObjectId;
+        renderable.renderOrderId = renderObject.renderOrderId;
+        renderable.cascaded = false;
+        var entity = renderable.sourceEntity;
+        var position = entity.scenePosition;
+        // project onto camera's z-axis
+        position = this._iEntryPoint.subtract(position);
+        renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
+        //store reference to scene transform
+        renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
+        if (renderObject.requiresBlending) {
+            renderable.next = this._pBlendedRenderableHead;
+            this._pBlendedRenderableHead = renderable;
+        }
+        else {
+            renderable.next = this._pOpaqueRenderableHead;
+            this._pOpaqueRenderableHead = renderable;
+        }
+        this._pNumTriangles += renderable.numTriangles;
+        //handle any overflow for renderables with data that exceeds GPU limitations
+        if (renderable.overflow)
+            this.applyRenderable(renderable.overflow);
+    };
+    RendererBase.prototype._pGetRenderObject = function (renderable, renderObjectOwner) {
+        throw new AbstractMethodError();
+    };
+    return RendererBase;
+})(EventDispatcher);
+module.exports = RendererBase;
+
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/sort/RenderableMergeSort":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-renderergl/lib/pool/RendererPoolBase":"awayjs-renderergl/lib/pool/RendererPoolBase","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8434,684 +9111,7 @@ var ParticleGeometry = (function (_super) {
 })(Geometry);
 module.exports = ParticleGeometry;
 
-},{"awayjs-core/lib/data/Geometry":undefined}],"awayjs-renderergl/lib/base/RendererBase":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-var Point = require("awayjs-core/lib/geom/Point");
-var Rectangle = require("awayjs-core/lib/geom/Rectangle");
-var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-var RenderableMergeSort = require("awayjs-display/lib/sort/RenderableMergeSort");
-var RendererEvent = require("awayjs-display/lib/events/RendererEvent");
-var StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
-var EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
-var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
-var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
-var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
-var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var StageManager = require("awayjs-stagegl/lib/managers/StageManager");
-var RendererPoolBase = require("awayjs-renderergl/lib/pool/RendererPoolBase");
-/**
- * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
- * contents of a partition
- *
- * @class away.render.RendererBase
- */
-var RendererBase = (function (_super) {
-    __extends(RendererBase, _super);
-    /**
-     * Creates a new RendererBase object.
-     */
-    function RendererBase(rendererPoolClass, stage) {
-        var _this = this;
-        if (rendererPoolClass === void 0) { rendererPoolClass = null; }
-        if (stage === void 0) { stage = null; }
-        _super.call(this);
-        this._numUsedStreams = 0;
-        this._numUsedTextures = 0;
-        this._viewPort = new Rectangle();
-        this._pBackBufferInvalid = true;
-        this._pDepthTextureInvalid = true;
-        this._depthPrepass = false;
-        this._backgroundR = 0;
-        this._backgroundG = 0;
-        this._backgroundB = 0;
-        this._backgroundAlpha = 1;
-        this._shareContext = false;
-        this.textureRatioX = 1;
-        this.textureRatioY = 1;
-        this._pRttViewProjectionMatrix = new Matrix3D();
-        this._localPos = new Point();
-        this._globalPos = new Point();
-        this._pScissorRect = new Rectangle();
-        this._pNumTriangles = 0;
-        this._disableColor = false;
-        this._renderBlended = true;
-        this._pRendererPoolClass = rendererPoolClass;
-        this._onViewportUpdatedDelegate = function (event) { return _this.onViewportUpdated(event); };
-        this._onContextUpdateDelegate = function (event) { return _this.onContextUpdate(event); };
-        //default sorting algorithm
-        this.renderableSorter = new RenderableMergeSort();
-        this._rendererPool = (rendererPoolClass) ? new this._pRendererPoolClass(this) : new RendererPoolBase(this);
-        this.stage = stage || StageManager.getInstance().getFreeStage();
-    }
-    Object.defineProperty(RendererBase.prototype, "renderBlended", {
-        get: function () {
-            return this._renderBlended;
-        },
-        set: function (value) {
-            this._renderBlended = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RendererBase.prototype, "disableColor", {
-        get: function () {
-            return this._disableColor;
-        },
-        set: function (value) {
-            this._disableColor = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RendererBase.prototype, "numTriangles", {
-        /**
-         *
-         */
-        get: function () {
-            return this._pNumTriangles;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RendererBase.prototype, "viewPort", {
-        /**
-         * A viewPort rectangle equivalent of the Stage size and position.
-         */
-        get: function () {
-            return this._viewPort;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RendererBase.prototype, "scissorRect", {
-        /**
-         * A scissor rectangle equivalent of the view size and position.
-         */
-        get: function () {
-            return this._pScissorRect;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RendererBase.prototype, "x", {
-        /**
-         *
-         */
-        get: function () {
-            return this._localPos.x;
-        },
-        set: function (value) {
-            if (this.x == value)
-                return;
-            this._globalPos.x = this._localPos.x = value;
-            this.updateGlobalPos();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RendererBase.prototype, "y", {
-        /**
-         *
-         */
-        get: function () {
-            return this._localPos.y;
-        },
-        set: function (value) {
-            if (this.y == value)
-                return;
-            this._globalPos.y = this._localPos.y = value;
-            this.updateGlobalPos();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RendererBase.prototype, "width", {
-        /**
-         *
-         */
-        get: function () {
-            return this._width;
-        },
-        set: function (value) {
-            if (this._width == value)
-                return;
-            this._width = value;
-            this._pScissorRect.width = value;
-            if (this._pRttBufferManager)
-                this._pRttBufferManager.viewWidth = value;
-            this._pBackBufferInvalid = true;
-            this._pDepthTextureInvalid = true;
-            this.notifyScissorUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RendererBase.prototype, "height", {
-        /**
-         *
-         */
-        get: function () {
-            return this._height;
-        },
-        set: function (value) {
-            if (this._height == value)
-                return;
-            this._height = value;
-            this._pScissorRect.height = value;
-            if (this._pRttBufferManager)
-                this._pRttBufferManager.viewHeight = value;
-            this._pBackBufferInvalid = true;
-            this._pDepthTextureInvalid = true;
-            this.notifyScissorUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    RendererBase.prototype.activatePass = function (renderable, pass, camera) {
-        for (var i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
-            this._pContext.setVertexBufferAt(i, null);
-        for (var i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
-            this._pContext.setTextureAt(i, null);
-        //check program data is uploaded
-        var programData = pass.shader.programData;
-        if (!programData.program) {
-            programData.program = this._pContext.createProgram();
-            var vertexByteCode = (new AGALMiniAssembler().assemble("part vertex 1\n" + programData.vertexString + "endpart"))['vertex'].data;
-            var fragmentByteCode = (new AGALMiniAssembler().assemble("part fragment 1\n" + programData.fragmentString + "endpart"))['fragment'].data;
-            programData.program.upload(vertexByteCode, fragmentByteCode);
-        }
-        //set program data
-        this._pContext.setProgram(programData.program);
-        //activate shader object through renderable
-        renderable._iActivate(pass, camera);
-    };
-    RendererBase.prototype.deactivatePass = function (renderable, pass) {
-        //deactivate shader object
-        renderable._iDeactivate(pass);
-        this._numUsedStreams = pass.shader.numUsedStreams;
-        this._numUsedTextures = pass.shader.numUsedTextures;
-    };
-    RendererBase.prototype._iCreateEntityCollector = function () {
-        return new EntityCollector();
-    };
-    Object.defineProperty(RendererBase.prototype, "_iBackgroundR", {
-        /**
-         * The background color's red component, used when clearing.
-         *
-         * @private
-         */
-        get: function () {
-            return this._backgroundR;
-        },
-        set: function (value) {
-            if (this._backgroundR == value)
-                return;
-            this._backgroundR = value;
-            this._pBackBufferInvalid = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RendererBase.prototype, "_iBackgroundG", {
-        /**
-         * The background color's green component, used when clearing.
-         *
-         * @private
-         */
-        get: function () {
-            return this._backgroundG;
-        },
-        set: function (value) {
-            if (this._backgroundG == value)
-                return;
-            this._backgroundG = value;
-            this._pBackBufferInvalid = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RendererBase.prototype, "_iBackgroundB", {
-        /**
-         * The background color's blue component, used when clearing.
-         *
-         * @private
-         */
-        get: function () {
-            return this._backgroundB;
-        },
-        set: function (value) {
-            if (this._backgroundB == value)
-                return;
-            this._backgroundB = value;
-            this._pBackBufferInvalid = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RendererBase.prototype, "context", {
-        get: function () {
-            return this._pContext;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RendererBase.prototype, "stage", {
-        /**
-         * The Stage that will provide the ContextGL used for rendering.
-         */
-        get: function () {
-            return this._pStage;
-        },
-        set: function (value) {
-            if (this._pStage == value)
-                return;
-            this.iSetStage(value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    RendererBase.prototype.iSetStage = function (value) {
-        if (this._pStage)
-            this.dispose();
-        if (value) {
-            this._pStage = value;
-            this._rendererPool.stage = this._pStage;
-            this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-            this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-            this._pStage.addEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-            /*
-             if (_backgroundImageRenderer)
-             _backgroundImageRenderer.stage = value;
-             */
-            if (this._pStage.context)
-                this._pContext = this._pStage.context;
-        }
-        this._pBackBufferInvalid = true;
-        this.updateGlobalPos();
-    };
-    Object.defineProperty(RendererBase.prototype, "shareContext", {
-        /**
-         * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
-         * to share the same ContextGL object.
-         */
-        get: function () {
-            return this._shareContext;
-        },
-        set: function (value) {
-            if (this._shareContext == value)
-                return;
-            this._shareContext = value;
-            this.updateGlobalPos();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Disposes the resources used by the RendererBase.
-     */
-    RendererBase.prototype.dispose = function () {
-        this._rendererPool.dispose();
-        this._pStage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-        this._pStage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-        this._pStage.removeEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-        this._pStage = null;
-        this._pContext = null;
-        /*
-         if (_backgroundImageRenderer) {
-         _backgroundImageRenderer.dispose();
-         _backgroundImageRenderer = null;
-         }
-         */
-    };
-    RendererBase.prototype.render = function (entityCollector) {
-        this._viewportDirty = false;
-        this._scissorDirty = false;
-    };
-    /**
-     * Renders the potentially visible geometry to the back buffer or texture.
-     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-     * @param target An option target texture to render to.
-     * @param surfaceSelector The index of a CubeTexture's face to render to.
-     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
-     */
-    RendererBase.prototype._iRender = function (entityCollector, target, scissorRect, surfaceSelector) {
-        if (target === void 0) { target = null; }
-        if (scissorRect === void 0) { scissorRect = null; }
-        if (surfaceSelector === void 0) { surfaceSelector = 0; }
-        //TODO refactor setTarget so that rendertextures are created before this check
-        if (!this._pStage || !this._pContext)
-            return;
-        this._pRttViewProjectionMatrix.copyFrom(entityCollector.camera.viewProjection);
-        this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
-        this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
-        for (var i = 0; i < 8; ++i) {
-            this._pContext.setVertexBufferAt(i, null);
-            this._pContext.setTextureAt(i, null);
-        }
-    };
-    RendererBase.prototype._iRenderCascades = function (entityCollector, target, numCascades, scissorRects, cameras) {
-        this.pCollectRenderables(entityCollector);
-        this._pStage.setRenderTarget(target, true, 0);
-        this._pContext.clear(1, 1, 1, 1, 1, 0);
-        this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-        this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
-        var head = this._pOpaqueRenderableHead;
-        var first = true;
-        for (var i = numCascades - 1; i >= 0; --i) {
-            this._pStage.scissorRect = scissorRects[i];
-            //this.drawCascadeRenderables(head, cameras[i], first? null : cameras[i].frustumPlanes);
-            first = false;
-        }
-        //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-        this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
-        this._pStage.scissorRect = null;
-    };
-    RendererBase.prototype.pCollectRenderables = function (entityCollector) {
-        //reset head values
-        this._pBlendedRenderableHead = null;
-        this._pOpaqueRenderableHead = null;
-        this._pNumTriangles = 0;
-        //grab entity head
-        var item = entityCollector.entityHead;
-        //set temp values for entry point and camera forward vector
-        this._pCamera = entityCollector.camera;
-        this._iEntryPoint = this._pCamera.scenePosition;
-        this._pCameraForward = this._pCamera.transform.forwardVector;
-        while (item) {
-            item.entity._iCollectRenderables(this._rendererPool);
-            item = item.next;
-        }
-        //sort the resulting renderables
-        this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
-        this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
-    };
-    /**
-     * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
-     *
-     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-     * @param target An option target texture to render to.
-     * @param surfaceSelector The index of a CubeTexture's face to render to.
-     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
-     */
-    RendererBase.prototype.pExecuteRender = function (entityCollector, target, scissorRect, surfaceSelector) {
-        if (target === void 0) { target = null; }
-        if (scissorRect === void 0) { scissorRect = null; }
-        if (surfaceSelector === void 0) { surfaceSelector = 0; }
-        this._pStage.setRenderTarget(target, true, surfaceSelector);
-        if ((target || !this._shareContext) && !this._depthPrepass)
-            this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
-        this._pStage.scissorRect = scissorRect;
-        /*
-         if (_backgroundImageRenderer)
-         _backgroundImageRenderer.render();
-         */
-        this.pCollectRenderables(entityCollector);
-        this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-        this.pDraw(entityCollector);
-        //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-        //this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
-        if (!this._shareContext) {
-            if (this._snapshotRequired && this._snapshotBitmapData) {
-                this._pContext.drawToBitmapData(this._snapshotBitmapData);
-                this._snapshotRequired = false;
-            }
-        }
-        this._pStage.scissorRect = null;
-    };
-    /*
-     * Will draw the renderer's output on next render to the provided bitmap data.
-     * */
-    RendererBase.prototype.queueSnapshot = function (bmd) {
-        this._snapshotRequired = true;
-        this._snapshotBitmapData = bmd;
-    };
-    /**
-     * Performs the actual drawing of geometry to the target.
-     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-     */
-    RendererBase.prototype.pDraw = function (entityCollector) {
-        this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
-        if (this._disableColor)
-            this._pContext.setColorMask(false, false, false, false);
-        this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
-        if (this._renderBlended)
-            this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
-        if (this._disableColor)
-            this._pContext.setColorMask(true, true, true, true);
-    };
-    //private drawCascadeRenderables(renderable:RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
-    //{
-    //	var renderable2:RenderableBase;
-    //	var renderObject:RenderObjectBase;
-    //	var pass:RenderPassBase;
-    //
-    //	while (renderable) {
-    //		renderable2 = renderable;
-    //		renderObject = renderable.renderObject;
-    //		pass = renderObject.passes[0] //assuming only one pass per material
-    //
-    //		this.activatePass(renderable, pass, camera);
-    //
-    //		do {
-    //			// if completely in front, it will fall in a different cascade
-    //			// do not use near and far planes
-    //			if (!cullPlanes || renderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
-    //				renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
-    //			} else {
-    //				renderable2.cascaded = true;
-    //			}
-    //
-    //			renderable2 = renderable2.next;
-    //
-    //		} while (renderable2 && renderable2.renderObject == renderObject && !renderable2.cascaded);
-    //
-    //		this.deactivatePass(renderable, pass);
-    //
-    //		renderable = renderable2;
-    //	}
-    //}
-    /**
-     * Draw a list of renderables.
-     *
-     * @param renderables The renderables to draw.
-     * @param entityCollector The EntityCollector containing all potentially visible information.
-     */
-    RendererBase.prototype.drawRenderables = function (renderable, entityCollector) {
-        var i;
-        var len;
-        var renderable2;
-        var renderObject;
-        var passes;
-        var pass;
-        var camera = entityCollector.camera;
-        while (renderable) {
-            renderObject = renderable.renderObject;
-            passes = renderObject.passes;
-            // otherwise this would result in depth rendered anyway because fragment shader kil is ignored
-            if (this._disableColor && renderObject._renderObjectOwner.alphaThreshold != 0) {
-                renderable2 = renderable;
-                do {
-                    renderable2 = renderable2.next;
-                } while (renderable2 && renderable2.renderObject == renderObject);
-            }
-            else {
-                //iterate through each shader object
-                len = passes.length;
-                for (i = 0; i < len; i++) {
-                    renderable2 = renderable;
-                    pass = passes[i];
-                    this.activatePass(renderable, pass, camera);
-                    do {
-                        renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
-                        renderable2 = renderable2.next;
-                    } while (renderable2 && renderable2.renderObject == renderObject);
-                    this.deactivatePass(renderable, pass);
-                }
-            }
-            renderable = renderable2;
-        }
-    };
-    /**
-     * Assign the context once retrieved
-     */
-    RendererBase.prototype.onContextUpdate = function (event) {
-        this._pContext = this._pStage.context;
-    };
-    Object.defineProperty(RendererBase.prototype, "_iBackgroundAlpha", {
-        get: function () {
-            return this._backgroundAlpha;
-        },
-        set: function (value) {
-            if (this._backgroundAlpha == value)
-                return;
-            this._backgroundAlpha = value;
-            this._pBackBufferInvalid = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /*
-     public get iBackground():Texture2DBase
-     {
-     return this._background;
-     }
-     */
-    /*
-     public set iBackground(value:Texture2DBase)
-     {
-     if (this._backgroundImageRenderer && !value) {
-     this._backgroundImageRenderer.dispose();
-     this._backgroundImageRenderer = null;
-     }
-
-     if (!this._backgroundImageRenderer && value)
-     {
-
-     this._backgroundImageRenderer = new BackgroundImageRenderer(this._pStage);
-
-     }
-
-
-     this._background = value;
-
-     if (this._backgroundImageRenderer)
-     this._backgroundImageRenderer.texture = value;
-     }
-     */
-    /*
-     public get backgroundImageRenderer():BackgroundImageRenderer
-     {
-     return _backgroundImageRenderer;
-     }
-     */
-    /**
-     * @private
-     */
-    RendererBase.prototype.notifyScissorUpdate = function () {
-        if (this._scissorDirty)
-            return;
-        this._scissorDirty = true;
-        if (!this._scissorUpdated)
-            this._scissorUpdated = new RendererEvent(RendererEvent.SCISSOR_UPDATED);
-        this.dispatchEvent(this._scissorUpdated);
-    };
-    /**
-     * @private
-     */
-    RendererBase.prototype.notifyViewportUpdate = function () {
-        if (this._viewportDirty)
-            return;
-        this._viewportDirty = true;
-        if (!this._viewPortUpdated)
-            this._viewPortUpdated = new RendererEvent(RendererEvent.VIEWPORT_UPDATED);
-        this.dispatchEvent(this._viewPortUpdated);
-    };
-    /**
-     *
-     */
-    RendererBase.prototype.onViewportUpdated = function (event) {
-        this._viewPort = this._pStage.viewPort;
-        //TODO stop firing viewport updated for every stagegl viewport change
-        if (this._shareContext) {
-            this._pScissorRect.x = this._globalPos.x - this._pStage.x;
-            this._pScissorRect.y = this._globalPos.y - this._pStage.y;
-            this.notifyScissorUpdate();
-        }
-        this.notifyViewportUpdate();
-    };
-    /**
-     *
-     */
-    RendererBase.prototype.updateGlobalPos = function () {
-        if (this._shareContext) {
-            this._pScissorRect.x = this._globalPos.x - this._viewPort.x;
-            this._pScissorRect.y = this._globalPos.y - this._viewPort.y;
-        }
-        else {
-            this._pScissorRect.x = 0;
-            this._pScissorRect.y = 0;
-            this._viewPort.x = this._globalPos.x;
-            this._viewPort.y = this._globalPos.y;
-        }
-        this.notifyScissorUpdate();
-    };
-    /**
-     *
-     * @param renderable
-     * @protected
-     */
-    RendererBase.prototype.applyRenderable = function (renderable) {
-        //set local vars for faster referencing
-        var renderObject = this._pGetRenderObject(renderable, renderable.renderObjectOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
-        renderable.renderObject = renderObject;
-        renderable.renderObjectId = renderObject.renderObjectId;
-        renderable.renderOrderId = renderObject.renderOrderId;
-        renderable.cascaded = false;
-        var entity = renderable.sourceEntity;
-        var position = entity.scenePosition;
-        // project onto camera's z-axis
-        position = this._iEntryPoint.subtract(position);
-        renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
-        //store reference to scene transform
-        renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
-        if (renderObject.requiresBlending) {
-            renderable.next = this._pBlendedRenderableHead;
-            this._pBlendedRenderableHead = renderable;
-        }
-        else {
-            renderable.next = this._pOpaqueRenderableHead;
-            this._pOpaqueRenderableHead = renderable;
-        }
-        this._pNumTriangles += renderable.numTriangles;
-        //handle any overflow for renderables with data that exceeds GPU limitations
-        if (renderable.overflow)
-            this.applyRenderable(renderable.overflow);
-    };
-    RendererBase.prototype._pGetRenderObject = function (renderable, renderObjectOwner) {
-        throw new AbstractMethodError();
-    };
-    return RendererBase;
-})(EventDispatcher);
-module.exports = RendererBase;
-
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/sort/RenderableMergeSort":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-renderergl/lib/pool/RendererPoolBase":"awayjs-renderergl/lib/pool/RendererPoolBase","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/compilation/DepthRenderObject":[function(require,module,exports){
+},{"awayjs-core/lib/data/Geometry":undefined}],"awayjs-renderergl/lib/compilation/DepthRenderObject":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9427,7 +9427,8 @@ var RenderObjectBase = (function () {
             shaderObject.useBothSides = material.bothSides;
             shaderObject.repeatTextures = material.repeat;
             shaderObject.usesUVTransform = material.animateUVs;
-            shaderObject.texture = material.texture;
+            if (material.texture)
+                shaderObject.texture = shaderObject.getTextureObject(material.texture);
             shaderObject.color = material.color;
         }
     };
@@ -9652,7 +9653,7 @@ var ShaderCompilerBase = (function () {
         if (this._pShaderObject.globalPosDependencies > 0)
             this.compileGlobalPositionCode();
         //compile the local-space position if required
-        if (this._pShaderObject.localPosDependencies > 0)
+        if (this._pShaderObject.usesLocalPosFragment)
             this.compileLocalPositionCode();
         //Calculate the (possibly animated) UV coordinates.
         if (this._pShaderObject.uvDependencies > 0)
@@ -9693,8 +9694,7 @@ var ShaderCompilerBase = (function () {
     ShaderCompilerBase.prototype.compileUVCode = function () {
         var uvAttributeReg = this._pRegisterCache.getFreeVertexAttribute();
         this._pShaderObject.uvBufferIndex = uvAttributeReg.index;
-        var varying = this._pRegisterCache.getFreeVarying();
-        this._pSharedRegisters.uvVarying = varying;
+        var varying = this._pSharedRegisters.uvVarying = this._pRegisterCache.getFreeVarying();
         if (this._pShaderObject.usesUVTransform) {
             // a, b, 0, tx
             // c, d, 0, ty
@@ -10362,9 +10362,9 @@ var ShaderLightingObject = (function (_super) {
         for (var i = 0; i < len; ++i) {
             probe = lightProbes[this._renderLightingPass.lightProbesOffset + i];
             if (addDiff)
-                this._stage.activateCubeTexture(this.lightProbeDiffuseIndices[i], probe.diffuseMap, this.useSmoothTextures, this.useMipmapping);
+                this._stage.getImageObject(probe.diffuseMap).activate(this.lightProbeDiffuseIndices[i], false, this.useSmoothTextures, this.useMipmapping);
             if (addSpec)
-                this._stage.activateCubeTexture(this.lightProbeSpecularIndices[i], probe.specularMap, this.useSmoothTextures, this.useMipmapping);
+                this._stage.getImageObject(probe.specularMap).activate(this.lightProbeSpecularIndices[i], false, this.useSmoothTextures, this.useMipmapping);
         }
         for (i = 0; i < len; ++i)
             this.fragmentConstantData[this.probeWeightsIndex + i] = weights[this._renderLightingPass.lightProbesOffset + i];
@@ -10377,6 +10377,7 @@ module.exports = ShaderLightingObject;
 var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLTriangleFace = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
+var TextureObjectPool = require("awayjs-renderergl/lib/pool/TextureObjectPool");
 var ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 /**
  * ShaderObjectBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -10405,12 +10406,17 @@ var ShaderObjectBase = (function () {
          * Indicates whether there are any dependencies on the world-space position vector.
          */
         this.usesGlobalPosFragment = false;
+        /**
+         * Indicates whether there are any dependencies on the local position vector.
+         */
+        this.usesLocalPosFragment = false;
         this.vertexConstantData = new Array();
         this.fragmentConstantData = new Array();
         this._renderableClass = renderableClass;
         this._renderPass = renderPass;
         this._stage = stage;
         this.profile = this._stage.profile;
+        this._textureObjectPool = TextureObjectPool.getPool(this._stage);
     }
     Object.defineProperty(ShaderObjectBase.prototype, "programData", {
         get: function () {
@@ -10421,6 +10427,9 @@ var ShaderObjectBase = (function () {
         enumerable: true,
         configurable: true
     });
+    ShaderObjectBase.prototype.getTextureObject = function (texture) {
+        return this._textureObjectPool.getItem(texture);
+    };
     ShaderObjectBase.prototype._iIncludeDependencies = function () {
         this._renderPass._iIncludeDependencies(this);
     };
@@ -10446,9 +10455,9 @@ var ShaderObjectBase = (function () {
         this.uvDependencies = 0;
         this.secondaryUVDependencies = 0;
         this.globalPosDependencies = 0;
-        this.localPosDependencies = 0;
         this.tangentDependencies = 0;
         this.usesGlobalPosFragment = false;
+        this.usesLocalPosFragment = false;
         this.usesFragmentAnimation = false;
         this.usesTangentSpace = false;
         this.outputsNormals = false;
@@ -10632,7 +10641,7 @@ var ShaderObjectBase = (function () {
 })();
 module.exports = ShaderObjectBase;
 
-},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/compilation/ShaderCompilerBase":"awayjs-renderergl/lib/compilation/ShaderCompilerBase","awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/compilation/ShaderRegisterCache":[function(require,module,exports){
+},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/compilation/ShaderCompilerBase":"awayjs-renderergl/lib/compilation/ShaderCompilerBase","awayjs-renderergl/lib/pool/TextureObjectPool":"awayjs-renderergl/lib/pool/TextureObjectPool","awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/compilation/ShaderRegisterCache":[function(require,module,exports){
 var RegisterPool = require("awayjs-renderergl/lib/compilation/RegisterPool");
 var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 /**
@@ -11373,7 +11382,7 @@ var __extends = this.__extends || function (d, b) {
 var Rectangle = require("awayjs-core/lib/geom/Rectangle");
 var Event = require("awayjs-core/lib/events/Event");
 var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-var TextureUtils = require("awayjs-core/lib/utils/TextureUtils");
+var ImageUtils = require("awayjs-core/lib/utils/ImageUtils");
 var RTTBufferManager = (function (_super) {
     __extends(RTTBufferManager, _super);
     function RTTBufferManager(stage) {
@@ -11449,7 +11458,7 @@ var RTTBufferManager = (function (_super) {
                 return;
             this._viewWidth = value;
             this._buffersInvalid = true;
-            this._textureWidth = TextureUtils.getBestPowerOf2(this._viewWidth);
+            this._textureWidth = ImageUtils.getBestPowerOf2(this._viewWidth);
             if (this._textureWidth > this._viewWidth) {
                 this._renderToTextureRect.x = Math.floor((this._textureWidth - this._viewWidth) * .5);
                 this._renderToTextureRect.width = this._viewWidth;
@@ -11472,7 +11481,7 @@ var RTTBufferManager = (function (_super) {
                 return;
             this._viewHeight = value;
             this._buffersInvalid = true;
-            this._textureHeight = TextureUtils.getBestPowerOf2(this._viewHeight);
+            this._textureHeight = ImageUtils.getBestPowerOf2(this._viewHeight);
             if (this._textureHeight > this._viewHeight) {
                 this._renderToTextureRect.y = Math.floor((this._textureHeight - this._viewHeight) * .5);
                 this._renderToTextureRect.height = this._viewHeight;
@@ -11584,7 +11593,7 @@ var RTTBufferManagerVO = (function () {
 })();
 module.exports = RTTBufferManager;
 
-},{"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/TextureUtils":undefined}],"awayjs-renderergl/lib/passes/BasicMaterialPass":[function(require,module,exports){
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/ImageUtils":undefined}],"awayjs-renderergl/lib/passes/BasicMaterialPass":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11592,7 +11601,6 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
 var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 /**
  * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
@@ -11625,11 +11633,9 @@ var BasicMaterialPass = (function (_super) {
             code += "mov " + alphaReg + ", " + sharedReg.shadedTarget + ".w\n";
         }
         var targetReg = sharedReg.shadedTarget;
-        var diffuseInputReg;
         if (shaderObject.texture != null) {
-            diffuseInputReg = regCache.getFreeTextureReg();
-            this._texturesIndex = diffuseInputReg.index;
-            code += ShaderCompilerHelper.getTex2DSampleCode(targetReg, sharedReg, diffuseInputReg, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
+            shaderObject.texture._iInitRegisters(shaderObject, regCache);
+            code += shaderObject.texture._iGetFragmentCode(shaderObject, targetReg, regCache, sharedReg.uvVarying);
             if (shaderObject.alphaThreshold > 0) {
                 var cutOffReg = regCache.getFreeFragmentConstant();
                 this._fragmentConstantsIndex = cutOffReg.index * 4;
@@ -11640,7 +11646,7 @@ var BasicMaterialPass = (function (_super) {
             code += "mov " + targetReg + ", " + sharedReg.colorVarying + "\n";
         }
         else {
-            diffuseInputReg = regCache.getFreeFragmentConstant();
+            var diffuseInputReg = regCache.getFreeFragmentConstant();
             this._fragmentConstantsIndex = diffuseInputReg.index * 4;
             code += "mov " + targetReg + ", " + diffuseInputReg + "\n";
         }
@@ -11656,7 +11662,7 @@ var BasicMaterialPass = (function (_super) {
     BasicMaterialPass.prototype._iActivate = function (camera) {
         _super.prototype._iActivate.call(this, camera);
         if (this._shader.texture != null) {
-            this._stage.activateTexture(this._texturesIndex, this._shader.texture, this._shader.repeatTextures, this._shader.useSmoothTextures, this._shader.useMipmapping);
+            this._shader.texture.activate(this._shader);
             if (this._shader.alphaThreshold > 0)
                 this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;
         }
@@ -11673,7 +11679,7 @@ var BasicMaterialPass = (function (_super) {
 })(RenderPassBase);
 module.exports = BasicMaterialPass;
 
-},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper"}],"awayjs-renderergl/lib/passes/DepthPass":[function(require,module,exports){
+},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase"}],"awayjs-renderergl/lib/passes/DepthPass":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11681,7 +11687,6 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
 var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 /**
  * DepthRenderObject forms an abstract base class for the default shaded materials provided by Stage,
@@ -11730,10 +11735,9 @@ var DepthPass = (function (_super) {
         //codeF += "mov ft1.w, fc1.w	\n" +
         //    "mov ft0.w, fc0.x	\n";
         if (shaderObject.texture && shaderObject.alphaThreshold > 0) {
-            diffuseInputReg = registerCache.getFreeTextureReg();
-            this._texturesIndex = diffuseInputReg.index;
+            shaderObject.texture._iInitRegisters(shaderObject, registerCache);
             var albedo = registerCache.getFreeFragmentVectorTemp();
-            code += ShaderCompilerHelper.getTex2DSampleCode(albedo, sharedRegisters, diffuseInputReg, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
+            code += shaderObject.texture._iGetFragmentCode(shaderObject, albedo, registerCache, sharedRegisters.uvVarying);
             var cutOffReg = registerCache.getFreeFragmentConstant();
             code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
         }
@@ -11749,7 +11753,7 @@ var DepthPass = (function (_super) {
         _super.prototype._iActivate.call(this, camera);
         var context = this._stage.context;
         if (this._shader.texture && this._shader.alphaThreshold > 0) {
-            this._stage.activateTexture(this._texturesIndex, this._shader.texture, this._shader.repeatTextures, this._shader.useSmoothTextures, this._shader.useMipmapping);
+            this._shader.texture.activate(this._shader);
             this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
         }
     };
@@ -11757,7 +11761,7 @@ var DepthPass = (function (_super) {
 })(RenderPassBase);
 module.exports = DepthPass;
 
-},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper"}],"awayjs-renderergl/lib/passes/DistancePass":[function(require,module,exports){
+},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase"}],"awayjs-renderergl/lib/passes/DistancePass":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11765,7 +11769,6 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
 var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 /**
  * DistancePass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
@@ -11809,7 +11812,6 @@ var DistancePass = (function (_super) {
     DistancePass.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
         var code;
         var targetReg = sharedRegisters.shadedTarget;
-        var diffuseInputReg = registerCache.getFreeTextureReg();
         var dataReg1 = registerCache.getFreeFragmentConstant();
         var dataReg2 = registerCache.getFreeFragmentConstant();
         this._fragmentConstantsIndex = dataReg1.index * 4;
@@ -11820,10 +11822,9 @@ var DistancePass = (function (_super) {
         // squared distance to view
         code = "dp3 " + temp1 + ".z, " + sharedRegisters.viewDirVarying + ".xyz, " + sharedRegisters.viewDirVarying + ".xyz\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
         if (shaderObject.alphaThreshold > 0) {
-            diffuseInputReg = registerCache.getFreeTextureReg();
-            this._texturesIndex = diffuseInputReg.index;
+            shaderObject.texture._iInitRegisters(shaderObject, registerCache);
             var albedo = registerCache.getFreeFragmentVectorTemp();
-            code += ShaderCompilerHelper.getTex2DSampleCode(albedo, sharedRegisters, diffuseInputReg, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
+            code += shaderObject.texture._iGetFragmentCode(shaderObject, albedo, registerCache, sharedRegisters.uvVarying);
             var cutOffReg = registerCache.getFreeFragmentConstant();
             code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
         }
@@ -11846,7 +11847,7 @@ var DistancePass = (function (_super) {
         data[index + 2] = 65025.0 * f;
         data[index + 3] = 16581375.0 * f;
         if (this._shader.alphaThreshold > 0) {
-            this._stage.activateTexture(this._texturesIndex, this._shader.texture, this._shader.repeatTextures, this._shader.useSmoothTextures, this._shader.useMipmapping);
+            this._shader.texture.activate(this._shader);
             data[index + 8] = this._shader.alphaThreshold;
         }
     };
@@ -11854,7 +11855,7 @@ var DistancePass = (function (_super) {
 })(RenderPassBase);
 module.exports = DistancePass;
 
-},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper"}],"awayjs-renderergl/lib/passes/IRenderLightingPass":[function(require,module,exports){
+},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase"}],"awayjs-renderergl/lib/passes/IRenderLightingPass":[function(require,module,exports){
 
 },{}],"awayjs-renderergl/lib/passes/IRenderPassBase":[function(require,module,exports){
 
@@ -12124,7 +12125,6 @@ var __extends = this.__extends || function (d, b) {
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
 /**
  * SkyboxPass forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
@@ -12135,18 +12135,18 @@ var SkyboxPass = (function (_super) {
         _super.call(this, renderObject, renderObjectOwner, renderableClass, stage);
         this._skybox = renderObjectOwner;
         this._shader = new ShaderObjectBase(renderableClass, this, this._stage);
+        this._cubeTexture = this._shader.getTextureObject(this._skybox.cubeMap);
     }
+    SkyboxPass.prototype._iIncludeDependencies = function (shaderObject) {
+        _super.prototype._iIncludeDependencies.call(this, shaderObject);
+        shaderObject.usesLocalPosFragment = true;
+    };
     /**
     * @inheritDoc
     */
     SkyboxPass.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        //var cubeMapReg:ShaderRegisterElement = registerCache.getFreeTextureReg();
-        //this._texturesIndex = cubeMapReg.index;
-        //ShaderCompilerHelper.getTexCubeSampleCode(sharedRegisters.shadedTarget, cubeMapReg, this._cubeTexture, shaderObject.useSmoothTextures, shaderObject.useMipmapping);
-        var mip = ",mipnone";
-        if (shaderObject.useMipmapping)
-            mip = ",miplinear";
-        return "tex ft0, v0, fs0 <cube," + ShaderCompilerHelper.getFormatStringForTexture(this._skybox.cubeMap) + "linear,clamp" + mip + ">\n";
+        this._cubeTexture._iInitRegisters(shaderObject, registerCache);
+        return this._cubeTexture._iGetFragmentCode(shaderObject, sharedRegisters.shadedTarget, registerCache, sharedRegisters.localPositionVarying);
     };
     /**
      * @inheritDoc
@@ -12155,13 +12155,13 @@ var SkyboxPass = (function (_super) {
         _super.prototype._iActivate.call(this, camera);
         var context = this._stage.context;
         context.setDepthTest(false, ContextGLCompareMode.LESS);
-        this._stage.activateCubeTexture(0, this._skybox.cubeMap, this._shader.useSmoothTextures, this._shader.useMipmapping);
+        this._cubeTexture.activate(this._shader);
     };
     return SkyboxPass;
 })(RenderPassBase);
 module.exports = SkyboxPass;
 
-},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper","awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/pick/JSPickingCollider":[function(require,module,exports){
+},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase","awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/pick/JSPickingCollider":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12403,7 +12403,7 @@ module.exports = PickingColliderBase;
 
 },{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/pool/BillboardRenderable":"awayjs-renderergl/lib/pool/BillboardRenderable","awayjs-renderergl/lib/pool/RenderablePoolBase":"awayjs-renderergl/lib/pool/RenderablePoolBase","awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable"}],"awayjs-renderergl/lib/pick/ShaderPicker":[function(require,module,exports){
 var Debug = require("awayjs-core/lib/utils/Debug");
-var BitmapData = require("awayjs-core/lib/data/BitmapData");
+var BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Point = require("awayjs-core/lib/geom/Point");
 var Rectangle = require("awayjs-core/lib/geom/Rectangle");
@@ -12485,10 +12485,10 @@ var ShaderPicker = (function () {
         this._context.setVertexBufferAt(0, null);
         if (!this._context || !this._potentialFound)
             return null;
-        if (!this._bitmapData)
-            this._bitmapData = new BitmapData(1, 1, false, 0);
-        this._context.drawToBitmapData(this._bitmapData);
-        this._hitColor = this._bitmapData.getPixel(0, 0);
+        if (!this._bitmapImage2D)
+            this._bitmapImage2D = new BitmapImage2D(1, 1, false, 0);
+        this._context.drawToBitmapImage2D(this._bitmapImage2D);
+        this._hitColor = this._bitmapImage2D.getPixel(0, 0);
         if (!this._hitColor) {
             this._context.present();
             return null;
@@ -12635,8 +12635,8 @@ var ShaderPicker = (function () {
         this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
         this._stage.activateBuffer(0, this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
         this._context.drawTriangles(this._stage.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
-        this._context.drawToBitmapData(this._bitmapData);
-        col = this._bitmapData.getPixel(0, 0);
+        this._context.drawToBitmapImage2D(this._bitmapImage2D);
+        col = this._bitmapImage2D.getPixel(0, 0);
         this._localHitPosition.x = ((col >> 16) & 0xff) * scX / 255 - offsX;
         this._localHitPosition.y = ((col >> 8) & 0xff) * scY / 255 - offsY;
         this._localHitPosition.z = (col & 0xff) * scZ / 255 - offsZ;
@@ -12800,14 +12800,14 @@ var ShaderPicker = (function () {
         this._localHitPosition.z = oz + rz * t;
     };
     ShaderPicker.prototype.dispose = function () {
-        this._bitmapData.dispose();
+        this._bitmapImage2D.dispose();
         if (this._triangleProgram)
             this._triangleProgram.dispose();
         if (this._objectProgram)
             this._objectProgram.dispose();
         this._triangleProgram = null;
         this._objectProgram = null;
-        this._bitmapData = null;
+        this._bitmapImage2D = null;
         this._hitRenderable = null;
         this._hitEntity = null;
     };
@@ -12816,7 +12816,7 @@ var ShaderPicker = (function () {
 })();
 module.exports = ShaderPicker;
 
-},{"awayjs-core/lib/data/BitmapData":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/pool/BillboardRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapImage2D":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/pool/BillboardRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12849,19 +12849,20 @@ var BillboardRenderable = (function (_super) {
      */
     BillboardRenderable.prototype._pGetSubGeometry = function () {
         var material = this._billboard.material;
+        var billboardRect = this._billboard.billboardRect;
         var geometry = BillboardRenderable._materialGeometry[material.id];
         if (!geometry) {
             geometry = BillboardRenderable._materialGeometry[material.id] = new TriangleSubGeometry(true);
             geometry.autoDeriveNormals = false;
             geometry.autoDeriveTangents = false;
             geometry.updateIndices(Array(0, 1, 2, 0, 2, 3));
-            geometry.updatePositions(Array(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
+            geometry.updatePositions(Array(-billboardRect.x, material.height - billboardRect.y, 0, material.width - billboardRect.x, material.height - billboardRect.y, 0, material.width - billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
             geometry.updateVertexNormals(Array(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
             geometry.updateVertexTangents(Array(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
             geometry.updateUVs(Array(0, 0, 1, 0, 1, 1, 0, 1));
         }
         else {
-            geometry.updatePositions(Array(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
+            geometry.updatePositions(Array(-billboardRect.x, material.height - billboardRect.y, 0, material.width - billboardRect.x, material.height - billboardRect.y, 0, material.width - billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
         }
         this._pVertexDataDirty[TriangleSubGeometry.POSITION_DATA] = true;
         this._pVertexDataDirty[TriangleSubGeometry.NORMAL_DATA] = true;
@@ -12977,7 +12978,7 @@ var CurveSubMeshRenderable = (function (_super) {
         return subGeometry;
     };
     CurveSubMeshRenderable._iIncludeDependencies = function (shaderObject) {
-        shaderObject.localPosDependencies++;
+        shaderObject.usesLocalPosFragment = true;
     };
     CurveSubMeshRenderable._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
         var code = "";
@@ -13065,6 +13066,7 @@ var CurveSubMeshRenderable = (function (_super) {
             code.push("mul", d, d, fixb, nl);
             code.push("add", d, d, d2, nl);
             code.push("abs", d, d, nl);
+            code.push("min", d, d, _1, nl);
             code.push("mov", out + ".w", d, nl);
         }
         return code.join(" ");
@@ -13125,6 +13127,8 @@ module.exports = CurveSubMeshRenderable;
 },{"awayjs-core/lib/data/CurveSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/IRenderableClass":[function(require,module,exports){
 
 },{}],"awayjs-renderergl/lib/pool/IRendererPoolClass":[function(require,module,exports){
+
+},{}],"awayjs-renderergl/lib/pool/ITextureObjectClass":[function(require,module,exports){
 
 },{}],"awayjs-renderergl/lib/pool/LineSegmentRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
@@ -13850,7 +13854,233 @@ var RendererPoolBase = (function () {
 })();
 module.exports = RendererPoolBase;
 
-},{"awayjs-renderergl/lib/pool/BillboardRenderable":"awayjs-renderergl/lib/pool/BillboardRenderable","awayjs-renderergl/lib/pool/CurveSubMeshRenderable":"awayjs-renderergl/lib/pool/CurveSubMeshRenderable","awayjs-renderergl/lib/pool/LineSegmentRenderable":"awayjs-renderergl/lib/pool/LineSegmentRenderable","awayjs-renderergl/lib/pool/LineSubMeshRenderable":"awayjs-renderergl/lib/pool/LineSubMeshRenderable","awayjs-renderergl/lib/pool/RenderablePoolBase":"awayjs-renderergl/lib/pool/RenderablePoolBase","awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable"}],"awayjs-renderergl/lib/pool/SkyboxRenderable":[function(require,module,exports){
+},{"awayjs-renderergl/lib/pool/BillboardRenderable":"awayjs-renderergl/lib/pool/BillboardRenderable","awayjs-renderergl/lib/pool/CurveSubMeshRenderable":"awayjs-renderergl/lib/pool/CurveSubMeshRenderable","awayjs-renderergl/lib/pool/LineSegmentRenderable":"awayjs-renderergl/lib/pool/LineSegmentRenderable","awayjs-renderergl/lib/pool/LineSubMeshRenderable":"awayjs-renderergl/lib/pool/LineSubMeshRenderable","awayjs-renderergl/lib/pool/RenderablePoolBase":"awayjs-renderergl/lib/pool/RenderablePoolBase","awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable"}],"awayjs-renderergl/lib/pool/Sampler2DObject":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var SamplerObjectBase = require("awayjs-renderergl/lib/pool/SamplerObjectBase");
+/**
+ *
+ * @class away.pool.Sampler2DObject
+ */
+var Sampler2DObject = (function (_super) {
+    __extends(Sampler2DObject, _super);
+    function Sampler2DObject(stage) {
+        _super.call(this, stage);
+    }
+    Sampler2DObject.prototype.initProperties = function (sampler2D, regCache) {
+        this.sampler2D = sampler2D;
+        this.samplerReg = regCache.getFreeTextureReg();
+        this.samplerIndex = this.samplerReg.index;
+        if (this.sampler2D.imageRect) {
+            this.fragmentReg = regCache.getFreeFragmentConstant();
+            this.fragmentIndex = this.fragmentReg.index * 4;
+        }
+    };
+    Sampler2DObject.prototype.getFragmentCode = function (shaderObject, targetReg, regCache, inputReg) {
+        var code = "";
+        var wrap = (shaderObject.repeatTextures ? "wrap" : "clamp");
+        var format = this.getFormatString(this.sampler2D);
+        var filter = (shaderObject.useSmoothTextures) ? (shaderObject.useMipmapping ? "linear,miplinear" : "linear") : (shaderObject.useMipmapping ? "nearest,mipnearest" : "nearest");
+        var temp;
+        //handles texture atlasing
+        if (this.sampler2D.imageRect) {
+            temp = regCache.getFreeFragmentVectorTemp();
+            code += "mul " + temp + ", " + inputReg + ", " + this.fragmentReg + ".xy\n";
+            code += "add " + temp + ", " + temp + ", " + this.fragmentReg + ".zw\n";
+        }
+        else {
+            temp = inputReg;
+        }
+        code += "tex " + targetReg + ", " + temp + ", " + this.samplerReg + " <2d," + filter + "," + format + wrap + ">\n";
+        return code;
+    };
+    Sampler2DObject.prototype.activate = function (shaderObject) {
+        this._stage.getImageObject(this.sampler2D.image2D).activate(this.samplerIndex, this.sampler2D.repeat || shaderObject.repeatTextures, this.sampler2D.smooth || shaderObject.useSmoothTextures, this.sampler2D.mipmap || shaderObject.useMipmapping);
+        if (this.sampler2D.imageRect) {
+            var index = this.fragmentIndex;
+            var data = shaderObject.fragmentConstantData;
+            data[index] = this.sampler2D.scaleX;
+            data[index + 1] = this.sampler2D.scaleY;
+            data[index + 2] = this.sampler2D.offsetX;
+            data[index + 3] = this.sampler2D.offsetY;
+        }
+    };
+    return Sampler2DObject;
+})(SamplerObjectBase);
+module.exports = Sampler2DObject;
+
+},{"awayjs-renderergl/lib/pool/SamplerObjectBase":"awayjs-renderergl/lib/pool/SamplerObjectBase"}],"awayjs-renderergl/lib/pool/SamplerCubeObject":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var SamplerObjectBase = require("awayjs-renderergl/lib/pool/SamplerObjectBase");
+/**
+ *
+ * @class away.pool.BitmapObject
+ */
+var SamplerCubeObject = (function (_super) {
+    __extends(SamplerCubeObject, _super);
+    function SamplerCubeObject(stage) {
+        _super.call(this, stage);
+    }
+    SamplerCubeObject.prototype.initProperties = function (samplerCube, regCache) {
+        this.samplerCube = samplerCube;
+        this.samplerReg = regCache.getFreeTextureReg();
+        this.samplerIndex = this.samplerReg.index;
+    };
+    SamplerCubeObject.prototype.getFragmentCode = function (shaderObject, targetReg, regCache, inputReg) {
+        var filter;
+        var format = this.getFormatString(this.samplerCube);
+        var filter = (shaderObject.useSmoothTextures) ? (shaderObject.useMipmapping ? "linear,miplinear" : "linear") : (shaderObject.useMipmapping ? "nearest,mipnearest" : "nearest");
+        return "tex " + targetReg + ", " + inputReg + ", " + this.samplerReg + " <cube," + format + filter + ">\n";
+    };
+    SamplerCubeObject.prototype.activate = function (shaderObject) {
+        this._stage.getImageObject(this.samplerCube.imageCube).activate(this.samplerIndex, false, this.samplerCube.smooth || shaderObject.useSmoothTextures, this.samplerCube.mipmap || shaderObject.useMipmapping);
+    };
+    return SamplerCubeObject;
+})(SamplerObjectBase);
+module.exports = SamplerCubeObject;
+
+},{"awayjs-renderergl/lib/pool/SamplerObjectBase":"awayjs-renderergl/lib/pool/SamplerObjectBase"}],"awayjs-renderergl/lib/pool/SamplerObjectBase":[function(require,module,exports){
+var ContextGLTextureFormat = require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
+/**
+ *
+ * @class away.pool.SamplerObjectBase
+ */
+var SamplerObjectBase = (function () {
+    function SamplerObjectBase(stage) {
+        this._stage = stage;
+    }
+    /**
+     * Generates a texture format string for the sample instruction.
+     * @param texture The texture for which to get the format string.
+     * @return
+     *
+     * @protected
+     */
+    SamplerObjectBase.prototype.getFormatString = function (bitmap) {
+        switch (bitmap.format) {
+            case ContextGLTextureFormat.COMPRESSED:
+                return "dxt1,";
+                break;
+            case ContextGLTextureFormat.COMPRESSED_ALPHA:
+                return "dxt5,";
+                break;
+            default:
+                return "";
+        }
+    };
+    return SamplerObjectBase;
+})();
+module.exports = SamplerObjectBase;
+
+},{"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/pool/Single2DTextureObject":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
+var TextureObjectBase = require("awayjs-renderergl/lib/pool/TextureObjectBase");
+var Sampler2DObject = require("awayjs-renderergl/lib/pool/Sampler2DObject");
+/**
+ *
+ * @class away.pool.Single2DTextureObject
+ */
+var Single2DTextureObject = (function (_super) {
+    __extends(Single2DTextureObject, _super);
+    function Single2DTextureObject(pool, single2DTexture, stage) {
+        _super.call(this, pool, single2DTexture, stage);
+        this._single2DTexture = single2DTexture;
+        this._sampler2DObject = new Sampler2DObject(stage);
+    }
+    Single2DTextureObject.prototype._iInitRegisters = function (shaderObject, regCache) {
+        this._sampler2DObject.initProperties(this._single2DTexture.sampler2D, regCache);
+    };
+    /**
+     *
+     * @param shaderObject
+     * @param regCache
+     * @param targetReg The register in which to store the sampled colour.
+     * @param uvReg The uv coordinate vector with which to sample the texture map.
+     * @returns {string}
+     * @private
+     */
+    Single2DTextureObject.prototype._iGetFragmentCode = function (shaderObject, targetReg, regCache, inputReg) {
+        return this._sampler2DObject.getFragmentCode(shaderObject, targetReg, regCache, inputReg);
+    };
+    Single2DTextureObject.prototype.activate = function (shaderObject) {
+        this._sampler2DObject.activate(shaderObject);
+    };
+    /**
+     *
+     */
+    Single2DTextureObject.assetClass = Single2DTexture;
+    return Single2DTextureObject;
+})(TextureObjectBase);
+module.exports = Single2DTextureObject;
+
+},{"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-renderergl/lib/pool/Sampler2DObject":"awayjs-renderergl/lib/pool/Sampler2DObject","awayjs-renderergl/lib/pool/TextureObjectBase":"awayjs-renderergl/lib/pool/TextureObjectBase"}],"awayjs-renderergl/lib/pool/SingleCubeTextureObject":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
+var TextureObjectBase = require("awayjs-renderergl/lib/pool/TextureObjectBase");
+var SamplerCubeObject = require("awayjs-renderergl/lib/pool/SamplerCubeObject");
+/**
+ *
+ * @class away.pool.TextureDataBase
+ */
+var SingleCubeTextureObject = (function (_super) {
+    __extends(SingleCubeTextureObject, _super);
+    function SingleCubeTextureObject(pool, singleCubeTexture, stage) {
+        _super.call(this, pool, singleCubeTexture, stage);
+        this._singleCubeTexture = singleCubeTexture;
+        this._samplerCubeObject = new SamplerCubeObject(stage);
+    }
+    SingleCubeTextureObject.prototype._iIncludeDependencies = function (shaderObject, includeInput) {
+        if (includeInput === void 0) { includeInput = true; }
+        if (includeInput)
+            shaderObject.usesLocalPosFragment = true;
+    };
+    SingleCubeTextureObject.prototype._iInitRegisters = function (shaderObject, regCache) {
+        this._samplerCubeObject.initProperties(this._singleCubeTexture.samplerCube, regCache);
+    };
+    /**
+     *
+     * @param shaderObject
+     * @param regCache
+     * @param targetReg The register in which to store the sampled colour.
+     * @param uvReg The direction vector with which to sample the cube map.
+     * @returns {string}
+     * @private
+     */
+    SingleCubeTextureObject.prototype._iGetFragmentCode = function (shaderObject, targetReg, regCache, inputReg) {
+        return this._samplerCubeObject.getFragmentCode(shaderObject, targetReg, regCache, inputReg);
+    };
+    SingleCubeTextureObject.prototype.activate = function (shaderObject) {
+        this._samplerCubeObject.activate(shaderObject);
+    };
+    /**
+     *
+     */
+    SingleCubeTextureObject.assetClass = SingleCubeTexture;
+    return SingleCubeTextureObject;
+})(TextureObjectBase);
+module.exports = SingleCubeTextureObject;
+
+},{"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-renderergl/lib/pool/SamplerCubeObject":"awayjs-renderergl/lib/pool/SamplerCubeObject","awayjs-renderergl/lib/pool/TextureObjectBase":"awayjs-renderergl/lib/pool/TextureObjectBase"}],"awayjs-renderergl/lib/pool/SkyboxRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13899,7 +14129,7 @@ var SkyboxRenderable = (function (_super) {
      * @inheritDoc
      */
     SkyboxRenderable._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "mul vt0, va0, vc5\n" + "add vt0, vt0, vc4\n" + "m44 op, vt0, vc0\n" + "mov v0, va0\n";
+        return "mul vt0, va0, vc5\n" + "add vt0, vt0, vc4\n" + "m44 op, vt0, vc0\n";
     };
     /**
      * @inheritDoc
@@ -13926,7 +14156,125 @@ var SkyboxRenderable = (function (_super) {
 })(RenderableBase);
 module.exports = SkyboxRenderable;
 
-},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/TextureObjectBase":[function(require,module,exports){
+var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
+/**
+ *
+ * @class away.pool.TextureObjectBaseBase
+ */
+var TextureObjectBase = (function () {
+    function TextureObjectBase(pool, texture, stage) {
+        this._pool = pool;
+        this._texture = texture;
+        this._stage = stage;
+    }
+    TextureObjectBase.prototype._iInitRegisters = function (shaderObject, regCache) {
+    };
+    /**
+     *
+     */
+    TextureObjectBase.prototype.dispose = function () {
+        this._pool.disposeItem(this._texture);
+    };
+    /**
+     *
+     */
+    TextureObjectBase.prototype.invalidate = function () {
+        this.invalid = true;
+    };
+    TextureObjectBase.prototype._iGetFragmentCode = function (shaderObject, targetReg, regCache, inputReg) {
+        if (inputReg === void 0) { inputReg = null; }
+        throw new AbstractMethodError();
+    };
+    TextureObjectBase.prototype.activate = function (shaderObject) {
+        throw new AbstractMethodError();
+    };
+    return TextureObjectBase;
+})();
+module.exports = TextureObjectBase;
+
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-renderergl/lib/pool/TextureObjectPool":[function(require,module,exports){
+var Single2DTextureObject = require("awayjs-renderergl/lib/pool/Single2DTextureObject");
+var SingleCubeTextureObject = require("awayjs-renderergl/lib/pool/SingleCubeTextureObject");
+/**
+ * @class away.pool.TextureObjectPool
+ */
+var TextureObjectPool = (function () {
+    /**
+     * //TODO
+     *
+     * @param textureDataClass
+     */
+    function TextureObjectPool(stage) {
+        this._pool = new Object();
+        this._stage = stage;
+    }
+    /**
+     * //TODO
+     *
+     * @param materialOwner
+     * @returns ITexture
+     */
+    TextureObjectPool.prototype.getItem = function (texture) {
+        return (this._pool[texture.id] || (this._pool[texture.id] = texture._iAddTextureObject(new (TextureObjectPool.getClass(texture))(this, texture, this._stage))));
+    };
+    /**
+     * //TODO
+     *
+     * @param materialOwner
+     */
+    TextureObjectPool.prototype.disposeItem = function (texture) {
+        texture._iRemoveTextureObject(this._pool[texture.id]);
+        this._pool[texture.id] = null;
+    };
+    TextureObjectPool.prototype.dispose = function () {
+        for (var id in this._pool)
+            this._pool[id].dispose();
+        TextureObjectPool.disposePool(this._stage);
+    };
+    /**
+     * //TODO
+     *
+     * @param renderableClass
+     * @returns RenderablePoolBase
+     */
+    TextureObjectPool.getPool = function (stage) {
+        return (TextureObjectPool._pools[stage.stageIndex] || (TextureObjectPool._pools[stage.stageIndex] = new TextureObjectPool(stage)));
+    };
+    /**
+     * //TODO
+     *
+     * @param renderableClass
+     */
+    TextureObjectPool.disposePool = function (stage) {
+        TextureObjectPool._pools[stage.stageIndex] = undefined;
+    };
+    /**
+     *
+     * @param subMeshClass
+     */
+    TextureObjectPool.registerClass = function (textureObjectClass) {
+        TextureObjectPool.classPool[textureObjectClass.assetClass.assetType] = textureObjectClass;
+    };
+    /**
+     *
+     * @param subGeometry
+     */
+    TextureObjectPool.getClass = function (texture) {
+        return TextureObjectPool.classPool[texture.assetType];
+    };
+    TextureObjectPool.addDefaults = function () {
+        TextureObjectPool.registerClass(Single2DTextureObject);
+        TextureObjectPool.registerClass(SingleCubeTextureObject);
+    };
+    TextureObjectPool.classPool = new Object();
+    TextureObjectPool._pools = new Object();
+    TextureObjectPool.main = TextureObjectPool.addDefaults();
+    return TextureObjectPool;
+})();
+module.exports = TextureObjectPool;
+
+},{"awayjs-renderergl/lib/pool/Single2DTextureObject":"awayjs-renderergl/lib/pool/Single2DTextureObject","awayjs-renderergl/lib/pool/SingleCubeTextureObject":"awayjs-renderergl/lib/pool/SingleCubeTextureObject"}],"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -14604,73 +14952,7 @@ var PerspectiveMatrix3D = (function (_super) {
 })(Matrix3D);
 module.exports = PerspectiveMatrix3D;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined}],"awayjs-renderergl/lib/utils/ShaderCompilerHelper":[function(require,module,exports){
-var ContextGLTextureFormat = require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
-var ShaderCompilerHelper = (function () {
-    function ShaderCompilerHelper() {
-    }
-    /**
-     * A helper method that generates standard code for sampling from a texture using the normal uv coordinates.
-     * @param vo The MethodVO object linking this method with the pass currently being compiled.
-     * @param sharedReg The shared register object for the shader.
-     * @param inputReg The texture stream register.
-     * @param texture The texture which will be assigned to the given slot.
-     * @param uvReg An optional uv register if coordinates different from the primary uv coordinates are to be used.
-     * @param forceWrap If true, texture wrapping is enabled regardless of the material setting.
-     * @return The fragment code that performs the sampling.
-     *
-     * @protected
-     */
-    ShaderCompilerHelper.getTex2DSampleCode = function (targetReg, sharedReg, inputReg, texture, smooth, repeat, mipmaps, uvReg, forceWrap) {
-        if (uvReg === void 0) { uvReg = null; }
-        if (forceWrap === void 0) { forceWrap = null; }
-        var wrap = forceWrap || (repeat ? "wrap" : "clamp");
-        var format = ShaderCompilerHelper.getFormatStringForTexture(texture);
-        var filter = (smooth) ? (mipmaps ? "linear,miplinear" : "linear") : (mipmaps ? "nearest,mipnearest" : "nearest");
-        if (uvReg == null)
-            uvReg = sharedReg.uvVarying;
-        return "tex " + targetReg + ", " + uvReg + ", " + inputReg + " <2d," + filter + "," + format + wrap + ">\n";
-    };
-    /**
-     * A helper method that generates standard code for sampling from a cube texture.
-     * @param vo The MethodVO object linking this method with the pass currently being compiled.
-     * @param targetReg The register in which to store the sampled colour.
-     * @param inputReg The texture stream register.
-     * @param texture The cube map which will be assigned to the given slot.
-     * @param uvReg The direction vector with which to sample the cube map.
-     *
-     * @protected
-     */
-    ShaderCompilerHelper.getTexCubeSampleCode = function (targetReg, inputReg, texture, smooth, mipmaps, uvReg) {
-        var filter;
-        var format = ShaderCompilerHelper.getFormatStringForTexture(texture);
-        var filter = (smooth) ? (mipmaps ? "linear,miplinear" : "linear") : (mipmaps ? "nearest,mipnearest" : "nearest");
-        return "tex " + targetReg + ", " + uvReg + ", " + inputReg + " <cube," + format + filter + ">\n";
-    };
-    /**
-     * Generates a texture format string for the sample instruction.
-     * @param texture The texture for which to get the format string.
-     * @return
-     *
-     * @protected
-     */
-    ShaderCompilerHelper.getFormatStringForTexture = function (texture) {
-        switch (texture.format) {
-            case ContextGLTextureFormat.COMPRESSED:
-                return "dxt1,";
-                break;
-            case ContextGLTextureFormat.COMPRESSED_ALPHA:
-                return "dxt5,";
-                break;
-            default:
-                return "";
-        }
-    };
-    return ShaderCompilerHelper;
-})();
-module.exports = ShaderCompilerHelper;
-
-},{"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}]},{},[])
+},{"awayjs-core/lib/geom/Matrix3D":undefined}]},{},[])
 
 
 //# sourceMappingURL=awayjs-renderergl.js.map

@@ -1,12 +1,12 @@
 declare module "awayjs-renderergl/lib/DefaultRenderer" {
+	import ImageBase = require("awayjs-core/lib/data/ImageBase");
+	import BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
 	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
-	import TextureBase = require("awayjs-core/lib/textures/TextureBase");
-	import IRenderer = require("awayjs-display/lib/render/IRenderer");
 	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
 	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
 	import Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
-	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
 	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
@@ -18,14 +18,14 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	 *
 	 * @class away.render.DefaultRenderer
 	 */
-	class DefaultRenderer extends RendererBase implements IRenderer {
+	class DefaultRenderer extends RendererBase {
 	    _pRequireDepthRender: boolean;
 	    private _skyboxRenderablePool;
 	    private _pDistanceRenderer;
 	    private _pDepthRenderer;
 	    private _skyboxProjection;
 	    _pFilter3DRenderer: Filter3DRenderer;
-	    _pDepthRender: TextureBase;
+	    _pDepthRender: BitmapImage2D;
 	    private _antiAlias;
 	    antiAlias: number;
 	    /**
@@ -45,7 +45,7 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	     */
 	    constructor(rendererPoolClass?: IRendererPoolClass, stage?: Stage);
 	    render(entityCollector: CollectorBase): void;
-	    pExecuteRender(entityCollector: EntityCollector, target?: TextureBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    pExecuteRender(entityCollector: EntityCollector, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
 	    private updateLights(entityCollector);
 	    /**
 	     * @inheritDoc
@@ -85,7 +85,7 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 declare module "awayjs-renderergl/lib/DepthRenderer" {
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
-	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
+	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 	import IRendererPoolClass = require("awayjs-renderergl/lib/pool/IRendererPoolClass");
@@ -110,7 +110,7 @@ declare module "awayjs-renderergl/lib/DepthRenderer" {
 declare module "awayjs-renderergl/lib/DistanceRenderer" {
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
-	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
+	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 	import IRendererPoolClass = require("awayjs-renderergl/lib/pool/IRendererPoolClass");
@@ -161,6 +161,214 @@ declare module "awayjs-renderergl/lib/Filter3DRenderer" {
 	    dispose(): void;
 	}
 	export = Filter3DRenderer;
+	
+}
+
+declare module "awayjs-renderergl/lib/RendererBase" {
+	import ImageBase = require("awayjs-core/lib/data/ImageBase");
+	import BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
+	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
+	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
+	import IEntitySorter = require("awayjs-display/lib/sort/IEntitySorter");
+	import IRenderer = require("awayjs-display/lib/render/IRenderer");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
+	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
+	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
+	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	import IRendererPoolClass = require("awayjs-renderergl/lib/pool/IRendererPoolClass");
+	import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
+	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
+	/**
+	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
+	 * contents of a partition
+	 *
+	 * @class away.render.RendererBase
+	 */
+	class RendererBase extends EventDispatcher implements IRenderer {
+	    private _numUsedStreams;
+	    private _numUsedTextures;
+	    private _rendererPool;
+	    _pRendererPoolClass: IRendererPoolClass;
+	    _pContext: IContextGL;
+	    _pStage: Stage;
+	    _pCamera: Camera;
+	    _iEntryPoint: Vector3D;
+	    _pCameraForward: Vector3D;
+	    _pRttBufferManager: RTTBufferManager;
+	    private _viewPort;
+	    private _viewportDirty;
+	    private _scissorDirty;
+	    _pBackBufferInvalid: boolean;
+	    _pDepthTextureInvalid: boolean;
+	    _depthPrepass: boolean;
+	    private _backgroundR;
+	    private _backgroundG;
+	    private _backgroundB;
+	    private _backgroundAlpha;
+	    _shareContext: boolean;
+	    _width: number;
+	    _height: number;
+	    textureRatioX: number;
+	    textureRatioY: number;
+	    private _snapshotBitmapImage2D;
+	    private _snapshotRequired;
+	    _pRttViewProjectionMatrix: Matrix3D;
+	    private _localPos;
+	    private _globalPos;
+	    _pScissorRect: Rectangle;
+	    private _scissorUpdated;
+	    private _viewPortUpdated;
+	    private _onContextUpdateDelegate;
+	    private _onViewportUpdatedDelegate;
+	    _pNumTriangles: number;
+	    _pOpaqueRenderableHead: RenderableBase;
+	    _pBlendedRenderableHead: RenderableBase;
+	    _disableColor: boolean;
+	    _renderBlended: boolean;
+	    renderBlended: boolean;
+	    disableColor: boolean;
+	    /**
+	     *
+	     */
+	    numTriangles: number;
+	    /**
+	     *
+	     */
+	    renderableSorter: IEntitySorter;
+	    /**
+	     * A viewPort rectangle equivalent of the Stage size and position.
+	     */
+	    viewPort: Rectangle;
+	    /**
+	     * A scissor rectangle equivalent of the view size and position.
+	     */
+	    scissorRect: Rectangle;
+	    /**
+	     *
+	     */
+	    x: number;
+	    /**
+	     *
+	     */
+	    y: number;
+	    /**
+	     *
+	     */
+	    width: number;
+	    /**
+	     *
+	     */
+	    height: number;
+	    /**
+	     * Creates a new RendererBase object.
+	     */
+	    constructor(rendererPoolClass?: IRendererPoolClass, stage?: Stage);
+	    activatePass(renderable: RenderableBase, pass: RenderPassBase, camera: Camera): void;
+	    deactivatePass(renderable: RenderableBase, pass: RenderPassBase): void;
+	    _iCreateEntityCollector(): CollectorBase;
+	    /**
+	     * The background color's red component, used when clearing.
+	     *
+	     * @private
+	     */
+	    _iBackgroundR: number;
+	    /**
+	     * The background color's green component, used when clearing.
+	     *
+	     * @private
+	     */
+	    _iBackgroundG: number;
+	    /**
+	     * The background color's blue component, used when clearing.
+	     *
+	     * @private
+	     */
+	    _iBackgroundB: number;
+	    context: IContextGL;
+	    /**
+	     * The Stage that will provide the ContextGL used for rendering.
+	     */
+	    stage: Stage;
+	    iSetStage(value: Stage): void;
+	    /**
+	     * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
+	     * to share the same ContextGL object.
+	     */
+	    shareContext: boolean;
+	    /**
+	     * Disposes the resources used by the RendererBase.
+	     */
+	    dispose(): void;
+	    render(entityCollector: CollectorBase): void;
+	    /**
+	     * Renders the potentially visible geometry to the back buffer or texture.
+	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+	     * @param target An option target texture to render to.
+	     * @param surfaceSelector The index of a CubeTexture's face to render to.
+	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
+	     */
+	    _iRender(entityCollector: CollectorBase, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: ImageBase, numCascades: number, scissorRects: Array<Rectangle>, cameras: Array<Camera>): void;
+	    pCollectRenderables(entityCollector: CollectorBase): void;
+	    /**
+	     * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
+	     *
+	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+	     * @param target An option target texture to render to.
+	     * @param surfaceSelector The index of a CubeTexture's face to render to.
+	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
+	     */
+	    pExecuteRender(entityCollector: CollectorBase, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    queueSnapshot(bmd: BitmapImage2D): void;
+	    /**
+	     * Performs the actual drawing of geometry to the target.
+	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+	     */
+	    pDraw(entityCollector: CollectorBase): void;
+	    /**
+	     * Draw a list of renderables.
+	     *
+	     * @param renderables The renderables to draw.
+	     * @param entityCollector The EntityCollector containing all potentially visible information.
+	     */
+	    drawRenderables(renderable: RenderableBase, entityCollector: CollectorBase): void;
+	    /**
+	     * Assign the context once retrieved
+	     */
+	    private onContextUpdate(event);
+	    _iBackgroundAlpha: number;
+	    /**
+	     * @private
+	     */
+	    private notifyScissorUpdate();
+	    /**
+	     * @private
+	     */
+	    private notifyViewportUpdate();
+	    /**
+	     *
+	     */
+	    onViewportUpdated(event: StageEvent): void;
+	    /**
+	     *
+	     */
+	    updateGlobalPos(): void;
+	    /**
+	     *
+	     * @param renderable
+	     * @protected
+	     */
+	    applyRenderable(renderable: RenderableBase): void;
+	    _pGetRenderObject(renderable: RenderableBase, renderObjectOwner: IRenderObjectOwner): RenderObjectBase;
+	}
+	export = RendererBase;
 	
 }
 
@@ -3822,213 +4030,6 @@ declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
 	
 }
 
-declare module "awayjs-renderergl/lib/base/RendererBase" {
-	import BitmapData = require("awayjs-core/lib/data/BitmapData");
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
-	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
-	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-	import TextureBase = require("awayjs-core/lib/textures/TextureBase");
-	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
-	import IEntitySorter = require("awayjs-display/lib/sort/IEntitySorter");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
-	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
-	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
-	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import IRendererPoolClass = require("awayjs-renderergl/lib/pool/IRendererPoolClass");
-	import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
-	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
-	/**
-	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
-	 * contents of a partition
-	 *
-	 * @class away.render.RendererBase
-	 */
-	class RendererBase extends EventDispatcher {
-	    private _numUsedStreams;
-	    private _numUsedTextures;
-	    private _rendererPool;
-	    _pRendererPoolClass: IRendererPoolClass;
-	    _pContext: IContextGL;
-	    _pStage: Stage;
-	    _pCamera: Camera;
-	    _iEntryPoint: Vector3D;
-	    _pCameraForward: Vector3D;
-	    _pRttBufferManager: RTTBufferManager;
-	    private _viewPort;
-	    private _viewportDirty;
-	    private _scissorDirty;
-	    _pBackBufferInvalid: boolean;
-	    _pDepthTextureInvalid: boolean;
-	    _depthPrepass: boolean;
-	    private _backgroundR;
-	    private _backgroundG;
-	    private _backgroundB;
-	    private _backgroundAlpha;
-	    _shareContext: boolean;
-	    _width: number;
-	    _height: number;
-	    textureRatioX: number;
-	    textureRatioY: number;
-	    private _snapshotBitmapData;
-	    private _snapshotRequired;
-	    _pRttViewProjectionMatrix: Matrix3D;
-	    private _localPos;
-	    private _globalPos;
-	    _pScissorRect: Rectangle;
-	    private _scissorUpdated;
-	    private _viewPortUpdated;
-	    private _onContextUpdateDelegate;
-	    private _onViewportUpdatedDelegate;
-	    _pNumTriangles: number;
-	    _pOpaqueRenderableHead: RenderableBase;
-	    _pBlendedRenderableHead: RenderableBase;
-	    _disableColor: boolean;
-	    _renderBlended: boolean;
-	    renderBlended: boolean;
-	    disableColor: boolean;
-	    /**
-	     *
-	     */
-	    numTriangles: number;
-	    /**
-	     *
-	     */
-	    renderableSorter: IEntitySorter;
-	    /**
-	     * A viewPort rectangle equivalent of the Stage size and position.
-	     */
-	    viewPort: Rectangle;
-	    /**
-	     * A scissor rectangle equivalent of the view size and position.
-	     */
-	    scissorRect: Rectangle;
-	    /**
-	     *
-	     */
-	    x: number;
-	    /**
-	     *
-	     */
-	    y: number;
-	    /**
-	     *
-	     */
-	    width: number;
-	    /**
-	     *
-	     */
-	    height: number;
-	    /**
-	     * Creates a new RendererBase object.
-	     */
-	    constructor(rendererPoolClass?: IRendererPoolClass, stage?: Stage);
-	    activatePass(renderable: RenderableBase, pass: RenderPassBase, camera: Camera): void;
-	    deactivatePass(renderable: RenderableBase, pass: RenderPassBase): void;
-	    _iCreateEntityCollector(): CollectorBase;
-	    /**
-	     * The background color's red component, used when clearing.
-	     *
-	     * @private
-	     */
-	    _iBackgroundR: number;
-	    /**
-	     * The background color's green component, used when clearing.
-	     *
-	     * @private
-	     */
-	    _iBackgroundG: number;
-	    /**
-	     * The background color's blue component, used when clearing.
-	     *
-	     * @private
-	     */
-	    _iBackgroundB: number;
-	    context: IContextGL;
-	    /**
-	     * The Stage that will provide the ContextGL used for rendering.
-	     */
-	    stage: Stage;
-	    iSetStage(value: Stage): void;
-	    /**
-	     * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
-	     * to share the same ContextGL object.
-	     */
-	    shareContext: boolean;
-	    /**
-	     * Disposes the resources used by the RendererBase.
-	     */
-	    dispose(): void;
-	    render(entityCollector: CollectorBase): void;
-	    /**
-	     * Renders the potentially visible geometry to the back buffer or texture.
-	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-	     * @param target An option target texture to render to.
-	     * @param surfaceSelector The index of a CubeTexture's face to render to.
-	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
-	     */
-	    _iRender(entityCollector: CollectorBase, target?: TextureBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
-	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: TextureBase, numCascades: number, scissorRects: Array<Rectangle>, cameras: Array<Camera>): void;
-	    pCollectRenderables(entityCollector: CollectorBase): void;
-	    /**
-	     * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
-	     *
-	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-	     * @param target An option target texture to render to.
-	     * @param surfaceSelector The index of a CubeTexture's face to render to.
-	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
-	     */
-	    pExecuteRender(entityCollector: CollectorBase, target?: TextureBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
-	    queueSnapshot(bmd: BitmapData): void;
-	    /**
-	     * Performs the actual drawing of geometry to the target.
-	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-	     */
-	    pDraw(entityCollector: CollectorBase): void;
-	    /**
-	     * Draw a list of renderables.
-	     *
-	     * @param renderables The renderables to draw.
-	     * @param entityCollector The EntityCollector containing all potentially visible information.
-	     */
-	    drawRenderables(renderable: RenderableBase, entityCollector: CollectorBase): void;
-	    /**
-	     * Assign the context once retrieved
-	     */
-	    private onContextUpdate(event);
-	    _iBackgroundAlpha: number;
-	    /**
-	     * @private
-	     */
-	    private notifyScissorUpdate();
-	    /**
-	     * @private
-	     */
-	    private notifyViewportUpdate();
-	    /**
-	     *
-	     */
-	    onViewportUpdated(event: StageEvent): void;
-	    /**
-	     *
-	     */
-	    updateGlobalPos(): void;
-	    /**
-	     *
-	     * @param renderable
-	     * @protected
-	     */
-	    applyRenderable(renderable: RenderableBase): void;
-	    _pGetRenderObject(renderable: RenderableBase, renderObjectOwner: IRenderObjectOwner): RenderObjectBase;
-	}
-	export = RendererBase;
-	
-}
-
 declare module "awayjs-renderergl/lib/compilation/DepthRenderObject" {
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -4576,12 +4577,13 @@ declare module "awayjs-renderergl/lib/compilation/ShaderLightingObject" {
 
 declare module "awayjs-renderergl/lib/compilation/ShaderObjectBase" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import Texture2DBase = require("awayjs-core/lib/textures/Texture2DBase");
 	import Camera = require("awayjs-display/lib/entities/Camera");
+	import TextureBase = require("awayjs-display/lib/textures/TextureBase");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ProgramData = require("awayjs-stagegl/lib/pool/ProgramData");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	import TextureObjectBase = require("awayjs-renderergl/lib/pool/TextureObjectBase");
 	import IRenderPassBase = require("awayjs-renderergl/lib/passes/IRenderPassBase");
 	import ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
@@ -4595,6 +4597,7 @@ declare module "awayjs-renderergl/lib/compilation/ShaderObjectBase" {
 	 * @see RegisterPool.addUsage
 	 */
 	class ShaderObjectBase {
+	    private _textureObjectPool;
 	    private _renderableClass;
 	    private _renderPass;
 	    _stage: Stage;
@@ -4640,7 +4643,7 @@ declare module "awayjs-renderergl/lib/compilation/ShaderObjectBase" {
 	    repeatTextures: boolean;
 	    usesUVTransform: boolean;
 	    alphaThreshold: number;
-	    texture: Texture2DBase;
+	    texture: TextureObjectBase;
 	    color: number;
 	    ambientR: number;
 	    ambientG: number;
@@ -4674,11 +4677,6 @@ declare module "awayjs-renderergl/lib/compilation/ShaderObjectBase" {
 	     */
 	    secondaryUVDependencies: number;
 	    /**
-	     * The amount of dependencies on the local position. This can be 0 while hasGlobalPosDependencies is true when
-	     * the global position is used as a temporary value (fe to calculate the view direction)
-	     */
-	    localPosDependencies: number;
-	    /**
 	     * The amount of dependencies on the global position. This can be 0 while hasGlobalPosDependencies is true when
 	     * the global position is used as a temporary value (fe to calculate the view direction)
 	     */
@@ -4708,6 +4706,10 @@ declare module "awayjs-renderergl/lib/compilation/ShaderObjectBase" {
 	     * Indicates whether there are any dependencies on the world-space position vector.
 	     */
 	    usesGlobalPosFragment: boolean;
+	    /**
+	     * Indicates whether there are any dependencies on the local position vector.
+	     */
+	    usesLocalPosFragment: boolean;
 	    vertexConstantData: Array<number>;
 	    fragmentConstantData: Array<number>;
 	    /**
@@ -4758,6 +4760,7 @@ declare module "awayjs-renderergl/lib/compilation/ShaderObjectBase" {
 	     * Creates a new MethodCompilerVO object.
 	     */
 	    constructor(renderableClass: IRenderableClass, renderPass: IRenderPassBase, stage: Stage);
+	    getTextureObject(texture: TextureBase): TextureObjectBase;
 	    _iIncludeDependencies(): void;
 	    /**
 	     * Factory method to create a concrete compiler object for this object
@@ -5277,7 +5280,6 @@ declare module "awayjs-renderergl/lib/passes/BasicMaterialPass" {
 	    private _diffuseB;
 	    private _diffuseA;
 	    private _fragmentConstantsIndex;
-	    private _texturesIndex;
 	    constructor(renderObject: RenderObjectBase, renderObjectOwner: IRenderObjectOwner, renderableClass: IRenderableClass, stage: Stage);
 	    _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
 	    /**
@@ -5309,7 +5311,6 @@ declare module "awayjs-renderergl/lib/passes/DepthPass" {
 	 */
 	class DepthPass extends RenderPassBase {
 	    private _fragmentConstantsIndex;
-	    private _texturesIndex;
 	    constructor(renderObject: RenderObjectBase, renderObjectOwner: IRenderObjectOwner, renderableClass: IRenderableClass, stage: Stage);
 	    _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
 	    _iInitConstantData(shaderObject: ShaderObjectBase): void;
@@ -5342,7 +5343,6 @@ declare module "awayjs-renderergl/lib/passes/DistancePass" {
 	 */
 	class DistancePass extends RenderPassBase {
 	    private _fragmentConstantsIndex;
-	    private _texturesIndex;
 	    /**
 	     * Creates a new DistancePass object.
 	     *
@@ -5576,6 +5576,7 @@ declare module "awayjs-renderergl/lib/passes/SkyboxPass" {
 	import Skybox = require("awayjs-display/lib/entities/Skybox");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import TextureObjectBase = require("awayjs-renderergl/lib/pool/TextureObjectBase");
 	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -5588,7 +5589,9 @@ declare module "awayjs-renderergl/lib/passes/SkyboxPass" {
 	 */
 	class SkyboxPass extends RenderPassBase {
 	    _skybox: Skybox;
+	    _cubeTexture: TextureObjectBase;
 	    constructor(renderObject: RenderObjectBase, renderObjectOwner: IRenderObjectOwner, renderableClass: IRenderableClass, stage: Stage);
+	    _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
 	    /**
 	    * @inheritDoc
 	    */
@@ -5712,7 +5715,7 @@ declare module "awayjs-renderergl/lib/pick/ShaderPicker" {
 	    private _onlyMouseEnabled;
 	    private _objectProgram;
 	    private _triangleProgram;
-	    private _bitmapData;
+	    private _bitmapImage2D;
 	    private _viewportData;
 	    private _boundOffsetScale;
 	    private _id;
@@ -5962,8 +5965,8 @@ declare module "awayjs-renderergl/lib/pool/IRenderableClass" {
 }
 
 declare module "awayjs-renderergl/lib/pool/IRendererPoolClass" {
+	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
 	import RendererPoolBase = require("awayjs-renderergl/lib/pool/RendererPoolBase");
-	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
 	/**
 	 * IRendererPoolClass is an interface for the constructable class definition IRenderable that is used to
 	 * create renderable objects in the rendering pipeline to render the contents of a partition
@@ -5977,6 +5980,28 @@ declare module "awayjs-renderergl/lib/pool/IRendererPoolClass" {
 	    new (renderer: RendererBase): RendererPoolBase;
 	}
 	export = IRendererPoolClass;
+	
+}
+
+declare module "awayjs-renderergl/lib/pool/ITextureObjectClass" {
+	import IWrapperClass = require("awayjs-core/lib/library/IWrapperClass");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ITextureObject = require("awayjs-display/lib/pool/ITextureObject");
+	import TextureBase = require("awayjs-display/lib/textures/TextureBase");
+	import TextureObjectPool = require("awayjs-renderergl/lib/pool/TextureObjectPool");
+	/**
+	 * ITextureObjectClass is an interface for the constructable class definition ITextureObject that is used to
+	 * create renderable objects in the rendering pipeline to render the contents of a partition
+	 *
+	 * @class away.render.ITextureObjectClass
+	 */
+	interface ITextureObjectClass extends IWrapperClass {
+	    /**
+	     *
+	     */
+	    new (pool: TextureObjectPool, texture: TextureBase, stage: Stage): ITextureObject;
+	}
+	export = ITextureObjectClass;
 	
 }
 
@@ -6417,8 +6442,8 @@ declare module "awayjs-renderergl/lib/pool/RendererPoolBase" {
 	import Billboard = require("awayjs-display/lib/entities/Billboard");
 	import LineSegment = require("awayjs-display/lib/entities/LineSegment");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
 	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
-	import RendererBase = require("awayjs-renderergl/lib/base/RendererBase");
 	/**
 	 * RendererPoolBase forms an abstract base class for classes that are used in the rendering pipeline to render the
 	 * contents of a partition
@@ -6477,6 +6502,155 @@ declare module "awayjs-renderergl/lib/pool/RendererPoolBase" {
 	
 }
 
+declare module "awayjs-renderergl/lib/pool/Sampler2DObject" {
+	import Sampler2D = require("awayjs-core/lib/data/Sampler2D");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+	import SamplerObjectBase = require("awayjs-renderergl/lib/pool/SamplerObjectBase");
+	/**
+	 *
+	 * @class away.pool.Sampler2DObject
+	 */
+	class Sampler2DObject extends SamplerObjectBase {
+	    sampler2D: Sampler2D;
+	    fragmentReg: ShaderRegisterElement;
+	    fragmentIndex: number;
+	    constructor(stage: Stage);
+	    initProperties(sampler2D: Sampler2D, regCache: ShaderRegisterCache): void;
+	    getFragmentCode(shaderObject: ShaderObjectBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg: ShaderRegisterElement): string;
+	    activate(shaderObject: ShaderObjectBase): void;
+	}
+	export = Sampler2DObject;
+	
+}
+
+declare module "awayjs-renderergl/lib/pool/SamplerCubeObject" {
+	import SamplerCube = require("awayjs-core/lib/data/SamplerCube");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+	import SamplerObjectBase = require("awayjs-renderergl/lib/pool/SamplerObjectBase");
+	/**
+	 *
+	 * @class away.pool.BitmapObject
+	 */
+	class SamplerCubeObject extends SamplerObjectBase {
+	    samplerCube: SamplerCube;
+	    constructor(stage: Stage);
+	    initProperties(samplerCube: SamplerCube, regCache: ShaderRegisterCache): void;
+	    getFragmentCode(shaderObject: ShaderObjectBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg: ShaderRegisterElement): string;
+	    activate(shaderObject: ShaderObjectBase): void;
+	}
+	export = SamplerCubeObject;
+	
+}
+
+declare module "awayjs-renderergl/lib/pool/SamplerObjectBase" {
+	import SamplerBase = require("awayjs-core/lib/data/SamplerBase");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+	/**
+	 *
+	 * @class away.pool.SamplerObjectBase
+	 */
+	class SamplerObjectBase {
+	    _stage: Stage;
+	    samplerReg: ShaderRegisterElement;
+	    samplerIndex: number;
+	    constructor(stage: Stage);
+	    /**
+	     * Generates a texture format string for the sample instruction.
+	     * @param texture The texture for which to get the format string.
+	     * @return
+	     *
+	     * @protected
+	     */
+	    getFormatString(bitmap: SamplerBase): string;
+	}
+	export = SamplerObjectBase;
+	
+}
+
+declare module "awayjs-renderergl/lib/pool/Single2DTextureObject" {
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+	import TextureObjectPool = require("awayjs-renderergl/lib/pool/TextureObjectPool");
+	import TextureObjectBase = require("awayjs-renderergl/lib/pool/TextureObjectBase");
+	/**
+	 *
+	 * @class away.pool.Single2DTextureObject
+	 */
+	class Single2DTextureObject extends TextureObjectBase {
+	    /**
+	     *
+	     */
+	    static assetClass: IAssetClass;
+	    private _single2DTexture;
+	    private _sampler2DObject;
+	    constructor(pool: TextureObjectPool, single2DTexture: Single2DTexture, stage: Stage);
+	    _iInitRegisters(shaderObject: ShaderObjectBase, regCache: ShaderRegisterCache): void;
+	    /**
+	     *
+	     * @param shaderObject
+	     * @param regCache
+	     * @param targetReg The register in which to store the sampled colour.
+	     * @param uvReg The uv coordinate vector with which to sample the texture map.
+	     * @returns {string}
+	     * @private
+	     */
+	    _iGetFragmentCode(shaderObject: ShaderObjectBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg: ShaderRegisterElement): string;
+	    activate(shaderObject: ShaderObjectBase): void;
+	}
+	export = Single2DTextureObject;
+	
+}
+
+declare module "awayjs-renderergl/lib/pool/SingleCubeTextureObject" {
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+	import TextureObjectPool = require("awayjs-renderergl/lib/pool/TextureObjectPool");
+	import TextureObjectBase = require("awayjs-renderergl/lib/pool/TextureObjectBase");
+	/**
+	 *
+	 * @class away.pool.TextureDataBase
+	 */
+	class SingleCubeTextureObject extends TextureObjectBase {
+	    /**
+	     *
+	     */
+	    static assetClass: IAssetClass;
+	    private _singleCubeTexture;
+	    private _samplerCubeObject;
+	    constructor(pool: TextureObjectPool, singleCubeTexture: SingleCubeTexture, stage: Stage);
+	    _iIncludeDependencies(shaderObject: ShaderObjectBase, includeInput?: boolean): void;
+	    _iInitRegisters(shaderObject: ShaderObjectBase, regCache: ShaderRegisterCache): void;
+	    /**
+	     *
+	     * @param shaderObject
+	     * @param regCache
+	     * @param targetReg The register in which to store the sampled colour.
+	     * @param uvReg The direction vector with which to sample the cube map.
+	     * @returns {string}
+	     * @private
+	     */
+	    _iGetFragmentCode(shaderObject: ShaderObjectBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg: ShaderRegisterElement): string;
+	    activate(shaderObject: ShaderObjectBase): void;
+	}
+	export = SingleCubeTextureObject;
+	
+}
+
 declare module "awayjs-renderergl/lib/pool/SkyboxRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
@@ -6528,6 +6702,103 @@ declare module "awayjs-renderergl/lib/pool/SkyboxRenderable" {
 	    _iRender(pass: RenderPassBase, camera: Camera, viewProjection: Matrix3D): void;
 	}
 	export = SkyboxRenderable;
+	
+}
+
+declare module "awayjs-renderergl/lib/pool/TextureObjectBase" {
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ITextureObject = require("awayjs-display/lib/pool/ITextureObject");
+	import TextureBase = require("awayjs-display/lib/textures/TextureBase");
+	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+	import TextureObjectPool = require("awayjs-renderergl/lib/pool/TextureObjectPool");
+	/**
+	 *
+	 * @class away.pool.TextureObjectBaseBase
+	 */
+	class TextureObjectBase implements ITextureObject {
+	    private _pool;
+	    private _texture;
+	    _stage: Stage;
+	    invalid: boolean;
+	    constructor(pool: TextureObjectPool, texture: TextureBase, stage: Stage);
+	    _iInitRegisters(shaderObject: ShaderObjectBase, regCache: ShaderRegisterCache): void;
+	    /**
+	     *
+	     */
+	    dispose(): void;
+	    /**
+	     *
+	     */
+	    invalidate(): void;
+	    _iGetFragmentCode(shaderObject: ShaderObjectBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg?: ShaderRegisterElement): string;
+	    activate(shaderObject: ShaderObjectBase): void;
+	}
+	export = TextureObjectBase;
+	
+}
+
+declare module "awayjs-renderergl/lib/pool/TextureObjectPool" {
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import TextureBase = require("awayjs-display/lib/textures/TextureBase");
+	import ITextureObjectClass = require("awayjs-renderergl/lib/pool/ITextureObjectClass");
+	import TextureObjectBase = require("awayjs-renderergl/lib/pool/TextureObjectBase");
+	/**
+	 * @class away.pool.TextureObjectPool
+	 */
+	class TextureObjectPool {
+	    private static classPool;
+	    static _pools: Object;
+	    _stage: Stage;
+	    private _pool;
+	    /**
+	     * //TODO
+	     *
+	     * @param textureDataClass
+	     */
+	    constructor(stage: Stage);
+	    /**
+	     * //TODO
+	     *
+	     * @param materialOwner
+	     * @returns ITexture
+	     */
+	    getItem(texture: TextureBase): TextureObjectBase;
+	    /**
+	     * //TODO
+	     *
+	     * @param materialOwner
+	     */
+	    disposeItem(texture: TextureBase): void;
+	    dispose(): void;
+	    /**
+	     * //TODO
+	     *
+	     * @param renderableClass
+	     * @returns RenderablePoolBase
+	     */
+	    static getPool(stage: Stage): TextureObjectPool;
+	    /**
+	     * //TODO
+	     *
+	     * @param renderableClass
+	     */
+	    static disposePool(stage: Stage): void;
+	    /**
+	     *
+	     * @param subMeshClass
+	     */
+	    static registerClass(textureObjectClass: ITextureObjectClass): void;
+	    /**
+	     *
+	     * @param subGeometry
+	     */
+	    static getClass(texture: TextureBase): ITextureObjectClass;
+	    private static main;
+	    private static addDefaults();
+	}
+	export = TextureObjectPool;
 	
 }
 
@@ -6701,48 +6972,6 @@ declare module "awayjs-renderergl/lib/utils/PerspectiveMatrix3D" {
 	    perspectiveFieldOfViewLH(fieldOfViewY: number, aspectRatio: number, zNear: number, zFar: number): void;
 	}
 	export = PerspectiveMatrix3D;
-	
-}
-
-declare module "awayjs-renderergl/lib/utils/ShaderCompilerHelper" {
-	import TextureBase = require("awayjs-core/lib/textures/TextureBase");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-	class ShaderCompilerHelper {
-	    /**
-	     * A helper method that generates standard code for sampling from a texture using the normal uv coordinates.
-	     * @param vo The MethodVO object linking this method with the pass currently being compiled.
-	     * @param sharedReg The shared register object for the shader.
-	     * @param inputReg The texture stream register.
-	     * @param texture The texture which will be assigned to the given slot.
-	     * @param uvReg An optional uv register if coordinates different from the primary uv coordinates are to be used.
-	     * @param forceWrap If true, texture wrapping is enabled regardless of the material setting.
-	     * @return The fragment code that performs the sampling.
-	     *
-	     * @protected
-	     */
-	    static getTex2DSampleCode(targetReg: ShaderRegisterElement, sharedReg: ShaderRegisterData, inputReg: ShaderRegisterElement, texture: TextureBase, smooth: boolean, repeat: boolean, mipmaps: boolean, uvReg?: ShaderRegisterElement, forceWrap?: string): string;
-	    /**
-	     * A helper method that generates standard code for sampling from a cube texture.
-	     * @param vo The MethodVO object linking this method with the pass currently being compiled.
-	     * @param targetReg The register in which to store the sampled colour.
-	     * @param inputReg The texture stream register.
-	     * @param texture The cube map which will be assigned to the given slot.
-	     * @param uvReg The direction vector with which to sample the cube map.
-	     *
-	     * @protected
-	     */
-	    static getTexCubeSampleCode(targetReg: ShaderRegisterElement, inputReg: ShaderRegisterElement, texture: TextureBase, smooth: boolean, mipmaps: boolean, uvReg: ShaderRegisterElement): string;
-	    /**
-	     * Generates a texture format string for the sample instruction.
-	     * @param texture The texture for which to get the format string.
-	     * @return
-	     *
-	     * @protected
-	     */
-	    static getFormatStringForTexture(texture: TextureBase): string;
-	}
-	export = ShaderCompilerHelper;
 	
 }
 
