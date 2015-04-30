@@ -1,10 +1,10 @@
+import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoader					= require("awayjs-core/lib/library/AssetLoader");
 import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
-import ImageCubeTexture				= require("awayjs-core/lib/textures/ImageCubeTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import Debug						= require("awayjs-core/lib/utils/Debug");
 
@@ -13,6 +13,7 @@ import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLig
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
+import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 //import SkyboxMaterial				= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
@@ -21,7 +22,7 @@ class CubeTextures
 {
 	private _view:View;
 	private _timer:RequestAnimationFrame;
-	private _skyboxCubeTexture:ImageCubeTexture;
+	private _skyboxSingleCubeTexture:SingleCubeTexture;
 	//private _skyboxMaterial:SkyboxMaterial;
 
 	private _skybox:Skybox;
@@ -39,7 +40,7 @@ class CubeTextures
 		this._view.camera.projection.far = 14000;
 		this._view.backgroundColor = 0x2c2c32;
 
-		var token:AssetLoaderToken = AssetLibrary.load( new URLRequest('assets/CubeTextureTest.cube'));
+		var token:AssetLoaderToken = AssetLibrary.load( new URLRequest('assets/SingleCubeTextureTest.cube'));
 		token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		window.onresize = (event:UIEvent) => this.onResize(event);
@@ -55,10 +56,10 @@ class CubeTextures
 		var loader:AssetLoader = <AssetLoader> event.target;
 
 		switch(event.url) {
-			case 'assets/CubeTextureTest.cube':
-				this._skyboxCubeTexture = <ImageCubeTexture> loader.baseDependency.assets[0];
+			case 'assets/SingleCubeTextureTest.cube':
+				this._skyboxSingleCubeTexture = new SingleCubeTexture(<BitmapImageCube> loader.baseDependency.assets[0]);
 
-				this._skybox = new Skybox(this._skyboxCubeTexture);
+				this._skybox = new Skybox(this._skyboxSingleCubeTexture);
 				this._view.scene.addChild(this._skybox);
 
 				break;

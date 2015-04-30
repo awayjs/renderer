@@ -1,3 +1,4 @@
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
@@ -10,12 +11,14 @@ import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import AlignmentMode				= require("awayjs-display/lib/base/AlignmentMode");
 import OrientationMode				= require("awayjs-display/lib/base/OrientationMode");
-import LineSegment					= require("awayjs-display/lib/entities/LineSegment");
+import Billboard					= require("awayjs-display/lib/entities/Billboard");
+import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-class LineSegmentTest
+class AtlasTest
 {
 	//engine variables
 	private _view:View;
@@ -44,8 +47,8 @@ class LineSegmentTest
 	private init():void
 	{
 		this.initEngine();
-		this.initObjects();
 		this.initListeners();
+		this.loadTexture();
 	}
 
 	/**
@@ -60,22 +63,6 @@ class LineSegmentTest
 
 		//setup controller to be used on the camera
 		this._cameraController = new HoverController(this._view.camera, null, 45, 20, 1000, 10);
-	}
-
-	private initObjects():void
-	{
-		var material:BasicMaterial = new BasicMaterial(0xFFFFFF);
-
-		var x:number, y:number, z:number, s:LineSegment;
-
-		for (var c:number = 0; c < 100; c ++) {
-			x = this.getRandom(-400 , 400);
-			y = this.getRandom(-400 , 400);
-			z = this.getRandom(-400 , 400);
-
-			s = new LineSegment(material, new Vector3D(0,0,0), new Vector3D(x, y, z), 3);
-			this._view.scene.addChild(s);
-		}
 	}
 
 	/**
@@ -96,6 +83,15 @@ class LineSegmentTest
 	}
 
 	/**
+	 * start loading our texture
+	 */
+	private loadTexture():void
+	{
+		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.load(new URLRequest("assets/atlas.xml"));
+	}
+
+	/**
 	 * Navigation and render loop
 	 */
 	private onEnterFrame(dt:number):void
@@ -103,6 +99,42 @@ class LineSegmentTest
 		this._time += dt;
 
 		this._view.render();
+	}
+
+	/**
+	 * Listener function for resource complete event on asset library
+	 */
+	private onResourceComplete(event:LoaderEvent)
+	{
+		var assets:Array<IAsset> = event.assets;
+		var length:number = assets.length;
+
+		for (var c:number = 0; c < length; c ++) {
+			var asset:IAsset = assets[c];
+
+			switch(event.url) {
+
+				case "assets/atlas.xml":
+
+					var material:BasicMaterial = new BasicMaterial(new Single2DTexture(<BitmapImage2D> asset));
+					material.alphaBlending = true;
+
+					//var size:number = this.getRandom(50 , 500);
+					var s:Billboard = new Billboard(material);
+					s.pivot = new Vector3D(s.width/2, s.height/2, 0);
+					//s.width = size;
+					//s.height = size;
+					s.orientationMode = OrientationMode.CAMERA_PLANE;
+					s.alignmentMode = AlignmentMode.PIVOT_POINT;
+						s.x =  this.getRandom(-400 , 400);
+						s.y =  this.getRandom(-400 , 400);
+						s.z =  this.getRandom(-400 , 400);
+					this._view.scene.addChild(s);
+
+					this._timer.start();
+					break;
+			}
+		}
 	}
 
 	/**

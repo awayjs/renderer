@@ -1,10 +1,10 @@
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/containers/View");
@@ -14,6 +14,7 @@ import OrientationMode				= require("awayjs-display/lib/base/OrientationMode");
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
@@ -115,8 +116,7 @@ class BillboardTest
 
 				case "assets/130909wall_big.png":
 
-					var material:BasicMaterial = new BasicMaterial();
-						material.texture = <Texture2DBase> AssetLibrary.getAsset(asset.name);
+					var material:BasicMaterial = new BasicMaterial(new Single2DTexture(<BitmapImage2D> asset));
 
 					var s:Billboard;
 						s = new Billboard(material);

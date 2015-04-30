@@ -6,7 +6,6 @@ import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Event						= require("awayjs-core/lib/events/Event");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import Debug						= require("awayjs-core/lib/utils/Debug");
 
@@ -15,6 +14,7 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
@@ -70,7 +70,7 @@ class TorusVortex
 
 	private onLoadComplete(event)
 	{
-		var matTx:BasicMaterial = new BasicMaterial(new ImageTexture(this._image), true, true, false);
+		var matTx:BasicMaterial = new BasicMaterial(new Single2DTexture(ParserUtils.imageToBitmapImage2D(this._image)));
 
 		matTx.blendMode = BlendMode.ADD;
 		matTx.bothSides = true;

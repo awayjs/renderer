@@ -1,3 +1,4 @@
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");
@@ -5,7 +6,6 @@ import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import CoordinateSystem				= require("awayjs-core/lib/projections/CoordinateSystem");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/containers/View");
@@ -14,6 +14,7 @@ import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import AwayMouseEvent				= require("awayjs-display/lib/events/MouseEvent");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
@@ -30,7 +31,7 @@ class LayoutTest
 	private _lastMouseX:number;
 	private _lastMouseY:number;
 
-	private _imageTexture:ImageTexture;
+	private _texture:Single2DTexture;
 	private _bitmapMaterial:BasicMaterial;
 	private _billboards:Array<Billboard> = new Array<Billboard>();
 
@@ -50,8 +51,8 @@ class LayoutTest
 	 */
 	private onResourceComplete(event:LoaderEvent)
 	{
-		//get the image texture
-		this._imageTexture = <ImageTexture> event.assets[0];
+		//get the texture
+		this._texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 
 		//create the view
 		this._view = new View(new DefaultRenderer());
@@ -66,7 +67,7 @@ class LayoutTest
 		this._projection.originY = 0;
 
 		//create a bitmap material
-		this._bitmapMaterial = new BasicMaterial(this._imageTexture);
+		this._bitmapMaterial = new BasicMaterial(this._texture);
 
 		var billboard:Billboard;
 		var numHBillboards:number = 2;

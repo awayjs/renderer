@@ -1,23 +1,21 @@
-import BitmapData					= require("awayjs-core/lib/data/BitmapData");
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoader					= require("awayjs-core/lib/library/AssetLoader");
 import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import BitmapTexture				= require("awayjs-core/lib/textures/BitmapTexture");
-import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
-import TextureBase					= require("awayjs-core/lib/textures/TextureBase");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/containers/View");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-class BitmapDataReflectionTest
+class BitmapImage2DReflectionTest
 {
 	private view:View;
 	private raf:RequestAnimationFrame;
@@ -45,11 +43,11 @@ class BitmapDataReflectionTest
 			var asset:IAsset = loader.baseDependency.assets[c];
 
 			switch (asset.assetType) {
-				case TextureBase.assetType:
+				case BitmapImage2D.assetType:
 
 					var prefab:PrimitivePlanePrefab = new PrimitivePlanePrefab(500 , 500, 1, 1, false);
-					var tx:ImageTexture = <ImageTexture> asset;
-					var bitmap:BitmapData = new BitmapData(1024, 1024, true, 0x00000000);
+					var tx:Single2DTexture = new Single2DTexture(<BitmapImage2D> asset);
+					var bitmap:BitmapImage2D = new BitmapImage2D(1024, 1024, true, 0x00000000);
 
 					var imageCanvas:HTMLCanvasElement = <HTMLCanvasElement> document.createElement("canvas");
 					imageCanvas.width = 1024;
@@ -59,7 +57,7 @@ class BitmapDataReflectionTest
 
 					context.translate(0, 1024);
 					context.scale(1, -1);
-					context.drawImage(tx.htmlImageElement, 0, 0, 1024, 1024);
+					context.drawImage((<BitmapImage2D> asset).getCanvas(), 0, 0, 1024, 1024);
 
 					var gradient = context.createLinearGradient(0, 0, 0, 1024);
 					gradient.addColorStop(0.8, "rgba(255, 255, 255, 1.0)");
@@ -72,12 +70,12 @@ class BitmapDataReflectionTest
 
 					bitmap.draw(imageCanvas);
 
-					var bitmapClone:BitmapData = new BitmapData(1024, 1024, true, 0x00000000);
+					var bitmapClone:BitmapImage2D = new BitmapImage2D(1024, 1024, true, 0x00000000);
 					bitmapClone.copyPixels(bitmap, bitmapClone.rect, bitmapClone.rect);
 
-					document.body.appendChild(bitmap.canvas);
+					document.body.appendChild(bitmap.getCanvas());
 
-					var bmpTX:BitmapTexture = new BitmapTexture(bitmapClone);
+					var bmpTX:Single2DTexture = new Single2DTexture(bitmapClone);
 
 					var material:BasicMaterial = new BasicMaterial(bmpTX);
 					material.bothSides = true;
