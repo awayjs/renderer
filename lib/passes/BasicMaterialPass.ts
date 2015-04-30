@@ -2,7 +2,6 @@ import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
-import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
@@ -18,12 +17,10 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
-import RenderObjectPool				= require("awayjs-renderergl/lib/compilation/RenderObjectPool");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-import ShaderCompilerHelper			= require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
 import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
 import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
@@ -40,7 +37,6 @@ class BasicMaterialPass extends RenderPassBase
 	private _diffuseA:number = 1;
 
 	private _fragmentConstantsIndex:number;
-	private _texturesIndex:number;
 
 	constructor(renderObject:RenderObjectBase, renderObjectOwner:IRenderObjectOwner, renderableClass:IRenderableClass, stage:Stage)
 	{
@@ -55,7 +51,6 @@ class BasicMaterialPass extends RenderPassBase
 
 		if (shaderObject.texture != null)
 			shaderObject.uvDependencies++;
-
     }
 
 	/**
@@ -74,14 +69,12 @@ class BasicMaterialPass extends RenderPassBase
         }
 
 		var targetReg:ShaderRegisterElement = sharedReg.shadedTarget;
-		var diffuseInputReg:ShaderRegisterElement;
 
 		if (shaderObject.texture != null) {
-			diffuseInputReg = regCache.getFreeTextureReg();
 
-			this._texturesIndex = diffuseInputReg.index;
+			shaderObject.texture._iInitRegisters(shaderObject, regCache);
 
-			code += ShaderCompilerHelper.getTex2DSampleCode(targetReg, sharedReg, diffuseInputReg, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
+			code += shaderObject.texture._iGetFragmentCode(shaderObject, targetReg, regCache, sharedReg.uvVarying);
 
 			if (shaderObject.alphaThreshold > 0) {
 				var cutOffReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
@@ -93,7 +86,7 @@ class BasicMaterialPass extends RenderPassBase
 
 			code += "mov " + targetReg + ", " + sharedReg.colorVarying + "\n";
 		} else {
-			diffuseInputReg = regCache.getFreeFragmentConstant();
+			var diffuseInputReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 
 			this._fragmentConstantsIndex = diffuseInputReg.index*4;
 
@@ -116,7 +109,7 @@ class BasicMaterialPass extends RenderPassBase
 		super._iActivate(camera);
 
 		if (this._shader.texture != null) {
-			this._stage.activateTexture(this._texturesIndex, this._shader.texture, this._shader.repeatTextures, this._shader.useSmoothTextures, this._shader.useMipmapping);
+			this._shader.texture.activate(this._shader);
 
 			if (this._shader.alphaThreshold > 0)
 				this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;

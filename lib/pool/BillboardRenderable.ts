@@ -1,5 +1,6 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
+import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 
 import SubGeometryBase				= require("awayjs-core/lib/data/SubGeometryBase");
 import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
@@ -59,6 +60,7 @@ class BillboardRenderable extends RenderableBase
 	public _pGetSubGeometry():SubGeometryBase
 	{
 		var material:MaterialBase = this._billboard.material;
+		var billboardRect:Rectangle = this._billboard.billboardRect;
 
 		var geometry:TriangleSubGeometry = BillboardRenderable._materialGeometry[material.id];
 
@@ -67,12 +69,12 @@ class BillboardRenderable extends RenderableBase
 			geometry.autoDeriveNormals = false;
 			geometry.autoDeriveTangents = false;
 			geometry.updateIndices(Array<number>(0, 1, 2, 0, 2, 3));
-			geometry.updatePositions(Array<number>(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
+			geometry.updatePositions(Array<number>(-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
 			geometry.updateVertexNormals(Array<number>(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
 			geometry.updateVertexTangents(Array<number>(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
 			geometry.updateUVs(Array<number>(0, 0, 1, 0, 1, 1, 0, 1));
 		} else {
-			geometry.updatePositions(Array<number>(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
+			geometry.updatePositions(Array<number>(-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
 		}
 
 		this._pVertexDataDirty[TriangleSubGeometry.POSITION_DATA] = true;

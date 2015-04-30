@@ -81,7 +81,7 @@ class CurveSubMeshRenderable extends RenderableBase
 
 	public static _iIncludeDependencies(shaderObject:ShaderObjectBase)
 	{
-        shaderObject.localPosDependencies++;
+        shaderObject.usesLocalPosFragment = true;
 	}
 
 	public static _iGetVertexCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string

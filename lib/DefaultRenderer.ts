@@ -1,11 +1,10 @@
+import ImageBase					= require("awayjs-core/lib/data/ImageBase");
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import RenderTexture				= require("awayjs-core/lib/textures/RenderTexture");
-import TextureBase					= require("awayjs-core/lib/textures/TextureBase");
 
 import LightBase					= require("awayjs-display/lib/base/LightBase");
-import IRenderer					= require("awayjs-display/lib/render/IRenderer");
 import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
 import CollectorBase				= require("awayjs-display/lib/traverse/CollectorBase");
 import Camera						= require("awayjs-display/lib/entities/Camera");
@@ -20,10 +19,10 @@ import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompar
 import ContextGLClearMask			= require("awayjs-stagegl/lib/base/ContextGLClearMask");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 
+import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
 import DepthRenderer				= require("awayjs-renderergl/lib/DepthRenderer");
 import DistanceRenderer				= require("awayjs-renderergl/lib/DistanceRenderer");
 import Filter3DRenderer				= require("awayjs-renderergl/lib/Filter3DRenderer");
-import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
@@ -41,7 +40,7 @@ import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase"
  *
  * @class away.render.DefaultRenderer
  */
-class DefaultRenderer extends RendererBase implements IRenderer
+class DefaultRenderer extends RendererBase
 {
 	public _pRequireDepthRender:boolean;
 	private _skyboxRenderablePool:RenderablePoolBase;
@@ -51,7 +50,7 @@ class DefaultRenderer extends RendererBase implements IRenderer
 	private _skyboxProjection:Matrix3D = new Matrix3D();
 	public _pFilter3DRenderer:Filter3DRenderer;
 
-	public _pDepthRender:TextureBase;
+	public _pDepthRender:BitmapImage2D;
 
 	private _antiAlias:number;
 
@@ -188,7 +187,7 @@ class DefaultRenderer extends RendererBase implements IRenderer
 		this._pStage.bufferClear = false;
 	}
 
-	public pExecuteRender(entityCollector:EntityCollector, target:TextureBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public pExecuteRender(entityCollector:EntityCollector, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 	{
 		this.updateLights(entityCollector);
 
@@ -392,7 +391,7 @@ class DefaultRenderer extends RendererBase implements IRenderer
 		if (this._pDepthRender)
 			this._pDepthRender.dispose();
 
-		this._pDepthRender = new RenderTexture(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
+		this._pDepthRender = new BitmapImage2D(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
 	}
 }
 

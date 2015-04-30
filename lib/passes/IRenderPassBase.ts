@@ -4,7 +4,6 @@ import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderOb
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-import RenderObjectPool				= require("awayjs-renderergl/lib/compilation/RenderObjectPool");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");

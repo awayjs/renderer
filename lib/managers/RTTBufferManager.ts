@@ -1,7 +1,7 @@
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Event						= require("awayjs-core/lib/events/Event");
 import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
-import TextureUtils					= require("awayjs-core/lib/utils/TextureUtils");
+import ImageUtils					= require("awayjs-core/lib/utils/ImageUtils");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
@@ -123,7 +123,7 @@ class RTTBufferManager extends EventDispatcher
 
 		this._buffersInvalid = true;
 
-		this._textureWidth = TextureUtils.getBestPowerOf2(this._viewWidth);
+		this._textureWidth = ImageUtils.getBestPowerOf2(this._viewWidth);
 
 		if (this._textureWidth > this._viewWidth) {
 			this._renderToTextureRect.x = Math.floor((this._textureWidth - this._viewWidth)*.5);
@@ -150,7 +150,7 @@ class RTTBufferManager extends EventDispatcher
 
 		this._buffersInvalid = true;
 
-		this._textureHeight = TextureUtils.getBestPowerOf2(this._viewHeight);
+		this._textureHeight = ImageUtils.getBestPowerOf2(this._viewHeight);
 
 		if (this._textureHeight > this._viewHeight) {
 			this._renderToTextureRect.y = Math.floor((this._textureHeight - this._viewHeight)*.5);

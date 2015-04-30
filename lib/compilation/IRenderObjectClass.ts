@@ -1,11 +1,10 @@
-import IRenderObjectOwner					= require("awayjs-display/lib/base/IRenderObjectOwner");
+import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 import RenderObjectPool				= require("awayjs-renderergl/lib/compilation/RenderObjectPool");
 import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
-import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 
 /**
  * IRenderObjectClass is an interface for the constructable class definition RenderObjectBase that is used to

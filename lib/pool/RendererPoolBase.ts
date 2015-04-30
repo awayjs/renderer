@@ -9,13 +9,13 @@ import Skybox						= require("awayjs-display/lib/entities/Skybox");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
+import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
 import BillboardRenderable			= require("awayjs-renderergl/lib/pool/BillboardRenderable");
 import LineSegmentRenderable		= require("awayjs-renderergl/lib/pool/LineSegmentRenderable");
 import LineSubMeshRenderable		= require("awayjs-renderergl/lib/pool/LineSubMeshRenderable");
 import TriangleSubMeshRenderable	= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
 import CurveSubMeshRenderable	    = require("awayjs-renderergl/lib/pool/CurveSubMeshRenderable");
 import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
-import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 
 /**
  * RendererPoolBase forms an abstract base class for classes that are used in the rendering pipeline to render the

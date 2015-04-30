@@ -2,7 +2,6 @@ import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
-import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 
 import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
@@ -19,12 +18,10 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
-import RenderObjectPool				= require("awayjs-renderergl/lib/compilation/RenderObjectPool");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-import ShaderCompilerHelper			= require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
 import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
 import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
@@ -36,7 +33,6 @@ class DepthPass extends RenderPassBase
 {
 
 	private _fragmentConstantsIndex:number;
-	private _texturesIndex:number;
 
 	constructor(renderObject:RenderObjectBase, renderObjectOwner:IRenderObjectOwner, renderableClass:IRenderableClass, stage:Stage)
 	{
@@ -99,12 +95,11 @@ class DepthPass extends RenderPassBase
 		//    "mov ft0.w, fc0.x	\n";
 
 		if (shaderObject.texture && shaderObject.alphaThreshold > 0) {
-			diffuseInputReg = registerCache.getFreeTextureReg();
 
-			this._texturesIndex = diffuseInputReg.index;
+			shaderObject.texture._iInitRegisters(shaderObject, registerCache);
 
 			var albedo:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
-			code += ShaderCompilerHelper.getTex2DSampleCode(albedo, sharedRegisters, diffuseInputReg, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
+			code += shaderObject.texture._iGetFragmentCode(shaderObject, albedo, registerCache, sharedRegisters.uvVarying);
 
 			var cutOffReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 
@@ -130,7 +125,7 @@ class DepthPass extends RenderPassBase
 		var context:IContextGL = this._stage.context;
 
 		if (this._shader.texture && this._shader.alphaThreshold > 0) {
-			this._stage.activateTexture(this._texturesIndex, this._shader.texture, this._shader.repeatTextures, this._shader.useSmoothTextures, this._shader.useMipmapping);
+			this._shader.texture.activate(this._shader);
 
 			this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
 		}

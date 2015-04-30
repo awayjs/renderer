@@ -1,6 +1,5 @@
 ﻿import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
-import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
@@ -12,13 +11,11 @@ import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode"
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
-import RenderObjectPool				= require("awayjs-renderergl/lib/compilation/RenderObjectPool");
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-import ShaderCompilerHelper			= require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
 import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
 import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
@@ -29,7 +26,6 @@ import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase"
 class DistancePass extends RenderPassBase
 {
 	private _fragmentConstantsIndex:number;
-	private _texturesIndex:number;
 
 	/**
 	 * Creates a new DistancePass object.
@@ -79,9 +75,8 @@ class DistancePass extends RenderPassBase
 	{
 		var code:string;
 		var targetReg:ShaderRegisterElement = sharedRegisters.shadedTarget;
-		var diffuseInputReg:ShaderRegisterElement = registerCache.getFreeTextureReg();
 		var dataReg1:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
-		var dataReg2:ShaderRegisterElement = registerCache.getFreeFragmentConstant()
+		var dataReg2:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 
 		this._fragmentConstantsIndex = dataReg1.index*4;
 
@@ -97,12 +92,10 @@ class DistancePass extends RenderPassBase
 			   "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
 
 		if (shaderObject.alphaThreshold > 0) {
-			diffuseInputReg = registerCache.getFreeTextureReg();
-
-			this._texturesIndex = diffuseInputReg.index;
+			shaderObject.texture._iInitRegisters(shaderObject, registerCache);
 
 			var albedo:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
-			code += ShaderCompilerHelper.getTex2DSampleCode(albedo, sharedRegisters, diffuseInputReg, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, shaderObject.useMipmapping);
+			code += shaderObject.texture._iGetFragmentCode(shaderObject, albedo, registerCache, sharedRegisters.uvVarying);
 
 			var cutOffReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 
@@ -136,7 +129,7 @@ class DistancePass extends RenderPassBase
 		data[index + 3] = 16581375.0*f;
 
 		if (this._shader.alphaThreshold > 0) {
-			this._stage.activateTexture(this._texturesIndex, this._shader.texture, this._shader.repeatTextures, this._shader.useSmoothTextures, this._shader.useMipmapping);
+			this._shader.texture.activate(this._shader);
 
 			data[index + 8] = this._shader.alphaThreshold;
 		}

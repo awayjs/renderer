@@ -1,4 +1,6 @@
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
+import LineSubGeometry				= require("awayjs-core/lib/data/LineSubGeometry");
+import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
@@ -6,16 +8,11 @@ import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import Event						= require("awayjs-core/lib/events/Event");
 import ArgumentError				= require("awayjs-core/lib/errors/ArgumentError");
-import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 
-import LineSubGeometry				= require("awayjs-core/lib/data/LineSubGeometry");
-import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
+import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import ContextGLTriangleFace		= require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
-import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
 
@@ -23,11 +20,12 @@ import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationS
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import AnimationRegisterCache		= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
+import TextureObjectPool			= require("awayjs-renderergl/lib/pool/TextureObjectPool");
+import TextureObjectBase			= require("awayjs-renderergl/lib/pool/TextureObjectBase");
 import IRenderPassBase				= require("awayjs-renderergl/lib/passes/IRenderPassBase");
 import ShaderCompilerBase			= require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
-import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
 
 /**
  * ShaderObjectBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -39,6 +37,7 @@ import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
  */
 class ShaderObjectBase
 {
+	private _textureObjectPool:TextureObjectPool;
 	private _renderableClass:IRenderableClass;
 	private _renderPass:IRenderPassBase;
 	public _stage:Stage;
@@ -104,7 +103,7 @@ class ShaderObjectBase
 	public repeatTextures:boolean;
 	public usesUVTransform:boolean;
 	public alphaThreshold:number;
-	public texture:Texture2DBase;
+	public texture:TextureObjectBase;
 	public color:number;
 
 
@@ -149,12 +148,6 @@ class ShaderObjectBase
 	public secondaryUVDependencies:number;
 
 	/**
-	 * The amount of dependencies on the local position. This can be 0 while hasGlobalPosDependencies is true when
-	 * the global position is used as a temporary value (fe to calculate the view direction)
-	 */
-	public localPosDependencies:number;
-
-	/**
 	 * The amount of dependencies on the global position. This can be 0 while hasGlobalPosDependencies is true when
 	 * the global position is used as a temporary value (fe to calculate the view direction)
 	 */
@@ -190,6 +183,11 @@ class ShaderObjectBase
 	 * Indicates whether there are any dependencies on the world-space position vector.
 	 */
 	public usesGlobalPosFragment:boolean = false;
+
+	/**
+	 * Indicates whether there are any dependencies on the local position vector.
+	 */
+	public usesLocalPosFragment:boolean = false;
 
 	public vertexConstantData:Array<number> = new Array<number>();
 	public fragmentConstantData:Array<number> = new Array<number>();
@@ -258,6 +256,13 @@ class ShaderObjectBase
 		this._renderPass = renderPass;
 		this._stage = stage;
 		this.profile = this._stage.profile;
+
+		this._textureObjectPool = TextureObjectPool.getPool(this._stage);
+	}
+
+	public getTextureObject(texture:TextureBase):TextureObjectBase
+	{
+		return this._textureObjectPool.getItem(texture);
 	}
 
 	public _iIncludeDependencies()
@@ -290,9 +295,9 @@ class ShaderObjectBase
 		this.uvDependencies = 0;
 		this.secondaryUVDependencies = 0;
 		this.globalPosDependencies = 0;
-		this.localPosDependencies = 0;
 		this.tangentDependencies = 0;
 		this.usesGlobalPosFragment = false;
+		this.usesLocalPosFragment = false;
 		this.usesFragmentAnimation = false;
 		this.usesTangentSpace = false;
 		this.outputsNormals = false;

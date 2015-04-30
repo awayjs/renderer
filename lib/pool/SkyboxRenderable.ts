@@ -1,6 +1,5 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import CubeTextureBase				= require("awayjs-core/lib/textures/CubeTextureBase");
 
 import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
@@ -20,7 +19,6 @@ import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderR
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
-import ShaderCompilerHelper			= require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
 import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
 /**
@@ -90,8 +88,7 @@ class SkyboxRenderable extends RenderableBase
 	{
 		return "mul vt0, va0, vc5\n" +
 			"add vt0, vt0, vc4\n" +
-			"m44 op, vt0, vc0\n" +
-			"mov v0, va0\n";
+			"m44 op, vt0, vc0\n";
 	}
 
 	/**

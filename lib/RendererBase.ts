@@ -1,4 +1,5 @@
-import BitmapData					= require("awayjs-core/lib/data/BitmapData");
+import ImageBase					= require("awayjs-core/lib/data/ImageBase");
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Plane3D						= require("awayjs-core/lib/geom/Plane3D");
 import Point						= require("awayjs-core/lib/geom/Point");
@@ -6,7 +7,6 @@ import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
 import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
-import TextureBase					= require("awayjs-core/lib/textures/TextureBase");
 import ByteArray					= require("awayjs-core/lib/utils/ByteArray");
 
 import LineSubMesh					= require("awayjs-display/lib/base/LineSubMesh");
@@ -21,7 +21,6 @@ import Camera						= require("awayjs-display/lib/entities/Camera");
 import IEntity						= require("awayjs-display/lib/entities/IEntity");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import RendererEvent				= require("awayjs-display/lib/events/RendererEvent");
-import StageEvent					= require("awayjs-stagegl/lib/events/StageEvent");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
 import CollectorBase				= require("awayjs-display/lib/traverse/CollectorBase");
@@ -33,11 +32,10 @@ import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendF
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import StageEvent					= require("awayjs-stagegl/lib/events/StageEvent");
 import StageManager					= require("awayjs-stagegl/lib/managers/StageManager");
 import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
 
-import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
-import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import IRendererPoolClass			= require("awayjs-renderergl/lib/pool/IRendererPoolClass");
@@ -52,7 +50,7 @@ import RendererPoolBase				= require("awayjs-renderergl/lib/pool/RendererPoolBas
  *
  * @class away.render.RendererBase
  */
-class RendererBase extends EventDispatcher
+class RendererBase extends EventDispatcher implements IRenderer
 {
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
@@ -88,7 +86,7 @@ class RendererBase extends EventDispatcher
 	public textureRatioX:number = 1;
 	public textureRatioY:number = 1;
 
-	private _snapshotBitmapData:BitmapData;
+	private _snapshotBitmapImage2D:BitmapImage2D;
 	private _snapshotRequired:boolean;
 
 	public _pRttViewProjectionMatrix:Matrix3D = new Matrix3D();
@@ -470,7 +468,7 @@ class RendererBase extends EventDispatcher
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public _iRender(entityCollector:CollectorBase, target:TextureBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public _iRender(entityCollector:CollectorBase, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 	{
 		//TODO refactor setTarget so that rendertextures are created before this check
 		if (!this._pStage || !this._pContext)
@@ -492,7 +490,7 @@ class RendererBase extends EventDispatcher
 		}
 	}
 
-	public _iRenderCascades(entityCollector:ShadowCasterCollector, target:TextureBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>)
+	public _iRenderCascades(entityCollector:ShadowCasterCollector, target:ImageBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>)
 	{
 		this.pCollectRenderables(entityCollector);
 
@@ -553,7 +551,7 @@ class RendererBase extends EventDispatcher
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public pExecuteRender(entityCollector:CollectorBase, target:TextureBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public pExecuteRender(entityCollector:CollectorBase, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 	{
 		this._pStage.setRenderTarget(target, true, surfaceSelector);
 
@@ -576,8 +574,8 @@ class RendererBase extends EventDispatcher
 		//this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
 
 		if (!this._shareContext) {
-			if (this._snapshotRequired && this._snapshotBitmapData) {
-				this._pContext.drawToBitmapData(this._snapshotBitmapData);
+			if (this._snapshotRequired && this._snapshotBitmapImage2D) {
+				this._pContext.drawToBitmapImage2D(this._snapshotBitmapImage2D);
 				this._snapshotRequired = false;
 			}
 		}
@@ -588,10 +586,10 @@ class RendererBase extends EventDispatcher
 	/*
 	 * Will draw the renderer's output on next render to the provided bitmap data.
 	 * */
-	public queueSnapshot(bmd:BitmapData)
+	public queueSnapshot(bmd:BitmapImage2D)
 	{
 		this._snapshotRequired = true;
-		this._snapshotBitmapData = bmd;
+		this._snapshotBitmapImage2D = bmd;
 	}
 
 	/**

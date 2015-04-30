@@ -15,7 +15,7 @@ import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendF
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
-import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
+import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");

@@ -94,7 +94,8 @@ class RenderObjectBase implements IRenderObject
 			shaderObject.useBothSides = material.bothSides;
 			shaderObject.repeatTextures = material.repeat;
 			shaderObject.usesUVTransform = material.animateUVs;
-			shaderObject.texture = material.texture;
+			if (material.texture)
+				shaderObject.texture = shaderObject.getTextureObject(material.texture);
 			shaderObject.color = material.color;
 		}
 	}

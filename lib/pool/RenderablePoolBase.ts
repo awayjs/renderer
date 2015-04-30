@@ -6,7 +6,7 @@ import IRenderObject				= require("awayjs-display/lib/pool/IRenderObject");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
-import RendererBase					= require("awayjs-renderergl/lib/base/RendererBase");
+import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import IRenderableClass				= require("awayjs-renderergl/lib/pool/IRenderableClass");
 import RenderObjectPool				= require("awayjs-renderergl/lib/compilation/RenderObjectPool");

@@ -1,4 +1,3 @@
-import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
@@ -105,7 +104,7 @@ class ShaderCompilerBase
 			this.compileGlobalPositionCode();
 
         //compile the local-space position if required
-        if (this._pShaderObject.localPosDependencies > 0)
+        if (this._pShaderObject.usesLocalPosFragment)
             this.compileLocalPositionCode();
 
 		//Calculate the (possibly animated) UV coordinates.
@@ -161,9 +160,7 @@ class ShaderCompilerBase
 		var uvAttributeReg:ShaderRegisterElement = this._pRegisterCache.getFreeVertexAttribute();
 		this._pShaderObject.uvBufferIndex = uvAttributeReg.index;
 
-		var varying:ShaderRegisterElement = this._pRegisterCache.getFreeVarying();
-
-		this._pSharedRegisters.uvVarying = varying;
+		var varying:ShaderRegisterElement = this._pSharedRegisters.uvVarying = this._pRegisterCache.getFreeVarying();
 
 		if (this._pShaderObject.usesUVTransform) {
 			// a, b, 0, tx

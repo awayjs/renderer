@@ -1,5 +1,5 @@
 import Debug							= require("awayjs-core/lib/utils/Debug");
-import BitmapData						= require("awayjs-core/lib/data/BitmapData");
+import BitmapImage2D						= require("awayjs-core/lib/data/BitmapImage2D");
 import Box								= require("awayjs-core/lib/geom/Box");
 import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils					= require("awayjs-core/lib/geom/Matrix3DUtils");
@@ -54,7 +54,7 @@ class ShaderPicker implements IPicker
 
 	private _objectProgram:IProgram;
 	private _triangleProgram:IProgram;
-	private _bitmapData:BitmapData;
+	private _bitmapImage2D:BitmapImage2D;
 	private _viewportData:Array<number>;
 	private _boundOffsetScale:Array<number>;
 	private _id:Array<number>;
@@ -145,11 +145,11 @@ class ShaderPicker implements IPicker
 		if (!this._context || !this._potentialFound)
 			return null;
 
-		if (!this._bitmapData)
-			this._bitmapData = new BitmapData(1, 1, false, 0);
+		if (!this._bitmapImage2D)
+			this._bitmapImage2D = new BitmapImage2D(1, 1, false, 0);
 
-		this._context.drawToBitmapData(this._bitmapData);
-		this._hitColor = this._bitmapData.getPixel(0, 0);
+		this._context.drawToBitmapImage2D(this._bitmapImage2D);
+		this._hitColor = this._bitmapImage2D.getPixel(0, 0);
 
 		if (!this._hitColor) {
 			this._context.present();
@@ -344,9 +344,9 @@ class ShaderPicker implements IPicker
 		this._stage.activateBuffer(0, this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 		this._context.drawTriangles(this._stage.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
 
-		this._context.drawToBitmapData(this._bitmapData);
+		this._context.drawToBitmapImage2D(this._bitmapImage2D);
 
-		col = this._bitmapData.getPixel(0, 0);
+		col = this._bitmapImage2D.getPixel(0, 0);
 
 		this._localHitPosition.x = ((col >> 16) & 0xff)*scX/255 - offsX;
 		this._localHitPosition.y = ((col >> 8) & 0xff)*scY/255 - offsY;
@@ -544,7 +544,7 @@ class ShaderPicker implements IPicker
 
 	public dispose()
 	{
-		this._bitmapData.dispose();
+		this._bitmapImage2D.dispose();
 		if (this._triangleProgram)
 			this._triangleProgram.dispose();
 
@@ -553,7 +553,7 @@ class ShaderPicker implements IPicker
 
 		this._triangleProgram = null;
 		this._objectProgram = null;
-		this._bitmapData = null;
+		this._bitmapImage2D = null;
 		this._hitRenderable = null;
 		this._hitEntity = null;
 	}
