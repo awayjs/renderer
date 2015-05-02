@@ -8,10 +8,6 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
 	import Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
 	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
-	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
-	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
-	import IRendererPoolClass = require("awayjs-renderergl/lib/pool/IRendererPoolClass");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 	/**
 	 * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
 	 * materials assigned to them.
@@ -20,7 +16,6 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	 */
 	class DefaultRenderer extends RendererBase {
 	    _pRequireDepthRender: boolean;
-	    private _skyboxRenderablePool;
 	    private _pDistanceRenderer;
 	    private _pDepthRenderer;
 	    private _skyboxProjection;
@@ -43,7 +38,7 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	     * @param antiAlias The amount of anti-aliasing to use.
 	     * @param renderMode The render mode to use.
 	     */
-	    constructor(rendererPoolClass?: IRendererPoolClass, stage?: Stage);
+	    constructor(stage?: Stage);
 	    render(entityCollector: CollectorBase): void;
 	    pExecuteRender(entityCollector: EntityCollector, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
 	    private updateLights(entityCollector);
@@ -51,7 +46,6 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	     * @inheritDoc
 	     */
 	    pDraw(entityCollector: EntityCollector): void;
-	    _pGetRenderObject(renderable: RenderableBase, renderObjectOwner: IRenderObjectOwner): RenderObjectBase;
 	    /**
 	     * Draw the skybox if present.
 	     *
@@ -72,7 +66,6 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	     * Updates the backbuffer dimensions.
 	     */
 	    pUpdateBackBuffer(): void;
-	    iSetStage(value: Stage): void;
 	    /**
 	     *
 	     */
@@ -84,11 +77,7 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 
 declare module "awayjs-renderergl/lib/DepthRenderer" {
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
-	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import IRendererPoolClass = require("awayjs-renderergl/lib/pool/IRendererPoolClass");
 	/**
 	 * The DepthRenderer class renders 32-bit depth information encoded as RGBA
 	 *
@@ -100,8 +89,7 @@ declare module "awayjs-renderergl/lib/DepthRenderer" {
 	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	     */
-	    constructor(rendererPoolClass?: IRendererPoolClass, stage?: Stage);
-	    _pGetRenderObject(renderable: RenderableBase, renderObjectOwner: IRenderObjectOwner): RenderObjectBase;
+	    constructor(stage?: Stage);
 	}
 	export = DepthRenderer;
 	
@@ -109,11 +97,7 @@ declare module "awayjs-renderergl/lib/DepthRenderer" {
 
 declare module "awayjs-renderergl/lib/DistanceRenderer" {
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
-	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import IRendererPoolClass = require("awayjs-renderergl/lib/pool/IRendererPoolClass");
 	/**
 	 * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
 	 *
@@ -125,8 +109,7 @@ declare module "awayjs-renderergl/lib/DistanceRenderer" {
 	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	     */
-	    constructor(rendererPoolClass?: IRendererPoolClass, stage?: Stage);
-	    _pGetRenderObject(renderable: RenderableBase, renderObjectOwner: IRenderObjectOwner): RenderObjectBase;
+	    constructor(stage?: Stage);
 	}
 	export = DistanceRenderer;
 	
@@ -171,20 +154,19 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
+	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
 	import IEntitySorter = require("awayjs-display/lib/sort/IEntitySorter");
-	import IRenderer = require("awayjs-display/lib/render/IRenderer");
+	import IRenderer = require("awayjs-display/lib/IRenderer");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
 	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
 	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
-	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import IRendererPoolClass = require("awayjs-renderergl/lib/pool/IRendererPoolClass");
 	import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
 	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
+	import RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 	/**
 	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
 	 * contents of a partition
@@ -194,8 +176,7 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	class RendererBase extends EventDispatcher implements IRenderer {
 	    private _numUsedStreams;
 	    private _numUsedTextures;
-	    private _rendererPool;
-	    _pRendererPoolClass: IRendererPoolClass;
+	    _pRenderablePool: RenderablePool;
 	    _pContext: IContextGL;
 	    _pStage: Stage;
 	    _pCamera: Camera;
@@ -269,7 +250,7 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	    /**
 	     * Creates a new RendererBase object.
 	     */
-	    constructor(rendererPoolClass?: IRendererPoolClass, stage?: Stage);
+	    constructor(stage?: Stage);
 	    activatePass(renderable: RenderableBase, pass: RenderPassBase, camera: Camera): void;
 	    deactivatePass(renderable: RenderableBase, pass: RenderPassBase): void;
 	    _iCreateEntityCollector(): CollectorBase;
@@ -296,12 +277,12 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	     * The Stage that will provide the ContextGL used for rendering.
 	     */
 	    stage: Stage;
-	    iSetStage(value: Stage): void;
 	    /**
 	     * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
 	     * to share the same ContextGL object.
 	     */
 	    shareContext: boolean;
+	    renderablePool: RenderablePool;
 	    /**
 	     * Disposes the resources used by the RendererBase.
 	     */
@@ -316,7 +297,7 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	     */
 	    _iRender(entityCollector: CollectorBase, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
 	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: ImageBase, numCascades: number, scissorRects: Array<Rectangle>, cameras: Array<Camera>): void;
-	    pCollectRenderables(entityCollector: CollectorBase): void;
+	    private _applyCollector(entityCollector);
 	    /**
 	     * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
 	     *
@@ -360,13 +341,13 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	     *
 	     */
 	    updateGlobalPos(): void;
+	    _iApplyRenderableOwner(renderableOwner: IRenderableOwner): void;
 	    /**
 	     *
 	     * @param renderable
 	     * @protected
 	     */
 	    applyRenderable(renderable: RenderableBase): void;
-	    _pGetRenderObject(renderable: RenderableBase, renderObjectOwner: IRenderObjectOwner): RenderObjectBase;
 	}
 	export = RendererBase;
 	
@@ -4031,6 +4012,7 @@ declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
 }
 
 declare module "awayjs-renderergl/lib/compilation/DepthRenderObject" {
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
@@ -4041,10 +4023,14 @@ declare module "awayjs-renderergl/lib/compilation/DepthRenderObject" {
 	 * using material methods to define their appearance.
 	 */
 	class DepthRenderObject extends RenderObjectBase {
+	    static assetClass: IAssetClass;
 	    /**
 	     *
+	     * @param pool
+	     * @param renderObjectOwner
+	     * @param renderableClass
+	     * @param stage
 	     */
-	    static id: string;
 	    constructor(pool: RenderObjectPool, renderObjectOwner: IRenderObjectOwner, renderableClass: IRenderableClass, stage: Stage);
 	}
 	export = DepthRenderObject;
@@ -4052,6 +4038,7 @@ declare module "awayjs-renderergl/lib/compilation/DepthRenderObject" {
 }
 
 declare module "awayjs-renderergl/lib/compilation/DistanceRenderObject" {
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RenderObjectPool = require("awayjs-renderergl/lib/compilation/RenderObjectPool");
@@ -4062,10 +4049,7 @@ declare module "awayjs-renderergl/lib/compilation/DistanceRenderObject" {
 	 * This is used to render omnidirectional shadow maps.
 	 */
 	class DistanceRenderObject extends RenderObjectBase {
-	    /**
-	     *
-	     */
-	    static id: string;
+	    static assetClass: IAssetClass;
 	    /**
 	     * Creates a new DistanceRenderObject object.
 	     *
@@ -4090,10 +4074,6 @@ declare module "awayjs-renderergl/lib/compilation/IRenderObjectClass" {
 	 * @class away.render.RenderObjectBase
 	 */
 	interface IRenderObjectClass {
-	    /**
-	     *
-	     */
-	    id: string;
 	    /**
 	     *
 	     */
@@ -4184,10 +4164,6 @@ declare module "awayjs-renderergl/lib/compilation/RenderBasicMaterialObject" {
 	 * using material methods to define their appearance.
 	 */
 	class RenderBasicMaterialObject extends RenderObjectBase {
-	    /**
-	     *
-	     */
-	    static id: string;
 	    private _material;
 	    private _screenPass;
 	    constructor(pool: RenderObjectPool, material: BasicMaterial, renderableClass: IRenderableClass, stage: Stage);
@@ -4291,8 +4267,9 @@ declare module "awayjs-renderergl/lib/compilation/RenderObjectBase" {
 }
 
 declare module "awayjs-renderergl/lib/compilation/RenderObjectPool" {
-	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
 	import IRenderObjectClass = require("awayjs-renderergl/lib/compilation/IRenderObjectClass");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 	import IRenderableClass = require("awayjs-renderergl/lib/pool/IRenderableClass");
@@ -4300,16 +4277,17 @@ declare module "awayjs-renderergl/lib/compilation/RenderObjectPool" {
 	 * @class away.pool.RenderObjectPool
 	 */
 	class RenderObjectPool {
-	    private _renderObjectPool;
-	    private _renderObjectClass;
+	    private static _classPool;
+	    private _pool;
 	    private _renderableClass;
 	    private _stage;
+	    private _renderObjectClass;
 	    /**
 	     * //TODO
 	     *
 	     * @param renderObjectClass
 	     */
-	    constructor(renderObjectClass: IRenderObjectClass, renderableClass: IRenderableClass, stage: Stage);
+	    constructor(renderableClass: IRenderableClass, stage: Stage, renderObjectClass?: IRenderObjectClass);
 	    /**
 	     * //TODO
 	     *
@@ -4323,6 +4301,18 @@ declare module "awayjs-renderergl/lib/compilation/RenderObjectPool" {
 	     * @param renderableOwner
 	     */
 	    disposeItem(renderObjectOwner: IRenderObjectOwner): void;
+	    /**
+	     *
+	     * @param imageObjectClass
+	     */
+	    static registerClass(renderObjectClass: IRenderObjectClass, assetClass: IAssetClass): void;
+	    /**
+	     *
+	     * @param subGeometry
+	     */
+	    static getClass(renderObjectOwner: IRenderObjectOwner): IRenderObjectClass;
+	    private static main;
+	    private static addDefaults();
 	}
 	export = RenderObjectPool;
 	
@@ -5022,7 +5012,7 @@ declare module "awayjs-renderergl/lib/compilation/ShaderRegisterElement" {
 }
 
 declare module "awayjs-renderergl/lib/compilation/SkyboxRenderObject" {
-	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
+	import Skybox = require("awayjs-display/lib/entities/Skybox");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 	import RenderObjectPool = require("awayjs-renderergl/lib/compilation/RenderObjectPool");
@@ -5032,12 +5022,8 @@ declare module "awayjs-renderergl/lib/compilation/SkyboxRenderObject" {
 	 * using material methods to define their appearance.
 	 */
 	class SkyboxRenderObject extends RenderObjectBase {
-	    /**
-	     *
-	     */
-	    static id: string;
 	    private _screenPass;
-	    constructor(pool: RenderObjectPool, renderObjectOwner: IRenderObjectOwner, renderableClass: IRenderableClass, stage: Stage);
+	    constructor(pool: RenderObjectPool, skybox: Skybox, renderableClass: IRenderableClass, stage: Stage);
 	    /**
 	     * @inheritDoc
 	     */
@@ -5608,9 +5594,9 @@ declare module "awayjs-renderergl/lib/passes/SkyboxPass" {
 declare module "awayjs-renderergl/lib/pick/JSPickingCollider" {
 	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
 	import IPickingCollider = require("awayjs-display/lib/pick/IPickingCollider");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import PickingColliderBase = require("awayjs-renderergl/lib/pick/PickingColliderBase");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	import RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 	/**
 	 * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
 	 *
@@ -5626,7 +5612,7 @@ declare module "awayjs-renderergl/lib/pick/JSPickingCollider" {
 	     *
 	     * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
 	     */
-	    constructor(stage: Stage, findClosestCollision?: boolean);
+	    constructor(renderablePool: RenderablePool, findClosestCollision?: boolean);
 	    /**
 	     * @inheritDoc
 	     */
@@ -5642,20 +5628,19 @@ declare module "awayjs-renderergl/lib/pick/PickingColliderBase" {
 	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
 	import Billboard = require("awayjs-display/lib/entities/Billboard");
 	import Mesh = require("awayjs-display/lib/entities/Mesh");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	import RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 	/**
 	 * An abstract base class for all picking collider classes. It should not be instantiated directly.
 	 *
 	 * @class away.pick.PickingColliderBase
 	 */
 	class PickingColliderBase {
-	    private _billboardRenderablePool;
-	    private _subMeshRenderablePool;
+	    private _renderablePool;
 	    rayPosition: Vector3D;
 	    rayDirection: Vector3D;
-	    constructor(stage: Stage);
-	    _pPetCollisionNormal(indexData: Array<number>, vertexData: Array<number>, triangleIndex: number): Vector3D;
+	    constructor(renderablePool: RenderablePool);
+	    _pGetCollisionNormal(indexData: Array<number>, vertexData: Array<number>, triangleIndex: number): Vector3D;
 	    _pGetCollisionUV(indexData: Array<number>, uvData: Array<number>, triangleIndex: number, v: number, w: number, u: number, uvOffset: number, uvStride: number): Point;
 	    /**
 	     * @inheritDoc
@@ -5812,6 +5797,7 @@ declare module "awayjs-renderergl/lib/pick/ShaderPicker" {
 
 declare module "awayjs-renderergl/lib/pool/BillboardRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
 	import Billboard = require("awayjs-display/lib/entities/Billboard");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -5820,17 +5806,14 @@ declare module "awayjs-renderergl/lib/pool/BillboardRenderable" {
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+	import RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 	/**
 	 * @class away.pool.RenderableListItem
 	 */
 	class BillboardRenderable extends RenderableBase {
+	    static assetClass: IAssetClass;
 	    private static _materialGeometry;
-	    /**
-	     *
-	     */
-	    static id: string;
 	    static vertexAttributesOffset: number;
 	    /**
 	     *
@@ -5842,7 +5825,7 @@ declare module "awayjs-renderergl/lib/pool/BillboardRenderable" {
 	     * @param pool
 	     * @param billboard
 	     */
-	    constructor(pool: RenderablePoolBase, billboard: Billboard, stage: Stage);
+	    constructor(pool: RenderablePool, billboard: Billboard, stage: Stage);
 	    /**
 	     * //TODO
 	     *
@@ -5851,6 +5834,7 @@ declare module "awayjs-renderergl/lib/pool/BillboardRenderable" {
 	    _pGetSubGeometry(): SubGeometryBase;
 	    static _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
 	    static _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    static _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 	    _iActivate(pass: RenderPassBase, camera: Camera): void;
 	    /**
 	     * @inheritDoc
@@ -5863,6 +5847,7 @@ declare module "awayjs-renderergl/lib/pool/BillboardRenderable" {
 
 declare module "awayjs-renderergl/lib/pool/CurveSubMeshRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import CurveSubMesh = require("awayjs-display/lib/base/CurveSubMesh");
 	import CurveSubGeometry = require("awayjs-core/lib/data/CurveSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -5871,16 +5856,13 @@ declare module "awayjs-renderergl/lib/pool/CurveSubMeshRenderable" {
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+	import RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 	/**
 	 * @class away.pool.TriangleSubMeshRenderable
 	 */
 	class CurveSubMeshRenderable extends RenderableBase {
-	    /**
-	     *
-	     */
-	    static id: string;
+	    static assetClass: IAssetClass;
 	    static vertexAttributesOffset: number;
 	    /**
 	     *
@@ -5894,7 +5876,7 @@ declare module "awayjs-renderergl/lib/pool/CurveSubMeshRenderable" {
 	     * @param level
 	     * @param indexOffset
 	     */
-	    constructor(pool: RenderablePoolBase, subMesh: CurveSubMesh, stage: Stage, level?: number, indexOffset?: number);
+	    constructor(pool: RenderablePool, subMesh: CurveSubMesh, stage: Stage, level?: number, indexOffset?: number);
 	    /**
 	     *
 	     * @returns {SubGeometryBase}
@@ -5933,53 +5915,31 @@ declare module "awayjs-renderergl/lib/pool/CurveSubMeshRenderable" {
 }
 
 declare module "awayjs-renderergl/lib/pool/IRenderableClass" {
+	import IWrapperClass = require("awayjs-core/lib/library/IWrapperClass");
 	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
 	import IRenderable = require("awayjs-display/lib/pool/IRenderable");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+	import RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 	/**
 	 * IRenderableClass is an interface for the constructable class definition IRenderable that is used to
 	 * create renderable objects in the rendering pipeline to render the contents of a partition
 	 *
 	 * @class away.render.IRenderableClass
 	 */
-	interface IRenderableClass {
-	    /**
-	     *
-	     */
-	    id: string;
+	interface IRenderableClass extends IWrapperClass {
 	    vertexAttributesOffset: number;
 	    /**
 	     *
 	     */
-	    new (pool: RenderablePoolBase, renderableOwner: IRenderableOwner, stage: Stage): IRenderable;
+	    new (pool: RenderablePool, renderableOwner: IRenderableOwner, stage: Stage): IRenderable;
 	    _iIncludeDependencies(shaderObject: ShaderObjectBase): any;
 	    _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 	    _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 	}
 	export = IRenderableClass;
-	
-}
-
-declare module "awayjs-renderergl/lib/pool/IRendererPoolClass" {
-	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
-	import RendererPoolBase = require("awayjs-renderergl/lib/pool/RendererPoolBase");
-	/**
-	 * IRendererPoolClass is an interface for the constructable class definition IRenderable that is used to
-	 * create renderable objects in the rendering pipeline to render the contents of a partition
-	 *
-	 * @class away.render.IRendererPoolClass
-	 */
-	interface IRendererPoolClass {
-	    /**
-	     *
-	     */
-	    new (renderer: RendererBase): RendererPoolBase;
-	}
-	export = IRendererPoolClass;
 	
 }
 
@@ -6007,6 +5967,7 @@ declare module "awayjs-renderergl/lib/pool/ITextureObjectClass" {
 
 declare module "awayjs-renderergl/lib/pool/LineSegmentRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import LineSegment = require("awayjs-display/lib/entities/LineSegment");
@@ -6015,22 +5976,19 @@ declare module "awayjs-renderergl/lib/pool/LineSegmentRenderable" {
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+	import RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 	/**
 	 * @class away.pool.LineSubMeshRenderable
 	 */
 	class LineSegmentRenderable extends RenderableBase {
+	    static assetClass: IAssetClass;
 	    private static _lineGeometry;
 	    static pONE_VECTOR: Array<number>;
 	    static pFRONT_VECTOR: Array<number>;
 	    private _constants;
 	    private _calcMatrix;
 	    private _thickness;
-	    /**
-	     *
-	     */
-	    static id: string;
 	    static vertexAttributesOffset: number;
 	    /**
 	     *
@@ -6044,7 +6002,7 @@ declare module "awayjs-renderergl/lib/pool/LineSegmentRenderable" {
 	     * @param level
 	     * @param dataOffset
 	     */
-	    constructor(pool: RenderablePoolBase, lineSegment: LineSegment, stage: Stage, level?: number, indexOffset?: number);
+	    constructor(pool: RenderablePool, lineSegment: LineSegment, stage: Stage, level?: number, indexOffset?: number);
 	    /**
 	     * //TODO
 	     *
@@ -6057,6 +6015,7 @@ declare module "awayjs-renderergl/lib/pool/LineSegmentRenderable" {
 	     * @inheritDoc
 	     */
 	    static _iGetVertexCode(shader: ShaderObjectBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
+	    static _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 	    /**
 	     * @inheritDoc
 	     */
@@ -6083,6 +6042,7 @@ declare module "awayjs-renderergl/lib/pool/LineSegmentRenderable" {
 
 declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
 	import LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -6091,21 +6051,18 @@ declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+	import RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 	/**
 	 * @class away.pool.LineSubMeshRenderable
 	 */
 	class LineSubMeshRenderable extends RenderableBase {
+	    static assetClass: IAssetClass;
 	    static pONE_VECTOR: Array<number>;
 	    static pFRONT_VECTOR: Array<number>;
 	    private _constants;
 	    private _calcMatrix;
 	    private _thickness;
-	    /**
-	     *
-	     */
-	    static id: string;
 	    static vertexAttributesOffset: number;
 	    /**
 	     *
@@ -6119,7 +6076,7 @@ declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
 	     * @param level
 	     * @param dataOffset
 	     */
-	    constructor(pool: RenderablePoolBase, subMesh: LineSubMesh, stage: Stage, level?: number, indexOffset?: number);
+	    constructor(pool: RenderablePool, subMesh: LineSubMesh, stage: Stage, level?: number, indexOffset?: number);
 	    /**
 	     * //TODO
 	     *
@@ -6132,6 +6089,7 @@ declare module "awayjs-renderergl/lib/pool/LineSubMeshRenderable" {
 	     * @inheritDoc
 	     */
 	    static _iGetVertexCode(shader: ShaderObjectBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
+	    static _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 	    /**
 	     * @inheritDoc
 	     */
@@ -6167,10 +6125,7 @@ declare module "awayjs-renderergl/lib/pool/RenderableBase" {
 	import IndexData = require("awayjs-stagegl/lib/pool/IndexData");
 	import VertexData = require("awayjs-stagegl/lib/pool/VertexData");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+	import RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 	/**
@@ -6197,7 +6152,7 @@ declare module "awayjs-renderergl/lib/pool/RenderableBase" {
 	    /**
 	     *
 	     */
-	    _pool: RenderablePoolBase;
+	    _pool: RenderablePool;
 	    _stage: Stage;
 	    /**
 	     *
@@ -6267,7 +6222,7 @@ declare module "awayjs-renderergl/lib/pool/RenderableBase" {
 	     * @param subGeometry
 	     * @param animationSubGeometry
 	     */
-	    constructor(pool: RenderablePoolBase, sourceEntity: IEntity, renderableOwner: IRenderableOwner, renderObjectOwner: IRenderObjectOwner, stage: Stage, level?: number, indexOffset?: number);
+	    constructor(pool: RenderablePool, sourceEntity: IEntity, renderableOwner: IRenderableOwner, renderObjectOwner: IRenderObjectOwner, stage: Stage, level?: number, indexOffset?: number);
 	    dispose(): void;
 	    invalidateGeometry(): void;
 	    /**
@@ -6281,8 +6236,6 @@ declare module "awayjs-renderergl/lib/pool/RenderableBase" {
 	     */
 	    invalidateVertexData(dataType: string): void;
 	    _pGetSubGeometry(): SubGeometryBase;
-	    static _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    static _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 	    /**
 	     * //TODO
 	     *
@@ -6352,32 +6305,31 @@ declare module "awayjs-renderergl/lib/pool/RenderableBase" {
 	
 }
 
-declare module "awayjs-renderergl/lib/pool/RenderablePoolBase" {
-	import IRenderObjectOwner = require("awayjs-display/lib/base/IRenderObjectOwner");
+declare module "awayjs-renderergl/lib/pool/RenderablePool" {
 	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
-	import IRenderablePool = require("awayjs-display/lib/pool/IRenderablePool");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+	import IRenderObjectClass = require("awayjs-renderergl/lib/compilation/IRenderObjectClass");
+	import RenderObjectPool = require("awayjs-renderergl/lib/compilation/RenderObjectPool");
 	import IRenderableClass = require("awayjs-renderergl/lib/pool/IRenderableClass");
-	import RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
+	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 	/**
-	 * @class away.pool.RenderablePoolBase
+	 * RenderablePool forms an abstract base class for classes that are used in the rendering pipeline to render the
+	 * contents of a partition
+	 *
+	 * @class away.render.RenderablePool
 	 */
-	class RenderablePoolBase implements IRenderablePool {
-	    static _pools: Object;
-	    _stage: Stage;
-	    _renderablePool: Object;
-	    _renderableClass: IRenderableClass;
-	    private _materialRenderObjectPool;
-	    private _skyboxRenderObjectPool;
-	    private _depthRenderObjectPool;
-	    private _distanceRenderObjectPool;
+	class RenderablePool {
+	    private static _classPool;
+	    private _stage;
+	    private _pool;
+	    private _objectPools;
 	    /**
-	     * //TODO
+	     * Creates a new RenderablePool object.
 	     *
-	     * @param renderableClass
+	     * @param stage
+	     * @param renderObjectClass
 	     */
-	    constructor(renderableClass: IRenderableClass, stage: Stage);
+	    constructor(stage: Stage, renderObjectClass?: IRenderObjectClass);
 	    /**
 	     * //TODO
 	     *
@@ -6387,118 +6339,34 @@ declare module "awayjs-renderergl/lib/pool/RenderablePoolBase" {
 	    getItem(renderableOwner: IRenderableOwner): RenderableBase;
 	    /**
 	     *
-	     * @param material
-	     * @param renderable
-	     */
-	    getMaterialRenderObject(renderObjectOwner: IRenderObjectOwner): RenderObjectBase;
-	    /**
-	     *
-	     * @param material
-	     * @param renderable
-	     */
-	    getSkyboxRenderObject(renderObjectOwner: IRenderObjectOwner): RenderObjectBase;
-	    /**
-	     *
-	     * @param material
-	     * @param renderable
-	     */
-	    getDepthRenderObject(renderObjectOwner: IRenderObjectOwner): RenderObjectBase;
-	    /**
-	     *
-	     * @param material
-	     * @param renderable
-	     */
-	    getDistanceRenderObject(renderObjectOwner: IRenderObjectOwner): RenderObjectBase;
-	    /**
-	     * //TODO
-	     *
-	     * @param renderableOwner
+	     * @param image
 	     */
 	    disposeItem(renderableOwner: IRenderableOwner): void;
-	    dispose(): void;
 	    /**
 	     * //TODO
 	     *
 	     * @param renderableClass
-	     * @returns RenderablePoolBase
+	     * @returns RenderObjectPool
 	     */
-	    static getPool(renderableClass: IRenderableClass, stage: Stage): RenderablePoolBase;
+	    getRenderObjectPool(renderableOwner: IRenderableOwner): RenderObjectPool;
 	    /**
-	     * //TODO
 	     *
-	     * @param renderableClass
+	     * @param imageObjectClass
 	     */
-	    static disposePool(renderableClass: IRenderableClass, stage: Stage): void;
-	}
-	export = RenderablePoolBase;
-	
-}
-
-declare module "awayjs-renderergl/lib/pool/RendererPoolBase" {
-	import LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
-	import TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
-	import CurveSubMesh = require("awayjs-display/lib/base/CurveSubMesh");
-	import IRendererPool = require("awayjs-display/lib/pool/IRendererPool");
-	import Billboard = require("awayjs-display/lib/entities/Billboard");
-	import LineSegment = require("awayjs-display/lib/entities/LineSegment");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
-	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
-	/**
-	 * RendererPoolBase forms an abstract base class for classes that are used in the rendering pipeline to render the
-	 * contents of a partition
-	 *
-	 * @class away.render.RendererPoolBase
-	 */
-	class RendererPoolBase implements IRendererPool {
-	    _billboardRenderablePool: RenderablePoolBase;
-	    _lineSegmentRenderablePool: RenderablePoolBase;
-	    _triangleSubMeshRenderablePool: RenderablePoolBase;
-	    _lineSubMeshRenderablePool: RenderablePoolBase;
-	    _curveSubMeshRenderablePool: RenderablePoolBase;
-	    _pStage: Stage;
-	    private _renderer;
+	    static registerClass(renderableClass: IRenderableClass): void;
 	    /**
-	     * Creates a new RendererPoolBase object.
+	     *
+	     * @param subGeometry
 	     */
-	    constructor(renderer: RendererBase);
+	    static getClass(renderableOwner: IRenderableOwner): IRenderableClass;
 	    /**
-	     * The Stage that will provide the ContextGL used for rendering.
-	     */
-	    stage: Stage;
-	    _pUpdatePool(): void;
-	    /**
-	     * Disposes the resources used by the RendererPoolBase.
+	     * Disposes the resources used by the RenderablePool.
 	     */
 	    dispose(): void;
-	    /**
-	     *
-	     * @param billboard
-	     * @protected
-	     */
-	    applyBillboard(billboard: Billboard): void;
-	    /**
-	     *
-	     * @param lineSubMesh
-	     */
-	    applyLineSegment(lineSegment: LineSegment): void;
-	    /**
-	     *
-	     * @param triangleSubMesh
-	     */
-	    applyTriangleSubMesh(triangleSubMesh: TriangleSubMesh): void;
-	    /**
-	     *
-	     * @param curveSubMesh
-	     */
-	    applyCurveSubMesh(curveSubMesh: CurveSubMesh): void;
-	    /**
-	     *
-	     * @param lineSubMesh
-	     */
-	    applyLineSubMesh(lineSubMesh: LineSubMesh): void;
+	    private static main;
+	    private static addDefaults();
 	}
-	export = RendererPoolBase;
+	export = RenderablePool;
 	
 }
 
@@ -6653,6 +6521,7 @@ declare module "awayjs-renderergl/lib/pool/SingleCubeTextureObject" {
 
 declare module "awayjs-renderergl/lib/pool/SkyboxRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	import Skybox = require("awayjs-display/lib/entities/Skybox");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -6661,29 +6530,26 @@ declare module "awayjs-renderergl/lib/pool/SkyboxRenderable" {
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+	import RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 	/**
 	 * @class away.pool.SkyboxRenderable
 	 */
 	class SkyboxRenderable extends RenderableBase {
-	    private _vertexArray;
-	    /**
-	     *
-	     */
-	    static id: string;
+	    static assetClass: IAssetClass;
 	    static vertexAttributesOffset: number;
 	    /**
 	     *
 	     */
 	    private static _geometry;
+	    private _vertexArray;
 	    /**
 	     * //TODO
 	     *
 	     * @param pool
 	     * @param skybox
 	     */
-	    constructor(pool: RenderablePoolBase, skybox: Skybox, stage: Stage);
+	    constructor(pool: RenderablePool, skybox: Skybox, stage: Stage);
 	    /**
 	     * //TODO
 	     *
@@ -6696,6 +6562,7 @@ declare module "awayjs-renderergl/lib/pool/SkyboxRenderable" {
 	     * @inheritDoc
 	     */
 	    static _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    static _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 	    /**
 	     * @inheritDoc
 	     */
@@ -6776,7 +6643,7 @@ declare module "awayjs-renderergl/lib/pool/TextureObjectPool" {
 	     * //TODO
 	     *
 	     * @param renderableClass
-	     * @returns RenderablePoolBase
+	     * @returns RenderObjectPool
 	     */
 	    static getPool(stage: Stage): TextureObjectPool;
 	    /**
@@ -6804,6 +6671,7 @@ declare module "awayjs-renderergl/lib/pool/TextureObjectPool" {
 
 declare module "awayjs-renderergl/lib/pool/TriangleSubMeshRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
 	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -6812,16 +6680,13 @@ declare module "awayjs-renderergl/lib/pool/TriangleSubMeshRenderable" {
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 	import RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
-	import RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+	import RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 	import RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 	/**
 	 * @class away.pool.TriangleSubMeshRenderable
 	 */
 	class TriangleSubMeshRenderable extends RenderableBase {
-	    /**
-	     *
-	     */
-	    static id: string;
+	    static assetClass: IAssetClass;
 	    static vertexAttributesOffset: number;
 	    /**
 	     *
@@ -6835,7 +6700,7 @@ declare module "awayjs-renderergl/lib/pool/TriangleSubMeshRenderable" {
 	     * @param level
 	     * @param indexOffset
 	     */
-	    constructor(pool: RenderablePoolBase, subMesh: TriangleSubMesh, stage: Stage, level?: number, indexOffset?: number);
+	    constructor(pool: RenderablePool, subMesh: TriangleSubMesh, stage: Stage, level?: number, indexOffset?: number);
 	    /**
 	     *
 	     * @returns {SubGeometryBase}
@@ -6844,6 +6709,7 @@ declare module "awayjs-renderergl/lib/pool/TriangleSubMeshRenderable" {
 	    _pGetSubGeometry(): TriangleSubGeometry;
 	    static _iIncludeDependencies(shaderObject: ShaderObjectBase): void;
 	    static _iGetVertexCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    static _iGetFragmentCode(shaderObject: ShaderObjectBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 	    /**
 	     * @inheritDoc
 	     */

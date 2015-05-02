@@ -14,8 +14,7 @@ var RendererBase = require("awayjs-renderergl/lib/RendererBase");
 var DepthRenderer = require("awayjs-renderergl/lib/DepthRenderer");
 var DistanceRenderer = require("awayjs-renderergl/lib/DistanceRenderer");
 var Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
-var RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
-var SkyboxRenderable = require("awayjs-renderergl/lib/pool/SkyboxRenderable");
+var RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 var RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -31,11 +30,16 @@ var DefaultRenderer = (function (_super) {
      * @param antiAlias The amount of anti-aliasing to use.
      * @param renderMode The render mode to use.
      */
-    function DefaultRenderer(rendererPoolClass, stage) {
-        if (rendererPoolClass === void 0) { rendererPoolClass = null; }
+    function DefaultRenderer(stage) {
         if (stage === void 0) { stage = null; }
-        _super.call(this, rendererPoolClass, stage);
+        _super.call(this, stage);
         this._skyboxProjection = new Matrix3D();
+        this._pRenderablePool = new RenderablePool(this._pStage);
+        if (stage)
+            this._shareContext = true;
+        this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
+        this._pDepthRenderer = new DepthRenderer(this._pStage);
+        this._pDistanceRenderer = new DistanceRenderer(this._pStage);
         if (this._width == 0)
             this.width = window.innerWidth;
         else
@@ -179,23 +183,20 @@ var DefaultRenderer = (function (_super) {
         }
         _super.prototype.pDraw.call(this, entityCollector);
     };
-    DefaultRenderer.prototype._pGetRenderObject = function (renderable, renderObjectOwner) {
-        return renderObjectOwner.getRenderObject(renderable._pool);
-    };
     /**
      * Draw the skybox if present.
      *
      * @param entityCollector The EntityCollector containing all potentially visible information.
      */
     DefaultRenderer.prototype.drawSkybox = function (entityCollector) {
-        var skyBox = this._skyboxRenderablePool.getItem(entityCollector.skyBox);
+        var renderable = this._pRenderablePool.getItem(entityCollector.skyBox);
         var camera = entityCollector.camera;
         this.updateSkyboxProjection(camera);
-        var renderObject = skyBox.renderObject = this._pGetRenderObject(skyBox, skyBox.renderObjectOwner);
+        var renderObject = this._pRenderablePool.getRenderObjectPool(renderable.renderableOwner).getItem(renderable.renderObjectOwner);
         var pass = renderObject.passes[0];
-        this.activatePass(skyBox, pass, camera);
-        skyBox._iRender(pass, camera, this._skyboxProjection);
-        this.deactivatePass(skyBox, pass);
+        this.activatePass(renderable, pass, camera);
+        renderable._iRender(pass, camera, this._skyboxProjection);
+        this.deactivatePass(renderable, pass);
     };
     DefaultRenderer.prototype.updateSkyboxProjection = function (camera) {
         var near = new Vector3D();
@@ -219,8 +220,6 @@ var DefaultRenderer = (function (_super) {
     DefaultRenderer.prototype.dispose = function () {
         if (!this._shareContext)
             this._pStage.dispose();
-        this._skyboxRenderablePool.dispose();
-        this._skyboxRenderablePool = null;
         this._pRttBufferManager.dispose();
         this._pRttBufferManager = null;
         this._pDepthRenderer.dispose();
@@ -268,15 +267,6 @@ var DefaultRenderer = (function (_super) {
             }
         }
     };
-    DefaultRenderer.prototype.iSetStage = function (value) {
-        _super.prototype.iSetStage.call(this, value);
-        if (this._pStage) {
-            this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
-            this._pDepthRenderer = new DepthRenderer(this._pRendererPoolClass, this._pStage);
-            this._pDistanceRenderer = new DistanceRenderer(this._pRendererPoolClass, this._pStage);
-            this._skyboxRenderablePool = RenderablePoolBase.getPool(SkyboxRenderable, this._pStage);
-        }
-    };
     /**
      *
      */
@@ -290,7 +280,7 @@ var DefaultRenderer = (function (_super) {
 })(RendererBase);
 module.exports = DefaultRenderer;
 
-},{"awayjs-core/lib/data/BitmapImage2D":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","awayjs-renderergl/lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","awayjs-renderergl/lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-renderergl/lib/pool/RenderablePoolBase":"awayjs-renderergl/lib/pool/RenderablePoolBase","awayjs-renderergl/lib/pool/SkyboxRenderable":"awayjs-renderergl/lib/pool/SkyboxRenderable","awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapImage2D":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","awayjs-renderergl/lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","awayjs-renderergl/lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-renderergl/lib/pool/RenderablePool":"awayjs-renderergl/lib/pool/RenderablePool","awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -298,6 +288,8 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var RendererBase = require("awayjs-renderergl/lib/RendererBase");
+var DepthRenderObject = require("awayjs-renderergl/lib/compilation/DepthRenderObject");
+var RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
  *
@@ -310,22 +302,19 @@ var DepthRenderer = (function (_super) {
      * @param renderBlended Indicates whether semi-transparent objects should be rendered.
      * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
      */
-    function DepthRenderer(rendererPoolClass, stage) {
-        if (rendererPoolClass === void 0) { rendererPoolClass = null; }
+    function DepthRenderer(stage) {
         if (stage === void 0) { stage = null; }
-        _super.call(this, rendererPoolClass, stage);
+        _super.call(this, stage);
+        this._pRenderablePool = new RenderablePool(this._pStage, DepthRenderObject);
         this._iBackgroundR = 1;
         this._iBackgroundG = 1;
         this._iBackgroundB = 1;
     }
-    DepthRenderer.prototype._pGetRenderObject = function (renderable, renderObjectOwner) {
-        return renderable._pool.getDepthRenderObject(renderObjectOwner);
-    };
     return DepthRenderer;
 })(RendererBase);
 module.exports = DepthRenderer;
 
-},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase"}],"awayjs-renderergl/lib/DistanceRenderer":[function(require,module,exports){
+},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/compilation/DepthRenderObject":"awayjs-renderergl/lib/compilation/DepthRenderObject","awayjs-renderergl/lib/pool/RenderablePool":"awayjs-renderergl/lib/pool/RenderablePool"}],"awayjs-renderergl/lib/DistanceRenderer":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -333,6 +322,8 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var RendererBase = require("awayjs-renderergl/lib/RendererBase");
+var DistanceRenderObject = require("awayjs-renderergl/lib/compilation/DistanceRenderObject");
+var RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
 /**
  * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
  *
@@ -345,22 +336,19 @@ var DistanceRenderer = (function (_super) {
      * @param renderBlended Indicates whether semi-transparent objects should be rendered.
      * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
      */
-    function DistanceRenderer(rendererPoolClass, stage) {
-        if (rendererPoolClass === void 0) { rendererPoolClass = null; }
+    function DistanceRenderer(stage) {
         if (stage === void 0) { stage = null; }
-        _super.call(this, rendererPoolClass, stage);
+        _super.call(this, stage);
+        this._pRenderablePool = new RenderablePool(this._pStage, DistanceRenderObject);
         this._iBackgroundR = 1;
         this._iBackgroundG = 1;
         this._iBackgroundB = 1;
     }
-    DistanceRenderer.prototype._pGetRenderObject = function (renderable, renderObjectOwner) {
-        return renderable._pool.getDistanceRenderObject(renderObjectOwner);
-    };
     return DistanceRenderer;
 })(RendererBase);
 module.exports = DistanceRenderer;
 
-},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase"}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
+},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/compilation/DistanceRenderObject":"awayjs-renderergl/lib/compilation/DistanceRenderObject","awayjs-renderergl/lib/pool/RenderablePool":"awayjs-renderergl/lib/pool/RenderablePool"}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
 var Event = require("awayjs-core/lib/events/Event");
 var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
@@ -510,7 +498,6 @@ var __extends = this.__extends || function (d, b) {
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var Point = require("awayjs-core/lib/geom/Point");
 var Rectangle = require("awayjs-core/lib/geom/Rectangle");
-var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
 var RenderableMergeSort = require("awayjs-display/lib/sort/RenderableMergeSort");
 var RendererEvent = require("awayjs-display/lib/events/RendererEvent");
@@ -521,7 +508,6 @@ var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
 var StageManager = require("awayjs-stagegl/lib/managers/StageManager");
-var RendererPoolBase = require("awayjs-renderergl/lib/pool/RendererPoolBase");
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
  * contents of a partition
@@ -533,9 +519,8 @@ var RendererBase = (function (_super) {
     /**
      * Creates a new RendererBase object.
      */
-    function RendererBase(rendererPoolClass, stage) {
+    function RendererBase(stage) {
         var _this = this;
-        if (rendererPoolClass === void 0) { rendererPoolClass = null; }
         if (stage === void 0) { stage = null; }
         _super.call(this);
         this._numUsedStreams = 0;
@@ -548,7 +533,6 @@ var RendererBase = (function (_super) {
         this._backgroundG = 0;
         this._backgroundB = 0;
         this._backgroundAlpha = 1;
-        this._shareContext = false;
         this.textureRatioX = 1;
         this.textureRatioY = 1;
         this._pRttViewProjectionMatrix = new Matrix3D();
@@ -558,13 +542,21 @@ var RendererBase = (function (_super) {
         this._pNumTriangles = 0;
         this._disableColor = false;
         this._renderBlended = true;
-        this._pRendererPoolClass = rendererPoolClass;
         this._onViewportUpdatedDelegate = function (event) { return _this.onViewportUpdated(event); };
         this._onContextUpdateDelegate = function (event) { return _this.onContextUpdate(event); };
         //default sorting algorithm
         this.renderableSorter = new RenderableMergeSort();
-        this._rendererPool = (rendererPoolClass) ? new this._pRendererPoolClass(this) : new RendererPoolBase(this);
-        this.stage = stage || StageManager.getInstance().getFreeStage();
+        //set stage
+        this._pStage = stage || StageManager.getInstance().getFreeStage();
+        this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+        this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+        this._pStage.addEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+        /*
+         if (_backgroundImageRenderer)
+         _backgroundImageRenderer.stage = value;
+         */
+        if (this._pStage.context)
+            this._pContext = this._pStage.context;
     }
     Object.defineProperty(RendererBase.prototype, "renderBlended", {
         get: function () {
@@ -785,33 +777,9 @@ var RendererBase = (function (_super) {
         get: function () {
             return this._pStage;
         },
-        set: function (value) {
-            if (this._pStage == value)
-                return;
-            this.iSetStage(value);
-        },
         enumerable: true,
         configurable: true
     });
-    RendererBase.prototype.iSetStage = function (value) {
-        if (this._pStage)
-            this.dispose();
-        if (value) {
-            this._pStage = value;
-            this._rendererPool.stage = this._pStage;
-            this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-            this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-            this._pStage.addEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-            /*
-             if (_backgroundImageRenderer)
-             _backgroundImageRenderer.stage = value;
-             */
-            if (this._pStage.context)
-                this._pContext = this._pStage.context;
-        }
-        this._pBackBufferInvalid = true;
-        this.updateGlobalPos();
-    };
     Object.defineProperty(RendererBase.prototype, "shareContext", {
         /**
          * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
@@ -820,11 +788,12 @@ var RendererBase = (function (_super) {
         get: function () {
             return this._shareContext;
         },
-        set: function (value) {
-            if (this._shareContext == value)
-                return;
-            this._shareContext = value;
-            this.updateGlobalPos();
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "renderablePool", {
+        get: function () {
+            return this._pRenderablePool;
         },
         enumerable: true,
         configurable: true
@@ -833,7 +802,7 @@ var RendererBase = (function (_super) {
      * Disposes the resources used by the RendererBase.
      */
     RendererBase.prototype.dispose = function () {
-        this._rendererPool.dispose();
+        this._pRenderablePool.dispose();
         this._pStage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
         this._pStage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
         this._pStage.removeEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
@@ -873,7 +842,7 @@ var RendererBase = (function (_super) {
         }
     };
     RendererBase.prototype._iRenderCascades = function (entityCollector, target, numCascades, scissorRects, cameras) {
-        this.pCollectRenderables(entityCollector);
+        this._applyCollector(entityCollector);
         this._pStage.setRenderTarget(target, true, 0);
         this._pContext.clear(1, 1, 1, 1, 1, 0);
         this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
@@ -889,7 +858,7 @@ var RendererBase = (function (_super) {
         this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
         this._pStage.scissorRect = null;
     };
-    RendererBase.prototype.pCollectRenderables = function (entityCollector) {
+    RendererBase.prototype._applyCollector = function (entityCollector) {
         //reset head values
         this._pBlendedRenderableHead = null;
         this._pOpaqueRenderableHead = null;
@@ -901,7 +870,7 @@ var RendererBase = (function (_super) {
         this._iEntryPoint = this._pCamera.scenePosition;
         this._pCameraForward = this._pCamera.transform.forwardVector;
         while (item) {
-            item.entity._iCollectRenderables(this._rendererPool);
+            item.entity._applyRenderer(this);
             item = item.next;
         }
         //sort the resulting renderables
@@ -928,7 +897,7 @@ var RendererBase = (function (_super) {
          if (_backgroundImageRenderer)
          _backgroundImageRenderer.render();
          */
-        this.pCollectRenderables(entityCollector);
+        this._applyCollector(entityCollector);
         this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
         this.pDraw(entityCollector);
         //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
@@ -1138,6 +1107,9 @@ var RendererBase = (function (_super) {
         }
         this.notifyScissorUpdate();
     };
+    RendererBase.prototype._iApplyRenderableOwner = function (renderableOwner) {
+        this.applyRenderable(this._pRenderablePool.getItem(renderableOwner));
+    };
     /**
      *
      * @param renderable
@@ -1145,7 +1117,7 @@ var RendererBase = (function (_super) {
      */
     RendererBase.prototype.applyRenderable = function (renderable) {
         //set local vars for faster referencing
-        var renderObject = this._pGetRenderObject(renderable, renderable.renderObjectOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
+        var renderObject = this._pRenderablePool.getRenderObjectPool(renderable.renderableOwner).getItem(renderable.renderObjectOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
         renderable.renderObject = renderObject;
         renderable.renderObjectId = renderObject.renderObjectId;
         renderable.renderOrderId = renderObject.renderOrderId;
@@ -1170,14 +1142,11 @@ var RendererBase = (function (_super) {
         if (renderable.overflow)
             this.applyRenderable(renderable.overflow);
     };
-    RendererBase.prototype._pGetRenderObject = function (renderable, renderObjectOwner) {
-        throw new AbstractMethodError();
-    };
     return RendererBase;
 })(EventDispatcher);
 module.exports = RendererBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/sort/RenderableMergeSort":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-renderergl/lib/pool/RendererPoolBase":"awayjs-renderergl/lib/pool/RendererPoolBase","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
+},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/sort/RenderableMergeSort":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9118,6 +9087,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
 var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 var DepthPass = require("awayjs-renderergl/lib/passes/DepthPass");
 /**
@@ -9126,25 +9096,31 @@ var DepthPass = require("awayjs-renderergl/lib/passes/DepthPass");
  */
 var DepthRenderObject = (function (_super) {
     __extends(DepthRenderObject, _super);
+    /**
+     *
+     * @param pool
+     * @param renderObjectOwner
+     * @param renderableClass
+     * @param stage
+     */
     function DepthRenderObject(pool, renderObjectOwner, renderableClass, stage) {
         _super.call(this, pool, renderObjectOwner, renderableClass, stage);
         this._pAddScreenPass(new DepthPass(this, renderObjectOwner, renderableClass, this._stage));
     }
-    /**
-     *
-     */
-    DepthRenderObject.id = "depth";
+    //TODO: create debug depth material
+    DepthRenderObject.assetClass = BasicMaterial;
     return DepthRenderObject;
 })(RenderObjectBase);
 module.exports = DepthRenderObject;
 
-},{"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/DepthPass":"awayjs-renderergl/lib/passes/DepthPass"}],"awayjs-renderergl/lib/compilation/DistanceRenderObject":[function(require,module,exports){
+},{"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/DepthPass":"awayjs-renderergl/lib/passes/DepthPass"}],"awayjs-renderergl/lib/compilation/DistanceRenderObject":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
 var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 var DistancePass = require("awayjs-renderergl/lib/passes/DistancePass");
 /**
@@ -9162,15 +9138,13 @@ var DistanceRenderObject = (function (_super) {
         _super.call(this, pool, renderObjectOwner, renderableClass, stage);
         this._pAddScreenPass(new DistancePass(this, renderObjectOwner, renderableClass, this._stage));
     }
-    /**
-     *
-     */
-    DistanceRenderObject.id = "distance";
+    //TODO: create debug distance material
+    DistanceRenderObject.assetClass = BasicMaterial;
     return DistanceRenderObject;
 })(RenderObjectBase);
 module.exports = DistanceRenderObject;
 
-},{"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/DistancePass":"awayjs-renderergl/lib/passes/DistancePass"}],"awayjs-renderergl/lib/compilation/IRenderObjectClass":[function(require,module,exports){
+},{"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/DistancePass":"awayjs-renderergl/lib/passes/DistancePass"}],"awayjs-renderergl/lib/compilation/IRenderObjectClass":[function(require,module,exports){
 
 },{}],"awayjs-renderergl/lib/compilation/RegisterPool":[function(require,module,exports){
 var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
@@ -9358,10 +9332,6 @@ var RenderBasicMaterialObject = (function (_super) {
         this._screenPass.setBlendMode((this._renderObjectOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._material.blendMode);
         //this._screenPass.forceSeparateMVP = false;
     };
-    /**
-     *
-     */
-    RenderBasicMaterialObject.id = "basic";
     return RenderBasicMaterialObject;
 })(RenderObjectBase);
 module.exports = RenderBasicMaterialObject;
@@ -9421,7 +9391,7 @@ var RenderObjectBase = (function () {
         shaderObject.alphaThreshold = this._renderObjectOwner.alphaThreshold;
         shaderObject.useMipmapping = this._renderObjectOwner.mipmap;
         shaderObject.useSmoothTextures = this._renderObjectOwner.smooth;
-        if (this._renderObjectOwner.isAsset(MaterialBase)) {
+        if (this._renderObjectOwner instanceof MaterialBase) {
             var material = this._renderObjectOwner;
             shaderObject.useAlphaPremultiplied = material.alphaPremultiplied;
             shaderObject.useBothSides = material.bothSides;
@@ -9554,6 +9524,10 @@ var RenderObjectBase = (function () {
 module.exports = RenderObjectBase;
 
 },{"awayjs-core/lib/events/Event":undefined,"awayjs-display/lib/materials/MaterialBase":undefined}],"awayjs-renderergl/lib/compilation/RenderObjectPool":[function(require,module,exports){
+var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
+var Skybox = require("awayjs-display/lib/entities/Skybox");
+var RenderBasicMaterialObject = require("awayjs-renderergl/lib/compilation/RenderBasicMaterialObject");
+var SkyboxRenderObject = require("awayjs-renderergl/lib/compilation/SkyboxRenderObject");
 /**
  * @class away.pool.RenderObjectPool
  */
@@ -9563,11 +9537,12 @@ var RenderObjectPool = (function () {
      *
      * @param renderObjectClass
      */
-    function RenderObjectPool(renderObjectClass, renderableClass, stage) {
-        this._renderObjectPool = new Object();
-        this._renderObjectClass = renderObjectClass;
+    function RenderObjectPool(renderableClass, stage, renderObjectClass) {
+        if (renderObjectClass === void 0) { renderObjectClass = null; }
+        this._pool = new Object();
         this._renderableClass = renderableClass;
         this._stage = stage;
+        this._renderObjectClass = renderObjectClass;
     }
     /**
      * //TODO
@@ -9576,7 +9551,7 @@ var RenderObjectPool = (function () {
      * @returns IRenderable
      */
     RenderObjectPool.prototype.getItem = function (renderObjectOwner) {
-        return (this._renderObjectPool[renderObjectOwner.id] || (this._renderObjectPool[renderObjectOwner.id] = renderObjectOwner._iAddRenderObject(new this._renderObjectClass(this, renderObjectOwner, this._renderableClass, this._stage))));
+        return (this._pool[renderObjectOwner.id] || (this._pool[renderObjectOwner.id] = renderObjectOwner._iAddRenderObject(new (this._renderObjectClass || RenderObjectPool.getClass(renderObjectOwner))(this, renderObjectOwner, this._renderableClass, this._stage))));
     };
     /**
      * //TODO
@@ -9584,14 +9559,34 @@ var RenderObjectPool = (function () {
      * @param renderableOwner
      */
     RenderObjectPool.prototype.disposeItem = function (renderObjectOwner) {
-        renderObjectOwner._iRemoveRenderObject(this._renderObjectPool[renderObjectOwner.id]);
-        this._renderObjectPool[renderObjectOwner.id] = null;
+        renderObjectOwner._iRemoveRenderObject(this._pool[renderObjectOwner.id]);
+        this._pool[renderObjectOwner.id] = null;
     };
+    /**
+     *
+     * @param imageObjectClass
+     */
+    RenderObjectPool.registerClass = function (renderObjectClass, assetClass) {
+        RenderObjectPool._classPool[assetClass.assetType] = renderObjectClass;
+    };
+    /**
+     *
+     * @param subGeometry
+     */
+    RenderObjectPool.getClass = function (renderObjectOwner) {
+        return RenderObjectPool._classPool[renderObjectOwner.assetType];
+    };
+    RenderObjectPool.addDefaults = function () {
+        RenderObjectPool.registerClass(RenderBasicMaterialObject, BasicMaterial);
+        RenderObjectPool.registerClass(SkyboxRenderObject, Skybox);
+    };
+    RenderObjectPool._classPool = new Object();
+    RenderObjectPool.main = RenderObjectPool.addDefaults();
     return RenderObjectPool;
 })();
 module.exports = RenderObjectPool;
 
-},{}],"awayjs-renderergl/lib/compilation/ShaderCompilerBase":[function(require,module,exports){
+},{"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-renderergl/lib/compilation/RenderBasicMaterialObject":"awayjs-renderergl/lib/compilation/RenderBasicMaterialObject","awayjs-renderergl/lib/compilation/SkyboxRenderObject":"awayjs-renderergl/lib/compilation/SkyboxRenderObject"}],"awayjs-renderergl/lib/compilation/ShaderCompilerBase":[function(require,module,exports){
 var ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 var ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 /**
@@ -10995,9 +10990,9 @@ var SkyboxPass = require("awayjs-renderergl/lib/passes/SkyboxPass");
  */
 var SkyboxRenderObject = (function (_super) {
     __extends(SkyboxRenderObject, _super);
-    function SkyboxRenderObject(pool, renderObjectOwner, renderableClass, stage) {
-        _super.call(this, pool, renderObjectOwner, renderableClass, stage);
-        this._screenPass = new SkyboxPass(this, renderObjectOwner, renderableClass, this._stage);
+    function SkyboxRenderObject(pool, skybox, renderableClass, stage) {
+        _super.call(this, pool, skybox, renderableClass, stage);
+        this._screenPass = new SkyboxPass(this, skybox, renderableClass, this._stage);
         this._pAddScreenPass(this._screenPass);
     }
     /**
@@ -11008,10 +11003,6 @@ var SkyboxRenderObject = (function (_super) {
         this._pRequiresBlending = (this._renderObjectOwner.blendMode != BlendMode.NORMAL);
         this._screenPass.setBlendMode((this._renderObjectOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._renderObjectOwner.blendMode);
     };
-    /**
-     *
-     */
-    SkyboxRenderObject.id = "skybox";
     return SkyboxRenderObject;
 })(RenderObjectBase);
 module.exports = SkyboxRenderObject;
@@ -12186,9 +12177,9 @@ var JSPickingCollider = (function (_super) {
      *
      * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
      */
-    function JSPickingCollider(stage, findClosestCollision) {
+    function JSPickingCollider(renderablePool, findClosestCollision) {
         if (findClosestCollision === void 0) { findClosestCollision = false; }
-        _super.call(this, stage);
+        _super.call(this, renderablePool);
         this._findClosestCollision = findClosestCollision;
     }
     /**
@@ -12302,21 +12293,17 @@ module.exports = JSPickingCollider;
 var Point = require("awayjs-core/lib/geom/Point");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var BillboardRenderable = require("awayjs-renderergl/lib/pool/BillboardRenderable");
-var TriangleSubMeshRenderable = require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
-var RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
 /**
  * An abstract base class for all picking collider classes. It should not be instantiated directly.
  *
  * @class away.pick.PickingColliderBase
  */
 var PickingColliderBase = (function () {
-    function PickingColliderBase(stage) {
+    function PickingColliderBase(renderablePool) {
         //TODO
-        this._billboardRenderablePool = RenderablePoolBase.getPool(BillboardRenderable, stage);
-        this._subMeshRenderablePool = RenderablePoolBase.getPool(TriangleSubMeshRenderable, stage);
+        this._renderablePool = renderablePool;
     }
-    PickingColliderBase.prototype._pPetCollisionNormal = function (indexData /*uint*/, vertexData, triangleIndex) {
+    PickingColliderBase.prototype._pGetCollisionNormal = function (indexData /*uint*/, vertexData, triangleIndex) {
         var normal = new Vector3D();
         var i0 = indexData[triangleIndex] * 3;
         var i1 = indexData[triangleIndex + 1] * 3;
@@ -12366,7 +12353,7 @@ var PickingColliderBase = (function () {
     PickingColliderBase.prototype.testBillboardCollision = function (billboard, pickingCollisionVO, shortestCollisionDistance) {
         this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
         pickingCollisionVO.renderableOwner = null;
-        if (this._pTestRenderableCollision(this._billboardRenderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
+        if (this._pTestRenderableCollision(this._renderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
             shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
             pickingCollisionVO.renderableOwner = billboard;
             return true;
@@ -12388,7 +12375,7 @@ var PickingColliderBase = (function () {
         var len = mesh.subMeshes.length;
         for (var i = 0; i < len; ++i) {
             subMesh = mesh.subMeshes[i];
-            if (this._pTestRenderableCollision(this._subMeshRenderablePool.getItem(subMesh), pickingCollisionVO, shortestCollisionDistance)) {
+            if (this._pTestRenderableCollision(this._renderablePool.getItem(subMesh), pickingCollisionVO, shortestCollisionDistance)) {
                 shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
                 pickingCollisionVO.renderableOwner = subMesh;
                 if (!findClosest)
@@ -12401,7 +12388,7 @@ var PickingColliderBase = (function () {
 })();
 module.exports = PickingColliderBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/pool/BillboardRenderable":"awayjs-renderergl/lib/pool/BillboardRenderable","awayjs-renderergl/lib/pool/RenderablePoolBase":"awayjs-renderergl/lib/pool/RenderablePoolBase","awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable"}],"awayjs-renderergl/lib/pick/ShaderPicker":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/pick/ShaderPicker":[function(require,module,exports){
 var Debug = require("awayjs-core/lib/utils/Debug");
 var BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
@@ -12825,6 +12812,7 @@ var __extends = this.__extends || function (d, b) {
 };
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var Billboard = require("awayjs-display/lib/entities/Billboard");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -12892,6 +12880,9 @@ var BillboardRenderable = (function (_super) {
         }
         return code;
     };
+    BillboardRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
     BillboardRenderable.prototype._iActivate = function (pass, camera) {
         _super.prototype._iActivate.call(this, pass, camera);
         //buffer the same for all materials, so can set here
@@ -12918,17 +12909,14 @@ var BillboardRenderable = (function (_super) {
         context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
         this._stage.context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
     };
+    BillboardRenderable.assetClass = Billboard;
     BillboardRenderable._materialGeometry = new Object();
-    /**
-     *
-     */
-    BillboardRenderable.id = "billboard";
     BillboardRenderable.vertexAttributesOffset = 1;
     return BillboardRenderable;
 })(RenderableBase);
 module.exports = BillboardRenderable;
 
-},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/CurveSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/CurveSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12936,6 +12924,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
+var CurveSubMesh = require("awayjs-display/lib/base/CurveSubMesh");
 var CurveSubGeometry = require("awayjs-core/lib/data/CurveSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
@@ -13115,18 +13104,13 @@ var CurveSubMeshRenderable = (function (_super) {
     CurveSubMeshRenderable.prototype._pGetOverflowRenderable = function (indexOffset) {
         return new CurveSubMeshRenderable(this._pool, this.renderableOwner, this._stage, this._level + 1, indexOffset);
     };
-    /**
-     *
-     */
-    CurveSubMeshRenderable.id = "curvesubmesh";
+    CurveSubMeshRenderable.assetClass = CurveSubMesh;
     CurveSubMeshRenderable.vertexAttributesOffset = 2;
     return CurveSubMeshRenderable;
 })(RenderableBase);
 module.exports = CurveSubMeshRenderable;
 
-},{"awayjs-core/lib/data/CurveSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/IRenderableClass":[function(require,module,exports){
-
-},{}],"awayjs-renderergl/lib/pool/IRendererPoolClass":[function(require,module,exports){
+},{"awayjs-core/lib/data/CurveSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/CurveSubMesh":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/IRenderableClass":[function(require,module,exports){
 
 },{}],"awayjs-renderergl/lib/pool/ITextureObjectClass":[function(require,module,exports){
 
@@ -13139,6 +13123,7 @@ var __extends = this.__extends || function (d, b) {
 };
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
+var LineSegment = require("awayjs-display/lib/entities/LineSegment");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -13211,6 +13196,9 @@ var LineSegmentRenderable = (function (_super) {
     LineSegmentRenderable._iGetVertexCode = function (shader, regCache, sharedReg) {
         return "m44 vt0, va0, vc8			\n" + "m44 vt1, va1, vc8			\n" + "sub vt2, vt1, vt0 			\n" + "slt vt5.x, vt0.z, vc7.z			\n" + "sub vt5.y, vc5.x, vt5.x			\n" + "add vt4.x, vt0.z, vc7.z			\n" + "sub vt4.y, vt0.z, vt1.z			\n" + "seq vt4.z, vt4.y vc6.x			\n" + "add vt4.y, vt4.y, vt4.z			\n" + "div vt4.z, vt4.x, vt4.y			\n" + "mul vt4.xyz, vt4.zzz, vt2.xyz	\n" + "add vt3.xyz, vt0.xyz, vt4.xyz	\n" + "mov vt3.w, vc5.x			\n" + "mul vt0, vt0, vt5.yyyy			\n" + "mul vt3, vt3, vt5.xxxx			\n" + "add vt0, vt0, vt3				\n" + "sub vt2, vt1, vt0 			\n" + "nrm vt2.xyz, vt2.xyz			\n" + "nrm vt5.xyz, vt0.xyz			\n" + "mov vt5.w, vc5.x				\n" + "crs vt3.xyz, vt2, vt5			\n" + "nrm vt3.xyz, vt3.xyz			\n" + "mul vt3.xyz, vt3.xyz, va2.xxx	\n" + "mov vt3.w, vc5.x			\n" + "dp3 vt4.x, vt0, vc6			\n" + "mul vt4.x, vt4.x, vc7.x			\n" + "mul vt3.xyz, vt3.xyz, vt4.xxx	\n" + "add vt0.xyz, vt0.xyz, vt3.xyz	\n" + "m44 op, vt0, vc0			\n"; // transform Q0 to clip space
     };
+    LineSegmentRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
     /**
      * @inheritDoc
      */
@@ -13253,19 +13241,16 @@ var LineSegmentRenderable = (function (_super) {
     LineSegmentRenderable.prototype._pGetOverflowRenderable = function (indexOffset) {
         return new LineSegmentRenderable(this._pool, this.renderableOwner, this._stage, this._level + 1, indexOffset);
     };
+    LineSegmentRenderable.assetClass = LineSegment;
     LineSegmentRenderable._lineGeometry = new Object();
     LineSegmentRenderable.pONE_VECTOR = Array(1, 1, 1, 1);
     LineSegmentRenderable.pFRONT_VECTOR = Array(0, 0, -1, 0);
-    /**
-     *
-     */
-    LineSegmentRenderable.id = "linesegment";
     LineSegmentRenderable.vertexAttributesOffset = 3;
     return LineSegmentRenderable;
 })(RenderableBase);
 module.exports = LineSegmentRenderable;
 
-},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/LineSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/LineSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13273,6 +13258,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
 var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
@@ -13324,6 +13310,9 @@ var LineSubMeshRenderable = (function (_super) {
     LineSubMeshRenderable._iGetVertexCode = function (shader, regCache, sharedReg) {
         return "m44 vt0, va0, vc8			\n" + "m44 vt1, va1, vc8			\n" + "sub vt2, vt1, vt0 			\n" + "slt vt5.x, vt0.z, vc7.z			\n" + "sub vt5.y, vc5.x, vt5.x			\n" + "add vt4.x, vt0.z, vc7.z			\n" + "sub vt4.y, vt0.z, vt1.z			\n" + "seq vt4.z, vt4.y vc6.x			\n" + "add vt4.y, vt4.y, vt4.z			\n" + "div vt4.z, vt4.x, vt4.y			\n" + "mul vt4.xyz, vt4.zzz, vt2.xyz	\n" + "add vt3.xyz, vt0.xyz, vt4.xyz	\n" + "mov vt3.w, vc5.x			\n" + "mul vt0, vt0, vt5.yyyy			\n" + "mul vt3, vt3, vt5.xxxx			\n" + "add vt0, vt0, vt3				\n" + "sub vt2, vt1, vt0 			\n" + "nrm vt2.xyz, vt2.xyz			\n" + "nrm vt5.xyz, vt0.xyz			\n" + "mov vt5.w, vc5.x				\n" + "crs vt3.xyz, vt2, vt5			\n" + "nrm vt3.xyz, vt3.xyz			\n" + "mul vt3.xyz, vt3.xyz, va2.xxx	\n" + "mov vt3.w, vc5.x			\n" + "dp3 vt4.x, vt0, vc6			\n" + "mul vt4.x, vt4.x, vc7.x			\n" + "mul vt3.xyz, vt3.xyz, vt4.xxx	\n" + "add vt0.xyz, vt0.xyz, vt3.xyz	\n" + "m44 op, vt0, vc0			\n"; // transform Q0 to clip space
     };
+    LineSubMeshRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
     /**
      * @inheritDoc
      */
@@ -13366,18 +13355,15 @@ var LineSubMeshRenderable = (function (_super) {
     LineSubMeshRenderable.prototype._pGetOverflowRenderable = function (indexOffset) {
         return new LineSubMeshRenderable(this._pool, this.renderableOwner, this._stage, this._level + 1, indexOffset);
     };
+    LineSubMeshRenderable.assetClass = LineSubMesh;
     LineSubMeshRenderable.pONE_VECTOR = Array(1, 1, 1, 1);
     LineSubMeshRenderable.pFRONT_VECTOR = Array(0, 0, -1, 0);
-    /**
-     *
-     */
-    LineSubMeshRenderable.id = "linesubmesh";
     LineSubMeshRenderable.vertexAttributesOffset = 3;
     return LineSubMeshRenderable;
 })(RenderableBase);
 module.exports = LineSubMeshRenderable;
 
-},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/RenderableBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/base/LineSubMesh":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/RenderableBase":[function(require,module,exports){
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
 var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
@@ -13507,12 +13493,6 @@ var RenderableBase = (function () {
     };
     RenderableBase.prototype._pGetSubGeometry = function () {
         throw new AbstractMethodError();
-    };
-    RenderableBase._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    RenderableBase._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
     };
     /**
      * //TODO
@@ -13647,29 +13627,34 @@ var RenderableBase = (function () {
 })();
 module.exports = RenderableBase;
 
-},{"awayjs-core/lib/data/SubGeometryBase":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/SubGeometryEvent":undefined,"awayjs-display/lib/events/RenderableOwnerEvent":undefined,"awayjs-stagegl/lib/pool/IndexDataPool":undefined,"awayjs-stagegl/lib/pool/VertexDataPool":undefined}],"awayjs-renderergl/lib/pool/RenderablePoolBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/SubGeometryBase":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/SubGeometryEvent":undefined,"awayjs-display/lib/events/RenderableOwnerEvent":undefined,"awayjs-stagegl/lib/pool/IndexDataPool":undefined,"awayjs-stagegl/lib/pool/VertexDataPool":undefined}],"awayjs-renderergl/lib/pool/RenderablePool":[function(require,module,exports){
 var RenderObjectPool = require("awayjs-renderergl/lib/compilation/RenderObjectPool");
-var RenderBasicMaterialObject = require("awayjs-renderergl/lib/compilation/RenderBasicMaterialObject");
-var SkyboxRenderObject = require("awayjs-renderergl/lib/compilation/SkyboxRenderObject");
-var DepthRenderObject = require("awayjs-renderergl/lib/compilation/DepthRenderObject");
-var DistanceRenderObject = require("awayjs-renderergl/lib/compilation/DistanceRenderObject");
+var BillboardRenderable = require("awayjs-renderergl/lib/pool/BillboardRenderable");
+var LineSegmentRenderable = require("awayjs-renderergl/lib/pool/LineSegmentRenderable");
+var LineSubMeshRenderable = require("awayjs-renderergl/lib/pool/LineSubMeshRenderable");
+var TriangleSubMeshRenderable = require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
+var CurveSubMeshRenderable = require("awayjs-renderergl/lib/pool/CurveSubMeshRenderable");
+var SkyboxRenderable = require("awayjs-renderergl/lib/pool/SkyboxRenderable");
 /**
- * @class away.pool.RenderablePoolBase
+ * RenderablePool forms an abstract base class for classes that are used in the rendering pipeline to render the
+ * contents of a partition
+ *
+ * @class away.render.RenderablePool
  */
-var RenderablePoolBase = (function () {
+var RenderablePool = (function () {
     /**
-     * //TODO
+     * Creates a new RenderablePool object.
      *
-     * @param renderableClass
+     * @param stage
+     * @param renderObjectClass
      */
-    function RenderablePoolBase(renderableClass, stage) {
-        this._renderablePool = new Object();
-        this._renderableClass = renderableClass;
+    function RenderablePool(stage, renderObjectClass) {
+        if (renderObjectClass === void 0) { renderObjectClass = null; }
+        this._pool = new Object();
+        this._objectPools = new Object();
         this._stage = stage;
-        this._materialRenderObjectPool = new RenderObjectPool(RenderBasicMaterialObject, this._renderableClass, this._stage);
-        this._skyboxRenderObjectPool = new RenderObjectPool(SkyboxRenderObject, this._renderableClass, this._stage);
-        this._depthRenderObjectPool = new RenderObjectPool(DepthRenderObject, this._renderableClass, this._stage);
-        this._distanceRenderObjectPool = new RenderObjectPool(DistanceRenderObject, this._renderableClass, this._stage);
+        for (var i in RenderablePool._classPool)
+            this._objectPools[i] = new RenderObjectPool(RenderablePool._classPool[i], this._stage, renderObjectClass);
     }
     /**
      * //TODO
@@ -13677,184 +13662,63 @@ var RenderablePoolBase = (function () {
      * @param renderableOwner
      * @returns IRenderable
      */
-    RenderablePoolBase.prototype.getItem = function (renderableOwner) {
-        return (this._renderablePool[renderableOwner.id] || (this._renderablePool[renderableOwner.id] = renderableOwner._iAddRenderable(new this._renderableClass(this, renderableOwner, this._stage))));
+    RenderablePool.prototype.getItem = function (renderableOwner) {
+        return this._pool[renderableOwner.id] || (this._pool[renderableOwner.id] = renderableOwner._iAddRenderable(new (RenderablePool.getClass(renderableOwner))(this, renderableOwner, this._stage)));
     };
     /**
      *
-     * @param material
-     * @param renderable
+     * @param image
      */
-    RenderablePoolBase.prototype.getMaterialRenderObject = function (renderObjectOwner) {
-        return this._materialRenderObjectPool.getItem(renderObjectOwner);
-    };
-    /**
-     *
-     * @param material
-     * @param renderable
-     */
-    RenderablePoolBase.prototype.getSkyboxRenderObject = function (renderObjectOwner) {
-        return this._skyboxRenderObjectPool.getItem(renderObjectOwner);
-    };
-    /**
-     *
-     * @param material
-     * @param renderable
-     */
-    RenderablePoolBase.prototype.getDepthRenderObject = function (renderObjectOwner) {
-        return this._depthRenderObjectPool.getItem(renderObjectOwner);
-    };
-    /**
-     *
-     * @param material
-     * @param renderable
-     */
-    RenderablePoolBase.prototype.getDistanceRenderObject = function (renderObjectOwner) {
-        return this._distanceRenderObjectPool.getItem(renderObjectOwner);
-    };
-    /**
-     * //TODO
-     *
-     * @param renderableOwner
-     */
-    RenderablePoolBase.prototype.disposeItem = function (renderableOwner) {
-        renderableOwner._iRemoveRenderable(this._renderablePool[renderableOwner.id]);
-        this._renderablePool[renderableOwner.id] = null;
-    };
-    RenderablePoolBase.prototype.dispose = function () {
-        for (var id in this._renderablePool)
-            this._renderablePool[id].dispose();
-        RenderablePoolBase.disposePool(this._renderableClass, this._stage);
+    RenderablePool.prototype.disposeItem = function (renderableOwner) {
+        renderableOwner._iRemoveRenderable(this._pool[renderableOwner.id]);
+        this._pool[renderableOwner.id] = null;
     };
     /**
      * //TODO
      *
      * @param renderableClass
-     * @returns RenderablePoolBase
+     * @returns RenderObjectPool
      */
-    RenderablePoolBase.getPool = function (renderableClass, stage) {
-        var pools = (RenderablePoolBase._pools[stage.stageIndex] || (RenderablePoolBase._pools[stage.stageIndex] = new Object()));
-        return (pools[renderableClass.id] || (pools[renderableClass.id] = new RenderablePoolBase(renderableClass, stage)));
+    RenderablePool.prototype.getRenderObjectPool = function (renderableOwner) {
+        return this._objectPools[renderableOwner.assetType];
     };
     /**
-     * //TODO
      *
-     * @param renderableClass
+     * @param imageObjectClass
      */
-    RenderablePoolBase.disposePool = function (renderableClass, stage) {
-        var pools = RenderablePoolBase._pools[stage.stageIndex];
-        if (pools == undefined)
-            return;
-        if (pools[renderableClass.id])
-            pools[renderableClass.id] = undefined;
+    RenderablePool.registerClass = function (renderableClass) {
+        RenderablePool._classPool[renderableClass.assetClass.assetType] = renderableClass;
     };
-    RenderablePoolBase._pools = new Object();
-    return RenderablePoolBase;
+    /**
+     *
+     * @param subGeometry
+     */
+    RenderablePool.getClass = function (renderableOwner) {
+        return RenderablePool._classPool[renderableOwner.assetType];
+    };
+    /**
+     * Disposes the resources used by the RenderablePool.
+     */
+    RenderablePool.prototype.dispose = function () {
+        for (var id in this._pool)
+            this._pool[id].dispose();
+        this._pool = null;
+    };
+    RenderablePool.addDefaults = function () {
+        RenderablePool.registerClass(BillboardRenderable);
+        RenderablePool.registerClass(LineSegmentRenderable);
+        RenderablePool.registerClass(LineSubMeshRenderable);
+        RenderablePool.registerClass(TriangleSubMeshRenderable);
+        RenderablePool.registerClass(CurveSubMeshRenderable);
+        RenderablePool.registerClass(SkyboxRenderable);
+    };
+    RenderablePool._classPool = new Object();
+    RenderablePool.main = RenderablePool.addDefaults();
+    return RenderablePool;
 })();
-module.exports = RenderablePoolBase;
+module.exports = RenderablePool;
 
-},{"awayjs-renderergl/lib/compilation/DepthRenderObject":"awayjs-renderergl/lib/compilation/DepthRenderObject","awayjs-renderergl/lib/compilation/DistanceRenderObject":"awayjs-renderergl/lib/compilation/DistanceRenderObject","awayjs-renderergl/lib/compilation/RenderBasicMaterialObject":"awayjs-renderergl/lib/compilation/RenderBasicMaterialObject","awayjs-renderergl/lib/compilation/RenderObjectPool":"awayjs-renderergl/lib/compilation/RenderObjectPool","awayjs-renderergl/lib/compilation/SkyboxRenderObject":"awayjs-renderergl/lib/compilation/SkyboxRenderObject"}],"awayjs-renderergl/lib/pool/RendererPoolBase":[function(require,module,exports){
-var BillboardRenderable = require("awayjs-renderergl/lib/pool/BillboardRenderable");
-var LineSegmentRenderable = require("awayjs-renderergl/lib/pool/LineSegmentRenderable");
-var LineSubMeshRenderable = require("awayjs-renderergl/lib/pool/LineSubMeshRenderable");
-var TriangleSubMeshRenderable = require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
-var CurveSubMeshRenderable = require("awayjs-renderergl/lib/pool/CurveSubMeshRenderable");
-var RenderablePoolBase = require("awayjs-renderergl/lib/pool/RenderablePoolBase");
-/**
- * RendererPoolBase forms an abstract base class for classes that are used in the rendering pipeline to render the
- * contents of a partition
- *
- * @class away.render.RendererPoolBase
- */
-var RendererPoolBase = (function () {
-    /**
-     * Creates a new RendererPoolBase object.
-     */
-    function RendererPoolBase(renderer) {
-        this._renderer = renderer;
-    }
-    Object.defineProperty(RendererPoolBase.prototype, "stage", {
-        /**
-         * The Stage that will provide the ContextGL used for rendering.
-         */
-        get: function () {
-            return this._pStage;
-        },
-        set: function (value) {
-            if (this._pStage == value)
-                return;
-            if (this._pStage)
-                this.dispose();
-            this._pStage = value;
-            if (this._pStage)
-                this._pUpdatePool();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    RendererPoolBase.prototype._pUpdatePool = function () {
-        this._billboardRenderablePool = RenderablePoolBase.getPool(BillboardRenderable, this._pStage);
-        this._lineSegmentRenderablePool = RenderablePoolBase.getPool(LineSegmentRenderable, this._pStage);
-        this._triangleSubMeshRenderablePool = RenderablePoolBase.getPool(TriangleSubMeshRenderable, this._pStage);
-        this._lineSubMeshRenderablePool = RenderablePoolBase.getPool(LineSubMeshRenderable, this._pStage);
-        this._curveSubMeshRenderablePool = RenderablePoolBase.getPool(CurveSubMeshRenderable, this._pStage);
-    };
-    /**
-     * Disposes the resources used by the RendererPoolBase.
-     */
-    RendererPoolBase.prototype.dispose = function () {
-        this._billboardRenderablePool.dispose();
-        this._billboardRenderablePool = null;
-        this._lineSegmentRenderablePool.dispose();
-        this._lineSegmentRenderablePool = null;
-        this._triangleSubMeshRenderablePool.dispose();
-        this._triangleSubMeshRenderablePool = null;
-        this._lineSubMeshRenderablePool.dispose();
-        this._lineSubMeshRenderablePool = null;
-        this._curveSubMeshRenderablePool.dispose();
-        this._curveSubMeshRenderablePool = null;
-    };
-    /**
-     *
-     * @param billboard
-     * @protected
-     */
-    RendererPoolBase.prototype.applyBillboard = function (billboard) {
-        this._renderer.applyRenderable(this._billboardRenderablePool.getItem(billboard));
-    };
-    /**
-     *
-     * @param lineSubMesh
-     */
-    RendererPoolBase.prototype.applyLineSegment = function (lineSegment) {
-        this._renderer.applyRenderable(this._lineSegmentRenderablePool.getItem(lineSegment));
-    };
-    /**
-     *
-     * @param triangleSubMesh
-     */
-    RendererPoolBase.prototype.applyTriangleSubMesh = function (triangleSubMesh) {
-        this._renderer.applyRenderable(this._triangleSubMeshRenderablePool.getItem(triangleSubMesh));
-    };
-    /**
-     *
-     * @param curveSubMesh
-     */
-    RendererPoolBase.prototype.applyCurveSubMesh = function (curveSubMesh) {
-        this._renderer.applyRenderable(this._curveSubMeshRenderablePool.getItem(curveSubMesh));
-    };
-    /**
-     *
-     * @param lineSubMesh
-     */
-    RendererPoolBase.prototype.applyLineSubMesh = function (lineSubMesh) {
-        this._renderer.applyRenderable(this._lineSubMeshRenderablePool.getItem(lineSubMesh));
-    };
-    return RendererPoolBase;
-})();
-module.exports = RendererPoolBase;
-
-},{"awayjs-renderergl/lib/pool/BillboardRenderable":"awayjs-renderergl/lib/pool/BillboardRenderable","awayjs-renderergl/lib/pool/CurveSubMeshRenderable":"awayjs-renderergl/lib/pool/CurveSubMeshRenderable","awayjs-renderergl/lib/pool/LineSegmentRenderable":"awayjs-renderergl/lib/pool/LineSegmentRenderable","awayjs-renderergl/lib/pool/LineSubMeshRenderable":"awayjs-renderergl/lib/pool/LineSubMeshRenderable","awayjs-renderergl/lib/pool/RenderablePoolBase":"awayjs-renderergl/lib/pool/RenderablePoolBase","awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable"}],"awayjs-renderergl/lib/pool/Sampler2DObject":[function(require,module,exports){
+},{"awayjs-renderergl/lib/compilation/RenderObjectPool":"awayjs-renderergl/lib/compilation/RenderObjectPool","awayjs-renderergl/lib/pool/BillboardRenderable":"awayjs-renderergl/lib/pool/BillboardRenderable","awayjs-renderergl/lib/pool/CurveSubMeshRenderable":"awayjs-renderergl/lib/pool/CurveSubMeshRenderable","awayjs-renderergl/lib/pool/LineSegmentRenderable":"awayjs-renderergl/lib/pool/LineSegmentRenderable","awayjs-renderergl/lib/pool/LineSubMeshRenderable":"awayjs-renderergl/lib/pool/LineSubMeshRenderable","awayjs-renderergl/lib/pool/SkyboxRenderable":"awayjs-renderergl/lib/pool/SkyboxRenderable","awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable"}],"awayjs-renderergl/lib/pool/Sampler2DObject":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -14088,6 +13952,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var Skybox = require("awayjs-display/lib/entities/Skybox");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -14131,6 +13996,9 @@ var SkyboxRenderable = (function (_super) {
     SkyboxRenderable._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
         return "mul vt0, va0, vc5\n" + "add vt0, vt0, vc4\n" + "m44 op, vt0, vc0\n";
     };
+    SkyboxRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
     /**
      * @inheritDoc
      */
@@ -14147,16 +14015,13 @@ var SkyboxRenderable = (function (_super) {
         this._stage.activateBuffer(0, this.getVertexData(TriangleSubGeometry.POSITION_DATA), this.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
         context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
     };
-    /**
-     *
-     */
-    SkyboxRenderable.id = "skybox";
+    SkyboxRenderable.assetClass = Skybox;
     SkyboxRenderable.vertexAttributesOffset = 1;
     return SkyboxRenderable;
 })(RenderableBase);
 module.exports = SkyboxRenderable;
 
-},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/TextureObjectBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/TextureObjectBase":[function(require,module,exports){
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 /**
  *
@@ -14236,7 +14101,7 @@ var TextureObjectPool = (function () {
      * //TODO
      *
      * @param renderableClass
-     * @returns RenderablePoolBase
+     * @returns RenderObjectPool
      */
     TextureObjectPool.getPool = function (stage) {
         return (TextureObjectPool._pools[stage.stageIndex] || (TextureObjectPool._pools[stage.stageIndex] = new TextureObjectPool(stage)));
@@ -14282,6 +14147,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
+var TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
 var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
@@ -14368,6 +14234,9 @@ var TriangleSubMeshRenderable = (function (_super) {
         }
         return code;
     };
+    TriangleSubMeshRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+        return "";
+    };
     /**
      * @inheritDoc
      */
@@ -14403,16 +14272,13 @@ var TriangleSubMeshRenderable = (function (_super) {
     TriangleSubMeshRenderable.prototype._pGetOverflowRenderable = function (indexOffset) {
         return new TriangleSubMeshRenderable(this._pool, this.renderableOwner, this._stage, this._level + 1, indexOffset);
     };
-    /**
-     *
-     */
-    TriangleSubMeshRenderable.id = "trianglesubmesh";
+    TriangleSubMeshRenderable.assetClass = TriangleSubMesh;
     TriangleSubMeshRenderable.vertexAttributesOffset = 1;
     return TriangleSubMeshRenderable;
 })(RenderableBase);
 module.exports = TriangleSubMeshRenderable;
 
-},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/TriangleSubMesh":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Geometry = require("awayjs-core/lib/data/Geometry");
 var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
