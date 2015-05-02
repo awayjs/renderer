@@ -1,5 +1,6 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import LineSubGeometry				= require("awayjs-core/lib/data/LineSubGeometry");
@@ -17,7 +18,7 @@ import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/Shader
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
 import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
 /**
@@ -25,6 +26,8 @@ import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase"
  */
 class LineSegmentRenderable extends RenderableBase
 {
+	public static assetClass:IAssetClass = LineSegment;
+
 	private static _lineGeometry:Object = new Object();
 
 	public static pONE_VECTOR:Array<number> = Array<number>(1, 1, 1, 1);
@@ -34,10 +37,6 @@ class LineSegmentRenderable extends RenderableBase
 	private _calcMatrix:Matrix3D;
 	private _thickness:number = 1.25;
 
-	/**
-	 *
-	 */
-	public static id:string = "linesegment";
 
 	public static vertexAttributesOffset:number = 3;
 
@@ -54,7 +53,7 @@ class LineSegmentRenderable extends RenderableBase
 	 * @param level
 	 * @param dataOffset
 	 */
-	constructor(pool:RenderablePoolBase, lineSegment:LineSegment, stage:Stage, level:number = 0, indexOffset:number = 0)
+	constructor(pool:RenderablePool, lineSegment:LineSegment, stage:Stage, level:number = 0, indexOffset:number = 0)
 	{
 		super(pool, lineSegment, lineSegment, lineSegment.material, stage, level, indexOffset);
 
@@ -177,6 +176,11 @@ class LineSegmentRenderable extends RenderableBase
 			"add vt0.xyz, vt0.xyz, vt3.xyz	\n" + // Q0 + S
 
 			"m44 op, vt0, vc0			\n"  // transform Q0 to clip space
+	}
+
+	public static _iGetFragmentCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	{
+		return "";
 	}
 
 	/**

@@ -1,4 +1,7 @@
-﻿import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
+﻿import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
+
+import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
+import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
@@ -13,10 +16,8 @@ import DistancePass					= require("awayjs-renderergl/lib/passes/DistancePass");
  */
 class DistanceRenderObject extends RenderObjectBase
 {
-	/**
-	 *
-	 */
-	public static id:string = "distance";
+	//TODO: create debug distance material
+	public static assetClass:IAssetClass = BasicMaterial;
 
 	/**
 	 * Creates a new DistanceRenderObject object.

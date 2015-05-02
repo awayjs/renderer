@@ -88,7 +88,7 @@ class RenderObjectBase implements IRenderObject
 		shaderObject.useMipmapping = this._renderObjectOwner.mipmap;
 		shaderObject.useSmoothTextures = this._renderObjectOwner.smooth;
 
-		if (this._renderObjectOwner.isAsset(MaterialBase)) {
+		if (this._renderObjectOwner instanceof MaterialBase) {
 			var material:MaterialBase = <MaterialBase> this._renderObjectOwner;
 			shaderObject.useAlphaPremultiplied = material.alphaPremultiplied;
 			shaderObject.useBothSides = material.bothSides;

@@ -10,7 +10,7 @@ import IEntity						= require("awayjs-display/lib/entities/IEntity");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import RenderableOwnerEvent			= require("awayjs-display/lib/events/RenderableOwnerEvent");
 import SubGeometryEvent				= require("awayjs-core/lib/events/SubGeometryEvent");
-import IRenderer					= require("awayjs-display/lib/render/IRenderer");
+import IRenderer					= require("awayjs-display/lib/IRenderer");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 
 import IndexData					= require("awayjs-stagegl/lib/pool/IndexData");
@@ -22,7 +22,7 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
@@ -31,7 +31,6 @@ import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase"
  */
 class RenderableBase implements IRenderable
 {
-
 	private _onIndicesUpdatedDelegate:(event:SubGeometryEvent) => void;
 	private _onVerticesUpdatedDelegate:(event:SubGeometryEvent) => void;
 	private _onRenderObjectOwnerUpdatedDelegate:(event:RenderableOwnerEvent) => void;
@@ -56,7 +55,7 @@ class RenderableBase implements IRenderable
 	/**
 	 *
 	 */
-	public _pool:RenderablePoolBase;
+	public _pool:RenderablePool;
 
 	public _stage:Stage;
 
@@ -178,7 +177,7 @@ class RenderableBase implements IRenderable
 	 * @param subGeometry
 	 * @param animationSubGeometry
 	 */
-	constructor(pool:RenderablePoolBase, sourceEntity:IEntity, renderableOwner:IRenderableOwner, renderObjectOwner:IRenderObjectOwner, stage:Stage, level:number = 0, indexOffset:number = 0)
+	constructor(pool:RenderablePool, sourceEntity:IEntity, renderableOwner:IRenderableOwner, renderObjectOwner:IRenderObjectOwner, stage:Stage, level:number = 0, indexOffset:number = 0)
 	{
 		this._onIndicesUpdatedDelegate = (event:SubGeometryEvent) => this._onIndicesUpdated(event);
 		this._onVerticesUpdatedDelegate = (event:SubGeometryEvent) => this._onVerticesUpdated(event);
@@ -254,16 +253,6 @@ class RenderableBase implements IRenderable
 	public _pGetSubGeometry():SubGeometryBase
 	{
 		throw new AbstractMethodError();
-	}
-
-	public static _iGetVertexCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
-	{
-		return "";
-	}
-
-	public static _iGetFragmentCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
-	{
-		return "";
 	}
 
 	/**

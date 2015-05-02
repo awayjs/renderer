@@ -1,5 +1,7 @@
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
-import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
+
+import Skybox						= require("awayjs-display/lib/entities/Skybox");
+import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
@@ -14,18 +16,13 @@ import SkyboxPass					= require("awayjs-renderergl/lib/passes/SkyboxPass");
  */
 class SkyboxRenderObject extends RenderObjectBase
 {
-	/**
-	 *
-	 */
-	public static id:string = "skybox";
-
 	private _screenPass:SkyboxPass;
 
-	constructor(pool:RenderObjectPool, renderObjectOwner:IRenderObjectOwner, renderableClass:IRenderableClass, stage:Stage)
+	constructor(pool:RenderObjectPool, skybox:Skybox, renderableClass:IRenderableClass, stage:Stage)
 	{
-		super(pool, renderObjectOwner, renderableClass, stage);
+		super(pool, skybox, renderableClass, stage);
 
-		this._screenPass = new SkyboxPass(this, renderObjectOwner, renderableClass, this._stage);
+		this._screenPass = new SkyboxPass(this, skybox, renderableClass, this._stage);
 
 		this._pAddScreenPass(this._screenPass);
 	}

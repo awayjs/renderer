@@ -17,11 +17,6 @@ interface IRenderObjectClass
 	/**
 	 *
 	 */
-	id:string;
-
-	/**
-	 *
-	 */
 	new(pool:RenderObjectPool, renderObjectOwner:IRenderObjectOwner, renderableClass:IRenderableClass, stage:Stage):RenderObjectBase;
 }
 

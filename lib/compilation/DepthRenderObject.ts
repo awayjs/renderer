@@ -1,4 +1,7 @@
+import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
+
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
+import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
@@ -13,11 +16,16 @@ import DepthPass					= require("awayjs-renderergl/lib/passes/DepthPass");
  */
 class DepthRenderObject extends RenderObjectBase
 {
+	//TODO: create debug depth material
+	public static assetClass:IAssetClass = BasicMaterial;
+
 	/**
 	 *
+	 * @param pool
+	 * @param renderObjectOwner
+	 * @param renderableClass
+	 * @param stage
 	 */
-	public static id:string = "depth";
-
 	constructor(pool:RenderObjectPool, renderObjectOwner:IRenderObjectOwner, renderableClass:IRenderableClass, stage:Stage)
 	{
 		super(pool, renderObjectOwner, renderableClass, stage);

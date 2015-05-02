@@ -64,7 +64,7 @@ class TextureObjectPool
 	 * //TODO
 	 *
 	 * @param renderableClass
-	 * @returns RenderablePoolBase
+	 * @returns RenderObjectPool
 	 */
 	public static getPool(stage:Stage):TextureObjectPool
 	{

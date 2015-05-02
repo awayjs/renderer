@@ -10,12 +10,12 @@ import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
 import ByteArray					= require("awayjs-core/lib/utils/ByteArray");
 
 import LineSubMesh					= require("awayjs-display/lib/base/LineSubMesh");
-import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
+import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import TriangleSubMesh				= require("awayjs-display/lib/base/TriangleSubMesh");
 import EntityListItem				= require("awayjs-display/lib/pool/EntityListItem");
 import IEntitySorter				= require("awayjs-display/lib/sort/IEntitySorter");
 import RenderableMergeSort			= require("awayjs-display/lib/sort/RenderableMergeSort");
-import IRenderer					= require("awayjs-display/lib/render/IRenderer");
+import IRenderer					= require("awayjs-display/lib/IRenderer");
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import IEntity						= require("awayjs-display/lib/entities/IEntity");
@@ -38,10 +38,9 @@ import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
 
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import IRendererPoolClass			= require("awayjs-renderergl/lib/pool/IRendererPoolClass");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
 import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
-import RendererPoolBase				= require("awayjs-renderergl/lib/pool/RendererPoolBase");
+import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
 
 
 /**
@@ -55,9 +54,8 @@ class RendererBase extends EventDispatcher implements IRenderer
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
 
-	private _rendererPool:RendererPoolBase;
+	public _pRenderablePool:RenderablePool;
 
-	public _pRendererPoolClass:IRendererPoolClass;
 	public _pContext:IContextGL;
 	public _pStage:Stage;
 
@@ -77,7 +75,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 	private _backgroundG:number = 0;
 	private _backgroundB:number = 0;
 	private _backgroundAlpha:number = 1;
-	public _shareContext:boolean = false;
+	public _shareContext:boolean;
 
 	// only used by renderers that need to render geometry to textures
 	public _width:number;
@@ -249,21 +247,29 @@ class RendererBase extends EventDispatcher implements IRenderer
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(rendererPoolClass:IRendererPoolClass = null, stage:Stage = null)
+	constructor(stage:Stage = null)
 	{
 		super();
 
-		this._pRendererPoolClass = rendererPoolClass;
-
-		this._onViewportUpdatedDelegate = (event:StageEvent) => this.onViewportUpdated(event)
+		this._onViewportUpdatedDelegate = (event:StageEvent) => this.onViewportUpdated(event);
 		this._onContextUpdateDelegate = (event:Event) => this.onContextUpdate(event);
 
 		//default sorting algorithm
 		this.renderableSorter = new RenderableMergeSort();
 
-		this._rendererPool = (rendererPoolClass)? new this._pRendererPoolClass(this) : new RendererPoolBase(this);
+		//set stage
+		this._pStage = stage || StageManager.getInstance().getFreeStage();
 
-		this.stage = stage || StageManager.getInstance().getFreeStage();
+		this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+		this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+		this._pStage.addEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+
+		/*
+		 if (_backgroundImageRenderer)
+		 _backgroundImageRenderer.stage = value;
+		 */
+		if (this._pStage.context)
+			this._pContext = <IContextGL> this._pStage.context;
 	}
 
 	public activatePass(renderable:RenderableBase, pass:RenderPassBase, camera:Camera)
@@ -380,41 +386,6 @@ class RendererBase extends EventDispatcher implements IRenderer
 		return this._pStage;
 	}
 
-	public set stage(value:Stage)
-	{
-		if (this._pStage == value)
-			return;
-
-		this.iSetStage(value);
-	}
-
-	public iSetStage(value:Stage)
-	{
-		if (this._pStage)
-			this.dispose();
-
-		if (value) {
-			this._pStage = value;
-
-			this._rendererPool.stage = this._pStage;
-
-			this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-			this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-			this._pStage.addEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-
-			/*
-			 if (_backgroundImageRenderer)
-			 _backgroundImageRenderer.stage = value;
-			 */
-			if (this._pStage.context)
-				this._pContext = <IContextGL> this._pStage.context;
-		}
-
-		this._pBackBufferInvalid = true;
-
-		this.updateGlobalPos();
-	}
-
 	/**
 	 * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
 	 * to share the same ContextGL object.
@@ -424,14 +395,9 @@ class RendererBase extends EventDispatcher implements IRenderer
 		return this._shareContext;
 	}
 
-	public set shareContext(value:boolean)
+	public get renderablePool():RenderablePool
 	{
-		if (this._shareContext == value)
-			return;
-
-		this._shareContext = value;
-
-		this.updateGlobalPos();
+		return this._pRenderablePool;
 	}
 
 	/**
@@ -439,7 +405,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 	 */
 	public dispose()
 	{
-		this._rendererPool.dispose();
+		this._pRenderablePool.dispose();
 
 		this._pStage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._pStage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
@@ -492,7 +458,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 
 	public _iRenderCascades(entityCollector:ShadowCasterCollector, target:ImageBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>)
 	{
-		this.pCollectRenderables(entityCollector);
+		this._applyCollector(entityCollector);
 
 		this._pStage.setRenderTarget(target, true, 0);
 		this._pContext.clear(1, 1, 1, 1, 1, 0);
@@ -517,7 +483,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 		this._pStage.scissorRect = null;
 	}
 
-	public pCollectRenderables(entityCollector:CollectorBase)
+	private _applyCollector(entityCollector:CollectorBase)
 	{
 		//reset head values
 		this._pBlendedRenderableHead = null;
@@ -534,7 +500,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 
 		//iterate through all entities
 		while (item) {
-			item.entity._iCollectRenderables(this._rendererPool);
+			item.entity._applyRenderer(this);
 			item = item.next;
 		}
 
@@ -564,7 +530,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 		 if (_backgroundImageRenderer)
 		 _backgroundImageRenderer.render();
 		 */
-		this.pCollectRenderables(entityCollector);
+		this._applyCollector(entityCollector);
 
 		this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 
@@ -825,6 +791,11 @@ class RendererBase extends EventDispatcher implements IRenderer
 		this.notifyScissorUpdate();
 	}
 
+	public _iApplyRenderableOwner(renderableOwner:IRenderableOwner)
+	{
+		this.applyRenderable(this._pRenderablePool.getItem(renderableOwner));
+	}
+
 	/**
 	 *
 	 * @param renderable
@@ -833,8 +804,8 @@ class RendererBase extends EventDispatcher implements IRenderer
 	public applyRenderable(renderable:RenderableBase)
 	{
 		//set local vars for faster referencing
-		var renderObject:RenderObjectBase = this._pGetRenderObject(renderable, renderable.renderObjectOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
-
+		var renderObject:RenderObjectBase = this._pRenderablePool.getRenderObjectPool(renderable.renderableOwner).getItem(renderable.renderObjectOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
+		
 		renderable.renderObject = renderObject;
 		renderable.renderObjectId = renderObject.renderObjectId;
 		renderable.renderOrderId = renderObject.renderOrderId;
@@ -864,11 +835,6 @@ class RendererBase extends EventDispatcher implements IRenderer
 		//handle any overflow for renderables with data that exceeds GPU limitations
 		if (renderable.overflow)
 			this.applyRenderable(renderable.overflow);
-	}
-
-	public _pGetRenderObject(renderable:RenderableBase, renderObjectOwner:IRenderObjectOwner):RenderObjectBase
-	{
-		throw new AbstractMethodError();
 	}
 }
 

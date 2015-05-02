@@ -1,5 +1,6 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
+import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import CurveSubMesh				    = require("awayjs-display/lib/base/CurveSubMesh");
@@ -17,7 +18,7 @@ import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/Shader
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
 import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
 /**
@@ -25,10 +26,7 @@ import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase"
  */
 class CurveSubMeshRenderable extends RenderableBase
 {
-	/**
-	 *
-	 */
-	public static id:string = "curvesubmesh";
+	public static assetClass:IAssetClass = CurveSubMesh;
 
 	public static vertexAttributesOffset:number = 2;
 
@@ -46,7 +44,7 @@ class CurveSubMeshRenderable extends RenderableBase
 	 * @param level
 	 * @param indexOffset
 	 */
-	constructor(pool:RenderablePoolBase, subMesh:CurveSubMesh, stage:Stage, level:number = 0, indexOffset:number = 0)
+	constructor(pool:RenderablePool, subMesh:CurveSubMesh, stage:Stage, level:number = 0, indexOffset:number = 0)
 	{
 		super(pool, subMesh.parentMesh, subMesh, subMesh.material, stage, level, indexOffset);
 

@@ -1,6 +1,7 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
+import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import SubGeometryBase				= require("awayjs-core/lib/data/SubGeometryBase");
 import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
@@ -17,7 +18,7 @@ import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/Shader
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
 import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
 /**
@@ -25,12 +26,9 @@ import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase"
  */
 class BillboardRenderable extends RenderableBase
 {
-	private static _materialGeometry:Object = new Object();
+	public static assetClass:IAssetClass = Billboard;
 
-	/**
-	 *
-	 */
-	public static id:string = "billboard";
+	private static _materialGeometry:Object = new Object();
 
 	public static vertexAttributesOffset:number = 1;
 
@@ -45,7 +43,7 @@ class BillboardRenderable extends RenderableBase
 	 * @param pool
 	 * @param billboard
 	 */
-	constructor(pool:RenderablePoolBase, billboard:Billboard, stage:Stage)
+	constructor(pool:RenderablePool, billboard:Billboard, stage:Stage)
 	{
 		super(pool, billboard, billboard, billboard.material, stage);
 
@@ -115,6 +113,11 @@ class BillboardRenderable extends RenderableBase
 		}
 
 		return code;
+	}
+
+	public static _iGetFragmentCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	{
+		return "";
 	}
 
 	public _iActivate(pass:RenderPassBase, camera:Camera)

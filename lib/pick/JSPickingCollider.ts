@@ -5,10 +5,10 @@ import PickingCollisionVO				= require("awayjs-display/lib/pick/PickingCollision
 import IPickingCollider					= require("awayjs-display/lib/pick/IPickingCollider");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
-
 import PickingColliderBase				= require("awayjs-renderergl/lib/pick/PickingColliderBase");
 import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
+import RenderablePool					= require("awayjs-renderergl/lib/pool/RenderablePool");
+
 
 /**
  * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
@@ -27,9 +27,9 @@ class JSPickingCollider extends PickingColliderBase implements IPickingCollider
 	 *
 	 * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
 	 */
-	constructor(stage:Stage, findClosestCollision:boolean = false)
+	constructor(renderablePool:RenderablePool, findClosestCollision:boolean = false)
 	{
-		super(stage);
+		super(renderablePool);
 
 		this._findClosestCollision = findClosestCollision;
 	}

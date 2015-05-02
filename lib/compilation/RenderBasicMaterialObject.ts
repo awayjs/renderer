@@ -1,4 +1,5 @@
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
+
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
@@ -15,11 +16,6 @@ import BasicMaterialPass			= require("awayjs-renderergl/lib/passes/BasicMaterial
  */
 class RenderBasicMaterialObject extends RenderObjectBase
 {
-	/**
-	 *
-	 */
-	public static id:string = "basic";
-
 	private _material:BasicMaterial;
 	private _screenPass:BasicMaterialPass;
 

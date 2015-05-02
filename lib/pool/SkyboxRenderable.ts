@@ -1,5 +1,6 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
@@ -18,7 +19,7 @@ import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/Shader
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
 import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
 
 /**
@@ -26,12 +27,7 @@ import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase"
  */
 class SkyboxRenderable extends RenderableBase
 {
-	private _vertexArray:Array<number>;
-
-	/**
-	 *
-	 */
-	public static id:string = "skybox";
+	public static assetClass:IAssetClass = Skybox;
 
 	public static vertexAttributesOffset:number = 1;
 
@@ -40,13 +36,15 @@ class SkyboxRenderable extends RenderableBase
 	 */
 	private static _geometry:TriangleSubGeometry;
 
+	private _vertexArray:Array<number>;
+
 	/**
 	 * //TODO
 	 *
 	 * @param pool
 	 * @param skybox
 	 */
-	constructor(pool:RenderablePoolBase, skybox:Skybox, stage:Stage)
+	constructor(pool:RenderablePool, skybox:Skybox, stage:Stage)
 	{
 		super(pool, skybox, skybox, skybox, stage);
 
@@ -89,6 +87,11 @@ class SkyboxRenderable extends RenderableBase
 		return "mul vt0, va0, vc5\n" +
 			"add vt0, vt0, vc4\n" +
 			"m44 op, vt0, vc0\n";
+	}
+
+	public static _iGetFragmentCode(shaderObject:ShaderObjectBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	{
+		return "";
 	}
 
 	/**

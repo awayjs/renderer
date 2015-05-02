@@ -27,9 +27,8 @@ import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
 import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
-import IRendererPoolClass			= require("awayjs-renderergl/lib/pool/IRendererPoolClass");
 import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RenderablePoolBase			= require("awayjs-renderergl/lib/pool/RenderablePoolBase");
+import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
 import SkyboxRenderable				= require("awayjs-renderergl/lib/pool/SkyboxRenderable");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
 import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
@@ -43,7 +42,6 @@ import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase"
 class DefaultRenderer extends RendererBase
 {
 	public _pRequireDepthRender:boolean;
-	private _skyboxRenderablePool:RenderablePoolBase;
 
 	private _pDistanceRenderer:DepthRenderer;
 	private _pDepthRenderer:DepthRenderer;
@@ -122,9 +120,19 @@ class DefaultRenderer extends RendererBase
 	 * @param antiAlias The amount of anti-aliasing to use.
 	 * @param renderMode The render mode to use.
 	 */
-	constructor(rendererPoolClass:IRendererPoolClass = null, stage:Stage = null)
+	constructor(stage:Stage = null)
 	{
-		super(rendererPoolClass, stage);
+		super(stage);
+
+		this._pRenderablePool = new RenderablePool(this._pStage);
+		
+		if (stage)
+			this._shareContext = true;
+
+		this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
+
+		this._pDepthRenderer = new DepthRenderer(this._pStage);
+		this._pDistanceRenderer = new DistanceRenderer(this._pStage);
 
 		if (this._width == 0)
 			this.width = window.innerWidth;
@@ -237,11 +245,6 @@ class DefaultRenderer extends RendererBase
 		super.pDraw(entityCollector);
 	}
 
-	public _pGetRenderObject(renderable:RenderableBase, renderObjectOwner:IRenderObjectOwner):RenderObjectBase
-	{
-		return <RenderObjectBase> renderObjectOwner.getRenderObject(renderable._pool);
-	}
-
 	/**
 	 * Draw the skybox if present.
 	 *
@@ -249,18 +252,19 @@ class DefaultRenderer extends RendererBase
 	 */
 	private drawSkybox(entityCollector:EntityCollector)
 	{
-		var skyBox:SkyboxRenderable = <SkyboxRenderable> this._skyboxRenderablePool.getItem(entityCollector.skyBox);
+		var renderable:RenderableBase = this._pRenderablePool.getItem(entityCollector.skyBox);
 
 		var camera:Camera = entityCollector.camera;
 
 		this.updateSkyboxProjection(camera);
 
-		var renderObject:RenderObjectBase = skyBox.renderObject = this._pGetRenderObject(skyBox, skyBox.renderObjectOwner);
+		var renderObject:RenderObjectBase = this._pRenderablePool.getRenderObjectPool(renderable.renderableOwner).getItem(renderable.renderObjectOwner);
+
 		var pass:RenderPassBase = renderObject.passes[0];
 
-		this.activatePass(skyBox, pass, camera);
-		skyBox._iRender(pass, camera, this._skyboxProjection);
-		this.deactivatePass(skyBox, pass);
+		this.activatePass(renderable, pass, camera);
+		renderable._iRender(pass, camera, this._skyboxProjection);
+		this.deactivatePass(renderable, pass);
 	}
 
 	private updateSkyboxProjection(camera:Camera)
@@ -298,9 +302,6 @@ class DefaultRenderer extends RendererBase
 	{
 		if (!this._shareContext)
 			this._pStage.dispose();
-
-		this._skyboxRenderablePool.dispose();
-		this._skyboxRenderablePool = null;
 
 		this._pRttBufferManager.dispose();
 		this._pRttBufferManager = null;
@@ -364,20 +365,6 @@ class DefaultRenderer extends RendererBase
 				this._pStage.configureBackBuffer(this._width, this._height, this._antiAlias, true);
 				this._pBackBufferInvalid = false;
 			}
-		}
-	}
-
-	public iSetStage(value:Stage)
-	{
-		super.iSetStage(value);
-
-		if (this._pStage) {
-			this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
-
-			this._pDepthRenderer = new DepthRenderer(this._pRendererPoolClass, this._pStage);
-			this._pDistanceRenderer = new DistanceRenderer(this._pRendererPoolClass, this._pStage);
-
-			this._skyboxRenderablePool = RenderablePoolBase.getPool(SkyboxRenderable, this._pStage);
 		}
 	}
 
