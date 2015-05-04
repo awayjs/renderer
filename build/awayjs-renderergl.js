@@ -14,7 +14,7 @@ var RendererBase = require("awayjs-renderergl/lib/RendererBase");
 var DepthRenderer = require("awayjs-renderergl/lib/DepthRenderer");
 var DistanceRenderer = require("awayjs-renderergl/lib/DistanceRenderer");
 var Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
-var RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
+var RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
 var RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -192,8 +192,8 @@ var DefaultRenderer = (function (_super) {
         var renderable = this._pRenderablePool.getItem(entityCollector.skyBox);
         var camera = entityCollector.camera;
         this.updateSkyboxProjection(camera);
-        var renderObject = this._pRenderablePool.getRenderObjectPool(renderable.renderableOwner).getItem(renderable.renderObjectOwner);
-        var pass = renderObject.passes[0];
+        var render = this._pRenderablePool.getRenderPool(renderable.renderableOwner).getItem(renderable.renderOwner);
+        var pass = render.passes[0];
         this.activatePass(renderable, pass, camera);
         renderable._iRender(pass, camera, this._skyboxProjection);
         this.deactivatePass(renderable, pass);
@@ -280,7 +280,7 @@ var DefaultRenderer = (function (_super) {
 })(RendererBase);
 module.exports = DefaultRenderer;
 
-},{"awayjs-core/lib/data/BitmapImage2D":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","awayjs-renderergl/lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","awayjs-renderergl/lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-renderergl/lib/pool/RenderablePool":"awayjs-renderergl/lib/pool/RenderablePool","awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapImage2D":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","awayjs-renderergl/lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","awayjs-renderergl/lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-renderergl/lib/renderables/RenderablePool":"awayjs-renderergl/lib/renderables/RenderablePool","awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -288,8 +288,8 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var RendererBase = require("awayjs-renderergl/lib/RendererBase");
-var DepthRenderObject = require("awayjs-renderergl/lib/compilation/DepthRenderObject");
-var RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
+var DepthRender = require("awayjs-renderergl/lib/render/DepthRender");
+var RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
  *
@@ -305,7 +305,7 @@ var DepthRenderer = (function (_super) {
     function DepthRenderer(stage) {
         if (stage === void 0) { stage = null; }
         _super.call(this, stage);
-        this._pRenderablePool = new RenderablePool(this._pStage, DepthRenderObject);
+        this._pRenderablePool = new RenderablePool(this._pStage, DepthRender);
         this._iBackgroundR = 1;
         this._iBackgroundG = 1;
         this._iBackgroundB = 1;
@@ -314,7 +314,7 @@ var DepthRenderer = (function (_super) {
 })(RendererBase);
 module.exports = DepthRenderer;
 
-},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/compilation/DepthRenderObject":"awayjs-renderergl/lib/compilation/DepthRenderObject","awayjs-renderergl/lib/pool/RenderablePool":"awayjs-renderergl/lib/pool/RenderablePool"}],"awayjs-renderergl/lib/DistanceRenderer":[function(require,module,exports){
+},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/render/DepthRender":"awayjs-renderergl/lib/render/DepthRender","awayjs-renderergl/lib/renderables/RenderablePool":"awayjs-renderergl/lib/renderables/RenderablePool"}],"awayjs-renderergl/lib/DistanceRenderer":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -322,8 +322,8 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var RendererBase = require("awayjs-renderergl/lib/RendererBase");
-var DistanceRenderObject = require("awayjs-renderergl/lib/compilation/DistanceRenderObject");
-var RenderablePool = require("awayjs-renderergl/lib/pool/RenderablePool");
+var DistanceRender = require("awayjs-renderergl/lib/render/DistanceRender");
+var RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
 /**
  * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
  *
@@ -339,7 +339,7 @@ var DistanceRenderer = (function (_super) {
     function DistanceRenderer(stage) {
         if (stage === void 0) { stage = null; }
         _super.call(this, stage);
-        this._pRenderablePool = new RenderablePool(this._pStage, DistanceRenderObject);
+        this._pRenderablePool = new RenderablePool(this._pStage, DistanceRender);
         this._iBackgroundR = 1;
         this._iBackgroundG = 1;
         this._iBackgroundB = 1;
@@ -348,7 +348,7 @@ var DistanceRenderer = (function (_super) {
 })(RendererBase);
 module.exports = DistanceRenderer;
 
-},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/compilation/DistanceRenderObject":"awayjs-renderergl/lib/compilation/DistanceRenderObject","awayjs-renderergl/lib/pool/RenderablePool":"awayjs-renderergl/lib/pool/RenderablePool"}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
+},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/render/DistanceRender":"awayjs-renderergl/lib/render/DistanceRender","awayjs-renderergl/lib/renderables/RenderablePool":"awayjs-renderergl/lib/renderables/RenderablePool"}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
 var Event = require("awayjs-core/lib/events/Event");
 var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
@@ -934,13 +934,13 @@ var RendererBase = (function (_super) {
     //private drawCascadeRenderables(renderable:RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
     //{
     //	var renderable2:RenderableBase;
-    //	var renderObject:RenderObjectBase;
-    //	var pass:RenderPassBase;
+    //	var render:RenderBase;
+    //	var pass:IPass;
     //
     //	while (renderable) {
     //		renderable2 = renderable;
-    //		renderObject = renderable.renderObject;
-    //		pass = renderObject.passes[0] //assuming only one pass per material
+    //		render = renderable.render;
+    //		pass = render.passes[0] //assuming only one pass per material
     //
     //		this.activatePass(renderable, pass, camera);
     //
@@ -955,7 +955,7 @@ var RendererBase = (function (_super) {
     //
     //			renderable2 = renderable2.next;
     //
-    //		} while (renderable2 && renderable2.renderObject == renderObject && !renderable2.cascaded);
+    //		} while (renderable2 && renderable2.render == render && !renderable2.cascaded);
     //
     //		this.deactivatePass(renderable, pass);
     //
@@ -972,19 +972,19 @@ var RendererBase = (function (_super) {
         var i;
         var len;
         var renderable2;
-        var renderObject;
+        var render;
         var passes;
         var pass;
         var camera = entityCollector.camera;
         while (renderable) {
-            renderObject = renderable.renderObject;
-            passes = renderObject.passes;
+            render = renderable.render;
+            passes = render.passes;
             // otherwise this would result in depth rendered anyway because fragment shader kil is ignored
-            if (this._disableColor && renderObject._renderObjectOwner.alphaThreshold != 0) {
+            if (this._disableColor && render._renderOwner.alphaThreshold != 0) {
                 renderable2 = renderable;
                 do {
                     renderable2 = renderable2.next;
-                } while (renderable2 && renderable2.renderObject == renderObject);
+                } while (renderable2 && renderable2.render == render);
             }
             else {
                 //iterate through each shader object
@@ -996,7 +996,7 @@ var RendererBase = (function (_super) {
                     do {
                         renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
                         renderable2 = renderable2.next;
-                    } while (renderable2 && renderable2.renderObject == renderObject);
+                    } while (renderable2 && renderable2.render == render);
                     this.deactivatePass(renderable, pass);
                 }
             }
@@ -1117,10 +1117,10 @@ var RendererBase = (function (_super) {
      */
     RendererBase.prototype.applyRenderable = function (renderable) {
         //set local vars for faster referencing
-        var renderObject = this._pRenderablePool.getRenderObjectPool(renderable.renderableOwner).getItem(renderable.renderObjectOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
-        renderable.renderObject = renderObject;
-        renderable.renderObjectId = renderObject.renderObjectId;
-        renderable.renderOrderId = renderObject.renderOrderId;
+        var render = this._pRenderablePool.getRenderPool(renderable.renderableOwner).getItem(renderable.renderOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
+        renderable.render = render;
+        renderable.renderId = render.renderId;
+        renderable.renderOrderId = render.renderOrderId;
         renderable.cascaded = false;
         var entity = renderable.sourceEntity;
         var position = entity.scenePosition;
@@ -1129,7 +1129,7 @@ var RendererBase = (function (_super) {
         renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
         //store reference to scene transform
         renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
-        if (renderObject.requiresBlending) {
+        if (render.requiresBlending) {
             renderable.next = this._pBlendedRenderableHead;
             this._pBlendedRenderableHead = renderable;
         }
@@ -1216,37 +1216,37 @@ var AnimationSetBase = (function (_super) {
     /**
      * @inheritDoc
      */
-    AnimationSetBase.prototype.getAGALVertexCode = function (shaderObject) {
+    AnimationSetBase.prototype.getAGALVertexCode = function (shader) {
         throw new AbstractMethodError();
     };
     /**
      * @inheritDoc
      */
-    AnimationSetBase.prototype.activate = function (shaderObject, stage) {
+    AnimationSetBase.prototype.activate = function (shader, stage) {
         throw new AbstractMethodError();
     };
     /**
      * @inheritDoc
      */
-    AnimationSetBase.prototype.deactivate = function (shaderObject, stage) {
+    AnimationSetBase.prototype.deactivate = function (shader, stage) {
         throw new AbstractMethodError();
     };
     /**
      * @inheritDoc
      */
-    AnimationSetBase.prototype.getAGALFragmentCode = function (shaderObject, shadedTarget) {
+    AnimationSetBase.prototype.getAGALFragmentCode = function (shader, shadedTarget) {
         throw new AbstractMethodError();
     };
     /**
      * @inheritDoc
      */
-    AnimationSetBase.prototype.getAGALUVCode = function (shaderObject) {
+    AnimationSetBase.prototype.getAGALUVCode = function (shader) {
         throw new AbstractMethodError();
     };
     /**
      * @inheritDoc
      */
-    AnimationSetBase.prototype.doneAGALCode = function (shaderObject) {
+    AnimationSetBase.prototype.doneAGALCode = function (shader) {
         throw new AbstractMethodError();
     };
     Object.defineProperty(AnimationSetBase.prototype, "assetType", {
@@ -1500,7 +1500,7 @@ var AnimatorBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    AnimatorBase.prototype.setRenderState = function (shaderObject, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
+    AnimatorBase.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
         throw new AbstractMethodError();
     };
     /**
@@ -1622,7 +1622,7 @@ var AnimatorBase = (function (_super) {
     /**
      * @inheritDoc
      */
-    AnimatorBase.prototype.testGPUCompatibility = function (shaderObject) {
+    AnimatorBase.prototype.testGPUCompatibility = function (shader) {
         throw new AbstractMethodError();
     };
     Object.defineProperty(AnimatorBase.prototype, "assetType", {
@@ -1719,13 +1719,13 @@ var ParticleAnimationSet = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleAnimationSet.prototype.activate = function (shaderObject, stage) {
+    ParticleAnimationSet.prototype.activate = function (shader, stage) {
         //			this._iAnimationRegisterCache = pass.animationRegisterCache;
     };
     /**
      * @inheritDoc
      */
-    ParticleAnimationSet.prototype.deactivate = function (shaderObject, stage) {
+    ParticleAnimationSet.prototype.deactivate = function (shader, stage) {
         //			var context:IContextGL = <IContextGL> stage.context;
         //			var offset:number /*int*/ = this._iAnimationRegisterCache.vertexAttributesOffset;
         //			var used:number /*int*/ = this._iAnimationRegisterCache.numUsedStreams;
@@ -1735,23 +1735,23 @@ var ParticleAnimationSet = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleAnimationSet.prototype.getAGALVertexCode = function (shaderObject) {
+    ParticleAnimationSet.prototype.getAGALVertexCode = function (shader) {
         //grab animationRegisterCache from the materialpassbase or create a new one if the first time
-        this._iAnimationRegisterCache = shaderObject.animationRegisterCache;
+        this._iAnimationRegisterCache = shader.animationRegisterCache;
         if (this._iAnimationRegisterCache == null)
-            this._iAnimationRegisterCache = shaderObject.animationRegisterCache = new AnimationRegisterCache(shaderObject.profile);
+            this._iAnimationRegisterCache = shader.animationRegisterCache = new AnimationRegisterCache(shader.profile);
         //reset animationRegisterCache
-        this._iAnimationRegisterCache.vertexConstantOffset = shaderObject.numUsedVertexConstants;
-        this._iAnimationRegisterCache.vertexAttributesOffset = shaderObject.numUsedStreams;
-        this._iAnimationRegisterCache.varyingsOffset = shaderObject.numUsedVaryings;
-        this._iAnimationRegisterCache.fragmentConstantOffset = shaderObject.numUsedFragmentConstants;
+        this._iAnimationRegisterCache.vertexConstantOffset = shader.numUsedVertexConstants;
+        this._iAnimationRegisterCache.vertexAttributesOffset = shader.numUsedStreams;
+        this._iAnimationRegisterCache.varyingsOffset = shader.numUsedVaryings;
+        this._iAnimationRegisterCache.fragmentConstantOffset = shader.numUsedFragmentConstants;
         this._iAnimationRegisterCache.hasUVNode = this.hasUVNode;
         this._iAnimationRegisterCache.needVelocity = this.needVelocity;
         this._iAnimationRegisterCache.hasBillboard = this.hasBillboard;
-        this._iAnimationRegisterCache.sourceRegisters = shaderObject.animatableAttributes;
-        this._iAnimationRegisterCache.targetRegisters = shaderObject.animationTargetRegisters;
-        this._iAnimationRegisterCache.needFragmentAnimation = shaderObject.usesFragmentAnimation;
-        this._iAnimationRegisterCache.needUVAnimation = !shaderObject.usesUVTransform;
+        this._iAnimationRegisterCache.sourceRegisters = shader.animatableAttributes;
+        this._iAnimationRegisterCache.targetRegisters = shader.animationTargetRegisters;
+        this._iAnimationRegisterCache.needFragmentAnimation = shader.usesFragmentAnimation;
+        this._iAnimationRegisterCache.needUVAnimation = !shader.usesUVTransform;
         this._iAnimationRegisterCache.hasColorAddNode = this.hasColorAddNode;
         this._iAnimationRegisterCache.hasColorMulNode = this.hasColorMulNode;
         this._iAnimationRegisterCache.reset();
@@ -1762,19 +1762,19 @@ var ParticleAnimationSet = (function (_super) {
         for (i = 0; i < this._particleNodes.length; i++) {
             node = this._particleNodes[i];
             if (node.priority < ParticleAnimationSet.POST_PRIORITY)
-                code += node.getAGALVertexCode(shaderObject, this._iAnimationRegisterCache);
+                code += node.getAGALVertexCode(shader, this._iAnimationRegisterCache);
         }
         code += this._iAnimationRegisterCache.getCombinationCode();
         for (i = 0; i < this._particleNodes.length; i++) {
             node = this._particleNodes[i];
             if (node.priority >= ParticleAnimationSet.POST_PRIORITY && node.priority < ParticleAnimationSet.COLOR_PRIORITY)
-                code += node.getAGALVertexCode(shaderObject, this._iAnimationRegisterCache);
+                code += node.getAGALVertexCode(shader, this._iAnimationRegisterCache);
         }
         code += this._iAnimationRegisterCache.initColorRegisters();
         for (i = 0; i < this._particleNodes.length; i++) {
             node = this._particleNodes[i];
             if (node.priority >= ParticleAnimationSet.COLOR_PRIORITY)
-                code += node.getAGALVertexCode(shaderObject, this._iAnimationRegisterCache);
+                code += node.getAGALVertexCode(shader, this._iAnimationRegisterCache);
         }
         code += this._iAnimationRegisterCache.getColorPassCode();
         return code;
@@ -1782,31 +1782,31 @@ var ParticleAnimationSet = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleAnimationSet.prototype.getAGALUVCode = function (shaderObject) {
+    ParticleAnimationSet.prototype.getAGALUVCode = function (shader) {
         var code = "";
         if (this.hasUVNode) {
-            this._iAnimationRegisterCache.setUVSourceAndTarget(shaderObject.uvSource, shaderObject.uvTarget);
+            this._iAnimationRegisterCache.setUVSourceAndTarget(shader.uvSource, shader.uvTarget);
             code += "mov " + this._iAnimationRegisterCache.uvTarget + ".xy," + this._iAnimationRegisterCache.uvAttribute.toString() + "\n";
             var node;
             for (var i = 0; i < this._particleNodes.length; i++)
                 node = this._particleNodes[i];
-            code += node.getAGALUVCode(shaderObject, this._iAnimationRegisterCache);
+            code += node.getAGALUVCode(shader, this._iAnimationRegisterCache);
             code += "mov " + this._iAnimationRegisterCache.uvVar.toString() + "," + this._iAnimationRegisterCache.uvTarget + ".xy\n";
         }
         else
-            code += "mov " + shaderObject.uvTarget + "," + shaderObject.uvSource + "\n";
+            code += "mov " + shader.uvTarget + "," + shader.uvSource + "\n";
         return code;
     };
     /**
      * @inheritDoc
      */
-    ParticleAnimationSet.prototype.getAGALFragmentCode = function (shaderObject, shadedTarget) {
+    ParticleAnimationSet.prototype.getAGALFragmentCode = function (shader, shadedTarget) {
         return this._iAnimationRegisterCache.getColorCombinationCode(shadedTarget);
     };
     /**
      * @inheritDoc
      */
-    ParticleAnimationSet.prototype.doneAGALCode = function (shaderObject) {
+    ParticleAnimationSet.prototype.doneAGALCode = function (shader) {
         this._iAnimationRegisterCache.setDataLength();
         //set vertexZeroConst,vertexOneConst,vertexTwoConst
         this._iAnimationRegisterCache.setVertexConst(this._iAnimationRegisterCache.vertexZeroConst.index, 0, 1, 2, 0);
@@ -1934,11 +1934,11 @@ var ParticleAnimationSet = (function (_super) {
         }
     };
     /**
-     * Property used by particle nodes that require compilation at the end of the shader
+     * Property used by particle nodes that require compilers at the end of the shader
      */
     ParticleAnimationSet.POST_PRIORITY = 9;
     /**
-     * Property used by particle nodes that require color compilation
+     * Property used by particle nodes that require color compilers
      */
     ParticleAnimationSet.COLOR_PRIORITY = 18;
     return ParticleAnimationSet;
@@ -2006,7 +2006,7 @@ var ParticleAnimator = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleAnimator.prototype.setRenderState = function (shaderObject, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
+    ParticleAnimator.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
         var animationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
         var subMesh = renderable.subMesh;
         var state;
@@ -2028,7 +2028,7 @@ var ParticleAnimator = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleAnimator.prototype.testGPUCompatibility = function (shaderObject) {
+    ParticleAnimator.prototype.testGPUCompatibility = function (shader) {
     };
     /**
      * @inheritDoc
@@ -2112,21 +2112,21 @@ var SkeletonAnimationSet = (function (_super) {
     /**
      * @inheritDoc
      */
-    SkeletonAnimationSet.prototype.getAGALVertexCode = function (shaderObject) {
-        var len = shaderObject.animatableAttributes.length;
-        var indexOffset0 = shaderObject.numUsedVertexConstants;
+    SkeletonAnimationSet.prototype.getAGALVertexCode = function (shader) {
+        var len = shader.animatableAttributes.length;
+        var indexOffset0 = shader.numUsedVertexConstants;
         var indexOffset1 = indexOffset0 + 1;
         var indexOffset2 = indexOffset0 + 2;
-        var indexStream = "va" + shaderObject.numUsedStreams;
-        var weightStream = "va" + (shaderObject.numUsedStreams + 1);
+        var indexStream = "va" + shader.numUsedStreams;
+        var weightStream = "va" + (shader.numUsedStreams + 1);
         var indices = [indexStream + ".x", indexStream + ".y", indexStream + ".z", indexStream + ".w"];
         var weights = [weightStream + ".x", weightStream + ".y", weightStream + ".z", weightStream + ".w"];
-        var temp1 = this._pFindTempReg(shaderObject.animationTargetRegisters);
-        var temp2 = this._pFindTempReg(shaderObject.animationTargetRegisters, temp1);
+        var temp1 = this._pFindTempReg(shader.animationTargetRegisters);
+        var temp2 = this._pFindTempReg(shader.animationTargetRegisters, temp1);
         var dot = "dp4";
         var code = "";
         for (var i = 0; i < len; ++i) {
-            var src = shaderObject.animatableAttributes[i];
+            var src = shader.animatableAttributes[i];
             for (var j = 0; j < this._jointsPerVertex; ++j) {
                 code += dot + " " + temp1 + ".x, " + src + ", vc[" + indices[j] + "+" + indexOffset0 + "]\n" + dot + " " + temp1 + ".y, " + src + ", vc[" + indices[j] + "+" + indexOffset1 + "]\n" + dot + " " + temp1 + ".z, " + src + ", vc[" + indices[j] + "+" + indexOffset2 + "]\n" + "mov " + temp1 + ".w, " + src + ".w\n" + "mul " + temp1 + ", " + temp1 + ", " + weights[j] + "\n"; // apply weight
                 // add or mov to target. Need to write to a temp reg first, because an output can be a target
@@ -2137,19 +2137,19 @@ var SkeletonAnimationSet = (function (_super) {
             }
             // switch to dp3 once positions have been transformed, from now on, it should only be vectors instead of points
             dot = "dp3";
-            code += "mov " + shaderObject.animationTargetRegisters[i] + ", " + temp2 + "\n";
+            code += "mov " + shader.animationTargetRegisters[i] + ", " + temp2 + "\n";
         }
         return code;
     };
     /**
      * @inheritDoc
      */
-    SkeletonAnimationSet.prototype.activate = function (shaderObject, stage) {
+    SkeletonAnimationSet.prototype.activate = function (shader, stage) {
     };
     /**
      * @inheritDoc
      */
-    SkeletonAnimationSet.prototype.deactivate = function (shaderObject, stage) {
+    SkeletonAnimationSet.prototype.deactivate = function (shader, stage) {
         //			var streamOffset:number /*uint*/ = pass.numUsedStreams;
         //			var context:IContextGL = <IContextGL> stage.context;
         //			context.setVertexBufferAt(streamOffset, null);
@@ -2158,19 +2158,19 @@ var SkeletonAnimationSet = (function (_super) {
     /**
      * @inheritDoc
      */
-    SkeletonAnimationSet.prototype.getAGALFragmentCode = function (shaderObject, shadedTarget) {
+    SkeletonAnimationSet.prototype.getAGALFragmentCode = function (shader, shadedTarget) {
         return "";
     };
     /**
      * @inheritDoc
      */
-    SkeletonAnimationSet.prototype.getAGALUVCode = function (shaderObject) {
-        return "mov " + shaderObject.uvTarget + "," + shaderObject.uvSource + "\n";
+    SkeletonAnimationSet.prototype.getAGALUVCode = function (shader) {
+        return "mov " + shader.uvTarget + "," + shader.uvSource + "\n";
     };
     /**
      * @inheritDoc
      */
-    SkeletonAnimationSet.prototype.doneAGALCode = function (shaderObject) {
+    SkeletonAnimationSet.prototype.doneAGALCode = function (shader) {
     };
     return SkeletonAnimationSet;
 })(AnimationSetBase);
@@ -2345,7 +2345,7 @@ var SkeletonAnimator = (function (_super) {
     /**
      * @inheritDoc
      */
-    SkeletonAnimator.prototype.setRenderState = function (shaderObject, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
+    SkeletonAnimator.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
         // do on request of globalProperties
         if (this._globalPropertiesDirty)
             this.updateGlobalProperties();
@@ -2370,8 +2370,8 @@ var SkeletonAnimator = (function (_super) {
     /**
      * @inheritDoc
      */
-    SkeletonAnimator.prototype.testGPUCompatibility = function (shaderObject) {
-        if (!this._useCondensedIndices && (this._forceCPU || this._jointsPerVertex > 4 || shaderObject.numUsedVertexConstants + this._numJoints * 3 > 128))
+    SkeletonAnimator.prototype.testGPUCompatibility = function (shader) {
+        if (!this._useCondensedIndices && (this._forceCPU || this._jointsPerVertex > 4 || shader.numUsedVertexConstants + this._numJoints * 3 > 128))
             this._pAnimationSet.cancelGPUCompatibility();
     };
     /**
@@ -2770,16 +2770,16 @@ var VertexAnimationSet = (function (_super) {
     /**
      * @inheritDoc
      */
-    VertexAnimationSet.prototype.getAGALVertexCode = function (shaderObject) {
+    VertexAnimationSet.prototype.getAGALVertexCode = function (shader) {
         if (this._blendMode == VertexAnimationMode.ABSOLUTE)
-            return this.getAbsoluteAGALCode(shaderObject);
+            return this.getAbsoluteAGALCode(shader);
         else
-            return this.getAdditiveAGALCode(shaderObject);
+            return this.getAdditiveAGALCode(shader);
     };
     /**
      * @inheritDoc
      */
-    VertexAnimationSet.prototype.activate = function (shaderObject, stage) {
+    VertexAnimationSet.prototype.activate = function (shader, stage) {
         //			var uID:number = pass._iUniqueId;
         //			this._uploadNormals = <boolean> this._useNormals[uID];
         //			this._uploadTangents = <boolean> this._useTangents[uID];
@@ -2787,7 +2787,7 @@ var VertexAnimationSet = (function (_super) {
     /**
      * @inheritDoc
      */
-    VertexAnimationSet.prototype.deactivate = function (shaderObject, stage) {
+    VertexAnimationSet.prototype.deactivate = function (shader, stage) {
         //			var uID:number = pass._iUniqueId;
         //			var index:number /*uint*/ = this._streamIndices[uID];
         //			var context:IContextGL = <IContextGL> stage.context;
@@ -2800,72 +2800,72 @@ var VertexAnimationSet = (function (_super) {
     /**
      * @inheritDoc
      */
-    VertexAnimationSet.prototype.getAGALFragmentCode = function (shaderObject, shadedTarget) {
+    VertexAnimationSet.prototype.getAGALFragmentCode = function (shader, shadedTarget) {
         return "";
     };
     /**
      * @inheritDoc
      */
-    VertexAnimationSet.prototype.getAGALUVCode = function (shaderObject) {
-        return "mov " + shaderObject.uvTarget + "," + shaderObject.uvSource + "\n";
+    VertexAnimationSet.prototype.getAGALUVCode = function (shader) {
+        return "mov " + shader.uvTarget + "," + shader.uvSource + "\n";
     };
     /**
      * @inheritDoc
      */
-    VertexAnimationSet.prototype.doneAGALCode = function (shaderObject) {
+    VertexAnimationSet.prototype.doneAGALCode = function (shader) {
     };
     /**
      * Generates the vertex AGAL code for absolute blending.
      */
-    VertexAnimationSet.prototype.getAbsoluteAGALCode = function (shaderObject) {
+    VertexAnimationSet.prototype.getAbsoluteAGALCode = function (shader) {
         var code = "";
-        var temp1 = this._pFindTempReg(shaderObject.animationTargetRegisters);
-        var temp2 = this._pFindTempReg(shaderObject.animationTargetRegisters, temp1);
+        var temp1 = this._pFindTempReg(shader.animationTargetRegisters);
+        var temp2 = this._pFindTempReg(shader.animationTargetRegisters, temp1);
         var regs = new Array("x", "y", "z", "w");
-        var len = shaderObject.animatableAttributes.length;
-        var constantReg = "vc" + shaderObject.numUsedVertexConstants;
+        var len = shader.animatableAttributes.length;
+        var constantReg = "vc" + shader.numUsedVertexConstants;
         if (len > 2)
             len = 2;
-        var streamIndex = shaderObject.numUsedStreams;
+        var streamIndex = shader.numUsedStreams;
         for (var i = 0; i < len; ++i) {
-            code += "mul " + temp1 + ", " + shaderObject.animatableAttributes[i] + ", " + constantReg + "." + regs[0] + "\n";
+            code += "mul " + temp1 + ", " + shader.animatableAttributes[i] + ", " + constantReg + "." + regs[0] + "\n";
             for (var j = 1; j < this._numPoses; ++j) {
                 code += "mul " + temp2 + ", va" + streamIndex + ", " + constantReg + "." + regs[j] + "\n";
                 if (j < this._numPoses - 1)
                     code += "add " + temp1 + ", " + temp1 + ", " + temp2 + "\n";
                 ++streamIndex;
             }
-            code += "add " + shaderObject.animationTargetRegisters[i] + ", " + temp1 + ", " + temp2 + "\n";
+            code += "add " + shader.animationTargetRegisters[i] + ", " + temp1 + ", " + temp2 + "\n";
         }
         // add code for bitangents if tangents are used
-        if (shaderObject.tangentDependencies > 0 || shaderObject.outputsNormals) {
-            code += "dp3 " + temp1 + ".x, " + shaderObject.animatableAttributes[2] + ", " + shaderObject.animationTargetRegisters[1] + "\n" + "mul " + temp1 + ", " + shaderObject.animationTargetRegisters[1] + ", " + temp1 + ".x\n" + "sub " + shaderObject.animationTargetRegisters[2] + ", " + shaderObject.animationTargetRegisters[2] + ", " + temp1 + "\n";
+        if (shader.tangentDependencies > 0 || shader.outputsNormals) {
+            code += "dp3 " + temp1 + ".x, " + shader.animatableAttributes[2] + ", " + shader.animationTargetRegisters[1] + "\n" + "mul " + temp1 + ", " + shader.animationTargetRegisters[1] + ", " + temp1 + ".x\n" + "sub " + shader.animationTargetRegisters[2] + ", " + shader.animationTargetRegisters[2] + ", " + temp1 + "\n";
         }
         return code;
     };
     /**
      * Generates the vertex AGAL code for additive blending.
      */
-    VertexAnimationSet.prototype.getAdditiveAGALCode = function (shaderObject) {
+    VertexAnimationSet.prototype.getAdditiveAGALCode = function (shader) {
         var code = "";
-        var len = shaderObject.animatableAttributes.length;
+        var len = shader.animatableAttributes.length;
         var regs = ["x", "y", "z", "w"];
-        var temp1 = this._pFindTempReg(shaderObject.animationTargetRegisters);
+        var temp1 = this._pFindTempReg(shader.animationTargetRegisters);
         var k /*uint*/;
-        var streamIndex = shaderObject.numUsedStreams;
+        var streamIndex = shader.numUsedStreams;
         if (len > 2)
             len = 2;
-        code += "mov  " + shaderObject.animationTargetRegisters[0] + ", " + shaderObject.animatableAttributes[0] + "\n";
-        if (shaderObject.normalDependencies > 0)
-            code += "mov " + shaderObject.animationTargetRegisters[1] + ", " + shaderObject.animatableAttributes[1] + "\n";
+        code += "mov  " + shader.animationTargetRegisters[0] + ", " + shader.animatableAttributes[0] + "\n";
+        if (shader.normalDependencies > 0)
+            code += "mov " + shader.animationTargetRegisters[1] + ", " + shader.animatableAttributes[1] + "\n";
         for (var i = 0; i < len; ++i) {
             for (var j = 0; j < this._numPoses; ++j) {
-                code += "mul " + temp1 + ", va" + (streamIndex + k) + ", vc" + shaderObject.numUsedVertexConstants + "." + regs[j] + "\n" + "add " + shaderObject.animationTargetRegisters[i] + ", " + shaderObject.animationTargetRegisters[i] + ", " + temp1 + "\n";
+                code += "mul " + temp1 + ", va" + (streamIndex + k) + ", vc" + shader.numUsedVertexConstants + "." + regs[j] + "\n" + "add " + shader.animationTargetRegisters[i] + ", " + shader.animationTargetRegisters[i] + ", " + temp1 + "\n";
                 k++;
             }
         }
-        if (shaderObject.tangentDependencies > 0 || shaderObject.outputsNormals) {
-            code += "dp3 " + temp1 + ".x, " + shaderObject.animatableAttributes[2] + ", " + shaderObject.animationTargetRegisters[1] + "\n" + "mul " + temp1 + ", " + shaderObject.animationTargetRegisters[1] + ", " + temp1 + ".x\n" + "sub " + shaderObject.animationTargetRegisters[2] + ", " + shaderObject.animatableAttributes[2] + ", " + temp1 + "\n";
+        if (shader.tangentDependencies > 0 || shader.outputsNormals) {
+            code += "dp3 " + temp1 + ".x, " + shader.animatableAttributes[2] + ", " + shader.animationTargetRegisters[1] + "\n" + "mul " + temp1 + ", " + shader.animationTargetRegisters[1] + ", " + temp1 + ".x\n" + "sub " + shader.animationTargetRegisters[2] + ", " + shader.animatableAttributes[2] + ", " + temp1 + "\n";
         }
         return code;
     };
@@ -2965,11 +2965,11 @@ var VertexAnimator = (function (_super) {
     /**
      * @inheritDoc
      */
-    VertexAnimator.prototype.setRenderState = function (shaderObject, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
+    VertexAnimator.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
         // todo: add code for when running on cpu
         // if no poses defined, set temp data
         if (!this._poses.length) {
-            this.setNullPose(shaderObject, renderable, stage, vertexConstantOffset, vertexStreamOffset);
+            this.setNullPose(shader, renderable, stage, vertexConstantOffset, vertexStreamOffset);
             return;
         }
         // this type of animation can only be SubMesh
@@ -2985,17 +2985,17 @@ var VertexAnimator = (function (_super) {
         for (; i < len; ++i) {
             subGeom = this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
             stage.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.POSITION_DATA), subGeom.getOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-            if (shaderObject.normalDependencies > 0)
+            if (shader.normalDependencies > 0)
                 stage.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.NORMAL_DATA), subGeom.getOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
         }
     };
-    VertexAnimator.prototype.setNullPose = function (shaderObject, renderable, stage, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
+    VertexAnimator.prototype.setNullPose = function (shader, renderable, stage, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
         stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
         if (this._blendMode == VertexAnimationMode.ABSOLUTE) {
             var len = this._numPoses;
             for (var i = 1; i < len; ++i) {
                 stage.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-                if (shaderObject.normalDependencies > 0)
+                if (shader.normalDependencies > 0)
                     stage.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
             }
         }
@@ -3005,7 +3005,7 @@ var VertexAnimator = (function (_super) {
      * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
      * Needs to be called if gpu code is potentially required.
      */
-    VertexAnimator.prototype.testGPUCompatibility = function (shaderObject) {
+    VertexAnimator.prototype.testGPUCompatibility = function (shader) {
     };
     VertexAnimator.prototype.getRenderableSubGeometry = function (renderable, sourceSubGeometry) {
         if (this._blendMode == VertexAnimationMode.ABSOLUTE && this._poses.length)
@@ -3024,8 +3024,8 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+var ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+var ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 /**
  * ...
  */
@@ -3213,7 +3213,7 @@ var AnimationRegisterCache = (function (_super) {
 })(ShaderRegisterCache);
 module.exports = AnimationRegisterCache;
 
-},{"awayjs-renderergl/lib/compilation/ShaderRegisterCache":"awayjs-renderergl/lib/compilation/ShaderRegisterCache","awayjs-renderergl/lib/compilation/ShaderRegisterElement":"awayjs-renderergl/lib/compilation/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/data/AnimationSubGeometry":[function(require,module,exports){
+},{"awayjs-renderergl/lib/shaders/ShaderRegisterCache":"awayjs-renderergl/lib/shaders/ShaderRegisterCache","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/data/AnimationSubGeometry":[function(require,module,exports){
 /**
  * ...
  */
@@ -3828,7 +3828,7 @@ var ParticleAccelerationNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleAccelerationNode.prototype.pGetAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleAccelerationNode.prototype.pGetAGALVertexCode = function (shader, animationRegisterCache) {
         var accelerationValue = (this._pMode == ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
         animationRegisterCache.setRegisterIndex(this, ParticleAccelerationState.ACCELERATION_INDEX, accelerationValue.index);
         var temp = animationRegisterCache.getFreeVertexVectorTemp();
@@ -3878,7 +3878,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+var ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 var ParticleBezierCurveState = require("awayjs-renderergl/lib/animators/states/ParticleBezierCurveState");
@@ -3905,7 +3905,7 @@ var ParticleBezierCurveNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleBezierCurveNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleBezierCurveNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var controlValue = (this._pMode == ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
         animationRegisterCache.setRegisterIndex(this, ParticleBezierCurveState.BEZIER_CONTROL_INDEX, controlValue.index);
         var endValue = (this._pMode == ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
@@ -3975,7 +3975,7 @@ var ParticleBezierCurveNode = (function (_super) {
 })(ParticleNodeBase);
 module.exports = ParticleBezierCurveNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleBezierCurveState":"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState","awayjs-renderergl/lib/compilation/ShaderRegisterElement":"awayjs-renderergl/lib/compilation/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleBezierCurveState":"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -4002,7 +4002,7 @@ var ParticleBillboardNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleBillboardNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleBillboardNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var rotationMatrixRegister = animationRegisterCache.getFreeVertexConstant();
         animationRegisterCache.setRegisterIndex(this, ParticleBillboardState.MATRIX_INDEX, rotationMatrixRegister.index);
         animationRegisterCache.getFreeVertexConstant();
@@ -4086,7 +4086,7 @@ var ParticleColorNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleColorNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleColorNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var code = "";
         if (animationRegisterCache.needFragmentAnimation) {
             var temp = animationRegisterCache.getFreeVertexVectorTemp();
@@ -4247,7 +4247,7 @@ var ParticleFollowNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleFollowNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleFollowNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         //TODO: use Quaternion to implement this function
         var code = "";
         if (this._iUsesRotation) {
@@ -4368,7 +4368,7 @@ var ParticleInitialColorNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleInitialColorNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleInitialColorNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var code = "";
         if (animationRegisterCache.needFragmentAnimation) {
             if (this._iUsesMultiplier) {
@@ -4511,19 +4511,19 @@ var ParticleNodeBase = (function (_super) {
     /**
      * Returns the AGAL code of the particle animation node for use in the vertex shader.
      */
-    ParticleNodeBase.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleNodeBase.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         return "";
     };
     /**
      * Returns the AGAL code of the particle animation node for use in the fragment shader.
      */
-    ParticleNodeBase.prototype.getAGALFragmentCode = function (shaderObject, animationRegisterCache) {
+    ParticleNodeBase.prototype.getAGALFragmentCode = function (shader, animationRegisterCache) {
         return "";
     };
     /**
      * Returns the AGAL code of the particle animation node for use in the fragment shader when UV coordinates are required.
      */
-    ParticleNodeBase.prototype.getAGALUVCode = function (shaderObject, animationRegisterCache) {
+    ParticleNodeBase.prototype.getAGALUVCode = function (shader, animationRegisterCache) {
         return "";
     };
     /**
@@ -4560,7 +4560,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+var ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 var ParticleOrbitState = require("awayjs-renderergl/lib/animators/states/ParticleOrbitState");
@@ -4605,7 +4605,7 @@ var ParticleOrbitNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleOrbitNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleOrbitNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var orbitRegister = (this._pMode == ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
         animationRegisterCache.setRegisterIndex(this, ParticleOrbitState.ORBIT_INDEX, orbitRegister.index);
         var eulersMatrixRegister = animationRegisterCache.getFreeVertexConstant();
@@ -4682,7 +4682,7 @@ var ParticleOrbitNode = (function (_super) {
 })(ParticleNodeBase);
 module.exports = ParticleOrbitNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleOrbitState":"awayjs-renderergl/lib/animators/states/ParticleOrbitState","awayjs-renderergl/lib/compilation/ShaderRegisterElement":"awayjs-renderergl/lib/compilation/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleOrbitState":"awayjs-renderergl/lib/animators/states/ParticleOrbitState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -4690,7 +4690,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+var ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 var ParticleOscillatorState = require("awayjs-renderergl/lib/animators/states/ParticleOscillatorState");
@@ -4714,7 +4714,7 @@ var ParticleOscillatorNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleOscillatorNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleOscillatorNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var oscillatorRegister = (this._pMode == ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
         animationRegisterCache.setRegisterIndex(this, ParticleOscillatorState.OSCILLATOR_INDEX, oscillatorRegister.index);
         var temp = animationRegisterCache.getFreeVertexVectorTemp();
@@ -4767,7 +4767,7 @@ var ParticleOscillatorNode = (function (_super) {
 })(ParticleNodeBase);
 module.exports = ParticleOscillatorNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleOscillatorState":"awayjs-renderergl/lib/animators/states/ParticleOscillatorState","awayjs-renderergl/lib/compilation/ShaderRegisterElement":"awayjs-renderergl/lib/compilation/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleOscillatorState":"awayjs-renderergl/lib/animators/states/ParticleOscillatorState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -4798,7 +4798,7 @@ var ParticlePositionNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticlePositionNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticlePositionNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var positionAttribute = (this._pMode == ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
         animationRegisterCache.setRegisterIndex(this, ParticlePositionState.POSITION_INDEX, positionAttribute.index);
         return "add " + animationRegisterCache.positionTarget + ".xyz," + positionAttribute + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
@@ -4836,7 +4836,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+var ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 var ParticleRotateToHeadingState = require("awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState");
@@ -4855,7 +4855,7 @@ var ParticleRotateToHeadingNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleRotateToHeadingNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleRotateToHeadingNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var code = "";
         var len = animationRegisterCache.rotationRegisters.length;
         var i /*int*/;
@@ -4992,7 +4992,7 @@ var ParticleRotateToHeadingNode = (function (_super) {
 })(ParticleNodeBase);
 module.exports = ParticleRotateToHeadingNode;
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState":"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState","awayjs-renderergl/lib/compilation/ShaderRegisterElement":"awayjs-renderergl/lib/compilation/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode":[function(require,module,exports){
+},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState":"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5000,7 +5000,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+var ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 var ParticleRotateToPositionState = require("awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState");
@@ -5021,7 +5021,7 @@ var ParticleRotateToPositionNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleRotateToPositionNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleRotateToPositionNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var positionAttribute = (this._pMode == ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
         animationRegisterCache.setRegisterIndex(this, ParticleRotateToPositionState.POSITION_INDEX, positionAttribute.index);
         var code = "";
@@ -5174,7 +5174,7 @@ var ParticleRotateToPositionNode = (function (_super) {
 })(ParticleNodeBase);
 module.exports = ParticleRotateToPositionNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState":"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState","awayjs-renderergl/lib/compilation/ShaderRegisterElement":"awayjs-renderergl/lib/compilation/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState":"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5182,7 +5182,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+var ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 var ParticleRotationalVelocityState = require("awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState");
@@ -5205,7 +5205,7 @@ var ParticleRotationalVelocityNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleRotationalVelocityNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleRotationalVelocityNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var rotationRegister = (this._pMode == ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
         animationRegisterCache.setRegisterIndex(this, ParticleRotationalVelocityState.ROTATIONALVELOCITY_INDEX, rotationRegister.index);
         var nrmVel = animationRegisterCache.getFreeVertexVectorTemp();
@@ -5301,7 +5301,7 @@ var ParticleRotationalVelocityNode = (function (_super) {
 })(ParticleNodeBase);
 module.exports = ParticleRotationalVelocityNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState":"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState","awayjs-renderergl/lib/compilation/ShaderRegisterElement":"awayjs-renderergl/lib/compilation/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState":"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5344,7 +5344,7 @@ var ParticleScaleNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleScaleNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleScaleNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var code = "";
         var temp = animationRegisterCache.getFreeVertexSingleTemp();
         var scaleRegister = (this._pMode == ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
@@ -5403,7 +5403,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+var ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 var ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
@@ -5438,7 +5438,7 @@ var ParticleSegmentedColorNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleSegmentedColorNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleSegmentedColorNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var code = "";
         if (animationRegisterCache.needFragmentAnimation) {
             var accMultiplierColor;
@@ -5547,14 +5547,14 @@ var ParticleSegmentedColorNode = (function (_super) {
 })(ParticleNodeBase);
 module.exports = ParticleSegmentedColorNode;
 
-},{"awayjs-renderergl/lib/animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState":"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState","awayjs-renderergl/lib/compilation/ShaderRegisterElement":"awayjs-renderergl/lib/compilation/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode":[function(require,module,exports){
+},{"awayjs-renderergl/lib/animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState":"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+var ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 var ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
@@ -5625,7 +5625,7 @@ var ParticleSpriteSheetNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleSpriteSheetNode.prototype.getAGALUVCode = function (shaderObject, animationRegisterCache) {
+    ParticleSpriteSheetNode.prototype.getAGALUVCode = function (shader, animationRegisterCache) {
         //get 2 vc
         var uvParamConst1 = animationRegisterCache.getFreeVertexConstant();
         var uvParamConst2 = (this._pMode == ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
@@ -5714,7 +5714,7 @@ var ParticleSpriteSheetNode = (function (_super) {
 })(ParticleNodeBase);
 module.exports = ParticleSpriteSheetNode;
 
-},{"awayjs-renderergl/lib/animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState":"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState","awayjs-renderergl/lib/compilation/ShaderRegisterElement":"awayjs-renderergl/lib/compilation/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode":[function(require,module,exports){
+},{"awayjs-renderergl/lib/animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState":"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5749,7 +5749,7 @@ var ParticleTimeNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleTimeNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleTimeNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var timeStreamRegister = animationRegisterCache.getFreeVertexAttribute(); //timeStreamRegister.x is start，timeStreamRegister.y is during time
         animationRegisterCache.setRegisterIndex(this, ParticleTimeState.TIME_STREAM_INDEX, timeStreamRegister.index);
         var timeConst = animationRegisterCache.getFreeVertexConstant();
@@ -5812,7 +5812,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+var ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 var ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 var ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
@@ -5886,7 +5886,7 @@ var ParticleUVNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleUVNode.prototype.getAGALUVCode = function (shaderObject, animationRegisterCache) {
+    ParticleUVNode.prototype.getAGALUVCode = function (shader, animationRegisterCache) {
         var code = "";
         var uvConst = animationRegisterCache.getFreeVertexConstant();
         animationRegisterCache.setRegisterIndex(this, ParticleUVState.UV_INDEX, uvConst.index);
@@ -5927,7 +5927,7 @@ var ParticleUVNode = (function (_super) {
 })(ParticleNodeBase);
 module.exports = ParticleUVNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleUVState":"awayjs-renderergl/lib/animators/states/ParticleUVState","awayjs-renderergl/lib/compilation/ShaderRegisterElement":"awayjs-renderergl/lib/compilation/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleUVState":"awayjs-renderergl/lib/animators/states/ParticleUVState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5958,7 +5958,7 @@ var ParticleVelocityNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleVelocityNode.prototype.getAGALVertexCode = function (shaderObject, animationRegisterCache) {
+    ParticleVelocityNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
         var velocityValue = (this._pMode == ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
         animationRegisterCache.setRegisterIndex(this, ParticleVelocityState.VELOCITY_INDEX, velocityValue.index);
         var distance = animationRegisterCache.getFreeVertexVectorTemp();
@@ -9080,1934 +9080,7 @@ var ParticleGeometry = (function (_super) {
 })(Geometry);
 module.exports = ParticleGeometry;
 
-},{"awayjs-core/lib/data/Geometry":undefined}],"awayjs-renderergl/lib/compilation/DepthRenderObject":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
-var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
-var DepthPass = require("awayjs-renderergl/lib/passes/DepthPass");
-/**
- * DepthRenderObject forms an abstract base class for the default shaded materials provided by Stage,
- * using material methods to define their appearance.
- */
-var DepthRenderObject = (function (_super) {
-    __extends(DepthRenderObject, _super);
-    /**
-     *
-     * @param pool
-     * @param renderObjectOwner
-     * @param renderableClass
-     * @param stage
-     */
-    function DepthRenderObject(pool, renderObjectOwner, renderableClass, stage) {
-        _super.call(this, pool, renderObjectOwner, renderableClass, stage);
-        this._pAddScreenPass(new DepthPass(this, renderObjectOwner, renderableClass, this._stage));
-    }
-    //TODO: create debug depth material
-    DepthRenderObject.assetClass = BasicMaterial;
-    return DepthRenderObject;
-})(RenderObjectBase);
-module.exports = DepthRenderObject;
-
-},{"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/DepthPass":"awayjs-renderergl/lib/passes/DepthPass"}],"awayjs-renderergl/lib/compilation/DistanceRenderObject":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
-var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
-var DistancePass = require("awayjs-renderergl/lib/passes/DistancePass");
-/**
- * DistanceRenderObject is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
- * This is used to render omnidirectional shadow maps.
- */
-var DistanceRenderObject = (function (_super) {
-    __extends(DistanceRenderObject, _super);
-    /**
-     * Creates a new DistanceRenderObject object.
-     *
-     * @param material The material to which this pass belongs.
-     */
-    function DistanceRenderObject(pool, renderObjectOwner, renderableClass, stage) {
-        _super.call(this, pool, renderObjectOwner, renderableClass, stage);
-        this._pAddScreenPass(new DistancePass(this, renderObjectOwner, renderableClass, this._stage));
-    }
-    //TODO: create debug distance material
-    DistanceRenderObject.assetClass = BasicMaterial;
-    return DistanceRenderObject;
-})(RenderObjectBase);
-module.exports = DistanceRenderObject;
-
-},{"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/DistancePass":"awayjs-renderergl/lib/passes/DistancePass"}],"awayjs-renderergl/lib/compilation/IRenderObjectClass":[function(require,module,exports){
-
-},{}],"awayjs-renderergl/lib/compilation/RegisterPool":[function(require,module,exports){
-var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-/**
- * RegisterPool is used by the shader compilation process to keep track of which registers of a certain type are
- * currently used and should not be allowed to be written to. Either entire registers can be requested and locked,
- * or single components (x, y, z, w) of a single register.
- * It is used by ShaderRegisterCache to track usages of individual register types.
- *
- * @see away.materials.ShaderRegisterCache
- */
-var RegisterPool = (function () {
-    /**
-     * Creates a new RegisterPool object.
-     * @param regName The base name of the register type ("ft" for fragment temporaries, "vc" for vertex constants, etc)
-     * @param regCount The amount of available registers of this type.
-     * @param persistent Whether or not registers, once reserved, can be freed again. For example, temporaries are not persistent, but constants are.
-     */
-    function RegisterPool(regName, regCount, persistent) {
-        if (persistent === void 0) { persistent = true; }
-        this._regName = regName;
-        this._regCount = regCount;
-        this._persistent = persistent;
-        this.initRegisters(regName, regCount);
-    }
-    /**
-     * Retrieve an entire vector register that's still available.
-     */
-    RegisterPool.prototype.requestFreeVectorReg = function () {
-        for (var i = 0; i < this._regCount; ++i) {
-            if (!this.isRegisterUsed(i)) {
-                if (this._persistent)
-                    this._usedVectorCount[i]++;
-                return this._vectorRegisters[i];
-            }
-        }
-        throw new Error("Register overflow!");
-    };
-    /**
-     * Retrieve a single vector component that's still available.
-     */
-    RegisterPool.prototype.requestFreeRegComponent = function () {
-        for (var i = 0; i < this._regCount; ++i) {
-            if (this._usedVectorCount[i] > 0)
-                continue;
-            for (var j = 0; j < 4; ++j) {
-                if (this._usedSingleCount[j][i] == 0) {
-                    if (this._persistent)
-                        this._usedSingleCount[j][i]++;
-                    return this._registerComponents[j][i];
-                }
-            }
-        }
-        throw new Error("Register overflow!");
-    };
-    /**
-     * Marks a register as used, so it cannot be retrieved. The register won't be able to be used until removeUsage
-     * has been called usageCount times again.
-     * @param register The register to mark as used.
-     * @param usageCount The amount of usages to add.
-     */
-    RegisterPool.prototype.addUsage = function (register, usageCount) {
-        if (register._component > -1)
-            this._usedSingleCount[register._component][register.index] += usageCount;
-        else
-            this._usedVectorCount[register.index] += usageCount;
-    };
-    /**
-     * Removes a usage from a register. When usages reach 0, the register is freed again.
-     * @param register The register for which to remove a usage.
-     */
-    RegisterPool.prototype.removeUsage = function (register) {
-        if (register._component > -1) {
-            if (--this._usedSingleCount[register._component][register.index] < 0)
-                throw new Error("More usages removed than exist!");
-        }
-        else {
-            if (--this._usedVectorCount[register.index] < 0)
-                throw new Error("More usages removed than exist!");
-        }
-    };
-    /**
-     * Disposes any resources used by the current RegisterPool object.
-     */
-    RegisterPool.prototype.dispose = function () {
-        this._vectorRegisters = null;
-        this._registerComponents = null;
-        this._usedSingleCount = null;
-        this._usedVectorCount = null;
-    };
-    /**
-     * Indicates whether or not any registers are in use.
-     */
-    RegisterPool.prototype.hasRegisteredRegs = function () {
-        for (var i = 0; i < this._regCount; ++i)
-            if (this.isRegisterUsed(i))
-                return true;
-        return false;
-    };
-    /**
-     * Initializes all registers.
-     */
-    RegisterPool.prototype.initRegisters = function (regName, regCount) {
-        var hash = RegisterPool._initPool(regName, regCount);
-        this._vectorRegisters = RegisterPool._regPool[hash];
-        this._registerComponents = RegisterPool._regCompsPool[hash];
-        this._usedVectorCount = this._initArray(Array(regCount), 0);
-        this._usedSingleCount = new Array(4);
-        this._usedSingleCount[0] = this._initArray(new Array(regCount), 0);
-        this._usedSingleCount[1] = this._initArray(new Array(regCount), 0);
-        this._usedSingleCount[2] = this._initArray(new Array(regCount), 0);
-        this._usedSingleCount[3] = this._initArray(new Array(regCount), 0);
-    };
-    RegisterPool._initPool = function (regName, regCount) {
-        var hash = regName + regCount;
-        if (RegisterPool._regPool[hash] != undefined)
-            return hash;
-        var vectorRegisters = new Array(regCount);
-        RegisterPool._regPool[hash] = vectorRegisters;
-        var registerComponents = [
-            [],
-            [],
-            [],
-            []
-        ];
-        RegisterPool._regCompsPool[hash] = registerComponents;
-        for (var i = 0; i < regCount; ++i) {
-            vectorRegisters[i] = new ShaderRegisterElement(regName, i);
-            for (var j = 0; j < 4; ++j)
-                registerComponents[j][i] = new ShaderRegisterElement(regName, i, j);
-        }
-        return hash;
-    };
-    /**
-     * Check if the temp register is either used for single or vector use
-     */
-    RegisterPool.prototype.isRegisterUsed = function (index) {
-        if (this._usedVectorCount[index] > 0)
-            return true;
-        for (var i = 0; i < 4; ++i)
-            if (this._usedSingleCount[i][index] > 0)
-                return true;
-        return false;
-    };
-    RegisterPool.prototype._initArray = function (a, val) {
-        var l = a.length;
-        for (var c = 0; c < l; c++)
-            a[c] = val;
-        return a;
-    };
-    RegisterPool._regPool = new Object();
-    RegisterPool._regCompsPool = new Object();
-    return RegisterPool;
-})();
-module.exports = RegisterPool;
-
-},{"awayjs-renderergl/lib/compilation/ShaderRegisterElement":"awayjs-renderergl/lib/compilation/ShaderRegisterElement"}],"awayjs-renderergl/lib/compilation/RenderBasicMaterialObject":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var BlendMode = require("awayjs-core/lib/data/BlendMode");
-var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
-var BasicMaterialPass = require("awayjs-renderergl/lib/passes/BasicMaterialPass");
-/**
- * RenderMaterialObject forms an abstract base class for the default shaded materials provided by Stage,
- * using material methods to define their appearance.
- */
-var RenderBasicMaterialObject = (function (_super) {
-    __extends(RenderBasicMaterialObject, _super);
-    function RenderBasicMaterialObject(pool, material, renderableClass, stage) {
-        _super.call(this, pool, material, renderableClass, stage);
-        this._material = material;
-        this._pAddScreenPass(this._screenPass = new BasicMaterialPass(this, material, renderableClass, this._stage));
-    }
-    /**
-     * @inheritDoc
-     */
-    RenderBasicMaterialObject.prototype._pUpdateRenderObject = function () {
-        _super.prototype._pUpdateRenderObject.call(this);
-        this._pRequiresBlending = (this._material.blendMode != BlendMode.NORMAL || this._material.alphaBlending || (this._material.colorTransform && this._material.colorTransform.alphaMultiplier < 1));
-        this._screenPass.preserveAlpha = this._material.preserveAlpha; //this._pRequiresBlending;
-        this._screenPass.setBlendMode((this._renderObjectOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._material.blendMode);
-        //this._screenPass.forceSeparateMVP = false;
-    };
-    return RenderBasicMaterialObject;
-})(RenderObjectBase);
-module.exports = RenderBasicMaterialObject;
-
-},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/BasicMaterialPass":"awayjs-renderergl/lib/passes/BasicMaterialPass"}],"awayjs-renderergl/lib/compilation/RenderObjectBase":[function(require,module,exports){
-var Event = require("awayjs-core/lib/events/Event");
-var MaterialBase = require("awayjs-display/lib/materials/MaterialBase");
-/**
- *
- * @class away.pool.ScreenPasses
- */
-var RenderObjectBase = (function () {
-    function RenderObjectBase(pool, renderObjectOwner, renderableClass, stage) {
-        var _this = this;
-        this._forceSeparateMVP = false;
-        this._invalidAnimation = true;
-        this._invalidRenderObject = true;
-        this._passes = new Array();
-        this._pRequiresBlending = false;
-        this._pool = pool;
-        this.renderObjectId = renderObjectOwner.id;
-        this._renderObjectOwner = renderObjectOwner;
-        this._renderableClass = renderableClass;
-        this._stage = stage;
-        this._onPassChangeDelegate = function (event) { return _this.onPassChange(event); };
-    }
-    Object.defineProperty(RenderObjectBase.prototype, "requiresBlending", {
-        /**
-         * Indicates whether or not the renderable requires alpha blending during rendering.
-         */
-        get: function () {
-            return this._pRequiresBlending;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RenderObjectBase.prototype, "renderOrderId", {
-        get: function () {
-            if (this._invalidAnimation)
-                this._updateAnimation();
-            return this._renderOrderId;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RenderObjectBase.prototype, "passes", {
-        get: function () {
-            if (this._invalidAnimation)
-                this._updateAnimation();
-            return this._passes;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    RenderObjectBase.prototype._iIncludeDependencies = function (shaderObject) {
-        this._renderableClass._iIncludeDependencies(shaderObject);
-        shaderObject.alphaThreshold = this._renderObjectOwner.alphaThreshold;
-        shaderObject.useMipmapping = this._renderObjectOwner.mipmap;
-        shaderObject.useSmoothTextures = this._renderObjectOwner.smooth;
-        if (this._renderObjectOwner instanceof MaterialBase) {
-            var material = this._renderObjectOwner;
-            shaderObject.useAlphaPremultiplied = material.alphaPremultiplied;
-            shaderObject.useBothSides = material.bothSides;
-            shaderObject.repeatTextures = material.repeat;
-            shaderObject.usesUVTransform = material.animateUVs;
-            if (material.texture)
-                shaderObject.texture = shaderObject.getTextureObject(material.texture);
-            shaderObject.color = material.color;
-        }
-    };
-    /**
-     *
-     */
-    RenderObjectBase.prototype.dispose = function () {
-        this._pClearScreenPasses();
-        var len = this._passes.length;
-        for (var i = 0; i < len; i++)
-            this._passes[i].dispose();
-        this._passes = null;
-        this._pool.disposeItem(this._renderObjectOwner);
-    };
-    /**
-     *
-     */
-    RenderObjectBase.prototype.invalidateRenderObject = function () {
-        this._invalidRenderObject = true;
-        this._invalidAnimation = true;
-    };
-    /**
-     *
-     */
-    RenderObjectBase.prototype.invalidatePasses = function () {
-        var len = this._passes.length;
-        for (var i = 0; i < len; i++)
-            this._passes[i].invalidatePass();
-        this._invalidAnimation = true;
-    };
-    /**
-     *
-     */
-    RenderObjectBase.prototype.invalidateAnimation = function () {
-        this._invalidAnimation = true;
-    };
-    /**
-     *
-     * @param renderObjectOwner
-     */
-    RenderObjectBase.prototype._updateAnimation = function () {
-        if (this._invalidRenderObject)
-            this._pUpdateRenderObject();
-        this._invalidAnimation = false;
-        var enabledGPUAnimation = this._getEnabledGPUAnimation();
-        var renderOrderId = 0;
-        var mult = 1;
-        var shaderObject;
-        var len = this._passes.length;
-        for (var i = 0; i < len; i++) {
-            shaderObject = this._passes[i].shader;
-            if (shaderObject.usesAnimation != enabledGPUAnimation) {
-                shaderObject.usesAnimation = enabledGPUAnimation;
-                shaderObject.invalidateProgram();
-            }
-            renderOrderId += shaderObject.programData.id * mult;
-            mult *= 1000;
-        }
-        this._renderOrderId = renderOrderId;
-    };
-    /**
-     * Performs any processing that needs to occur before any of its passes are used.
-     *
-     * @private
-     */
-    RenderObjectBase.prototype._pUpdateRenderObject = function () {
-        this._invalidRenderObject = false;
-        //overrride to update shader object properties
-    };
-    /**
-     * Removes a pass from the renderObjectOwner.
-     * @param pass The pass to be removed.
-     */
-    RenderObjectBase.prototype._pRemoveScreenPass = function (pass) {
-        pass.removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
-        this._passes.splice(this._passes.indexOf(pass), 1);
-    };
-    /**
-     * Removes all passes from the renderObjectOwner
-     */
-    RenderObjectBase.prototype._pClearScreenPasses = function () {
-        var len = this._passes.length;
-        for (var i = 0; i < len; ++i)
-            this._passes[i].removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
-        this._passes.length = 0;
-    };
-    /**
-     * Adds a pass to the renderObjectOwner
-     * @param pass
-     */
-    RenderObjectBase.prototype._pAddScreenPass = function (pass) {
-        this._passes.push(pass);
-        pass.addEventListener(Event.CHANGE, this._onPassChangeDelegate);
-    };
-    /**
-     * Listener for when a pass's shader code changes. It recalculates the render order id.
-     */
-    RenderObjectBase.prototype.onPassChange = function (event) {
-        this.invalidateAnimation();
-    };
-    /**
-     * test if animation will be able to run on gpu BEFORE compiling materials
-     * test if the shader objects supports animating the animation set in the vertex shader
-     * if any object using this material fails to support accelerated animations for any of the shader objects,
-     * we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
-     */
-    RenderObjectBase.prototype._getEnabledGPUAnimation = function () {
-        if (this._renderObjectOwner.animationSet) {
-            this._renderObjectOwner.animationSet.resetGPUCompatibility();
-            var owners = this._renderObjectOwner.iOwners;
-            var numOwners = owners.length;
-            var len = this._passes.length;
-            for (var i = 0; i < len; i++)
-                for (var j = 0; j < numOwners; j++)
-                    if (owners[j].animator)
-                        owners[j].animator.testGPUCompatibility(this._passes[i].shader);
-            return !this._renderObjectOwner.animationSet.usesCPU;
-        }
-        return false;
-    };
-    return RenderObjectBase;
-})();
-module.exports = RenderObjectBase;
-
-},{"awayjs-core/lib/events/Event":undefined,"awayjs-display/lib/materials/MaterialBase":undefined}],"awayjs-renderergl/lib/compilation/RenderObjectPool":[function(require,module,exports){
-var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
-var Skybox = require("awayjs-display/lib/entities/Skybox");
-var RenderBasicMaterialObject = require("awayjs-renderergl/lib/compilation/RenderBasicMaterialObject");
-var SkyboxRenderObject = require("awayjs-renderergl/lib/compilation/SkyboxRenderObject");
-/**
- * @class away.pool.RenderObjectPool
- */
-var RenderObjectPool = (function () {
-    /**
-     * //TODO
-     *
-     * @param renderObjectClass
-     */
-    function RenderObjectPool(renderableClass, stage, renderObjectClass) {
-        if (renderObjectClass === void 0) { renderObjectClass = null; }
-        this._pool = new Object();
-        this._renderableClass = renderableClass;
-        this._stage = stage;
-        this._renderObjectClass = renderObjectClass;
-    }
-    /**
-     * //TODO
-     *
-     * @param renderableOwner
-     * @returns IRenderable
-     */
-    RenderObjectPool.prototype.getItem = function (renderObjectOwner) {
-        return (this._pool[renderObjectOwner.id] || (this._pool[renderObjectOwner.id] = renderObjectOwner._iAddRenderObject(new (this._renderObjectClass || RenderObjectPool.getClass(renderObjectOwner))(this, renderObjectOwner, this._renderableClass, this._stage))));
-    };
-    /**
-     * //TODO
-     *
-     * @param renderableOwner
-     */
-    RenderObjectPool.prototype.disposeItem = function (renderObjectOwner) {
-        renderObjectOwner._iRemoveRenderObject(this._pool[renderObjectOwner.id]);
-        this._pool[renderObjectOwner.id] = null;
-    };
-    /**
-     *
-     * @param imageObjectClass
-     */
-    RenderObjectPool.registerClass = function (renderObjectClass, assetClass) {
-        RenderObjectPool._classPool[assetClass.assetType] = renderObjectClass;
-    };
-    /**
-     *
-     * @param subGeometry
-     */
-    RenderObjectPool.getClass = function (renderObjectOwner) {
-        return RenderObjectPool._classPool[renderObjectOwner.assetType];
-    };
-    RenderObjectPool.addDefaults = function () {
-        RenderObjectPool.registerClass(RenderBasicMaterialObject, BasicMaterial);
-        RenderObjectPool.registerClass(SkyboxRenderObject, Skybox);
-    };
-    RenderObjectPool._classPool = new Object();
-    RenderObjectPool.main = RenderObjectPool.addDefaults();
-    return RenderObjectPool;
-})();
-module.exports = RenderObjectPool;
-
-},{"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-renderergl/lib/compilation/RenderBasicMaterialObject":"awayjs-renderergl/lib/compilation/RenderBasicMaterialObject","awayjs-renderergl/lib/compilation/SkyboxRenderObject":"awayjs-renderergl/lib/compilation/SkyboxRenderObject"}],"awayjs-renderergl/lib/compilation/ShaderCompilerBase":[function(require,module,exports){
-var ShaderRegisterCache = require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-var ShaderRegisterData = require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-/**
- * ShaderCompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
- * material. Concrete subclasses are used by the default materials.
- *
- * @see away.materials.ShadingMethodBase
- */
-var ShaderCompilerBase = (function () {
-    /**
-     * Creates a new ShaderCompilerBase object.
-     * @param profile The compatibility profile of the renderer.
-     */
-    function ShaderCompilerBase(renderableClass, renderPass, shaderObject) {
-        this._pVertexCode = ''; // Changed to emtpy string- AwayTS
-        this._pFragmentCode = ''; // Changed to emtpy string - AwayTS
-        this._pPostAnimationFragmentCode = ''; // Changed to emtpy string - AwayTS
-        this._pRenderableClass = renderableClass;
-        this._pRenderPass = renderPass;
-        this._pShaderObject = shaderObject;
-        this._pSharedRegisters = new ShaderRegisterData();
-        this._pRegisterCache = new ShaderRegisterCache(shaderObject.profile);
-        this._pRegisterCache.vertexAttributesOffset = renderableClass.vertexAttributesOffset;
-        this._pRegisterCache.reset();
-    }
-    /**
-     * Compiles the code after all setup on the compiler has finished.
-     */
-    ShaderCompilerBase.prototype.compile = function () {
-        this._pShaderObject.reset();
-        this.pIncludeDependencies();
-        this.pInitRegisterIndices();
-        this.pCompileDependencies();
-        //compile custom vertex & fragment codes
-        this._pVertexCode += this._pRenderPass._iGetVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-        this._pPostAnimationFragmentCode += this._pRenderPass._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-        //assign the final output color to the output register
-        this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
-        this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
-        //initialise the required shader constants
-        this._pShaderObject.initConstantData(this._pRegisterCache, this._pAnimatableAttributes, this._pAnimationTargetRegisters, this._uvSource, this._uvTarget);
-        this._pRenderPass._iInitConstantData(this._pShaderObject);
-    };
-    ShaderCompilerBase.prototype.pIncludeDependencies = function () {
-        this._pShaderObject._iIncludeDependencies();
-        this._pShaderObject.outputsNormals = this._pRenderPass._pOutputsNormals(this._pShaderObject);
-        this._pShaderObject.outputsTangentNormals = this._pShaderObject.outputsNormals && this._pRenderPass._pOutputsTangentNormals(this._pShaderObject);
-        this._pShaderObject.usesTangentSpace = this._pShaderObject.outputsTangentNormals && this._pRenderPass._pUsesTangentSpace(this._pShaderObject);
-        if (!this._pShaderObject.usesTangentSpace && this._pShaderObject.viewDirDependencies > 0)
-            this._pShaderObject.globalPosDependencies++;
-    };
-    /**
-     * Compile the code for the methods.
-     */
-    ShaderCompilerBase.prototype.pCompileDependencies = function () {
-        this._pSharedRegisters.shadedTarget = this._pRegisterCache.getFreeFragmentVectorTemp();
-        this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.shadedTarget, 1);
-        //compile the world-space position if required
-        if (this._pShaderObject.globalPosDependencies > 0)
-            this.compileGlobalPositionCode();
-        //compile the local-space position if required
-        if (this._pShaderObject.usesLocalPosFragment)
-            this.compileLocalPositionCode();
-        //Calculate the (possibly animated) UV coordinates.
-        if (this._pShaderObject.uvDependencies > 0)
-            this.compileUVCode();
-        if (this._pShaderObject.secondaryUVDependencies > 0)
-            this.compileSecondaryUVCode();
-        if (this._pShaderObject.normalDependencies > 0)
-            this.compileNormalCode();
-        if (this._pShaderObject.viewDirDependencies > 0)
-            this.compileViewDirCode();
-        //collect code from material
-        this._pVertexCode += this._pRenderableClass._iGetVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-        this._pFragmentCode += this._pRenderableClass._iGetFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-        //collect code from pass
-        this._pVertexCode += this._pRenderPass._iGetPreLightingVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-        this._pFragmentCode += this._pRenderPass._iGetPreLightingFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-    };
-    ShaderCompilerBase.prototype.compileGlobalPositionCode = function () {
-        this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.globalPositionVertex = this._pRegisterCache.getFreeVertexVectorTemp(), this._pShaderObject.globalPosDependencies);
-        var sceneMatrixReg = this._pRegisterCache.getFreeVertexConstant();
-        this._pRegisterCache.getFreeVertexConstant();
-        this._pRegisterCache.getFreeVertexConstant();
-        this._pRegisterCache.getFreeVertexConstant();
-        this._pShaderObject.sceneMatrixIndex = sceneMatrixReg.index * 4;
-        this._pVertexCode += "m44 " + this._pSharedRegisters.globalPositionVertex + ", " + this._pSharedRegisters.localPosition + ", " + sceneMatrixReg + "\n";
-        if (this._pShaderObject.usesGlobalPosFragment) {
-            this._pSharedRegisters.globalPositionVarying = this._pRegisterCache.getFreeVarying();
-            this._pVertexCode += "mov " + this._pSharedRegisters.globalPositionVarying + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
-        }
-    };
-    ShaderCompilerBase.prototype.compileLocalPositionCode = function () {
-        this._pSharedRegisters.localPositionVarying = this._pRegisterCache.getFreeVarying();
-        this._pVertexCode += "mov " + this._pSharedRegisters.localPositionVarying + ", " + this._pSharedRegisters.localPosition + "\n";
-    };
-    /**
-     * Calculate the (possibly animated) UV coordinates.
-     */
-    ShaderCompilerBase.prototype.compileUVCode = function () {
-        var uvAttributeReg = this._pRegisterCache.getFreeVertexAttribute();
-        this._pShaderObject.uvBufferIndex = uvAttributeReg.index;
-        var varying = this._pSharedRegisters.uvVarying = this._pRegisterCache.getFreeVarying();
-        if (this._pShaderObject.usesUVTransform) {
-            // a, b, 0, tx
-            // c, d, 0, ty
-            var uvTransform1 = this._pRegisterCache.getFreeVertexConstant();
-            var uvTransform2 = this._pRegisterCache.getFreeVertexConstant();
-            this._pShaderObject.uvTransformIndex = uvTransform1.index * 4;
-            this._pVertexCode += "dp4 " + varying + ".x, " + uvAttributeReg + ", " + uvTransform1 + "\n" + "dp4 " + varying + ".y, " + uvAttributeReg + ", " + uvTransform2 + "\n" + "mov " + varying + ".zw, " + uvAttributeReg + ".zw \n";
-        }
-        else {
-            this._pShaderObject.uvTransformIndex = -1;
-            this._uvTarget = varying.toString();
-            this._uvSource = uvAttributeReg.toString();
-        }
-    };
-    /**
-     * Provide the secondary UV coordinates.
-     */
-    ShaderCompilerBase.prototype.compileSecondaryUVCode = function () {
-        var uvAttributeReg = this._pRegisterCache.getFreeVertexAttribute();
-        this._pShaderObject.secondaryUVBufferIndex = uvAttributeReg.index;
-        this._pSharedRegisters.secondaryUVVarying = this._pRegisterCache.getFreeVarying();
-        this._pVertexCode += "mov " + this._pSharedRegisters.secondaryUVVarying + ", " + uvAttributeReg + "\n";
-    };
-    /**
-     * Calculate the view direction.
-     */
-    ShaderCompilerBase.prototype.compileViewDirCode = function () {
-        var cameraPositionReg = this._pRegisterCache.getFreeVertexConstant();
-        this._pSharedRegisters.viewDirVarying = this._pRegisterCache.getFreeVarying();
-        this._pSharedRegisters.viewDirFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
-        this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.viewDirFragment, this._pShaderObject.viewDirDependencies);
-        this._pShaderObject.cameraPositionIndex = cameraPositionReg.index * 4;
-        if (this._pShaderObject.usesTangentSpace) {
-            var temp = this._pRegisterCache.getFreeVertexVectorTemp();
-            this._pVertexCode += "sub " + temp + ", " + cameraPositionReg + ", " + this._pSharedRegisters.localPosition + "\n" + "m33 " + this._pSharedRegisters.viewDirVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + this._pSharedRegisters.viewDirVarying + ".w, " + this._pSharedRegisters.localPosition + ".w\n";
-        }
-        else {
-            this._pVertexCode += "sub " + this._pSharedRegisters.viewDirVarying + ", " + cameraPositionReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
-            this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.globalPositionVertex);
-        }
-        //TODO is this required in all cases? (re: distancemappass)
-        this._pFragmentCode += "nrm " + this._pSharedRegisters.viewDirFragment + ".xyz, " + this._pSharedRegisters.viewDirVarying + "\n" + "mov " + this._pSharedRegisters.viewDirFragment + ".w,   " + this._pSharedRegisters.viewDirVarying + ".w\n";
-    };
-    /**
-     * Calculate the normal.
-     */
-    ShaderCompilerBase.prototype.compileNormalCode = function () {
-        this._pSharedRegisters.normalFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
-        this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.normalFragment, this._pShaderObject.normalDependencies);
-        //simple normal aquisition if no tangent space is being used
-        if (this._pShaderObject.outputsNormals && !this._pShaderObject.outputsTangentNormals) {
-            this._pVertexCode += this._pRenderPass._iGetNormalVertexCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-            this._pFragmentCode += this._pRenderPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-            return;
-        }
-        var normalMatrix;
-        if (!this._pShaderObject.outputsNormals || !this._pShaderObject.usesTangentSpace) {
-            normalMatrix = new Array(3);
-            normalMatrix[0] = this._pRegisterCache.getFreeVertexConstant();
-            normalMatrix[1] = this._pRegisterCache.getFreeVertexConstant();
-            normalMatrix[2] = this._pRegisterCache.getFreeVertexConstant();
-            this._pRegisterCache.getFreeVertexConstant();
-            this._pShaderObject.sceneNormalMatrixIndex = normalMatrix[0].index * 4;
-            this._pSharedRegisters.normalVarying = this._pRegisterCache.getFreeVarying();
-        }
-        if (this._pShaderObject.outputsNormals) {
-            if (this._pShaderObject.usesTangentSpace) {
-                // normalize normal + tangent vector and generate (approximated) bitangent used in m33 operation for view
-                this._pVertexCode += "nrm " + this._pSharedRegisters.animatedNormal + ".xyz, " + this._pSharedRegisters.animatedNormal + "\n" + "nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + this._pSharedRegisters.animatedTangent + "\n" + "crs " + this._pSharedRegisters.bitangent + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n";
-                this._pFragmentCode += this._pRenderPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters);
-            }
-            else {
-                //Compiles the vertex shader code for tangent-space normal maps.
-                this._pSharedRegisters.tangentVarying = this._pRegisterCache.getFreeVarying();
-                this._pSharedRegisters.bitangentVarying = this._pRegisterCache.getFreeVarying();
-                var temp = this._pRegisterCache.getFreeVertexVectorTemp();
-                this._pVertexCode += "m33 " + temp + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" + "nrm " + this._pSharedRegisters.animatedNormal + ".xyz, " + temp + "\n" + "m33 " + temp + ".xyz, " + this._pSharedRegisters.animatedTangent + ", " + normalMatrix[0] + "\n" + "nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + temp + "\n" + "mov " + this._pSharedRegisters.tangentVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".x  \n" + "mov " + this._pSharedRegisters.tangentVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".x  \n" + "mov " + this._pSharedRegisters.tangentVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".y  \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".y  \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" + "mov " + this._pSharedRegisters.normalVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".z  \n" + "mov " + this._pSharedRegisters.normalVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".z  \n" + "mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" + "crs " + temp + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + this._pSharedRegisters.tangentVarying + ".y, " + temp + ".x    \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".y, " + temp + ".y  \n" + "mov " + this._pSharedRegisters.normalVarying + ".y, " + temp + ".z    \n";
-                this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.animatedTangent);
-                //Compiles the fragment shader code for tangent-space normal maps.
-                var t;
-                var b;
-                var n;
-                t = this._pRegisterCache.getFreeFragmentVectorTemp();
-                this._pRegisterCache.addFragmentTempUsages(t, 1);
-                b = this._pRegisterCache.getFreeFragmentVectorTemp();
-                this._pRegisterCache.addFragmentTempUsages(b, 1);
-                n = this._pRegisterCache.getFreeFragmentVectorTemp();
-                this._pRegisterCache.addFragmentTempUsages(n, 1);
-                this._pFragmentCode += "nrm " + t + ".xyz, " + this._pSharedRegisters.tangentVarying + "\n" + "mov " + t + ".w, " + this._pSharedRegisters.tangentVarying + ".w	\n" + "nrm " + b + ".xyz, " + this._pSharedRegisters.bitangentVarying + "\n" + "nrm " + n + ".xyz, " + this._pSharedRegisters.normalVarying + "\n";
-                //compile custom fragment code for normal calcs
-                this._pFragmentCode += this._pRenderPass._iGetNormalFragmentCode(this._pShaderObject, this._pRegisterCache, this._pSharedRegisters) + "m33 " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalFragment + ", " + t + "\n" + "mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w\n";
-                this._pRegisterCache.removeFragmentTempUsage(b);
-                this._pRegisterCache.removeFragmentTempUsage(t);
-                this._pRegisterCache.removeFragmentTempUsage(n);
-            }
-        }
-        else {
-            // no output, world space is enough
-            this._pVertexCode += "m33 " + this._pSharedRegisters.normalVarying + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" + "mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.animatedNormal + ".w\n";
-            this._pFragmentCode += "nrm " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalVarying + "\n" + "mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w\n";
-            if (this._pShaderObject.tangentDependencies > 0) {
-                this._pSharedRegisters.tangentVarying = this._pRegisterCache.getFreeVarying();
-                this._pVertexCode += "m33 " + this._pSharedRegisters.tangentVarying + ".xyz, " + this._pSharedRegisters.animatedTangent + ", " + normalMatrix[0] + "\n" + "mov " + this._pSharedRegisters.tangentVarying + ".w, " + this._pSharedRegisters.animatedTangent + ".w\n";
-            }
-        }
-        if (!this._pShaderObject.usesTangentSpace)
-            this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.animatedNormal);
-    };
-    /**
-     * Reset all the indices to "unused".
-     */
-    ShaderCompilerBase.prototype.pInitRegisterIndices = function () {
-        this._pShaderObject.pInitRegisterIndices();
-        this._pAnimatableAttributes = new Array("va0");
-        this._pAnimationTargetRegisters = new Array("vt0");
-        this._pVertexCode = "";
-        this._pFragmentCode = "";
-        this._pPostAnimationFragmentCode = "";
-        this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.localPosition = this._pRegisterCache.getFreeVertexVectorTemp(), 1);
-        //create commonly shared constant registers
-        this._pSharedRegisters.commons = this._pRegisterCache.getFreeFragmentConstant();
-        this._pShaderObject.commonsDataIndex = this._pSharedRegisters.commons.index * 4;
-        //Creates the registers to contain the tangent data.
-        // need to be created FIRST and in this order (for when using tangent space)
-        if (this._pShaderObject.tangentDependencies > 0 || this._pShaderObject.outputsNormals) {
-            this._pSharedRegisters.tangentInput = this._pRegisterCache.getFreeVertexAttribute();
-            this._pShaderObject.tangentBufferIndex = this._pSharedRegisters.tangentInput.index;
-            this._pSharedRegisters.animatedTangent = this._pRegisterCache.getFreeVertexVectorTemp();
-            this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedTangent, 1);
-            if (this._pShaderObject.usesTangentSpace) {
-                this._pSharedRegisters.bitangent = this._pRegisterCache.getFreeVertexVectorTemp();
-                this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.bitangent, 1);
-            }
-            this._pAnimatableAttributes.push(this._pSharedRegisters.tangentInput.toString());
-            this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedTangent.toString());
-        }
-        if (this._pShaderObject.normalDependencies > 0) {
-            this._pSharedRegisters.normalInput = this._pRegisterCache.getFreeVertexAttribute();
-            this._pShaderObject.normalBufferIndex = this._pSharedRegisters.normalInput.index;
-            this._pSharedRegisters.animatedNormal = this._pRegisterCache.getFreeVertexVectorTemp();
-            this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedNormal, 1);
-            this._pAnimatableAttributes.push(this._pSharedRegisters.normalInput.toString());
-            this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedNormal.toString());
-        }
-        if (this._pShaderObject.colorDependencies > 0) {
-            this._pSharedRegisters.colorInput = this._pRegisterCache.getFreeVertexAttribute();
-            this._pShaderObject.colorBufferIndex = this._pSharedRegisters.colorInput.index;
-            this._pSharedRegisters.colorVarying = this._pRegisterCache.getFreeVarying();
-            this._pVertexCode += "mov " + this._pSharedRegisters.colorVarying + ", " + this._pSharedRegisters.colorInput + "\n";
-        }
-    };
-    /**
-     * Disposes all resources used by the compiler.
-     */
-    ShaderCompilerBase.prototype.dispose = function () {
-        this._pRegisterCache.dispose();
-        this._pRegisterCache = null;
-        this._pSharedRegisters = null;
-    };
-    Object.defineProperty(ShaderCompilerBase.prototype, "vertexCode", {
-        /**
-         * The generated vertex code.
-         */
-        get: function () {
-            return this._pVertexCode;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderCompilerBase.prototype, "fragmentCode", {
-        /**
-         * The generated fragment code.
-         */
-        get: function () {
-            return this._pFragmentCode;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderCompilerBase.prototype, "postAnimationFragmentCode", {
-        /**
-         * The generated fragment code.
-         */
-        get: function () {
-            return this._pPostAnimationFragmentCode;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderCompilerBase.prototype, "shadedTarget", {
-        /**
-         * The register name containing the final shaded colour.
-         */
-        get: function () {
-            return this._pSharedRegisters.shadedTarget.toString();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return ShaderCompilerBase;
-})();
-module.exports = ShaderCompilerBase;
-
-},{"awayjs-renderergl/lib/compilation/ShaderRegisterCache":"awayjs-renderergl/lib/compilation/ShaderRegisterCache","awayjs-renderergl/lib/compilation/ShaderRegisterData":"awayjs-renderergl/lib/compilation/ShaderRegisterData"}],"awayjs-renderergl/lib/compilation/ShaderLightingCompiler":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
-/**
- * ShaderCompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
- * material. Concrete subclasses are used by the default materials.
- *
- * @see away.materials.ShadingMethodBase
- */
-var ShaderLightingCompiler = (function (_super) {
-    __extends(ShaderLightingCompiler, _super);
-    /**
-     * Creates a new ShaderCompilerBase object.
-     * @param profile The compatibility profile of the renderer.
-     */
-    function ShaderLightingCompiler(renderableClass, renderLightingPass, shaderLightingObject) {
-        _super.call(this, renderableClass, renderLightingPass, shaderLightingObject);
-        this._shaderLightingObject = shaderLightingObject;
-        this._renderLightingPass = renderLightingPass;
-    }
-    /**
-     * Compile the code for the methods.
-     */
-    ShaderLightingCompiler.prototype.pCompileDependencies = function () {
-        _super.prototype.pCompileDependencies.call(this);
-        //compile the lighting code
-        if (this._shaderLightingObject.usesShadows)
-            this.pCompileShadowCode();
-        if (this._shaderLightingObject.usesLights) {
-            this.initLightRegisters();
-            this.compileLightCode();
-        }
-        if (this._shaderLightingObject.usesProbes)
-            this.compileLightProbeCode();
-        this._pVertexCode += this._renderLightingPass._iGetPostLightingVertexCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
-        this._pFragmentCode += this._renderLightingPass._iGetPostLightingFragmentCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
-    };
-    /**
-     * Provides the code to provide shadow mapping.
-     */
-    ShaderLightingCompiler.prototype.pCompileShadowCode = function () {
-        if (this._shaderLightingObject.normalDependencies > 0) {
-            this._pSharedRegisters.shadowTarget = this._pSharedRegisters.normalFragment;
-        }
-        else {
-            this._pSharedRegisters.shadowTarget = this._pRegisterCache.getFreeFragmentVectorTemp();
-            this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.shadowTarget, 1);
-        }
-    };
-    /**
-     * Initializes constant registers to contain light data.
-     */
-    ShaderLightingCompiler.prototype.initLightRegisters = function () {
-        // init these first so we're sure they're in sequence
-        var i, len;
-        if (this._dirLightVertexConstants) {
-            len = this._dirLightVertexConstants.length;
-            for (i = 0; i < len; ++i) {
-                this._dirLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
-                if (this._shaderLightingObject.lightVertexConstantIndex == -1)
-                    this._shaderLightingObject.lightVertexConstantIndex = this._dirLightVertexConstants[i].index * 4;
-            }
-        }
-        if (this._pointLightVertexConstants) {
-            len = this._pointLightVertexConstants.length;
-            for (i = 0; i < len; ++i) {
-                this._pointLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
-                if (this._shaderLightingObject.lightVertexConstantIndex == -1)
-                    this._shaderLightingObject.lightVertexConstantIndex = this._pointLightVertexConstants[i].index * 4;
-            }
-        }
-        len = this._dirLightFragmentConstants.length;
-        for (i = 0; i < len; ++i) {
-            this._dirLightFragmentConstants[i] = this._pRegisterCache.getFreeFragmentConstant();
-            if (this._shaderLightingObject.lightFragmentConstantIndex == -1)
-                this._shaderLightingObject.lightFragmentConstantIndex = this._dirLightFragmentConstants[i].index * 4;
-        }
-        len = this._pointLightFragmentConstants.length;
-        for (i = 0; i < len; ++i) {
-            this._pointLightFragmentConstants[i] = this._pRegisterCache.getFreeFragmentConstant();
-            if (this._shaderLightingObject.lightFragmentConstantIndex == -1)
-                this._shaderLightingObject.lightFragmentConstantIndex = this._pointLightFragmentConstants[i].index * 4;
-        }
-    };
-    /**
-     * Compiles the shading code for directional and point lights.
-     */
-    ShaderLightingCompiler.prototype.compileLightCode = function () {
-        var diffuseColorReg;
-        var specularColorReg;
-        var lightPosReg;
-        var lightDirReg;
-        var vertexRegIndex = 0;
-        var fragmentRegIndex = 0;
-        var addSpec = this._shaderLightingObject.usesLightsForSpecular;
-        var addDiff = this._shaderLightingObject.usesLightsForDiffuse;
-        for (var i = 0; i < this._shaderLightingObject.numDirectionalLights; ++i) {
-            if (this._shaderLightingObject.usesTangentSpace) {
-                lightDirReg = this._dirLightVertexConstants[vertexRegIndex++];
-                var lightVarying = this._pRegisterCache.getFreeVarying();
-                this._pVertexCode += "m33 " + lightVarying + ".xyz, " + lightDirReg + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + lightVarying + ".w, " + lightDirReg + ".w\n";
-                lightDirReg = this._pRegisterCache.getFreeFragmentVectorTemp();
-                this._pRegisterCache.addVertexTempUsages(lightDirReg, 1);
-                this._pFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" + "mov " + lightDirReg + ".w, " + lightVarying + ".w\n";
-            }
-            else {
-                lightDirReg = this._dirLightFragmentConstants[fragmentRegIndex++];
-            }
-            diffuseColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
-            specularColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
-            if (addDiff)
-                this._pFragmentCode += this._renderLightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
-            if (addSpec)
-                this._pFragmentCode += this._renderLightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
-            if (this._shaderLightingObject.usesTangentSpace)
-                this._pRegisterCache.removeVertexTempUsage(lightDirReg);
-        }
-        vertexRegIndex = 0;
-        fragmentRegIndex = 0;
-        for (var i = 0; i < this._shaderLightingObject.numPointLights; ++i) {
-            if (this._shaderLightingObject.usesTangentSpace || !this._shaderLightingObject.usesGlobalPosFragment)
-                lightPosReg = this._pointLightVertexConstants[vertexRegIndex++];
-            else
-                lightPosReg = this._pointLightFragmentConstants[fragmentRegIndex++];
-            diffuseColorReg = this._pointLightFragmentConstants[fragmentRegIndex++];
-            specularColorReg = this._pointLightFragmentConstants[fragmentRegIndex++];
-            lightDirReg = this._pRegisterCache.getFreeFragmentVectorTemp();
-            this._pRegisterCache.addFragmentTempUsages(lightDirReg, 1);
-            var lightVarying;
-            if (this._shaderLightingObject.usesTangentSpace) {
-                lightVarying = this._pRegisterCache.getFreeVarying();
-                var temp = this._pRegisterCache.getFreeVertexVectorTemp();
-                this._pVertexCode += "sub " + temp + ", " + lightPosReg + ", " + this._pSharedRegisters.localPosition + "\n" + "m33 " + lightVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + lightVarying + ".w, " + this._pSharedRegisters.localPosition + ".w\n";
-            }
-            else if (!this._shaderLightingObject.usesGlobalPosFragment) {
-                lightVarying = this._pRegisterCache.getFreeVarying();
-                this._pVertexCode += "sub " + lightVarying + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
-            }
-            else {
-                lightVarying = lightDirReg;
-                this._pFragmentCode += "sub " + lightDirReg + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVarying + "\n";
-            }
-            if (this._shaderLightingObject.usesLightFallOff) {
-                // calculate attenuation
-                this._pFragmentCode += "dp3 " + lightDirReg + ".w, " + lightVarying + ", " + lightVarying + "\n" + "sub " + lightDirReg + ".w, " + lightDirReg + ".w, " + diffuseColorReg + ".w\n" + "mul " + lightDirReg + ".w, " + lightDirReg + ".w, " + specularColorReg + ".w\n" + "sat " + lightDirReg + ".w, " + lightDirReg + ".w\n" + "sub " + lightDirReg + ".w, " + this._pSharedRegisters.commons + ".w, " + lightDirReg + ".w\n" + "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n";
-            }
-            else {
-                this._pFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" + "mov " + lightDirReg + ".w, " + lightVarying + ".w\n";
-            }
-            if (this._shaderLightingObject.lightFragmentConstantIndex == -1)
-                this._shaderLightingObject.lightFragmentConstantIndex = lightPosReg.index * 4;
-            if (addDiff)
-                this._pFragmentCode += this._renderLightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
-            if (addSpec)
-                this._pFragmentCode += this._renderLightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
-            this._pRegisterCache.removeFragmentTempUsage(lightDirReg);
-        }
-    };
-    /**
-     * Compiles shading code for light probes.
-     */
-    ShaderLightingCompiler.prototype.compileLightProbeCode = function () {
-        var weightReg;
-        var weightComponents = [".x", ".y", ".z", ".w"];
-        var weightRegisters = new Array();
-        var i;
-        var texReg;
-        var addSpec = this._shaderLightingObject.usesProbesForSpecular;
-        var addDiff = this._shaderLightingObject.usesProbesForDiffuse;
-        if (addDiff)
-            this._shaderLightingObject.lightProbeDiffuseIndices = new Array();
-        if (addSpec)
-            this._shaderLightingObject.lightProbeSpecularIndices = new Array();
-        for (i = 0; i < this._pNumProbeRegisters; ++i) {
-            weightRegisters[i] = this._pRegisterCache.getFreeFragmentConstant();
-            if (i == 0)
-                this._shaderLightingObject.probeWeightsIndex = weightRegisters[i].index * 4;
-        }
-        for (i = 0; i < this._shaderLightingObject.numLightProbes; ++i) {
-            weightReg = weightRegisters[Math.floor(i / 4)].toString() + weightComponents[i % 4];
-            if (addDiff) {
-                texReg = this._pRegisterCache.getFreeTextureReg();
-                this._shaderLightingObject.lightProbeDiffuseIndices[i] = texReg.index;
-                this._pFragmentCode += this._renderLightingPass._iGetPerProbeDiffuseFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
-            }
-            if (addSpec) {
-                texReg = this._pRegisterCache.getFreeTextureReg();
-                this._shaderLightingObject.lightProbeSpecularIndices[i] = texReg.index;
-                this._pFragmentCode += this._renderLightingPass._iGetPerProbeSpecularFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
-            }
-        }
-    };
-    /**
-     * Reset all the indices to "unused".
-     */
-    ShaderLightingCompiler.prototype.pInitRegisterIndices = function () {
-        _super.prototype.pInitRegisterIndices.call(this);
-        this._shaderLightingObject.lightVertexConstantIndex = -1;
-        this._shaderLightingObject.lightFragmentConstantIndex = -1;
-        this._shaderLightingObject.probeWeightsIndex = -1;
-        this._pNumProbeRegisters = Math.ceil(this._shaderLightingObject.numLightProbes / 4);
-        //init light data
-        if (this._shaderLightingObject.usesTangentSpace || !this._shaderLightingObject.usesGlobalPosFragment) {
-            this._pointLightVertexConstants = new Array(this._shaderLightingObject.numPointLights);
-            this._pointLightFragmentConstants = new Array(this._shaderLightingObject.numPointLights * 2);
-        }
-        else {
-            this._pointLightFragmentConstants = new Array(this._shaderLightingObject.numPointLights * 3);
-        }
-        if (this._shaderLightingObject.usesTangentSpace) {
-            this._dirLightVertexConstants = new Array(this._shaderLightingObject.numDirectionalLights);
-            this._dirLightFragmentConstants = new Array(this._shaderLightingObject.numDirectionalLights * 2);
-        }
-        else {
-            this._dirLightFragmentConstants = new Array(this._shaderLightingObject.numDirectionalLights * 3);
-        }
-    };
-    return ShaderLightingCompiler;
-})(ShaderCompilerBase);
-module.exports = ShaderLightingCompiler;
-
-},{"awayjs-renderergl/lib/compilation/ShaderCompilerBase":"awayjs-renderergl/lib/compilation/ShaderCompilerBase"}],"awayjs-renderergl/lib/compilation/ShaderLightingObject":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var LightSources = require("awayjs-display/lib/materials/LightSources");
-var ContextGLProfile = require("awayjs-stagegl/lib/base/ContextGLProfile");
-var ShaderLightingCompiler = require("awayjs-renderergl/lib/compilation/ShaderLightingCompiler");
-var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-/**
- * ShaderObjectBase keeps track of the number of dependencies for "named registers" used across a pass.
- * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
- * passed on to methods. The compiler uses the results to reserve usages through RegisterPool, which can be removed
- * each time a method has been compiled into the shader.
- *
- * @see RegisterPool.addUsage
- */
-var ShaderLightingObject = (function (_super) {
-    __extends(ShaderLightingObject, _super);
-    /**
-     * Creates a new MethodCompilerVO object.
-     */
-    function ShaderLightingObject(renderableClass, renderLightingPass, stage) {
-        _super.call(this, renderableClass, renderLightingPass, stage);
-        this._includeCasters = true;
-        this._renderLightingPass = renderLightingPass;
-    }
-    ShaderLightingObject.prototype._iIncludeDependencies = function () {
-        this.numPointLights = this._renderLightingPass.numPointLights;
-        this.numDirectionalLights = this._renderLightingPass.numDirectionalLights;
-        this.numLightProbes = this._renderLightingPass.numLightProbes;
-        var numAllLights = this._renderLightingPass.numPointLights + this._renderLightingPass.numDirectionalLights;
-        var numLightProbes = this._renderLightingPass.numLightProbes;
-        var diffuseLightSources = this._renderLightingPass._iUsesDiffuse(this) ? this._renderLightingPass.diffuseLightSources : 0x00;
-        var specularLightSources = this._renderLightingPass._iUsesSpecular(this) ? this._renderLightingPass.specularLightSources : 0x00;
-        var combinedLightSources = diffuseLightSources | specularLightSources;
-        this.usesLightFallOff = this._renderLightingPass.enableLightFallOff && this.profile != ContextGLProfile.BASELINE_CONSTRAINED;
-        this.numLights = numAllLights + numLightProbes;
-        this.usesLights = numAllLights > 0 && (combinedLightSources & LightSources.LIGHTS) != 0;
-        this.usesProbes = numLightProbes > 0 && (combinedLightSources & LightSources.PROBES) != 0;
-        this.usesLightsForSpecular = numAllLights > 0 && (specularLightSources & LightSources.LIGHTS) != 0;
-        this.usesProbesForSpecular = numLightProbes > 0 && (specularLightSources & LightSources.PROBES) != 0;
-        this.usesLightsForDiffuse = numAllLights > 0 && (diffuseLightSources & LightSources.LIGHTS) != 0;
-        this.usesProbesForDiffuse = numLightProbes > 0 && (diffuseLightSources & LightSources.PROBES) != 0;
-        this.usesShadows = this._renderLightingPass._iUsesShadows(this);
-        //IMPORTANT this must occur after shader lighting initialisation above
-        _super.prototype._iIncludeDependencies.call(this);
-    };
-    /**
-     * Factory method to create a concrete compiler object for this object
-     *
-     * @param materialPassVO
-     * @returns {away.materials.ShaderLightingCompiler}
-     */
-    ShaderLightingObject.prototype.createCompiler = function (renderableClass, renderPass) {
-        return new ShaderLightingCompiler(renderableClass, renderPass, this);
-    };
-    /**
-     * Clears dependency counts for all registers. Called when recompiling a pass.
-     */
-    ShaderLightingObject.prototype.reset = function () {
-        _super.prototype.reset.call(this);
-        this.numLights = 0;
-        this.usesLightFallOff = true;
-    };
-    /**
-     *
-     *
-     * @param renderable
-     * @param stage
-     * @param camera
-     */
-    ShaderLightingObject.prototype._iRender = function (renderable, camera, viewProjection) {
-        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
-        if (this._renderLightingPass.lightPicker)
-            this._renderLightingPass.lightPicker.collectLights(renderable);
-        if (this.usesLights)
-            this.updateLights();
-        if (this.usesProbes)
-            this.updateProbes();
-    };
-    /**
-     * Updates constant data render state used by the lights. This method is optional for subclasses to implement.
-     */
-    ShaderLightingObject.prototype.updateLights = function () {
-        var dirLight;
-        var pointLight;
-        var i = 0;
-        var k = 0;
-        var len;
-        var dirPos;
-        var total = 0;
-        var numLightTypes = this.usesShadows ? 2 : 1;
-        var l;
-        var offset;
-        this.ambientR = this.ambientG = this.ambientB = 0;
-        l = this.lightVertexConstantIndex;
-        k = this.lightFragmentConstantIndex;
-        var cast = 0;
-        var dirLights = this._renderLightingPass.lightPicker.directionalLights;
-        offset = this._renderLightingPass.directionalLightsOffset;
-        len = this._renderLightingPass.lightPicker.directionalLights.length;
-        if (offset > len) {
-            cast = 1;
-            offset -= len;
-        }
-        for (; cast < numLightTypes; ++cast) {
-            if (cast)
-                dirLights = this._renderLightingPass.lightPicker.castingDirectionalLights;
-            len = dirLights.length;
-            if (len > this.numDirectionalLights)
-                len = this.numDirectionalLights;
-            for (i = 0; i < len; ++i) {
-                dirLight = dirLights[offset + i];
-                dirPos = dirLight.sceneDirection;
-                this.ambientR += dirLight._iAmbientR;
-                this.ambientG += dirLight._iAmbientG;
-                this.ambientB += dirLight._iAmbientB;
-                if (this.usesTangentSpace) {
-                    var x = -dirPos.x;
-                    var y = -dirPos.y;
-                    var z = -dirPos.z;
-                    this.vertexConstantData[l++] = this._pInverseSceneMatrix[0] * x + this._pInverseSceneMatrix[4] * y + this._pInverseSceneMatrix[8] * z;
-                    this.vertexConstantData[l++] = this._pInverseSceneMatrix[1] * x + this._pInverseSceneMatrix[5] * y + this._pInverseSceneMatrix[9] * z;
-                    this.vertexConstantData[l++] = this._pInverseSceneMatrix[2] * x + this._pInverseSceneMatrix[6] * y + this._pInverseSceneMatrix[10] * z;
-                    this.vertexConstantData[l++] = 1;
-                }
-                else {
-                    this.fragmentConstantData[k++] = -dirPos.x;
-                    this.fragmentConstantData[k++] = -dirPos.y;
-                    this.fragmentConstantData[k++] = -dirPos.z;
-                    this.fragmentConstantData[k++] = 1;
-                }
-                this.fragmentConstantData[k++] = dirLight._iDiffuseR;
-                this.fragmentConstantData[k++] = dirLight._iDiffuseG;
-                this.fragmentConstantData[k++] = dirLight._iDiffuseB;
-                this.fragmentConstantData[k++] = 1;
-                this.fragmentConstantData[k++] = dirLight._iSpecularR;
-                this.fragmentConstantData[k++] = dirLight._iSpecularG;
-                this.fragmentConstantData[k++] = dirLight._iSpecularB;
-                this.fragmentConstantData[k++] = 1;
-                if (++total == this.numDirectionalLights) {
-                    // break loop
-                    i = len;
-                    cast = numLightTypes;
-                }
-            }
-        }
-        // more directional supported than currently picked, need to clamp all to 0
-        if (this.numDirectionalLights > total) {
-            i = k + (this.numDirectionalLights - total) * 12;
-            while (k < i)
-                this.fragmentConstantData[k++] = 0;
-        }
-        total = 0;
-        var pointLights = this._renderLightingPass.lightPicker.pointLights;
-        offset = this._renderLightingPass.pointLightsOffset;
-        len = this._renderLightingPass.lightPicker.pointLights.length;
-        if (offset > len) {
-            cast = 1;
-            offset -= len;
-        }
-        else {
-            cast = 0;
-        }
-        for (; cast < numLightTypes; ++cast) {
-            if (cast)
-                pointLights = this._renderLightingPass.lightPicker.castingPointLights;
-            len = pointLights.length;
-            for (i = 0; i < len; ++i) {
-                pointLight = pointLights[offset + i];
-                dirPos = pointLight.scenePosition;
-                this.ambientR += pointLight._iAmbientR;
-                this.ambientG += pointLight._iAmbientG;
-                this.ambientB += pointLight._iAmbientB;
-                if (this.usesTangentSpace) {
-                    x = dirPos.x;
-                    y = dirPos.y;
-                    z = dirPos.z;
-                    this.vertexConstantData[l++] = this._pInverseSceneMatrix[0] * x + this._pInverseSceneMatrix[4] * y + this._pInverseSceneMatrix[8] * z + this._pInverseSceneMatrix[12];
-                    this.vertexConstantData[l++] = this._pInverseSceneMatrix[1] * x + this._pInverseSceneMatrix[5] * y + this._pInverseSceneMatrix[9] * z + this._pInverseSceneMatrix[13];
-                    this.vertexConstantData[l++] = this._pInverseSceneMatrix[2] * x + this._pInverseSceneMatrix[6] * y + this._pInverseSceneMatrix[10] * z + this._pInverseSceneMatrix[14];
-                    this.vertexConstantData[l++] = 1;
-                }
-                else if (!this.usesGlobalPosFragment) {
-                    this.vertexConstantData[l++] = dirPos.x;
-                    this.vertexConstantData[l++] = dirPos.y;
-                    this.vertexConstantData[l++] = dirPos.z;
-                    this.vertexConstantData[l++] = 1;
-                }
-                else {
-                    this.fragmentConstantData[k++] = dirPos.x;
-                    this.fragmentConstantData[k++] = dirPos.y;
-                    this.fragmentConstantData[k++] = dirPos.z;
-                    this.fragmentConstantData[k++] = 1;
-                }
-                this.fragmentConstantData[k++] = pointLight._iDiffuseR;
-                this.fragmentConstantData[k++] = pointLight._iDiffuseG;
-                this.fragmentConstantData[k++] = pointLight._iDiffuseB;
-                var radius = pointLight._pRadius;
-                this.fragmentConstantData[k++] = radius * radius;
-                this.fragmentConstantData[k++] = pointLight._iSpecularR;
-                this.fragmentConstantData[k++] = pointLight._iSpecularG;
-                this.fragmentConstantData[k++] = pointLight._iSpecularB;
-                this.fragmentConstantData[k++] = pointLight._pFallOffFactor;
-                if (++total == this.numPointLights) {
-                    // break loop
-                    i = len;
-                    cast = numLightTypes;
-                }
-            }
-        }
-        // more directional supported than currently picked, need to clamp all to 0
-        if (this.numPointLights > total) {
-            i = k + (total - this.numPointLights) * 12;
-            for (; k < i; ++k)
-                this.fragmentConstantData[k] = 0;
-        }
-    };
-    /**
-     * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
-     */
-    ShaderLightingObject.prototype.updateProbes = function () {
-        var probe;
-        var lightProbes = this._renderLightingPass.lightPicker.lightProbes;
-        var weights = this._renderLightingPass.lightPicker.lightProbeWeights;
-        var len = lightProbes.length - this._renderLightingPass.lightProbesOffset;
-        var addDiff = this.usesProbesForDiffuse;
-        var addSpec = this.usesProbesForSpecular;
-        if (!(addDiff || addSpec))
-            return;
-        if (len > this.numLightProbes)
-            len = this.numLightProbes;
-        for (var i = 0; i < len; ++i) {
-            probe = lightProbes[this._renderLightingPass.lightProbesOffset + i];
-            if (addDiff)
-                this._stage.getImageObject(probe.diffuseMap).activate(this.lightProbeDiffuseIndices[i], false, this.useSmoothTextures, this.useMipmapping);
-            if (addSpec)
-                this._stage.getImageObject(probe.specularMap).activate(this.lightProbeSpecularIndices[i], false, this.useSmoothTextures, this.useMipmapping);
-        }
-        for (i = 0; i < len; ++i)
-            this.fragmentConstantData[this.probeWeightsIndex + i] = weights[this._renderLightingPass.lightProbesOffset + i];
-    };
-    return ShaderLightingObject;
-})(ShaderObjectBase);
-module.exports = ShaderLightingObject;
-
-},{"awayjs-display/lib/materials/LightSources":undefined,"awayjs-renderergl/lib/compilation/ShaderLightingCompiler":"awayjs-renderergl/lib/compilation/ShaderLightingCompiler","awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-stagegl/lib/base/ContextGLProfile":undefined}],"awayjs-renderergl/lib/compilation/ShaderObjectBase":[function(require,module,exports){
-var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
-var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
-var ContextGLTriangleFace = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
-var TextureObjectPool = require("awayjs-renderergl/lib/pool/TextureObjectPool");
-var ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
-/**
- * ShaderObjectBase keeps track of the number of dependencies for "named registers" used across a pass.
- * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
- * passed on to methods. The compiler uses the results to reserve usages through RegisterPool, which can be removed
- * each time a method has been compiled into the shader.
- *
- * @see RegisterPool.addUsage
- */
-var ShaderObjectBase = (function () {
-    /**
-     * Creates a new MethodCompilerVO object.
-     */
-    function ShaderObjectBase(renderableClass, renderPass, stage) {
-        this._invalidShader = true;
-        this._invalidProgram = true;
-        this._animationVertexCode = "";
-        this._animationFragmentCode = "";
-        this._defaultCulling = ContextGLTriangleFace.BACK;
-        this._pInverseSceneMatrix = new Array();
-        //set ambient values to default
-        this.ambientR = 0xFF;
-        this.ambientG = 0xFF;
-        this.ambientB = 0xFF;
-        /**
-         * Indicates whether there are any dependencies on the world-space position vector.
-         */
-        this.usesGlobalPosFragment = false;
-        /**
-         * Indicates whether there are any dependencies on the local position vector.
-         */
-        this.usesLocalPosFragment = false;
-        this.vertexConstantData = new Array();
-        this.fragmentConstantData = new Array();
-        this._renderableClass = renderableClass;
-        this._renderPass = renderPass;
-        this._stage = stage;
-        this.profile = this._stage.profile;
-        this._textureObjectPool = new TextureObjectPool(this._stage);
-    }
-    Object.defineProperty(ShaderObjectBase.prototype, "programData", {
-        get: function () {
-            if (this._invalidProgram)
-                this._updateProgram();
-            return this._programData;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ShaderObjectBase.prototype.getTextureObject = function (texture) {
-        return this._textureObjectPool.getItem(texture);
-    };
-    ShaderObjectBase.prototype._iIncludeDependencies = function () {
-        this._renderPass._iIncludeDependencies(this);
-    };
-    /**
-     * Factory method to create a concrete compiler object for this object
-     *
-     * @param renderableClass
-     * @param renderPass
-     * @param stage
-     * @returns {ShaderCompilerBase}
-     */
-    ShaderObjectBase.prototype.createCompiler = function (renderableClass, renderPass) {
-        return new ShaderCompilerBase(renderableClass, renderPass, this);
-    };
-    /**
-     * Clears dependency counts for all registers. Called when recompiling a pass.
-     */
-    ShaderObjectBase.prototype.reset = function () {
-        this.projectionDependencies = 0;
-        this.normalDependencies = 0;
-        this.colorDependencies = 0;
-        this.viewDirDependencies = 0;
-        this.uvDependencies = 0;
-        this.secondaryUVDependencies = 0;
-        this.globalPosDependencies = 0;
-        this.tangentDependencies = 0;
-        this.usesGlobalPosFragment = false;
-        this.usesLocalPosFragment = false;
-        this.usesFragmentAnimation = false;
-        this.usesTangentSpace = false;
-        this.outputsNormals = false;
-        this.outputsTangentNormals = false;
-    };
-    ShaderObjectBase.prototype.pInitRegisterIndices = function () {
-        this.commonsDataIndex = -1;
-        this.cameraPositionIndex = -1;
-        this.uvBufferIndex = -1;
-        this.uvTransformIndex = -1;
-        this.secondaryUVBufferIndex = -1;
-        this.normalBufferIndex = -1;
-        this.colorBufferIndex = -1;
-        this.tangentBufferIndex = -1;
-        this.sceneMatrixIndex = -1;
-        this.sceneNormalMatrixIndex = -1;
-    };
-    /**
-     * Initializes the unchanging constant data for this shader object.
-     */
-    ShaderObjectBase.prototype.initConstantData = function (registerCache, animatableAttributes, animationTargetRegisters, uvSource, uvTarget) {
-        //Updates the amount of used register indices.
-        this.numUsedVertexConstants = registerCache.numUsedVertexConstants;
-        this.numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
-        this.numUsedStreams = registerCache.numUsedStreams;
-        this.numUsedTextures = registerCache.numUsedTextures;
-        this.numUsedVaryings = registerCache.numUsedVaryings;
-        this.numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
-        this.animatableAttributes = animatableAttributes;
-        this.animationTargetRegisters = animationTargetRegisters;
-        this.uvSource = uvSource;
-        this.uvTarget = uvTarget;
-        this.vertexConstantData.length = this.numUsedVertexConstants * 4;
-        this.fragmentConstantData.length = this.numUsedFragmentConstants * 4;
-        //Initializes commonly required constant values.
-        this.fragmentConstantData[this.commonsDataIndex] = .5;
-        this.fragmentConstantData[this.commonsDataIndex + 1] = 0;
-        this.fragmentConstantData[this.commonsDataIndex + 2] = 1 / 255;
-        this.fragmentConstantData[this.commonsDataIndex + 3] = 1;
-        //Initializes the default UV transformation matrix.
-        if (this.uvTransformIndex >= 0) {
-            this.vertexConstantData[this.uvTransformIndex] = 1;
-            this.vertexConstantData[this.uvTransformIndex + 1] = 0;
-            this.vertexConstantData[this.uvTransformIndex + 2] = 0;
-            this.vertexConstantData[this.uvTransformIndex + 3] = 0;
-            this.vertexConstantData[this.uvTransformIndex + 4] = 0;
-            this.vertexConstantData[this.uvTransformIndex + 5] = 1;
-            this.vertexConstantData[this.uvTransformIndex + 6] = 0;
-            this.vertexConstantData[this.uvTransformIndex + 7] = 0;
-        }
-        if (this.cameraPositionIndex >= 0)
-            this.vertexConstantData[this.cameraPositionIndex + 3] = 1;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShaderObjectBase.prototype._iActivate = function (camera) {
-        if (this.usesAnimation)
-            this._renderPass.animationSet.activate(this, this._stage);
-        this._stage.context.setCulling(this.useBothSides ? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
-        if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
-            var pos = camera.scenePosition;
-            this.vertexConstantData[this.cameraPositionIndex] = pos.x;
-            this.vertexConstantData[this.cameraPositionIndex + 1] = pos.y;
-            this.vertexConstantData[this.cameraPositionIndex + 2] = pos.z;
-        }
-    };
-    /**
-     * @inheritDoc
-     */
-    ShaderObjectBase.prototype._iDeactivate = function () {
-        if (this.usesAnimation)
-            this._renderPass.animationSet.deactivate(this, this._stage);
-    };
-    /**
-     *
-     *
-     * @param renderable
-     * @param stage
-     * @param camera
-     */
-    ShaderObjectBase.prototype._iRender = function (renderable, camera, viewProjection) {
-        if (renderable.renderableOwner.animator)
-            renderable.renderableOwner.animator.setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
-        if (this.uvBufferIndex >= 0)
-            this._stage.activateBuffer(this.uvBufferIndex, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
-        if (this.secondaryUVBufferIndex >= 0)
-            this._stage.activateBuffer(this.secondaryUVBufferIndex, renderable.getVertexData(TriangleSubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.SECONDARY_UV_DATA), TriangleSubGeometry.SECONDARY_UV_FORMAT);
-        if (this.normalBufferIndex >= 0)
-            this._stage.activateBuffer(this.normalBufferIndex, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
-        if (this.tangentBufferIndex >= 0)
-            this._stage.activateBuffer(this.tangentBufferIndex, renderable.getVertexData(TriangleSubGeometry.TANGENT_DATA), renderable.getVertexOffset(TriangleSubGeometry.TANGENT_DATA), TriangleSubGeometry.TANGENT_FORMAT);
-        if (this.colorBufferIndex >= 0)
-            this._stage.activateBuffer(this.colorBufferIndex, renderable.getVertexData(LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(LineSubGeometry.COLOR_DATA), LineSubGeometry.COLOR_FORMAT);
-        if (this.usesUVTransform) {
-            var uvTransform = renderable.renderableOwner.uvTransform.matrix;
-            if (uvTransform) {
-                this.vertexConstantData[this.uvTransformIndex] = uvTransform.a;
-                this.vertexConstantData[this.uvTransformIndex + 1] = uvTransform.b;
-                this.vertexConstantData[this.uvTransformIndex + 3] = uvTransform.tx;
-                this.vertexConstantData[this.uvTransformIndex + 4] = uvTransform.c;
-                this.vertexConstantData[this.uvTransformIndex + 5] = uvTransform.d;
-                this.vertexConstantData[this.uvTransformIndex + 7] = uvTransform.ty;
-            }
-            else {
-                this.vertexConstantData[this.uvTransformIndex] = 1;
-                this.vertexConstantData[this.uvTransformIndex + 1] = 0;
-                this.vertexConstantData[this.uvTransformIndex + 3] = 0;
-                this.vertexConstantData[this.uvTransformIndex + 4] = 0;
-                this.vertexConstantData[this.uvTransformIndex + 5] = 1;
-                this.vertexConstantData[this.uvTransformIndex + 7] = 0;
-            }
-        }
-        if (this.sceneNormalMatrixIndex >= 0)
-            renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this.vertexConstantData, this.sceneNormalMatrixIndex, false);
-        if (this.usesTangentSpace && this.cameraPositionIndex >= 0) {
-            renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this._pInverseSceneMatrix);
-            var pos = camera.scenePosition;
-            var x = pos.x;
-            var y = pos.y;
-            var z = pos.z;
-            this.vertexConstantData[this.cameraPositionIndex] = this._pInverseSceneMatrix[0] * x + this._pInverseSceneMatrix[4] * y + this._pInverseSceneMatrix[8] * z + this._pInverseSceneMatrix[12];
-            this.vertexConstantData[this.cameraPositionIndex + 1] = this._pInverseSceneMatrix[1] * x + this._pInverseSceneMatrix[5] * y + this._pInverseSceneMatrix[9] * z + this._pInverseSceneMatrix[13];
-            this.vertexConstantData[this.cameraPositionIndex + 2] = this._pInverseSceneMatrix[2] * x + this._pInverseSceneMatrix[6] * y + this._pInverseSceneMatrix[10] * z + this._pInverseSceneMatrix[14];
-        }
-    };
-    ShaderObjectBase.prototype.invalidateProgram = function () {
-        this._invalidProgram = true;
-    };
-    ShaderObjectBase.prototype.invalidateShader = function () {
-        this._invalidShader = true;
-        this._invalidProgram = true;
-    };
-    ShaderObjectBase.prototype.dispose = function () {
-        this._programData.dispose();
-        this._programData = null;
-    };
-    ShaderObjectBase.prototype._updateProgram = function () {
-        this._invalidProgram = false;
-        var compiler;
-        if (this._invalidShader) {
-            this._invalidShader = false;
-            compiler = this.createCompiler(this._renderableClass, this._renderPass);
-            compiler.compile();
-        }
-        this._calcAnimationCode(compiler.shadedTarget);
-        var programData = this._stage.getProgramData(this._animationVertexCode + compiler.vertexCode, compiler.fragmentCode + this._animationFragmentCode + compiler.postAnimationFragmentCode);
-        //check program data hasn't changed, keep count of program usages
-        if (this._programData != programData) {
-            if (this._programData)
-                this._programData.dispose();
-            this._programData = programData;
-            programData.usages++;
-        }
-    };
-    ShaderObjectBase.prototype._calcAnimationCode = function (shadedTarget) {
-        //reset code
-        this._animationVertexCode = "";
-        this._animationFragmentCode = "";
-        //check to see if GPU animation is used
-        if (this.usesAnimation) {
-            var animationSet = this._renderPass.animationSet;
-            this._animationVertexCode += animationSet.getAGALVertexCode(this);
-            if (this.uvDependencies > 0 && !this.usesUVTransform)
-                this._animationVertexCode += animationSet.getAGALUVCode(this);
-            if (this.usesFragmentAnimation)
-                this._animationFragmentCode += animationSet.getAGALFragmentCode(this, shadedTarget);
-            animationSet.doneAGALCode(this);
-        }
-        else {
-            // simply write attributes to targets, do not animate them
-            // projection will pick up on targets[0] to do the projection
-            var len = this.animatableAttributes.length;
-            for (var i = 0; i < len; ++i)
-                this._animationVertexCode += "mov " + this.animationTargetRegisters[i] + ", " + this.animatableAttributes[i] + "\n";
-            if (this.uvDependencies > 0 && !this.usesUVTransform)
-                this._animationVertexCode += "mov " + this.uvTarget + "," + this.uvSource + "\n";
-        }
-    };
-    return ShaderObjectBase;
-})();
-module.exports = ShaderObjectBase;
-
-},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/compilation/ShaderCompilerBase":"awayjs-renderergl/lib/compilation/ShaderCompilerBase","awayjs-renderergl/lib/pool/TextureObjectPool":"awayjs-renderergl/lib/pool/TextureObjectPool","awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/compilation/ShaderRegisterCache":[function(require,module,exports){
-var RegisterPool = require("awayjs-renderergl/lib/compilation/RegisterPool");
-var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-/**
- * ShaderRegister Cache provides the usage management system for all registers during shading compilation.
- */
-var ShaderRegisterCache = (function () {
-    /**
-     * Create a new ShaderRegisterCache object.
-     *
-     * @param profile The compatibility profile used by the renderer.
-     */
-    function ShaderRegisterCache(profile) {
-        this._numUsedVertexConstants = 0;
-        this._numUsedFragmentConstants = 0;
-        this._numUsedStreams = 0;
-        this._numUsedTextures = 0;
-        this._numUsedVaryings = 0;
-        this._profile = profile;
-    }
-    /**
-     * Resets all registers.
-     */
-    ShaderRegisterCache.prototype.reset = function () {
-        this._fragmentTempCache = new RegisterPool("ft", 8, false);
-        this._vertexTempCache = new RegisterPool("vt", 8, false);
-        this._varyingCache = new RegisterPool("v", 8);
-        this._textureCache = new RegisterPool("fs", 8);
-        this._vertexAttributesCache = new RegisterPool("va", 8);
-        this._fragmentConstantsCache = new RegisterPool("fc", 28);
-        this._vertexConstantsCache = new RegisterPool("vc", 128);
-        this._fragmentOutputRegister = new ShaderRegisterElement("oc", -1);
-        this._vertexOutputRegister = new ShaderRegisterElement("op", -1);
-        this._numUsedVertexConstants = 0;
-        this._numUsedStreams = 0;
-        this._numUsedTextures = 0;
-        this._numUsedVaryings = 0;
-        this._numUsedFragmentConstants = 0;
-        var i;
-        for (i = 0; i < this._vertexAttributesOffset; ++i)
-            this.getFreeVertexAttribute();
-        for (i = 0; i < this._vertexConstantOffset; ++i)
-            this.getFreeVertexConstant();
-        for (i = 0; i < this._varyingsOffset; ++i)
-            this.getFreeVarying();
-        for (i = 0; i < this._fragmentConstantOffset; ++i)
-            this.getFreeFragmentConstant();
-    };
-    /**
-     * Disposes all resources used.
-     */
-    ShaderRegisterCache.prototype.dispose = function () {
-        this._fragmentTempCache.dispose();
-        this._vertexTempCache.dispose();
-        this._varyingCache.dispose();
-        this._fragmentConstantsCache.dispose();
-        this._vertexAttributesCache.dispose();
-        this._fragmentTempCache = null;
-        this._vertexTempCache = null;
-        this._varyingCache = null;
-        this._fragmentConstantsCache = null;
-        this._vertexAttributesCache = null;
-        this._fragmentOutputRegister = null;
-        this._vertexOutputRegister = null;
-    };
-    /**
-     * Marks a fragment temporary register as used, so it cannot be retrieved. The register won't be able to be used until removeUsage
-     * has been called usageCount times again.
-     * @param register The register to mark as used.
-     * @param usageCount The amount of usages to add.
-     */
-    ShaderRegisterCache.prototype.addFragmentTempUsages = function (register, usageCount) {
-        this._fragmentTempCache.addUsage(register, usageCount);
-    };
-    /**
-     * Removes a usage from a fragment temporary register. When usages reach 0, the register is freed again.
-     * @param register The register for which to remove a usage.
-     */
-    ShaderRegisterCache.prototype.removeFragmentTempUsage = function (register) {
-        this._fragmentTempCache.removeUsage(register);
-    };
-    /**
-     * Marks a vertex temporary register as used, so it cannot be retrieved. The register won't be able to be used
-     * until removeUsage has been called usageCount times again.
-     * @param register The register to mark as used.
-     * @param usageCount The amount of usages to add.
-     */
-    ShaderRegisterCache.prototype.addVertexTempUsages = function (register, usageCount) {
-        this._vertexTempCache.addUsage(register, usageCount);
-    };
-    /**
-     * Removes a usage from a vertex temporary register. When usages reach 0, the register is freed again.
-     * @param register The register for which to remove a usage.
-     */
-    ShaderRegisterCache.prototype.removeVertexTempUsage = function (register) {
-        this._vertexTempCache.removeUsage(register);
-    };
-    /**
-     * Retrieve an entire fragment temporary register that's still available. The register won't be able to be used until removeUsage
-     * has been called usageCount times again.
-     */
-    ShaderRegisterCache.prototype.getFreeFragmentVectorTemp = function () {
-        return this._fragmentTempCache.requestFreeVectorReg();
-    };
-    /**
-     * Retrieve a single component from a fragment temporary register that's still available.
-     */
-    ShaderRegisterCache.prototype.getFreeFragmentSingleTemp = function () {
-        return this._fragmentTempCache.requestFreeRegComponent();
-    };
-    /**
-     * Retrieve an available varying register
-     */
-    ShaderRegisterCache.prototype.getFreeVarying = function () {
-        ++this._numUsedVaryings;
-        return this._varyingCache.requestFreeVectorReg();
-    };
-    /**
-     * Retrieve an available fragment constant register
-     */
-    ShaderRegisterCache.prototype.getFreeFragmentConstant = function () {
-        ++this._numUsedFragmentConstants;
-        return this._fragmentConstantsCache.requestFreeVectorReg();
-    };
-    /**
-     * Retrieve an available vertex constant register
-     */
-    ShaderRegisterCache.prototype.getFreeVertexConstant = function () {
-        ++this._numUsedVertexConstants;
-        return this._vertexConstantsCache.requestFreeVectorReg();
-    };
-    /**
-     * Retrieve an entire vertex temporary register that's still available.
-     */
-    ShaderRegisterCache.prototype.getFreeVertexVectorTemp = function () {
-        return this._vertexTempCache.requestFreeVectorReg();
-    };
-    /**
-     * Retrieve a single component from a vertex temporary register that's still available.
-     */
-    ShaderRegisterCache.prototype.getFreeVertexSingleTemp = function () {
-        return this._vertexTempCache.requestFreeRegComponent();
-    };
-    /**
-     * Retrieve an available vertex attribute register
-     */
-    ShaderRegisterCache.prototype.getFreeVertexAttribute = function () {
-        ++this._numUsedStreams;
-        return this._vertexAttributesCache.requestFreeVectorReg();
-    };
-    /**
-     * Retrieve an available texture register
-     */
-    ShaderRegisterCache.prototype.getFreeTextureReg = function () {
-        ++this._numUsedTextures;
-        return this._textureCache.requestFreeVectorReg();
-    };
-    Object.defineProperty(ShaderRegisterCache.prototype, "vertexConstantOffset", {
-        /**
-         * Indicates the start index from which to retrieve vertex constants.
-         */
-        get: function () {
-            return this._vertexConstantOffset;
-        },
-        set: function (vertexConstantOffset) {
-            this._vertexConstantOffset = vertexConstantOffset;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterCache.prototype, "vertexAttributesOffset", {
-        /**
-         * Indicates the start index from which to retrieve vertex attributes.
-         */
-        get: function () {
-            return this._vertexAttributesOffset;
-        },
-        set: function (value) {
-            this._vertexAttributesOffset = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterCache.prototype, "varyingsOffset", {
-        /**
-         * Indicates the start index from which to retrieve varying registers.
-         */
-        get: function () {
-            return this._varyingsOffset;
-        },
-        set: function (value) {
-            this._varyingsOffset = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterCache.prototype, "fragmentConstantOffset", {
-        /**
-         * Indicates the start index from which to retrieve fragment constants.
-         */
-        get: function () {
-            return this._fragmentConstantOffset;
-        },
-        set: function (value) {
-            this._fragmentConstantOffset = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterCache.prototype, "fragmentOutputRegister", {
-        /**
-         * The fragment output register.
-         */
-        get: function () {
-            return this._fragmentOutputRegister;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterCache.prototype, "numUsedVertexConstants", {
-        /**
-         * The amount of used vertex constant registers.
-         */
-        get: function () {
-            return this._numUsedVertexConstants;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterCache.prototype, "numUsedFragmentConstants", {
-        /**
-         * The amount of used fragment constant registers.
-         */
-        get: function () {
-            return this._numUsedFragmentConstants;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterCache.prototype, "numUsedStreams", {
-        /**
-         * The amount of used vertex streams.
-         */
-        get: function () {
-            return this._numUsedStreams;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterCache.prototype, "numUsedTextures", {
-        /**
-         * The amount of used texture slots.
-         */
-        get: function () {
-            return this._numUsedTextures;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterCache.prototype, "numUsedVaryings", {
-        /**
-         * The amount of used varying registers.
-         */
-        get: function () {
-            return this._numUsedVaryings;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return ShaderRegisterCache;
-})();
-module.exports = ShaderRegisterCache;
-
-},{"awayjs-renderergl/lib/compilation/RegisterPool":"awayjs-renderergl/lib/compilation/RegisterPool","awayjs-renderergl/lib/compilation/ShaderRegisterElement":"awayjs-renderergl/lib/compilation/ShaderRegisterElement"}],"awayjs-renderergl/lib/compilation/ShaderRegisterData":[function(require,module,exports){
-/**
- * ShaderRegisterData contains the "named" registers, generated by the compiler and to be passed on to the methods.
- */
-var ShaderRegisterData = (function () {
-    function ShaderRegisterData() {
-    }
-    return ShaderRegisterData;
-})();
-module.exports = ShaderRegisterData;
-
-},{}],"awayjs-renderergl/lib/compilation/ShaderRegisterElement":[function(require,module,exports){
-/**
- * A single register element (an entire register or a single register's component) used by the RegisterPool.
- */
-var ShaderRegisterElement = (function () {
-    /**
-     * Creates a new ShaderRegisterElement object.
-     *
-     * @param regName The name of the register.
-     * @param index The index of the register.
-     * @param component The register's component, if not the entire register is represented.
-     */
-    function ShaderRegisterElement(regName, index, component) {
-        if (component === void 0) { component = -1; }
-        this._component = component;
-        this._regName = regName;
-        this._index = index;
-        this._toStr = this._regName;
-        if (this._index >= 0)
-            this._toStr += this._index;
-        if (component > -1)
-            this._toStr += "." + ShaderRegisterElement.COMPONENTS[component];
-    }
-    /**
-     * Converts the register or the components AGAL string representation.
-     */
-    ShaderRegisterElement.prototype.toString = function () {
-        return this._toStr;
-    };
-    Object.defineProperty(ShaderRegisterElement.prototype, "regName", {
-        /**
-         * The register's name.
-         */
-        get: function () {
-            return this._regName;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterElement.prototype, "index", {
-        /**
-         * The register's index.
-         */
-        get: function () {
-            return this._index;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ShaderRegisterElement.COMPONENTS = ["x", "y", "z", "w"];
-    return ShaderRegisterElement;
-})();
-module.exports = ShaderRegisterElement;
-
-},{}],"awayjs-renderergl/lib/compilation/SkyboxRenderObject":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var BlendMode = require("awayjs-core/lib/data/BlendMode");
-var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
-var SkyboxPass = require("awayjs-renderergl/lib/passes/SkyboxPass");
-/**
- * SkyboxRenderObject forms an abstract base class for the default shaded materials provided by Stage,
- * using material methods to define their appearance.
- */
-var SkyboxRenderObject = (function (_super) {
-    __extends(SkyboxRenderObject, _super);
-    function SkyboxRenderObject(pool, skybox, renderableClass, stage) {
-        _super.call(this, pool, skybox, renderableClass, stage);
-        this._screenPass = new SkyboxPass(this, skybox, renderableClass, this._stage);
-        this._pAddScreenPass(this._screenPass);
-    }
-    /**
-     * @inheritDoc
-     */
-    SkyboxRenderObject.prototype._pUpdateRenderObject = function () {
-        _super.prototype._pUpdateRenderObject.call(this);
-        this._pRequiresBlending = (this._renderObjectOwner.blendMode != BlendMode.NORMAL);
-        this._screenPass.setBlendMode((this._renderObjectOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._renderObjectOwner.blendMode);
-    };
-    return SkyboxRenderObject;
-})(RenderObjectBase);
-module.exports = SkyboxRenderObject;
-
-},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/SkyboxPass":"awayjs-renderergl/lib/passes/SkyboxPass"}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
+},{"awayjs-core/lib/data/Geometry":undefined}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11584,575 +9657,7 @@ var RTTBufferManagerVO = (function () {
 })();
 module.exports = RTTBufferManager;
 
-},{"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/ImageUtils":undefined}],"awayjs-renderergl/lib/passes/BasicMaterialPass":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
-/**
- * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
- * using material methods to define their appearance.
- */
-var BasicMaterialPass = (function (_super) {
-    __extends(BasicMaterialPass, _super);
-    function BasicMaterialPass(renderObject, renderObjectOwner, renderableClass, stage) {
-        _super.call(this, renderObject, renderObjectOwner, renderableClass, stage);
-        this._diffuseR = 1;
-        this._diffuseG = 1;
-        this._diffuseB = 1;
-        this._diffuseA = 1;
-        this._shader = new ShaderObjectBase(renderableClass, this, this._stage);
-    }
-    BasicMaterialPass.prototype._iIncludeDependencies = function (shaderObject) {
-        _super.prototype._iIncludeDependencies.call(this, shaderObject);
-        if (shaderObject.texture != null)
-            shaderObject.uvDependencies++;
-    };
-    /**
-     * @inheritDoc
-     */
-    BasicMaterialPass.prototype._iGetFragmentCode = function (shaderObject, regCache, sharedReg) {
-        var code = "";
-        var alphaReg;
-        if (this.preserveAlpha) {
-            alphaReg = regCache.getFreeFragmentSingleTemp();
-            regCache.addFragmentTempUsages(alphaReg, 1);
-            code += "mov " + alphaReg + ", " + sharedReg.shadedTarget + ".w\n";
-        }
-        var targetReg = sharedReg.shadedTarget;
-        if (shaderObject.texture != null) {
-            shaderObject.texture._iInitRegisters(shaderObject, regCache);
-            code += shaderObject.texture._iGetFragmentCode(shaderObject, targetReg, regCache, sharedReg.uvVarying);
-            if (shaderObject.alphaThreshold > 0) {
-                var cutOffReg = regCache.getFreeFragmentConstant();
-                this._fragmentConstantsIndex = cutOffReg.index * 4;
-                code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" + "kil " + targetReg + ".w\n" + "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
-            }
-        }
-        else if (shaderObject.colorBufferIndex != -1) {
-            code += "mov " + targetReg + ", " + sharedReg.colorVarying + "\n";
-        }
-        else {
-            var diffuseInputReg = regCache.getFreeFragmentConstant();
-            this._fragmentConstantsIndex = diffuseInputReg.index * 4;
-            code += "mov " + targetReg + ", " + diffuseInputReg + "\n";
-        }
-        if (this.preserveAlpha) {
-            code += "mul " + sharedReg.shadedTarget + ".w, " + sharedReg.shadedTarget + ".w, " + alphaReg + "\n";
-            regCache.removeFragmentTempUsage(alphaReg);
-        }
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    BasicMaterialPass.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
-        if (this._shader.texture != null) {
-            this._shader.texture.activate(this._shader);
-            if (this._shader.alphaThreshold > 0)
-                this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;
-        }
-        else if (this._shader.colorBufferIndex == -1) {
-            var index = this._fragmentConstantsIndex;
-            var data = this._shader.fragmentConstantData;
-            data[index] = this._diffuseR;
-            data[index + 1] = this._diffuseG;
-            data[index + 2] = this._diffuseB;
-            data[index + 3] = this._diffuseA;
-        }
-    };
-    return BasicMaterialPass;
-})(RenderPassBase);
-module.exports = BasicMaterialPass;
-
-},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase"}],"awayjs-renderergl/lib/passes/DepthPass":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
-/**
- * DepthRenderObject forms an abstract base class for the default shaded materials provided by Stage,
- * using material methods to define their appearance.
- */
-var DepthPass = (function (_super) {
-    __extends(DepthPass, _super);
-    function DepthPass(renderObject, renderObjectOwner, renderableClass, stage) {
-        _super.call(this, renderObject, renderObjectOwner, renderableClass, stage);
-        this._shader = new ShaderObjectBase(renderableClass, this, this._stage);
-    }
-    DepthPass.prototype._iIncludeDependencies = function (shaderObject) {
-        _super.prototype._iIncludeDependencies.call(this, shaderObject);
-        shaderObject.projectionDependencies++;
-        if (shaderObject.alphaThreshold > 0)
-            shaderObject.uvDependencies++;
-    };
-    DepthPass.prototype._iInitConstantData = function (shaderObject) {
-        _super.prototype._iInitConstantData.call(this, shaderObject);
-        var index = this._fragmentConstantsIndex;
-        var data = shaderObject.fragmentConstantData;
-        data[index] = 1.0;
-        data[index + 1] = 255.0;
-        data[index + 2] = 65025.0;
-        data[index + 3] = 16581375.0;
-        data[index + 4] = 1.0 / 255.0;
-        data[index + 5] = 1.0 / 255.0;
-        data[index + 6] = 1.0 / 255.0;
-        data[index + 7] = 0.0;
-    };
-    /**
-     * @inheritDoc
-     */
-    DepthPass.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        var code = "";
-        var targetReg = sharedRegisters.shadedTarget;
-        var diffuseInputReg = registerCache.getFreeTextureReg();
-        var dataReg1 = registerCache.getFreeFragmentConstant();
-        var dataReg2 = registerCache.getFreeFragmentConstant();
-        this._fragmentConstantsIndex = dataReg1.index * 4;
-        var temp1 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp1, 1);
-        var temp2 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp2, 1);
-        code += "div " + temp1 + ", " + sharedRegisters.projectionFragment + ", " + sharedRegisters.projectionFragment + ".w\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
-        //codeF += "mov ft1.w, fc1.w	\n" +
-        //    "mov ft0.w, fc0.x	\n";
-        if (shaderObject.texture && shaderObject.alphaThreshold > 0) {
-            shaderObject.texture._iInitRegisters(shaderObject, registerCache);
-            var albedo = registerCache.getFreeFragmentVectorTemp();
-            code += shaderObject.texture._iGetFragmentCode(shaderObject, albedo, registerCache, sharedRegisters.uvVarying);
-            var cutOffReg = registerCache.getFreeFragmentConstant();
-            code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
-        }
-        code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
-        registerCache.removeFragmentTempUsage(temp1);
-        registerCache.removeFragmentTempUsage(temp2);
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DepthPass.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
-        var context = this._stage.context;
-        if (this._shader.texture && this._shader.alphaThreshold > 0) {
-            this._shader.texture.activate(this._shader);
-            this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
-        }
-    };
-    return DepthPass;
-})(RenderPassBase);
-module.exports = DepthPass;
-
-},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase"}],"awayjs-renderergl/lib/passes/DistancePass":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
-/**
- * DistancePass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
- * This is used to render omnidirectional shadow maps.
- */
-var DistancePass = (function (_super) {
-    __extends(DistancePass, _super);
-    /**
-     * Creates a new DistancePass object.
-     *
-     * @param material The material to which this pass belongs.
-     */
-    function DistancePass(renderObject, renderObjectOwner, renderableClass, stage) {
-        _super.call(this, renderObject, renderObjectOwner, renderableClass, stage);
-        this._shader = new ShaderObjectBase(renderableClass, this, this._stage);
-    }
-    /**
-     * Initializes the unchanging constant data for this material.
-     */
-    DistancePass.prototype._iInitConstantData = function (shaderObject) {
-        _super.prototype._iInitConstantData.call(this, shaderObject);
-        var index = this._fragmentConstantsIndex;
-        var data = shaderObject.fragmentConstantData;
-        data[index + 4] = 1.0 / 255.0;
-        data[index + 5] = 1.0 / 255.0;
-        data[index + 6] = 1.0 / 255.0;
-        data[index + 7] = 0.0;
-    };
-    DistancePass.prototype._iIncludeDependencies = function (shaderObject) {
-        _super.prototype._iIncludeDependencies.call(this, shaderObject);
-        shaderObject.projectionDependencies++;
-        shaderObject.viewDirDependencies++;
-        if (shaderObject.alphaThreshold > 0)
-            shaderObject.uvDependencies++;
-        if (shaderObject.viewDirDependencies > 0)
-            shaderObject.globalPosDependencies++;
-    };
-    /**
-     * @inheritDoc
-     */
-    DistancePass.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        var code;
-        var targetReg = sharedRegisters.shadedTarget;
-        var dataReg1 = registerCache.getFreeFragmentConstant();
-        var dataReg2 = registerCache.getFreeFragmentConstant();
-        this._fragmentConstantsIndex = dataReg1.index * 4;
-        var temp1 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp1, 1);
-        var temp2 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp2, 1);
-        // squared distance to view
-        code = "dp3 " + temp1 + ".z, " + sharedRegisters.viewDirVarying + ".xyz, " + sharedRegisters.viewDirVarying + ".xyz\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
-        if (shaderObject.alphaThreshold > 0) {
-            shaderObject.texture._iInitRegisters(shaderObject, registerCache);
-            var albedo = registerCache.getFreeFragmentVectorTemp();
-            code += shaderObject.texture._iGetFragmentCode(shaderObject, albedo, registerCache, sharedRegisters.uvVarying);
-            var cutOffReg = registerCache.getFreeFragmentConstant();
-            code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
-        }
-        code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DistancePass.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
-        var context = this._stage.context;
-        var f = camera.projection.far;
-        f = 1 / (2 * f * f);
-        // sqrt(f*f+f*f) is largest possible distance for any frustum, so we need to divide by it. Rarely a tight fit, but with 32 bits precision, it's enough.
-        var index = this._fragmentConstantsIndex;
-        var data = this._shader.fragmentConstantData;
-        data[index] = 1.0 * f;
-        data[index + 1] = 255.0 * f;
-        data[index + 2] = 65025.0 * f;
-        data[index + 3] = 16581375.0 * f;
-        if (this._shader.alphaThreshold > 0) {
-            this._shader.texture.activate(this._shader);
-            data[index + 8] = this._shader.alphaThreshold;
-        }
-    };
-    return DistancePass;
-})(RenderPassBase);
-module.exports = DistancePass;
-
-},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase"}],"awayjs-renderergl/lib/passes/IRenderLightingPass":[function(require,module,exports){
-
-},{}],"awayjs-renderergl/lib/passes/IRenderPassBase":[function(require,module,exports){
-
-},{}],"awayjs-renderergl/lib/passes/RenderPassBase":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var BlendMode = require("awayjs-core/lib/data/BlendMode");
-var ArgumentError = require("awayjs-core/lib/errors/ArgumentError");
-var Event = require("awayjs-core/lib/events/Event");
-var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
-var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-/**
- * RenderPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
- * a render call per required renderable.
- */
-var RenderPassBase = (function (_super) {
-    __extends(RenderPassBase, _super);
-    /**
-     * Creates a new RenderPassBase object.
-     */
-    function RenderPassBase(renderObject, renderObjectOwner, renderableClass, stage) {
-        _super.call(this);
-        this._preserveAlpha = true;
-        this._forceSeparateMVP = false;
-        this._depthCompareMode = ContextGLCompareMode.LESS_EQUAL;
-        this._blendFactorSource = ContextGLBlendFactor.ONE;
-        this._blendFactorDest = ContextGLBlendFactor.ZERO;
-        this._pEnableBlending = false;
-        this._writeDepth = true;
-        this._renderObject = renderObject;
-        this._renderObjectOwner = renderObjectOwner;
-        this._renderableClass = renderableClass;
-        this._stage = stage;
-    }
-    Object.defineProperty(RenderPassBase.prototype, "shader", {
-        get: function () {
-            return this._shader;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RenderPassBase.prototype, "animationSet", {
-        get: function () {
-            return this._renderObjectOwner.animationSet;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RenderPassBase.prototype, "preserveAlpha", {
-        /**
-         * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
-         */
-        get: function () {
-            return this._preserveAlpha;
-        },
-        set: function (value) {
-            if (this._preserveAlpha == value)
-                return;
-            this._preserveAlpha = value;
-            this.invalidatePass();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RenderPassBase.prototype, "forceSeparateMVP", {
-        /**
-         * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
-         * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
-         * projection code.
-         */
-        get: function () {
-            return this._forceSeparateMVP;
-        },
-        set: function (value) {
-            if (this._forceSeparateMVP == value)
-                return;
-            this._forceSeparateMVP = value;
-            this.invalidatePass();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RenderPassBase.prototype, "writeDepth", {
-        /**
-         * Indicate whether this pass should write to the depth buffer or not. Ignored when blending is enabled.
-         */
-        get: function () {
-            return this._writeDepth;
-        },
-        set: function (value) {
-            this._writeDepth = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RenderPassBase.prototype, "depthCompareMode", {
-        /**
-         * The depth compare mode used to render the renderables using this material.
-         *
-         * @see away.stagegl.ContextGLCompareMode
-         */
-        get: function () {
-            return this._depthCompareMode;
-        },
-        set: function (value) {
-            this._depthCompareMode = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Cleans up any resources used by the current object.
-     * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
-     */
-    RenderPassBase.prototype.dispose = function () {
-        this._shader.dispose();
-        this._shader = null;
-    };
-    /**
-     * Renders the current pass. Before calling renderPass, activatePass needs to be called with the same index.
-     * @param pass The pass used to render the renderable.
-     * @param renderable The IRenderable object to draw.
-     * @param stage The Stage object used for rendering.
-     * @param entityCollector The EntityCollector object that contains the visible scene data.
-     * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
-     * camera.viewProjection as it includes the scaling factors when rendering to textures.
-     *
-     * @internal
-     */
-    RenderPassBase.prototype._iRender = function (renderable, camera, viewProjection) {
-        this._shader._iRender(renderable, camera, viewProjection);
-    };
-    /**
-     * The blend mode to use when drawing this renderable. The following blend modes are supported:
-     * <ul>
-     * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
-     * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
-     * <li>BlendMode.MULTIPLY</li>
-     * <li>BlendMode.ADD</li>
-     * <li>BlendMode.ALPHA</li>
-     * </ul>
-     */
-    RenderPassBase.prototype.setBlendMode = function (value) {
-        switch (value) {
-            case BlendMode.NORMAL:
-                this._blendFactorSource = ContextGLBlendFactor.ONE;
-                this._blendFactorDest = ContextGLBlendFactor.ZERO;
-                this._pEnableBlending = false;
-                break;
-            case BlendMode.LAYER:
-                this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
-                this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
-                this._pEnableBlending = true;
-                break;
-            case BlendMode.MULTIPLY:
-                this._blendFactorSource = ContextGLBlendFactor.ZERO;
-                this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
-                this._pEnableBlending = true;
-                break;
-            case BlendMode.ADD:
-                this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
-                this._blendFactorDest = ContextGLBlendFactor.ONE;
-                this._pEnableBlending = true;
-                break;
-            case BlendMode.ALPHA:
-                this._blendFactorSource = ContextGLBlendFactor.ZERO;
-                this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
-                this._pEnableBlending = true;
-                break;
-            default:
-                throw new ArgumentError("Unsupported blend mode!");
-        }
-    };
-    /**
-     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
-     * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
-     * @param stage The Stage object which is currently used for rendering.
-     * @param camera The camera from which the scene is viewed.
-     * @private
-     */
-    RenderPassBase.prototype._iActivate = function (camera) {
-        this._stage.context.setDepthTest((this._writeDepth && !this._pEnableBlending), this._depthCompareMode);
-        if (this._pEnableBlending)
-            this._stage.context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
-        this._shader._iActivate(camera);
-    };
-    /**
-     * Clears the render state for the pass. This needs to be called before activating another pass.
-     * @param stage The Stage used for rendering
-     *
-     * @private
-     */
-    RenderPassBase.prototype._iDeactivate = function () {
-        this._shader._iDeactivate();
-        //For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
-        this._stage.context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
-    };
-    /**
-     * Marks the shader program as invalid, so it will be recompiled before the next render.
-     *
-     * @param updateMaterial Indicates whether the invalidation should be performed on the entire material. Should always pass "true" unless it's called from the material itself.
-     */
-    RenderPassBase.prototype.invalidatePass = function () {
-        this._shader.invalidateShader();
-        this.dispatchEvent(new Event(Event.CHANGE));
-    };
-    RenderPassBase.prototype._iIncludeDependencies = function (shaderObject) {
-        this._renderObject._iIncludeDependencies(shaderObject);
-        if (this._forceSeparateMVP)
-            shaderObject.globalPosDependencies++;
-    };
-    RenderPassBase.prototype._iInitConstantData = function (shaderObject) {
-    };
-    RenderPassBase.prototype._iGetPreLightingVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    RenderPassBase.prototype._iGetPreLightingFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    RenderPassBase.prototype._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    RenderPassBase.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    RenderPassBase.prototype._iGetNormalVertexCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    RenderPassBase.prototype._iGetNormalFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        return "";
-    };
-    /**
-     * Indicates whether or not normals are calculated at all.
-     */
-    RenderPassBase.prototype._pOutputsNormals = function (shaderObject) {
-        return false;
-    };
-    /**
-     * Indicates whether or not normals are calculated in tangent space.
-     */
-    RenderPassBase.prototype._pOutputsTangentNormals = function (shaderObject) {
-        return false;
-    };
-    /**
-     * Indicates whether or not normals are allowed in tangent space. This is only the case if no object-space
-     * dependencies exist.
-     */
-    RenderPassBase.prototype._pUsesTangentSpace = function (shaderObject) {
-        return false;
-    };
-    return RenderPassBase;
-})(EventDispatcher);
-module.exports = RenderPassBase;
-
-},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/passes/SkyboxPass":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
-var ShaderObjectBase = require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-/**
- * SkyboxPass forms an abstract base class for the default shaded materials provided by Stage,
- * using material methods to define their appearance.
- */
-var SkyboxPass = (function (_super) {
-    __extends(SkyboxPass, _super);
-    function SkyboxPass(renderObject, renderObjectOwner, renderableClass, stage) {
-        _super.call(this, renderObject, renderObjectOwner, renderableClass, stage);
-        this._skybox = renderObjectOwner;
-        this._shader = new ShaderObjectBase(renderableClass, this, this._stage);
-        this._cubeTexture = this._shader.getTextureObject(this._skybox.cubeMap);
-    }
-    SkyboxPass.prototype._iIncludeDependencies = function (shaderObject) {
-        _super.prototype._iIncludeDependencies.call(this, shaderObject);
-        shaderObject.usesLocalPosFragment = true;
-    };
-    /**
-    * @inheritDoc
-    */
-    SkyboxPass.prototype._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        this._cubeTexture._iInitRegisters(shaderObject, registerCache);
-        return this._cubeTexture._iGetFragmentCode(shaderObject, sharedRegisters.shadedTarget, registerCache, sharedRegisters.localPositionVarying);
-    };
-    /**
-     * @inheritDoc
-     */
-    SkyboxPass.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
-        var context = this._stage.context;
-        context.setDepthTest(false, ContextGLCompareMode.LESS);
-        this._cubeTexture.activate(this._shader);
-    };
-    return SkyboxPass;
-})(RenderPassBase);
-module.exports = SkyboxPass;
-
-},{"awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase","awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/pick/JSPickingCollider":[function(require,module,exports){
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/ImageUtils":undefined}],"awayjs-renderergl/lib/pick/JSPickingCollider":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12201,7 +9706,7 @@ var JSPickingCollider = (function (_super) {
         var Q1Q2, Q1Q1, Q2Q2, RQ1, RQ2;
         var indexData = renderable.getIndexData().data;
         var collisionTriangleIndex = -1;
-        var bothSides = renderable.renderObjectOwner.bothSides;
+        var bothSides = renderable.renderOwner.bothSides;
         var positionData = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).data;
         var positionStride = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).dataPerVertex;
         var positionOffset = renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA);
@@ -12540,7 +10045,7 @@ var ShaderPicker = (function () {
                 continue;
             }
             this._potentialFound = true;
-            this._context.setCulling(renderable.renderObjectOwner.bothSides ? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
+            this._context.setCulling(renderable.renderOwner.bothSides ? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
             this._interactives[this._interactiveId++] = renderable;
             // color code so that reading from bitmapdata will contain the correct value
             this._id[1] = (this._interactiveId >> 8) / 255; // on green channel
@@ -12803,7 +10308,892 @@ var ShaderPicker = (function () {
 })();
 module.exports = ShaderPicker;
 
-},{"awayjs-core/lib/data/BitmapImage2D":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/pool/BillboardRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapImage2D":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/render/BasicMaterialRender":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
+var BasicMaterialPass = require("awayjs-renderergl/lib/render/passes/BasicMaterialPass");
+var RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
+/**
+ * RenderMaterialObject forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
+ */
+var BasicMaterialRender = (function (_super) {
+    __extends(BasicMaterialRender, _super);
+    function BasicMaterialRender(pool, material, renderableClass, stage) {
+        _super.call(this, pool, material, renderableClass, stage);
+        this._material = material;
+        this._pAddPass(this._pass = new BasicMaterialPass(this, material, renderableClass, this._stage));
+    }
+    /**
+     * @inheritDoc
+     */
+    BasicMaterialRender.prototype._pUpdateRender = function () {
+        _super.prototype._pUpdateRender.call(this);
+        this._pRequiresBlending = (this._material.blendMode != BlendMode.NORMAL || this._material.alphaBlending || (this._material.colorTransform && this._material.colorTransform.alphaMultiplier < 1));
+        this._pass.preserveAlpha = this._material.preserveAlpha; //this._pRequiresBlending;
+        this._pass.shader.setBlendMode((this._renderOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._material.blendMode);
+        //this._pass.forceSeparateMVP = false;
+    };
+    return BasicMaterialRender;
+})(RenderBase);
+module.exports = BasicMaterialRender;
+
+},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-renderergl/lib/render/RenderBase":"awayjs-renderergl/lib/render/RenderBase","awayjs-renderergl/lib/render/passes/BasicMaterialPass":"awayjs-renderergl/lib/render/passes/BasicMaterialPass"}],"awayjs-renderergl/lib/render/DepthRender":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var RenderPassBase = require("awayjs-renderergl/lib/render/RenderPassBase");
+var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+/**
+ * DepthRender forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
+ */
+var DepthRender = (function (_super) {
+    __extends(DepthRender, _super);
+    /**
+     *
+     * @param pool
+     * @param renderOwner
+     * @param renderableClass
+     * @param stage
+     */
+    function DepthRender(pool, renderOwner, renderableClass, stage) {
+        _super.call(this, pool, renderOwner, renderableClass, stage);
+        this._shader = new ShaderBase(renderableClass, this, this._stage);
+        this._pAddPass(this);
+    }
+    DepthRender.prototype._iIncludeDependencies = function (shader) {
+        _super.prototype._iIncludeDependencies.call(this, shader);
+        shader.projectionDependencies++;
+        if (shader.alphaThreshold > 0)
+            shader.uvDependencies++;
+    };
+    DepthRender.prototype._iInitConstantData = function (shader) {
+        _super.prototype._iInitConstantData.call(this, shader);
+        var index = this._fragmentConstantsIndex;
+        var data = shader.fragmentConstantData;
+        data[index] = 1.0;
+        data[index + 1] = 255.0;
+        data[index + 2] = 65025.0;
+        data[index + 3] = 16581375.0;
+        data[index + 4] = 1.0 / 255.0;
+        data[index + 5] = 1.0 / 255.0;
+        data[index + 6] = 1.0 / 255.0;
+        data[index + 7] = 0.0;
+    };
+    /**
+     * @inheritDoc
+     */
+    DepthRender.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+        var code = "";
+        var targetReg = sharedRegisters.shadedTarget;
+        var dataReg1 = registerCache.getFreeFragmentConstant();
+        var dataReg2 = registerCache.getFreeFragmentConstant();
+        this._fragmentConstantsIndex = dataReg1.index * 4;
+        var temp1 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp1, 1);
+        var temp2 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp2, 1);
+        code += "div " + temp1 + ", " + sharedRegisters.projectionFragment + ", " + sharedRegisters.projectionFragment + ".w\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
+        //codeF += "mov ft1.w, fc1.w	\n" +
+        //    "mov ft0.w, fc0.x	\n";
+        if (shader.texture && shader.alphaThreshold > 0) {
+            shader.texture._iInitRegisters(shader, registerCache);
+            var albedo = registerCache.getFreeFragmentVectorTemp();
+            code += shader.texture._iGetFragmentCode(shader, albedo, registerCache, sharedRegisters.uvVarying);
+            var cutOffReg = registerCache.getFreeFragmentConstant();
+            code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
+        }
+        code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
+        registerCache.removeFragmentTempUsage(temp1);
+        registerCache.removeFragmentTempUsage(temp2);
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DepthRender.prototype._iActivate = function (camera) {
+        _super.prototype._iActivate.call(this, camera);
+        if (this._shader.texture && this._shader.alphaThreshold > 0) {
+            this._shader.texture.activate(this._shader);
+            this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
+        }
+    };
+    return DepthRender;
+})(RenderPassBase);
+module.exports = DepthRender;
+
+},{"awayjs-renderergl/lib/render/RenderPassBase":"awayjs-renderergl/lib/render/RenderPassBase","awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase"}],"awayjs-renderergl/lib/render/DistanceRender":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var RenderPassBase = require("awayjs-renderergl/lib/render/RenderPassBase");
+var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+/**
+ * DistanceRender is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
+ * This is used to render omnidirectional shadow maps.
+ */
+var DistanceRender = (function (_super) {
+    __extends(DistanceRender, _super);
+    /**
+     * Creates a new DistanceRender object.
+     *
+     * @param material The material to which this pass belongs.
+     */
+    function DistanceRender(pool, renderOwner, renderableClass, stage) {
+        _super.call(this, pool, renderOwner, renderableClass, stage);
+        this._shader = new ShaderBase(renderableClass, this, this._stage);
+        this._pAddPass(this);
+    }
+    /**
+     * Initializes the unchanging constant data for this material.
+     */
+    DistanceRender.prototype._iInitConstantData = function (shader) {
+        _super.prototype._iInitConstantData.call(this, shader);
+        var index = this._fragmentConstantsIndex;
+        var data = shader.fragmentConstantData;
+        data[index + 4] = 1.0 / 255.0;
+        data[index + 5] = 1.0 / 255.0;
+        data[index + 6] = 1.0 / 255.0;
+        data[index + 7] = 0.0;
+    };
+    DistanceRender.prototype._iIncludeDependencies = function (shader) {
+        _super.prototype._iIncludeDependencies.call(this, shader);
+        shader.projectionDependencies++;
+        shader.viewDirDependencies++;
+        if (shader.alphaThreshold > 0)
+            shader.uvDependencies++;
+        if (shader.viewDirDependencies > 0)
+            shader.globalPosDependencies++;
+    };
+    /**
+     * @inheritDoc
+     */
+    DistanceRender.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+        var code;
+        var targetReg = sharedRegisters.shadedTarget;
+        var dataReg1 = registerCache.getFreeFragmentConstant();
+        var dataReg2 = registerCache.getFreeFragmentConstant();
+        this._fragmentConstantsIndex = dataReg1.index * 4;
+        var temp1 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp1, 1);
+        var temp2 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp2, 1);
+        // squared distance to view
+        code = "dp3 " + temp1 + ".z, " + sharedRegisters.viewDirVarying + ".xyz, " + sharedRegisters.viewDirVarying + ".xyz\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
+        if (shader.alphaThreshold > 0) {
+            shader.texture._iInitRegisters(shader, registerCache);
+            var albedo = registerCache.getFreeFragmentVectorTemp();
+            code += shader.texture._iGetFragmentCode(shader, albedo, registerCache, sharedRegisters.uvVarying);
+            var cutOffReg = registerCache.getFreeFragmentConstant();
+            code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
+        }
+        code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DistanceRender.prototype._iActivate = function (camera) {
+        _super.prototype._iActivate.call(this, camera);
+        var f = camera.projection.far;
+        f = 1 / (2 * f * f);
+        // sqrt(f*f+f*f) is largest possible distance for any frustum, so we need to divide by it. Rarely a tight fit, but with 32 bits precision, it's enough.
+        var index = this._fragmentConstantsIndex;
+        var data = this._shader.fragmentConstantData;
+        data[index] = 1.0 * f;
+        data[index + 1] = 255.0 * f;
+        data[index + 2] = 65025.0 * f;
+        data[index + 3] = 16581375.0 * f;
+        if (this._shader.alphaThreshold > 0) {
+            this._shader.texture.activate(this._shader);
+            data[index + 8] = this._shader.alphaThreshold;
+        }
+    };
+    return DistanceRender;
+})(RenderPassBase);
+module.exports = DistanceRender;
+
+},{"awayjs-renderergl/lib/render/RenderPassBase":"awayjs-renderergl/lib/render/RenderPassBase","awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase"}],"awayjs-renderergl/lib/render/IRenderClass":[function(require,module,exports){
+
+},{}],"awayjs-renderergl/lib/render/RenderBase":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Event = require("awayjs-core/lib/events/Event");
+var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+var MaterialBase = require("awayjs-display/lib/materials/MaterialBase");
+/**
+ *
+ * @class away.pool.Passes
+ */
+var RenderBase = (function (_super) {
+    __extends(RenderBase, _super);
+    function RenderBase(pool, renderOwner, renderableClass, stage) {
+        var _this = this;
+        _super.call(this);
+        this._forceSeparateMVP = false;
+        this._invalidAnimation = true;
+        this._invalidRender = true;
+        this._passes = new Array();
+        this._pRequiresBlending = false;
+        this._pool = pool;
+        this.renderId = renderOwner.id;
+        this._renderOwner = renderOwner;
+        this._renderableClass = renderableClass;
+        this._stage = stage;
+        this._onPassChangeDelegate = function (event) { return _this.onPassChange(event); };
+    }
+    Object.defineProperty(RenderBase.prototype, "requiresBlending", {
+        /**
+         * Indicates whether or not the renderable requires alpha blending during rendering.
+         */
+        get: function () {
+            return this._pRequiresBlending;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RenderBase.prototype, "renderOrderId", {
+        get: function () {
+            if (this._invalidAnimation)
+                this._updateAnimation();
+            return this._renderOrderId;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RenderBase.prototype, "passes", {
+        get: function () {
+            if (this._invalidAnimation)
+                this._updateAnimation();
+            return this._passes;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    RenderBase.prototype._iIncludeDependencies = function (shader) {
+        this._renderableClass._iIncludeDependencies(shader);
+        shader.alphaThreshold = this._renderOwner.alphaThreshold;
+        shader.useMipmapping = this._renderOwner.mipmap;
+        shader.useSmoothTextures = this._renderOwner.smooth;
+        if (this._renderOwner instanceof MaterialBase) {
+            var material = this._renderOwner;
+            shader.useAlphaPremultiplied = material.alphaPremultiplied;
+            shader.useBothSides = material.bothSides;
+            shader.repeatTextures = material.repeat;
+            shader.usesUVTransform = material.animateUVs;
+            if (material.texture)
+                shader.texture = shader.getTextureVO(material.texture);
+            shader.color = material.color;
+        }
+    };
+    /**
+     *
+     */
+    RenderBase.prototype.dispose = function () {
+        this._pClearPasses();
+        var len = this._passes.length;
+        for (var i = 0; i < len; i++)
+            this._passes[i].dispose();
+        this._passes = null;
+        this._pool.disposeItem(this._renderOwner);
+    };
+    /**
+     *
+     */
+    RenderBase.prototype.invalidateRender = function () {
+        this._invalidRender = true;
+        this._invalidAnimation = true;
+    };
+    /**
+     *
+     */
+    RenderBase.prototype.invalidatePasses = function () {
+        var len = this._passes.length;
+        for (var i = 0; i < len; i++)
+            this._passes[i].invalidatePass();
+        this._invalidAnimation = true;
+    };
+    /**
+     *
+     */
+    RenderBase.prototype.invalidateAnimation = function () {
+        this._invalidAnimation = true;
+    };
+    /**
+     *
+     * @param renderOwner
+     */
+    RenderBase.prototype._updateAnimation = function () {
+        if (this._invalidRender)
+            this._pUpdateRender();
+        this._invalidAnimation = false;
+        var enabledGPUAnimation = this._getEnabledGPUAnimation();
+        var renderOrderId = 0;
+        var mult = 1;
+        var shader;
+        var len = this._passes.length;
+        for (var i = 0; i < len; i++) {
+            shader = this._passes[i].shader;
+            if (shader.usesAnimation != enabledGPUAnimation) {
+                shader.usesAnimation = enabledGPUAnimation;
+                shader.invalidateProgram();
+            }
+            renderOrderId += shader.programData.id * mult;
+            mult *= 1000;
+        }
+        this._renderOrderId = renderOrderId;
+    };
+    /**
+     * Performs any processing that needs to occur before any of its passes are used.
+     *
+     * @private
+     */
+    RenderBase.prototype._pUpdateRender = function () {
+        this._invalidRender = false;
+        //overrride to update shader object properties
+    };
+    /**
+     * Removes a pass from the renderOwner.
+     * @param pass The pass to be removed.
+     */
+    RenderBase.prototype._pRemovePass = function (pass) {
+        pass.removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
+        this._passes.splice(this._passes.indexOf(pass), 1);
+    };
+    /**
+     * Removes all passes from the renderOwner
+     */
+    RenderBase.prototype._pClearPasses = function () {
+        var len = this._passes.length;
+        for (var i = 0; i < len; ++i)
+            this._passes[i].removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
+        this._passes.length = 0;
+    };
+    /**
+     * Adds a pass to the renderOwner
+     * @param pass
+     */
+    RenderBase.prototype._pAddPass = function (pass) {
+        this._passes.push(pass);
+        pass.addEventListener(Event.CHANGE, this._onPassChangeDelegate);
+    };
+    /**
+     * Listener for when a pass's shader code changes. It recalculates the render order id.
+     */
+    RenderBase.prototype.onPassChange = function (event) {
+        this.invalidateAnimation();
+    };
+    /**
+     * test if animation will be able to run on gpu BEFORE compiling materials
+     * test if the shader objects supports animating the animation set in the vertex shader
+     * if any object using this material fails to support accelerated animations for any of the shader objects,
+     * we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
+     */
+    RenderBase.prototype._getEnabledGPUAnimation = function () {
+        if (this._renderOwner.animationSet) {
+            this._renderOwner.animationSet.resetGPUCompatibility();
+            var owners = this._renderOwner.iOwners;
+            var numOwners = owners.length;
+            var len = this._passes.length;
+            for (var i = 0; i < len; i++)
+                for (var j = 0; j < numOwners; j++)
+                    if (owners[j].animator)
+                        owners[j].animator.testGPUCompatibility(this._passes[i].shader);
+            return !this._renderOwner.animationSet.usesCPU;
+        }
+        return false;
+    };
+    return RenderBase;
+})(EventDispatcher);
+module.exports = RenderBase;
+
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-display/lib/materials/MaterialBase":undefined}],"awayjs-renderergl/lib/render/RenderPassBase":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Event = require("awayjs-core/lib/events/Event");
+var RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
+/**
+ * RenderPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
+ * a render call per required renderable.
+ */
+var RenderPassBase = (function (_super) {
+    __extends(RenderPassBase, _super);
+    function RenderPassBase() {
+        _super.apply(this, arguments);
+    }
+    Object.defineProperty(RenderPassBase.prototype, "shader", {
+        get: function () {
+            return this._shader;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RenderPassBase.prototype, "animationSet", {
+        get: function () {
+            return this._renderOwner.animationSet;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Cleans up any resources used by the current object.
+     * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
+     */
+    RenderPassBase.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._shader.dispose();
+        this._shader = null;
+    };
+    /**
+     * Renders the current pass. Before calling pass, activatePass needs to be called with the same index.
+     * @param pass The pass used to render the renderable.
+     * @param renderable The IRenderable object to draw.
+     * @param stage The Stage object used for rendering.
+     * @param entityCollector The EntityCollector object that contains the visible scene data.
+     * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
+     * camera.viewProjection as it includes the scaling factors when rendering to textures.
+     *
+     * @internal
+     */
+    RenderPassBase.prototype._iRender = function (renderable, camera, viewProjection) {
+        this._shader._iRender(renderable, camera, viewProjection);
+    };
+    /**
+     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
+     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
+     * @param stage The Stage object which is currently used for rendering.
+     * @param camera The camera from which the scene is viewed.
+     * @private
+     */
+    RenderPassBase.prototype._iActivate = function (camera) {
+        this._shader._iActivate(camera);
+    };
+    /**
+     * Clears the render state for the pass. This needs to be called before activating another pass.
+     * @param stage The Stage used for rendering
+     *
+     * @private
+     */
+    RenderPassBase.prototype._iDeactivate = function () {
+        this._shader._iDeactivate();
+    };
+    /**
+     * Marks the shader program as invalid, so it will be recompiled before the next render.
+     *
+     * @param updateMaterial Indicates whether the invalidation should be performed on the entire material. Should always pass "true" unless it's called from the material itself.
+     */
+    RenderPassBase.prototype.invalidatePass = function () {
+        this._shader.invalidateShader();
+        this.dispatchEvent(new Event(Event.CHANGE));
+    };
+    RenderPassBase.prototype._iInitConstantData = function (shader) {
+    };
+    RenderPassBase.prototype._iGetPreLightingVertexCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    RenderPassBase.prototype._iGetPreLightingFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    RenderPassBase.prototype._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    RenderPassBase.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    RenderPassBase.prototype._iGetNormalVertexCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    RenderPassBase.prototype._iGetNormalFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    return RenderPassBase;
+})(RenderBase);
+module.exports = RenderPassBase;
+
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-renderergl/lib/render/RenderBase":"awayjs-renderergl/lib/render/RenderBase"}],"awayjs-renderergl/lib/render/RenderPool":[function(require,module,exports){
+var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
+var Skybox = require("awayjs-display/lib/entities/Skybox");
+var BasicMaterialRender = require("awayjs-renderergl/lib/render/BasicMaterialRender");
+var SkyboxRender = require("awayjs-renderergl/lib/render/SkyboxRender");
+/**
+ * @class away.pool.RenderPool
+ */
+var RenderPool = (function () {
+    /**
+     * //TODO
+     *
+     * @param renderClass
+     */
+    function RenderPool(renderableClass, stage, renderClass) {
+        if (renderClass === void 0) { renderClass = null; }
+        this._pool = new Object();
+        this._renderableClass = renderableClass;
+        this._stage = stage;
+        this._renderClass = renderClass;
+    }
+    /**
+     * //TODO
+     *
+     * @param renderableOwner
+     * @returns IRenderable
+     */
+    RenderPool.prototype.getItem = function (renderOwner) {
+        return (this._pool[renderOwner.id] || (this._pool[renderOwner.id] = renderOwner._iAddRender(new (this._renderClass || RenderPool.getClass(renderOwner))(this, renderOwner, this._renderableClass, this._stage))));
+    };
+    /**
+     * //TODO
+     *
+     * @param renderableOwner
+     */
+    RenderPool.prototype.disposeItem = function (renderOwner) {
+        renderOwner._iRemoveRender(this._pool[renderOwner.id]);
+        this._pool[renderOwner.id] = null;
+    };
+    /**
+     *
+     * @param imageObjectClass
+     */
+    RenderPool.registerClass = function (renderClass, assetClass) {
+        RenderPool._classPool[assetClass.assetType] = renderClass;
+    };
+    /**
+     *
+     * @param subGeometry
+     */
+    RenderPool.getClass = function (renderOwner) {
+        return RenderPool._classPool[renderOwner.assetType];
+    };
+    RenderPool.addDefaults = function () {
+        RenderPool.registerClass(BasicMaterialRender, BasicMaterial);
+        RenderPool.registerClass(SkyboxRender, Skybox);
+    };
+    RenderPool._classPool = new Object();
+    RenderPool.main = RenderPool.addDefaults();
+    return RenderPool;
+})();
+module.exports = RenderPool;
+
+},{"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-renderergl/lib/render/BasicMaterialRender":"awayjs-renderergl/lib/render/BasicMaterialRender","awayjs-renderergl/lib/render/SkyboxRender":"awayjs-renderergl/lib/render/SkyboxRender"}],"awayjs-renderergl/lib/render/SkyboxRender":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
+var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
+var RenderPassBase = require("awayjs-renderergl/lib/render/RenderPassBase");
+var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+/**
+ * SkyboxRender forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
+ */
+var SkyboxRender = (function (_super) {
+    __extends(SkyboxRender, _super);
+    function SkyboxRender(pool, skybox, renderableClass, stage) {
+        _super.call(this, pool, skybox, renderableClass, stage);
+        this._skybox = skybox;
+        this._shader = new ShaderBase(renderableClass, this, this._stage);
+        this._cubeTexture = this._shader.getTextureVO(this._skybox.cubeMap);
+        this._pAddPass(this);
+    }
+    /**
+     * @inheritDoc
+     */
+    SkyboxRender.prototype._pUpdateRender = function () {
+        _super.prototype._pUpdateRender.call(this);
+        this._pRequiresBlending = (this._renderOwner.blendMode != BlendMode.NORMAL);
+        this.shader.setBlendMode((this._renderOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._renderOwner.blendMode);
+    };
+    SkyboxRender.prototype._iIncludeDependencies = function (shader) {
+        _super.prototype._iIncludeDependencies.call(this, shader);
+        shader.usesLocalPosFragment = true;
+    };
+    /**
+     * @inheritDoc
+     */
+    SkyboxRender.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+        this._cubeTexture._iInitRegisters(shader, registerCache);
+        return this._cubeTexture._iGetFragmentCode(shader, sharedRegisters.shadedTarget, registerCache, sharedRegisters.localPositionVarying);
+    };
+    /**
+     * @inheritDoc
+     */
+    SkyboxRender.prototype._iActivate = function (camera) {
+        _super.prototype._iActivate.call(this, camera);
+        var context = this._stage.context;
+        context.setDepthTest(false, ContextGLCompareMode.LESS);
+        this._cubeTexture.activate(this._shader);
+    };
+    return SkyboxRender;
+})(RenderPassBase);
+module.exports = SkyboxRender;
+
+},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-renderergl/lib/render/RenderPassBase":"awayjs-renderergl/lib/render/RenderPassBase","awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/render/passes/BasicMaterialPass":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+var PassBase = require("awayjs-renderergl/lib/render/passes/PassBase");
+/**
+ * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
+ */
+var BasicMaterialPass = (function (_super) {
+    __extends(BasicMaterialPass, _super);
+    function BasicMaterialPass(render, renderOwner, renderableClass, stage) {
+        _super.call(this, render, renderOwner, renderableClass, stage);
+        this._diffuseR = 1;
+        this._diffuseG = 1;
+        this._diffuseB = 1;
+        this._diffuseA = 1;
+        this._shader = new ShaderBase(renderableClass, this, this._stage);
+    }
+    BasicMaterialPass.prototype._iIncludeDependencies = function (shader) {
+        _super.prototype._iIncludeDependencies.call(this, shader);
+        if (shader.texture != null)
+            shader.uvDependencies++;
+    };
+    /**
+     * @inheritDoc
+     */
+    BasicMaterialPass.prototype._iGetFragmentCode = function (shader, regCache, sharedReg) {
+        var code = "";
+        var alphaReg;
+        if (this.preserveAlpha) {
+            alphaReg = regCache.getFreeFragmentSingleTemp();
+            regCache.addFragmentTempUsages(alphaReg, 1);
+            code += "mov " + alphaReg + ", " + sharedReg.shadedTarget + ".w\n";
+        }
+        var targetReg = sharedReg.shadedTarget;
+        if (shader.texture != null) {
+            shader.texture._iInitRegisters(shader, regCache);
+            code += shader.texture._iGetFragmentCode(shader, targetReg, regCache, sharedReg.uvVarying);
+            if (shader.alphaThreshold > 0) {
+                var cutOffReg = regCache.getFreeFragmentConstant();
+                this._fragmentConstantsIndex = cutOffReg.index * 4;
+                code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" + "kil " + targetReg + ".w\n" + "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
+            }
+        }
+        else if (shader.colorBufferIndex != -1) {
+            code += "mov " + targetReg + ", " + sharedReg.colorVarying + "\n";
+        }
+        else {
+            var diffuseInputReg = regCache.getFreeFragmentConstant();
+            this._fragmentConstantsIndex = diffuseInputReg.index * 4;
+            code += "mov " + targetReg + ", " + diffuseInputReg + "\n";
+        }
+        if (this.preserveAlpha) {
+            code += "mul " + sharedReg.shadedTarget + ".w, " + sharedReg.shadedTarget + ".w, " + alphaReg + "\n";
+            regCache.removeFragmentTempUsage(alphaReg);
+        }
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    BasicMaterialPass.prototype._iActivate = function (camera) {
+        _super.prototype._iActivate.call(this, camera);
+        if (this._shader.texture != null) {
+            this._shader.texture.activate(this._shader);
+            if (this._shader.alphaThreshold > 0)
+                this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;
+        }
+        else if (this._shader.colorBufferIndex == -1) {
+            var index = this._fragmentConstantsIndex;
+            var data = this._shader.fragmentConstantData;
+            data[index] = this._diffuseR;
+            data[index + 1] = this._diffuseG;
+            data[index + 2] = this._diffuseB;
+            data[index + 3] = this._diffuseA;
+        }
+    };
+    return BasicMaterialPass;
+})(PassBase);
+module.exports = BasicMaterialPass;
+
+},{"awayjs-renderergl/lib/render/passes/PassBase":"awayjs-renderergl/lib/render/passes/PassBase","awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase"}],"awayjs-renderergl/lib/render/passes/ILightingPass":[function(require,module,exports){
+
+},{}],"awayjs-renderergl/lib/render/passes/IPass":[function(require,module,exports){
+
+},{}],"awayjs-renderergl/lib/render/passes/PassBase":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Event = require("awayjs-core/lib/events/Event");
+var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+/**
+ * PassBase provides an abstract base class for material shader passes. A material pass constitutes at least
+ * a render call per required renderable.
+ */
+var PassBase = (function (_super) {
+    __extends(PassBase, _super);
+    /**
+     * Creates a new PassBase object.
+     */
+    function PassBase(render, renderOwner, renderableClass, stage) {
+        _super.call(this);
+        this._preserveAlpha = true;
+        this._forceSeparateMVP = false;
+        this._render = render;
+        this._renderOwner = renderOwner;
+        this._renderableClass = renderableClass;
+        this._stage = stage;
+    }
+    Object.defineProperty(PassBase.prototype, "shader", {
+        get: function () {
+            return this._shader;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PassBase.prototype, "animationSet", {
+        get: function () {
+            return this._renderOwner.animationSet;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PassBase.prototype, "preserveAlpha", {
+        /**
+         * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
+         */
+        get: function () {
+            return this._preserveAlpha;
+        },
+        set: function (value) {
+            if (this._preserveAlpha == value)
+                return;
+            this._preserveAlpha = value;
+            this.invalidatePass();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PassBase.prototype, "forceSeparateMVP", {
+        /**
+         * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
+         * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
+         * projection code.
+         */
+        get: function () {
+            return this._forceSeparateMVP;
+        },
+        set: function (value) {
+            if (this._forceSeparateMVP == value)
+                return;
+            this._forceSeparateMVP = value;
+            this.invalidatePass();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Cleans up any resources used by the current object.
+     * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
+     */
+    PassBase.prototype.dispose = function () {
+        this._shader.dispose();
+        this._shader = null;
+    };
+    /**
+     * Renders the current pass. Before calling pass, activatePass needs to be called with the same index.
+     * @param pass The pass used to render the renderable.
+     * @param renderable The IRenderable object to draw.
+     * @param stage The Stage object used for rendering.
+     * @param entityCollector The EntityCollector object that contains the visible scene data.
+     * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
+     * camera.viewProjection as it includes the scaling factors when rendering to textures.
+     *
+     * @internal
+     */
+    PassBase.prototype._iRender = function (renderable, camera, viewProjection) {
+        this._shader._iRender(renderable, camera, viewProjection);
+    };
+    /**
+     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
+     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
+     * @param stage The Stage object which is currently used for rendering.
+     * @param camera The camera from which the scene is viewed.
+     * @private
+     */
+    PassBase.prototype._iActivate = function (camera) {
+        this._shader._iActivate(camera);
+    };
+    /**
+     * Clears the render state for the pass. This needs to be called before activating another pass.
+     * @param stage The Stage used for rendering
+     *
+     * @private
+     */
+    PassBase.prototype._iDeactivate = function () {
+        this._shader._iDeactivate();
+    };
+    /**
+     * Marks the shader program as invalid, so it will be recompiled before the next render.
+     *
+     * @param updateMaterial Indicates whether the invalidation should be performed on the entire material. Should always pass "true" unless it's called from the material itself.
+     */
+    PassBase.prototype.invalidatePass = function () {
+        this._shader.invalidateShader();
+        this.dispatchEvent(new Event(Event.CHANGE));
+    };
+    PassBase.prototype._iIncludeDependencies = function (shader) {
+        this._render._iIncludeDependencies(shader);
+        if (this._forceSeparateMVP)
+            shader.globalPosDependencies++;
+    };
+    PassBase.prototype._iInitConstantData = function (shader) {
+    };
+    PassBase.prototype._iGetPreLightingVertexCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    PassBase.prototype._iGetPreLightingFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    PassBase.prototype._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    PassBase.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    PassBase.prototype._iGetNormalVertexCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    PassBase.prototype._iGetNormalFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    return PassBase;
+})(EventDispatcher);
+module.exports = PassBase;
+
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined}],"awayjs-renderergl/lib/renderables/BillboardRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12814,7 +11204,7 @@ var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var Billboard = require("awayjs-display/lib/entities/Billboard");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
 /**
  * @class away.pool.RenderableListItem
  */
@@ -12858,19 +11248,19 @@ var BillboardRenderable = (function (_super) {
         this._pVertexDataDirty[TriangleSubGeometry.UV_DATA] = true;
         return geometry;
     };
-    BillboardRenderable._iIncludeDependencies = function (shaderObject) {
+    BillboardRenderable._iIncludeDependencies = function (shader) {
     };
-    BillboardRenderable._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
+    BillboardRenderable._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
         //get the projection coordinates
-        var position = (shaderObject.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
+        var position = (shader.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
         //reserving vertex constants for projection matrix
         var viewMatrixReg = registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
-        shaderObject.viewMatrixIndex = viewMatrixReg.index * 4;
-        if (shaderObject.projectionDependencies > 0) {
+        shader.viewMatrixIndex = viewMatrixReg.index * 4;
+        if (shader.projectionDependencies > 0) {
             sharedRegisters.projectionFragment = registerCache.getFreeVarying();
             var temp = registerCache.getFreeVertexVectorTemp();
             code += "m44 " + temp + ", " + position + ", " + viewMatrixReg + "\n" + "mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" + "mov op, " + temp + "\n";
@@ -12880,7 +11270,7 @@ var BillboardRenderable = (function (_super) {
         }
         return code;
     };
-    BillboardRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+    BillboardRenderable._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
     };
     BillboardRenderable.prototype._iActivate = function (pass, camera) {
@@ -12916,7 +11306,7 @@ var BillboardRenderable = (function (_super) {
 })(RenderableBase);
 module.exports = BillboardRenderable;
 
-},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/CurveSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables/CurveSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12927,7 +11317,7 @@ var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var CurveSubMesh = require("awayjs-display/lib/base/CurveSubMesh");
 var CurveSubGeometry = require("awayjs-core/lib/data/CurveSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
 /**
  * @class away.pool.TriangleSubMeshRenderable
  */
@@ -12966,20 +11356,20 @@ var CurveSubMeshRenderable = (function (_super) {
             this._pVertexDataDirty[CurveSubGeometry.UV_DATA] = true;
         return subGeometry;
     };
-    CurveSubMeshRenderable._iIncludeDependencies = function (shaderObject) {
-        shaderObject.usesLocalPosFragment = true;
+    CurveSubMeshRenderable._iIncludeDependencies = function (shader) {
+        shader.usesLocalPosFragment = true;
     };
-    CurveSubMeshRenderable._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
+    CurveSubMeshRenderable._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
         //get the projection coordinates
-        var position = (shaderObject.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
+        var position = (shader.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
         //reserving vertex constants for projection matrix
         var viewMatrixReg = registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
-        shaderObject.viewMatrixIndex = viewMatrixReg.index * 4;
-        if (shaderObject.projectionDependencies > 0) {
+        shader.viewMatrixIndex = viewMatrixReg.index * 4;
+        if (shader.projectionDependencies > 0) {
             sharedRegisters.projectionFragment = registerCache.getFreeVarying();
             var temp = registerCache.getFreeVertexVectorTemp();
             code += "m44 " + temp + ", " + position + ".xyw, " + viewMatrixReg + "\n" + "mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" + "mov v2 va1 \n" + "mov op, " + temp + "\n";
@@ -12993,8 +11383,8 @@ var CurveSubMeshRenderable = (function (_super) {
     /**
      * @inheritDoc
      */
-    CurveSubMeshRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        var sd = shaderObject._stage.context.standardDerivatives;
+    CurveSubMeshRenderable._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+        var sd = shader._stage.context.standardDerivatives;
         var pos = sharedRegisters.localPositionVarying;
         var out = sharedRegisters.shadedTarget;
         var curve = "v2";
@@ -13110,11 +11500,9 @@ var CurveSubMeshRenderable = (function (_super) {
 })(RenderableBase);
 module.exports = CurveSubMeshRenderable;
 
-},{"awayjs-core/lib/data/CurveSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/CurveSubMesh":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/IRenderableClass":[function(require,module,exports){
+},{"awayjs-core/lib/data/CurveSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/CurveSubMesh":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables/IRenderableClass":[function(require,module,exports){
 
-},{}],"awayjs-renderergl/lib/pool/ITextureObjectClass":[function(require,module,exports){
-
-},{}],"awayjs-renderergl/lib/pool/LineSegmentRenderable":[function(require,module,exports){
+},{}],"awayjs-renderergl/lib/renderables/LineSegmentRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13125,7 +11513,7 @@ var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 var LineSegment = require("awayjs-display/lib/entities/LineSegment");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
 /**
  * @class away.pool.LineSubMeshRenderable
  */
@@ -13187,8 +11575,8 @@ var LineSegmentRenderable = (function (_super) {
         geometry.updateThickness(thickness);
         return geometry;
     };
-    LineSegmentRenderable._iIncludeDependencies = function (shaderObject) {
-        shaderObject.colorDependencies++;
+    LineSegmentRenderable._iIncludeDependencies = function (shader) {
+        shader.colorDependencies++;
     };
     /**
      * @inheritDoc
@@ -13196,7 +11584,7 @@ var LineSegmentRenderable = (function (_super) {
     LineSegmentRenderable._iGetVertexCode = function (shader, regCache, sharedReg) {
         return "m44 vt0, va0, vc8			\n" + "m44 vt1, va1, vc8			\n" + "sub vt2, vt1, vt0 			\n" + "slt vt5.x, vt0.z, vc7.z			\n" + "sub vt5.y, vc5.x, vt5.x			\n" + "add vt4.x, vt0.z, vc7.z			\n" + "sub vt4.y, vt0.z, vt1.z			\n" + "seq vt4.z, vt4.y vc6.x			\n" + "add vt4.y, vt4.y, vt4.z			\n" + "div vt4.z, vt4.x, vt4.y			\n" + "mul vt4.xyz, vt4.zzz, vt2.xyz	\n" + "add vt3.xyz, vt0.xyz, vt4.xyz	\n" + "mov vt3.w, vc5.x			\n" + "mul vt0, vt0, vt5.yyyy			\n" + "mul vt3, vt3, vt5.xxxx			\n" + "add vt0, vt0, vt3				\n" + "sub vt2, vt1, vt0 			\n" + "nrm vt2.xyz, vt2.xyz			\n" + "nrm vt5.xyz, vt0.xyz			\n" + "mov vt5.w, vc5.x				\n" + "crs vt3.xyz, vt2, vt5			\n" + "nrm vt3.xyz, vt3.xyz			\n" + "mul vt3.xyz, vt3.xyz, va2.xxx	\n" + "mov vt3.w, vc5.x			\n" + "dp3 vt4.x, vt0, vc6			\n" + "mul vt4.x, vt4.x, vc7.x			\n" + "mul vt3.xyz, vt3.xyz, vt4.xxx	\n" + "add vt0.xyz, vt0.xyz, vt3.xyz	\n" + "m44 op, vt0, vc0			\n"; // transform Q0 to clip space
     };
-    LineSegmentRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+    LineSegmentRenderable._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
     };
     /**
@@ -13250,7 +11638,7 @@ var LineSegmentRenderable = (function (_super) {
 })(RenderableBase);
 module.exports = LineSegmentRenderable;
 
-},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/LineSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables/LineSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13261,7 +11649,7 @@ var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
 var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
 /**
  * @class away.pool.LineSubMeshRenderable
  */
@@ -13301,8 +11689,8 @@ var LineSubMeshRenderable = (function (_super) {
             this._pVertexDataDirty[LineSubGeometry.COLOR_DATA] = true;
         return subGeometry;
     };
-    LineSubMeshRenderable._iIncludeDependencies = function (shaderObject) {
-        shaderObject.colorDependencies++;
+    LineSubMeshRenderable._iIncludeDependencies = function (shader) {
+        shader.colorDependencies++;
     };
     /**
      * @inheritDoc
@@ -13310,7 +11698,7 @@ var LineSubMeshRenderable = (function (_super) {
     LineSubMeshRenderable._iGetVertexCode = function (shader, regCache, sharedReg) {
         return "m44 vt0, va0, vc8			\n" + "m44 vt1, va1, vc8			\n" + "sub vt2, vt1, vt0 			\n" + "slt vt5.x, vt0.z, vc7.z			\n" + "sub vt5.y, vc5.x, vt5.x			\n" + "add vt4.x, vt0.z, vc7.z			\n" + "sub vt4.y, vt0.z, vt1.z			\n" + "seq vt4.z, vt4.y vc6.x			\n" + "add vt4.y, vt4.y, vt4.z			\n" + "div vt4.z, vt4.x, vt4.y			\n" + "mul vt4.xyz, vt4.zzz, vt2.xyz	\n" + "add vt3.xyz, vt0.xyz, vt4.xyz	\n" + "mov vt3.w, vc5.x			\n" + "mul vt0, vt0, vt5.yyyy			\n" + "mul vt3, vt3, vt5.xxxx			\n" + "add vt0, vt0, vt3				\n" + "sub vt2, vt1, vt0 			\n" + "nrm vt2.xyz, vt2.xyz			\n" + "nrm vt5.xyz, vt0.xyz			\n" + "mov vt5.w, vc5.x				\n" + "crs vt3.xyz, vt2, vt5			\n" + "nrm vt3.xyz, vt3.xyz			\n" + "mul vt3.xyz, vt3.xyz, va2.xxx	\n" + "mov vt3.w, vc5.x			\n" + "dp3 vt4.x, vt0, vc6			\n" + "mul vt4.x, vt4.x, vc7.x			\n" + "mul vt3.xyz, vt3.xyz, vt4.xxx	\n" + "add vt0.xyz, vt0.xyz, vt3.xyz	\n" + "m44 op, vt0, vc0			\n"; // transform Q0 to clip space
     };
-    LineSubMeshRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+    LineSubMeshRenderable._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
     };
     /**
@@ -13363,7 +11751,7 @@ var LineSubMeshRenderable = (function (_super) {
 })(RenderableBase);
 module.exports = LineSubMeshRenderable;
 
-},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/base/LineSubMesh":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/RenderableBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/base/LineSubMesh":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables/RenderableBase":[function(require,module,exports){
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
 var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
@@ -13382,7 +11770,7 @@ var RenderableBase = (function () {
      * @param subGeometry
      * @param animationSubGeometry
      */
-    function RenderableBase(pool, sourceEntity, renderableOwner, renderObjectOwner, stage, level, indexOffset) {
+    function RenderableBase(pool, sourceEntity, renderableOwner, renderOwner, stage, level, indexOffset) {
         var _this = this;
         if (level === void 0) { level = 0; }
         if (indexOffset === void 0) { indexOffset = 0; }
@@ -13393,7 +11781,7 @@ var RenderableBase = (function () {
         this._vertexOffset = new Object();
         this._onIndicesUpdatedDelegate = function (event) { return _this._onIndicesUpdated(event); };
         this._onVerticesUpdatedDelegate = function (event) { return _this._onVerticesUpdated(event); };
-        this._onRenderObjectOwnerUpdatedDelegate = function (event) { return _this._onRenderObjectOwnerUpdated(event); };
+        this._onRenderOwnerUpdatedDelegate = function (event) { return _this._onRenderOwnerUpdated(event); };
         //store a reference to the pool for later disposal
         this._pool = pool;
         this._stage = stage;
@@ -13403,8 +11791,8 @@ var RenderableBase = (function () {
         this._indexOffset = indexOffset;
         this.sourceEntity = sourceEntity;
         this.renderableOwner = renderableOwner;
-        this.renderableOwner.addEventListener(RenderableOwnerEvent.RENDER_OBJECT_OWNER_UPDATED, this._onRenderObjectOwnerUpdatedDelegate);
-        this.renderObjectOwner = renderObjectOwner;
+        this.renderableOwner.addEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate);
+        this.renderOwner = renderOwner;
     }
     Object.defineProperty(RenderableBase.prototype, "overflow", {
         /**
@@ -13523,7 +11911,7 @@ var RenderableBase = (function () {
     };
     /**
      * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
-     * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
+     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
      * @param stage The Stage object which is currently used for rendering.
      * @param camera The camera from which the scene is viewed.
      * @private
@@ -13619,22 +12007,22 @@ var RenderableBase = (function () {
         this._concatenateArrays = event.target.concatenateArrays;
         this.invalidateVertexData(event.dataType);
     };
-    RenderableBase.prototype._onRenderObjectOwnerUpdated = function (event) {
-        //TODO flag unused renderObjects for deletion
-        this.renderObjectOwner = event.renderObjectOwner;
+    RenderableBase.prototype._onRenderOwnerUpdated = function (event) {
+        //TODO flag unused renders for deletion
+        this.renderOwner = event.renderOwner;
     };
     return RenderableBase;
 })();
 module.exports = RenderableBase;
 
-},{"awayjs-core/lib/data/SubGeometryBase":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/SubGeometryEvent":undefined,"awayjs-display/lib/events/RenderableOwnerEvent":undefined,"awayjs-stagegl/lib/pool/IndexDataPool":undefined,"awayjs-stagegl/lib/pool/VertexDataPool":undefined}],"awayjs-renderergl/lib/pool/RenderablePool":[function(require,module,exports){
-var RenderObjectPool = require("awayjs-renderergl/lib/compilation/RenderObjectPool");
-var BillboardRenderable = require("awayjs-renderergl/lib/pool/BillboardRenderable");
-var LineSegmentRenderable = require("awayjs-renderergl/lib/pool/LineSegmentRenderable");
-var LineSubMeshRenderable = require("awayjs-renderergl/lib/pool/LineSubMeshRenderable");
-var TriangleSubMeshRenderable = require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
-var CurveSubMeshRenderable = require("awayjs-renderergl/lib/pool/CurveSubMeshRenderable");
-var SkyboxRenderable = require("awayjs-renderergl/lib/pool/SkyboxRenderable");
+},{"awayjs-core/lib/data/SubGeometryBase":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/SubGeometryEvent":undefined,"awayjs-display/lib/events/RenderableOwnerEvent":undefined,"awayjs-stagegl/lib/pool/IndexDataPool":undefined,"awayjs-stagegl/lib/pool/VertexDataPool":undefined}],"awayjs-renderergl/lib/renderables/RenderablePool":[function(require,module,exports){
+var RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
+var BillboardRenderable = require("awayjs-renderergl/lib/renderables/BillboardRenderable");
+var LineSegmentRenderable = require("awayjs-renderergl/lib/renderables/LineSegmentRenderable");
+var LineSubMeshRenderable = require("awayjs-renderergl/lib/renderables/LineSubMeshRenderable");
+var CurveSubMeshRenderable = require("awayjs-renderergl/lib/renderables/CurveSubMeshRenderable");
+var SkyboxRenderable = require("awayjs-renderergl/lib/renderables/SkyboxRenderable");
+var TriangleSubMeshRenderable = require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
 /**
  * RenderablePool forms an abstract base class for classes that are used in the rendering pipeline to render the
  * contents of a partition
@@ -13646,15 +12034,15 @@ var RenderablePool = (function () {
      * Creates a new RenderablePool object.
      *
      * @param stage
-     * @param renderObjectClass
+     * @param renderClass
      */
-    function RenderablePool(stage, renderObjectClass) {
-        if (renderObjectClass === void 0) { renderObjectClass = null; }
+    function RenderablePool(stage, renderClass) {
+        if (renderClass === void 0) { renderClass = null; }
         this._pool = new Object();
         this._objectPools = new Object();
         this._stage = stage;
         for (var i in RenderablePool._classPool)
-            this._objectPools[i] = new RenderObjectPool(RenderablePool._classPool[i], this._stage, renderObjectClass);
+            this._objectPools[i] = new RenderPool(RenderablePool._classPool[i], this._stage, renderClass);
     }
     /**
      * //TODO
@@ -13677,9 +12065,9 @@ var RenderablePool = (function () {
      * //TODO
      *
      * @param renderableClass
-     * @returns RenderObjectPool
+     * @returns RenderPool
      */
-    RenderablePool.prototype.getRenderObjectPool = function (renderableOwner) {
+    RenderablePool.prototype.getRenderPool = function (renderableOwner) {
         return this._objectPools[renderableOwner.assetType];
     };
     /**
@@ -13718,233 +12106,7 @@ var RenderablePool = (function () {
 })();
 module.exports = RenderablePool;
 
-},{"awayjs-renderergl/lib/compilation/RenderObjectPool":"awayjs-renderergl/lib/compilation/RenderObjectPool","awayjs-renderergl/lib/pool/BillboardRenderable":"awayjs-renderergl/lib/pool/BillboardRenderable","awayjs-renderergl/lib/pool/CurveSubMeshRenderable":"awayjs-renderergl/lib/pool/CurveSubMeshRenderable","awayjs-renderergl/lib/pool/LineSegmentRenderable":"awayjs-renderergl/lib/pool/LineSegmentRenderable","awayjs-renderergl/lib/pool/LineSubMeshRenderable":"awayjs-renderergl/lib/pool/LineSubMeshRenderable","awayjs-renderergl/lib/pool/SkyboxRenderable":"awayjs-renderergl/lib/pool/SkyboxRenderable","awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable"}],"awayjs-renderergl/lib/pool/Sampler2DObject":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var SamplerObjectBase = require("awayjs-renderergl/lib/pool/SamplerObjectBase");
-/**
- *
- * @class away.pool.Sampler2DObject
- */
-var Sampler2DObject = (function (_super) {
-    __extends(Sampler2DObject, _super);
-    function Sampler2DObject(stage) {
-        _super.call(this, stage);
-    }
-    Sampler2DObject.prototype.initProperties = function (sampler2D, regCache) {
-        this.sampler2D = sampler2D;
-        this.samplerReg = regCache.getFreeTextureReg();
-        this.samplerIndex = this.samplerReg.index;
-        if (this.sampler2D.imageRect) {
-            this.fragmentReg = regCache.getFreeFragmentConstant();
-            this.fragmentIndex = this.fragmentReg.index * 4;
-        }
-    };
-    Sampler2DObject.prototype.getFragmentCode = function (shaderObject, targetReg, regCache, inputReg) {
-        var code = "";
-        var wrap = (shaderObject.repeatTextures ? "wrap" : "clamp");
-        var format = this.getFormatString(this.sampler2D);
-        var filter = (shaderObject.useSmoothTextures) ? (shaderObject.useMipmapping ? "linear,miplinear" : "linear") : (shaderObject.useMipmapping ? "nearest,mipnearest" : "nearest");
-        var temp;
-        //handles texture atlasing
-        if (this.sampler2D.imageRect) {
-            temp = regCache.getFreeFragmentVectorTemp();
-            code += "mul " + temp + ", " + inputReg + ", " + this.fragmentReg + ".xy\n";
-            code += "add " + temp + ", " + temp + ", " + this.fragmentReg + ".zw\n";
-        }
-        else {
-            temp = inputReg;
-        }
-        code += "tex " + targetReg + ", " + temp + ", " + this.samplerReg + " <2d," + filter + "," + format + wrap + ">\n";
-        return code;
-    };
-    Sampler2DObject.prototype.activate = function (shaderObject) {
-        this._stage.getImageObject(this.sampler2D.image2D).activate(this.samplerIndex, this.sampler2D.repeat || shaderObject.repeatTextures, this.sampler2D.smooth || shaderObject.useSmoothTextures, this.sampler2D.mipmap || shaderObject.useMipmapping);
-        if (this.sampler2D.imageRect) {
-            var index = this.fragmentIndex;
-            var data = shaderObject.fragmentConstantData;
-            data[index] = this.sampler2D.scaleX;
-            data[index + 1] = this.sampler2D.scaleY;
-            data[index + 2] = this.sampler2D.offsetX;
-            data[index + 3] = this.sampler2D.offsetY;
-        }
-    };
-    return Sampler2DObject;
-})(SamplerObjectBase);
-module.exports = Sampler2DObject;
-
-},{"awayjs-renderergl/lib/pool/SamplerObjectBase":"awayjs-renderergl/lib/pool/SamplerObjectBase"}],"awayjs-renderergl/lib/pool/SamplerCubeObject":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var SamplerObjectBase = require("awayjs-renderergl/lib/pool/SamplerObjectBase");
-/**
- *
- * @class away.pool.BitmapObject
- */
-var SamplerCubeObject = (function (_super) {
-    __extends(SamplerCubeObject, _super);
-    function SamplerCubeObject(stage) {
-        _super.call(this, stage);
-    }
-    SamplerCubeObject.prototype.initProperties = function (samplerCube, regCache) {
-        this.samplerCube = samplerCube;
-        this.samplerReg = regCache.getFreeTextureReg();
-        this.samplerIndex = this.samplerReg.index;
-    };
-    SamplerCubeObject.prototype.getFragmentCode = function (shaderObject, targetReg, regCache, inputReg) {
-        var filter;
-        var format = this.getFormatString(this.samplerCube);
-        var filter = (shaderObject.useSmoothTextures) ? (shaderObject.useMipmapping ? "linear,miplinear" : "linear") : (shaderObject.useMipmapping ? "nearest,mipnearest" : "nearest");
-        return "tex " + targetReg + ", " + inputReg + ", " + this.samplerReg + " <cube," + format + filter + ">\n";
-    };
-    SamplerCubeObject.prototype.activate = function (shaderObject) {
-        this._stage.getImageObject(this.samplerCube.imageCube).activate(this.samplerIndex, false, this.samplerCube.smooth || shaderObject.useSmoothTextures, this.samplerCube.mipmap || shaderObject.useMipmapping);
-    };
-    return SamplerCubeObject;
-})(SamplerObjectBase);
-module.exports = SamplerCubeObject;
-
-},{"awayjs-renderergl/lib/pool/SamplerObjectBase":"awayjs-renderergl/lib/pool/SamplerObjectBase"}],"awayjs-renderergl/lib/pool/SamplerObjectBase":[function(require,module,exports){
-var ContextGLTextureFormat = require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
-/**
- *
- * @class away.pool.SamplerObjectBase
- */
-var SamplerObjectBase = (function () {
-    function SamplerObjectBase(stage) {
-        this._stage = stage;
-    }
-    /**
-     * Generates a texture format string for the sample instruction.
-     * @param texture The texture for which to get the format string.
-     * @return
-     *
-     * @protected
-     */
-    SamplerObjectBase.prototype.getFormatString = function (bitmap) {
-        switch (bitmap.format) {
-            case ContextGLTextureFormat.COMPRESSED:
-                return "dxt1,";
-                break;
-            case ContextGLTextureFormat.COMPRESSED_ALPHA:
-                return "dxt5,";
-                break;
-            default:
-                return "";
-        }
-    };
-    return SamplerObjectBase;
-})();
-module.exports = SamplerObjectBase;
-
-},{"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/pool/Single2DTextureObject":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
-var TextureObjectBase = require("awayjs-renderergl/lib/pool/TextureObjectBase");
-var Sampler2DObject = require("awayjs-renderergl/lib/pool/Sampler2DObject");
-/**
- *
- * @class away.pool.Single2DTextureObject
- */
-var Single2DTextureObject = (function (_super) {
-    __extends(Single2DTextureObject, _super);
-    function Single2DTextureObject(pool, single2DTexture, stage) {
-        _super.call(this, pool, single2DTexture, stage);
-        this._single2DTexture = single2DTexture;
-        this._sampler2DObject = new Sampler2DObject(stage);
-    }
-    Single2DTextureObject.prototype._iInitRegisters = function (shaderObject, regCache) {
-        this._sampler2DObject.initProperties(this._single2DTexture.sampler2D, regCache);
-    };
-    /**
-     *
-     * @param shaderObject
-     * @param regCache
-     * @param targetReg The register in which to store the sampled colour.
-     * @param uvReg The uv coordinate vector with which to sample the texture map.
-     * @returns {string}
-     * @private
-     */
-    Single2DTextureObject.prototype._iGetFragmentCode = function (shaderObject, targetReg, regCache, inputReg) {
-        return this._sampler2DObject.getFragmentCode(shaderObject, targetReg, regCache, inputReg);
-    };
-    Single2DTextureObject.prototype.activate = function (shaderObject) {
-        this._sampler2DObject.activate(shaderObject);
-    };
-    /**
-     *
-     */
-    Single2DTextureObject.assetClass = Single2DTexture;
-    return Single2DTextureObject;
-})(TextureObjectBase);
-module.exports = Single2DTextureObject;
-
-},{"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-renderergl/lib/pool/Sampler2DObject":"awayjs-renderergl/lib/pool/Sampler2DObject","awayjs-renderergl/lib/pool/TextureObjectBase":"awayjs-renderergl/lib/pool/TextureObjectBase"}],"awayjs-renderergl/lib/pool/SingleCubeTextureObject":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
-var TextureObjectBase = require("awayjs-renderergl/lib/pool/TextureObjectBase");
-var SamplerCubeObject = require("awayjs-renderergl/lib/pool/SamplerCubeObject");
-/**
- *
- * @class away.pool.TextureDataBase
- */
-var SingleCubeTextureObject = (function (_super) {
-    __extends(SingleCubeTextureObject, _super);
-    function SingleCubeTextureObject(pool, singleCubeTexture, stage) {
-        _super.call(this, pool, singleCubeTexture, stage);
-        this._singleCubeTexture = singleCubeTexture;
-        this._samplerCubeObject = new SamplerCubeObject(stage);
-    }
-    SingleCubeTextureObject.prototype._iIncludeDependencies = function (shaderObject, includeInput) {
-        if (includeInput === void 0) { includeInput = true; }
-        if (includeInput)
-            shaderObject.usesLocalPosFragment = true;
-    };
-    SingleCubeTextureObject.prototype._iInitRegisters = function (shaderObject, regCache) {
-        this._samplerCubeObject.initProperties(this._singleCubeTexture.samplerCube, regCache);
-    };
-    /**
-     *
-     * @param shaderObject
-     * @param regCache
-     * @param targetReg The register in which to store the sampled colour.
-     * @param uvReg The direction vector with which to sample the cube map.
-     * @returns {string}
-     * @private
-     */
-    SingleCubeTextureObject.prototype._iGetFragmentCode = function (shaderObject, targetReg, regCache, inputReg) {
-        return this._samplerCubeObject.getFragmentCode(shaderObject, targetReg, regCache, inputReg);
-    };
-    SingleCubeTextureObject.prototype.activate = function (shaderObject) {
-        this._samplerCubeObject.activate(shaderObject);
-    };
-    /**
-     *
-     */
-    SingleCubeTextureObject.assetClass = SingleCubeTexture;
-    return SingleCubeTextureObject;
-})(TextureObjectBase);
-module.exports = SingleCubeTextureObject;
-
-},{"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-renderergl/lib/pool/SamplerCubeObject":"awayjs-renderergl/lib/pool/SamplerCubeObject","awayjs-renderergl/lib/pool/TextureObjectBase":"awayjs-renderergl/lib/pool/TextureObjectBase"}],"awayjs-renderergl/lib/pool/SkyboxRenderable":[function(require,module,exports){
+},{"awayjs-renderergl/lib/render/RenderPool":"awayjs-renderergl/lib/render/RenderPool","awayjs-renderergl/lib/renderables/BillboardRenderable":"awayjs-renderergl/lib/renderables/BillboardRenderable","awayjs-renderergl/lib/renderables/CurveSubMeshRenderable":"awayjs-renderergl/lib/renderables/CurveSubMeshRenderable","awayjs-renderergl/lib/renderables/LineSegmentRenderable":"awayjs-renderergl/lib/renderables/LineSegmentRenderable","awayjs-renderergl/lib/renderables/LineSubMeshRenderable":"awayjs-renderergl/lib/renderables/LineSubMeshRenderable","awayjs-renderergl/lib/renderables/SkyboxRenderable":"awayjs-renderergl/lib/renderables/SkyboxRenderable","awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable":"awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable"}],"awayjs-renderergl/lib/renderables/SkyboxRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13954,7 +12116,7 @@ var __extends = this.__extends || function (d, b) {
 var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var Skybox = require("awayjs-display/lib/entities/Skybox");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
 /**
  * @class away.pool.SkyboxRenderable
  */
@@ -13988,15 +12150,15 @@ var SkyboxRenderable = (function (_super) {
         this._pVertexDataDirty[TriangleSubGeometry.POSITION_DATA] = true;
         return geometry;
     };
-    SkyboxRenderable._iIncludeDependencies = function (shaderObject) {
+    SkyboxRenderable._iIncludeDependencies = function (shader) {
     };
     /**
      * @inheritDoc
      */
-    SkyboxRenderable._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
+    SkyboxRenderable._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
         return "mul vt0, va0, vc5\n" + "add vt0, vt0, vc4\n" + "m44 op, vt0, vc0\n";
     };
-    SkyboxRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+    SkyboxRenderable._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
     };
     /**
@@ -14021,125 +12183,7 @@ var SkyboxRenderable = (function (_super) {
 })(RenderableBase);
 module.exports = SkyboxRenderable;
 
-},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/pool/TextureObjectBase":[function(require,module,exports){
-var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-/**
- *
- * @class away.pool.TextureObjectBaseBase
- */
-var TextureObjectBase = (function () {
-    function TextureObjectBase(pool, texture, stage) {
-        this._pool = pool;
-        this._texture = texture;
-        this._stage = stage;
-    }
-    TextureObjectBase.prototype._iInitRegisters = function (shaderObject, regCache) {
-    };
-    /**
-     *
-     */
-    TextureObjectBase.prototype.dispose = function () {
-        this._pool.disposeItem(this._texture);
-    };
-    /**
-     *
-     */
-    TextureObjectBase.prototype.invalidate = function () {
-        this.invalid = true;
-    };
-    TextureObjectBase.prototype._iGetFragmentCode = function (shaderObject, targetReg, regCache, inputReg) {
-        if (inputReg === void 0) { inputReg = null; }
-        throw new AbstractMethodError();
-    };
-    TextureObjectBase.prototype.activate = function (shaderObject) {
-        throw new AbstractMethodError();
-    };
-    return TextureObjectBase;
-})();
-module.exports = TextureObjectBase;
-
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-renderergl/lib/pool/TextureObjectPool":[function(require,module,exports){
-var Single2DTextureObject = require("awayjs-renderergl/lib/pool/Single2DTextureObject");
-var SingleCubeTextureObject = require("awayjs-renderergl/lib/pool/SingleCubeTextureObject");
-/**
- * @class away.pool.TextureObjectPool
- */
-var TextureObjectPool = (function () {
-    /**
-     * //TODO
-     *
-     * @param textureDataClass
-     */
-    function TextureObjectPool(stage) {
-        this._pool = new Object();
-        this._stage = stage;
-    }
-    /**
-     * //TODO
-     *
-     * @param materialOwner
-     * @returns ITexture
-     */
-    TextureObjectPool.prototype.getItem = function (texture) {
-        return (this._pool[texture.id] || (this._pool[texture.id] = texture._iAddTextureObject(new (TextureObjectPool.getClass(texture))(this, texture, this._stage))));
-    };
-    /**
-     * //TODO
-     *
-     * @param materialOwner
-     */
-    TextureObjectPool.prototype.disposeItem = function (texture) {
-        texture._iRemoveTextureObject(this._pool[texture.id]);
-        this._pool[texture.id] = null;
-    };
-    TextureObjectPool.prototype.dispose = function () {
-        for (var id in this._pool)
-            this._pool[id].dispose();
-        TextureObjectPool.disposePool(this._stage);
-    };
-    /**
-     * //TODO
-     *
-     * @param renderableClass
-     * @returns RenderObjectPool
-     */
-    TextureObjectPool.getPool = function (stage) {
-        return (TextureObjectPool._pools[stage.stageIndex] || (TextureObjectPool._pools[stage.stageIndex] = new TextureObjectPool(stage)));
-    };
-    /**
-     * //TODO
-     *
-     * @param renderableClass
-     */
-    TextureObjectPool.disposePool = function (stage) {
-        TextureObjectPool._pools[stage.stageIndex] = undefined;
-    };
-    /**
-     *
-     * @param subMeshClass
-     */
-    TextureObjectPool.registerClass = function (textureObjectClass) {
-        TextureObjectPool.classPool[textureObjectClass.assetClass.assetType] = textureObjectClass;
-    };
-    /**
-     *
-     * @param subGeometry
-     */
-    TextureObjectPool.getClass = function (texture) {
-        return TextureObjectPool.classPool[texture.assetType];
-    };
-    TextureObjectPool.addDefaults = function () {
-        TextureObjectPool.registerClass(Single2DTextureObject);
-        TextureObjectPool.registerClass(SingleCubeTextureObject);
-    };
-    TextureObjectPool.classPool = new Object();
-    TextureObjectPool._pools = new Object();
-    TextureObjectPool.main = TextureObjectPool.addDefaults();
-    return TextureObjectPool;
-})();
-module.exports = TextureObjectPool;
-
-},{"awayjs-renderergl/lib/pool/Single2DTextureObject":"awayjs-renderergl/lib/pool/Single2DTextureObject","awayjs-renderergl/lib/pool/SingleCubeTextureObject":"awayjs-renderergl/lib/pool/SingleCubeTextureObject"}],"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -14151,7 +12195,7 @@ var TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
 var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
+var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
 /**
  * @class away.pool.TriangleSubMeshRenderable
  */
@@ -14212,19 +12256,19 @@ var TriangleSubMeshRenderable = (function (_super) {
         }
         return subGeometry;
     };
-    TriangleSubMeshRenderable._iIncludeDependencies = function (shaderObject) {
+    TriangleSubMeshRenderable._iIncludeDependencies = function (shader) {
     };
-    TriangleSubMeshRenderable._iGetVertexCode = function (shaderObject, registerCache, sharedRegisters) {
+    TriangleSubMeshRenderable._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
         //get the projection coordinates
-        var position = (shaderObject.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
+        var position = (shader.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
         //reserving vertex constants for projection matrix
         var viewMatrixReg = registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
-        shaderObject.viewMatrixIndex = viewMatrixReg.index * 4;
-        if (shaderObject.projectionDependencies > 0) {
+        shader.viewMatrixIndex = viewMatrixReg.index * 4;
+        if (shader.projectionDependencies > 0) {
             sharedRegisters.projectionFragment = registerCache.getFreeVarying();
             var temp = registerCache.getFreeVertexVectorTemp();
             code += "m44 " + temp + ", " + position + ", " + viewMatrixReg + "\n" + "mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" + "mov op, " + temp + "\n";
@@ -14234,7 +12278,7 @@ var TriangleSubMeshRenderable = (function (_super) {
         }
         return code;
     };
-    TriangleSubMeshRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
+    TriangleSubMeshRenderable._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
     };
     /**
@@ -14278,7 +12322,1605 @@ var TriangleSubMeshRenderable = (function (_super) {
 })(RenderableBase);
 module.exports = TriangleSubMeshRenderable;
 
-},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/TriangleSubMesh":undefined,"awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/TriangleSubMesh":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/shaders/LightingShader":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var LightSources = require("awayjs-display/lib/materials/LightSources");
+var ContextGLProfile = require("awayjs-stagegl/lib/base/ContextGLProfile");
+var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+var LightingCompiler = require("awayjs-renderergl/lib/shaders/compilers/LightingCompiler");
+/**
+ * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
+ * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
+ * passed on to methods. The compiler uses the results to reserve usages through RegisterPool, which can be removed
+ * each time a method has been compiled into the shader.
+ *
+ * @see RegisterPool.addUsage
+ */
+var LightingShader = (function (_super) {
+    __extends(LightingShader, _super);
+    /**
+     * Creates a new MethodCompilerVO object.
+     */
+    function LightingShader(renderableClass, lightingPass, stage) {
+        _super.call(this, renderableClass, lightingPass, stage);
+        this._includeCasters = true;
+        this._lightingPass = lightingPass;
+    }
+    LightingShader.prototype._iIncludeDependencies = function () {
+        this.numPointLights = this._lightingPass.numPointLights;
+        this.numDirectionalLights = this._lightingPass.numDirectionalLights;
+        this.numLightProbes = this._lightingPass.numLightProbes;
+        var numAllLights = this._lightingPass.numPointLights + this._lightingPass.numDirectionalLights;
+        var numLightProbes = this._lightingPass.numLightProbes;
+        var diffuseLightSources = this._lightingPass._iUsesDiffuse(this) ? this._lightingPass.diffuseLightSources : 0x00;
+        var specularLightSources = this._lightingPass._iUsesSpecular(this) ? this._lightingPass.specularLightSources : 0x00;
+        var combinedLightSources = diffuseLightSources | specularLightSources;
+        this.usesLightFallOff = this._lightingPass.enableLightFallOff && this.profile != ContextGLProfile.BASELINE_CONSTRAINED;
+        this.numLights = numAllLights + numLightProbes;
+        this.usesLights = numAllLights > 0 && (combinedLightSources & LightSources.LIGHTS) != 0;
+        this.usesProbes = numLightProbes > 0 && (combinedLightSources & LightSources.PROBES) != 0;
+        this.usesLightsForSpecular = numAllLights > 0 && (specularLightSources & LightSources.LIGHTS) != 0;
+        this.usesProbesForSpecular = numLightProbes > 0 && (specularLightSources & LightSources.PROBES) != 0;
+        this.usesLightsForDiffuse = numAllLights > 0 && (diffuseLightSources & LightSources.LIGHTS) != 0;
+        this.usesProbesForDiffuse = numLightProbes > 0 && (diffuseLightSources & LightSources.PROBES) != 0;
+        this.usesShadows = this._lightingPass._iUsesShadows(this);
+        //IMPORTANT this must occur after shader lighting initialisation above
+        _super.prototype._iIncludeDependencies.call(this);
+    };
+    /**
+     * Factory method to create a concrete compiler object for this object
+     *
+     * @param materialPassVO
+     * @returns {away.materials.LightingCompiler}
+     */
+    LightingShader.prototype.createCompiler = function (renderableClass, pass) {
+        return new LightingCompiler(renderableClass, pass, this);
+    };
+    /**
+     * Clears dependency counts for all registers. Called when recompiling a pass.
+     */
+    LightingShader.prototype.reset = function () {
+        _super.prototype.reset.call(this);
+        this.numLights = 0;
+        this.usesLightFallOff = true;
+    };
+    /**
+     *
+     *
+     * @param renderable
+     * @param stage
+     * @param camera
+     */
+    LightingShader.prototype._iRender = function (renderable, camera, viewProjection) {
+        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
+        if (this._lightingPass.lightPicker)
+            this._lightingPass.lightPicker.collectLights(renderable);
+        if (this.usesLights)
+            this.updateLights();
+        if (this.usesProbes)
+            this.updateProbes();
+    };
+    /**
+     * Updates constant data render state used by the lights. This method is optional for subclasses to implement.
+     */
+    LightingShader.prototype.updateLights = function () {
+        var dirLight;
+        var pointLight;
+        var i = 0;
+        var k = 0;
+        var len;
+        var dirPos;
+        var total = 0;
+        var numLightTypes = this.usesShadows ? 2 : 1;
+        var l;
+        var offset;
+        this.ambientR = this.ambientG = this.ambientB = 0;
+        l = this.lightVertexConstantIndex;
+        k = this.lightFragmentConstantIndex;
+        var cast = 0;
+        var dirLights = this._lightingPass.lightPicker.directionalLights;
+        offset = this._lightingPass.directionalLightsOffset;
+        len = this._lightingPass.lightPicker.directionalLights.length;
+        if (offset > len) {
+            cast = 1;
+            offset -= len;
+        }
+        for (; cast < numLightTypes; ++cast) {
+            if (cast)
+                dirLights = this._lightingPass.lightPicker.castingDirectionalLights;
+            len = dirLights.length;
+            if (len > this.numDirectionalLights)
+                len = this.numDirectionalLights;
+            for (i = 0; i < len; ++i) {
+                dirLight = dirLights[offset + i];
+                dirPos = dirLight.sceneDirection;
+                this.ambientR += dirLight._iAmbientR;
+                this.ambientG += dirLight._iAmbientG;
+                this.ambientB += dirLight._iAmbientB;
+                if (this.usesTangentSpace) {
+                    var x = -dirPos.x;
+                    var y = -dirPos.y;
+                    var z = -dirPos.z;
+                    this.vertexConstantData[l++] = this._pInverseSceneMatrix[0] * x + this._pInverseSceneMatrix[4] * y + this._pInverseSceneMatrix[8] * z;
+                    this.vertexConstantData[l++] = this._pInverseSceneMatrix[1] * x + this._pInverseSceneMatrix[5] * y + this._pInverseSceneMatrix[9] * z;
+                    this.vertexConstantData[l++] = this._pInverseSceneMatrix[2] * x + this._pInverseSceneMatrix[6] * y + this._pInverseSceneMatrix[10] * z;
+                    this.vertexConstantData[l++] = 1;
+                }
+                else {
+                    this.fragmentConstantData[k++] = -dirPos.x;
+                    this.fragmentConstantData[k++] = -dirPos.y;
+                    this.fragmentConstantData[k++] = -dirPos.z;
+                    this.fragmentConstantData[k++] = 1;
+                }
+                this.fragmentConstantData[k++] = dirLight._iDiffuseR;
+                this.fragmentConstantData[k++] = dirLight._iDiffuseG;
+                this.fragmentConstantData[k++] = dirLight._iDiffuseB;
+                this.fragmentConstantData[k++] = 1;
+                this.fragmentConstantData[k++] = dirLight._iSpecularR;
+                this.fragmentConstantData[k++] = dirLight._iSpecularG;
+                this.fragmentConstantData[k++] = dirLight._iSpecularB;
+                this.fragmentConstantData[k++] = 1;
+                if (++total == this.numDirectionalLights) {
+                    // break loop
+                    i = len;
+                    cast = numLightTypes;
+                }
+            }
+        }
+        // more directional supported than currently picked, need to clamp all to 0
+        if (this.numDirectionalLights > total) {
+            i = k + (this.numDirectionalLights - total) * 12;
+            while (k < i)
+                this.fragmentConstantData[k++] = 0;
+        }
+        total = 0;
+        var pointLights = this._lightingPass.lightPicker.pointLights;
+        offset = this._lightingPass.pointLightsOffset;
+        len = this._lightingPass.lightPicker.pointLights.length;
+        if (offset > len) {
+            cast = 1;
+            offset -= len;
+        }
+        else {
+            cast = 0;
+        }
+        for (; cast < numLightTypes; ++cast) {
+            if (cast)
+                pointLights = this._lightingPass.lightPicker.castingPointLights;
+            len = pointLights.length;
+            for (i = 0; i < len; ++i) {
+                pointLight = pointLights[offset + i];
+                dirPos = pointLight.scenePosition;
+                this.ambientR += pointLight._iAmbientR;
+                this.ambientG += pointLight._iAmbientG;
+                this.ambientB += pointLight._iAmbientB;
+                if (this.usesTangentSpace) {
+                    x = dirPos.x;
+                    y = dirPos.y;
+                    z = dirPos.z;
+                    this.vertexConstantData[l++] = this._pInverseSceneMatrix[0] * x + this._pInverseSceneMatrix[4] * y + this._pInverseSceneMatrix[8] * z + this._pInverseSceneMatrix[12];
+                    this.vertexConstantData[l++] = this._pInverseSceneMatrix[1] * x + this._pInverseSceneMatrix[5] * y + this._pInverseSceneMatrix[9] * z + this._pInverseSceneMatrix[13];
+                    this.vertexConstantData[l++] = this._pInverseSceneMatrix[2] * x + this._pInverseSceneMatrix[6] * y + this._pInverseSceneMatrix[10] * z + this._pInverseSceneMatrix[14];
+                    this.vertexConstantData[l++] = 1;
+                }
+                else if (!this.usesGlobalPosFragment) {
+                    this.vertexConstantData[l++] = dirPos.x;
+                    this.vertexConstantData[l++] = dirPos.y;
+                    this.vertexConstantData[l++] = dirPos.z;
+                    this.vertexConstantData[l++] = 1;
+                }
+                else {
+                    this.fragmentConstantData[k++] = dirPos.x;
+                    this.fragmentConstantData[k++] = dirPos.y;
+                    this.fragmentConstantData[k++] = dirPos.z;
+                    this.fragmentConstantData[k++] = 1;
+                }
+                this.fragmentConstantData[k++] = pointLight._iDiffuseR;
+                this.fragmentConstantData[k++] = pointLight._iDiffuseG;
+                this.fragmentConstantData[k++] = pointLight._iDiffuseB;
+                var radius = pointLight._pRadius;
+                this.fragmentConstantData[k++] = radius * radius;
+                this.fragmentConstantData[k++] = pointLight._iSpecularR;
+                this.fragmentConstantData[k++] = pointLight._iSpecularG;
+                this.fragmentConstantData[k++] = pointLight._iSpecularB;
+                this.fragmentConstantData[k++] = pointLight._pFallOffFactor;
+                if (++total == this.numPointLights) {
+                    // break loop
+                    i = len;
+                    cast = numLightTypes;
+                }
+            }
+        }
+        // more directional supported than currently picked, need to clamp all to 0
+        if (this.numPointLights > total) {
+            i = k + (total - this.numPointLights) * 12;
+            for (; k < i; ++k)
+                this.fragmentConstantData[k] = 0;
+        }
+    };
+    /**
+     * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
+     */
+    LightingShader.prototype.updateProbes = function () {
+        var probe;
+        var lightProbes = this._lightingPass.lightPicker.lightProbes;
+        var weights = this._lightingPass.lightPicker.lightProbeWeights;
+        var len = lightProbes.length - this._lightingPass.lightProbesOffset;
+        var addDiff = this.usesProbesForDiffuse;
+        var addSpec = this.usesProbesForSpecular;
+        if (!(addDiff || addSpec))
+            return;
+        if (len > this.numLightProbes)
+            len = this.numLightProbes;
+        for (var i = 0; i < len; ++i) {
+            probe = lightProbes[this._lightingPass.lightProbesOffset + i];
+            if (addDiff)
+                this._stage.getImageObject(probe.diffuseMap).activate(this.lightProbeDiffuseIndices[i], false, this.useSmoothTextures, this.useMipmapping);
+            if (addSpec)
+                this._stage.getImageObject(probe.specularMap).activate(this.lightProbeSpecularIndices[i], false, this.useSmoothTextures, this.useMipmapping);
+        }
+        for (i = 0; i < len; ++i)
+            this.fragmentConstantData[this.probeWeightsIndex + i] = weights[this._lightingPass.lightProbesOffset + i];
+    };
+    return LightingShader;
+})(ShaderBase);
+module.exports = LightingShader;
+
+},{"awayjs-display/lib/materials/LightSources":undefined,"awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/shaders/compilers/LightingCompiler":"awayjs-renderergl/lib/shaders/compilers/LightingCompiler","awayjs-stagegl/lib/base/ContextGLProfile":undefined}],"awayjs-renderergl/lib/shaders/RegisterPool":[function(require,module,exports){
+var ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+/**
+ * RegisterPool is used by the shader compilers process to keep track of which registers of a certain type are
+ * currently used and should not be allowed to be written to. Either entire registers can be requested and locked,
+ * or single components (x, y, z, w) of a single register.
+ * It is used by ShaderRegisterCache to track usages of individual register types.
+ *
+ * @see away.materials.ShaderRegisterCache
+ */
+var RegisterPool = (function () {
+    /**
+     * Creates a new RegisterPool object.
+     * @param regName The base name of the register type ("ft" for fragment temporaries, "vc" for vertex constants, etc)
+     * @param regCount The amount of available registers of this type.
+     * @param persistent Whether or not registers, once reserved, can be freed again. For example, temporaries are not persistent, but constants are.
+     */
+    function RegisterPool(regName, regCount, persistent) {
+        if (persistent === void 0) { persistent = true; }
+        this._regName = regName;
+        this._regCount = regCount;
+        this._persistent = persistent;
+        this.initRegisters(regName, regCount);
+    }
+    /**
+     * Retrieve an entire vector register that's still available.
+     */
+    RegisterPool.prototype.requestFreeVectorReg = function () {
+        for (var i = 0; i < this._regCount; ++i) {
+            if (!this.isRegisterUsed(i)) {
+                if (this._persistent)
+                    this._usedVectorCount[i]++;
+                return this._vectorRegisters[i];
+            }
+        }
+        throw new Error("Register overflow!");
+    };
+    /**
+     * Retrieve a single vector component that's still available.
+     */
+    RegisterPool.prototype.requestFreeRegComponent = function () {
+        for (var i = 0; i < this._regCount; ++i) {
+            if (this._usedVectorCount[i] > 0)
+                continue;
+            for (var j = 0; j < 4; ++j) {
+                if (this._usedSingleCount[j][i] == 0) {
+                    if (this._persistent)
+                        this._usedSingleCount[j][i]++;
+                    return this._registerComponents[j][i];
+                }
+            }
+        }
+        throw new Error("Register overflow!");
+    };
+    /**
+     * Marks a register as used, so it cannot be retrieved. The register won't be able to be used until removeUsage
+     * has been called usageCount times again.
+     * @param register The register to mark as used.
+     * @param usageCount The amount of usages to add.
+     */
+    RegisterPool.prototype.addUsage = function (register, usageCount) {
+        if (register._component > -1)
+            this._usedSingleCount[register._component][register.index] += usageCount;
+        else
+            this._usedVectorCount[register.index] += usageCount;
+    };
+    /**
+     * Removes a usage from a register. When usages reach 0, the register is freed again.
+     * @param register The register for which to remove a usage.
+     */
+    RegisterPool.prototype.removeUsage = function (register) {
+        if (register._component > -1) {
+            if (--this._usedSingleCount[register._component][register.index] < 0)
+                throw new Error("More usages removed than exist!");
+        }
+        else {
+            if (--this._usedVectorCount[register.index] < 0)
+                throw new Error("More usages removed than exist!");
+        }
+    };
+    /**
+     * Disposes any resources used by the current RegisterPool object.
+     */
+    RegisterPool.prototype.dispose = function () {
+        this._vectorRegisters = null;
+        this._registerComponents = null;
+        this._usedSingleCount = null;
+        this._usedVectorCount = null;
+    };
+    /**
+     * Indicates whether or not any registers are in use.
+     */
+    RegisterPool.prototype.hasRegisteredRegs = function () {
+        for (var i = 0; i < this._regCount; ++i)
+            if (this.isRegisterUsed(i))
+                return true;
+        return false;
+    };
+    /**
+     * Initializes all registers.
+     */
+    RegisterPool.prototype.initRegisters = function (regName, regCount) {
+        var hash = RegisterPool._initPool(regName, regCount);
+        this._vectorRegisters = RegisterPool._regPool[hash];
+        this._registerComponents = RegisterPool._regCompsPool[hash];
+        this._usedVectorCount = this._initArray(Array(regCount), 0);
+        this._usedSingleCount = new Array(4);
+        this._usedSingleCount[0] = this._initArray(new Array(regCount), 0);
+        this._usedSingleCount[1] = this._initArray(new Array(regCount), 0);
+        this._usedSingleCount[2] = this._initArray(new Array(regCount), 0);
+        this._usedSingleCount[3] = this._initArray(new Array(regCount), 0);
+    };
+    RegisterPool._initPool = function (regName, regCount) {
+        var hash = regName + regCount;
+        if (RegisterPool._regPool[hash] != undefined)
+            return hash;
+        var vectorRegisters = new Array(regCount);
+        RegisterPool._regPool[hash] = vectorRegisters;
+        var registerComponents = [
+            [],
+            [],
+            [],
+            []
+        ];
+        RegisterPool._regCompsPool[hash] = registerComponents;
+        for (var i = 0; i < regCount; ++i) {
+            vectorRegisters[i] = new ShaderRegisterElement(regName, i);
+            for (var j = 0; j < 4; ++j)
+                registerComponents[j][i] = new ShaderRegisterElement(regName, i, j);
+        }
+        return hash;
+    };
+    /**
+     * Check if the temp register is either used for single or vector use
+     */
+    RegisterPool.prototype.isRegisterUsed = function (index) {
+        if (this._usedVectorCount[index] > 0)
+            return true;
+        for (var i = 0; i < 4; ++i)
+            if (this._usedSingleCount[i][index] > 0)
+                return true;
+        return false;
+    };
+    RegisterPool.prototype._initArray = function (a, val) {
+        var l = a.length;
+        for (var c = 0; c < l; c++)
+            a[c] = val;
+        return a;
+    };
+    RegisterPool._regPool = new Object();
+    RegisterPool._regCompsPool = new Object();
+    return RegisterPool;
+})();
+module.exports = RegisterPool;
+
+},{"awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/shaders/ShaderBase":[function(require,module,exports){
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
+var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var ArgumentError = require("awayjs-core/lib/errors/ArgumentError");
+var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
+var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
+var ContextGLTriangleFace = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
+var CompilerBase = require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
+var TextureVOPool = require("awayjs-renderergl/lib/vos/TextureVOPool");
+/**
+ * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
+ * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
+ * passed on to methods. The compiler uses the results to reserve usages through RegisterPool, which can be removed
+ * each time a method has been compiled into the shader.
+ *
+ * @see RegisterPool.addUsage
+ */
+var ShaderBase = (function () {
+    /**
+     * Creates a new MethodCompilerVO object.
+     */
+    function ShaderBase(renderableClass, pass, stage) {
+        this._blendFactorSource = ContextGLBlendFactor.ONE;
+        this._blendFactorDest = ContextGLBlendFactor.ZERO;
+        this._invalidShader = true;
+        this._invalidProgram = true;
+        this._animationVertexCode = "";
+        this._animationFragmentCode = "";
+        this.usesBlending = false;
+        /**
+         * The depth compare mode used to render the renderables using this material.
+         *
+         * @see away.stagegl.ContextGLCompareMode
+         */
+        this.depthCompareMode = ContextGLCompareMode.LESS_EQUAL;
+        /**
+         * Indicate whether the shader should write to the depth buffer or not. Ignored when blending is enabled.
+         */
+        this.writeDepth = true;
+        this._defaultCulling = ContextGLTriangleFace.BACK;
+        this._pInverseSceneMatrix = new Array();
+        //set ambient values to default
+        this.ambientR = 0xFF;
+        this.ambientG = 0xFF;
+        this.ambientB = 0xFF;
+        /**
+         * Indicates whether there are any dependencies on the world-space position vector.
+         */
+        this.usesGlobalPosFragment = false;
+        /**
+         * Indicates whether there are any dependencies on the local position vector.
+         */
+        this.usesLocalPosFragment = false;
+        this.vertexConstantData = new Array();
+        this.fragmentConstantData = new Array();
+        this._renderableClass = renderableClass;
+        this._pass = pass;
+        this._stage = stage;
+        this.profile = this._stage.profile;
+        this._textureVOPool = new TextureVOPool(this._stage);
+    }
+    Object.defineProperty(ShaderBase.prototype, "programData", {
+        get: function () {
+            if (this._invalidProgram)
+                this._updateProgram();
+            return this._programData;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ShaderBase.prototype.getTextureVO = function (texture) {
+        return this._textureVOPool.getItem(texture);
+    };
+    ShaderBase.prototype._iIncludeDependencies = function () {
+        this._pass._iIncludeDependencies(this);
+    };
+    /**
+     * Factory method to create a concrete compiler object for this object
+     *
+     * @param renderableClass
+     * @param pass
+     * @param stage
+     * @returns {CompilerBase}
+     */
+    ShaderBase.prototype.createCompiler = function (renderableClass, pass) {
+        return new CompilerBase(renderableClass, pass, this);
+    };
+    /**
+     * Clears dependency counts for all registers. Called when recompiling a pass.
+     */
+    ShaderBase.prototype.reset = function () {
+        this.projectionDependencies = 0;
+        this.normalDependencies = 0;
+        this.colorDependencies = 0;
+        this.viewDirDependencies = 0;
+        this.uvDependencies = 0;
+        this.secondaryUVDependencies = 0;
+        this.globalPosDependencies = 0;
+        this.tangentDependencies = 0;
+        this.usesGlobalPosFragment = false;
+        this.usesLocalPosFragment = false;
+        this.usesFragmentAnimation = false;
+        this.usesTangentSpace = false;
+        this.outputsNormals = false;
+        this.outputsTangentNormals = false;
+    };
+    ShaderBase.prototype.pInitRegisterIndices = function () {
+        this.commonsDataIndex = -1;
+        this.cameraPositionIndex = -1;
+        this.uvBufferIndex = -1;
+        this.uvTransformIndex = -1;
+        this.secondaryUVBufferIndex = -1;
+        this.normalBufferIndex = -1;
+        this.colorBufferIndex = -1;
+        this.tangentBufferIndex = -1;
+        this.sceneMatrixIndex = -1;
+        this.sceneNormalMatrixIndex = -1;
+    };
+    /**
+     * Initializes the unchanging constant data for this shader object.
+     */
+    ShaderBase.prototype.initConstantData = function (registerCache, animatableAttributes, animationTargetRegisters, uvSource, uvTarget) {
+        //Updates the amount of used register indices.
+        this.numUsedVertexConstants = registerCache.numUsedVertexConstants;
+        this.numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
+        this.numUsedStreams = registerCache.numUsedStreams;
+        this.numUsedTextures = registerCache.numUsedTextures;
+        this.numUsedVaryings = registerCache.numUsedVaryings;
+        this.numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
+        this.animatableAttributes = animatableAttributes;
+        this.animationTargetRegisters = animationTargetRegisters;
+        this.uvSource = uvSource;
+        this.uvTarget = uvTarget;
+        this.vertexConstantData.length = this.numUsedVertexConstants * 4;
+        this.fragmentConstantData.length = this.numUsedFragmentConstants * 4;
+        //Initializes commonly required constant values.
+        this.fragmentConstantData[this.commonsDataIndex] = .5;
+        this.fragmentConstantData[this.commonsDataIndex + 1] = 0;
+        this.fragmentConstantData[this.commonsDataIndex + 2] = 1 / 255;
+        this.fragmentConstantData[this.commonsDataIndex + 3] = 1;
+        //Initializes the default UV transformation matrix.
+        if (this.uvTransformIndex >= 0) {
+            this.vertexConstantData[this.uvTransformIndex] = 1;
+            this.vertexConstantData[this.uvTransformIndex + 1] = 0;
+            this.vertexConstantData[this.uvTransformIndex + 2] = 0;
+            this.vertexConstantData[this.uvTransformIndex + 3] = 0;
+            this.vertexConstantData[this.uvTransformIndex + 4] = 0;
+            this.vertexConstantData[this.uvTransformIndex + 5] = 1;
+            this.vertexConstantData[this.uvTransformIndex + 6] = 0;
+            this.vertexConstantData[this.uvTransformIndex + 7] = 0;
+        }
+        if (this.cameraPositionIndex >= 0)
+            this.vertexConstantData[this.cameraPositionIndex + 3] = 1;
+    };
+    /**
+     * The blend mode to use when drawing this renderable. The following blend modes are supported:
+     * <ul>
+     * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
+     * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
+     * <li>BlendMode.MULTIPLY</li>
+     * <li>BlendMode.ADD</li>
+     * <li>BlendMode.ALPHA</li>
+     * </ul>
+     */
+    ShaderBase.prototype.setBlendMode = function (value) {
+        switch (value) {
+            case BlendMode.NORMAL:
+                this._blendFactorSource = ContextGLBlendFactor.ONE;
+                this._blendFactorDest = ContextGLBlendFactor.ZERO;
+                this.usesBlending = false;
+                break;
+            case BlendMode.LAYER:
+                this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
+                this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+                this.usesBlending = true;
+                break;
+            case BlendMode.MULTIPLY:
+                this._blendFactorSource = ContextGLBlendFactor.ZERO;
+                this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
+                this.usesBlending = true;
+                break;
+            case BlendMode.ADD:
+                this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
+                this._blendFactorDest = ContextGLBlendFactor.ONE;
+                this.usesBlending = true;
+                break;
+            case BlendMode.ALPHA:
+                this._blendFactorSource = ContextGLBlendFactor.ZERO;
+                this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
+                this.usesBlending = true;
+                break;
+            default:
+                throw new ArgumentError("Unsupported blend mode!");
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    ShaderBase.prototype._iActivate = function (camera) {
+        if (this.usesAnimation)
+            this._pass.animationSet.activate(this, this._stage);
+        this._stage.context.setCulling(this.useBothSides ? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
+        if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
+            var pos = camera.scenePosition;
+            this.vertexConstantData[this.cameraPositionIndex] = pos.x;
+            this.vertexConstantData[this.cameraPositionIndex + 1] = pos.y;
+            this.vertexConstantData[this.cameraPositionIndex + 2] = pos.z;
+        }
+        this._stage.context.setDepthTest((this.writeDepth && !this.usesBlending), this.depthCompareMode);
+        if (this.usesBlending)
+            this._stage.context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
+    };
+    /**
+     * @inheritDoc
+     */
+    ShaderBase.prototype._iDeactivate = function () {
+        if (this.usesAnimation)
+            this._pass.animationSet.deactivate(this, this._stage);
+        //For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
+        this._stage.context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+    };
+    /**
+     *
+     *
+     * @param renderable
+     * @param stage
+     * @param camera
+     */
+    ShaderBase.prototype._iRender = function (renderable, camera, viewProjection) {
+        if (renderable.renderableOwner.animator)
+            renderable.renderableOwner.animator.setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
+        if (this.uvBufferIndex >= 0)
+            this._stage.activateBuffer(this.uvBufferIndex, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
+        if (this.secondaryUVBufferIndex >= 0)
+            this._stage.activateBuffer(this.secondaryUVBufferIndex, renderable.getVertexData(TriangleSubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.SECONDARY_UV_DATA), TriangleSubGeometry.SECONDARY_UV_FORMAT);
+        if (this.normalBufferIndex >= 0)
+            this._stage.activateBuffer(this.normalBufferIndex, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
+        if (this.tangentBufferIndex >= 0)
+            this._stage.activateBuffer(this.tangentBufferIndex, renderable.getVertexData(TriangleSubGeometry.TANGENT_DATA), renderable.getVertexOffset(TriangleSubGeometry.TANGENT_DATA), TriangleSubGeometry.TANGENT_FORMAT);
+        if (this.colorBufferIndex >= 0)
+            this._stage.activateBuffer(this.colorBufferIndex, renderable.getVertexData(LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(LineSubGeometry.COLOR_DATA), LineSubGeometry.COLOR_FORMAT);
+        if (this.usesUVTransform) {
+            var uvTransform = renderable.renderableOwner.uvTransform.matrix;
+            if (uvTransform) {
+                this.vertexConstantData[this.uvTransformIndex] = uvTransform.a;
+                this.vertexConstantData[this.uvTransformIndex + 1] = uvTransform.b;
+                this.vertexConstantData[this.uvTransformIndex + 3] = uvTransform.tx;
+                this.vertexConstantData[this.uvTransformIndex + 4] = uvTransform.c;
+                this.vertexConstantData[this.uvTransformIndex + 5] = uvTransform.d;
+                this.vertexConstantData[this.uvTransformIndex + 7] = uvTransform.ty;
+            }
+            else {
+                this.vertexConstantData[this.uvTransformIndex] = 1;
+                this.vertexConstantData[this.uvTransformIndex + 1] = 0;
+                this.vertexConstantData[this.uvTransformIndex + 3] = 0;
+                this.vertexConstantData[this.uvTransformIndex + 4] = 0;
+                this.vertexConstantData[this.uvTransformIndex + 5] = 1;
+                this.vertexConstantData[this.uvTransformIndex + 7] = 0;
+            }
+        }
+        if (this.sceneNormalMatrixIndex >= 0)
+            renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this.vertexConstantData, this.sceneNormalMatrixIndex, false);
+        if (this.usesTangentSpace && this.cameraPositionIndex >= 0) {
+            renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this._pInverseSceneMatrix);
+            var pos = camera.scenePosition;
+            var x = pos.x;
+            var y = pos.y;
+            var z = pos.z;
+            this.vertexConstantData[this.cameraPositionIndex] = this._pInverseSceneMatrix[0] * x + this._pInverseSceneMatrix[4] * y + this._pInverseSceneMatrix[8] * z + this._pInverseSceneMatrix[12];
+            this.vertexConstantData[this.cameraPositionIndex + 1] = this._pInverseSceneMatrix[1] * x + this._pInverseSceneMatrix[5] * y + this._pInverseSceneMatrix[9] * z + this._pInverseSceneMatrix[13];
+            this.vertexConstantData[this.cameraPositionIndex + 2] = this._pInverseSceneMatrix[2] * x + this._pInverseSceneMatrix[6] * y + this._pInverseSceneMatrix[10] * z + this._pInverseSceneMatrix[14];
+        }
+    };
+    ShaderBase.prototype.invalidateProgram = function () {
+        this._invalidProgram = true;
+    };
+    ShaderBase.prototype.invalidateShader = function () {
+        this._invalidShader = true;
+        this._invalidProgram = true;
+    };
+    ShaderBase.prototype.dispose = function () {
+        this._programData.dispose();
+        this._programData = null;
+    };
+    ShaderBase.prototype._updateProgram = function () {
+        this._invalidProgram = false;
+        var compiler;
+        if (this._invalidShader) {
+            this._invalidShader = false;
+            compiler = this.createCompiler(this._renderableClass, this._pass);
+            compiler.compile();
+        }
+        this._calcAnimationCode(compiler.shadedTarget);
+        var programData = this._stage.getProgramData(this._animationVertexCode + compiler.vertexCode, compiler.fragmentCode + this._animationFragmentCode + compiler.postAnimationFragmentCode);
+        //check program data hasn't changed, keep count of program usages
+        if (this._programData != programData) {
+            if (this._programData)
+                this._programData.dispose();
+            this._programData = programData;
+            programData.usages++;
+        }
+    };
+    ShaderBase.prototype._calcAnimationCode = function (shadedTarget) {
+        //reset code
+        this._animationVertexCode = "";
+        this._animationFragmentCode = "";
+        //check to see if GPU animation is used
+        if (this.usesAnimation) {
+            var animationSet = this._pass.animationSet;
+            this._animationVertexCode += animationSet.getAGALVertexCode(this);
+            if (this.uvDependencies > 0 && !this.usesUVTransform)
+                this._animationVertexCode += animationSet.getAGALUVCode(this);
+            if (this.usesFragmentAnimation)
+                this._animationFragmentCode += animationSet.getAGALFragmentCode(this, shadedTarget);
+            animationSet.doneAGALCode(this);
+        }
+        else {
+            // simply write attributes to targets, do not animate them
+            // projection will pick up on targets[0] to do the projection
+            var len = this.animatableAttributes.length;
+            for (var i = 0; i < len; ++i)
+                this._animationVertexCode += "mov " + this.animationTargetRegisters[i] + ", " + this.animatableAttributes[i] + "\n";
+            if (this.uvDependencies > 0 && !this.usesUVTransform)
+                this._animationVertexCode += "mov " + this.uvTarget + "," + this.uvSource + "\n";
+        }
+    };
+    return ShaderBase;
+})();
+module.exports = ShaderBase;
+
+},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-renderergl/lib/shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase","awayjs-renderergl/lib/vos/TextureVOPool":"awayjs-renderergl/lib/vos/TextureVOPool","awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/shaders/ShaderRegisterCache":[function(require,module,exports){
+var RegisterPool = require("awayjs-renderergl/lib/shaders/RegisterPool");
+var ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+/**
+ * ShaderRegister Cache provides the usage management system for all registers during shading compilers.
+ */
+var ShaderRegisterCache = (function () {
+    /**
+     * Create a new ShaderRegisterCache object.
+     *
+     * @param profile The compatibility profile used by the renderer.
+     */
+    function ShaderRegisterCache(profile) {
+        this._numUsedVertexConstants = 0;
+        this._numUsedFragmentConstants = 0;
+        this._numUsedStreams = 0;
+        this._numUsedTextures = 0;
+        this._numUsedVaryings = 0;
+        this._profile = profile;
+    }
+    /**
+     * Resets all registers.
+     */
+    ShaderRegisterCache.prototype.reset = function () {
+        this._fragmentTempCache = new RegisterPool("ft", 8, false);
+        this._vertexTempCache = new RegisterPool("vt", 8, false);
+        this._varyingCache = new RegisterPool("v", 8);
+        this._textureCache = new RegisterPool("fs", 8);
+        this._vertexAttributesCache = new RegisterPool("va", 8);
+        this._fragmentConstantsCache = new RegisterPool("fc", 28);
+        this._vertexConstantsCache = new RegisterPool("vc", 128);
+        this._fragmentOutputRegister = new ShaderRegisterElement("oc", -1);
+        this._vertexOutputRegister = new ShaderRegisterElement("op", -1);
+        this._numUsedVertexConstants = 0;
+        this._numUsedStreams = 0;
+        this._numUsedTextures = 0;
+        this._numUsedVaryings = 0;
+        this._numUsedFragmentConstants = 0;
+        var i;
+        for (i = 0; i < this._vertexAttributesOffset; ++i)
+            this.getFreeVertexAttribute();
+        for (i = 0; i < this._vertexConstantOffset; ++i)
+            this.getFreeVertexConstant();
+        for (i = 0; i < this._varyingsOffset; ++i)
+            this.getFreeVarying();
+        for (i = 0; i < this._fragmentConstantOffset; ++i)
+            this.getFreeFragmentConstant();
+    };
+    /**
+     * Disposes all resources used.
+     */
+    ShaderRegisterCache.prototype.dispose = function () {
+        this._fragmentTempCache.dispose();
+        this._vertexTempCache.dispose();
+        this._varyingCache.dispose();
+        this._fragmentConstantsCache.dispose();
+        this._vertexAttributesCache.dispose();
+        this._fragmentTempCache = null;
+        this._vertexTempCache = null;
+        this._varyingCache = null;
+        this._fragmentConstantsCache = null;
+        this._vertexAttributesCache = null;
+        this._fragmentOutputRegister = null;
+        this._vertexOutputRegister = null;
+    };
+    /**
+     * Marks a fragment temporary register as used, so it cannot be retrieved. The register won't be able to be used until removeUsage
+     * has been called usageCount times again.
+     * @param register The register to mark as used.
+     * @param usageCount The amount of usages to add.
+     */
+    ShaderRegisterCache.prototype.addFragmentTempUsages = function (register, usageCount) {
+        this._fragmentTempCache.addUsage(register, usageCount);
+    };
+    /**
+     * Removes a usage from a fragment temporary register. When usages reach 0, the register is freed again.
+     * @param register The register for which to remove a usage.
+     */
+    ShaderRegisterCache.prototype.removeFragmentTempUsage = function (register) {
+        this._fragmentTempCache.removeUsage(register);
+    };
+    /**
+     * Marks a vertex temporary register as used, so it cannot be retrieved. The register won't be able to be used
+     * until removeUsage has been called usageCount times again.
+     * @param register The register to mark as used.
+     * @param usageCount The amount of usages to add.
+     */
+    ShaderRegisterCache.prototype.addVertexTempUsages = function (register, usageCount) {
+        this._vertexTempCache.addUsage(register, usageCount);
+    };
+    /**
+     * Removes a usage from a vertex temporary register. When usages reach 0, the register is freed again.
+     * @param register The register for which to remove a usage.
+     */
+    ShaderRegisterCache.prototype.removeVertexTempUsage = function (register) {
+        this._vertexTempCache.removeUsage(register);
+    };
+    /**
+     * Retrieve an entire fragment temporary register that's still available. The register won't be able to be used until removeUsage
+     * has been called usageCount times again.
+     */
+    ShaderRegisterCache.prototype.getFreeFragmentVectorTemp = function () {
+        return this._fragmentTempCache.requestFreeVectorReg();
+    };
+    /**
+     * Retrieve a single component from a fragment temporary register that's still available.
+     */
+    ShaderRegisterCache.prototype.getFreeFragmentSingleTemp = function () {
+        return this._fragmentTempCache.requestFreeRegComponent();
+    };
+    /**
+     * Retrieve an available varying register
+     */
+    ShaderRegisterCache.prototype.getFreeVarying = function () {
+        ++this._numUsedVaryings;
+        return this._varyingCache.requestFreeVectorReg();
+    };
+    /**
+     * Retrieve an available fragment constant register
+     */
+    ShaderRegisterCache.prototype.getFreeFragmentConstant = function () {
+        ++this._numUsedFragmentConstants;
+        return this._fragmentConstantsCache.requestFreeVectorReg();
+    };
+    /**
+     * Retrieve an available vertex constant register
+     */
+    ShaderRegisterCache.prototype.getFreeVertexConstant = function () {
+        ++this._numUsedVertexConstants;
+        return this._vertexConstantsCache.requestFreeVectorReg();
+    };
+    /**
+     * Retrieve an entire vertex temporary register that's still available.
+     */
+    ShaderRegisterCache.prototype.getFreeVertexVectorTemp = function () {
+        return this._vertexTempCache.requestFreeVectorReg();
+    };
+    /**
+     * Retrieve a single component from a vertex temporary register that's still available.
+     */
+    ShaderRegisterCache.prototype.getFreeVertexSingleTemp = function () {
+        return this._vertexTempCache.requestFreeRegComponent();
+    };
+    /**
+     * Retrieve an available vertex attribute register
+     */
+    ShaderRegisterCache.prototype.getFreeVertexAttribute = function () {
+        ++this._numUsedStreams;
+        return this._vertexAttributesCache.requestFreeVectorReg();
+    };
+    /**
+     * Retrieve an available texture register
+     */
+    ShaderRegisterCache.prototype.getFreeTextureReg = function () {
+        ++this._numUsedTextures;
+        return this._textureCache.requestFreeVectorReg();
+    };
+    Object.defineProperty(ShaderRegisterCache.prototype, "vertexConstantOffset", {
+        /**
+         * Indicates the start index from which to retrieve vertex constants.
+         */
+        get: function () {
+            return this._vertexConstantOffset;
+        },
+        set: function (vertexConstantOffset) {
+            this._vertexConstantOffset = vertexConstantOffset;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderRegisterCache.prototype, "vertexAttributesOffset", {
+        /**
+         * Indicates the start index from which to retrieve vertex attributes.
+         */
+        get: function () {
+            return this._vertexAttributesOffset;
+        },
+        set: function (value) {
+            this._vertexAttributesOffset = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderRegisterCache.prototype, "varyingsOffset", {
+        /**
+         * Indicates the start index from which to retrieve varying registers.
+         */
+        get: function () {
+            return this._varyingsOffset;
+        },
+        set: function (value) {
+            this._varyingsOffset = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderRegisterCache.prototype, "fragmentConstantOffset", {
+        /**
+         * Indicates the start index from which to retrieve fragment constants.
+         */
+        get: function () {
+            return this._fragmentConstantOffset;
+        },
+        set: function (value) {
+            this._fragmentConstantOffset = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderRegisterCache.prototype, "fragmentOutputRegister", {
+        /**
+         * The fragment output register.
+         */
+        get: function () {
+            return this._fragmentOutputRegister;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderRegisterCache.prototype, "numUsedVertexConstants", {
+        /**
+         * The amount of used vertex constant registers.
+         */
+        get: function () {
+            return this._numUsedVertexConstants;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderRegisterCache.prototype, "numUsedFragmentConstants", {
+        /**
+         * The amount of used fragment constant registers.
+         */
+        get: function () {
+            return this._numUsedFragmentConstants;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderRegisterCache.prototype, "numUsedStreams", {
+        /**
+         * The amount of used vertex streams.
+         */
+        get: function () {
+            return this._numUsedStreams;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderRegisterCache.prototype, "numUsedTextures", {
+        /**
+         * The amount of used texture slots.
+         */
+        get: function () {
+            return this._numUsedTextures;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderRegisterCache.prototype, "numUsedVaryings", {
+        /**
+         * The amount of used varying registers.
+         */
+        get: function () {
+            return this._numUsedVaryings;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return ShaderRegisterCache;
+})();
+module.exports = ShaderRegisterCache;
+
+},{"awayjs-renderergl/lib/shaders/RegisterPool":"awayjs-renderergl/lib/shaders/RegisterPool","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/shaders/ShaderRegisterData":[function(require,module,exports){
+/**
+ * ShaderRegisterData contains the "named" registers, generated by the compiler and to be passed on to the methods.
+ */
+var ShaderRegisterData = (function () {
+    function ShaderRegisterData() {
+    }
+    return ShaderRegisterData;
+})();
+module.exports = ShaderRegisterData;
+
+},{}],"awayjs-renderergl/lib/shaders/ShaderRegisterElement":[function(require,module,exports){
+/**
+ * A single register element (an entire register or a single register's component) used by the RegisterPool.
+ */
+var ShaderRegisterElement = (function () {
+    /**
+     * Creates a new ShaderRegisterElement object.
+     *
+     * @param regName The name of the register.
+     * @param index The index of the register.
+     * @param component The register's component, if not the entire register is represented.
+     */
+    function ShaderRegisterElement(regName, index, component) {
+        if (component === void 0) { component = -1; }
+        this._component = component;
+        this._regName = regName;
+        this._index = index;
+        this._toStr = this._regName;
+        if (this._index >= 0)
+            this._toStr += this._index;
+        if (component > -1)
+            this._toStr += "." + ShaderRegisterElement.COMPONENTS[component];
+    }
+    /**
+     * Converts the register or the components AGAL string representation.
+     */
+    ShaderRegisterElement.prototype.toString = function () {
+        return this._toStr;
+    };
+    Object.defineProperty(ShaderRegisterElement.prototype, "regName", {
+        /**
+         * The register's name.
+         */
+        get: function () {
+            return this._regName;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderRegisterElement.prototype, "index", {
+        /**
+         * The register's index.
+         */
+        get: function () {
+            return this._index;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ShaderRegisterElement.COMPONENTS = ["x", "y", "z", "w"];
+    return ShaderRegisterElement;
+})();
+module.exports = ShaderRegisterElement;
+
+},{}],"awayjs-renderergl/lib/shaders/compilers/CompilerBase":[function(require,module,exports){
+var ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+var ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+/**
+ * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
+ * material. Concrete subclasses are used by the default materials.
+ *
+ * @see away.materials.ShadingMethodBase
+ */
+var CompilerBase = (function () {
+    /**
+     * Creates a new CompilerBase object.
+     * @param profile The compatibility profile of the renderer.
+     */
+    function CompilerBase(renderableClass, pass, shader) {
+        this._pVertexCode = ''; // Changed to emtpy string- AwayTS
+        this._pFragmentCode = ''; // Changed to emtpy string - AwayTS
+        this._pPostAnimationFragmentCode = ''; // Changed to emtpy string - AwayTS
+        this._pRenderableClass = renderableClass;
+        this._pRenderPass = pass;
+        this._pShader = shader;
+        this._pSharedRegisters = new ShaderRegisterData();
+        this._pRegisterCache = new ShaderRegisterCache(shader.profile);
+        this._pRegisterCache.vertexAttributesOffset = renderableClass.vertexAttributesOffset;
+        this._pRegisterCache.reset();
+    }
+    /**
+     * Compiles the code after all setup on the compiler has finished.
+     */
+    CompilerBase.prototype.compile = function () {
+        this._pShader.reset();
+        this._pShader._iIncludeDependencies();
+        this.pInitRegisterIndices();
+        this.pCompileDependencies();
+        //compile custom vertex & fragment codes
+        this._pVertexCode += this._pRenderPass._iGetVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+        this._pPostAnimationFragmentCode += this._pRenderPass._iGetFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+        //assign the final output color to the output register
+        this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
+        this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
+        //initialise the required shader constants
+        this._pShader.initConstantData(this._pRegisterCache, this._pAnimatableAttributes, this._pAnimationTargetRegisters, this._uvSource, this._uvTarget);
+        this._pRenderPass._iInitConstantData(this._pShader);
+    };
+    /**
+     * Compile the code for the methods.
+     */
+    CompilerBase.prototype.pCompileDependencies = function () {
+        this._pSharedRegisters.shadedTarget = this._pRegisterCache.getFreeFragmentVectorTemp();
+        this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.shadedTarget, 1);
+        //compile the world-space position if required
+        if (this._pShader.globalPosDependencies > 0)
+            this.compileGlobalPositionCode();
+        //compile the local-space position if required
+        if (this._pShader.usesLocalPosFragment)
+            this.compileLocalPositionCode();
+        //Calculate the (possibly animated) UV coordinates.
+        if (this._pShader.uvDependencies > 0)
+            this.compileUVCode();
+        if (this._pShader.secondaryUVDependencies > 0)
+            this.compileSecondaryUVCode();
+        if (this._pShader.normalDependencies > 0)
+            this.compileNormalCode();
+        if (this._pShader.viewDirDependencies > 0)
+            this.compileViewDirCode();
+        //collect code from material
+        this._pVertexCode += this._pRenderableClass._iGetVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+        this._pFragmentCode += this._pRenderableClass._iGetFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+        //collect code from pass
+        this._pVertexCode += this._pRenderPass._iGetPreLightingVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+        this._pFragmentCode += this._pRenderPass._iGetPreLightingFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+    };
+    CompilerBase.prototype.compileGlobalPositionCode = function () {
+        this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.globalPositionVertex = this._pRegisterCache.getFreeVertexVectorTemp(), this._pShader.globalPosDependencies);
+        var sceneMatrixReg = this._pRegisterCache.getFreeVertexConstant();
+        this._pRegisterCache.getFreeVertexConstant();
+        this._pRegisterCache.getFreeVertexConstant();
+        this._pRegisterCache.getFreeVertexConstant();
+        this._pShader.sceneMatrixIndex = sceneMatrixReg.index * 4;
+        this._pVertexCode += "m44 " + this._pSharedRegisters.globalPositionVertex + ", " + this._pSharedRegisters.localPosition + ", " + sceneMatrixReg + "\n";
+        if (this._pShader.usesGlobalPosFragment) {
+            this._pSharedRegisters.globalPositionVarying = this._pRegisterCache.getFreeVarying();
+            this._pVertexCode += "mov " + this._pSharedRegisters.globalPositionVarying + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
+        }
+    };
+    CompilerBase.prototype.compileLocalPositionCode = function () {
+        this._pSharedRegisters.localPositionVarying = this._pRegisterCache.getFreeVarying();
+        this._pVertexCode += "mov " + this._pSharedRegisters.localPositionVarying + ", " + this._pSharedRegisters.localPosition + "\n";
+    };
+    /**
+     * Calculate the (possibly animated) UV coordinates.
+     */
+    CompilerBase.prototype.compileUVCode = function () {
+        var uvAttributeReg = this._pRegisterCache.getFreeVertexAttribute();
+        this._pShader.uvBufferIndex = uvAttributeReg.index;
+        var varying = this._pSharedRegisters.uvVarying = this._pRegisterCache.getFreeVarying();
+        if (this._pShader.usesUVTransform) {
+            // a, b, 0, tx
+            // c, d, 0, ty
+            var uvTransform1 = this._pRegisterCache.getFreeVertexConstant();
+            var uvTransform2 = this._pRegisterCache.getFreeVertexConstant();
+            this._pShader.uvTransformIndex = uvTransform1.index * 4;
+            this._pVertexCode += "dp4 " + varying + ".x, " + uvAttributeReg + ", " + uvTransform1 + "\n" + "dp4 " + varying + ".y, " + uvAttributeReg + ", " + uvTransform2 + "\n" + "mov " + varying + ".zw, " + uvAttributeReg + ".zw \n";
+        }
+        else {
+            this._pShader.uvTransformIndex = -1;
+            this._uvTarget = varying.toString();
+            this._uvSource = uvAttributeReg.toString();
+        }
+    };
+    /**
+     * Provide the secondary UV coordinates.
+     */
+    CompilerBase.prototype.compileSecondaryUVCode = function () {
+        var uvAttributeReg = this._pRegisterCache.getFreeVertexAttribute();
+        this._pShader.secondaryUVBufferIndex = uvAttributeReg.index;
+        this._pSharedRegisters.secondaryUVVarying = this._pRegisterCache.getFreeVarying();
+        this._pVertexCode += "mov " + this._pSharedRegisters.secondaryUVVarying + ", " + uvAttributeReg + "\n";
+    };
+    /**
+     * Calculate the view direction.
+     */
+    CompilerBase.prototype.compileViewDirCode = function () {
+        var cameraPositionReg = this._pRegisterCache.getFreeVertexConstant();
+        this._pSharedRegisters.viewDirVarying = this._pRegisterCache.getFreeVarying();
+        this._pSharedRegisters.viewDirFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
+        this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.viewDirFragment, this._pShader.viewDirDependencies);
+        this._pShader.cameraPositionIndex = cameraPositionReg.index * 4;
+        if (this._pShader.usesTangentSpace) {
+            var temp = this._pRegisterCache.getFreeVertexVectorTemp();
+            this._pVertexCode += "sub " + temp + ", " + cameraPositionReg + ", " + this._pSharedRegisters.localPosition + "\n" + "m33 " + this._pSharedRegisters.viewDirVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + this._pSharedRegisters.viewDirVarying + ".w, " + this._pSharedRegisters.localPosition + ".w\n";
+        }
+        else {
+            this._pVertexCode += "sub " + this._pSharedRegisters.viewDirVarying + ", " + cameraPositionReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
+            this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.globalPositionVertex);
+        }
+        //TODO is this required in all cases? (re: distancemappass)
+        this._pFragmentCode += "nrm " + this._pSharedRegisters.viewDirFragment + ".xyz, " + this._pSharedRegisters.viewDirVarying + "\n" + "mov " + this._pSharedRegisters.viewDirFragment + ".w,   " + this._pSharedRegisters.viewDirVarying + ".w\n";
+    };
+    /**
+     * Calculate the normal.
+     */
+    CompilerBase.prototype.compileNormalCode = function () {
+        this._pSharedRegisters.normalFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
+        this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.normalFragment, this._pShader.normalDependencies);
+        //simple normal aquisition if no tangent space is being used
+        if (this._pShader.outputsNormals && !this._pShader.outputsTangentNormals) {
+            this._pVertexCode += this._pRenderPass._iGetNormalVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+            this._pFragmentCode += this._pRenderPass._iGetNormalFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+            return;
+        }
+        var normalMatrix;
+        if (!this._pShader.outputsNormals || !this._pShader.usesTangentSpace) {
+            normalMatrix = new Array(3);
+            normalMatrix[0] = this._pRegisterCache.getFreeVertexConstant();
+            normalMatrix[1] = this._pRegisterCache.getFreeVertexConstant();
+            normalMatrix[2] = this._pRegisterCache.getFreeVertexConstant();
+            this._pRegisterCache.getFreeVertexConstant();
+            this._pShader.sceneNormalMatrixIndex = normalMatrix[0].index * 4;
+            this._pSharedRegisters.normalVarying = this._pRegisterCache.getFreeVarying();
+        }
+        if (this._pShader.outputsNormals) {
+            if (this._pShader.usesTangentSpace) {
+                // normalize normal + tangent vector and generate (approximated) bitangent used in m33 operation for view
+                this._pVertexCode += "nrm " + this._pSharedRegisters.animatedNormal + ".xyz, " + this._pSharedRegisters.animatedNormal + "\n" + "nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + this._pSharedRegisters.animatedTangent + "\n" + "crs " + this._pSharedRegisters.bitangent + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n";
+                this._pFragmentCode += this._pRenderPass._iGetNormalFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+            }
+            else {
+                //Compiles the vertex shader code for tangent-space normal maps.
+                this._pSharedRegisters.tangentVarying = this._pRegisterCache.getFreeVarying();
+                this._pSharedRegisters.bitangentVarying = this._pRegisterCache.getFreeVarying();
+                var temp = this._pRegisterCache.getFreeVertexVectorTemp();
+                this._pVertexCode += "m33 " + temp + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" + "nrm " + this._pSharedRegisters.animatedNormal + ".xyz, " + temp + "\n" + "m33 " + temp + ".xyz, " + this._pSharedRegisters.animatedTangent + ", " + normalMatrix[0] + "\n" + "nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + temp + "\n" + "mov " + this._pSharedRegisters.tangentVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".x  \n" + "mov " + this._pSharedRegisters.tangentVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".x  \n" + "mov " + this._pSharedRegisters.tangentVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".y  \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".y  \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" + "mov " + this._pSharedRegisters.normalVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".z  \n" + "mov " + this._pSharedRegisters.normalVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".z  \n" + "mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" + "crs " + temp + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + this._pSharedRegisters.tangentVarying + ".y, " + temp + ".x    \n" + "mov " + this._pSharedRegisters.bitangentVarying + ".y, " + temp + ".y  \n" + "mov " + this._pSharedRegisters.normalVarying + ".y, " + temp + ".z    \n";
+                this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.animatedTangent);
+                //Compiles the fragment shader code for tangent-space normal maps.
+                var t;
+                var b;
+                var n;
+                t = this._pRegisterCache.getFreeFragmentVectorTemp();
+                this._pRegisterCache.addFragmentTempUsages(t, 1);
+                b = this._pRegisterCache.getFreeFragmentVectorTemp();
+                this._pRegisterCache.addFragmentTempUsages(b, 1);
+                n = this._pRegisterCache.getFreeFragmentVectorTemp();
+                this._pRegisterCache.addFragmentTempUsages(n, 1);
+                this._pFragmentCode += "nrm " + t + ".xyz, " + this._pSharedRegisters.tangentVarying + "\n" + "mov " + t + ".w, " + this._pSharedRegisters.tangentVarying + ".w	\n" + "nrm " + b + ".xyz, " + this._pSharedRegisters.bitangentVarying + "\n" + "nrm " + n + ".xyz, " + this._pSharedRegisters.normalVarying + "\n";
+                //compile custom fragment code for normal calcs
+                this._pFragmentCode += this._pRenderPass._iGetNormalFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters) + "m33 " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalFragment + ", " + t + "\n" + "mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w\n";
+                this._pRegisterCache.removeFragmentTempUsage(b);
+                this._pRegisterCache.removeFragmentTempUsage(t);
+                this._pRegisterCache.removeFragmentTempUsage(n);
+            }
+        }
+        else {
+            // no output, world space is enough
+            this._pVertexCode += "m33 " + this._pSharedRegisters.normalVarying + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" + "mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.animatedNormal + ".w\n";
+            this._pFragmentCode += "nrm " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalVarying + "\n" + "mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w\n";
+            if (this._pShader.tangentDependencies > 0) {
+                this._pSharedRegisters.tangentVarying = this._pRegisterCache.getFreeVarying();
+                this._pVertexCode += "m33 " + this._pSharedRegisters.tangentVarying + ".xyz, " + this._pSharedRegisters.animatedTangent + ", " + normalMatrix[0] + "\n" + "mov " + this._pSharedRegisters.tangentVarying + ".w, " + this._pSharedRegisters.animatedTangent + ".w\n";
+            }
+        }
+        if (!this._pShader.usesTangentSpace)
+            this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.animatedNormal);
+    };
+    /**
+     * Reset all the indices to "unused".
+     */
+    CompilerBase.prototype.pInitRegisterIndices = function () {
+        this._pShader.pInitRegisterIndices();
+        this._pAnimatableAttributes = new Array("va0");
+        this._pAnimationTargetRegisters = new Array("vt0");
+        this._pVertexCode = "";
+        this._pFragmentCode = "";
+        this._pPostAnimationFragmentCode = "";
+        this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.localPosition = this._pRegisterCache.getFreeVertexVectorTemp(), 1);
+        //create commonly shared constant registers
+        this._pSharedRegisters.commons = this._pRegisterCache.getFreeFragmentConstant();
+        this._pShader.commonsDataIndex = this._pSharedRegisters.commons.index * 4;
+        //Creates the registers to contain the tangent data.
+        // need to be created FIRST and in this order (for when using tangent space)
+        if (this._pShader.tangentDependencies > 0 || this._pShader.outputsNormals) {
+            this._pSharedRegisters.tangentInput = this._pRegisterCache.getFreeVertexAttribute();
+            this._pShader.tangentBufferIndex = this._pSharedRegisters.tangentInput.index;
+            this._pSharedRegisters.animatedTangent = this._pRegisterCache.getFreeVertexVectorTemp();
+            this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedTangent, 1);
+            if (this._pShader.usesTangentSpace) {
+                this._pSharedRegisters.bitangent = this._pRegisterCache.getFreeVertexVectorTemp();
+                this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.bitangent, 1);
+            }
+            this._pAnimatableAttributes.push(this._pSharedRegisters.tangentInput.toString());
+            this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedTangent.toString());
+        }
+        if (this._pShader.normalDependencies > 0) {
+            this._pSharedRegisters.normalInput = this._pRegisterCache.getFreeVertexAttribute();
+            this._pShader.normalBufferIndex = this._pSharedRegisters.normalInput.index;
+            this._pSharedRegisters.animatedNormal = this._pRegisterCache.getFreeVertexVectorTemp();
+            this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedNormal, 1);
+            this._pAnimatableAttributes.push(this._pSharedRegisters.normalInput.toString());
+            this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedNormal.toString());
+        }
+        if (this._pShader.colorDependencies > 0) {
+            this._pSharedRegisters.colorInput = this._pRegisterCache.getFreeVertexAttribute();
+            this._pShader.colorBufferIndex = this._pSharedRegisters.colorInput.index;
+            this._pSharedRegisters.colorVarying = this._pRegisterCache.getFreeVarying();
+            this._pVertexCode += "mov " + this._pSharedRegisters.colorVarying + ", " + this._pSharedRegisters.colorInput + "\n";
+        }
+    };
+    /**
+     * Disposes all resources used by the compiler.
+     */
+    CompilerBase.prototype.dispose = function () {
+        this._pRegisterCache.dispose();
+        this._pRegisterCache = null;
+        this._pSharedRegisters = null;
+    };
+    Object.defineProperty(CompilerBase.prototype, "vertexCode", {
+        /**
+         * The generated vertex code.
+         */
+        get: function () {
+            return this._pVertexCode;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CompilerBase.prototype, "fragmentCode", {
+        /**
+         * The generated fragment code.
+         */
+        get: function () {
+            return this._pFragmentCode;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CompilerBase.prototype, "postAnimationFragmentCode", {
+        /**
+         * The generated fragment code.
+         */
+        get: function () {
+            return this._pPostAnimationFragmentCode;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CompilerBase.prototype, "shadedTarget", {
+        /**
+         * The register name containing the final shaded colour.
+         */
+        get: function () {
+            return this._pSharedRegisters.shadedTarget.toString();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return CompilerBase;
+})();
+module.exports = CompilerBase;
+
+},{"awayjs-renderergl/lib/shaders/ShaderRegisterCache":"awayjs-renderergl/lib/shaders/ShaderRegisterCache","awayjs-renderergl/lib/shaders/ShaderRegisterData":"awayjs-renderergl/lib/shaders/ShaderRegisterData"}],"awayjs-renderergl/lib/shaders/compilers/LightingCompiler":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var CompilerBase = require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
+/**
+ * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
+ * material. Concrete subclasses are used by the default materials.
+ *
+ * @see away.materials.ShadingMethodBase
+ */
+var LightingCompiler = (function (_super) {
+    __extends(LightingCompiler, _super);
+    /**
+     * Creates a new CompilerBase object.
+     * @param profile The compatibility profile of the renderer.
+     */
+    function LightingCompiler(renderableClass, lightingPass, shaderLightingObject) {
+        _super.call(this, renderableClass, lightingPass, shaderLightingObject);
+        this._shaderLightingObject = shaderLightingObject;
+        this._lightingPass = lightingPass;
+    }
+    /**
+     * Compile the code for the methods.
+     */
+    LightingCompiler.prototype.pCompileDependencies = function () {
+        _super.prototype.pCompileDependencies.call(this);
+        //compile the lighting code
+        if (this._shaderLightingObject.usesShadows)
+            this.pCompileShadowCode();
+        if (this._shaderLightingObject.usesLights) {
+            this.initLightRegisters();
+            this.compileLightCode();
+        }
+        if (this._shaderLightingObject.usesProbes)
+            this.compileLightProbeCode();
+        this._pVertexCode += this._lightingPass._iGetPostLightingVertexCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
+        this._pFragmentCode += this._lightingPass._iGetPostLightingFragmentCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
+    };
+    /**
+     * Provides the code to provide shadow mapping.
+     */
+    LightingCompiler.prototype.pCompileShadowCode = function () {
+        if (this._shaderLightingObject.normalDependencies > 0) {
+            this._pSharedRegisters.shadowTarget = this._pSharedRegisters.normalFragment;
+        }
+        else {
+            this._pSharedRegisters.shadowTarget = this._pRegisterCache.getFreeFragmentVectorTemp();
+            this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.shadowTarget, 1);
+        }
+    };
+    /**
+     * Initializes constant registers to contain light data.
+     */
+    LightingCompiler.prototype.initLightRegisters = function () {
+        // init these first so we're sure they're in sequence
+        var i, len;
+        if (this._dirLightVertexConstants) {
+            len = this._dirLightVertexConstants.length;
+            for (i = 0; i < len; ++i) {
+                this._dirLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
+                if (this._shaderLightingObject.lightVertexConstantIndex == -1)
+                    this._shaderLightingObject.lightVertexConstantIndex = this._dirLightVertexConstants[i].index * 4;
+            }
+        }
+        if (this._pointLightVertexConstants) {
+            len = this._pointLightVertexConstants.length;
+            for (i = 0; i < len; ++i) {
+                this._pointLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
+                if (this._shaderLightingObject.lightVertexConstantIndex == -1)
+                    this._shaderLightingObject.lightVertexConstantIndex = this._pointLightVertexConstants[i].index * 4;
+            }
+        }
+        len = this._dirLightFragmentConstants.length;
+        for (i = 0; i < len; ++i) {
+            this._dirLightFragmentConstants[i] = this._pRegisterCache.getFreeFragmentConstant();
+            if (this._shaderLightingObject.lightFragmentConstantIndex == -1)
+                this._shaderLightingObject.lightFragmentConstantIndex = this._dirLightFragmentConstants[i].index * 4;
+        }
+        len = this._pointLightFragmentConstants.length;
+        for (i = 0; i < len; ++i) {
+            this._pointLightFragmentConstants[i] = this._pRegisterCache.getFreeFragmentConstant();
+            if (this._shaderLightingObject.lightFragmentConstantIndex == -1)
+                this._shaderLightingObject.lightFragmentConstantIndex = this._pointLightFragmentConstants[i].index * 4;
+        }
+    };
+    /**
+     * Compiles the shading code for directional and point lights.
+     */
+    LightingCompiler.prototype.compileLightCode = function () {
+        var diffuseColorReg;
+        var specularColorReg;
+        var lightPosReg;
+        var lightDirReg;
+        var vertexRegIndex = 0;
+        var fragmentRegIndex = 0;
+        var addSpec = this._shaderLightingObject.usesLightsForSpecular;
+        var addDiff = this._shaderLightingObject.usesLightsForDiffuse;
+        for (var i = 0; i < this._shaderLightingObject.numDirectionalLights; ++i) {
+            if (this._shaderLightingObject.usesTangentSpace) {
+                lightDirReg = this._dirLightVertexConstants[vertexRegIndex++];
+                var lightVarying = this._pRegisterCache.getFreeVarying();
+                this._pVertexCode += "m33 " + lightVarying + ".xyz, " + lightDirReg + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + lightVarying + ".w, " + lightDirReg + ".w\n";
+                lightDirReg = this._pRegisterCache.getFreeFragmentVectorTemp();
+                this._pRegisterCache.addVertexTempUsages(lightDirReg, 1);
+                this._pFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" + "mov " + lightDirReg + ".w, " + lightVarying + ".w\n";
+            }
+            else {
+                lightDirReg = this._dirLightFragmentConstants[fragmentRegIndex++];
+            }
+            diffuseColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
+            specularColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
+            if (addDiff)
+                this._pFragmentCode += this._lightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
+            if (addSpec)
+                this._pFragmentCode += this._lightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
+            if (this._shaderLightingObject.usesTangentSpace)
+                this._pRegisterCache.removeVertexTempUsage(lightDirReg);
+        }
+        vertexRegIndex = 0;
+        fragmentRegIndex = 0;
+        for (var i = 0; i < this._shaderLightingObject.numPointLights; ++i) {
+            if (this._shaderLightingObject.usesTangentSpace || !this._shaderLightingObject.usesGlobalPosFragment)
+                lightPosReg = this._pointLightVertexConstants[vertexRegIndex++];
+            else
+                lightPosReg = this._pointLightFragmentConstants[fragmentRegIndex++];
+            diffuseColorReg = this._pointLightFragmentConstants[fragmentRegIndex++];
+            specularColorReg = this._pointLightFragmentConstants[fragmentRegIndex++];
+            lightDirReg = this._pRegisterCache.getFreeFragmentVectorTemp();
+            this._pRegisterCache.addFragmentTempUsages(lightDirReg, 1);
+            var lightVarying;
+            if (this._shaderLightingObject.usesTangentSpace) {
+                lightVarying = this._pRegisterCache.getFreeVarying();
+                var temp = this._pRegisterCache.getFreeVertexVectorTemp();
+                this._pVertexCode += "sub " + temp + ", " + lightPosReg + ", " + this._pSharedRegisters.localPosition + "\n" + "m33 " + lightVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + lightVarying + ".w, " + this._pSharedRegisters.localPosition + ".w\n";
+            }
+            else if (!this._shaderLightingObject.usesGlobalPosFragment) {
+                lightVarying = this._pRegisterCache.getFreeVarying();
+                this._pVertexCode += "sub " + lightVarying + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
+            }
+            else {
+                lightVarying = lightDirReg;
+                this._pFragmentCode += "sub " + lightDirReg + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVarying + "\n";
+            }
+            if (this._shaderLightingObject.usesLightFallOff) {
+                // calculate attenuation
+                this._pFragmentCode += "dp3 " + lightDirReg + ".w, " + lightVarying + ", " + lightVarying + "\n" + "sub " + lightDirReg + ".w, " + lightDirReg + ".w, " + diffuseColorReg + ".w\n" + "mul " + lightDirReg + ".w, " + lightDirReg + ".w, " + specularColorReg + ".w\n" + "sat " + lightDirReg + ".w, " + lightDirReg + ".w\n" + "sub " + lightDirReg + ".w, " + this._pSharedRegisters.commons + ".w, " + lightDirReg + ".w\n" + "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n";
+            }
+            else {
+                this._pFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" + "mov " + lightDirReg + ".w, " + lightVarying + ".w\n";
+            }
+            if (this._shaderLightingObject.lightFragmentConstantIndex == -1)
+                this._shaderLightingObject.lightFragmentConstantIndex = lightPosReg.index * 4;
+            if (addDiff)
+                this._pFragmentCode += this._lightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
+            if (addSpec)
+                this._pFragmentCode += this._lightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
+            this._pRegisterCache.removeFragmentTempUsage(lightDirReg);
+        }
+    };
+    /**
+     * Compiles shading code for light probes.
+     */
+    LightingCompiler.prototype.compileLightProbeCode = function () {
+        var weightReg;
+        var weightComponents = [".x", ".y", ".z", ".w"];
+        var weightRegisters = new Array();
+        var i;
+        var texReg;
+        var addSpec = this._shaderLightingObject.usesProbesForSpecular;
+        var addDiff = this._shaderLightingObject.usesProbesForDiffuse;
+        if (addDiff)
+            this._shaderLightingObject.lightProbeDiffuseIndices = new Array();
+        if (addSpec)
+            this._shaderLightingObject.lightProbeSpecularIndices = new Array();
+        for (i = 0; i < this._pNumProbeRegisters; ++i) {
+            weightRegisters[i] = this._pRegisterCache.getFreeFragmentConstant();
+            if (i == 0)
+                this._shaderLightingObject.probeWeightsIndex = weightRegisters[i].index * 4;
+        }
+        for (i = 0; i < this._shaderLightingObject.numLightProbes; ++i) {
+            weightReg = weightRegisters[Math.floor(i / 4)].toString() + weightComponents[i % 4];
+            if (addDiff) {
+                texReg = this._pRegisterCache.getFreeTextureReg();
+                this._shaderLightingObject.lightProbeDiffuseIndices[i] = texReg.index;
+                this._pFragmentCode += this._lightingPass._iGetPerProbeDiffuseFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
+            }
+            if (addSpec) {
+                texReg = this._pRegisterCache.getFreeTextureReg();
+                this._shaderLightingObject.lightProbeSpecularIndices[i] = texReg.index;
+                this._pFragmentCode += this._lightingPass._iGetPerProbeSpecularFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
+            }
+        }
+    };
+    /**
+     * Reset all the indices to "unused".
+     */
+    LightingCompiler.prototype.pInitRegisterIndices = function () {
+        _super.prototype.pInitRegisterIndices.call(this);
+        this._shaderLightingObject.lightVertexConstantIndex = -1;
+        this._shaderLightingObject.lightFragmentConstantIndex = -1;
+        this._shaderLightingObject.probeWeightsIndex = -1;
+        this._pNumProbeRegisters = Math.ceil(this._shaderLightingObject.numLightProbes / 4);
+        //init light data
+        if (this._shaderLightingObject.usesTangentSpace || !this._shaderLightingObject.usesGlobalPosFragment) {
+            this._pointLightVertexConstants = new Array(this._shaderLightingObject.numPointLights);
+            this._pointLightFragmentConstants = new Array(this._shaderLightingObject.numPointLights * 2);
+        }
+        else {
+            this._pointLightFragmentConstants = new Array(this._shaderLightingObject.numPointLights * 3);
+        }
+        if (this._shaderLightingObject.usesTangentSpace) {
+            this._dirLightVertexConstants = new Array(this._shaderLightingObject.numDirectionalLights);
+            this._dirLightFragmentConstants = new Array(this._shaderLightingObject.numDirectionalLights * 2);
+        }
+        else {
+            this._dirLightFragmentConstants = new Array(this._shaderLightingObject.numDirectionalLights * 3);
+        }
+    };
+    return LightingCompiler;
+})(CompilerBase);
+module.exports = LightingCompiler;
+
+},{"awayjs-renderergl/lib/shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase"}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Geometry = require("awayjs-core/lib/data/Geometry");
 var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
@@ -14818,7 +14460,353 @@ var PerspectiveMatrix3D = (function (_super) {
 })(Matrix3D);
 module.exports = PerspectiveMatrix3D;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined}]},{},[])
+},{"awayjs-core/lib/geom/Matrix3D":undefined}],"awayjs-renderergl/lib/vos/ITextureVOClass":[function(require,module,exports){
+
+},{}],"awayjs-renderergl/lib/vos/Sampler2DVO":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var SamplerVOBase = require("awayjs-renderergl/lib/vos/SamplerVOBase");
+/**
+ *
+ * @class away.pool.Sampler2DVO
+ */
+var Sampler2DVO = (function (_super) {
+    __extends(Sampler2DVO, _super);
+    function Sampler2DVO(stage) {
+        _super.call(this, stage);
+    }
+    Sampler2DVO.prototype.initProperties = function (sampler2D, regCache) {
+        this.sampler2D = sampler2D;
+        this.samplerReg = regCache.getFreeTextureReg();
+        this.samplerIndex = this.samplerReg.index;
+        if (this.sampler2D.imageRect) {
+            this.fragmentReg = regCache.getFreeFragmentConstant();
+            this.fragmentIndex = this.fragmentReg.index * 4;
+        }
+    };
+    Sampler2DVO.prototype.getFragmentCode = function (shader, targetReg, regCache, inputReg) {
+        var code = "";
+        var wrap = (shader.repeatTextures ? "wrap" : "clamp");
+        var format = this.getFormatString(this.sampler2D);
+        var filter = (shader.useSmoothTextures) ? (shader.useMipmapping ? "linear,miplinear" : "linear") : (shader.useMipmapping ? "nearest,mipnearest" : "nearest");
+        var temp;
+        //handles texture atlasing
+        if (this.sampler2D.imageRect) {
+            temp = regCache.getFreeFragmentVectorTemp();
+            code += "mul " + temp + ", " + inputReg + ", " + this.fragmentReg + ".xy\n";
+            code += "add " + temp + ", " + temp + ", " + this.fragmentReg + ".zw\n";
+        }
+        else {
+            temp = inputReg;
+        }
+        code += "tex " + targetReg + ", " + temp + ", " + this.samplerReg + " <2d," + filter + "," + format + wrap + ">\n";
+        return code;
+    };
+    Sampler2DVO.prototype.activate = function (shader) {
+        this._stage.getImageObject(this.sampler2D.image2D).activate(this.samplerIndex, this.sampler2D.repeat || shader.repeatTextures, this.sampler2D.smooth || shader.useSmoothTextures, this.sampler2D.mipmap || shader.useMipmapping);
+        if (this.sampler2D.imageRect) {
+            var index = this.fragmentIndex;
+            var data = shader.fragmentConstantData;
+            data[index] = this.sampler2D.scaleX;
+            data[index + 1] = this.sampler2D.scaleY;
+            data[index + 2] = this.sampler2D.offsetX;
+            data[index + 3] = this.sampler2D.offsetY;
+        }
+    };
+    return Sampler2DVO;
+})(SamplerVOBase);
+module.exports = Sampler2DVO;
+
+},{"awayjs-renderergl/lib/vos/SamplerVOBase":"awayjs-renderergl/lib/vos/SamplerVOBase"}],"awayjs-renderergl/lib/vos/SamplerCubeVO":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var SamplerVOBase = require("awayjs-renderergl/lib/vos/SamplerVOBase");
+/**
+ *
+ * @class away.pool.BitmapObject
+ */
+var SamplerCubeVO = (function (_super) {
+    __extends(SamplerCubeVO, _super);
+    function SamplerCubeVO(stage) {
+        _super.call(this, stage);
+    }
+    SamplerCubeVO.prototype.initProperties = function (samplerCube, regCache) {
+        this.samplerCube = samplerCube;
+        this.samplerReg = regCache.getFreeTextureReg();
+        this.samplerIndex = this.samplerReg.index;
+    };
+    SamplerCubeVO.prototype.getFragmentCode = function (shader, targetReg, regCache, inputReg) {
+        var filter;
+        var format = this.getFormatString(this.samplerCube);
+        var filter = (shader.useSmoothTextures) ? (shader.useMipmapping ? "linear,miplinear" : "linear") : (shader.useMipmapping ? "nearest,mipnearest" : "nearest");
+        return "tex " + targetReg + ", " + inputReg + ", " + this.samplerReg + " <cube," + format + filter + ">\n";
+    };
+    SamplerCubeVO.prototype.activate = function (shader) {
+        this._stage.getImageObject(this.samplerCube.imageCube).activate(this.samplerIndex, false, this.samplerCube.smooth || shader.useSmoothTextures, this.samplerCube.mipmap || shader.useMipmapping);
+    };
+    return SamplerCubeVO;
+})(SamplerVOBase);
+module.exports = SamplerCubeVO;
+
+},{"awayjs-renderergl/lib/vos/SamplerVOBase":"awayjs-renderergl/lib/vos/SamplerVOBase"}],"awayjs-renderergl/lib/vos/SamplerVOBase":[function(require,module,exports){
+var ContextGLTextureFormat = require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
+/**
+ *
+ * @class away.pool.SamplerVOBase
+ */
+var SamplerVOBase = (function () {
+    function SamplerVOBase(stage) {
+        this._stage = stage;
+    }
+    /**
+     * Generates a texture format string for the sample instruction.
+     * @param texture The texture for which to get the format string.
+     * @return
+     *
+     * @protected
+     */
+    SamplerVOBase.prototype.getFormatString = function (bitmap) {
+        switch (bitmap.format) {
+            case ContextGLTextureFormat.COMPRESSED:
+                return "dxt1,";
+                break;
+            case ContextGLTextureFormat.COMPRESSED_ALPHA:
+                return "dxt5,";
+                break;
+            default:
+                return "";
+        }
+    };
+    return SamplerVOBase;
+})();
+module.exports = SamplerVOBase;
+
+},{"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/vos/Single2DTextureVO":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
+var TextureVOBase = require("awayjs-renderergl/lib/vos/TextureVOBase");
+var Sampler2DVO = require("awayjs-renderergl/lib/vos/Sampler2DVO");
+/**
+ *
+ * @class away.pool.Single2DTextureVO
+ */
+var Single2DTextureVO = (function (_super) {
+    __extends(Single2DTextureVO, _super);
+    function Single2DTextureVO(pool, single2DTexture, stage) {
+        _super.call(this, pool, single2DTexture, stage);
+        this._single2DTexture = single2DTexture;
+        this._sampler2DVO = new Sampler2DVO(stage);
+    }
+    Single2DTextureVO.prototype._iInitRegisters = function (shader, regCache) {
+        this._sampler2DVO.initProperties(this._single2DTexture.sampler2D, regCache);
+    };
+    /**
+     *
+     * @param shader
+     * @param regCache
+     * @param targetReg The register in which to store the sampled colour.
+     * @param uvReg The uv coordinate vector with which to sample the texture map.
+     * @returns {string}
+     * @private
+     */
+    Single2DTextureVO.prototype._iGetFragmentCode = function (shader, targetReg, regCache, inputReg) {
+        return this._sampler2DVO.getFragmentCode(shader, targetReg, regCache, inputReg);
+    };
+    Single2DTextureVO.prototype.activate = function (shader) {
+        this._sampler2DVO.activate(shader);
+    };
+    /**
+     *
+     */
+    Single2DTextureVO.assetClass = Single2DTexture;
+    return Single2DTextureVO;
+})(TextureVOBase);
+module.exports = Single2DTextureVO;
+
+},{"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-renderergl/lib/vos/Sampler2DVO":"awayjs-renderergl/lib/vos/Sampler2DVO","awayjs-renderergl/lib/vos/TextureVOBase":"awayjs-renderergl/lib/vos/TextureVOBase"}],"awayjs-renderergl/lib/vos/SingleCubeTextureVO":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
+var TextureVOBase = require("awayjs-renderergl/lib/vos/TextureVOBase");
+var SamplerCubeVO = require("awayjs-renderergl/lib/vos/SamplerCubeVO");
+/**
+ *
+ * @class away.pool.TextureDataBase
+ */
+var SingleCubeTextureVO = (function (_super) {
+    __extends(SingleCubeTextureVO, _super);
+    function SingleCubeTextureVO(pool, singleCubeTexture, stage) {
+        _super.call(this, pool, singleCubeTexture, stage);
+        this._singleCubeTexture = singleCubeTexture;
+        this._samplerCubeVO = new SamplerCubeVO(stage);
+    }
+    SingleCubeTextureVO.prototype._iIncludeDependencies = function (shader, includeInput) {
+        if (includeInput === void 0) { includeInput = true; }
+        if (includeInput)
+            shader.usesLocalPosFragment = true;
+    };
+    SingleCubeTextureVO.prototype._iInitRegisters = function (shader, regCache) {
+        this._samplerCubeVO.initProperties(this._singleCubeTexture.samplerCube, regCache);
+    };
+    /**
+     *
+     * @param shader
+     * @param regCache
+     * @param targetReg The register in which to store the sampled colour.
+     * @param uvReg The direction vector with which to sample the cube map.
+     * @returns {string}
+     * @private
+     */
+    SingleCubeTextureVO.prototype._iGetFragmentCode = function (shader, targetReg, regCache, inputReg) {
+        return this._samplerCubeVO.getFragmentCode(shader, targetReg, regCache, inputReg);
+    };
+    SingleCubeTextureVO.prototype.activate = function (shader) {
+        this._samplerCubeVO.activate(shader);
+    };
+    /**
+     *
+     */
+    SingleCubeTextureVO.assetClass = SingleCubeTexture;
+    return SingleCubeTextureVO;
+})(TextureVOBase);
+module.exports = SingleCubeTextureVO;
+
+},{"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-renderergl/lib/vos/SamplerCubeVO":"awayjs-renderergl/lib/vos/SamplerCubeVO","awayjs-renderergl/lib/vos/TextureVOBase":"awayjs-renderergl/lib/vos/TextureVOBase"}],"awayjs-renderergl/lib/vos/TextureVOBase":[function(require,module,exports){
+var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
+/**
+ *
+ * @class away.pool.TextureVOBaseBase
+ */
+var TextureVOBase = (function () {
+    function TextureVOBase(pool, texture, stage) {
+        this._pool = pool;
+        this._texture = texture;
+        this._stage = stage;
+    }
+    TextureVOBase.prototype._iInitRegisters = function (shader, regCache) {
+    };
+    /**
+     *
+     */
+    TextureVOBase.prototype.dispose = function () {
+        this._pool.disposeItem(this._texture);
+    };
+    /**
+     *
+     */
+    TextureVOBase.prototype.invalidate = function () {
+        this.invalid = true;
+    };
+    TextureVOBase.prototype._iGetFragmentCode = function (shader, targetReg, regCache, inputReg) {
+        if (inputReg === void 0) { inputReg = null; }
+        throw new AbstractMethodError();
+    };
+    TextureVOBase.prototype.activate = function (shader) {
+        throw new AbstractMethodError();
+    };
+    return TextureVOBase;
+})();
+module.exports = TextureVOBase;
+
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-renderergl/lib/vos/TextureVOPool":[function(require,module,exports){
+var Single2DTextureVO = require("awayjs-renderergl/lib/vos/Single2DTextureVO");
+var SingleCubeTextureVO = require("awayjs-renderergl/lib/vos/SingleCubeTextureVO");
+/**
+ * @class away.pool.TextureVOPool
+ */
+var TextureVOPool = (function () {
+    /**
+     * //TODO
+     *
+     * @param textureDataClass
+     */
+    function TextureVOPool(stage) {
+        this._pool = new Object();
+        this._stage = stage;
+    }
+    /**
+     * //TODO
+     *
+     * @param materialOwner
+     * @returns ITexture
+     */
+    TextureVOPool.prototype.getItem = function (texture) {
+        return (this._pool[texture.id] || (this._pool[texture.id] = texture._iAddTextureVO(new (TextureVOPool.getClass(texture))(this, texture, this._stage))));
+    };
+    /**
+     * //TODO
+     *
+     * @param materialOwner
+     */
+    TextureVOPool.prototype.disposeItem = function (texture) {
+        texture._iRemoveTextureVO(this._pool[texture.id]);
+        this._pool[texture.id] = null;
+    };
+    TextureVOPool.prototype.dispose = function () {
+        for (var id in this._pool)
+            this._pool[id].dispose();
+        TextureVOPool.disposePool(this._stage);
+    };
+    /**
+     * //TODO
+     *
+     * @param renderableClass
+     * @returns RenderPool
+     */
+    TextureVOPool.getPool = function (stage) {
+        return (TextureVOPool._pools[stage.stageIndex] || (TextureVOPool._pools[stage.stageIndex] = new TextureVOPool(stage)));
+    };
+    /**
+     * //TODO
+     *
+     * @param renderableClass
+     */
+    TextureVOPool.disposePool = function (stage) {
+        TextureVOPool._pools[stage.stageIndex] = undefined;
+    };
+    /**
+     *
+     * @param subMeshClass
+     */
+    TextureVOPool.registerClass = function (textureVOClass) {
+        TextureVOPool.classPool[textureVOClass.assetClass.assetType] = textureVOClass;
+    };
+    /**
+     *
+     * @param subGeometry
+     */
+    TextureVOPool.getClass = function (texture) {
+        return TextureVOPool.classPool[texture.assetType];
+    };
+    TextureVOPool.addDefaults = function () {
+        TextureVOPool.registerClass(Single2DTextureVO);
+        TextureVOPool.registerClass(SingleCubeTextureVO);
+    };
+    TextureVOPool.classPool = new Object();
+    TextureVOPool._pools = new Object();
+    TextureVOPool.main = TextureVOPool.addDefaults();
+    return TextureVOPool;
+})();
+module.exports = TextureVOPool;
+
+},{"awayjs-renderergl/lib/vos/Single2DTextureVO":"awayjs-renderergl/lib/vos/Single2DTextureVO","awayjs-renderergl/lib/vos/SingleCubeTextureVO":"awayjs-renderergl/lib/vos/SingleCubeTextureVO"}]},{},[])
 
 
 //# sourceMappingURL=awayjs-renderergl.js.map
