@@ -10,7 +10,7 @@ import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/A
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleRotateToHeadingNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
+import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
 
 /**
  * ...

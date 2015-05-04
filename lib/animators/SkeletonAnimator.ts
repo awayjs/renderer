@@ -19,9 +19,9 @@ import SkeletonPose						= require("awayjs-renderergl/lib/animators/data/Skeleto
 import ISkeletonAnimationState			= require("awayjs-renderergl/lib/animators/states/ISkeletonAnimationState");
 import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
 import AnimationStateEvent				= require("awayjs-renderergl/lib/events/AnimationStateEvent");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
-import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
+import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
+import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
 
 /**
  * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects
@@ -200,7 +200,7 @@ class SkeletonAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shaderObject:ShaderObjectBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	public setRenderState(shader:ShaderBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 	{
 		// do on request of globalProperties
 		if (this._globalPropertiesDirty)
@@ -231,9 +231,9 @@ class SkeletonAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public testGPUCompatibility(shaderObject:ShaderObjectBase)
+	public testGPUCompatibility(shader:ShaderBase)
 	{
-		if (!this._useCondensedIndices && (this._forceCPU || this._jointsPerVertex > 4 || shaderObject.numUsedVertexConstants + this._numJoints*3 > 128))
+		if (!this._useCondensedIndices && (this._forceCPU || this._jointsPerVertex > 4 || shader.numUsedVertexConstants + this._numJoints*3 > 128))
 			this._pAnimationSet.cancelGPUCompatibility();
 	}
 

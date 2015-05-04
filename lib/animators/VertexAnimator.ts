@@ -15,9 +15,9 @@ import VertexAnimationSet				= require("awayjs-renderergl/lib/animators/VertexAn
 import VertexAnimationMode				= require("awayjs-renderergl/lib/animators/data/VertexAnimationMode");
 import IVertexAnimationState			= require("awayjs-renderergl/lib/animators/states/IVertexAnimationState");
 import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
-import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
-import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
+import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
 
 /**
  * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
@@ -125,13 +125,13 @@ class VertexAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shaderObject:ShaderObjectBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	public setRenderState(shader:ShaderBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 	{
 		// todo: add code for when running on cpu
 
 		// if no poses defined, set temp data
 		if (!this._poses.length) {
-			this.setNullPose(shaderObject, renderable, stage, vertexConstantOffset, vertexStreamOffset);
+			this.setNullPose(shader, renderable, stage, vertexConstantOffset, vertexStreamOffset);
 			return;
 		}
 
@@ -153,12 +153,12 @@ class VertexAnimator extends AnimatorBase
 
 			stage.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.POSITION_DATA), subGeom.getOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
-			if (shaderObject.normalDependencies > 0)
+			if (shader.normalDependencies > 0)
 				stage.activateBuffer(vertexStreamOffset++, VertexDataPool.getItem(subGeom, renderable.getIndexData(), TriangleSubGeometry.NORMAL_DATA), subGeom.getOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 		}
 	}
 
-	private setNullPose(shaderObject:ShaderObjectBase, renderable:RenderableBase, stage:Stage, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	private setNullPose(shader:ShaderBase, renderable:RenderableBase, stage:Stage, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 	{
 		stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
@@ -167,7 +167,7 @@ class VertexAnimator extends AnimatorBase
 			for (var i:number /*uint*/ = 1; i < len; ++i) {
 				stage.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
 
-				if (shaderObject.normalDependencies > 0)
+				if (shader.normalDependencies > 0)
 					stage.activateBuffer(vertexStreamOffset++, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
 			}
 		}
@@ -178,7 +178,7 @@ class VertexAnimator extends AnimatorBase
 	 * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
 	 * Needs to be called if gpu code is potentially required.
 	 */
-	public testGPUCompatibility(shaderObject:ShaderObjectBase)
+	public testGPUCompatibility(shader:ShaderBase)
 	{
 	}
 

@@ -13,9 +13,9 @@ import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/P
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
-import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
+import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
+import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
 
 /**
  * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
@@ -75,7 +75,7 @@ class ParticleAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shaderObject:ShaderObjectBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	public setRenderState(shader:ShaderBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 	{
 		var animationRegisterCache:AnimationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
 
@@ -107,7 +107,7 @@ class ParticleAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public testGPUCompatibility(shaderObject:ShaderObjectBase)
+	public testGPUCompatibility(shader:ShaderBase)
 	{
 
 	}

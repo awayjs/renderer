@@ -18,7 +18,7 @@ import ParticleData						= require("awayjs-renderergl/lib/animators/data/Particl
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleTimeNode					= require("awayjs-renderergl/lib/animators/nodes/ParticleTimeNode");
 import ParticleGeometry					= require("awayjs-renderergl/lib/base/ParticleGeometry");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
 
 
 /**
@@ -35,12 +35,12 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 	private _timeNode:ParticleTimeNode;
 
 	/**
-	 * Property used by particle nodes that require compilation at the end of the shader
+	 * Property used by particle nodes that require compilers at the end of the shader
 	 */
 	public static POST_PRIORITY:number /*int*/ = 9;
 
 	/**
-	 * Property used by particle nodes that require color compilation
+	 * Property used by particle nodes that require color compilers
 	 */
 	public static COLOR_PRIORITY:number /*int*/ = 18;
 
@@ -134,7 +134,7 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public activate(shaderObject:ShaderObjectBase, stage:Stage)
+	public activate(shader:ShaderBase, stage:Stage)
 	{
 //			this._iAnimationRegisterCache = pass.animationRegisterCache;
 	}
@@ -142,7 +142,7 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public deactivate(shaderObject:ShaderObjectBase, stage:Stage)
+	public deactivate(shader:ShaderBase, stage:Stage)
 	{
 //			var context:IContextGL = <IContextGL> stage.context;
 //			var offset:number /*int*/ = this._iAnimationRegisterCache.vertexAttributesOffset;
@@ -154,26 +154,26 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALVertexCode(shaderObject:ShaderObjectBase):string
+	public getAGALVertexCode(shader:ShaderBase):string
 	{
 		//grab animationRegisterCache from the materialpassbase or create a new one if the first time
-		this._iAnimationRegisterCache = shaderObject.animationRegisterCache;
+		this._iAnimationRegisterCache = shader.animationRegisterCache;
 
 		if (this._iAnimationRegisterCache == null)
-			this._iAnimationRegisterCache = shaderObject.animationRegisterCache = new AnimationRegisterCache(shaderObject.profile);
+			this._iAnimationRegisterCache = shader.animationRegisterCache = new AnimationRegisterCache(shader.profile);
 
 		//reset animationRegisterCache
-		this._iAnimationRegisterCache.vertexConstantOffset = shaderObject.numUsedVertexConstants;
-		this._iAnimationRegisterCache.vertexAttributesOffset = shaderObject.numUsedStreams;
-		this._iAnimationRegisterCache.varyingsOffset = shaderObject.numUsedVaryings;
-		this._iAnimationRegisterCache.fragmentConstantOffset = shaderObject.numUsedFragmentConstants;
+		this._iAnimationRegisterCache.vertexConstantOffset = shader.numUsedVertexConstants;
+		this._iAnimationRegisterCache.vertexAttributesOffset = shader.numUsedStreams;
+		this._iAnimationRegisterCache.varyingsOffset = shader.numUsedVaryings;
+		this._iAnimationRegisterCache.fragmentConstantOffset = shader.numUsedFragmentConstants;
 		this._iAnimationRegisterCache.hasUVNode = this.hasUVNode;
 		this._iAnimationRegisterCache.needVelocity = this.needVelocity;
 		this._iAnimationRegisterCache.hasBillboard = this.hasBillboard;
-		this._iAnimationRegisterCache.sourceRegisters = shaderObject.animatableAttributes;
-		this._iAnimationRegisterCache.targetRegisters = shaderObject.animationTargetRegisters;
-		this._iAnimationRegisterCache.needFragmentAnimation = shaderObject.usesFragmentAnimation;
-		this._iAnimationRegisterCache.needUVAnimation = !shaderObject.usesUVTransform;
+		this._iAnimationRegisterCache.sourceRegisters = shader.animatableAttributes;
+		this._iAnimationRegisterCache.targetRegisters = shader.animationTargetRegisters;
+		this._iAnimationRegisterCache.needFragmentAnimation = shader.usesFragmentAnimation;
+		this._iAnimationRegisterCache.needUVAnimation = !shader.usesUVTransform;
 		this._iAnimationRegisterCache.hasColorAddNode = this.hasColorAddNode;
 		this._iAnimationRegisterCache.hasColorMulNode = this.hasColorMulNode;
 		this._iAnimationRegisterCache.reset();
@@ -188,7 +188,7 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 		for (i = 0; i < this._particleNodes.length; i++) {
 			node = this._particleNodes[i];
 			if (node.priority < ParticleAnimationSet.POST_PRIORITY)
-				code += node.getAGALVertexCode(shaderObject, this._iAnimationRegisterCache);
+				code += node.getAGALVertexCode(shader, this._iAnimationRegisterCache);
 		}
 
 		code += this._iAnimationRegisterCache.getCombinationCode();
@@ -196,7 +196,7 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 		for (i = 0; i < this._particleNodes.length; i++) {
 			node = this._particleNodes[i];
 			if (node.priority >= ParticleAnimationSet.POST_PRIORITY && node.priority < ParticleAnimationSet.COLOR_PRIORITY)
-				code += node.getAGALVertexCode(shaderObject, this._iAnimationRegisterCache);
+				code += node.getAGALVertexCode(shader, this._iAnimationRegisterCache);
 		}
 
 		code += this._iAnimationRegisterCache.initColorRegisters();
@@ -204,7 +204,7 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 		for (i = 0; i < this._particleNodes.length; i++) {
 			node = this._particleNodes[i];
 			if (node.priority >= ParticleAnimationSet.COLOR_PRIORITY)
-				code += node.getAGALVertexCode(shaderObject, this._iAnimationRegisterCache);
+				code += node.getAGALVertexCode(shader, this._iAnimationRegisterCache);
 		}
 		code += this._iAnimationRegisterCache.getColorPassCode();
 		return code;
@@ -213,26 +213,26 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALUVCode(shaderObject:ShaderObjectBase):string
+	public getAGALUVCode(shader:ShaderBase):string
 	{
 		var code:string = "";
 		if (this.hasUVNode) {
-			this._iAnimationRegisterCache.setUVSourceAndTarget(shaderObject.uvSource, shaderObject.uvTarget);
+			this._iAnimationRegisterCache.setUVSourceAndTarget(shader.uvSource, shader.uvTarget);
 			code += "mov " + this._iAnimationRegisterCache.uvTarget + ".xy," + this._iAnimationRegisterCache.uvAttribute.toString() + "\n";
 			var node:ParticleNodeBase;
 			for (var i:number /*uint*/ = 0; i < this._particleNodes.length; i++)
 				node = this._particleNodes[i];
-				code += node.getAGALUVCode(shaderObject, this._iAnimationRegisterCache);
+				code += node.getAGALUVCode(shader, this._iAnimationRegisterCache);
 			code += "mov " + this._iAnimationRegisterCache.uvVar.toString() + "," + this._iAnimationRegisterCache.uvTarget + ".xy\n";
 		} else
-			code += "mov " + shaderObject.uvTarget + "," + shaderObject.uvSource + "\n";
+			code += "mov " + shader.uvTarget + "," + shader.uvSource + "\n";
 		return code;
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALFragmentCode(shaderObject:ShaderObjectBase, shadedTarget:string):string
+	public getAGALFragmentCode(shader:ShaderBase, shadedTarget:string):string
 	{
 		return this._iAnimationRegisterCache.getColorCombinationCode(shadedTarget);
 	}
@@ -240,7 +240,7 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public doneAGALCode(shaderObject:ShaderObjectBase)
+	public doneAGALCode(shader:ShaderBase)
 	{
 		this._iAnimationRegisterCache.setDataLength();
 

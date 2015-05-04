@@ -6,8 +6,8 @@ import IPickingCollider					= require("awayjs-display/lib/pick/IPickingCollider"
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
 import PickingColliderBase				= require("awayjs-renderergl/lib/pick/PickingColliderBase");
-import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RenderablePool					= require("awayjs-renderergl/lib/pool/RenderablePool");
+import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import RenderablePool					= require("awayjs-renderergl/lib/renderables/RenderablePool");
 
 
 /**
@@ -54,7 +54,7 @@ class JSPickingCollider extends PickingColliderBase implements IPickingCollider
 		var Q1Q2:number, Q1Q1:number, Q2Q2:number, RQ1:number, RQ2:number;
 		var indexData:Array<number> = renderable.getIndexData().data;
 		var collisionTriangleIndex:number = -1;
-		var bothSides:boolean = (<MaterialBase> renderable.renderObjectOwner).bothSides;
+		var bothSides:boolean = (<MaterialBase> renderable.renderOwner).bothSides;
 
 		var positionData:Array<number> = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).data;
 		var positionStride:number = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).dataPerVertex;

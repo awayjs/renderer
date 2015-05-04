@@ -1,11 +1,11 @@
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
-import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
+import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 
 import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
-import DistanceRenderObject			= require("awayjs-renderergl/lib/compilation/DistanceRenderObject");
-import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
+import DistanceRender				= require("awayjs-renderergl/lib/render/DistanceRender");
+import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
 
 
 /**
@@ -24,7 +24,7 @@ class DistanceRenderer extends RendererBase
 	{
 		super(stage);
 		
-		this._pRenderablePool = new RenderablePool(this._pStage, DistanceRenderObject);
+		this._pRenderablePool = new RenderablePool(this._pStage, DistanceRender);
 		
 		this._iBackgroundR = 1;
 		this._iBackgroundG = 1;

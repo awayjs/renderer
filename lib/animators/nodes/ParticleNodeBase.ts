@@ -1,7 +1,7 @@
 import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
 
 import ParticleAnimationSet				= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 import ParticleProperties				= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
@@ -100,7 +100,7 @@ class ParticleNodeBase extends AnimationNodeBase
 	/**
 	 * Returns the AGAL code of the particle animation node for use in the vertex shader.
 	 */
-	public getAGALVertexCode(shaderObject:ShaderObjectBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALVertexCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
 	{
 		return "";
 	}
@@ -108,7 +108,7 @@ class ParticleNodeBase extends AnimationNodeBase
 	/**
 	 * Returns the AGAL code of the particle animation node for use in the fragment shader.
 	 */
-	public getAGALFragmentCode(shaderObject:ShaderObjectBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALFragmentCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
 	{
 		return "";
 	}
@@ -116,7 +116,7 @@ class ParticleNodeBase extends AnimationNodeBase
 	/**
 	 * Returns the AGAL code of the particle animation node for use in the fragment shader when UV coordinates are required.
 	 */
-	public getAGALUVCode(shaderObject:ShaderObjectBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALUVCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
 	{
 		return "";
 	}

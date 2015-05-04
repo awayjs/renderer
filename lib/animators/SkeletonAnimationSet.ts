@@ -3,7 +3,7 @@ import IAnimationSet					= require("awayjs-display/lib/animators/IAnimationSet")
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
 import AnimationSetBase					= require("awayjs-renderergl/lib/animators/AnimationSetBase");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
 
 /**
  * The animation data set used by skeleton-based animators, containing skeleton animation data.
@@ -38,25 +38,25 @@ class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALVertexCode(shaderObject:ShaderObjectBase):string
+	public getAGALVertexCode(shader:ShaderBase):string
 	{
-		var len:number /*uint*/ = shaderObject.animatableAttributes.length;
+		var len:number /*uint*/ = shader.animatableAttributes.length;
 
-		var indexOffset0:number /*uint*/ = shaderObject.numUsedVertexConstants;
+		var indexOffset0:number /*uint*/ = shader.numUsedVertexConstants;
 		var indexOffset1:number /*uint*/ = indexOffset0 + 1;
 		var indexOffset2:number /*uint*/ = indexOffset0 + 2;
-		var indexStream:string = "va" + shaderObject.numUsedStreams;
-		var weightStream:string = "va" + (shaderObject.numUsedStreams + 1);
+		var indexStream:string = "va" + shader.numUsedStreams;
+		var weightStream:string = "va" + (shader.numUsedStreams + 1);
 		var indices:Array<string> = [ indexStream + ".x", indexStream + ".y", indexStream + ".z", indexStream + ".w" ];
 		var weights:Array<string> = [ weightStream + ".x", weightStream + ".y", weightStream + ".z", weightStream + ".w" ];
-		var temp1:string = this._pFindTempReg(shaderObject.animationTargetRegisters);
-		var temp2:string = this._pFindTempReg(shaderObject.animationTargetRegisters, temp1);
+		var temp1:string = this._pFindTempReg(shader.animationTargetRegisters);
+		var temp2:string = this._pFindTempReg(shader.animationTargetRegisters, temp1);
 		var dot:string = "dp4";
 		var code:string = "";
 
 		for (var i:number /*uint*/ = 0; i < len; ++i) {
 
-			var src:string = shaderObject.animatableAttributes[i];
+			var src:string = shader.animatableAttributes[i];
 
 			for (var j:number /*uint*/ = 0; j < this._jointsPerVertex; ++j) {
 				code += dot + " " + temp1 + ".x, " + src + ", vc[" + indices[j] + "+" + indexOffset0 + "]\n" +
@@ -72,7 +72,7 @@ class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet
 			}
 			// switch to dp3 once positions have been transformed, from now on, it should only be vectors instead of points
 			dot = "dp3";
-			code += "mov " + shaderObject.animationTargetRegisters[i] + ", " + temp2 + "\n";
+			code += "mov " + shader.animationTargetRegisters[i] + ", " + temp2 + "\n";
 		}
 
 		return code;
@@ -81,14 +81,14 @@ class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public activate(shaderObject:ShaderObjectBase, stage:Stage)
+	public activate(shader:ShaderBase, stage:Stage)
 	{
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public deactivate(shaderObject:ShaderObjectBase, stage:Stage)
+	public deactivate(shader:ShaderBase, stage:Stage)
 	{
 //			var streamOffset:number /*uint*/ = pass.numUsedStreams;
 //			var context:IContextGL = <IContextGL> stage.context;
@@ -99,7 +99,7 @@ class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALFragmentCode(shaderObject:ShaderObjectBase, shadedTarget:string):string
+	public getAGALFragmentCode(shader:ShaderBase, shadedTarget:string):string
 	{
 		return "";
 	}
@@ -107,15 +107,15 @@ class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALUVCode(shaderObject:ShaderObjectBase):string
+	public getAGALUVCode(shader:ShaderBase):string
 	{
-		return "mov " + shaderObject.uvTarget + "," + shaderObject.uvSource + "\n";
+		return "mov " + shader.uvTarget + "," + shader.uvSource + "\n";
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public doneAGALCode(shaderObject:ShaderObjectBase)
+	public doneAGALCode(shader:ShaderBase)
 	{
 
 	}

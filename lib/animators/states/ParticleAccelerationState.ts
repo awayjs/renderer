@@ -11,7 +11,7 @@ import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/A
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 import ParticleAccelerationNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
+import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
 
 /**
  * ...

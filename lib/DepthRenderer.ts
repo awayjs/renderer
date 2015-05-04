@@ -1,11 +1,11 @@
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
-import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
+import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 
 import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
-import DepthRenderObject			= require("awayjs-renderergl/lib/compilation/DepthRenderObject");
-import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
+import DepthRender					= require("awayjs-renderergl/lib/render/DepthRender");
+import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
 
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
@@ -23,7 +23,7 @@ class DepthRenderer extends RendererBase
 	{
 		super(stage);
 
-		this._pRenderablePool = new RenderablePool(this._pStage, DepthRenderObject);
+		this._pRenderablePool = new RenderablePool(this._pStage, DepthRender);
 
 		this._iBackgroundR = 1;
 		this._iBackgroundG = 1;

@@ -9,10 +9,10 @@ import Mesh								= require("awayjs-display/lib/entities/Mesh");
 
 import RendererBase						= require("awayjs-renderergl/lib/RendererBase");
 
-import BillboardRenderable				= require("awayjs-renderergl/lib/pool/BillboardRenderable");
-import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
-import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
-import RenderablePool					= require("awayjs-renderergl/lib/pool/RenderablePool");
+import BillboardRenderable				= require("awayjs-renderergl/lib/renderables/BillboardRenderable");
+import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import RenderablePool					= require("awayjs-renderergl/lib/renderables/RenderablePool");
+import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
 
 /**
  * An abstract base class for all picking collider classes. It should not be instantiated directly.

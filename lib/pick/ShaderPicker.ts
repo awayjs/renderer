@@ -30,7 +30,7 @@ import IProgram							= require("awayjs-stagegl/lib/base/IProgram");
 import ITextureBase						= require("awayjs-stagegl/lib/base/ITextureBase");
 
 import DefaultRenderer					= require("awayjs-renderergl/lib/DefaultRenderer");
-import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
+import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
 
 /**
  * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
@@ -235,7 +235,7 @@ class ShaderPicker implements IPicker
 
 			this._potentialFound = true;
 
-			this._context.setCulling((<MaterialBase> renderable.renderObjectOwner).bothSides? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
+			this._context.setCulling((<MaterialBase> renderable.renderOwner).bothSides? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
 
 			this._interactives[this._interactiveId++] = renderable;
 			// color code so that reading from bitmapdata will contain the correct value

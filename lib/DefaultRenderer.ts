@@ -4,6 +4,7 @@ import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 
+import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import LightBase					= require("awayjs-display/lib/base/LightBase");
 import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
 import CollectorBase				= require("awayjs-display/lib/traverse/CollectorBase");
@@ -12,6 +13,7 @@ import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLig
 import PointLight					= require("awayjs-display/lib/entities/PointLight");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import ShadowMapperBase				= require("awayjs-display/lib/materials/shadowmappers/ShadowMapperBase");
+
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
@@ -24,14 +26,13 @@ import DepthRenderer				= require("awayjs-renderergl/lib/DepthRenderer");
 import DistanceRenderer				= require("awayjs-renderergl/lib/DistanceRenderer");
 import Filter3DRenderer				= require("awayjs-renderergl/lib/Filter3DRenderer");
 import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
-import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-import IRenderObjectOwner			= require("awayjs-display/lib/base/IRenderObjectOwner");
-import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
-import SkyboxRenderable				= require("awayjs-renderergl/lib/pool/SkyboxRenderable");
+import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
+import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
+import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
+import SkyboxRenderable				= require("awayjs-renderergl/lib/renderables/SkyboxRenderable");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
-import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
+import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -258,9 +259,9 @@ class DefaultRenderer extends RendererBase
 
 		this.updateSkyboxProjection(camera);
 
-		var renderObject:RenderObjectBase = this._pRenderablePool.getRenderObjectPool(renderable.renderableOwner).getItem(renderable.renderObjectOwner);
+		var render:RenderBase = this._pRenderablePool.getRenderPool(renderable.renderableOwner).getItem(renderable.renderOwner);
 
-		var pass:RenderPassBase = renderObject.passes[0];
+		var pass:IPass = render.passes[0];
 
 		this.activatePass(renderable, pass, camera);
 		renderable._iRender(pass, camera, this._skyboxProjection);

@@ -14,10 +14,10 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import IAnimationState				= require("awayjs-renderergl/lib/animators/states/IAnimationState");
-import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
-import TriangleSubMeshRenderable	= require("awayjs-renderergl/lib/pool/TriangleSubMeshRenderable");
+import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import TriangleSubMeshRenderable	= require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
 import AnimatorEvent				= require("awayjs-renderergl/lib/events/AnimatorEvent");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 
 /**
  * Dispatched when playback of an animation inside the animator object starts.
@@ -211,7 +211,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 		this._playbackSpeed = value;
 	}
 
-	public setRenderState(shaderObject:ShaderObjectBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	public setRenderState(shader:ShaderBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 	{
 		throw new AbstractMethodError();
 	}
@@ -373,7 +373,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	/**
 	 * @inheritDoc
 	 */
-	public testGPUCompatibility(shaderObject:ShaderObjectBase)
+	public testGPUCompatibility(shader:ShaderBase)
 	{
 		throw new AbstractMethodError();
 	}

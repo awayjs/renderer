@@ -13,7 +13,7 @@ import ColorSegmentPoint				= require("awayjs-renderergl/lib/animators/data/Colo
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 import ParticleSegmentedColorNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import RenderableBase					= require("awayjs-renderergl/lib/pool/RenderableBase");
+import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
 
 /**
  *

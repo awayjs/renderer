@@ -7,8 +7,8 @@ import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/Animati
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import AnimationSetError			= require("awayjs-renderergl/lib/errors/AnimationSetError");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
+import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 
 /**
  * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
@@ -82,7 +82,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALVertexCode(shaderObject:ShaderObjectBase):string
+	public getAGALVertexCode(shader:ShaderBase):string
 	{
 		throw new AbstractMethodError();
 	}
@@ -90,7 +90,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	/**
 	 * @inheritDoc
 	 */
-	public activate(shaderObject:ShaderObjectBase, stage:Stage)
+	public activate(shader:ShaderBase, stage:Stage)
 	{
 		throw new AbstractMethodError();
 	}
@@ -98,7 +98,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	/**
 	 * @inheritDoc
 	 */
-	public deactivate(shaderObject:ShaderObjectBase, stage:Stage)
+	public deactivate(shader:ShaderBase, stage:Stage)
 	{
 		throw new AbstractMethodError();
 	}
@@ -106,7 +106,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALFragmentCode(shaderObject:ShaderObjectBase, shadedTarget:string):string
+	public getAGALFragmentCode(shader:ShaderBase, shadedTarget:string):string
 	{
 		throw new AbstractMethodError();
 	}
@@ -114,7 +114,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALUVCode(shaderObject:ShaderObjectBase):string
+	public getAGALUVCode(shader:ShaderBase):string
 	{
 		throw new AbstractMethodError();
 	}
@@ -122,7 +122,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	/**
 	 * @inheritDoc
 	 */
-	public doneAGALCode(shaderObject:ShaderObjectBase)
+	public doneAGALCode(shader:ShaderBase)
 	{
 		throw new AbstractMethodError();
 	}

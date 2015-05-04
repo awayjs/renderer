@@ -36,11 +36,11 @@ import StageEvent					= require("awayjs-stagegl/lib/events/StageEvent");
 import StageManager					= require("awayjs-stagegl/lib/managers/StageManager");
 import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
 
-import RenderObjectBase				= require("awayjs-renderergl/lib/compilation/RenderObjectBase");
-import RenderableBase				= require("awayjs-renderergl/lib/pool/RenderableBase");
+import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
+import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
-import RenderPassBase				= require("awayjs-renderergl/lib/passes/RenderPassBase");
-import RenderablePool				= require("awayjs-renderergl/lib/pool/RenderablePool");
+import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
+import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
 
 
 /**
@@ -272,7 +272,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 			this._pContext = <IContextGL> this._pStage.context;
 	}
 
-	public activatePass(renderable:RenderableBase, pass:RenderPassBase, camera:Camera)
+	public activatePass(renderable:RenderableBase, pass:IPass, camera:Camera)
 	{
 		//clear unused vertex streams
 		for (var i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
@@ -299,7 +299,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 		renderable._iActivate(pass, camera);
 	}
 
-	public deactivatePass(renderable:RenderableBase, pass:RenderPassBase)
+	public deactivatePass(renderable:RenderableBase, pass:IPass)
 	{
 		//deactivate shader object
 		renderable._iDeactivate(pass);
@@ -581,13 +581,13 @@ class RendererBase extends EventDispatcher implements IRenderer
 	//private drawCascadeRenderables(renderable:RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
 	//{
 	//	var renderable2:RenderableBase;
-	//	var renderObject:RenderObjectBase;
-	//	var pass:RenderPassBase;
+	//	var render:RenderBase;
+	//	var pass:IPass;
 	//
 	//	while (renderable) {
 	//		renderable2 = renderable;
-	//		renderObject = renderable.renderObject;
-	//		pass = renderObject.passes[0] //assuming only one pass per material
+	//		render = renderable.render;
+	//		pass = render.passes[0] //assuming only one pass per material
 	//
 	//		this.activatePass(renderable, pass, camera);
 	//
@@ -602,7 +602,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 	//
 	//			renderable2 = renderable2.next;
 	//
-	//		} while (renderable2 && renderable2.renderObject == renderObject && !renderable2.cascaded);
+	//		} while (renderable2 && renderable2.render == render && !renderable2.cascaded);
 	//
 	//		this.deactivatePass(renderable, pass);
 	//
@@ -621,24 +621,24 @@ class RendererBase extends EventDispatcher implements IRenderer
 		var i:number;
 		var len:number;
 		var renderable2:RenderableBase;
-		var renderObject:RenderObjectBase;
-		var passes:Array<RenderPassBase>;
-		var pass:RenderPassBase;
+		var render:RenderBase;
+		var passes:Array<IPass>;
+		var pass:IPass;
 		var camera:Camera = entityCollector.camera;
 
 
 		while (renderable) {
-			renderObject = renderable.renderObject;
-			passes = renderObject.passes;
+			render = renderable.render;
+			passes = render.passes;
 
 			// otherwise this would result in depth rendered anyway because fragment shader kil is ignored
-			if (this._disableColor && renderObject._renderObjectOwner.alphaThreshold != 0) {
+			if (this._disableColor && render._renderOwner.alphaThreshold != 0) {
 				renderable2 = renderable;
 				// fast forward
 				do {
 					renderable2 = renderable2.next;
 
-				} while (renderable2 && renderable2.renderObject == renderObject);
+				} while (renderable2 && renderable2.render == render);
 			} else {
 				//iterate through each shader object
 				len = passes.length;
@@ -653,7 +653,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 
 						renderable2 = renderable2.next;
 
-					} while (renderable2 && renderable2.renderObject == renderObject);
+					} while (renderable2 && renderable2.render == render);
 
 					this.deactivatePass(renderable, pass);
 				}
@@ -804,11 +804,11 @@ class RendererBase extends EventDispatcher implements IRenderer
 	public applyRenderable(renderable:RenderableBase)
 	{
 		//set local vars for faster referencing
-		var renderObject:RenderObjectBase = this._pRenderablePool.getRenderObjectPool(renderable.renderableOwner).getItem(renderable.renderObjectOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
+		var render:RenderBase = this._pRenderablePool.getRenderPool(renderable.renderableOwner).getItem(renderable.renderOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
 		
-		renderable.renderObject = renderObject;
-		renderable.renderObjectId = renderObject.renderObjectId;
-		renderable.renderOrderId = renderObject.renderOrderId;
+		renderable.render = render;
+		renderable.renderId = render.renderId;
+		renderable.renderOrderId = render.renderOrderId;
 
 		renderable.cascaded = false;
 
@@ -822,7 +822,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 		//store reference to scene transform
 		renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
 
-		if (renderObject.requiresBlending) {
+		if (render.requiresBlending) {
 			renderable.next = this._pBlendedRenderableHead;
 			this._pBlendedRenderableHead = renderable;
 		} else {

@@ -2,8 +2,8 @@ import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
 import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import ShaderObjectBase					= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-import ShaderRegisterElement			= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
+import ShaderRegisterElement			= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 
 import ParticleAnimationSet				= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 import ParticleProperties				= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
@@ -101,7 +101,7 @@ class ParticleUVNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALUVCode(shaderObject:ShaderObjectBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALUVCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
 	{
 		var code:string = "";
 
