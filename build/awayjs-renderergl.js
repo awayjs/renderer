@@ -10597,6 +10597,7 @@ var RenderBase = (function (_super) {
             shader.useBothSides = material.bothSides;
             shader.repeatTextures = material.repeat;
             shader.usesUVTransform = material.animateUVs;
+            shader.usesColorTransform = material.useColorTransform;
             if (material.texture)
                 shader.texture = shader.getTextureVO(material.texture);
             shader.color = material.color;
@@ -12838,6 +12839,7 @@ var ShaderBase = (function () {
         this.cameraPositionIndex = -1;
         this.uvBufferIndex = -1;
         this.uvTransformIndex = -1;
+        this.colorTransformIndex = -1;
         this.secondaryUVBufferIndex = -1;
         this.normalBufferIndex = -1;
         this.colorBufferIndex = -1;
@@ -12877,6 +12879,17 @@ var ShaderBase = (function () {
             this.vertexConstantData[this.uvTransformIndex + 5] = 1;
             this.vertexConstantData[this.uvTransformIndex + 6] = 0;
             this.vertexConstantData[this.uvTransformIndex + 7] = 0;
+        }
+        //Initializes the default colorTransform.
+        if (this.colorTransformIndex >= 0) {
+            this.fragmentConstantData[this.colorTransformIndex] = 1;
+            this.fragmentConstantData[this.colorTransformIndex + 1] = 1;
+            this.fragmentConstantData[this.colorTransformIndex + 2] = 1;
+            this.fragmentConstantData[this.colorTransformIndex + 3] = 1;
+            this.fragmentConstantData[this.colorTransformIndex + 4] = 0;
+            this.fragmentConstantData[this.colorTransformIndex + 5] = 0;
+            this.fragmentConstantData[this.colorTransformIndex + 6] = 0;
+            this.fragmentConstantData[this.colorTransformIndex + 7] = 0;
         }
         if (this.cameraPositionIndex >= 0)
             this.vertexConstantData[this.cameraPositionIndex + 3] = 1;
@@ -12985,6 +12998,29 @@ var ShaderBase = (function () {
                 this.vertexConstantData[this.uvTransformIndex + 4] = 0;
                 this.vertexConstantData[this.uvTransformIndex + 5] = 1;
                 this.vertexConstantData[this.uvTransformIndex + 7] = 0;
+            }
+        }
+        if (this.usesColorTransform) {
+            var colorTransform = renderable.renderableOwner.colorTransform;
+            if (colorTransform) {
+                this.fragmentConstantData[this.colorTransformIndex] = colorTransform.redMultiplier;
+                this.fragmentConstantData[this.colorTransformIndex + 1] = colorTransform.greenMultiplier;
+                this.fragmentConstantData[this.colorTransformIndex + 2] = colorTransform.blueMultiplier;
+                this.fragmentConstantData[this.colorTransformIndex + 3] = colorTransform.alphaMultiplier;
+                this.fragmentConstantData[this.colorTransformIndex + 4] = colorTransform.redOffset;
+                this.fragmentConstantData[this.colorTransformIndex + 5] = colorTransform.greenOffset;
+                this.fragmentConstantData[this.colorTransformIndex + 6] = colorTransform.blueOffset;
+                this.fragmentConstantData[this.colorTransformIndex + 7] = colorTransform.alphaOffset;
+            }
+            else {
+                this.fragmentConstantData[this.colorTransformIndex] = 1;
+                this.fragmentConstantData[this.colorTransformIndex + 1] = 1;
+                this.fragmentConstantData[this.colorTransformIndex + 2] = 1;
+                this.fragmentConstantData[this.colorTransformIndex + 3] = 1;
+                this.fragmentConstantData[this.colorTransformIndex + 4] = 0;
+                this.fragmentConstantData[this.colorTransformIndex + 5] = 0;
+                this.fragmentConstantData[this.colorTransformIndex + 6] = 0;
+                this.fragmentConstantData[this.colorTransformIndex + 7] = 0;
             }
         }
         if (this.sceneNormalMatrixIndex >= 0)
@@ -13432,12 +13468,31 @@ var CompilerBase = (function () {
         //compile custom vertex & fragment codes
         this._pVertexCode += this._pRenderPass._iGetVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
         this._pPostAnimationFragmentCode += this._pRenderPass._iGetFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+        console.log("uses ct:", this._pShader.usesColorTransform);
+        if (this._pShader.usesColorTransform) {
+            this.compileColorTransformCode();
+        }
+        else {
+            this._pShader.colorTransformIndex = -1;
+        }
         //assign the final output color to the output register
         this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
         this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
         //initialise the required shader constants
         this._pShader.initConstantData(this._pRegisterCache, this._pAnimatableAttributes, this._pAnimationTargetRegisters, this._uvSource, this._uvTarget);
         this._pRenderPass._iInitConstantData(this._pShader);
+    };
+    /**
+     * Calculate the transformed colours
+     */
+    CompilerBase.prototype.compileColorTransformCode = function () {
+        // rm, gm, bm, am - multiplier
+        // ro, go, bo, ao - offset
+        var ct1 = this._pRegisterCache.getFreeFragmentConstant();
+        var ct2 = this._pRegisterCache.getFreeFragmentConstant();
+        this._pShader.colorTransformIndex = ct1.index * 4;
+        this._pPostAnimationFragmentCode += "mul " + this._pSharedRegisters.shadedTarget + ", " + this._pSharedRegisters.shadedTarget + ", " + ct1 + "\n";
+        this._pPostAnimationFragmentCode += "add " + this._pSharedRegisters.shadedTarget + ", " + this._pSharedRegisters.shadedTarget + ", " + ct2 + "\n";
     };
     /**
      * Compile the code for the methods.

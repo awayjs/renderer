@@ -95,26 +95,6 @@ declare module "awayjs-renderergl/lib/DepthRenderer" {
 	
 }
 
-declare module "awayjs-renderergl/lib/DistanceRenderer" {
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
-	/**
-	 * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
-	 *
-	 * @class away.render.DistanceRenderer
-	 */
-	class DistanceRenderer extends RendererBase {
-	    /**
-	     * Creates a new DistanceRenderer object.
-	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
-	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
-	     */
-	    constructor(stage?: Stage);
-	}
-	export = DistanceRenderer;
-	
-}
-
 declare module "awayjs-renderergl/lib/Filter3DRenderer" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -144,6 +124,26 @@ declare module "awayjs-renderergl/lib/Filter3DRenderer" {
 	    dispose(): void;
 	}
 	export = Filter3DRenderer;
+	
+}
+
+declare module "awayjs-renderergl/lib/DistanceRenderer" {
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
+	/**
+	 * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
+	 *
+	 * @class away.render.DistanceRenderer
+	 */
+	class DistanceRenderer extends RendererBase {
+	    /**
+	     * Creates a new DistanceRenderer object.
+	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
+	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
+	     */
+	    constructor(stage?: Stage);
+	}
+	export = DistanceRenderer;
 	
 }
 
@@ -814,58 +814,6 @@ declare module "awayjs-renderergl/lib/animators/ParticleAnimator" {
 	
 }
 
-declare module "awayjs-renderergl/lib/animators/SkeletonAnimationSet" {
-	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	/**
-	 * The animation data set used by skeleton-based animators, containing skeleton animation data.
-	 *
-	 * @see away.animators.SkeletonAnimator
-	 */
-	class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet {
-	    private _jointsPerVertex;
-	    /**
-	     * Returns the amount of skeleton joints that can be linked to a single vertex via skinned weight values. For GPU-base animation, the
-	     * maximum allowed value is 4.
-	     */
-	    jointsPerVertex: number;
-	    /**
-	     * Creates a new <code>SkeletonAnimationSet</code> object.
-	     *
-	     * @param jointsPerVertex Sets the amount of skeleton joints that can be linked to a single vertex via skinned weight values. For GPU-base animation, the maximum allowed value is 4. Defaults to 4.
-	     */
-	    constructor(jointsPerVertex?: number);
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALVertexCode(shader: ShaderBase): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    activate(shader: ShaderBase, stage: Stage): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    deactivate(shader: ShaderBase, stage: Stage): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALFragmentCode(shader: ShaderBase, shadedTarget: string): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALUVCode(shader: ShaderBase): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    doneAGALCode(shader: ShaderBase): void;
-	}
-	export = SkeletonAnimationSet;
-	
-}
-
 declare module "awayjs-renderergl/lib/animators/SkeletonAnimator" {
 	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -1106,6 +1054,58 @@ declare module "awayjs-renderergl/lib/animators/VertexAnimator" {
 	    getRenderableSubGeometry(renderable: TriangleSubMeshRenderable, sourceSubGeometry: TriangleSubGeometry): TriangleSubGeometry;
 	}
 	export = VertexAnimator;
+	
+}
+
+declare module "awayjs-renderergl/lib/animators/SkeletonAnimationSet" {
+	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	/**
+	 * The animation data set used by skeleton-based animators, containing skeleton animation data.
+	 *
+	 * @see away.animators.SkeletonAnimator
+	 */
+	class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet {
+	    private _jointsPerVertex;
+	    /**
+	     * Returns the amount of skeleton joints that can be linked to a single vertex via skinned weight values. For GPU-base animation, the
+	     * maximum allowed value is 4.
+	     */
+	    jointsPerVertex: number;
+	    /**
+	     * Creates a new <code>SkeletonAnimationSet</code> object.
+	     *
+	     * @param jointsPerVertex Sets the amount of skeleton joints that can be linked to a single vertex via skinned weight values. For GPU-base animation, the maximum allowed value is 4. Defaults to 4.
+	     */
+	    constructor(jointsPerVertex?: number);
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALVertexCode(shader: ShaderBase): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    activate(shader: ShaderBase, stage: Stage): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    deactivate(shader: ShaderBase, stage: Stage): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALFragmentCode(shader: ShaderBase, shadedTarget: string): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALUVCode(shader: ShaderBase): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    doneAGALCode(shader: ShaderBase): void;
+	}
+	export = SkeletonAnimationSet;
 	
 }
 
@@ -4011,15 +4011,6 @@ declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
 	
 }
 
-declare module "awayjs-renderergl/lib/errors/AnimationSetError" {
-	import Error = require("awayjs-core/lib/errors/Error");
-	class AnimationSetError extends Error {
-	    constructor(message: string);
-	}
-	export = AnimationSetError;
-	
-}
-
 declare module "awayjs-renderergl/lib/events/AnimationStateEvent" {
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import Event = require("awayjs-core/lib/events/Event");
@@ -4068,6 +4059,15 @@ declare module "awayjs-renderergl/lib/events/AnimationStateEvent" {
 	
 }
 
+declare module "awayjs-renderergl/lib/errors/AnimationSetError" {
+	import Error = require("awayjs-core/lib/errors/Error");
+	class AnimationSetError extends Error {
+	    constructor(message: string);
+	}
+	export = AnimationSetError;
+	
+}
+
 declare module "awayjs-renderergl/lib/events/AnimatorEvent" {
 	import Event = require("awayjs-core/lib/events/Event");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -4104,41 +4104,6 @@ declare module "awayjs-renderergl/lib/events/AnimatorEvent" {
 	    clone(): Event;
 	}
 	export = AnimatorEvent;
-	
-}
-
-declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
-	import Event = require("awayjs-core/lib/events/Event");
-	class ShadingMethodEvent extends Event {
-	    static SHADER_INVALIDATED: string;
-	    constructor(type: string);
-	}
-	export = ShadingMethodEvent;
-	
-}
-
-declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
-	import Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
-	class Filter3DBase {
-	    private _tasks;
-	    private _requireDepthRender;
-	    private _textureWidth;
-	    private _textureHeight;
-	    constructor();
-	    requireDepthRender: boolean;
-	    pAddTask(filter: Filter3DTaskBase): void;
-	    tasks: Filter3DTaskBase[];
-	    getMainInputTexture(stage: Stage): ITexture;
-	    textureWidth: number;
-	    textureHeight: number;
-	    setRenderTargets(mainTarget: ITexture, stage: Stage): void;
-	    dispose(): void;
-	    update(stage: Stage, camera: Camera): void;
-	}
-	export = Filter3DBase;
 	
 }
 
@@ -4180,6 +4145,41 @@ declare module "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase" {
 	    requireDepthRender: boolean;
 	}
 	export = Filter3DTaskBase;
+	
+}
+
+declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
+	import Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+	class Filter3DBase {
+	    private _tasks;
+	    private _requireDepthRender;
+	    private _textureWidth;
+	    private _textureHeight;
+	    constructor();
+	    requireDepthRender: boolean;
+	    pAddTask(filter: Filter3DTaskBase): void;
+	    tasks: Filter3DTaskBase[];
+	    getMainInputTexture(stage: Stage): ITexture;
+	    textureWidth: number;
+	    textureHeight: number;
+	    setRenderTargets(mainTarget: ITexture, stage: Stage): void;
+	    dispose(): void;
+	    update(stage: Stage, camera: Camera): void;
+	}
+	export = Filter3DBase;
+	
+}
+
+declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
+	import Event = require("awayjs-core/lib/events/Event");
+	class ShadingMethodEvent extends Event {
+	    static SHADER_INVALIDATED: string;
+	    constructor(type: string);
+	}
+	export = ShadingMethodEvent;
 	
 }
 
@@ -4428,68 +4428,6 @@ declare module "awayjs-renderergl/lib/pick/ShaderPicker" {
 	
 }
 
-declare module "awayjs-renderergl/lib/render/BasicMaterialRender" {
-	import BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
-	import RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
-	import RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
-	/**
-	 * RenderMaterialObject forms an abstract base class for the default shaded materials provided by Stage,
-	 * using material methods to define their appearance.
-	 */
-	class BasicMaterialRender extends RenderBase {
-	    private _material;
-	    private _pass;
-	    constructor(pool: RenderPool, material: BasicMaterial, renderableClass: IRenderableClass, stage: Stage);
-	    /**
-	     * @inheritDoc
-	     */
-	    _pUpdateRender(): void;
-	}
-	export = BasicMaterialRender;
-	
-}
-
-declare module "awayjs-renderergl/lib/render/DepthRender" {
-	import IRenderOwner = require("awayjs-display/lib/base/IRenderOwner");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
-	import RenderPassBase = require("awayjs-renderergl/lib/render/RenderPassBase");
-	import RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-	/**
-	 * DepthRender forms an abstract base class for the default shaded materials provided by Stage,
-	 * using material methods to define their appearance.
-	 */
-	class DepthRender extends RenderPassBase {
-	    private _fragmentConstantsIndex;
-	    /**
-	     *
-	     * @param pool
-	     * @param renderOwner
-	     * @param renderableClass
-	     * @param stage
-	     */
-	    constructor(pool: RenderPool, renderOwner: IRenderOwner, renderableClass: IRenderableClass, stage: Stage);
-	    _iIncludeDependencies(shader: ShaderBase): void;
-	    _iInitConstantData(shader: ShaderBase): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iActivate(camera: Camera): void;
-	}
-	export = DepthRender;
-	
-}
-
 declare module "awayjs-renderergl/lib/render/DistanceRender" {
 	import IRenderOwner = require("awayjs-display/lib/base/IRenderOwner");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -4530,25 +4468,42 @@ declare module "awayjs-renderergl/lib/render/DistanceRender" {
 	
 }
 
-declare module "awayjs-renderergl/lib/render/IRenderClass" {
+declare module "awayjs-renderergl/lib/render/DepthRender" {
 	import IRenderOwner = require("awayjs-display/lib/base/IRenderOwner");
+	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
-	import RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
+	import RenderPassBase = require("awayjs-renderergl/lib/render/RenderPassBase");
 	import RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 	/**
-	 * IRenderClass is an interface for the constructable class definition RenderBase that is used to
-	 * create render objects in the rendering pipeline to render the contents of a partition
-	 *
-	 * @class away.render.RenderBase
+	 * DepthRender forms an abstract base class for the default shaded materials provided by Stage,
+	 * using material methods to define their appearance.
 	 */
-	interface IRenderClass {
+	class DepthRender extends RenderPassBase {
+	    private _fragmentConstantsIndex;
 	    /**
 	     *
+	     * @param pool
+	     * @param renderOwner
+	     * @param renderableClass
+	     * @param stage
 	     */
-	    new (pool: RenderPool, renderOwner: IRenderOwner, renderableClass: IRenderableClass, stage: Stage): RenderBase;
+	    constructor(pool: RenderPool, renderOwner: IRenderOwner, renderableClass: IRenderableClass, stage: Stage);
+	    _iIncludeDependencies(shader: ShaderBase): void;
+	    _iInitConstantData(shader: ShaderBase): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iActivate(camera: Camera): void;
 	}
-	export = IRenderClass;
+	export = DepthRender;
 	
 }
 
@@ -4643,6 +4598,51 @@ declare module "awayjs-renderergl/lib/render/RenderBase" {
 	
 }
 
+declare module "awayjs-renderergl/lib/render/BasicMaterialRender" {
+	import BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
+	import RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
+	import RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
+	/**
+	 * RenderMaterialObject forms an abstract base class for the default shaded materials provided by Stage,
+	 * using material methods to define their appearance.
+	 */
+	class BasicMaterialRender extends RenderBase {
+	    private _material;
+	    private _pass;
+	    constructor(pool: RenderPool, material: BasicMaterial, renderableClass: IRenderableClass, stage: Stage);
+	    /**
+	     * @inheritDoc
+	     */
+	    _pUpdateRender(): void;
+	}
+	export = BasicMaterialRender;
+	
+}
+
+declare module "awayjs-renderergl/lib/render/IRenderClass" {
+	import IRenderOwner = require("awayjs-display/lib/base/IRenderOwner");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
+	import RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
+	import RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
+	/**
+	 * IRenderClass is an interface for the constructable class definition RenderBase that is used to
+	 * create render objects in the rendering pipeline to render the contents of a partition
+	 *
+	 * @class away.render.RenderBase
+	 */
+	interface IRenderClass {
+	    /**
+	     *
+	     */
+	    new (pool: RenderPool, renderOwner: IRenderOwner, renderableClass: IRenderableClass, stage: Stage): RenderBase;
+	}
+	export = IRenderClass;
+	
+}
+
 declare module "awayjs-renderergl/lib/render/RenderPassBase" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
@@ -4708,95 +4708,6 @@ declare module "awayjs-renderergl/lib/render/RenderPassBase" {
 	    _iGetNormalFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 	}
 	export = RenderPassBase;
-	
-}
-
-declare module "awayjs-renderergl/lib/render/RenderPool" {
-	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import IRenderOwner = require("awayjs-display/lib/base/IRenderOwner");
-	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
-	import IRenderClass = require("awayjs-renderergl/lib/render/IRenderClass");
-	import RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
-	/**
-	 * @class away.pool.RenderPool
-	 */
-	class RenderPool {
-	    private static _classPool;
-	    private _pool;
-	    private _renderableClass;
-	    private _stage;
-	    private _renderClass;
-	    /**
-	     * //TODO
-	     *
-	     * @param renderClass
-	     */
-	    constructor(renderableClass: IRenderableClass, stage: Stage, renderClass?: IRenderClass);
-	    /**
-	     * //TODO
-	     *
-	     * @param renderableOwner
-	     * @returns IRenderable
-	     */
-	    getItem(renderOwner: IRenderOwner): RenderBase;
-	    /**
-	     * //TODO
-	     *
-	     * @param renderableOwner
-	     */
-	    disposeItem(renderOwner: IRenderOwner): void;
-	    /**
-	     *
-	     * @param imageObjectClass
-	     */
-	    static registerClass(renderClass: IRenderClass, assetClass: IAssetClass): void;
-	    /**
-	     *
-	     * @param subGeometry
-	     */
-	    static getClass(renderOwner: IRenderOwner): IRenderClass;
-	    private static main;
-	    private static addDefaults();
-	}
-	export = RenderPool;
-	
-}
-
-declare module "awayjs-renderergl/lib/render/SkyboxRender" {
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Skybox = require("awayjs-display/lib/entities/Skybox");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
-	import RenderPassBase = require("awayjs-renderergl/lib/render/RenderPassBase");
-	import RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-	import TextureVOBase = require("awayjs-renderergl/lib/vos/TextureVOBase");
-	/**
-	 * SkyboxRender forms an abstract base class for the default shaded materials provided by Stage,
-	 * using material methods to define their appearance.
-	 */
-	class SkyboxRender extends RenderPassBase {
-	    _skybox: Skybox;
-	    _cubeTexture: TextureVOBase;
-	    constructor(pool: RenderPool, skybox: Skybox, renderableClass: IRenderableClass, stage: Stage);
-	    /**
-	     * @inheritDoc
-	     */
-	    _pUpdateRender(): void;
-	    _iIncludeDependencies(shader: ShaderBase): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iActivate(camera: Camera): void;
-	}
-	export = SkyboxRender;
 	
 }
 
@@ -4877,6 +4788,58 @@ declare module "awayjs-renderergl/lib/render/passes/ILightingPass" {
 	    _iUsesDiffuse(shader: LightingShader): boolean;
 	}
 	export = ILightingPass;
+	
+}
+
+declare module "awayjs-renderergl/lib/render/RenderPool" {
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import IRenderOwner = require("awayjs-display/lib/base/IRenderOwner");
+	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
+	import IRenderClass = require("awayjs-renderergl/lib/render/IRenderClass");
+	import RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
+	/**
+	 * @class away.pool.RenderPool
+	 */
+	class RenderPool {
+	    private static _classPool;
+	    private _pool;
+	    private _renderableClass;
+	    private _stage;
+	    private _renderClass;
+	    /**
+	     * //TODO
+	     *
+	     * @param renderClass
+	     */
+	    constructor(renderableClass: IRenderableClass, stage: Stage, renderClass?: IRenderClass);
+	    /**
+	     * //TODO
+	     *
+	     * @param renderableOwner
+	     * @returns IRenderable
+	     */
+	    getItem(renderOwner: IRenderOwner): RenderBase;
+	    /**
+	     * //TODO
+	     *
+	     * @param renderableOwner
+	     */
+	    disposeItem(renderOwner: IRenderOwner): void;
+	    /**
+	     *
+	     * @param imageObjectClass
+	     */
+	    static registerClass(renderClass: IRenderClass, assetClass: IAssetClass): void;
+	    /**
+	     *
+	     * @param subGeometry
+	     */
+	    static getClass(renderOwner: IRenderOwner): IRenderClass;
+	    private static main;
+	    private static addDefaults();
+	}
+	export = RenderPool;
 	
 }
 
@@ -5007,6 +4970,43 @@ declare module "awayjs-renderergl/lib/render/passes/PassBase" {
 	
 }
 
+declare module "awayjs-renderergl/lib/render/SkyboxRender" {
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Skybox = require("awayjs-display/lib/entities/Skybox");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
+	import RenderPassBase = require("awayjs-renderergl/lib/render/RenderPassBase");
+	import RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+	import TextureVOBase = require("awayjs-renderergl/lib/vos/TextureVOBase");
+	/**
+	 * SkyboxRender forms an abstract base class for the default shaded materials provided by Stage,
+	 * using material methods to define their appearance.
+	 */
+	class SkyboxRender extends RenderPassBase {
+	    _skybox: Skybox;
+	    _cubeTexture: TextureVOBase;
+	    constructor(pool: RenderPool, skybox: Skybox, renderableClass: IRenderableClass, stage: Stage);
+	    /**
+	     * @inheritDoc
+	     */
+	    _pUpdateRender(): void;
+	    _iIncludeDependencies(shader: ShaderBase): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iActivate(camera: Camera): void;
+	}
+	export = SkyboxRender;
+	
+}
+
 declare module "awayjs-renderergl/lib/renderables/BillboardRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
@@ -5054,6 +5054,35 @@ declare module "awayjs-renderergl/lib/renderables/BillboardRenderable" {
 	    _iRender(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
 	}
 	export = BillboardRenderable;
+	
+}
+
+declare module "awayjs-renderergl/lib/renderables/IRenderableClass" {
+	import IWrapperClass = require("awayjs-core/lib/library/IWrapperClass");
+	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
+	import IRenderable = require("awayjs-display/lib/pool/IRenderable");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+	import RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
+	/**
+	 * IRenderableClass is an interface for the constructable class definition IRenderable that is used to
+	 * create renderable objects in the rendering pipeline to render the contents of a partition
+	 *
+	 * @class away.render.IRenderableClass
+	 */
+	interface IRenderableClass extends IWrapperClass {
+	    vertexAttributesOffset: number;
+	    /**
+	     *
+	     */
+	    new (pool: RenderablePool, renderableOwner: IRenderableOwner, stage: Stage): IRenderable;
+	    _iIncludeDependencies(shader: ShaderBase): any;
+	    _iGetVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	}
+	export = IRenderableClass;
 	
 }
 
@@ -5123,35 +5152,6 @@ declare module "awayjs-renderergl/lib/renderables/CurveSubMeshRenderable" {
 	    _pGetOverflowRenderable(indexOffset: number): RenderableBase;
 	}
 	export = CurveSubMeshRenderable;
-	
-}
-
-declare module "awayjs-renderergl/lib/renderables/IRenderableClass" {
-	import IWrapperClass = require("awayjs-core/lib/library/IWrapperClass");
-	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
-	import IRenderable = require("awayjs-display/lib/pool/IRenderable");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-	import RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
-	/**
-	 * IRenderableClass is an interface for the constructable class definition IRenderable that is used to
-	 * create renderable objects in the rendering pipeline to render the contents of a partition
-	 *
-	 * @class away.render.IRenderableClass
-	 */
-	interface IRenderableClass extends IWrapperClass {
-	    vertexAttributesOffset: number;
-	    /**
-	     *
-	     */
-	    new (pool: RenderablePool, renderableOwner: IRenderableOwner, stage: Stage): IRenderable;
-	    _iIncludeDependencies(shader: ShaderBase): any;
-	    _iGetVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	}
-	export = IRenderableClass;
 	
 }
 
@@ -5495,6 +5495,59 @@ declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
 	
 }
 
+declare module "awayjs-renderergl/lib/renderables/SkyboxRenderable" {
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
+	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+	import Skybox = require("awayjs-display/lib/entities/Skybox");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+	import RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
+	import PassBase = require("awayjs-renderergl/lib/render/passes/PassBase");
+	/**
+	 * @class away.pool.SkyboxRenderable
+	 */
+	class SkyboxRenderable extends RenderableBase {
+	    static assetClass: IAssetClass;
+	    static vertexAttributesOffset: number;
+	    /**
+	     *
+	     */
+	    private static _geometry;
+	    private _vertexArray;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param skybox
+	     */
+	    constructor(pool: RenderablePool, skybox: Skybox, stage: Stage);
+	    /**
+	     * //TODO
+	     *
+	     * @returns {away.base.TriangleSubGeometry}
+	     * @private
+	     */
+	    _pGetSubGeometry(): TriangleSubGeometry;
+	    static _iIncludeDependencies(shader: ShaderBase): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    static _iGetVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    static _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iRender(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
+	}
+	export = SkyboxRenderable;
+	
+}
+
 declare module "awayjs-renderergl/lib/renderables/RenderablePool" {
 	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -5560,59 +5613,6 @@ declare module "awayjs-renderergl/lib/renderables/RenderablePool" {
 	
 }
 
-declare module "awayjs-renderergl/lib/renderables/SkyboxRenderable" {
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
-	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
-	import Skybox = require("awayjs-display/lib/entities/Skybox");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
-	import RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
-	import PassBase = require("awayjs-renderergl/lib/render/passes/PassBase");
-	/**
-	 * @class away.pool.SkyboxRenderable
-	 */
-	class SkyboxRenderable extends RenderableBase {
-	    static assetClass: IAssetClass;
-	    static vertexAttributesOffset: number;
-	    /**
-	     *
-	     */
-	    private static _geometry;
-	    private _vertexArray;
-	    /**
-	     * //TODO
-	     *
-	     * @param pool
-	     * @param skybox
-	     */
-	    constructor(pool: RenderablePool, skybox: Skybox, stage: Stage);
-	    /**
-	     * //TODO
-	     *
-	     * @returns {away.base.TriangleSubGeometry}
-	     * @private
-	     */
-	    _pGetSubGeometry(): TriangleSubGeometry;
-	    static _iIncludeDependencies(shader: ShaderBase): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    static _iGetVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    static _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iRender(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
-	}
-	export = SkyboxRenderable;
-	
-}
-
 declare module "awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
@@ -5671,6 +5671,266 @@ declare module "awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable" {
 	    _pGetOverflowRenderable(indexOffset: number): RenderableBase;
 	}
 	export = TriangleSubMeshRenderable;
+	
+}
+
+declare module "awayjs-renderergl/lib/shaders/ShaderBase" {
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import TextureBase = require("awayjs-display/lib/textures/TextureBase");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ProgramData = require("awayjs-stagegl/lib/pool/ProgramData");
+	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
+	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
+	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
+	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+	import CompilerBase = require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import TextureVOBase = require("awayjs-renderergl/lib/vos/TextureVOBase");
+	/**
+	 * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
+	 * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
+	 * passed on to methods. The compiler uses the results to reserve usages through RegisterPool, which can be removed
+	 * each time a method has been compiled into the shader.
+	 *
+	 * @see RegisterPool.addUsage
+	 */
+	class ShaderBase {
+	    private _textureVOPool;
+	    private _renderableClass;
+	    private _pass;
+	    _stage: Stage;
+	    private _programData;
+	    private _blendFactorSource;
+	    private _blendFactorDest;
+	    private _invalidShader;
+	    private _invalidProgram;
+	    private _animationVertexCode;
+	    private _animationFragmentCode;
+	    programData: ProgramData;
+	    usesBlending: boolean;
+	    /**
+	     * The depth compare mode used to render the renderables using this material.
+	     *
+	     * @see away.stagegl.ContextGLCompareMode
+	     */
+	    depthCompareMode: string;
+	    /**
+	     * Indicate whether the shader should write to the depth buffer or not. Ignored when blending is enabled.
+	     */
+	    writeDepth: boolean;
+	    profile: string;
+	    usesAnimation: boolean;
+	    private _defaultCulling;
+	    _pInverseSceneMatrix: Array<number>;
+	    animationRegisterCache: AnimationRegisterCache;
+	    /**
+	     * The amount of used vertex constants in the vertex code. Used by the animation code generation to know from which index on registers are available.
+	     */
+	    numUsedVertexConstants: number;
+	    /**
+	     * The amount of used fragment constants in the fragment code. Used by the animation code generation to know from which index on registers are available.
+	     */
+	    numUsedFragmentConstants: number;
+	    /**
+	     * The amount of used vertex streams in the vertex code. Used by the animation code generation to know from which index on streams are available.
+	     */
+	    numUsedStreams: number;
+	    /**
+	     *
+	     */
+	    numUsedTextures: number;
+	    /**
+	     *
+	     */
+	    numUsedVaryings: number;
+	    animatableAttributes: Array<string>;
+	    animationTargetRegisters: Array<string>;
+	    uvSource: string;
+	    uvTarget: string;
+	    useAlphaPremultiplied: boolean;
+	    useBothSides: boolean;
+	    useMipmapping: boolean;
+	    useSmoothTextures: boolean;
+	    repeatTextures: boolean;
+	    usesUVTransform: boolean;
+	    usesColorTransform: boolean;
+	    alphaThreshold: number;
+	    texture: TextureVOBase;
+	    color: number;
+	    ambientR: number;
+	    ambientG: number;
+	    ambientB: number;
+	    /**
+	     * Indicates whether the pass requires any fragment animation code.
+	     */
+	    usesFragmentAnimation: boolean;
+	    /**
+	     * The amount of dependencies on the projected position.
+	     */
+	    projectionDependencies: number;
+	    /**
+	     * The amount of dependencies on the normal vector.
+	     */
+	    normalDependencies: number;
+	    /**
+	     * The amount of dependencies on the vertex color.
+	     */
+	    colorDependencies: number;
+	    /**
+	     * The amount of dependencies on the view direction.
+	     */
+	    viewDirDependencies: number;
+	    /**
+	     * The amount of dependencies on the primary UV coordinates.
+	     */
+	    uvDependencies: number;
+	    /**
+	     * The amount of dependencies on the secondary UV coordinates.
+	     */
+	    secondaryUVDependencies: number;
+	    /**
+	     * The amount of dependencies on the global position. This can be 0 while hasGlobalPosDependencies is true when
+	     * the global position is used as a temporary value (fe to calculate the view direction)
+	     */
+	    globalPosDependencies: number;
+	    /**
+	     * The amount of tangent vector dependencies (fragment shader).
+	     */
+	    tangentDependencies: number;
+	    /**
+	     *
+	     */
+	    outputsColors: boolean;
+	    /**
+	     * Indicates whether or not normals are output.
+	     */
+	    outputsNormals: boolean;
+	    /**
+	     * Indicates whether or not normal calculations are output in tangent space.
+	     */
+	    outputsTangentNormals: boolean;
+	    /**
+	     * Indicates whether or not normal calculations are expected in tangent space. This is only the case if no world-space
+	     * dependencies exist and normals are being output.
+	     */
+	    usesTangentSpace: boolean;
+	    /**
+	     * Indicates whether there are any dependencies on the world-space position vector.
+	     */
+	    usesGlobalPosFragment: boolean;
+	    /**
+	     * Indicates whether there are any dependencies on the local position vector.
+	     */
+	    usesLocalPosFragment: boolean;
+	    vertexConstantData: Array<number>;
+	    fragmentConstantData: Array<number>;
+	    /**
+	     * The index for the common data register.
+	     */
+	    commonsDataIndex: number;
+	    /**
+	     * The index for the UV vertex attribute stream.
+	     */
+	    uvBufferIndex: number;
+	    /**
+	     * The index for the secondary UV vertex attribute stream.
+	     */
+	    secondaryUVBufferIndex: number;
+	    /**
+	     * The index for the vertex normal attribute stream.
+	     */
+	    normalBufferIndex: number;
+	    /**
+	     * The index for the color attribute stream.
+	     */
+	    colorBufferIndex: number;
+	    /**
+	     * The index for the vertex tangent attribute stream.
+	     */
+	    tangentBufferIndex: number;
+	    /**
+	     * The index of the vertex constant containing the view matrix.
+	     */
+	    viewMatrixIndex: number;
+	    /**
+	     * The index of the vertex constant containing the scene matrix.
+	     */
+	    sceneMatrixIndex: number;
+	    /**
+	     * The index of the vertex constant containing the uniform scene matrix (the inverse transpose).
+	     */
+	    sceneNormalMatrixIndex: number;
+	    /**
+	     * The index of the vertex constant containing the camera position.
+	     */
+	    cameraPositionIndex: number;
+	    /**
+	     * The index for the UV transformation matrix vertex constant.
+	     */
+	    uvTransformIndex: number;
+	    /**
+	     * The index for the colorTrtansform fragment constant.
+	     */
+	    colorTransformIndex: number;
+	    /**
+	     * Creates a new MethodCompilerVO object.
+	     */
+	    constructor(renderableClass: IRenderableClass, pass: IPass, stage: Stage);
+	    getTextureVO(texture: TextureBase): TextureVOBase;
+	    _iIncludeDependencies(): void;
+	    /**
+	     * Factory method to create a concrete compiler object for this object
+	     *
+	     * @param renderableClass
+	     * @param pass
+	     * @param stage
+	     * @returns {CompilerBase}
+	     */
+	    createCompiler(renderableClass: IRenderableClass, pass: IPass): CompilerBase;
+	    /**
+	     * Clears dependency counts for all registers. Called when recompiling a pass.
+	     */
+	    reset(): void;
+	    pInitRegisterIndices(): void;
+	    /**
+	     * Initializes the unchanging constant data for this shader object.
+	     */
+	    initConstantData(registerCache: ShaderRegisterCache, animatableAttributes: Array<string>, animationTargetRegisters: Array<string>, uvSource: string, uvTarget: string): void;
+	    /**
+	     * The blend mode to use when drawing this renderable. The following blend modes are supported:
+	     * <ul>
+	     * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
+	     * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
+	     * <li>BlendMode.MULTIPLY</li>
+	     * <li>BlendMode.ADD</li>
+	     * <li>BlendMode.ALPHA</li>
+	     * </ul>
+	     */
+	    setBlendMode(value: string): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iActivate(camera: Camera): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iDeactivate(): void;
+	    /**
+	     *
+	     *
+	     * @param renderable
+	     * @param stage
+	     * @param camera
+	     */
+	    _iRender(renderable: RenderableBase, camera: Camera, viewProjection: Matrix3D): void;
+	    invalidateProgram(): void;
+	    invalidateShader(): void;
+	    dispose(): void;
+	    private _updateProgram();
+	    private _calcAnimationCode(shadedTarget);
+	}
+	export = ShaderBase;
 	
 }
 
@@ -5851,261 +6111,6 @@ declare module "awayjs-renderergl/lib/shaders/RegisterPool" {
 	
 }
 
-declare module "awayjs-renderergl/lib/shaders/ShaderBase" {
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import TextureBase = require("awayjs-display/lib/textures/TextureBase");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ProgramData = require("awayjs-stagegl/lib/pool/ProgramData");
-	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
-	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
-	import CompilerBase = require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import TextureVOBase = require("awayjs-renderergl/lib/vos/TextureVOBase");
-	/**
-	 * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
-	 * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
-	 * passed on to methods. The compiler uses the results to reserve usages through RegisterPool, which can be removed
-	 * each time a method has been compiled into the shader.
-	 *
-	 * @see RegisterPool.addUsage
-	 */
-	class ShaderBase {
-	    private _textureVOPool;
-	    private _renderableClass;
-	    private _pass;
-	    _stage: Stage;
-	    private _programData;
-	    private _blendFactorSource;
-	    private _blendFactorDest;
-	    private _invalidShader;
-	    private _invalidProgram;
-	    private _animationVertexCode;
-	    private _animationFragmentCode;
-	    programData: ProgramData;
-	    usesBlending: boolean;
-	    /**
-	     * The depth compare mode used to render the renderables using this material.
-	     *
-	     * @see away.stagegl.ContextGLCompareMode
-	     */
-	    depthCompareMode: string;
-	    /**
-	     * Indicate whether the shader should write to the depth buffer or not. Ignored when blending is enabled.
-	     */
-	    writeDepth: boolean;
-	    profile: string;
-	    usesAnimation: boolean;
-	    private _defaultCulling;
-	    _pInverseSceneMatrix: Array<number>;
-	    animationRegisterCache: AnimationRegisterCache;
-	    /**
-	     * The amount of used vertex constants in the vertex code. Used by the animation code generation to know from which index on registers are available.
-	     */
-	    numUsedVertexConstants: number;
-	    /**
-	     * The amount of used fragment constants in the fragment code. Used by the animation code generation to know from which index on registers are available.
-	     */
-	    numUsedFragmentConstants: number;
-	    /**
-	     * The amount of used vertex streams in the vertex code. Used by the animation code generation to know from which index on streams are available.
-	     */
-	    numUsedStreams: number;
-	    /**
-	     *
-	     */
-	    numUsedTextures: number;
-	    /**
-	     *
-	     */
-	    numUsedVaryings: number;
-	    animatableAttributes: Array<string>;
-	    animationTargetRegisters: Array<string>;
-	    uvSource: string;
-	    uvTarget: string;
-	    useAlphaPremultiplied: boolean;
-	    useBothSides: boolean;
-	    useMipmapping: boolean;
-	    useSmoothTextures: boolean;
-	    repeatTextures: boolean;
-	    usesUVTransform: boolean;
-	    alphaThreshold: number;
-	    texture: TextureVOBase;
-	    color: number;
-	    ambientR: number;
-	    ambientG: number;
-	    ambientB: number;
-	    /**
-	     * Indicates whether the pass requires any fragment animation code.
-	     */
-	    usesFragmentAnimation: boolean;
-	    /**
-	     * The amount of dependencies on the projected position.
-	     */
-	    projectionDependencies: number;
-	    /**
-	     * The amount of dependencies on the normal vector.
-	     */
-	    normalDependencies: number;
-	    /**
-	     * The amount of dependencies on the vertex color.
-	     */
-	    colorDependencies: number;
-	    /**
-	     * The amount of dependencies on the view direction.
-	     */
-	    viewDirDependencies: number;
-	    /**
-	     * The amount of dependencies on the primary UV coordinates.
-	     */
-	    uvDependencies: number;
-	    /**
-	     * The amount of dependencies on the secondary UV coordinates.
-	     */
-	    secondaryUVDependencies: number;
-	    /**
-	     * The amount of dependencies on the global position. This can be 0 while hasGlobalPosDependencies is true when
-	     * the global position is used as a temporary value (fe to calculate the view direction)
-	     */
-	    globalPosDependencies: number;
-	    /**
-	     * The amount of tangent vector dependencies (fragment shader).
-	     */
-	    tangentDependencies: number;
-	    /**
-	     *
-	     */
-	    outputsColors: boolean;
-	    /**
-	     * Indicates whether or not normals are output.
-	     */
-	    outputsNormals: boolean;
-	    /**
-	     * Indicates whether or not normal calculations are output in tangent space.
-	     */
-	    outputsTangentNormals: boolean;
-	    /**
-	     * Indicates whether or not normal calculations are expected in tangent space. This is only the case if no world-space
-	     * dependencies exist and normals are being output.
-	     */
-	    usesTangentSpace: boolean;
-	    /**
-	     * Indicates whether there are any dependencies on the world-space position vector.
-	     */
-	    usesGlobalPosFragment: boolean;
-	    /**
-	     * Indicates whether there are any dependencies on the local position vector.
-	     */
-	    usesLocalPosFragment: boolean;
-	    vertexConstantData: Array<number>;
-	    fragmentConstantData: Array<number>;
-	    /**
-	     * The index for the common data register.
-	     */
-	    commonsDataIndex: number;
-	    /**
-	     * The index for the UV vertex attribute stream.
-	     */
-	    uvBufferIndex: number;
-	    /**
-	     * The index for the secondary UV vertex attribute stream.
-	     */
-	    secondaryUVBufferIndex: number;
-	    /**
-	     * The index for the vertex normal attribute stream.
-	     */
-	    normalBufferIndex: number;
-	    /**
-	     * The index for the color attribute stream.
-	     */
-	    colorBufferIndex: number;
-	    /**
-	     * The index for the vertex tangent attribute stream.
-	     */
-	    tangentBufferIndex: number;
-	    /**
-	     * The index of the vertex constant containing the view matrix.
-	     */
-	    viewMatrixIndex: number;
-	    /**
-	     * The index of the vertex constant containing the scene matrix.
-	     */
-	    sceneMatrixIndex: number;
-	    /**
-	     * The index of the vertex constant containing the uniform scene matrix (the inverse transpose).
-	     */
-	    sceneNormalMatrixIndex: number;
-	    /**
-	     * The index of the vertex constant containing the camera position.
-	     */
-	    cameraPositionIndex: number;
-	    /**
-	     * The index for the UV transformation matrix vertex constant.
-	     */
-	    uvTransformIndex: number;
-	    /**
-	     * Creates a new MethodCompilerVO object.
-	     */
-	    constructor(renderableClass: IRenderableClass, pass: IPass, stage: Stage);
-	    getTextureVO(texture: TextureBase): TextureVOBase;
-	    _iIncludeDependencies(): void;
-	    /**
-	     * Factory method to create a concrete compiler object for this object
-	     *
-	     * @param renderableClass
-	     * @param pass
-	     * @param stage
-	     * @returns {CompilerBase}
-	     */
-	    createCompiler(renderableClass: IRenderableClass, pass: IPass): CompilerBase;
-	    /**
-	     * Clears dependency counts for all registers. Called when recompiling a pass.
-	     */
-	    reset(): void;
-	    pInitRegisterIndices(): void;
-	    /**
-	     * Initializes the unchanging constant data for this shader object.
-	     */
-	    initConstantData(registerCache: ShaderRegisterCache, animatableAttributes: Array<string>, animationTargetRegisters: Array<string>, uvSource: string, uvTarget: string): void;
-	    /**
-	     * The blend mode to use when drawing this renderable. The following blend modes are supported:
-	     * <ul>
-	     * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
-	     * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
-	     * <li>BlendMode.MULTIPLY</li>
-	     * <li>BlendMode.ADD</li>
-	     * <li>BlendMode.ALPHA</li>
-	     * </ul>
-	     */
-	    setBlendMode(value: string): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iActivate(camera: Camera): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iDeactivate(): void;
-	    /**
-	     *
-	     *
-	     * @param renderable
-	     * @param stage
-	     * @param camera
-	     */
-	    _iRender(renderable: RenderableBase, camera: Camera, viewProjection: Matrix3D): void;
-	    invalidateProgram(): void;
-	    invalidateShader(): void;
-	    dispose(): void;
-	    private _updateProgram();
-	    private _calcAnimationCode(shadedTarget);
-	}
-	export = ShaderBase;
-	
-}
-
 declare module "awayjs-renderergl/lib/shaders/ShaderRegisterCache" {
 	import ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 	/**
@@ -6251,76 +6256,6 @@ declare module "awayjs-renderergl/lib/shaders/ShaderRegisterCache" {
 	
 }
 
-declare module "awayjs-renderergl/lib/shaders/ShaderRegisterData" {
-	import ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-	/**
-	 * ShaderRegisterData contains the "named" registers, generated by the compiler and to be passed on to the methods.
-	 */
-	class ShaderRegisterData {
-	    normalVarying: ShaderRegisterElement;
-	    colorVarying: ShaderRegisterElement;
-	    tangentVarying: ShaderRegisterElement;
-	    bitangentVarying: ShaderRegisterElement;
-	    uvVarying: ShaderRegisterElement;
-	    secondaryUVVarying: ShaderRegisterElement;
-	    viewDirVarying: ShaderRegisterElement;
-	    shadowTarget: ShaderRegisterElement;
-	    shadedTarget: ShaderRegisterElement;
-	    globalPositionVertex: ShaderRegisterElement;
-	    globalPositionVarying: ShaderRegisterElement;
-	    localPositionVarying: ShaderRegisterElement;
-	    localPosition: ShaderRegisterElement;
-	    normalInput: ShaderRegisterElement;
-	    colorInput: ShaderRegisterElement;
-	    tangentInput: ShaderRegisterElement;
-	    animatedNormal: ShaderRegisterElement;
-	    animatedTangent: ShaderRegisterElement;
-	    commons: ShaderRegisterElement;
-	    projectionFragment: ShaderRegisterElement;
-	    normalFragment: ShaderRegisterElement;
-	    viewDirFragment: ShaderRegisterElement;
-	    bitangent: ShaderRegisterElement;
-	    constructor();
-	}
-	export = ShaderRegisterData;
-	
-}
-
-declare module "awayjs-renderergl/lib/shaders/ShaderRegisterElement" {
-	/**
-	 * A single register element (an entire register or a single register's component) used by the RegisterPool.
-	 */
-	class ShaderRegisterElement {
-	    private _regName;
-	    private _index;
-	    private _toStr;
-	    private static COMPONENTS;
-	    _component: number;
-	    /**
-	     * Creates a new ShaderRegisterElement object.
-	     *
-	     * @param regName The name of the register.
-	     * @param index The index of the register.
-	     * @param component The register's component, if not the entire register is represented.
-	     */
-	    constructor(regName: string, index: number, component?: number);
-	    /**
-	     * Converts the register or the components AGAL string representation.
-	     */
-	    toString(): string;
-	    /**
-	     * The register's name.
-	     */
-	    regName: string;
-	    /**
-	     * The register's index.
-	     */
-	    index: number;
-	}
-	export = ShaderRegisterElement;
-	
-}
-
 declare module "awayjs-renderergl/lib/shaders/compilers/CompilerBase" {
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
@@ -6355,6 +6290,10 @@ declare module "awayjs-renderergl/lib/shaders/compilers/CompilerBase" {
 	     * Compiles the code after all setup on the compiler has finished.
 	     */
 	    compile(): void;
+	    /**
+	     * Calculate the transformed colours
+	     */
+	    private compileColorTransformCode();
 	    /**
 	     * Compile the code for the methods.
 	     */
@@ -6460,6 +6399,41 @@ declare module "awayjs-renderergl/lib/shaders/compilers/LightingCompiler" {
 	
 }
 
+declare module "awayjs-renderergl/lib/shaders/ShaderRegisterData" {
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+	/**
+	 * ShaderRegisterData contains the "named" registers, generated by the compiler and to be passed on to the methods.
+	 */
+	class ShaderRegisterData {
+	    normalVarying: ShaderRegisterElement;
+	    colorVarying: ShaderRegisterElement;
+	    tangentVarying: ShaderRegisterElement;
+	    bitangentVarying: ShaderRegisterElement;
+	    uvVarying: ShaderRegisterElement;
+	    secondaryUVVarying: ShaderRegisterElement;
+	    viewDirVarying: ShaderRegisterElement;
+	    shadowTarget: ShaderRegisterElement;
+	    shadedTarget: ShaderRegisterElement;
+	    globalPositionVertex: ShaderRegisterElement;
+	    globalPositionVarying: ShaderRegisterElement;
+	    localPositionVarying: ShaderRegisterElement;
+	    localPosition: ShaderRegisterElement;
+	    normalInput: ShaderRegisterElement;
+	    colorInput: ShaderRegisterElement;
+	    tangentInput: ShaderRegisterElement;
+	    animatedNormal: ShaderRegisterElement;
+	    animatedTangent: ShaderRegisterElement;
+	    commons: ShaderRegisterElement;
+	    projectionFragment: ShaderRegisterElement;
+	    normalFragment: ShaderRegisterElement;
+	    viewDirFragment: ShaderRegisterElement;
+	    bitangent: ShaderRegisterElement;
+	    constructor();
+	}
+	export = ShaderRegisterData;
+	
+}
+
 declare module "awayjs-renderergl/lib/tools/commands/Merge" {
 	import DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
 	import Mesh = require("awayjs-display/lib/entities/Mesh");
@@ -6522,6 +6496,41 @@ declare module "awayjs-renderergl/lib/tools/commands/Merge" {
 	    private parseContainer(receiver, object);
 	}
 	export = Merge;
+	
+}
+
+declare module "awayjs-renderergl/lib/shaders/ShaderRegisterElement" {
+	/**
+	 * A single register element (an entire register or a single register's component) used by the RegisterPool.
+	 */
+	class ShaderRegisterElement {
+	    private _regName;
+	    private _index;
+	    private _toStr;
+	    private static COMPONENTS;
+	    _component: number;
+	    /**
+	     * Creates a new ShaderRegisterElement object.
+	     *
+	     * @param regName The name of the register.
+	     * @param index The index of the register.
+	     * @param component The register's component, if not the entire register is represented.
+	     */
+	    constructor(regName: string, index: number, component?: number);
+	    /**
+	     * Converts the register or the components AGAL string representation.
+	     */
+	    toString(): string;
+	    /**
+	     * The register's name.
+	     */
+	    regName: string;
+	    /**
+	     * The register's index.
+	     */
+	    index: number;
+	}
+	export = ShaderRegisterElement;
 	
 }
 
@@ -6639,6 +6648,40 @@ declare module "awayjs-renderergl/lib/vos/SamplerCubeVO" {
 	
 }
 
+declare module "awayjs-renderergl/lib/vos/TextureVOBase" {
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ITextureVO = require("awayjs-display/lib/pool/ITextureVO");
+	import TextureBase = require("awayjs-display/lib/textures/TextureBase");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+	import TextureVOPool = require("awayjs-renderergl/lib/vos/TextureVOPool");
+	/**
+	 *
+	 * @class away.pool.TextureVOBaseBase
+	 */
+	class TextureVOBase implements ITextureVO {
+	    private _pool;
+	    private _texture;
+	    _stage: Stage;
+	    invalid: boolean;
+	    constructor(pool: TextureVOPool, texture: TextureBase, stage: Stage);
+	    _iInitRegisters(shader: ShaderBase, regCache: ShaderRegisterCache): void;
+	    /**
+	     *
+	     */
+	    dispose(): void;
+	    /**
+	     *
+	     */
+	    invalidate(): void;
+	    _iGetFragmentCode(shader: ShaderBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg?: ShaderRegisterElement): string;
+	    activate(shader: ShaderBase): void;
+	}
+	export = TextureVOBase;
+	
+}
+
 declare module "awayjs-renderergl/lib/vos/SamplerVOBase" {
 	import SamplerBase = require("awayjs-core/lib/data/SamplerBase");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -6662,44 +6705,6 @@ declare module "awayjs-renderergl/lib/vos/SamplerVOBase" {
 	    getFormatString(bitmap: SamplerBase): string;
 	}
 	export = SamplerVOBase;
-	
-}
-
-declare module "awayjs-renderergl/lib/vos/Single2DTextureVO" {
-	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-	import TextureVOPool = require("awayjs-renderergl/lib/vos/TextureVOPool");
-	import TextureVOBase = require("awayjs-renderergl/lib/vos/TextureVOBase");
-	/**
-	 *
-	 * @class away.pool.Single2DTextureVO
-	 */
-	class Single2DTextureVO extends TextureVOBase {
-	    /**
-	     *
-	     */
-	    static assetClass: IAssetClass;
-	    private _single2DTexture;
-	    private _sampler2DVO;
-	    constructor(pool: TextureVOPool, single2DTexture: Single2DTexture, stage: Stage);
-	    _iInitRegisters(shader: ShaderBase, regCache: ShaderRegisterCache): void;
-	    /**
-	     *
-	     * @param shader
-	     * @param regCache
-	     * @param targetReg The register in which to store the sampled colour.
-	     * @param uvReg The uv coordinate vector with which to sample the texture map.
-	     * @returns {string}
-	     * @private
-	     */
-	    _iGetFragmentCode(shader: ShaderBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg: ShaderRegisterElement): string;
-	    activate(shader: ShaderBase): void;
-	}
-	export = Single2DTextureVO;
 	
 }
 
@@ -6739,40 +6744,6 @@ declare module "awayjs-renderergl/lib/vos/SingleCubeTextureVO" {
 	    activate(shader: ShaderBase): void;
 	}
 	export = SingleCubeTextureVO;
-	
-}
-
-declare module "awayjs-renderergl/lib/vos/TextureVOBase" {
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ITextureVO = require("awayjs-display/lib/pool/ITextureVO");
-	import TextureBase = require("awayjs-display/lib/textures/TextureBase");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-	import TextureVOPool = require("awayjs-renderergl/lib/vos/TextureVOPool");
-	/**
-	 *
-	 * @class away.pool.TextureVOBaseBase
-	 */
-	class TextureVOBase implements ITextureVO {
-	    private _pool;
-	    private _texture;
-	    _stage: Stage;
-	    invalid: boolean;
-	    constructor(pool: TextureVOPool, texture: TextureBase, stage: Stage);
-	    _iInitRegisters(shader: ShaderBase, regCache: ShaderRegisterCache): void;
-	    /**
-	     *
-	     */
-	    dispose(): void;
-	    /**
-	     *
-	     */
-	    invalidate(): void;
-	    _iGetFragmentCode(shader: ShaderBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg?: ShaderRegisterElement): string;
-	    activate(shader: ShaderBase): void;
-	}
-	export = TextureVOBase;
 	
 }
 
@@ -6836,6 +6807,44 @@ declare module "awayjs-renderergl/lib/vos/TextureVOPool" {
 	    private static addDefaults();
 	}
 	export = TextureVOPool;
+	
+}
+
+declare module "awayjs-renderergl/lib/vos/Single2DTextureVO" {
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+	import TextureVOPool = require("awayjs-renderergl/lib/vos/TextureVOPool");
+	import TextureVOBase = require("awayjs-renderergl/lib/vos/TextureVOBase");
+	/**
+	 *
+	 * @class away.pool.Single2DTextureVO
+	 */
+	class Single2DTextureVO extends TextureVOBase {
+	    /**
+	     *
+	     */
+	    static assetClass: IAssetClass;
+	    private _single2DTexture;
+	    private _sampler2DVO;
+	    constructor(pool: TextureVOPool, single2DTexture: Single2DTexture, stage: Stage);
+	    _iInitRegisters(shader: ShaderBase, regCache: ShaderRegisterCache): void;
+	    /**
+	     *
+	     * @param shader
+	     * @param regCache
+	     * @param targetReg The register in which to store the sampled colour.
+	     * @param uvReg The uv coordinate vector with which to sample the texture map.
+	     * @returns {string}
+	     * @private
+	     */
+	    _iGetFragmentCode(shader: ShaderBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg: ShaderRegisterElement): string;
+	    activate(shader: ShaderBase): void;
+	}
+	export = Single2DTextureVO;
 	
 }
 
