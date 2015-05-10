@@ -97,6 +97,7 @@ class RenderBase extends EventDispatcher implements IRender
 			shader.useBothSides = material.bothSides;
 			shader.repeatTextures = material.repeat;
 			shader.usesUVTransform = material.animateUVs;
+			shader.usesColorTransform = material.useColorTransform;
 			if (material.texture)
 				shader.texture = shader.getTextureVO(material.texture);
 			shader.color = material.color;

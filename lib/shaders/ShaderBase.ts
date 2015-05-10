@@ -6,6 +6,7 @@ import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
 import Event						= require("awayjs-core/lib/events/Event");
 import ArgumentError				= require("awayjs-core/lib/errors/ArgumentError");
 
@@ -122,6 +123,7 @@ class ShaderBase
 	public useSmoothTextures:boolean;
 	public repeatTextures:boolean;
 	public usesUVTransform:boolean;
+	public usesColorTransform:boolean;
 	public alphaThreshold:number;
 	public texture:TextureVOBase;
 	public color:number;
@@ -268,6 +270,11 @@ class ShaderBase
 	public uvTransformIndex:number;
 
 	/**
+	 * The index for the colorTrtansform fragment constant.
+	 */
+	public colorTransformIndex:number;
+
+	/**
 	 * Creates a new MethodCompilerVO object.
 	 */
 	constructor(renderableClass:IRenderableClass, pass:IPass, stage:Stage)
@@ -330,6 +337,7 @@ class ShaderBase
 		this.cameraPositionIndex = -1;
 		this.uvBufferIndex = -1;
 		this.uvTransformIndex = -1;
+		this.colorTransformIndex = -1;
 		this.secondaryUVBufferIndex = -1;
 		this.normalBufferIndex = -1;
 		this.colorBufferIndex = -1;
@@ -377,6 +385,17 @@ class ShaderBase
 			this.vertexConstantData[this.uvTransformIndex + 7] = 0;
 		}
 
+		//Initializes the default colorTransform.
+		if (this.colorTransformIndex >= 0) {
+			this.fragmentConstantData[this.colorTransformIndex] = 1;
+			this.fragmentConstantData[this.colorTransformIndex + 1] = 1;
+			this.fragmentConstantData[this.colorTransformIndex + 2] = 1;
+			this.fragmentConstantData[this.colorTransformIndex + 3] = 1;
+			this.fragmentConstantData[this.colorTransformIndex + 4] = 0;
+			this.fragmentConstantData[this.colorTransformIndex + 5] = 0;
+			this.fragmentConstantData[this.colorTransformIndex + 6] = 0;
+			this.fragmentConstantData[this.colorTransformIndex + 7] = 0;
+		}
 		if (this.cameraPositionIndex >= 0)
 			this.vertexConstantData[this.cameraPositionIndex + 3] = 1;
 	}
@@ -514,7 +533,30 @@ class ShaderBase
 				this.vertexConstantData[this.uvTransformIndex + 7] = 0;
 			}
 		}
+		if (this.usesColorTransform) {
 
+			var colorTransform:ColorTransform = renderable.renderableOwner.colorTransform;
+
+			if (colorTransform) {
+				this.fragmentConstantData[this.colorTransformIndex] = colorTransform.redMultiplier;
+				this.fragmentConstantData[this.colorTransformIndex + 1] = colorTransform.greenMultiplier;
+				this.fragmentConstantData[this.colorTransformIndex + 2] = colorTransform.blueMultiplier;
+				this.fragmentConstantData[this.colorTransformIndex + 3] = colorTransform.alphaMultiplier;
+				this.fragmentConstantData[this.colorTransformIndex + 4] = colorTransform.redOffset;
+				this.fragmentConstantData[this.colorTransformIndex + 5] = colorTransform.greenOffset;
+				this.fragmentConstantData[this.colorTransformIndex + 6] = colorTransform.blueOffset;
+				this.fragmentConstantData[this.colorTransformIndex + 7] = colorTransform.alphaOffset;
+			} else {
+				this.fragmentConstantData[this.colorTransformIndex] = 1;
+				this.fragmentConstantData[this.colorTransformIndex + 1] = 1;
+				this.fragmentConstantData[this.colorTransformIndex + 2] = 1;
+				this.fragmentConstantData[this.colorTransformIndex + 3] = 1;
+				this.fragmentConstantData[this.colorTransformIndex + 4] = 0;
+				this.fragmentConstantData[this.colorTransformIndex + 5] = 0;
+				this.fragmentConstantData[this.colorTransformIndex + 6] = 0;
+				this.fragmentConstantData[this.colorTransformIndex + 7] = 0;
+			}
+		}
 		if (this.sceneNormalMatrixIndex >= 0)
 			renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this.vertexConstantData, this.sceneNormalMatrixIndex, false);
 

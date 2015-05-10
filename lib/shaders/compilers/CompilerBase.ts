@@ -70,6 +70,14 @@ class CompilerBase
 		this._pVertexCode += this._pRenderPass._iGetVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
 		this._pPostAnimationFragmentCode += this._pRenderPass._iGetFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
 
+		console.log("uses ct:",this._pShader.usesColorTransform);
+		if (this._pShader.usesColorTransform)
+		{
+			this.compileColorTransformCode();
+		}else{
+			this._pShader.colorTransformIndex = -1;
+		}
+
 		//assign the final output color to the output register
 		this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
 		this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
@@ -78,7 +86,19 @@ class CompilerBase
 		this._pShader.initConstantData(this._pRegisterCache, this._pAnimatableAttributes, this._pAnimationTargetRegisters, this._uvSource, this._uvTarget);
 		this._pRenderPass._iInitConstantData(this._pShader);
 	}
-
+	/**
+	 * Calculate the transformed colours
+	 */
+	private compileColorTransformCode()
+	{
+		// rm, gm, bm, am - multiplier
+		// ro, go, bo, ao - offset
+		var ct1:ShaderRegisterElement = this._pRegisterCache.getFreeFragmentConstant();
+		var ct2:ShaderRegisterElement = this._pRegisterCache.getFreeFragmentConstant();
+		this._pShader.colorTransformIndex = ct1.index*4;
+		this._pPostAnimationFragmentCode += "mul " + this._pSharedRegisters.shadedTarget + ", " + this._pSharedRegisters.shadedTarget + ", " + ct1 + "\n";
+		this._pPostAnimationFragmentCode += "add " + this._pSharedRegisters.shadedTarget + ", " + this._pSharedRegisters.shadedTarget + ", " + ct2 + "\n";
+	}
 	/**
 	 * Compile the code for the methods.
 	 */
