@@ -11408,6 +11408,7 @@ var CurveSubMeshRenderable = (function (_super) {
         var fixa = free1 + ".y";
         var fixb = free1 + ".z";
         var _aa = "fc7.z";
+        var _0 = "fc7.x";
         var _1 = "fc7.y";
         var nl = "\n";
         var code = new Array();
@@ -11415,7 +11416,7 @@ var CurveSubMeshRenderable = (function (_super) {
         code.push("mul", d, curvex, curvex, nl);
         code.push("sub", d, d, curvey, nl);
         code.push("mul", d, d, curvez, nl); //flipper
-        code.push("kil", d, nl);
+        //code.push("kil" ,d, nl);
         if (sd) {
             //derivatives
             code.push("ddx", dx, d, nl);
@@ -11427,25 +11428,17 @@ var CurveSubMeshRenderable = (function (_super) {
             code.push("sqt", t, t, nl);
             code.push("mul", t, t, _aa, nl);
             code.push("div", d, d, t, nl);
-            /*LINE*/
-            code.push("mov", d2, curvey, nl);
-            code.push("ddx", dx, curvey, nl);
-            code.push("ddy", dy, curvey, nl);
-            code.push("mul", dx, dx, dx, nl);
-            code.push("mul", dy, dy, dy, nl);
-            code.push("add", t, dx, dy, nl);
-            code.push("sqt", t, t, nl);
-            code.push("mul", t, t, _aa, nl);
-            code.push("div", d2, d2, t, nl);
-            /**/
-            //code.push("sge", fixa, curvex, _1, nl);
-            code.push("slt", fixb, curvex, _1, nl);
-            code.push("sub", fixa, _1, fixb, nl);
-            //code.push("sub", fixb, _1, fixa, nl);
-            code.push("mul", d2, d2, fixa, nl);
-            code.push("mul", d, d, fixb, nl);
-            code.push("add", d, d, d2, nl);
-            code.push("abs", d, d, nl);
+            /*
+                        //code.push("sge", fixa, curvex, _1, nl);
+                        code.push("slt", fixb, curvex, _1, nl);
+                        code.push("sub", fixa, _1, fixb, nl);
+                        //code.push("sub", fixb, _1, fixa, nl);
+            
+                        code.push("mul", d, d, fixb, nl);
+            
+            */
+            //			code.push("abs", d, d, nl);
+            code.push("max", d, d, _0, nl);
             code.push("min", d, d, _1, nl);
             code.push("mov", out + ".w", d, nl);
         }
