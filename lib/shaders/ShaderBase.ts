@@ -542,10 +542,10 @@ class ShaderBase
 				this.fragmentConstantData[this.colorTransformIndex + 1] = colorTransform.greenMultiplier;
 				this.fragmentConstantData[this.colorTransformIndex + 2] = colorTransform.blueMultiplier;
 				this.fragmentConstantData[this.colorTransformIndex + 3] = colorTransform.alphaMultiplier;
-				this.fragmentConstantData[this.colorTransformIndex + 4] = colorTransform.redOffset;
-				this.fragmentConstantData[this.colorTransformIndex + 5] = colorTransform.greenOffset;
-				this.fragmentConstantData[this.colorTransformIndex + 6] = colorTransform.blueOffset;
-				this.fragmentConstantData[this.colorTransformIndex + 7] = colorTransform.alphaOffset;
+				this.fragmentConstantData[this.colorTransformIndex + 4] = colorTransform.redOffset/255;
+				this.fragmentConstantData[this.colorTransformIndex + 5] = colorTransform.greenOffset/255;
+				this.fragmentConstantData[this.colorTransformIndex + 6] = colorTransform.blueOffset/255;
+				this.fragmentConstantData[this.colorTransformIndex + 7] = colorTransform.alphaOffset/255;
 			} else {
 				this.fragmentConstantData[this.colorTransformIndex] = 1;
 				this.fragmentConstantData[this.colorTransformIndex + 1] = 1;
