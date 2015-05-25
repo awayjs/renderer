@@ -11416,8 +11416,10 @@ var CurveSubMeshRenderable = (function (_super) {
         code.push("mul", d, curvex, curvex, nl);
         code.push("sub", d, d, curvey, nl);
         code.push("mul", d, d, curvez, nl); //flipper
-        //code.push("kil" ,d, nl);
-        if (sd) {
+        //kill based on distance from curve
+        code.push("kil", d, nl);
+        var applyAA = false;
+        if (applyAA && sd) {
             //derivatives
             code.push("ddx", dx, d, nl);
             code.push("ddy", dy, d, nl);
@@ -11442,6 +11444,7 @@ var CurveSubMeshRenderable = (function (_super) {
             code.push("min", d, d, _1, nl);
             code.push("mov", out + ".w", d, nl);
         }
+        code.push("mov", out + ".w", _1, nl);
         return code.join(" ");
     };
     /**
