@@ -156,9 +156,11 @@ class CurveSubMeshRenderable extends RenderableBase
 		code.push("sub",d, d, curvey, nl);
 		code.push("mul",d, d, curvez, nl);	//flipper
 
-		//code.push("kil" ,d, nl);
+		//kill based on distance from curve
+		code.push("kil" ,d, nl);
 
-		if(sd)
+		var applyAA:boolean = false;
+		if(applyAA && sd)
 		{
 
 			//derivatives
@@ -186,9 +188,11 @@ class CurveSubMeshRenderable extends RenderableBase
 //			code.push("abs", d, d, nl);
 			code.push("max", d, d, _0, nl);
 			code.push("min", d, d, _1, nl);
-
 			code.push("mov", out+".w", d, nl);
 		}
+
+
+		code.push("mov", out+".w", _1, nl);
 		return code.join(" ");
 	}
     private _constants:Array<number> = new Array<number>(0, 1, 1, 0.5);
