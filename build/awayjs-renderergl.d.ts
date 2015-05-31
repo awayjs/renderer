@@ -208,7 +208,7 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	    private _viewPortUpdated;
 	    private _onContextUpdateDelegate;
 	    private _onViewportUpdatedDelegate;
-	    _pNumTriangles: number;
+	    _pNumElements: number;
 	    _pOpaqueRenderableHead: RenderableBase;
 	    _pBlendedRenderableHead: RenderableBase;
 	    _disableColor: boolean;
@@ -218,7 +218,7 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	    /**
 	     *
 	     */
-	    numTriangles: number;
+	    numElements: number;
 	    /**
 	     *
 	     */
@@ -959,7 +959,7 @@ declare module "awayjs-renderergl/lib/animators/SkeletonAnimator" {
 	     * Applies the calculated time delta to the active animation state node or state transition object.
 	     */
 	    _pUpdateDeltaTime(dt: number): void;
-	    private updateCondensedMatrices(condensedIndexLookUp, numJoints);
+	    private updateCondensedMatrices(condensedIndexLookUp);
 	    private updateGlobalProperties();
 	    getRenderableSubGeometry(renderable: TriangleSubMeshRenderable, sourceSubGeometry: TriangleSubGeometry): TriangleSubGeometry;
 	    /**
@@ -1068,6 +1068,7 @@ declare module "awayjs-renderergl/lib/animators/VertexAnimator" {
 	 * automatically updated or manually triggered.
 	 */
 	class VertexAnimator extends AnimatorBase {
+	    private _subGeometryVOPool;
 	    private _vertexAnimationSet;
 	    private _poses;
 	    private _weights;
@@ -1097,7 +1098,7 @@ declare module "awayjs-renderergl/lib/animators/VertexAnimator" {
 	     * @inheritDoc
 	     */
 	    setRenderState(shader: ShaderBase, renderable: RenderableBase, stage: Stage, camera: Camera, vertexConstantOffset: number, vertexStreamOffset: number): void;
-	    private setNullPose(shader, renderable, stage, vertexConstantOffset, vertexStreamOffset);
+	    private setNullPose(shader, subGeometry, stage, vertexConstantOffset, vertexStreamOffset);
 	    /**
 	     * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
 	     * Needs to be called if gpu code is potentially required.
@@ -4225,10 +4226,10 @@ declare module "awayjs-renderergl/lib/managers/RTTBufferManager" {
 }
 
 declare module "awayjs-renderergl/lib/pick/JSPickingCollider" {
+	import ISubMesh = require("awayjs-display/lib/base/ISubMesh");
 	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
 	import IPickingCollider = require("awayjs-display/lib/pick/IPickingCollider");
 	import PickingColliderBase = require("awayjs-renderergl/lib/pick/PickingColliderBase");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
 	import RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
 	/**
 	 * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
@@ -4249,7 +4250,7 @@ declare module "awayjs-renderergl/lib/pick/JSPickingCollider" {
 	    /**
 	     * @inheritDoc
 	     */
-	    _pTestRenderableCollision(renderable: RenderableBase, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number): boolean;
+	    _pTestRenderableCollision(subMesh: ISubMesh, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number): boolean;
 	}
 	export = JSPickingCollider;
 	
@@ -4258,10 +4259,10 @@ declare module "awayjs-renderergl/lib/pick/JSPickingCollider" {
 declare module "awayjs-renderergl/lib/pick/PickingColliderBase" {
 	import Point = require("awayjs-core/lib/geom/Point");
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
+	import ISubMesh = require("awayjs-display/lib/base/ISubMesh");
 	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
 	import Billboard = require("awayjs-display/lib/entities/Billboard");
 	import Mesh = require("awayjs-display/lib/entities/Mesh");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
 	import RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
 	/**
 	 * An abstract base class for all picking collider classes. It should not be instantiated directly.
@@ -4273,12 +4274,12 @@ declare module "awayjs-renderergl/lib/pick/PickingColliderBase" {
 	    rayPosition: Vector3D;
 	    rayDirection: Vector3D;
 	    constructor(renderablePool: RenderablePool);
-	    _pGetCollisionNormal(indexData: Array<number>, vertexData: Array<number>, triangleIndex: number): Vector3D;
-	    _pGetCollisionUV(indexData: Array<number>, uvData: Array<number>, triangleIndex: number, v: number, w: number, u: number, uvOffset: number, uvStride: number): Point;
+	    _pGetCollisionNormal(indices: Uint16Array, positions: Float32Array, triangleIndex: number): Vector3D;
+	    _pGetCollisionUV(indices: Uint16Array, uvData: Float32Array, triangleIndex: number, v: number, w: number, u: number, uvDim: number): Point;
 	    /**
 	     * @inheritDoc
 	     */
-	    _pTestRenderableCollision(renderable: RenderableBase, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number): boolean;
+	    _pTestRenderableCollision(subMesh: ISubMesh, pickingCollisionVO: PickingCollisionVO, shortestCollisionDistance: number): boolean;
 	    /**
 	     * @inheritDoc
 	     */
@@ -5047,11 +5048,10 @@ declare module "awayjs-renderergl/lib/renderables/BillboardRenderable" {
 	    static _iIncludeDependencies(shader: ShaderBase): void;
 	    static _iGetVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 	    static _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iActivate(pass: PassBase, camera: Camera): void;
 	    /**
 	     * @inheritDoc
 	     */
-	    _iRender(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
+	    _setRenderState(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
 	}
 	export = BillboardRenderable;
 	
@@ -5088,7 +5088,7 @@ declare module "awayjs-renderergl/lib/renderables/CurveSubMeshRenderable" {
 	     * @param level
 	     * @param indexOffset
 	     */
-	    constructor(pool: RenderablePool, subMesh: CurveSubMesh, stage: Stage, level?: number, indexOffset?: number);
+	    constructor(pool: RenderablePool, subMesh: CurveSubMesh, stage: Stage);
 	    /**
 	     *
 	     * @returns {SubGeometryBase}
@@ -5109,18 +5109,7 @@ declare module "awayjs-renderergl/lib/renderables/CurveSubMeshRenderable" {
 	    /**
 	     * @inheritDoc
 	     */
-	    _iRender(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
-	    /**
-	     * //TODO
-	     *
-	     * @param pool
-	     * @param renderableOwner
-	     * @param level
-	     * @param indexOffset
-	     * @returns {away.pool.TriangleSubMeshRenderable}
-	     * @protected
-	     */
-	    _pGetOverflowRenderable(indexOffset: number): RenderableBase;
+	    _setRenderState(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
 	}
 	export = CurveSubMeshRenderable;
 	
@@ -5192,7 +5181,7 @@ declare module "awayjs-renderergl/lib/renderables/LineSegmentRenderable" {
 	     * @param level
 	     * @param dataOffset
 	     */
-	    constructor(pool: RenderablePool, lineSegment: LineSegment, stage: Stage, level?: number, indexOffset?: number);
+	    constructor(pool: RenderablePool, lineSegment: LineSegment, stage: Stage);
 	    /**
 	     * //TODO
 	     *
@@ -5213,7 +5202,7 @@ declare module "awayjs-renderergl/lib/renderables/LineSegmentRenderable" {
 	    /**
 	     * @inheritDoc
 	     */
-	    _iRender(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
+	    _setRenderState(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
 	    /**
 	     * //TODO
 	     *
@@ -5266,7 +5255,7 @@ declare module "awayjs-renderergl/lib/renderables/LineSubMeshRenderable" {
 	     * @param level
 	     * @param dataOffset
 	     */
-	    constructor(pool: RenderablePool, subMesh: LineSubMesh, stage: Stage, level?: number, indexOffset?: number);
+	    constructor(pool: RenderablePool, subMesh: LineSubMesh, stage: Stage);
 	    /**
 	     * //TODO
 	     *
@@ -5287,18 +5276,7 @@ declare module "awayjs-renderergl/lib/renderables/LineSubMeshRenderable" {
 	    /**
 	     * @inheritDoc
 	     */
-	    _iRender(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
-	    /**
-	     * //TODO
-	     *
-	     * @param pool
-	     * @param renderableOwner
-	     * @param level
-	     * @param indexOffset
-	     * @returns {away.pool.LineSubMeshRenderable}
-	     * @private
-	     */
-	    _pGetOverflowRenderable(indexOffset: number): RenderableBase;
+	    _setRenderState(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
 	}
 	export = LineSubMeshRenderable;
 	
@@ -5312,31 +5290,20 @@ declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
 	import IRenderable = require("awayjs-display/lib/pool/IRenderable");
 	import IEntity = require("awayjs-display/lib/entities/IEntity");
 	import Camera = require("awayjs-display/lib/entities/Camera");
-	import IndexData = require("awayjs-stagegl/lib/pool/IndexData");
-	import VertexData = require("awayjs-stagegl/lib/pool/VertexData");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
 	import RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
 	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
+	import SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
+	import SubGeometryVOPool = require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
 	/**
 	 * @class RenderableListItem
 	 */
 	class RenderableBase implements IRenderable {
-	    private _onIndicesUpdatedDelegate;
-	    private _onVerticesUpdatedDelegate;
 	    private _onRenderOwnerUpdatedDelegate;
-	    private _subGeometry;
+	    _subGeometryVOPool: SubGeometryVOPool;
+	    _subGeometryVO: SubGeometryVOBase;
 	    private _geometryDirty;
-	    private _indexData;
-	    private _indexDataDirty;
-	    private _vertexData;
-	    _pVertexDataDirty: Object;
-	    private _vertexOffset;
-	    _level: number;
-	    private _indexOffset;
-	    private _overflow;
-	    private _numTriangles;
-	    private _concatenateArrays;
 	    JOINT_INDEX_FORMAT: string;
 	    JOINT_WEIGHT_FORMAT: string;
 	    /**
@@ -5344,14 +5311,6 @@ declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
 	     */
 	    _pool: RenderablePool;
 	    _stage: Stage;
-	    /**
-	     *
-	     */
-	    overflow: RenderableBase;
-	    /**
-	     *
-	     */
-	    numTriangles: number;
 	    /**
 	     *
 	     */
@@ -5393,18 +5352,7 @@ declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
 	     *
 	     */
 	    render: RenderBase;
-	    /**
-	     *
-	     */
-	    getIndexData(): IndexData;
-	    /**
-	     *
-	     */
-	    getVertexData(dataType: string): VertexData;
-	    /**
-	     *
-	     */
-	    getVertexOffset(dataType: string): number;
+	    subGeometryVO: SubGeometryVOBase;
 	    /**
 	     *
 	     * @param sourceEntity
@@ -5412,29 +5360,10 @@ declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
 	     * @param subGeometry
 	     * @param animationSubGeometry
 	     */
-	    constructor(pool: RenderablePool, sourceEntity: IEntity, renderableOwner: IRenderableOwner, renderOwner: IRenderOwner, stage: Stage, level?: number, indexOffset?: number);
+	    constructor(pool: RenderablePool, sourceEntity: IEntity, renderableOwner: IRenderableOwner, renderOwner: IRenderOwner, stage: Stage);
 	    dispose(): void;
 	    invalidateGeometry(): void;
-	    /**
-	     *
-	     */
-	    invalidateIndexData(): void;
-	    /**
-	     * //TODO
-	     *
-	     * @param dataType
-	     */
-	    invalidateVertexData(dataType: string): void;
 	    _pGetSubGeometry(): SubGeometryBase;
-	    /**
-	     * //TODO
-	     *
-	     * @param subGeometry
-	     * @param offset
-	     * @internal
-	     */
-	    _iFillIndexData(indexOffset: number): void;
-	    _pGetOverflowRenderable(indexOffset: number): RenderableBase;
 	    /**
 	     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
 	     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
@@ -5449,6 +5378,7 @@ declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
 	     * @private
 	     */
 	    _iRender(pass: IPass, camera: Camera, viewProjection: Matrix3D): void;
+	    _setRenderState(pass: IPass, camera: Camera, viewProjection: Matrix3D): void;
 	    /**
 	     * Clears the render state for the pass. This needs to be called before activating another pass.
 	     * @param stage The Stage used for rendering
@@ -5462,33 +5392,6 @@ declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
 	     * @private
 	     */
 	    private _updateGeometry();
-	    /**
-	     * //TODO
-	     *
-	     * @private
-	     */
-	    private _updateIndexData();
-	    /**
-	     * //TODO
-	     *
-	     * @param dataType
-	     * @private
-	     */
-	    private _updateVertexData(dataType);
-	    /**
-	     * //TODO
-	     *
-	     * @param event
-	     * @private
-	     */
-	    private _onIndicesUpdated(event);
-	    /**
-	     * //TODO
-	     *
-	     * @param event
-	     * @private
-	     */
-	    private _onVerticesUpdated(event);
 	    private _onRenderOwnerUpdated(event);
 	}
 	export = RenderableBase;
@@ -5607,7 +5510,7 @@ declare module "awayjs-renderergl/lib/renderables/SkyboxRenderable" {
 	    /**
 	     * @inheritDoc
 	     */
-	    _iRender(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
+	    _setRenderState(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
 	}
 	export = SkyboxRenderable;
 	
@@ -5644,7 +5547,7 @@ declare module "awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable" {
 	     * @param level
 	     * @param indexOffset
 	     */
-	    constructor(pool: RenderablePool, subMesh: TriangleSubMesh, stage: Stage, level?: number, indexOffset?: number);
+	    constructor(pool: RenderablePool, subMesh: TriangleSubMesh, stage: Stage);
 	    /**
 	     *
 	     * @returns {SubGeometryBase}
@@ -5657,18 +5560,7 @@ declare module "awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable" {
 	    /**
 	     * @inheritDoc
 	     */
-	    _iRender(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
-	    /**
-	     * //TODO
-	     *
-	     * @param pool
-	     * @param renderableOwner
-	     * @param level
-	     * @param indexOffset
-	     * @returns {away.pool.TriangleSubMeshRenderable}
-	     * @protected
-	     */
-	    _pGetOverflowRenderable(indexOffset: number): RenderableBase;
+	    _setRenderState(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
 	}
 	export = TriangleSubMeshRenderable;
 	
@@ -6047,9 +5939,17 @@ declare module "awayjs-renderergl/lib/shaders/ShaderBase" {
 	     */
 	    uvTransformIndex: number;
 	    /**
-	     * The index for the colorTrtansform fragment constant.
+	     * The index for the color transform fragment constant.
 	     */
 	    colorTransformIndex: number;
+	    /**
+	     *
+	     */
+	    jointIndexIndex: number;
+	    /**
+	     *
+	     */
+	    jointWeightIndex: number;
 	    /**
 	     * Creates a new MethodCompilerVO object.
 	     */
@@ -6580,6 +6480,62 @@ declare module "awayjs-renderergl/lib/utils/PerspectiveMatrix3D" {
 	
 }
 
+declare module "awayjs-renderergl/lib/vos/CurveSubGeometryVO" {
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import CurveSubGeometry = require("awayjs-core/lib/data/CurveSubGeometry");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import SubGeometryVOPool = require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
+	import SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
+	/**
+	 *
+	 * @class away.pool.CurveSubGeometryVO
+	 */
+	class CurveSubGeometryVO extends SubGeometryVOBase {
+	    /**
+	     *
+	     */
+	    static assetClass: IAssetClass;
+	    private _curveSubGeometry;
+	    constructor(pool: SubGeometryVOPool, curveSubGeometry: CurveSubGeometry);
+	    _render(shader: ShaderBase, stage: Stage): void;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param renderableOwner
+	     * @param level
+	     * @param indexOffset
+	     * @returns {away.pool.CurveSubMeshRenderable}
+	     * @protected
+	     */
+	    _pGetOverflowSubGeometry(): SubGeometryVOBase;
+	}
+	export = CurveSubGeometryVO;
+	
+}
+
+declare module "awayjs-renderergl/lib/vos/ISubGeometryVOClass" {
+	import IWrapperClass = require("awayjs-core/lib/library/IWrapperClass");
+	import ISubGeometryVO = require("awayjs-core/lib/vos/ISubGeometryVO");
+	import SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
+	import SubGeometryVOPool = require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
+	/**
+	 * ISubGeometryVOClass is an interface for the constructable class definition ISubGeometryVO that is used to
+	 * create renderable objects in the rendering pipeline to render the contents of a partition
+	 *
+	 * @class away.render.ISubGeometryVOClass
+	 */
+	interface ISubGeometryVOClass extends IWrapperClass {
+	    /**
+	     *
+	     */
+	    new (pool: SubGeometryVOPool, subGeometry: SubGeometryBase): ISubGeometryVO;
+	}
+	export = ISubGeometryVOClass;
+	
+}
+
 declare module "awayjs-renderergl/lib/vos/ITextureVOClass" {
 	import IWrapperClass = require("awayjs-core/lib/library/IWrapperClass");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -6599,6 +6555,41 @@ declare module "awayjs-renderergl/lib/vos/ITextureVOClass" {
 	    new (pool: TextureVOPool, texture: TextureBase, stage: Stage): ITextureVO;
 	}
 	export = ITextureVOClass;
+	
+}
+
+declare module "awayjs-renderergl/lib/vos/LineSubGeometryVO" {
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import SubGeometryVOPool = require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
+	import SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
+	/**
+	 *
+	 * @class away.pool.LineSubGeometryVO
+	 */
+	class LineSubGeometryVO extends SubGeometryVOBase {
+	    /**
+	     *
+	     */
+	    static assetClass: IAssetClass;
+	    private _lineSubGeometry;
+	    constructor(pool: SubGeometryVOPool, lineSubGeometry: LineSubGeometry);
+	    _render(shader: ShaderBase, stage: Stage): void;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param renderableOwner
+	     * @param level
+	     * @param indexOffset
+	     * @returns {away.pool.LineSubMeshRenderable}
+	     * @protected
+	     */
+	    _pGetOverflowSubGeometry(): SubGeometryVOBase;
+	}
+	export = LineSubGeometryVO;
 	
 }
 
@@ -6751,6 +6742,197 @@ declare module "awayjs-renderergl/lib/vos/SingleCubeTextureVO" {
 	
 }
 
+declare module "awayjs-renderergl/lib/vos/SubGeometryVOBase" {
+	import AttributesView = require("awayjs-core/lib/attributes/AttributesView");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import AttributesBufferVO = require("awayjs-stagegl/lib/vos/AttributesBufferVO");
+	import ISubGeometryVO = require("awayjs-core/lib/vos/ISubGeometryVO");
+	import SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+	import SubGeometryVOPool = require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
+	/**
+	 *
+	 * @class away.pool.SubGeometryVOBaseBase
+	 */
+	class SubGeometryVOBase implements ISubGeometryVO {
+	    _pool: SubGeometryVOPool;
+	    private _subGeometry;
+	    private _onIndicesUpdatedDelegate;
+	    private _onIndicesDisposedDelegate;
+	    private _onVerticesUpdatedDelegate;
+	    private _onVerticesDisposedDelegate;
+	    private _overflow;
+	    private _indices;
+	    private _indicesDirty;
+	    private _vertices;
+	    private _verticesDirty;
+	    _indexMappings: Array<number>;
+	    private _numElements;
+	    invalid: boolean;
+	    subGeometry: SubGeometryBase;
+	    /**
+	     *
+	     */
+	    numElements: number;
+	    constructor(pool: SubGeometryVOPool, subGeometry: SubGeometryBase);
+	    /**
+	     *
+	     */
+	    indexMappings: Array<number>;
+	    /**
+	     *
+	     */
+	    getIndexBufferVO(stage: Stage): AttributesBufferVO;
+	    /**
+	     *
+	     */
+	    getVertexBufferVO(attributesView: AttributesView, stage: Stage): AttributesBufferVO;
+	    /**
+	     *
+	     */
+	    activateVertexBufferVO(index: number, attributesView: AttributesView, stage: Stage, dimensions?: number, offset?: number): void;
+	    /**
+	     *
+	     */
+	    invalidateIndices(): void;
+	    /**
+	     *
+	     */
+	    disposeIndices(): void;
+	    /**
+	     * //TODO
+	     *
+	     * @param attributesView
+	     */
+	    invalidateVertices(attributesView: AttributesView): void;
+	    /**
+	     *
+	     */
+	    disposeVertices(attributesView: AttributesView): void;
+	    /**
+	     *
+	     */
+	    dispose(): void;
+	    /**
+	     *
+	     */
+	    invalidate(): void;
+	    _iGetFragmentCode(shader: ShaderBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg?: ShaderRegisterElement): string;
+	    _iRender(shader: ShaderBase, stage: Stage): void;
+	    _render(shader: ShaderBase, stage: Stage): void;
+	    /**
+	     * //TODO
+	     *
+	     * @private
+	     */
+	    _updateIndices(indexOffset?: number): void;
+	    /**
+	     * //TODO
+	     *
+	     * @param attributesView
+	     * @private
+	     */
+	    private _updateVertices(attributesView);
+	    /**
+	     * //TODO
+	     *
+	     * @param event
+	     * @private
+	     */
+	    private _onIndicesUpdated(event);
+	    /**
+	     * //TODO
+	     *
+	     * @param event
+	     * @private
+	     */
+	    private _onIndicesDisposed(event);
+	    /**
+	     * //TODO
+	     *
+	     * @param event
+	     * @private
+	     */
+	    private _onVerticesUpdated(event);
+	    /**
+	     * //TODO
+	     *
+	     * @param event
+	     * @private
+	     */
+	    private _onVerticesDisposed(event);
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param renderableOwner
+	     * @param level
+	     * @param indexOffset
+	     * @returns {away.pool.TriangleSubMeshRenderable}
+	     * @protected
+	     */
+	    _pGetOverflowSubGeometry(): SubGeometryVOBase;
+	}
+	export = SubGeometryVOBase;
+	
+}
+
+declare module "awayjs-renderergl/lib/vos/SubGeometryVOPool" {
+	import SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
+	import ISubGeometryVOClass = require("awayjs-renderergl/lib/vos/ISubGeometryVOClass");
+	import SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
+	/**
+	 * @class away.pool.SubGeometryVOPool
+	 */
+	class SubGeometryVOPool {
+	    private static classPool;
+	    static _pool: SubGeometryVOPool;
+	    private _pool;
+	    /**
+	     * //TODO
+	     *
+	     * @param subGeometryDataClass
+	     */
+	    constructor();
+	    /**
+	     * //TODO
+	     *
+	     * @param materialOwner
+	     * @returns ISubGeometry
+	     */
+	    getItem(subGeometry: SubGeometryBase): SubGeometryVOBase;
+	    /**
+	     * //TODO
+	     *
+	     * @param materialOwner
+	     */
+	    disposeItem(subGeometry: SubGeometryBase): void;
+	    /**
+	     * //TODO
+	     *
+	     * @param renderableClass
+	     * @returns RenderPool
+	     */
+	    static getPool(): SubGeometryVOPool;
+	    /**
+	     *
+	     * @param subMeshClass
+	     */
+	    static registerClass(subGeometryVOClass: ISubGeometryVOClass): void;
+	    /**
+	     *
+	     * @param subGeometry
+	     */
+	    static getClass(subGeometry: SubGeometryBase): ISubGeometryVOClass;
+	    private static main;
+	    private static addDefaults();
+	}
+	export = SubGeometryVOPool;
+	
+}
+
 declare module "awayjs-renderergl/lib/vos/TextureVOBase" {
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ITextureVO = require("awayjs-display/lib/pool/ITextureVO");
@@ -6795,7 +6977,6 @@ declare module "awayjs-renderergl/lib/vos/TextureVOPool" {
 	 */
 	class TextureVOPool {
 	    private static classPool;
-	    static _pools: Object;
 	    _stage: Stage;
 	    private _pool;
 	    /**
@@ -6819,19 +7000,6 @@ declare module "awayjs-renderergl/lib/vos/TextureVOPool" {
 	    disposeItem(texture: TextureBase): void;
 	    dispose(): void;
 	    /**
-	     * //TODO
-	     *
-	     * @param renderableClass
-	     * @returns RenderPool
-	     */
-	    static getPool(stage: Stage): TextureVOPool;
-	    /**
-	     * //TODO
-	     *
-	     * @param renderableClass
-	     */
-	    static disposePool(stage: Stage): void;
-	    /**
 	     *
 	     * @param subMeshClass
 	     */
@@ -6845,6 +7013,41 @@ declare module "awayjs-renderergl/lib/vos/TextureVOPool" {
 	    private static addDefaults();
 	}
 	export = TextureVOPool;
+	
+}
+
+declare module "awayjs-renderergl/lib/vos/TriangleSubGeometryVO" {
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import SubGeometryVOPool = require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
+	import SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
+	/**
+	 *
+	 * @class away.pool.TriangleSubGeometryVO
+	 */
+	class TriangleSubGeometryVO extends SubGeometryVOBase {
+	    /**
+	     *
+	     */
+	    static assetClass: IAssetClass;
+	    private _triangleSubGeometry;
+	    constructor(pool: SubGeometryVOPool, triangleSubGeometry: TriangleSubGeometry);
+	    _render(shader: ShaderBase, stage: Stage): void;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param renderableOwner
+	     * @param level
+	     * @param indexOffset
+	     * @returns {away.pool.TriangleSubMeshRenderable}
+	     * @protected
+	     */
+	    _pGetOverflowSubGeometry(): SubGeometryVOBase;
+	}
+	export = TriangleSubGeometryVO;
 	
 }
 
