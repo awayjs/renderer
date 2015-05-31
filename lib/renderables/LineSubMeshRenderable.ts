@@ -50,9 +50,9 @@ class LineSubMeshRenderable extends RenderableBase
 	 * @param level
 	 * @param dataOffset
 	 */
-	constructor(pool:RenderablePool, subMesh:LineSubMesh, stage:Stage, level:number = 0, indexOffset:number = 0)
+	constructor(pool:RenderablePool, subMesh:LineSubMesh, stage:Stage)
 	{
-		super(pool, subMesh.parentMesh, subMesh, subMesh.material, stage, level, indexOffset);
+		super(pool, subMesh.parentMesh, subMesh, subMesh.material, stage);
 
 		this.subMesh = subMesh;
 
@@ -69,18 +69,7 @@ class LineSubMeshRenderable extends RenderableBase
 	 */
 	public _pGetSubGeometry():LineSubGeometry
 	{
-		var subGeometry:LineSubGeometry = this.subMesh.subGeometry;
-
-		this._pVertexDataDirty[LineSubGeometry.START_POSITION_DATA] = true;
-		this._pVertexDataDirty[LineSubGeometry.END_POSITION_DATA] = true;
-
-		if (subGeometry.thickness)
-			this._pVertexDataDirty[LineSubGeometry.THICKNESS_DATA] = true;
-
-		if (subGeometry.startColors)
-			this._pVertexDataDirty[LineSubGeometry.COLOR_DATA] = true;
-
-		return subGeometry;
+		return this.subMesh.subGeometry;
 	}
 
 	public static _iIncludeDependencies(shader:ShaderBase)
@@ -181,36 +170,15 @@ class LineSubMeshRenderable extends RenderableBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iRender(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		super._iRender(pass, camera, viewProjection);
+		super._setRenderState(pass, camera, viewProjection);
 
 		var context:IContextGL = this._stage.context;
 		this._calcMatrix.copyFrom(this.sourceEntity.sceneTransform);
 		this._calcMatrix.append(camera.inverseSceneTransform);
 
 		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
-
-		this._stage.activateBuffer(0, this.getVertexData(LineSubGeometry.START_POSITION_DATA), this.getVertexOffset(LineSubGeometry.START_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
-		this._stage.activateBuffer(1, this.getVertexData(LineSubGeometry.END_POSITION_DATA), this.getVertexOffset(LineSubGeometry.END_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
-		this._stage.activateBuffer(2, this.getVertexData(LineSubGeometry.THICKNESS_DATA), this.getVertexOffset(LineSubGeometry.THICKNESS_DATA), LineSubGeometry.THICKNESS_FORMAT);
-
-		context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
-	}
-
-	/**
-	 * //TODO
-	 *
-	 * @param pool
-	 * @param renderableOwner
-	 * @param level
-	 * @param indexOffset
-	 * @returns {away.pool.LineSubMeshRenderable}
-	 * @private
-	 */
-	public _pGetOverflowRenderable(indexOffset:number):RenderableBase
-	{
-		return new LineSubMeshRenderable(this._pool, <LineSubMesh> this.renderableOwner, this._stage, this._level + 1, indexOffset);
 	}
 }
 

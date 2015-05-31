@@ -1,3 +1,4 @@
+import AttributesBuffer				= require("awayjs-core/lib/attributes/AttributesBuffer");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
@@ -62,14 +63,12 @@ class SkyboxRenderable extends RenderableBase
 		var geometry:TriangleSubGeometry = SkyboxRenderable._geometry;
 
 		if (!geometry) {
-			geometry = SkyboxRenderable._geometry = new TriangleSubGeometry(true);
+			geometry = SkyboxRenderable._geometry = new TriangleSubGeometry(new AttributesBuffer(11, 4));
 			geometry.autoDeriveNormals = false;
 			geometry.autoDeriveTangents = false;
-			geometry.updateIndices(Array<number>(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2));
-			geometry.updatePositions(Array<number>(-1, 1, -1, 1, 1, -1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1));
+			geometry.setIndices(Array<number>(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2));
+			geometry.setPositions(Array<number>(-1, 1, -1, 1, 1, -1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1));
 		}
-
-		this._pVertexDataDirty[TriangleSubGeometry.POSITION_DATA] = true;
 
 		return geometry;
 	}
@@ -97,9 +96,9 @@ class SkyboxRenderable extends RenderableBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iRender(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		super._iRender(pass, camera, viewProjection);
+		super._setRenderState(pass, camera, viewProjection);
 
 		var context:IContextGL = this._stage.context;
 		var pos:Vector3D = camera.scenePosition;
@@ -109,9 +108,6 @@ class SkyboxRenderable extends RenderableBase
 		this._vertexArray[4] = this._vertexArray[5] = this._vertexArray[6] = camera.projection.far/Math.sqrt(3);
 		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, viewProjection, true);
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._vertexArray, 2);
-
-		this._stage.activateBuffer(0, this.getVertexData(TriangleSubGeometry.POSITION_DATA), this.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-		context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
 	}
 }
 

@@ -212,8 +212,8 @@ class SkeletonAnimator extends AnimatorBase
 
 		if (this._useCondensedIndices) {
 			// using a condensed data set
-			this.updateCondensedMatrices(subGeometry.condensedIndexLookUp, subGeometry.numCondensedJoints);
-			stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, subGeometry.numCondensedJoints*3);
+			this.updateCondensedMatrices(subGeometry.condensedIndexLookUp);
+			stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, this._condensedMatrices.length/4);
 		} else {
 			if (this._pAnimationSet.usesCPU) {
 				if (this._morphedSubGeometryDirty[subGeometry.id])
@@ -224,8 +224,8 @@ class SkeletonAnimator extends AnimatorBase
 			stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints*3);
 		}
 
-		stage.activateBuffer(vertexStreamOffset, renderable.getVertexData(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_INDEX_DATA), renderable.JOINT_INDEX_FORMAT);
-		stage.activateBuffer(vertexStreamOffset + 1, renderable.getVertexData(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.getVertexOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA), renderable.JOINT_WEIGHT_FORMAT);
+		shader.jointIndexIndex = vertexStreamOffset++;
+		shader.jointWeightIndex = vertexStreamOffset++;
 	}
 
 	/**
@@ -253,21 +253,21 @@ class SkeletonAnimator extends AnimatorBase
 				this._morphedSubGeometryDirty[key] = true;
 	}
 
-	private updateCondensedMatrices(condensedIndexLookUp:Array<number> /*uint*/, numJoints:number /*uint*/)
+	private updateCondensedMatrices(condensedIndexLookUp:Array<number>)
 	{
-		var i:number /*uint*/ = 0, j:number /*uint*/ = 0;
-		var len:number /*uint*/;
+		var j:number = 0, k:number = 0;
 		var srcIndex:number /*uint*/;
 
 		this._condensedMatrices = new Array<number>();
 
-		do {
-			srcIndex = condensedIndexLookUp[i]*4;
-			len = srcIndex + 12;
+		var len:number = condensedIndexLookUp.length;
+		for (var i:number = 0; i < len; i++) {
+			srcIndex = condensedIndexLookUp[i]*12; //12 required for the three 4-component vectors that store the matrix
+			k = 12;
 			// copy into condensed
-			while (srcIndex < len)
+			while (k--)
 				this._condensedMatrices[j++] = this._globalMatrices[srcIndex++];
-		} while (++i < numJoints);
+		}
 	}
 
 	private updateGlobalProperties()
@@ -397,18 +397,19 @@ class SkeletonAnimator extends AnimatorBase
 	{
 		this._morphedSubGeometryDirty[sourceSubGeometry.id] = false;
 
-		var sourcePositions:Array<number> = sourceSubGeometry.positions;
-		var sourceNormals:Array<number> = sourceSubGeometry.vertexNormals;
-		var sourceTangents:Array<number> = sourceSubGeometry.vertexTangents;
+		var numVertices:number = sourceSubGeometry.numVertices;
+		var sourcePositions:Float32Array = sourceSubGeometry.positions.get(numVertices);
+		var sourceNormals:Float32Array = sourceSubGeometry.normals.get(numVertices);
+		var sourceTangents:Float32Array = sourceSubGeometry.tangents.get(numVertices);
 
-		var jointIndices:Array<number> = sourceSubGeometry.jointIndices;
-		var jointWeights:Array<number> = sourceSubGeometry.jointWeights;
+		var jointIndices:Float32Array = <Float32Array> sourceSubGeometry.jointIndices.get(numVertices);
+		var jointWeights:Float32Array = <Float32Array> sourceSubGeometry.jointWeights.get(numVertices);
 
-		var targetSubGeometry = this._morphedSubGeometry[sourceSubGeometry.id];
+		var targetSubGeometry:TriangleSubGeometry = this._morphedSubGeometry[sourceSubGeometry.id];
 
-		var targetPositions:Array<number> = targetSubGeometry.positions;
-		var targetNormals:Array<number> = targetSubGeometry.vertexNormals;
-		var targetTangents:Array<number> = targetSubGeometry.vertexTangents;
+		var targetPositions:Float32Array = targetSubGeometry.positions.get(numVertices);
+		var targetNormals:Float32Array = targetSubGeometry.normals.get(numVertices);
+		var targetTangents:Float32Array = targetSubGeometry.tangents.get(numVertices);
 
 		var index:number /*uint*/ = 0;
 		var j:number /*uint*/ = 0;
@@ -491,9 +492,9 @@ class SkeletonAnimator extends AnimatorBase
 			index += 3;
 		}
 
-		targetSubGeometry.updatePositions(targetPositions);
-		targetSubGeometry.updateVertexNormals(targetNormals);
-		targetSubGeometry.updateVertexTangents(targetTangents);
+		targetSubGeometry.setPositions(targetPositions);
+		targetSubGeometry.setNormals(targetNormals);
+		targetSubGeometry.setTangents(targetTangents);
 	}
 
 	/**
@@ -610,7 +611,7 @@ class SkeletonAnimator extends AnimatorBase
 	{
 		var subGeometry:TriangleSubGeometry = <TriangleSubGeometry> event.target;
 
-		(<TriangleSubGeometry> this._morphedSubGeometry[subGeometry.id]).updateIndices(subGeometry.indices);
+		(<TriangleSubGeometry> this._morphedSubGeometry[subGeometry.id]).setIndices(subGeometry.indices);
 	}
 
 	private onVerticesUpdate(event:SubGeometryEvent)
@@ -618,11 +619,11 @@ class SkeletonAnimator extends AnimatorBase
 		var subGeometry:TriangleSubGeometry = <TriangleSubGeometry> event.target;
 		var morphGeometry:TriangleSubGeometry = <TriangleSubGeometry> this._morphedSubGeometry[subGeometry.id];
 
-		switch(event.dataType) {
-			case TriangleSubGeometry.UV_DATA:
-				morphGeometry.updateUVs(subGeometry.uvs);
-			case TriangleSubGeometry.SECONDARY_UV_DATA:
-				morphGeometry.updateUVs(subGeometry.secondaryUVs);
+		switch(event.attributesView) {
+			case subGeometry.uvs:
+				morphGeometry.setUVs(subGeometry.uvs.get(subGeometry.numVertices));
+			case subGeometry.secondaryUVs:
+				morphGeometry.setSecondaryUVs(subGeometry.secondaryUVs.get(subGeometry.numVertices));
 		}
 	}
 }

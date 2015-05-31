@@ -56,7 +56,7 @@ class AnimationSubGeometry
 
 		var buffer:IVertexBuffer = this._pVertexBuffer[contextIndex];
 		if (!buffer || this._pBufferContext[contextIndex] != context) {
-			buffer = this._pVertexBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, this._totalLenOfOneVertex);
+			buffer = this._pVertexBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, this._totalLenOfOneVertex*4);
 			this._pBufferContext[contextIndex] = context;
 			this._pBufferDirty[contextIndex] = true;
 		}
@@ -64,7 +64,7 @@ class AnimationSubGeometry
 			buffer.uploadFromArray(this._pVertexData, 0, this._numVertices);
 			this._pBufferDirty[contextIndex] = false;
 		}
-		context.setVertexBufferAt(index, buffer, bufferOffset, format);
+		context.setVertexBufferAt(index, buffer, bufferOffset*4, format);
 	}
 
 	public dispose()

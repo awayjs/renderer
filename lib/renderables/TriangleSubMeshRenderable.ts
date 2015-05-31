@@ -43,9 +43,9 @@ class TriangleSubMeshRenderable extends RenderableBase
 	 * @param level
 	 * @param indexOffset
 	 */
-	constructor(pool:RenderablePool, subMesh:TriangleSubMesh, stage:Stage, level:number = 0, indexOffset:number = 0)
+	constructor(pool:RenderablePool, subMesh:TriangleSubMesh, stage:Stage)
 	{
-		super(pool, subMesh.parentMesh, subMesh, subMesh.material, stage, level, indexOffset);
+		super(pool, subMesh.parentMesh, subMesh, subMesh.material, stage);
 
 		this.subMesh = subMesh;
 	}
@@ -57,50 +57,7 @@ class TriangleSubMeshRenderable extends RenderableBase
 	 */
 	public _pGetSubGeometry():TriangleSubGeometry
 	{
-		var subGeometry:TriangleSubGeometry;
-
-		if (this.subMesh.animator)
-			subGeometry = <TriangleSubGeometry> this.subMesh.animator.getRenderableSubGeometry(this, this.subMesh.subGeometry);
-		else
-			subGeometry = this.subMesh.subGeometry;
-
-		this._pVertexDataDirty[TriangleSubGeometry.POSITION_DATA] = true;
-
-		if (subGeometry.vertexNormals)
-			this._pVertexDataDirty[TriangleSubGeometry.NORMAL_DATA] = true;
-
-		if (subGeometry.vertexTangents)
-			this._pVertexDataDirty[TriangleSubGeometry.TANGENT_DATA] = true;
-
-		if (subGeometry.uvs)
-			this._pVertexDataDirty[TriangleSubGeometry.UV_DATA] = true;
-
-		if (subGeometry.secondaryUVs)
-			this._pVertexDataDirty[TriangleSubGeometry.SECONDARY_UV_DATA] = true;
-
-		if (subGeometry.jointIndices)
-			this._pVertexDataDirty[TriangleSubGeometry.JOINT_INDEX_DATA] = true;
-
-		if (subGeometry.jointWeights)
-			this._pVertexDataDirty[TriangleSubGeometry.JOINT_WEIGHT_DATA] = true;
-
-		switch(subGeometry.jointsPerVertex) {
-			case 1:
-				this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = ContextGLVertexBufferFormat.FLOAT_1;
-				break;
-			case 2:
-				this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = ContextGLVertexBufferFormat.FLOAT_2;
-				break;
-			case 3:
-				this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = ContextGLVertexBufferFormat.FLOAT_3;
-				break;
-			case 4:
-				this.JOINT_INDEX_FORMAT = this.JOINT_WEIGHT_FORMAT = ContextGLVertexBufferFormat.FLOAT_4;
-				break;
-			default:
-		}
-
-		return subGeometry;
+		return (this.subMesh.animator)? <TriangleSubGeometry> this.subMesh.animator.getRenderableSubGeometry(this, this.subMesh.subGeometry) : this.subMesh.subGeometry;
 	}
 
 
@@ -144,9 +101,9 @@ class TriangleSubMeshRenderable extends RenderableBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iRender(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		super._iRender(pass, camera, viewProjection);
+		super._setRenderState(pass, camera, viewProjection);
 
 		var shader:ShaderBase = pass.shader;
 
@@ -165,24 +122,6 @@ class TriangleSubMeshRenderable extends RenderableBase
 		var context:IContextGL = this._stage.context;
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shader.vertexConstantData, shader.numUsedVertexConstants);
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
-
-		this._stage.activateBuffer(0, this.getVertexData(TriangleSubGeometry.POSITION_DATA), this.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-		this._stage.context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
-	}
-
-	/**
-	 * //TODO
-	 *
-	 * @param pool
-	 * @param renderableOwner
-	 * @param level
-	 * @param indexOffset
-	 * @returns {away.pool.TriangleSubMeshRenderable}
-	 * @protected
-	 */
-	public _pGetOverflowRenderable(indexOffset:number):RenderableBase
-	{
-		return new TriangleSubMeshRenderable(this._pool, <TriangleSubMesh> this.renderableOwner, this._stage, this._level + 1, indexOffset);
 	}
 }
 

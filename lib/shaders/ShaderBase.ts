@@ -28,7 +28,7 @@ import RenderableBase				= require("awayjs-renderergl/lib/renderables/Renderable
 import CompilerBase					= require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import TextureVOPool				= require("awayjs-renderergl/lib/vos/TextureVOPool");
-import TextureVOBase					= require("awayjs-renderergl/lib/vos/TextureVOBase");
+import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -270,9 +270,19 @@ class ShaderBase
 	public uvTransformIndex:number;
 
 	/**
-	 * The index for the colorTrtansform fragment constant.
+	 * The index for the color transform fragment constant.
 	 */
 	public colorTransformIndex:number;
+
+	/**
+	 *
+	 */
+	public jointIndexIndex:number;
+
+	/**
+	 *
+	 */
+	public jointWeightIndex:number;
 
 	/**
 	 * Creates a new MethodCompilerVO object.
@@ -344,6 +354,8 @@ class ShaderBase
 		this.tangentBufferIndex = -1;
 		this.sceneMatrixIndex = -1;
 		this.sceneNormalMatrixIndex = -1;
+		this.jointIndexIndex = -1;
+		this.jointWeightIndex = -1;
 	}
 
 	/**
@@ -497,22 +509,6 @@ class ShaderBase
 	{
 		if (renderable.renderableOwner.animator)
 			(<AnimatorBase> renderable.renderableOwner.animator).setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
-
-		if (this.uvBufferIndex >= 0)
-			this._stage.activateBuffer(this.uvBufferIndex, renderable.getVertexData(TriangleSubGeometry.UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.UV_DATA), TriangleSubGeometry.UV_FORMAT);
-
-		if (this.secondaryUVBufferIndex >= 0)
-			this._stage.activateBuffer(this.secondaryUVBufferIndex, renderable.getVertexData(TriangleSubGeometry.SECONDARY_UV_DATA), renderable.getVertexOffset(TriangleSubGeometry.SECONDARY_UV_DATA), TriangleSubGeometry.SECONDARY_UV_FORMAT);
-
-		if (this.normalBufferIndex >= 0)
-			this._stage.activateBuffer(this.normalBufferIndex, renderable.getVertexData(TriangleSubGeometry.NORMAL_DATA), renderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA), TriangleSubGeometry.NORMAL_FORMAT);
-
-		if (this.tangentBufferIndex >= 0)
-			this._stage.activateBuffer(this.tangentBufferIndex, renderable.getVertexData(TriangleSubGeometry.TANGENT_DATA), renderable.getVertexOffset(TriangleSubGeometry.TANGENT_DATA), TriangleSubGeometry.TANGENT_FORMAT);
-
-		if (this.colorBufferIndex >= 0)
-			this._stage.activateBuffer(this.colorBufferIndex, renderable.getVertexData(LineSubGeometry.COLOR_DATA), renderable.getVertexOffset(LineSubGeometry.COLOR_DATA), LineSubGeometry.COLOR_FORMAT);
-
 
 		if (this.usesUVTransform) {
 			var uvTransform:Matrix = renderable.renderableOwner.uvTransform.matrix;

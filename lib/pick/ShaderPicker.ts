@@ -1,5 +1,6 @@
 import Debug							= require("awayjs-core/lib/utils/Debug");
-import BitmapImage2D						= require("awayjs-core/lib/data/BitmapImage2D");
+import BitmapImage2D					= require("awayjs-core/lib/data/BitmapImage2D");
+import SubGeometryBase					= require("awayjs-core/lib/data/SubGeometryBase");
 import Box								= require("awayjs-core/lib/geom/Box");
 import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils					= require("awayjs-core/lib/geom/Matrix3DUtils");
@@ -31,6 +32,8 @@ import ITextureBase						= require("awayjs-stagegl/lib/base/ITextureBase");
 
 import DefaultRenderer					= require("awayjs-renderergl/lib/DefaultRenderer");
 import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import SubGeometryVOBase				= require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
+import SubGeometryVOPool				= require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
 
 /**
  * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
@@ -246,8 +249,11 @@ class ShaderPicker implements IPicker
 			matrix.append(viewProjection);
 			this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
 			this._context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._id, 1);
-			this._stage.activateBuffer(0, renderable.getVertexData(TriangleSubGeometry.POSITION_DATA), renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-			this._context.drawTriangles(this._stage.getIndexBuffer(renderable.getIndexData()), 0, renderable.numTriangles);
+
+			var subGeometryVO:SubGeometryVOBase = this._hitRenderable.subGeometryVO;
+
+			subGeometryVO.activateVertexBufferVO(0, (<TriangleSubGeometry> subGeometryVO.subGeometry).positions, this._stage);
+			subGeometryVO.getIndexBufferVO(this._stage).draw(0, subGeometryVO.numElements);
 
 			renderable = renderable.next;
 		}
@@ -341,8 +347,10 @@ class ShaderPicker implements IPicker
 		this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, localViewProjection, true);
 		this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
 
-		this._stage.activateBuffer(0, this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA), this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-		this._context.drawTriangles(this._stage.getIndexBuffer(this._hitRenderable.getIndexData()), 0, this._hitRenderable.numTriangles);
+		var subGeometryVO:SubGeometryVOBase = this._hitRenderable.subGeometryVO;
+
+		subGeometryVO.activateVertexBufferVO(0, (<TriangleSubGeometry> subGeometryVO.subGeometry).positions, this._stage);
+		subGeometryVO.getIndexBufferVO(this._stage).draw(0, subGeometryVO.numElements);
 
 		this._context.drawToBitmapImage2D(this._bitmapImage2D);
 
@@ -379,26 +387,24 @@ class ShaderPicker implements IPicker
 		var s0x:number, s0y:number, s0z:number;
 		var s1x:number, s1y:number, s1z:number;
 		var nl:number;
-		var indices:Array<number> = this._hitRenderable.getIndexData().data;
+		var subGeom:TriangleSubGeometry = <TriangleSubGeometry> this._hitRenderable._pGetSubGeometry();
+		var indices:Uint16Array = subGeom.indices.get(subGeom.numElements);
 
-		var positions:Array<number> = this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA).data;
-		var positionStride:number = this._hitRenderable.getVertexData(TriangleSubGeometry.POSITION_DATA).dataPerVertex;
-		var positionOffset:number = this._hitRenderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA);
+		var positions:Float32Array = subGeom.positions.get(subGeom.numVertices);
+		var posDim:number = subGeom.positions.dimensions;
 
-		var uvs:Array<number> = this._hitRenderable.getVertexData(TriangleSubGeometry.UV_DATA).data;
-		var uvStride:number = this._hitRenderable.getVertexData(TriangleSubGeometry.UV_DATA).dataPerVertex;
-		var uvOffset:number = this._hitRenderable.getVertexOffset(TriangleSubGeometry.UV_DATA);
+		var uvs:Float32Array = subGeom.uvs.get(subGeom.numVertices);
+		var uvDim:number = subGeom.uvs.dimensions;
 
-		var normals:Array<number> = this._hitRenderable.getVertexData(TriangleSubGeometry.NORMAL_DATA).data;
-		var normalStride:number = this._hitRenderable.getVertexData(TriangleSubGeometry.NORMAL_DATA).dataPerVertex;
-		var normalOffset:number = this._hitRenderable.getVertexOffset(TriangleSubGeometry.NORMAL_DATA);
+		var normals:Float32Array = subGeom.normals.get(subGeom.numVertices);
+		var normalDim:number = subGeom.normals.dimensions;
 
 		this.updateRay(camera);
 
 		while (i < len) {
-			t1 = positionOffset + indices[i]*positionStride;
-			t2 = positionOffset + indices[j]*positionStride;
-			t3 = positionOffset + indices[k]*positionStride;
+			t1 = indices[i]*posDim;
+			t2 = indices[j]*posDim;
+			t3 = indices[k]*posDim;
 			x1 = positions[t1];
 			y1 = positions[t1 + 1];
 			z1 = positions[t1 + 2];
@@ -434,9 +440,9 @@ class ShaderPicker implements IPicker
 				// if inside the current triangle, fetch details hit information
 				if (s >= 0 && t >= 0 && (s + t) <= 1) {
 
-					ni1 = normalOffset + indices[i]*normalStride;
-					ni2 = normalOffset + indices[j]*normalStride;
-					ni3 = normalOffset + indices[k]*normalStride;
+					ni1 = indices[i]*normalDim;
+					ni2 = indices[j]*normalDim;
+					ni3 = indices[k]*normalDim;
 
 					n1 = indices[ni1] + indices[ni2] + indices[ni3];
 					n2 = indices[ni1 + 1] + indices[ni2 + 1] + indices[ni3 + 1];
@@ -474,9 +480,9 @@ class ShaderPicker implements IPicker
 					s = (dot11*dot02 - dot01*dot12)*invDenom;
 					t = (dot00*dot12 - dot01*dot02)*invDenom;
 
-					ui1 = uvOffset + indices[i]*uvStride
-					ui2 = uvOffset + indices[j]*uvStride
-					ui3 = uvOffset + indices[k]*uvStride
+					ui1 = indices[i]*uvDim
+					ui2 = indices[j]*uvDim
+					ui3 = indices[k]*uvDim
 
 					u = uvs[ui1];
 					v = uvs[ui1 + 1];

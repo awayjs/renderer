@@ -53,9 +53,9 @@ class LineSegmentRenderable extends RenderableBase
 	 * @param level
 	 * @param dataOffset
 	 */
-	constructor(pool:RenderablePool, lineSegment:LineSegment, stage:Stage, level:number = 0, indexOffset:number = 0)
+	constructor(pool:RenderablePool, lineSegment:LineSegment, stage:Stage)
 	{
-		super(pool, lineSegment, lineSegment, lineSegment.material, stage, level, indexOffset);
+		super(pool, lineSegment, lineSegment, lineSegment.material, stage);
 
 		this._lineSegment = lineSegment;
 
@@ -74,38 +74,30 @@ class LineSegmentRenderable extends RenderableBase
 	{
 		var geometry:LineSubGeometry = LineSegmentRenderable._lineGeometry[this._lineSegment.id] || (LineSegmentRenderable._lineGeometry[this._lineSegment.id] = new LineSubGeometry());
 
-		this._pVertexDataDirty[LineSubGeometry.START_POSITION_DATA] = true;
-		this._pVertexDataDirty[LineSubGeometry.END_POSITION_DATA] = true;
-		this._pVertexDataDirty[LineSubGeometry.THICKNESS_DATA] = true;
-		this._pVertexDataDirty[LineSubGeometry.COLOR_DATA] = true;
-
 		var start:Vector3D = this._lineSegment.startPostion;
 		var end:Vector3D = this._lineSegment.endPosition;
 
-		var startPositions:Array<number>;
-		var endPositions:Array<number>;
-		var thickness:Array<number>;
+		var positions:Float32Array;
+		var thickness:Float32Array;
 
-		if (geometry.indices != null) {
-			startPositions = geometry.startPositions;
-			endPositions = geometry.endPositions;
-			thickness = geometry.thickness;
-		} else {
-			startPositions = new Array<number>(3);
-			endPositions = new Array<number>(3);
-			thickness = new Array<number>(1);
-		}
+		//if (geometry.indices != null) {
+		//	positions = <Float32Array> geometry.positions.get(geometry.numVertices);
+		//	thickness = geometry.thickness.get(geometry.numVertices);
+		//} else {
+			positions = new Float32Array(6);
+			thickness = new Float32Array(1);
+		//}
 
-		startPositions[0] = start.x;
-		startPositions[1] = start.y;
-		startPositions[2] = start.z;
-		endPositions[0] = end.x;
-		endPositions[1] = end.y;
-		endPositions[2] = end.z;
+		positions[0] = start.x;
+		positions[1] = start.y;
+		positions[2] = start.z;
+		positions[3] = end.x;
+		positions[4] = end.y;
+		positions[5] = end.z;
 		thickness[0] = this._lineSegment.thickness;
 
-		geometry.updatePositions(startPositions, endPositions);
-		geometry.updateThickness(thickness);
+		geometry.setPositions(positions);
+		geometry.setThickness(thickness);
 
 		return geometry;
 	}
@@ -208,21 +200,15 @@ class LineSegmentRenderable extends RenderableBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iRender(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		super._iRender(pass, camera, viewProjection);
+		super._setRenderState(pass, camera, viewProjection);
 
 		var context:IContextGL = this._stage.context;
 		this._calcMatrix.copyFrom(this.sourceEntity.sceneTransform);
 		this._calcMatrix.append(camera.inverseSceneTransform);
 
 		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
-
-		this._stage.activateBuffer(0, this.getVertexData(LineSubGeometry.START_POSITION_DATA), this.getVertexOffset(LineSubGeometry.START_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
-		this._stage.activateBuffer(1, this.getVertexData(LineSubGeometry.END_POSITION_DATA), this.getVertexOffset(LineSubGeometry.END_POSITION_DATA), LineSubGeometry.POSITION_FORMAT);
-		this._stage.activateBuffer(2, this.getVertexData(LineSubGeometry.THICKNESS_DATA), this.getVertexOffset(LineSubGeometry.THICKNESS_DATA), LineSubGeometry.THICKNESS_FORMAT);
-
-		context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
 	}
 
 	/**
@@ -237,7 +223,7 @@ class LineSegmentRenderable extends RenderableBase
 	 */
 	public _pGetOverflowRenderable(indexOffset:number):RenderableBase
 	{
-		return new LineSegmentRenderable(this._pool, <LineSegment> this.renderableOwner, this._stage, this._level + 1, indexOffset);
+		return new LineSegmentRenderable(this._pool, <LineSegment> this.renderableOwner, this._stage);
 	}
 }
 

@@ -14,8 +14,6 @@ class TextureVOPool
 {
 	private static classPool:Object = new Object();
 
-	public static _pools:Object = new Object();
-
 	public _stage:Stage;
 	private _pool:Object = new Object();
 
@@ -56,29 +54,6 @@ class TextureVOPool
 	{
 		for (var id in this._pool)
 			this._pool[id].dispose();
-
-		TextureVOPool.disposePool(this._stage);
-	}
-
-	/**
-	 * //TODO
-	 *
-	 * @param renderableClass
-	 * @returns RenderPool
-	 */
-	public static getPool(stage:Stage):TextureVOPool
-	{
-		return (TextureVOPool._pools[stage.stageIndex] || (TextureVOPool._pools[stage.stageIndex] = new TextureVOPool(stage)));
-	}
-
-	/**
-	 * //TODO
-	 *
-	 * @param renderableClass
-	 */
-	public static disposePool(stage:Stage)
-	{
-		TextureVOPool._pools[stage.stageIndex] = undefined;
 	}
 
 	/**

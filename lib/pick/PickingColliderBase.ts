@@ -32,15 +32,15 @@ class PickingColliderBase
 		this._renderablePool = renderablePool;
 	}
 
-	public _pGetCollisionNormal(indexData:Array<number> /*uint*/, vertexData:Array<number>, triangleIndex:number):Vector3D // PROTECTED
+	public _pGetCollisionNormal(indices:Uint16Array, positions:Float32Array, triangleIndex:number):Vector3D // PROTECTED
 	{
 		var normal:Vector3D = new Vector3D();
-		var i0:number = indexData[ triangleIndex ]*3;
-		var i1:number = indexData[ triangleIndex + 1 ]*3;
-		var i2:number = indexData[ triangleIndex + 2 ]*3;
-		var p0:Vector3D = new Vector3D(vertexData[ i0 ], vertexData[ i0 + 1 ], vertexData[ i0 + 2 ]);
-		var p1:Vector3D = new Vector3D(vertexData[ i1 ], vertexData[ i1 + 1 ], vertexData[ i1 + 2 ]);
-		var p2:Vector3D = new Vector3D(vertexData[ i2 ], vertexData[ i2 + 1 ], vertexData[ i2 + 2 ]);
+		var i0:number = indices[triangleIndex]*3;
+		var i1:number = indices[triangleIndex + 1]*3;
+		var i2:number = indices[triangleIndex + 2]*3;
+		var p0:Vector3D = new Vector3D(positions[i0], positions[i0 + 1], positions[i0 + 2]);
+		var p1:Vector3D = new Vector3D(positions[i1], positions[i1 + 1], positions[i1 + 2]);
+		var p2:Vector3D = new Vector3D(positions[i2], positions[i2 + 1], positions[i2 + 2]);
 		var side0:Vector3D = p1.subtract(p0);
 		var side1:Vector3D = p2.subtract(p0);
 		normal = side0.crossProduct(side1);
@@ -48,15 +48,15 @@ class PickingColliderBase
 		return normal;
 	}
 
-	public _pGetCollisionUV(indexData:Array<number> /*uint*/, uvData:Array<number>, triangleIndex:number, v:number, w:number, u:number, uvOffset:number, uvStride:number):Point // PROTECTED
+	public _pGetCollisionUV(indices:Uint16Array, uvData:Float32Array, triangleIndex:number, v:number, w:number, u:number, uvDim:number):Point // PROTECTED
 	{
 		var uv:Point = new Point();
-		var uIndex:number = indexData[ triangleIndex ]*uvStride + uvOffset;
-		var uv0:Vector3D = new Vector3D(uvData[ uIndex ], uvData[ uIndex + 1 ]);
-		uIndex = indexData[ triangleIndex + 1 ]*uvStride + uvOffset;
-		var uv1:Vector3D = new Vector3D(uvData[ uIndex ], uvData[ uIndex + 1 ]);
-		uIndex = indexData[ triangleIndex + 2 ]*uvStride + uvOffset;
-		var uv2:Vector3D = new Vector3D(uvData[ uIndex ], uvData[ uIndex + 1 ]);
+		var uIndex:number = indices[triangleIndex]*uvDim;
+		var uv0:Vector3D = new Vector3D(uvData[uIndex], uvData[uIndex + 1]);
+		uIndex = indices[triangleIndex + 1]*uvDim;
+		var uv1:Vector3D = new Vector3D(uvData[uIndex], uvData[uIndex + 1]);
+		uIndex = indices[triangleIndex + 2]*uvDim;
+		var uv2:Vector3D = new Vector3D(uvData[uIndex], uvData[uIndex + 1]);
 		uv.x = u*uv0.x + v*uv1.x + w*uv2.x;
 		uv.y = u*uv0.y + v*uv1.y + w*uv2.y;
 		return uv;
@@ -65,7 +65,7 @@ class PickingColliderBase
 	/**
 	 * @inheritDoc
 	 */
-	public _pTestRenderableCollision(renderable:RenderableBase, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
+	public _pTestRenderableCollision(subMesh:ISubMesh, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
 	{
 		throw new AbstractMethodError();
 	}
@@ -92,13 +92,13 @@ class PickingColliderBase
 		this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
 		pickingCollisionVO.renderableOwner = null;
 
-		if (this._pTestRenderableCollision(<RenderableBase> this._renderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
-			shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-
-			pickingCollisionVO.renderableOwner = billboard;
-
-			return true;
-		}
+		//if (this._pTestRenderableCollision(<RenderableBase> this._renderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
+		//	shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+		//
+		//	pickingCollisionVO.renderableOwner = billboard;
+		//
+		//	return true;
+		//}
 
 		return false;
 	}
@@ -122,7 +122,7 @@ class PickingColliderBase
 		for (var i:number = 0; i < len; ++i) {
 			subMesh = mesh.subMeshes[i];
 
-			if (this._pTestRenderableCollision(<RenderableBase> this._renderablePool.getItem(subMesh), pickingCollisionVO, shortestCollisionDistance)) {
+			if (this._pTestRenderableCollision(subMesh, pickingCollisionVO, shortestCollisionDistance)) {
 				shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
 
 				pickingCollisionVO.renderableOwner = subMesh;

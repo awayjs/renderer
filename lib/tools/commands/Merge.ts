@@ -1,3 +1,4 @@
+import AttributesBuffer					= require("awayjs-core/lib/attributes/AttributesBuffer");
 import Matrix3DUtils					= require("awayjs-core/lib/geom/Matrix3DUtils");
 
 import DisplayObjectContainer			= require("awayjs-display/lib/containers/DisplayObjectContainer");
@@ -164,16 +165,16 @@ class Merge
 		for (i = 0; i < this._geomVOs.length; i++) {
 			var s:number /*uint*/;
 			var data:GeometryVO;
-			var sub:TriangleSubGeometry = new TriangleSubGeometry(true);
+			var sub:TriangleSubGeometry = new TriangleSubGeometry(new AttributesBuffer());
 			sub.autoDeriveNormals = false;
 			sub.autoDeriveTangents = false;
 
 			data = this._geomVOs[i];
-			sub.updateIndices(data.indices);
-			sub.updatePositions(data.vertices);
-			sub.updateVertexNormals(data.normals);
-			sub.updateVertexTangents(data.tangents);
-			sub.updateUVs(data.uvs);
+			sub.setIndices(data.indices);
+			sub.setPositions(data.vertices);
+			sub.setNormals(data.normals);
+			sub.setTangents(data.tangents);
+			sub.setUVs(data.uvs);
 
 			destGeom.addSubGeometry(sub);
 
@@ -216,13 +217,13 @@ class Merge
 				var vertices:Array<number>;
 				var normals:Array<number>;
 				var tangents:Array<number>;
-				var pd:Array<number>, nd:Array<number>, td:Array<number>, ud:Array<number>;
+				var ind:Uint16Array, pd:Float32Array, nd:Float32Array, td:Float32Array, ud:Float32Array;
 
 				subGeom = subGeometries[subIdx];
-				pd = subGeom.positions;
-				nd = subGeom.vertexNormals;
-				td = subGeom.vertexTangents;
-				ud = subGeom.uvs;
+				pd = subGeom.positions.get(subGeom.numVertices);
+				nd = subGeom.normals.get(subGeom.numVertices);
+				td = subGeom.tangents.get(subGeom.numVertices);
+				ud = subGeom.uvs.get(subGeom.numVertices);
 
 				// Get (or create) a VO for this material
 				vo = this.getSubGeomData(mesh.subMeshes[subIdx].material || mesh.material);
@@ -266,12 +267,13 @@ class Merge
 				// Copy over triangle indices
 				indexOffset = (!this._objectSpace)? vo.vertices.length/3 :0;
 				iIdx = vo.indices.length;
-				len = subGeom.numTriangles;
+				len = subGeom.numElements;
+				ind = subGeom.indices.get(len);
 				for (i = 0; i < len; i++) {
 					calc = i*3;
-					vo.indices[iIdx++] = subGeom.indices[calc] + indexOffset;
-					vo.indices[iIdx++] = subGeom.indices[calc + 1] + indexOffset;
-					vo.indices[iIdx++] = subGeom.indices[calc + 2] + indexOffset;
+					vo.indices[iIdx++] = ind[calc] + indexOffset;
+					vo.indices[iIdx++] = ind[calc + 1] + indexOffset;
+					vo.indices[iIdx++] = ind[calc + 2] + indexOffset;
 				}
 
 				if (!this._objectSpace) {

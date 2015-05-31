@@ -44,9 +44,9 @@ class CurveSubMeshRenderable extends RenderableBase
 	 * @param level
 	 * @param indexOffset
 	 */
-	constructor(pool:RenderablePool, subMesh:CurveSubMesh, stage:Stage, level:number = 0, indexOffset:number = 0)
+	constructor(pool:RenderablePool, subMesh:CurveSubMesh, stage:Stage)
 	{
-		super(pool, subMesh.parentMesh, subMesh, subMesh.material, stage, level, indexOffset);
+		super(pool, subMesh.parentMesh, subMesh, subMesh.material, stage);
 
 		this.subMesh = subMesh;
 	}
@@ -58,22 +58,7 @@ class CurveSubMeshRenderable extends RenderableBase
 	 */
 	public _pGetSubGeometry():CurveSubGeometry
 	{
-		var subGeometry:CurveSubGeometry;
-
-		if (this.subMesh.animator)
-			subGeometry = <CurveSubGeometry> this.subMesh.animator.getRenderableSubGeometry(this, this.subMesh.subGeometry);
-		else
-			subGeometry = this.subMesh.subGeometry;
-
-		this._pVertexDataDirty[CurveSubGeometry.POSITION_DATA] = true;
-
-		if (subGeometry.curves)
-			this._pVertexDataDirty[CurveSubGeometry.CURVE_DATA] = true;
-
-		if (subGeometry.uvs)
-			this._pVertexDataDirty[CurveSubGeometry.UV_DATA] = true;
-
-		return subGeometry;
+		return (this.subMesh.animator)? <CurveSubGeometry> this.subMesh.animator.getRenderableSubGeometry(this, this.subMesh.subGeometry) : this.subMesh.subGeometry;
 	}
 
 
@@ -211,9 +196,9 @@ class CurveSubMeshRenderable extends RenderableBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iRender(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		super._iRender(pass, camera, viewProjection);
+		super._setRenderState(pass, camera, viewProjection);
 
 		var shader:ShaderBase = pass.shader;
 
@@ -232,26 +217,6 @@ class CurveSubMeshRenderable extends RenderableBase
 		var context:IContextGL = this._stage.context;
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shader.vertexConstantData, shader.numUsedVertexConstants);
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
-
-		this._stage.activateBuffer(0, this.getVertexData(CurveSubGeometry.POSITION_DATA), this.getVertexOffset(CurveSubGeometry.POSITION_DATA), CurveSubGeometry.POSITION_FORMAT);
-        this._stage.activateBuffer(1, this.getVertexData(CurveSubGeometry.CURVE_DATA), this.getVertexOffset(CurveSubGeometry.CURVE_DATA), CurveSubGeometry.CURVE_FORMAT);
-
-        this._stage.context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
-	}
-
-	/**
-	 * //TODO
-	 *
-	 * @param pool
-	 * @param renderableOwner
-	 * @param level
-	 * @param indexOffset
-	 * @returns {away.pool.TriangleSubMeshRenderable}
-	 * @protected
-	 */
-	public _pGetOverflowRenderable(indexOffset:number):RenderableBase
-	{
-		return new CurveSubMeshRenderable(this._pool, <CurveSubMesh> this.renderableOwner, this._stage, this._level + 1, indexOffset);
 	}
 }
 

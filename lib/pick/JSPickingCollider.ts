@@ -1,5 +1,6 @@
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
+import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
 import TriangleSubGeometry				= require("awayjs-core/lib/data/TriangleSubGeometry");
 import PickingCollisionVO				= require("awayjs-display/lib/pick/PickingCollisionVO");
 import IPickingCollider					= require("awayjs-display/lib/pick/IPickingCollider");
@@ -37,8 +38,9 @@ class JSPickingCollider extends PickingColliderBase implements IPickingCollider
 	/**
 	 * @inheritDoc
 	 */
-	public _pTestRenderableCollision(renderable:RenderableBase, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
+	public _pTestRenderableCollision(subMesh:ISubMesh, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
 	{
+		var subGeometry:TriangleSubGeometry = <TriangleSubGeometry> subMesh.subGeometry;
 		var t:number;
 		var i0:number, i1:number, i2:number;
 		var rx:number, ry:number, rz:number;
@@ -52,34 +54,32 @@ class JSPickingCollider extends PickingColliderBase implements IPickingCollider
 		var s1x:number, s1y:number, s1z:number;
 		var nl:number, nDotV:number, D:number, disToPlane:number;
 		var Q1Q2:number, Q1Q1:number, Q2Q2:number, RQ1:number, RQ2:number;
-		var indexData:Array<number> = renderable.getIndexData().data;
+		var indices:Uint16Array = subGeometry.indices.get(subGeometry.numElements);
 		var collisionTriangleIndex:number = -1;
-		var bothSides:boolean = (<MaterialBase> renderable.renderOwner).bothSides;
+		var bothSides:boolean = subMesh.material.bothSides;
 
-		var positionData:Array<number> = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).data;
-		var positionStride:number = renderable.getVertexData(TriangleSubGeometry.POSITION_DATA).dataPerVertex;
-		var positionOffset:number = renderable.getVertexOffset(TriangleSubGeometry.POSITION_DATA);
-		var uvData:Array<number> = renderable.getVertexData(TriangleSubGeometry.UV_DATA).data;
-		var uvStride:number = renderable.getVertexData(TriangleSubGeometry.UV_DATA).dataPerVertex;
-		var uvOffset:number = renderable.getVertexOffset(TriangleSubGeometry.UV_DATA);
-		var numIndices:number = indexData.length;
+		var positions:Float32Array = subGeometry.positions.get(subGeometry.numVertices);
+		var posDim:number = subGeometry.positions.dimensions;
+		var uvs:Float32Array = subGeometry.uvs.get(subGeometry.numVertices);
+		var uvDim:number = subGeometry.uvs.dimensions;
+		var numIndices:number = indices.length;
 
 		for (var index:number = 0; index < numIndices; index += 3) { // sweep all triangles
 			// evaluate triangle indices
-			i0 = positionOffset + indexData[ index ]*positionStride;
-			i1 = positionOffset + indexData[ (index + 1) ]*positionStride;
-			i2 = positionOffset + indexData[ (index + 2) ]*positionStride;
+			i0 = indices[index]*posDim;
+			i1 = indices[index + 1]*posDim;
+			i2 = indices[index + 2]*posDim;
 
 			// evaluate triangle positions
-			p0x = positionData[ i0 ];
-			p0y = positionData[ (i0 + 1) ];
-			p0z = positionData[ (i0 + 2) ];
-			p1x = positionData[ i1 ];
-			p1y = positionData[ (i1 + 1) ];
-			p1z = positionData[ (i1 + 2) ];
-			p2x = positionData[ i2 ];
-			p2y = positionData[ (i2 + 1) ];
-			p2z = positionData[ (i2 + 2) ];
+			p0x = positions[i0];
+			p0y = positions[i0 + 1];
+			p0z = positions[i0 + 2];
+			p1x = positions[i1];
+			p1y = positions[i1 + 1];
+			p1z = positions[i1 + 2];
+			p2x = positions[i2];
+			p2y = positions[i2 + 1];
+			p2z = positions[i2 + 2];
 
 			// evaluate sides and triangle normal
 			s0x = p1x - p0x; // s0 = p1 - p0
@@ -116,9 +116,9 @@ class JSPickingCollider extends PickingColliderBase implements IPickingCollider
 				rz = cz - p0z;
 				RQ1 = rx*s0x + ry*s0y + rz*s0z;
 				RQ2 = rx*s1x + ry*s1y + rz*s1z;
-				coeff = 1/( Q1Q1*Q2Q2 - Q1Q2*Q1Q2 );
-				v = coeff*( Q2Q2*RQ1 - Q1Q2*RQ2 );
-				w = coeff*( -Q1Q2*RQ1 + Q1Q1*RQ2 );
+				coeff = 1/(Q1Q1*Q2Q2 - Q1Q2*Q1Q2);
+				v = coeff*(Q2Q2*RQ1 - Q1Q2*RQ2);
+				w = coeff*(-Q1Q2*RQ1 + Q1Q1*RQ2);
 				if (v < 0)
 					continue;
 				if (w < 0)
@@ -130,7 +130,7 @@ class JSPickingCollider extends PickingColliderBase implements IPickingCollider
 					pickingCollisionVO.rayEntryDistance = t;
 					pickingCollisionVO.localPosition = new Vector3D(cx, cy, cz);
 					pickingCollisionVO.localNormal = new Vector3D(nx, ny, nz);
-					pickingCollisionVO.uv = this._pGetCollisionUV(indexData, uvData, index, v, w, u, uvOffset, uvStride);
+					pickingCollisionVO.uv = this._pGetCollisionUV(indices, uvs, index, v, w, u, uvDim);
 					pickingCollisionVO.index = index;
 //						pickingCollisionVO.subGeometryIndex = this.pGetMeshSubMeshIndex(renderable);
 

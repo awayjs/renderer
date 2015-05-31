@@ -99,7 +99,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 	private _onContextUpdateDelegate:Function;
 	private _onViewportUpdatedDelegate;
 
-	public _pNumTriangles:number = 0;
+	public _pNumElements:number = 0;
 
 	public _pOpaqueRenderableHead:RenderableBase;
 	public _pBlendedRenderableHead:RenderableBase;
@@ -131,9 +131,9 @@ class RendererBase extends EventDispatcher implements IRenderer
 	/**
 	 *
 	 */
-	public get numTriangles():number
+	public get numElements():number
 	{
-		return this._pNumTriangles;
+		return this._pNumElements;
 	}
 
 	/**
@@ -488,7 +488,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 		//reset head values
 		this._pBlendedRenderableHead = null;
 		this._pOpaqueRenderableHead = null;
-		this._pNumTriangles = 0;
+		this._pNumElements = 0;
 
 		//grab entity head
 		var item:EntityListItem = entityCollector.entityHead;
@@ -830,11 +830,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 			this._pOpaqueRenderableHead = renderable;
 		}
 
-		this._pNumTriangles += renderable.numTriangles;
-
-		//handle any overflow for renderables with data that exceeds GPU limitations
-		if (renderable.overflow)
-			this.applyRenderable(renderable.overflow);
+		this._pNumElements += renderable.subGeometryVO.subGeometry.numElements;
 	}
 }
 

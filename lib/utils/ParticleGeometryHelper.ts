@@ -1,3 +1,4 @@
+import AttributesBuffer					= require("awayjs-core/lib/attributes/AttributesBuffer");
 import Matrix							= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 import Point							= require("awayjs-core/lib/geom/Point");
@@ -62,7 +63,7 @@ class ParticleGeometryHelper
 					normalsVector.push(new Array<number>());
 					tangentsVector.push(new Array<number>());
 					uvsVector.push(new Array<number>());
-					subGeometries.push(new TriangleSubGeometry(true));
+					subGeometries.push(new TriangleSubGeometry(new AttributesBuffer()));
 					vertexCounters.push(0);
 				}
 
@@ -77,7 +78,7 @@ class ParticleGeometryHelper
 					normalsVector.push(new Array<number>());
 					tangentsVector.push(new Array<number>());
 					uvsVector.push(new Array<number>());
-					subGeometries.push(new TriangleSubGeometry(true));
+					subGeometries.push(new TriangleSubGeometry(new AttributesBuffer()));
 					vertexCounters.push(0);
 				}
 
@@ -105,18 +106,17 @@ class ParticleGeometryHelper
 				var tempLen:number /*int*/;
 				var compact:TriangleSubGeometry = sourceSubGeometry;
 				var product:number /*uint*/;
-				var sourcePositions:Array<number>;
-				var sourceNormals:Array<number>;
-				var sourceTangents:Array<number>;
-				var sourceUVs:Array<number>;
+				var sourcePositions:Float32Array;
+				var sourceNormals:Float32Array;
+				var sourceTangents:Float32Array;
+				var sourceUVs:Float32Array;
 
 				if (compact) {
 					tempLen = compact.numVertices;
-					compact.numTriangles;
-					sourcePositions = compact.positions;
-					sourceNormals = compact.vertexNormals;
-					sourceTangents = compact.vertexTangents;
-					sourceUVs = compact.uvs;
+					sourcePositions = compact.positions.get(tempLen);
+					sourceNormals = compact.normals.get(tempLen);
+					sourceTangents = compact.tangents.get(tempLen);
+					sourceUVs = compact.uvs.get(tempLen);
 
 					if (transforms) {
 						var particleGeometryTransform:ParticleGeometryTransform = transforms[i];
@@ -151,10 +151,10 @@ class ParticleGeometryHelper
 							if (UVTransform)
 								tempUV = UVTransform.transformPoint(tempUV);
 							//this is faster than that only push one data
-							sourcePositions.push(tempVertex.x, tempVertex.y, tempVertex.z);
-							sourceNormals.push(tempNormal.x, tempNormal.y, tempNormal.z);
-							sourceTangents.push(tempTangents.x, tempTangents.y, tempTangents.z);
-							sourceUVs.push(tempUV.x, tempUV.y);
+							positions.push(tempVertex.x, tempVertex.y, tempVertex.z);
+							normals.push(tempNormal.x, tempNormal.y, tempNormal.z);
+							tangents.push(tempTangents.x, tempTangents.y, tempTangents.z);
+							uvs.push(tempUV.x, tempUV.y);
 						}
 					} else {
 						for (k = 0; k < tempLen; k++) {
@@ -170,8 +170,8 @@ class ParticleGeometryHelper
 					//Todo
 				}
 
-				var sourceIndices:Array<number> /*uint*/ = sourceSubGeometry.indices;
-				tempLen = sourceSubGeometry.numTriangles;
+				tempLen = sourceSubGeometry.numElements;
+				var sourceIndices:Uint16Array = sourceSubGeometry.indices.get(tempLen);
 				for (k = 0; k < tempLen; k++) {
 					product = k*3;
 					indices.push(sourceIndices[product] + vertexCounter, sourceIndices[product + 1] + vertexCounter, sourceIndices[product + 2] + vertexCounter);
@@ -188,11 +188,11 @@ class ParticleGeometryHelper
 			subGeometry = subGeometries[i];
 			subGeometry.autoDeriveNormals = false;
 			subGeometry.autoDeriveTangents = false;
-			subGeometry.updateIndices(indicesVector[i]);
-			subGeometry.updatePositions(positionsVector[i]);
-			subGeometry.updateVertexNormals(normalsVector[i]);
-			subGeometry.updateVertexTangents(tangentsVector[i]);
-			subGeometry.updateUVs(uvsVector[i]);
+			subGeometry.setIndices(indicesVector[i]);
+			subGeometry.setPositions(positionsVector[i]);
+			subGeometry.setNormals(normalsVector[i]);
+			subGeometry.setTangents(tangentsVector[i]);
+			subGeometry.setUVs(uvsVector[i]);
 			particleGeometry.addSubGeometry(subGeometry);
 		}
 

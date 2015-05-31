@@ -1,3 +1,4 @@
+import AttributesBuffer				= require("awayjs-core/lib/attributes/AttributesBuffer");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
@@ -63,22 +64,17 @@ class BillboardRenderable extends RenderableBase
 		var geometry:TriangleSubGeometry = BillboardRenderable._materialGeometry[material.id];
 
 		if (!geometry) {
-			geometry = BillboardRenderable._materialGeometry[material.id] = new TriangleSubGeometry(true);
+			geometry = BillboardRenderable._materialGeometry[material.id] = new TriangleSubGeometry(new AttributesBuffer(11, 4));
 			geometry.autoDeriveNormals = false;
 			geometry.autoDeriveTangents = false;
-			geometry.updateIndices(Array<number>(0, 1, 2, 0, 2, 3));
-			geometry.updatePositions(Array<number>(-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
-			geometry.updateVertexNormals(Array<number>(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
-			geometry.updateVertexTangents(Array<number>(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
-			geometry.updateUVs(Array<number>(0, 0, 1, 0, 1, 1, 0, 1));
+			geometry.setIndices(Array<number>(0, 1, 2, 0, 2, 3));
+			geometry.setPositions(Array<number>(-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
+			geometry.setNormals(Array<number>(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
+			geometry.setTangents(Array<number>(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
+			geometry.setUVs(Array<number>(0, 0, 1, 0, 1, 1, 0, 1));
 		} else {
-			geometry.updatePositions(Array<number>(-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
+			geometry.setPositions(Array<number>(-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
 		}
-
-		this._pVertexDataDirty[TriangleSubGeometry.POSITION_DATA] = true;
-		this._pVertexDataDirty[TriangleSubGeometry.NORMAL_DATA] = true;
-		this._pVertexDataDirty[TriangleSubGeometry.TANGENT_DATA] = true;
-		this._pVertexDataDirty[TriangleSubGeometry.UV_DATA] = true;
 
 		return geometry;
 	}
@@ -120,20 +116,12 @@ class BillboardRenderable extends RenderableBase
 		return "";
 	}
 
-	public _iActivate(pass:PassBase, camera:Camera)
-	{
-		super._iActivate(pass, camera);
-
-		//buffer the same for all materials, so can set here
-		this._stage.activateBuffer(0, this.getVertexData(TriangleSubGeometry.POSITION_DATA), this.getVertexOffset(TriangleSubGeometry.POSITION_DATA), TriangleSubGeometry.POSITION_FORMAT);
-	}
-
 	/**
 	 * @inheritDoc
 	 */
-	public _iRender(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		super._iRender(pass, camera, viewProjection);
+		super._setRenderState(pass, camera, viewProjection);
 
 		var shader:ShaderBase = pass.shader;
 
@@ -152,8 +140,6 @@ class BillboardRenderable extends RenderableBase
 		var context:IContextGL = this._stage.context;
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shader.vertexConstantData, shader.numUsedVertexConstants);
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
-
-		this._stage.context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
 	}
 }
 
