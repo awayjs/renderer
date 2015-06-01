@@ -1,4 +1,4 @@
-import Geometry							= require("awayjs-core/lib/data/Geometry");
+import Geometry							= require("awayjs-display/lib/base/Geometry");
 
 import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import VertexAnimator					= require("awayjs-renderergl/lib/animators/VertexAnimator");

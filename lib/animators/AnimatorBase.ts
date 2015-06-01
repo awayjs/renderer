@@ -7,7 +7,7 @@ import getTimer						= require("awayjs-core/lib/utils/getTimer");
 import IAnimationSet				= require("awayjs-display/lib/animators/IAnimationSet");
 import IAnimator					= require("awayjs-display/lib/animators/IAnimator");
 import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
+import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 

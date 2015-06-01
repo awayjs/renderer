@@ -2,10 +2,10 @@ import Quaternion						= require("awayjs-core/lib/geom/Quaternion");
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
 import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
-import TriangleSubGeometry				= require("awayjs-core/lib/data/TriangleSubGeometry");
+import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
 import TriangleSubMesh					= require("awayjs-display/lib/base/TriangleSubMesh");
 import Camera							= require("awayjs-display/lib/entities/Camera");
-import SubGeometryEvent					= require("awayjs-core/lib/events/SubGeometryEvent");
+import SubGeometryEvent					= require("awayjs-display/lib/events/SubGeometryEvent");
 
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import Stage							= require("awayjs-stagegl/lib/base/Stage");

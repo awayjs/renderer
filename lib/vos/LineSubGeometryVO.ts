@@ -2,7 +2,7 @@ import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
-import LineSubGeometry				= require("awayjs-core/lib/data/LineSubGeometry");
+import LineSubGeometry				= require("awayjs-display/lib/base/LineSubGeometry");
 
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");

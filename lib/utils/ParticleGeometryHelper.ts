@@ -4,8 +4,8 @@ import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 import Point							= require("awayjs-core/lib/geom/Point");
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
-import Geometry							= require("awayjs-core/lib/data/Geometry");
-import TriangleSubGeometry				= require("awayjs-core/lib/data/TriangleSubGeometry");
+import Geometry							= require("awayjs-display/lib/base/Geometry");
+import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 

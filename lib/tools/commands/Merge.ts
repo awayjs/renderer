@@ -2,8 +2,8 @@ import AttributesBuffer					= require("awayjs-core/lib/attributes/AttributesBuff
 import Matrix3DUtils					= require("awayjs-core/lib/geom/Matrix3DUtils");
 
 import DisplayObjectContainer			= require("awayjs-display/lib/containers/DisplayObjectContainer");
-import Geometry							= require("awayjs-core/lib/data/Geometry");
-import TriangleSubGeometry				= require("awayjs-core/lib/data/TriangleSubGeometry");
+import Geometry							= require("awayjs-display/lib/base/Geometry");
+import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 

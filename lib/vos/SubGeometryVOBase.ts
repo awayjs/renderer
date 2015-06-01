@@ -1,14 +1,14 @@
 import AttributesView				= require("awayjs-core/lib/attributes/AttributesView");
 import AttributesBuffer				= require("awayjs-core/lib/attributes/AttributesBuffer");
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
-import SubGeometryEvent				= require("awayjs-core/lib/events/SubGeometryEvent");
-import SubGeometryUtils				= require("awayjs-core/lib/utils/SubGeometryUtils");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
+import SubGeometryUtils				= require("awayjs-display/lib/utils/SubGeometryUtils");
 import AttributesBufferVO			= require("awayjs-stagegl/lib/vos/AttributesBufferVO");
 
-import ISubGeometryVO				= require("awayjs-core/lib/vos/ISubGeometryVO");
-import SubGeometryBase				= require("awayjs-core/lib/data/SubGeometryBase");
+import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
+import ISubGeometryVO				= require("awayjs-display/lib/vos/ISubGeometryVO");
 
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");

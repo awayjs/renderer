@@ -1,6 +1,6 @@
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
-import SubGeometryBase				= require("awayjs-core/lib/data/SubGeometryBase");
+import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
 
 import ISubGeometryVOClass			= require("awayjs-renderergl/lib/vos/ISubGeometryVOClass");
 import SubGeometryVOBase			= require("awayjs-renderergl/lib/vos/SubGeometryVOBase");

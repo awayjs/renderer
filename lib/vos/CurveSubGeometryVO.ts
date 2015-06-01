@@ -2,7 +2,7 @@ import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
-import CurveSubGeometry				= require("awayjs-core/lib/data/CurveSubGeometry");
+import CurveSubGeometry				= require("awayjs-display/lib/base/CurveSubGeometry");
 
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");

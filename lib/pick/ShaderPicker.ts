@@ -1,6 +1,5 @@
 import Debug							= require("awayjs-core/lib/utils/Debug");
 import BitmapImage2D					= require("awayjs-core/lib/data/BitmapImage2D");
-import SubGeometryBase					= require("awayjs-core/lib/data/SubGeometryBase");
 import Box								= require("awayjs-core/lib/geom/Box");
 import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils					= require("awayjs-core/lib/geom/Matrix3DUtils");
@@ -9,7 +8,7 @@ import Rectangle						= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 import ByteArray						= require("awayjs-core/lib/utils/ByteArray");
 
-import TriangleSubGeometry				= require("awayjs-core/lib/data/TriangleSubGeometry");
+import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Scene							= require("awayjs-display/lib/containers/Scene");
 import View								= require("awayjs-display/lib/containers/View");
 import IPicker							= require("awayjs-display/lib/pick/IPicker");

@@ -3,7 +3,7 @@ import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
-import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
+import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 

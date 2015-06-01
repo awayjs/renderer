@@ -1,6 +1,7 @@
 import IWrapperClass				= require("awayjs-core/lib/library/IWrapperClass");
-import ISubGeometryVO				= require("awayjs-core/lib/vos/ISubGeometryVO");
-import SubGeometryBase				= require("awayjs-core/lib/data/SubGeometryBase");
+
+import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
+import ISubGeometryVO				= require("awayjs-display/lib/vos/ISubGeometryVO");
 
 import SubGeometryVOPool			= require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
 

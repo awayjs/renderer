@@ -4,7 +4,7 @@ import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import TriangleSubMesh				= require("awayjs-display/lib/base/TriangleSubMesh");
-import TriangleSubGeometry			= require("awayjs-core/lib/data/TriangleSubGeometry");
+import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
 import ContextGLVertexBufferFormat	= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");

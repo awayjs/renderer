@@ -3,8 +3,8 @@ import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import LineSubMesh					= require("awayjs-display/lib/base/LineSubMesh");
-import LineSubGeometry				= require("awayjs-core/lib/data/LineSubGeometry");
-import SubGeometryEvent				= require("awayjs-core/lib/events/SubGeometryEvent");
+import LineSubGeometry				= require("awayjs-display/lib/base/LineSubGeometry");
+import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
 
