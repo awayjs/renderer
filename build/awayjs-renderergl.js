@@ -2180,7 +2180,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var SubGeometryEvent = require("awayjs-core/lib/events/SubGeometryEvent");
+var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 var JointPose = require("awayjs-renderergl/lib/animators/data/JointPose");
@@ -2706,7 +2706,7 @@ var SkeletonAnimator = (function (_super) {
 })(AnimatorBase);
 module.exports = SkeletonAnimator;
 
-},{"awayjs-core/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
+},{"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9068,7 +9068,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Geometry = require("awayjs-core/lib/data/Geometry");
+var Geometry = require("awayjs-display/lib/base/Geometry");
 /**
  * @class away.base.ParticleGeometry
  */
@@ -9081,7 +9081,7 @@ var ParticleGeometry = (function (_super) {
 })(Geometry);
 module.exports = ParticleGeometry;
 
-},{"awayjs-core/lib/data/Geometry":undefined}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
+},{"awayjs-display/lib/base/Geometry":undefined}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9658,243 +9658,7 @@ var RTTBufferManagerVO = (function () {
 })();
 module.exports = RTTBufferManager;
 
-},{"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/ImageUtils":undefined}],"awayjs-renderergl/lib/pick/JSPickingCollider":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var PickingColliderBase = require("awayjs-renderergl/lib/pick/PickingColliderBase");
-/**
- * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
- *
- * @see away.base.DisplayObject#pickingCollider
- * @see away.pick.RaycastPicker
- *
- * @class away.pick.JSPickingCollider
- */
-var JSPickingCollider = (function (_super) {
-    __extends(JSPickingCollider, _super);
-    /**
-     * Creates a new <code>JSPickingCollider</code> object.
-     *
-     * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
-     */
-    function JSPickingCollider(renderablePool, findClosestCollision) {
-        if (findClosestCollision === void 0) { findClosestCollision = false; }
-        _super.call(this, renderablePool);
-        this._findClosestCollision = findClosestCollision;
-    }
-    /**
-     * @inheritDoc
-     */
-    JSPickingCollider.prototype._pTestRenderableCollision = function (subMesh, pickingCollisionVO, shortestCollisionDistance) {
-        var subGeometry = subMesh.subGeometry;
-        var t;
-        var i0, i1, i2;
-        var rx, ry, rz;
-        var nx, ny, nz;
-        var cx, cy, cz;
-        var coeff, u, v, w;
-        var p0x, p0y, p0z;
-        var p1x, p1y, p1z;
-        var p2x, p2y, p2z;
-        var s0x, s0y, s0z;
-        var s1x, s1y, s1z;
-        var nl, nDotV, D, disToPlane;
-        var Q1Q2, Q1Q1, Q2Q2, RQ1, RQ2;
-        var indices = subGeometry.indices.get(subGeometry.numElements);
-        var collisionTriangleIndex = -1;
-        var bothSides = subMesh.material.bothSides;
-        var positions = subGeometry.positions.get(subGeometry.numVertices);
-        var posDim = subGeometry.positions.dimensions;
-        var uvs = subGeometry.uvs.get(subGeometry.numVertices);
-        var uvDim = subGeometry.uvs.dimensions;
-        var numIndices = indices.length;
-        for (var index = 0; index < numIndices; index += 3) {
-            // evaluate triangle indices
-            i0 = indices[index] * posDim;
-            i1 = indices[index + 1] * posDim;
-            i2 = indices[index + 2] * posDim;
-            // evaluate triangle positions
-            p0x = positions[i0];
-            p0y = positions[i0 + 1];
-            p0z = positions[i0 + 2];
-            p1x = positions[i1];
-            p1y = positions[i1 + 1];
-            p1z = positions[i1 + 2];
-            p2x = positions[i2];
-            p2y = positions[i2 + 1];
-            p2z = positions[i2 + 2];
-            // evaluate sides and triangle normal
-            s0x = p1x - p0x; // s0 = p1 - p0
-            s0y = p1y - p0y;
-            s0z = p1z - p0z;
-            s1x = p2x - p0x; // s1 = p2 - p0
-            s1y = p2y - p0y;
-            s1z = p2z - p0z;
-            nx = s0y * s1z - s0z * s1y; // n = s0 x s1
-            ny = s0z * s1x - s0x * s1z;
-            nz = s0x * s1y - s0y * s1x;
-            nl = 1 / Math.sqrt(nx * nx + ny * ny + nz * nz); // normalize n
-            nx *= nl;
-            ny *= nl;
-            nz *= nl;
-            // -- plane intersection test --
-            nDotV = nx * this.rayDirection.x + ny * +this.rayDirection.y + nz * this.rayDirection.z; // rayDirection . normal
-            if ((!bothSides && nDotV < 0.0) || (bothSides && nDotV != 0.0)) {
-                // find collision t
-                D = -(nx * p0x + ny * p0y + nz * p0z);
-                disToPlane = -(nx * this.rayPosition.x + ny * this.rayPosition.y + nz * this.rayPosition.z + D);
-                t = disToPlane / nDotV;
-                // find collision point
-                cx = this.rayPosition.x + t * this.rayDirection.x;
-                cy = this.rayPosition.y + t * this.rayDirection.y;
-                cz = this.rayPosition.z + t * this.rayDirection.z;
-                // collision point inside triangle? ( using barycentric coordinates )
-                Q1Q2 = s0x * s1x + s0y * s1y + s0z * s1z;
-                Q1Q1 = s0x * s0x + s0y * s0y + s0z * s0z;
-                Q2Q2 = s1x * s1x + s1y * s1y + s1z * s1z;
-                rx = cx - p0x;
-                ry = cy - p0y;
-                rz = cz - p0z;
-                RQ1 = rx * s0x + ry * s0y + rz * s0z;
-                RQ2 = rx * s1x + ry * s1y + rz * s1z;
-                coeff = 1 / (Q1Q1 * Q2Q2 - Q1Q2 * Q1Q2);
-                v = coeff * (Q2Q2 * RQ1 - Q1Q2 * RQ2);
-                w = coeff * (-Q1Q2 * RQ1 + Q1Q1 * RQ2);
-                if (v < 0)
-                    continue;
-                if (w < 0)
-                    continue;
-                u = 1 - v - w;
-                if (!(u < 0) && t > 0 && t < shortestCollisionDistance) {
-                    shortestCollisionDistance = t;
-                    collisionTriangleIndex = index / 3;
-                    pickingCollisionVO.rayEntryDistance = t;
-                    pickingCollisionVO.localPosition = new Vector3D(cx, cy, cz);
-                    pickingCollisionVO.localNormal = new Vector3D(nx, ny, nz);
-                    pickingCollisionVO.uv = this._pGetCollisionUV(indices, uvs, index, v, w, u, uvDim);
-                    pickingCollisionVO.index = index;
-                    //						pickingCollisionVO.subGeometryIndex = this.pGetMeshSubMeshIndex(renderable);
-                    // if not looking for best hit, first found will do...
-                    if (!this._findClosestCollision)
-                        return true;
-                }
-            }
-        }
-        if (collisionTriangleIndex >= 0)
-            return true;
-        return false;
-    };
-    return JSPickingCollider;
-})(PickingColliderBase);
-module.exports = JSPickingCollider;
-
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/pick/PickingColliderBase":"awayjs-renderergl/lib/pick/PickingColliderBase"}],"awayjs-renderergl/lib/pick/PickingColliderBase":[function(require,module,exports){
-var Point = require("awayjs-core/lib/geom/Point");
-var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-/**
- * An abstract base class for all picking collider classes. It should not be instantiated directly.
- *
- * @class away.pick.PickingColliderBase
- */
-var PickingColliderBase = (function () {
-    function PickingColliderBase(renderablePool) {
-        //TODO
-        this._renderablePool = renderablePool;
-    }
-    PickingColliderBase.prototype._pGetCollisionNormal = function (indices, positions, triangleIndex) {
-        var normal = new Vector3D();
-        var i0 = indices[triangleIndex] * 3;
-        var i1 = indices[triangleIndex + 1] * 3;
-        var i2 = indices[triangleIndex + 2] * 3;
-        var p0 = new Vector3D(positions[i0], positions[i0 + 1], positions[i0 + 2]);
-        var p1 = new Vector3D(positions[i1], positions[i1 + 1], positions[i1 + 2]);
-        var p2 = new Vector3D(positions[i2], positions[i2 + 1], positions[i2 + 2]);
-        var side0 = p1.subtract(p0);
-        var side1 = p2.subtract(p0);
-        normal = side0.crossProduct(side1);
-        normal.normalize();
-        return normal;
-    };
-    PickingColliderBase.prototype._pGetCollisionUV = function (indices, uvData, triangleIndex, v, w, u, uvDim) {
-        var uv = new Point();
-        var uIndex = indices[triangleIndex] * uvDim;
-        var uv0 = new Vector3D(uvData[uIndex], uvData[uIndex + 1]);
-        uIndex = indices[triangleIndex + 1] * uvDim;
-        var uv1 = new Vector3D(uvData[uIndex], uvData[uIndex + 1]);
-        uIndex = indices[triangleIndex + 2] * uvDim;
-        var uv2 = new Vector3D(uvData[uIndex], uvData[uIndex + 1]);
-        uv.x = u * uv0.x + v * uv1.x + w * uv2.x;
-        uv.y = u * uv0.y + v * uv1.y + w * uv2.y;
-        return uv;
-    };
-    /**
-     * @inheritDoc
-     */
-    PickingColliderBase.prototype._pTestRenderableCollision = function (subMesh, pickingCollisionVO, shortestCollisionDistance) {
-        throw new AbstractMethodError();
-    };
-    /**
-     * @inheritDoc
-     */
-    PickingColliderBase.prototype.setLocalRay = function (localPosition, localDirection) {
-        this.rayPosition = localPosition;
-        this.rayDirection = localDirection;
-    };
-    /**
-     * Tests a <code>Billboard</code> object for a collision with the picking ray.
-     *
-     * @param billboard The billboard instance to be tested.
-     * @param pickingCollisionVO The collision object used to store the collision results
-     * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
-     * @param findClosest
-     */
-    PickingColliderBase.prototype.testBillboardCollision = function (billboard, pickingCollisionVO, shortestCollisionDistance) {
-        this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
-        pickingCollisionVO.renderableOwner = null;
-        //if (this._pTestRenderableCollision(<RenderableBase> this._renderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
-        //	shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-        //
-        //	pickingCollisionVO.renderableOwner = billboard;
-        //
-        //	return true;
-        //}
-        return false;
-    };
-    /**
-     * Tests a <code>Mesh</code> object for a collision with the picking ray.
-     *
-     * @param mesh The mesh instance to be tested.
-     * @param pickingCollisionVO The collision object used to store the collision results
-     * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
-     * @param findClosest
-     */
-    PickingColliderBase.prototype.testMeshCollision = function (mesh, pickingCollisionVO, shortestCollisionDistance, findClosest) {
-        this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
-        pickingCollisionVO.renderableOwner = null;
-        var subMesh;
-        var len = mesh.subMeshes.length;
-        for (var i = 0; i < len; ++i) {
-            subMesh = mesh.subMeshes[i];
-            if (this._pTestRenderableCollision(subMesh, pickingCollisionVO, shortestCollisionDistance)) {
-                shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-                pickingCollisionVO.renderableOwner = subMesh;
-                if (!findClosest)
-                    return true;
-            }
-        }
-        return pickingCollisionVO.renderableOwner != null;
-    };
-    return PickingColliderBase;
-})();
-module.exports = PickingColliderBase;
-
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/pick/ShaderPicker":[function(require,module,exports){
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/ImageUtils":undefined}],"awayjs-renderergl/lib/pick/ShaderPicker":[function(require,module,exports){
 var Debug = require("awayjs-core/lib/utils/Debug");
 var BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
@@ -11203,7 +10967,7 @@ var __extends = this.__extends || function (d, b) {
 };
 var AttributesBuffer = require("awayjs-core/lib/attributes/AttributesBuffer");
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var Billboard = require("awayjs-display/lib/entities/Billboard");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
@@ -11298,7 +11062,7 @@ var BillboardRenderable = (function (_super) {
 })(RenderableBase);
 module.exports = BillboardRenderable;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables/CurveSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables/CurveSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11469,7 +11233,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
+var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
 var LineSegment = require("awayjs-display/lib/entities/LineSegment");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
@@ -11583,7 +11347,7 @@ var LineSegmentRenderable = (function (_super) {
 })(RenderableBase);
 module.exports = LineSegmentRenderable;
 
-},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables/LineSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables/LineSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11864,7 +11628,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var AttributesBuffer = require("awayjs-core/lib/attributes/AttributesBuffer");
-var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var Skybox = require("awayjs-display/lib/entities/Skybox");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
@@ -11931,7 +11695,7 @@ var SkyboxRenderable = (function (_super) {
 })(RenderableBase);
 module.exports = SkyboxRenderable;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13663,8 +13427,8 @@ module.exports = LightingCompiler;
 },{"awayjs-renderergl/lib/shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase"}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
 var AttributesBuffer = require("awayjs-core/lib/attributes/AttributesBuffer");
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var Geometry = require("awayjs-core/lib/data/Geometry");
-var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var Geometry = require("awayjs-display/lib/base/Geometry");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
 /**
  *  Class Merge merges two or more static meshes into one.<code>Merge</code>
@@ -13955,7 +13719,7 @@ var GeometryVO = (function () {
 })();
 module.exports = Merge;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/data/Geometry":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/entities/Mesh":undefined}],"awayjs-renderergl/lib/tools/data/ParticleGeometryTransform":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/entities/Mesh":undefined}],"awayjs-renderergl/lib/tools/data/ParticleGeometryTransform":[function(require,module,exports){
 /**
  * ...
  */
@@ -14000,7 +13764,7 @@ module.exports = ParticleGeometryTransform;
 var AttributesBuffer = require("awayjs-core/lib/attributes/AttributesBuffer");
 var Point = require("awayjs-core/lib/geom/Point");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
 var ParticleGeometry = require("awayjs-renderergl/lib/base/ParticleGeometry");
 /**
@@ -14176,7 +13940,7 @@ var ParticleGeometryHelper = (function () {
 })();
 module.exports = ParticleGeometryHelper;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticleData":"awayjs-renderergl/lib/animators/data/ParticleData","awayjs-renderergl/lib/base/ParticleGeometry":"awayjs-renderergl/lib/base/ParticleGeometry"}],"awayjs-renderergl/lib/utils/PerspectiveMatrix3D":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/animators/data/ParticleData":"awayjs-renderergl/lib/animators/data/ParticleData","awayjs-renderergl/lib/base/ParticleGeometry":"awayjs-renderergl/lib/base/ParticleGeometry"}],"awayjs-renderergl/lib/utils/PerspectiveMatrix3D":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -14209,7 +13973,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var CurveSubGeometry = require("awayjs-core/lib/data/CurveSubGeometry");
+var CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
 var SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
 /**
  *
@@ -14252,7 +14016,7 @@ var CurveSubGeometryVO = (function (_super) {
 })(SubGeometryVOBase);
 module.exports = CurveSubGeometryVO;
 
-},{"awayjs-core/lib/data/CurveSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase"}],"awayjs-renderergl/lib/vos/ISubGeometryVOClass":[function(require,module,exports){
+},{"awayjs-display/lib/base/CurveSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase"}],"awayjs-renderergl/lib/vos/ISubGeometryVOClass":[function(require,module,exports){
 
 },{}],"awayjs-renderergl/lib/vos/ITextureVOClass":[function(require,module,exports){
 
@@ -14263,7 +14027,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
+var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
 var SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
 /**
  *
@@ -14307,7 +14071,7 @@ var LineSubGeometryVO = (function (_super) {
 })(SubGeometryVOBase);
 module.exports = LineSubGeometryVO;
 
-},{"awayjs-core/lib/data/LineSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase"}],"awayjs-renderergl/lib/vos/Sampler2DVO":[function(require,module,exports){
+},{"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase"}],"awayjs-renderergl/lib/vos/Sampler2DVO":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -14535,8 +14299,8 @@ module.exports = SingleCubeTextureVO;
 
 },{"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-renderergl/lib/vos/SamplerCubeVO":"awayjs-renderergl/lib/vos/SamplerCubeVO","awayjs-renderergl/lib/vos/TextureVOBase":"awayjs-renderergl/lib/vos/TextureVOBase"}],"awayjs-renderergl/lib/vos/SubGeometryVOBase":[function(require,module,exports){
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var SubGeometryEvent = require("awayjs-core/lib/events/SubGeometryEvent");
-var SubGeometryUtils = require("awayjs-core/lib/utils/SubGeometryUtils");
+var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
+var SubGeometryUtils = require("awayjs-display/lib/utils/SubGeometryUtils");
 /**
  *
  * @class away.pool.SubGeometryVOBaseBase
@@ -14775,7 +14539,7 @@ var SubGeometryVOBase = (function () {
 })();
 module.exports = SubGeometryVOBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/SubGeometryEvent":undefined,"awayjs-core/lib/utils/SubGeometryUtils":undefined}],"awayjs-renderergl/lib/vos/SubGeometryVOPool":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-display/lib/utils/SubGeometryUtils":undefined}],"awayjs-renderergl/lib/vos/SubGeometryVOPool":[function(require,module,exports){
 var TriangleSubGeometryVO = require("awayjs-renderergl/lib/vos/TriangleSubGeometryVO");
 var LineSubGeometryVO = require("awayjs-renderergl/lib/vos/LineSubGeometryVO");
 var CurveSubGeometryVO = require("awayjs-renderergl/lib/vos/CurveSubGeometryVO");
@@ -14949,7 +14713,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
 /**
  *
@@ -15005,7 +14769,7 @@ var TriangleSubGeometryVO = (function (_super) {
 })(SubGeometryVOBase);
 module.exports = TriangleSubGeometryVO;
 
-},{"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase"}]},{},[])
+},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase"}]},{},[])
 
 
 //# sourceMappingURL=awayjs-renderergl.js.map
