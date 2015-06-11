@@ -1,5 +1,6 @@
 import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
+import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import LineSubGeometry				= require("awayjs-display/lib/base/LineSubGeometry");
@@ -46,6 +47,15 @@ class LineSubGeometryVO extends SubGeometryVOBase
 		super._render(shader, stage);
 	}
 
+	public _drawElements(firstIndex:number, numElements:number, stage:Stage)
+	{
+		this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numElements);
+	}
+
+	public _drawArrays(firstIndex:number, numVertices:number, stage:Stage)
+	{
+		stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstIndex, numVertices);
+	}
 
 	/**
 	 * //TODO

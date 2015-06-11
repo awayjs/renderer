@@ -8,11 +8,7 @@ import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-import ContextGLMipFilter			= require("awayjs-stagegl/lib/base/ContextGLMipFilter");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");

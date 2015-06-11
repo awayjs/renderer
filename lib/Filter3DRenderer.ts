@@ -3,6 +3,7 @@ import Event						= require("awayjs-core/lib/events/Event");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 import ContextGLVertexBufferFormat	= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
@@ -192,7 +193,7 @@ class Filter3DRenderer
 			task.activate(stage, camera, depthTexture);
 
 			context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-			context.drawTriangles(indexBuffer, 0, 2);
+			context.drawIndices(ContextGLDrawMode.TRIANGLES, indexBuffer, 0, 2);
 
 			task.deactivate(stage);
 		}

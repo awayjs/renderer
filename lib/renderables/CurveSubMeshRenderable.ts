@@ -7,7 +7,6 @@ import CurveSubMesh				    = require("awayjs-display/lib/base/CurveSubMesh");
 import CurveSubGeometry		    	= require("awayjs-display/lib/base/CurveSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
-import ContextGLVertexBufferFormat	= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import ContextWebGL					= require("awayjs-stagegl/lib/base/ContextWebGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");

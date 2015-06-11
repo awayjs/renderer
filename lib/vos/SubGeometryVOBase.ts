@@ -37,6 +37,8 @@ class SubGeometryVOBase implements ISubGeometryVO
 	
 	private _numElements:number;
 
+	private _numVertices:number;
+
 	public invalid:boolean;
 
 	public get subGeometry()
@@ -132,8 +134,10 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 */
 	public disposeIndices()
 	{
-		this._indices.dispose();
-		this._indices = null;
+		if (this._indices) {
+			this._indices.dispose();
+			this._indices = null;
+		}
 	}
 
 
@@ -208,9 +212,19 @@ class SubGeometryVOBase implements ISubGeometryVO
 	public _render(shader:ShaderBase, stage:Stage)
 	{
 		if (this._indices)
-			this.getIndexBufferVO(stage).draw(0, this._numElements);
-		//else
-		//	this._stage.context.drawVertices(mode, 0, this._numElements);
+			this._drawElements(0, this._numElements, stage);
+		else
+			this._drawArrays(0, this._numVertices, stage);
+	}
+
+	public _drawElements(firstIndex:number, numElements:number, stage:Stage)
+	{
+
+	}
+
+	public _drawArrays(firstIndex:number, numVertices:number, stage:Stage)
+	{
+		throw new AbstractMethodError();
 	}
 
 	/**
@@ -254,6 +268,8 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 */
 	private _updateVertices(attributesView:AttributesView)
 	{
+		this._numVertices = attributesView.count;
+
 		var bufferId:number = attributesView.buffer.id;
 
 		this._vertices[bufferId] = SubGeometryUtils.getSubVertices(attributesView.buffer, this._indexMappings);

@@ -19,6 +19,7 @@ import IEntity							= require("awayjs-display/lib/entities/IEntity");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
 import AGALMiniAssembler				= require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
+import ContextGLDrawMode				= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLBlendFactor				= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 import ContextGLClearMask				= require("awayjs-stagegl/lib/base/ContextGLClearMask");
@@ -252,7 +253,7 @@ class ShaderPicker implements IPicker
 			var subGeometryVO:SubGeometryVOBase = this._hitRenderable.subGeometryVO;
 
 			subGeometryVO.activateVertexBufferVO(0, (<TriangleSubGeometry> subGeometryVO.subGeometry).positions, this._stage);
-			subGeometryVO.getIndexBufferVO(this._stage).draw(0, subGeometryVO.numElements);
+			subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numElements);
 
 			renderable = renderable.next;
 		}
@@ -349,7 +350,7 @@ class ShaderPicker implements IPicker
 		var subGeometryVO:SubGeometryVOBase = this._hitRenderable.subGeometryVO;
 
 		subGeometryVO.activateVertexBufferVO(0, (<TriangleSubGeometry> subGeometryVO.subGeometry).positions, this._stage);
-		subGeometryVO.getIndexBufferVO(this._stage).draw(0, subGeometryVO.numElements);
+		subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numElements);
 
 		this._context.drawToBitmapImage2D(this._bitmapImage2D);
 

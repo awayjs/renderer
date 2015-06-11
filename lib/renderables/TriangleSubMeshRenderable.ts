@@ -7,7 +7,6 @@ import TriangleSubMesh				= require("awayjs-display/lib/base/TriangleSubMesh");
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
-import ContextGLVertexBufferFormat	= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
