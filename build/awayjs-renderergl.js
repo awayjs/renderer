@@ -350,6 +350,7 @@ module.exports = DistanceRenderer;
 
 },{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/render/DistanceRender":"awayjs-renderergl/lib/render/DistanceRender","awayjs-renderergl/lib/renderables/RenderablePool":"awayjs-renderergl/lib/renderables/RenderablePool"}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
 var Event = require("awayjs-core/lib/events/Event");
+var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
@@ -465,7 +466,7 @@ var Filter3DRenderer = (function () {
             context.clear(0.0, 0.0, 0.0, 0.0);
             task.activate(stage, camera, depthTexture);
             context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-            context.drawTriangles(indexBuffer, 0, 2);
+            context.drawIndices(ContextGLDrawMode.TRIANGLES, indexBuffer, 0, 2);
             task.deactivate(stage);
         }
         context.setTextureAt(0, null);
@@ -488,7 +489,7 @@ var Filter3DRenderer = (function () {
 })();
 module.exports = Filter3DRenderer;
 
-},{"awayjs-core/lib/events/Event":undefined,"awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/RendererBase":[function(require,module,exports){
+},{"awayjs-core/lib/events/Event":undefined,"awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/RendererBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9666,6 +9667,7 @@ var Point = require("awayjs-core/lib/geom/Point");
 var Rectangle = require("awayjs-core/lib/geom/Rectangle");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
+var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLClearMask = require("awayjs-stagegl/lib/base/ContextGLClearMask");
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
@@ -9820,7 +9822,7 @@ var ShaderPicker = (function () {
             this._context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._id, 1);
             var subGeometryVO = this._hitRenderable.subGeometryVO;
             subGeometryVO.activateVertexBufferVO(0, subGeometryVO.subGeometry.positions, this._stage);
-            subGeometryVO.getIndexBufferVO(this._stage).draw(0, subGeometryVO.numElements);
+            subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numElements);
             renderable = renderable.next;
         }
     };
@@ -9892,7 +9894,7 @@ var ShaderPicker = (function () {
         this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
         var subGeometryVO = this._hitRenderable.subGeometryVO;
         subGeometryVO.activateVertexBufferVO(0, subGeometryVO.subGeometry.positions, this._stage);
-        subGeometryVO.getIndexBufferVO(this._stage).draw(0, subGeometryVO.numElements);
+        subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numElements);
         this._context.drawToBitmapImage2D(this._bitmapImage2D);
         col = this._bitmapImage2D.getPixel(0, 0);
         this._localHitPosition.x = ((col >> 16) & 0xff) * scX / 255 - offsX;
@@ -10072,7 +10074,7 @@ var ShaderPicker = (function () {
 })();
 module.exports = ShaderPicker;
 
-},{"awayjs-core/lib/data/BitmapImage2D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/render/BasicMaterialRender":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapImage2D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/render/BasicMaterialRender":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13973,6 +13975,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
 var SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
 /**
@@ -13995,6 +13998,12 @@ var CurveSubGeometryVO = (function (_super) {
         this.activateVertexBufferVO(1, this._curveSubGeometry.curves, stage);
         _super.prototype._render.call(this, shader, stage);
     };
+    CurveSubGeometryVO.prototype._drawElements = function (firstIndex, numElements, stage) {
+        this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numElements);
+    };
+    CurveSubGeometryVO.prototype._drawArrays = function (firstIndex, numVertices, stage) {
+        stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstIndex, numVertices);
+    };
     /**
      * //TODO
      *
@@ -14016,7 +14025,7 @@ var CurveSubGeometryVO = (function (_super) {
 })(SubGeometryVOBase);
 module.exports = CurveSubGeometryVO;
 
-},{"awayjs-display/lib/base/CurveSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase"}],"awayjs-renderergl/lib/vos/ISubGeometryVOClass":[function(require,module,exports){
+},{"awayjs-display/lib/base/CurveSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}],"awayjs-renderergl/lib/vos/ISubGeometryVOClass":[function(require,module,exports){
 
 },{}],"awayjs-renderergl/lib/vos/ITextureVOClass":[function(require,module,exports){
 
@@ -14027,6 +14036,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
 var SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
 /**
@@ -14050,6 +14060,12 @@ var LineSubGeometryVO = (function (_super) {
         this.activateVertexBufferVO(2, this._lineSubGeometry.thickness, stage);
         _super.prototype._render.call(this, shader, stage);
     };
+    LineSubGeometryVO.prototype._drawElements = function (firstIndex, numElements, stage) {
+        this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numElements);
+    };
+    LineSubGeometryVO.prototype._drawArrays = function (firstIndex, numVertices, stage) {
+        stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstIndex, numVertices);
+    };
     /**
      * //TODO
      *
@@ -14071,7 +14087,7 @@ var LineSubGeometryVO = (function (_super) {
 })(SubGeometryVOBase);
 module.exports = LineSubGeometryVO;
 
-},{"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase"}],"awayjs-renderergl/lib/vos/Sampler2DVO":[function(require,module,exports){
+},{"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}],"awayjs-renderergl/lib/vos/Sampler2DVO":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -14391,8 +14407,10 @@ var SubGeometryVOBase = (function () {
      *
      */
     SubGeometryVOBase.prototype.disposeIndices = function () {
-        this._indices.dispose();
-        this._indices = null;
+        if (this._indices) {
+            this._indices.dispose();
+            this._indices = null;
+        }
     };
     /**
      * //TODO
@@ -14445,9 +14463,14 @@ var SubGeometryVOBase = (function () {
     };
     SubGeometryVOBase.prototype._render = function (shader, stage) {
         if (this._indices)
-            this.getIndexBufferVO(stage).draw(0, this._numElements);
-        //else
-        //	this._stage.context.drawVertices(mode, 0, this._numElements);
+            this._drawElements(0, this._numElements, stage);
+        else
+            this._drawArrays(0, this._numVertices, stage);
+    };
+    SubGeometryVOBase.prototype._drawElements = function (firstIndex, numElements, stage) {
+    };
+    SubGeometryVOBase.prototype._drawArrays = function (firstIndex, numVertices, stage) {
+        throw new AbstractMethodError();
     };
     /**
      * //TODO
@@ -14482,6 +14505,7 @@ var SubGeometryVOBase = (function () {
      * @private
      */
     SubGeometryVOBase.prototype._updateVertices = function (attributesView) {
+        this._numVertices = attributesView.count;
         var bufferId = attributesView.buffer.id;
         this._vertices[bufferId] = SubGeometryUtils.getSubVertices(attributesView.buffer, this._indexMappings);
         this._verticesDirty[bufferId] = false;
@@ -14713,6 +14737,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
 /**
@@ -14748,6 +14773,12 @@ var TriangleSubGeometryVO = (function (_super) {
         this.activateVertexBufferVO(0, this._triangleSubGeometry.positions, stage);
         _super.prototype._render.call(this, shader, stage);
     };
+    TriangleSubGeometryVO.prototype._drawElements = function (firstIndex, numElements, stage) {
+        this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numElements);
+    };
+    TriangleSubGeometryVO.prototype._drawArrays = function (firstIndex, numVertices, stage) {
+        stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstIndex, numVertices);
+    };
     /**
      * //TODO
      *
@@ -14769,7 +14800,7 @@ var TriangleSubGeometryVO = (function (_super) {
 })(SubGeometryVOBase);
 module.exports = TriangleSubGeometryVO;
 
-},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase"}]},{},[])
+},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}]},{},[])
 
 
 //# sourceMappingURL=awayjs-renderergl.js.map

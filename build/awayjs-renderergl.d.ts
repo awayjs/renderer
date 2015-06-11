@@ -1,23 +1,3 @@
-declare module "awayjs-renderergl/lib/DepthRenderer" {
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
-	/**
-	 * The DepthRenderer class renders 32-bit depth information encoded as RGBA
-	 *
-	 * @class away.render.DepthRenderer
-	 */
-	class DepthRenderer extends RendererBase {
-	    /**
-	     * Creates a new DepthRenderer object.
-	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
-	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
-	     */
-	    constructor(stage?: Stage);
-	}
-	export = DepthRenderer;
-	
-}
-
 declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	import ImageBase = require("awayjs-core/lib/data/ImageBase");
 	import BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
@@ -112,6 +92,26 @@ declare module "awayjs-renderergl/lib/DistanceRenderer" {
 	    constructor(stage?: Stage);
 	}
 	export = DistanceRenderer;
+	
+}
+
+declare module "awayjs-renderergl/lib/DepthRenderer" {
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
+	/**
+	 * The DepthRenderer class renders 32-bit depth information encoded as RGBA
+	 *
+	 * @class away.render.DepthRenderer
+	 */
+	class DepthRenderer extends RendererBase {
+	    /**
+	     * Creates a new DepthRenderer object.
+	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
+	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
+	     */
+	    constructor(stage?: Stage);
+	}
+	export = DepthRenderer;
 	
 }
 
@@ -1573,6 +1573,49 @@ declare module "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase" {
 	
 }
 
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode" {
+	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ParticleProperties = require("awayjs-renderergl/lib/animators/data/ParticleProperties");
+	import ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
+	import ParticleAccelerationState = require("awayjs-renderergl/lib/animators/states/ParticleAccelerationState");
+	/**
+	 * A particle animation node used to apply a constant acceleration vector to the motion of a particle.
+	 */
+	class ParticleAccelerationNode extends ParticleNodeBase {
+	    /** @private */
+	    _acceleration: Vector3D;
+	    /**
+	     * Reference for acceleration node properties on a single particle (when in local property mode).
+	     * Expects a <code>Vector3D</code> object representing the direction of acceleration on the particle.
+	     */
+	    static ACCELERATION_VECTOR3D: string;
+	    /**
+	     * Creates a new <code>ParticleAccelerationNode</code>
+	     *
+	     * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+	     * @param    [optional] acceleration    Defines the default acceleration vector of the node, used when in global mode.
+	     */
+	    constructor(mode: number, acceleration?: Vector3D);
+	    /**
+	     * @inheritDoc
+	     */
+	    pGetAGALVertexCode(shader: ShaderBase, animationRegisterCache: AnimationRegisterCache): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    getAnimationState(animator: AnimatorBase): ParticleAccelerationState;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iGeneratePropertyOfOneParticle(param: ParticleProperties): void;
+	}
+	export = ParticleAccelerationNode;
+	
+}
+
 declare module "awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -1624,46 +1667,38 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode" {
 	
 }
 
-declare module "awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode" {
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode" {
 	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ParticleProperties = require("awayjs-renderergl/lib/animators/data/ParticleProperties");
+	import ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 	import ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-	import ParticleAccelerationState = require("awayjs-renderergl/lib/animators/states/ParticleAccelerationState");
+	import ParticleBillboardState = require("awayjs-renderergl/lib/animators/states/ParticleBillboardState");
 	/**
-	 * A particle animation node used to apply a constant acceleration vector to the motion of a particle.
+	 * A particle animation node that controls the rotation of a particle to always face the camera.
 	 */
-	class ParticleAccelerationNode extends ParticleNodeBase {
+	class ParticleBillboardNode extends ParticleNodeBase {
 	    /** @private */
-	    _acceleration: Vector3D;
+	    _iBillboardAxis: Vector3D;
 	    /**
-	     * Reference for acceleration node properties on a single particle (when in local property mode).
-	     * Expects a <code>Vector3D</code> object representing the direction of acceleration on the particle.
+	     * Creates a new <code>ParticleBillboardNode</code>
 	     */
-	    static ACCELERATION_VECTOR3D: string;
-	    /**
-	     * Creates a new <code>ParticleAccelerationNode</code>
-	     *
-	     * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
-	     * @param    [optional] acceleration    Defines the default acceleration vector of the node, used when in global mode.
-	     */
-	    constructor(mode: number, acceleration?: Vector3D);
+	    constructor(billboardAxis?: Vector3D);
 	    /**
 	     * @inheritDoc
 	     */
-	    pGetAGALVertexCode(shader: ShaderBase, animationRegisterCache: AnimationRegisterCache): string;
+	    getAGALVertexCode(shader: ShaderBase, animationRegisterCache: AnimationRegisterCache): string;
 	    /**
 	     * @inheritDoc
 	     */
-	    getAnimationState(animator: AnimatorBase): ParticleAccelerationState;
+	    getAnimationState(animator: AnimatorBase): ParticleBillboardState;
 	    /**
 	     * @inheritDoc
 	     */
-	    _iGeneratePropertyOfOneParticle(param: ParticleProperties): void;
+	    _iProcessAnimationSetting(particleAnimationSet: ParticleAnimationSet): void;
 	}
-	export = ParticleAccelerationNode;
+	export = ParticleBillboardNode;
 	
 }
 
@@ -1775,41 +1810,6 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleFollowNode" {
 	    getAnimationState(animator: AnimatorBase): ParticleFollowState;
 	}
 	export = ParticleFollowNode;
-	
-}
-
-declare module "awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode" {
-	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-	import ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-	import ParticleBillboardState = require("awayjs-renderergl/lib/animators/states/ParticleBillboardState");
-	/**
-	 * A particle animation node that controls the rotation of a particle to always face the camera.
-	 */
-	class ParticleBillboardNode extends ParticleNodeBase {
-	    /** @private */
-	    _iBillboardAxis: Vector3D;
-	    /**
-	     * Creates a new <code>ParticleBillboardNode</code>
-	     */
-	    constructor(billboardAxis?: Vector3D);
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALVertexCode(shader: ShaderBase, animationRegisterCache: AnimationRegisterCache): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    getAnimationState(animator: AnimatorBase): ParticleBillboardState;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iProcessAnimationSetting(particleAnimationSet: ParticleAnimationSet): void;
-	}
-	export = ParticleBillboardNode;
 	
 }
 
@@ -2253,6 +2253,43 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleScaleNode" {
 	
 }
 
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode" {
+	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
+	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
+	import ColorSegmentPoint = require("awayjs-renderergl/lib/animators/data/ColorSegmentPoint");
+	import ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
+	/**
+	 *
+	 */
+	class ParticleSegmentedColorNode extends ParticleNodeBase {
+	    /** @private */
+	    _iUsesMultiplier: boolean;
+	    /** @private */
+	    _iUsesOffset: boolean;
+	    /** @private */
+	    _iStartColor: ColorTransform;
+	    /** @private */
+	    _iEndColor: ColorTransform;
+	    /** @private */
+	    _iNumSegmentPoint: number;
+	    /** @private */
+	    _iSegmentPoints: Array<ColorSegmentPoint>;
+	    constructor(usesMultiplier: boolean, usesOffset: boolean, numSegmentPoint: number, startColor: ColorTransform, endColor: ColorTransform, segmentPoints: Array<ColorSegmentPoint>);
+	    /**
+	     * @inheritDoc
+	     */
+	    _iProcessAnimationSetting(particleAnimationSet: ParticleAnimationSet): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALVertexCode(shader: ShaderBase, animationRegisterCache: AnimationRegisterCache): string;
+	}
+	export = ParticleSegmentedColorNode;
+	
+}
+
 declare module "awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -2327,43 +2364,6 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode" {
 	    _iGeneratePropertyOfOneParticle(param: ParticleProperties): void;
 	}
 	export = ParticleSpriteSheetNode;
-	
-}
-
-declare module "awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode" {
-	import ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
-	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-	import ColorSegmentPoint = require("awayjs-renderergl/lib/animators/data/ColorSegmentPoint");
-	import ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-	/**
-	 *
-	 */
-	class ParticleSegmentedColorNode extends ParticleNodeBase {
-	    /** @private */
-	    _iUsesMultiplier: boolean;
-	    /** @private */
-	    _iUsesOffset: boolean;
-	    /** @private */
-	    _iStartColor: ColorTransform;
-	    /** @private */
-	    _iEndColor: ColorTransform;
-	    /** @private */
-	    _iNumSegmentPoint: number;
-	    /** @private */
-	    _iSegmentPoints: Array<ColorSegmentPoint>;
-	    constructor(usesMultiplier: boolean, usesOffset: boolean, numSegmentPoint: number, startColor: ColorTransform, endColor: ColorTransform, segmentPoints: Array<ColorSegmentPoint>);
-	    /**
-	     * @inheritDoc
-	     */
-	    _iProcessAnimationSetting(particleAnimationSet: ParticleAnimationSet): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALVertexCode(shader: ShaderBase, animationRegisterCache: AnimationRegisterCache): string;
-	}
-	export = ParticleSegmentedColorNode;
 	
 }
 
@@ -6417,6 +6417,8 @@ declare module "awayjs-renderergl/lib/vos/CurveSubGeometryVO" {
 	    private _curveSubGeometry;
 	    constructor(pool: SubGeometryVOPool, curveSubGeometry: CurveSubGeometry);
 	    _render(shader: ShaderBase, stage: Stage): void;
+	    _drawElements(firstIndex: number, numElements: number, stage: Stage): void;
+	    _drawArrays(firstIndex: number, numVertices: number, stage: Stage): void;
 	    /**
 	     * //TODO
 	     *
@@ -6495,6 +6497,8 @@ declare module "awayjs-renderergl/lib/vos/LineSubGeometryVO" {
 	    private _lineSubGeometry;
 	    constructor(pool: SubGeometryVOPool, lineSubGeometry: LineSubGeometry);
 	    _render(shader: ShaderBase, stage: Stage): void;
+	    _drawElements(firstIndex: number, numElements: number, stage: Stage): void;
+	    _drawArrays(firstIndex: number, numVertices: number, stage: Stage): void;
 	    /**
 	     * //TODO
 	     *
@@ -6688,6 +6692,7 @@ declare module "awayjs-renderergl/lib/vos/SubGeometryVOBase" {
 	    private _verticesDirty;
 	    _indexMappings: Array<number>;
 	    private _numElements;
+	    private _numVertices;
 	    invalid: boolean;
 	    subGeometry: SubGeometryBase;
 	    /**
@@ -6740,6 +6745,8 @@ declare module "awayjs-renderergl/lib/vos/SubGeometryVOBase" {
 	    _iGetFragmentCode(shader: ShaderBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg?: ShaderRegisterElement): string;
 	    _iRender(shader: ShaderBase, stage: Stage): void;
 	    _render(shader: ShaderBase, stage: Stage): void;
+	    _drawElements(firstIndex: number, numElements: number, stage: Stage): void;
+	    _drawArrays(firstIndex: number, numVertices: number, stage: Stage): void;
 	    /**
 	     * //TODO
 	     *
@@ -6953,6 +6960,8 @@ declare module "awayjs-renderergl/lib/vos/TriangleSubGeometryVO" {
 	    private _triangleSubGeometry;
 	    constructor(pool: SubGeometryVOPool, triangleSubGeometry: TriangleSubGeometry);
 	    _render(shader: ShaderBase, stage: Stage): void;
+	    _drawElements(firstIndex: number, numElements: number, stage: Stage): void;
+	    _drawArrays(firstIndex: number, numVertices: number, stage: Stage): void;
 	    /**
 	     * //TODO
 	     *
