@@ -253,7 +253,7 @@ class ShaderPicker implements IPicker
 			var subGeometryVO:SubGeometryVOBase = this._hitRenderable.subGeometryVO;
 
 			subGeometryVO.activateVertexBufferVO(0, (<TriangleSubGeometry> subGeometryVO.subGeometry).positions, this._stage);
-			subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numElements);
+			subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numIndices);
 
 			renderable = renderable.next;
 		}
@@ -350,7 +350,7 @@ class ShaderPicker implements IPicker
 		var subGeometryVO:SubGeometryVOBase = this._hitRenderable.subGeometryVO;
 
 		subGeometryVO.activateVertexBufferVO(0, (<TriangleSubGeometry> subGeometryVO.subGeometry).positions, this._stage);
-		subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numElements);
+		subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numIndices);
 
 		this._context.drawToBitmapImage2D(this._bitmapImage2D);
 

@@ -35,7 +35,7 @@ class SubGeometryVOBase implements ISubGeometryVO
 
 	public _indexMappings:Array<number> = Array<number>();
 	
-	private _numElements:number;
+	private _numIndices:number;
 
 	private _numVertices:number;
 
@@ -48,9 +48,9 @@ class SubGeometryVOBase implements ISubGeometryVO
 	/**
 	 *
 	 */
-	public get numElements():number
+	public get numIndices():number
 	{
-		return this._numElements;
+		return this._numIndices;
 	}
 
 	constructor(pool:SubGeometryVOPool, subGeometry:SubGeometryBase)
@@ -212,17 +212,17 @@ class SubGeometryVOBase implements ISubGeometryVO
 	public _render(shader:ShaderBase, stage:Stage)
 	{
 		if (this._indices)
-			this._drawElements(0, this._numElements, stage);
+			this._drawElements(0, this._numIndices, stage);
 		else
 			this._drawArrays(0, this._numVertices, stage);
 	}
 
-	public _drawElements(firstIndex:number, numElements:number, stage:Stage)
+	public _drawElements(firstIndex:number, numIndices:number, stage:Stage)
 	{
-
+		throw new AbstractMethodError();
 	}
 
-	public _drawArrays(firstIndex:number, numVertices:number, stage:Stage)
+	public _drawArrays(firstVertex:number, numVertices:number, stage:Stage)
 	{
 		throw new AbstractMethodError();
 	}
@@ -236,12 +236,12 @@ class SubGeometryVOBase implements ISubGeometryVO
 	{
 		this._indices = SubGeometryUtils.getSubIndices(this._subGeometry.indices, this._subGeometry.numVertices, this._indexMappings, indexOffset);
 
-		this._numElements = this._indices.count;
+		this._numIndices = this._indices.count*this._subGeometry.indices.dimensions;
 
-		indexOffset = this._indices.count;
+		indexOffset += this._numIndices;
 
 		//check if there is more to split
-		if (indexOffset < this._subGeometry.indices.count) {
+		if (indexOffset < this._subGeometry.indices.count*this._subGeometry.indices.dimensions) {
 			if (!this._overflow)
 				this._overflow = this._pGetOverflowSubGeometry();
 

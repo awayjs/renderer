@@ -47,14 +47,14 @@ class LineSubGeometryVO extends SubGeometryVOBase
 		super._render(shader, stage);
 	}
 
-	public _drawElements(firstIndex:number, numElements:number, stage:Stage)
+	public _drawElements(firstIndex:number, numIndices:number, stage:Stage)
 	{
-		this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numElements);
+		this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
 	}
 
-	public _drawArrays(firstIndex:number, numVertices:number, stage:Stage)
+	public _drawArrays(firstVertex:number, numVertices:number, stage:Stage)
 	{
-		stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstIndex, numVertices);
+		stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
 	}
 
 	/**
