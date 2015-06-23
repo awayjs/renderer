@@ -75,26 +75,6 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	
 }
 
-declare module "awayjs-renderergl/lib/DistanceRenderer" {
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
-	/**
-	 * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
-	 *
-	 * @class away.render.DistanceRenderer
-	 */
-	class DistanceRenderer extends RendererBase {
-	    /**
-	     * Creates a new DistanceRenderer object.
-	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
-	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
-	     */
-	    constructor(stage?: Stage);
-	}
-	export = DistanceRenderer;
-	
-}
-
 declare module "awayjs-renderergl/lib/DepthRenderer" {
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
@@ -112,6 +92,26 @@ declare module "awayjs-renderergl/lib/DepthRenderer" {
 	    constructor(stage?: Stage);
 	}
 	export = DepthRenderer;
+	
+}
+
+declare module "awayjs-renderergl/lib/DistanceRenderer" {
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
+	/**
+	 * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
+	 *
+	 * @class away.render.DistanceRenderer
+	 */
+	class DistanceRenderer extends RendererBase {
+	    /**
+	     * Creates a new DistanceRenderer object.
+	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
+	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
+	     */
+	    constructor(stage?: Stage);
+	}
+	export = DistanceRenderer;
 	
 }
 
@@ -6417,8 +6417,8 @@ declare module "awayjs-renderergl/lib/vos/CurveSubGeometryVO" {
 	    private _curveSubGeometry;
 	    constructor(pool: SubGeometryVOPool, curveSubGeometry: CurveSubGeometry);
 	    _render(shader: ShaderBase, stage: Stage): void;
-	    _drawElements(firstIndex: number, numElements: number, stage: Stage): void;
-	    _drawArrays(firstIndex: number, numVertices: number, stage: Stage): void;
+	    _drawElements(firstIndex: number, numIndices: number, stage: Stage): void;
+	    _drawArrays(firstVertex: number, numVertices: number, stage: Stage): void;
 	    /**
 	     * //TODO
 	     *
@@ -6497,8 +6497,8 @@ declare module "awayjs-renderergl/lib/vos/LineSubGeometryVO" {
 	    private _lineSubGeometry;
 	    constructor(pool: SubGeometryVOPool, lineSubGeometry: LineSubGeometry);
 	    _render(shader: ShaderBase, stage: Stage): void;
-	    _drawElements(firstIndex: number, numElements: number, stage: Stage): void;
-	    _drawArrays(firstIndex: number, numVertices: number, stage: Stage): void;
+	    _drawElements(firstIndex: number, numIndices: number, stage: Stage): void;
+	    _drawArrays(firstVertex: number, numVertices: number, stage: Stage): void;
 	    /**
 	     * //TODO
 	     *
@@ -6691,14 +6691,14 @@ declare module "awayjs-renderergl/lib/vos/SubGeometryVOBase" {
 	    private _vertices;
 	    private _verticesDirty;
 	    _indexMappings: Array<number>;
-	    private _numElements;
+	    private _numIndices;
 	    private _numVertices;
 	    invalid: boolean;
 	    subGeometry: SubGeometryBase;
 	    /**
 	     *
 	     */
-	    numElements: number;
+	    numIndices: number;
 	    constructor(pool: SubGeometryVOPool, subGeometry: SubGeometryBase);
 	    /**
 	     *
@@ -6745,8 +6745,8 @@ declare module "awayjs-renderergl/lib/vos/SubGeometryVOBase" {
 	    _iGetFragmentCode(shader: ShaderBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg?: ShaderRegisterElement): string;
 	    _iRender(shader: ShaderBase, stage: Stage): void;
 	    _render(shader: ShaderBase, stage: Stage): void;
-	    _drawElements(firstIndex: number, numElements: number, stage: Stage): void;
-	    _drawArrays(firstIndex: number, numVertices: number, stage: Stage): void;
+	    _drawElements(firstIndex: number, numIndices: number, stage: Stage): void;
+	    _drawArrays(firstVertex: number, numVertices: number, stage: Stage): void;
 	    /**
 	     * //TODO
 	     *
@@ -6960,8 +6960,8 @@ declare module "awayjs-renderergl/lib/vos/TriangleSubGeometryVO" {
 	    private _triangleSubGeometry;
 	    constructor(pool: SubGeometryVOPool, triangleSubGeometry: TriangleSubGeometry);
 	    _render(shader: ShaderBase, stage: Stage): void;
-	    _drawElements(firstIndex: number, numElements: number, stage: Stage): void;
-	    _drawArrays(firstIndex: number, numVertices: number, stage: Stage): void;
+	    _drawElements(firstIndex: number, numIndices: number, stage: Stage): void;
+	    _drawArrays(firstVertex: number, numVertices: number, stage: Stage): void;
 	    /**
 	     * //TODO
 	     *

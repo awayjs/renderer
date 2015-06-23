@@ -9822,7 +9822,7 @@ var ShaderPicker = (function () {
             this._context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._id, 1);
             var subGeometryVO = this._hitRenderable.subGeometryVO;
             subGeometryVO.activateVertexBufferVO(0, subGeometryVO.subGeometry.positions, this._stage);
-            subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numElements);
+            subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numIndices);
             renderable = renderable.next;
         }
     };
@@ -9894,7 +9894,7 @@ var ShaderPicker = (function () {
         this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
         var subGeometryVO = this._hitRenderable.subGeometryVO;
         subGeometryVO.activateVertexBufferVO(0, subGeometryVO.subGeometry.positions, this._stage);
-        subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numElements);
+        subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numIndices);
         this._context.drawToBitmapImage2D(this._bitmapImage2D);
         col = this._bitmapImage2D.getPixel(0, 0);
         this._localHitPosition.x = ((col >> 16) & 0xff) * scX / 255 - offsX;
@@ -13998,11 +13998,11 @@ var CurveSubGeometryVO = (function (_super) {
         this.activateVertexBufferVO(1, this._curveSubGeometry.curves, stage);
         _super.prototype._render.call(this, shader, stage);
     };
-    CurveSubGeometryVO.prototype._drawElements = function (firstIndex, numElements, stage) {
-        this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numElements);
+    CurveSubGeometryVO.prototype._drawElements = function (firstIndex, numIndices, stage) {
+        this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, firstIndex, numIndices);
     };
-    CurveSubGeometryVO.prototype._drawArrays = function (firstIndex, numVertices, stage) {
-        stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstIndex, numVertices);
+    CurveSubGeometryVO.prototype._drawArrays = function (firstVertex, numVertices, stage) {
+        stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
     };
     /**
      * //TODO
@@ -14060,11 +14060,11 @@ var LineSubGeometryVO = (function (_super) {
         this.activateVertexBufferVO(2, this._lineSubGeometry.thickness, stage);
         _super.prototype._render.call(this, shader, stage);
     };
-    LineSubGeometryVO.prototype._drawElements = function (firstIndex, numElements, stage) {
-        this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numElements);
+    LineSubGeometryVO.prototype._drawElements = function (firstIndex, numIndices, stage) {
+        this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
     };
-    LineSubGeometryVO.prototype._drawArrays = function (firstIndex, numVertices, stage) {
-        stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstIndex, numVertices);
+    LineSubGeometryVO.prototype._drawArrays = function (firstVertex, numVertices, stage) {
+        stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
     };
     /**
      * //TODO
@@ -14346,12 +14346,12 @@ var SubGeometryVOBase = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SubGeometryVOBase.prototype, "numElements", {
+    Object.defineProperty(SubGeometryVOBase.prototype, "numIndices", {
         /**
          *
          */
         get: function () {
-            return this._numElements;
+            return this._numIndices;
         },
         enumerable: true,
         configurable: true
@@ -14463,13 +14463,14 @@ var SubGeometryVOBase = (function () {
     };
     SubGeometryVOBase.prototype._render = function (shader, stage) {
         if (this._indices)
-            this._drawElements(0, this._numElements, stage);
+            this._drawElements(0, this._numIndices, stage);
         else
             this._drawArrays(0, this._numVertices, stage);
     };
-    SubGeometryVOBase.prototype._drawElements = function (firstIndex, numElements, stage) {
+    SubGeometryVOBase.prototype._drawElements = function (firstIndex, numIndices, stage) {
+        throw new AbstractMethodError();
     };
-    SubGeometryVOBase.prototype._drawArrays = function (firstIndex, numVertices, stage) {
+    SubGeometryVOBase.prototype._drawArrays = function (firstVertex, numVertices, stage) {
         throw new AbstractMethodError();
     };
     /**
@@ -14480,10 +14481,10 @@ var SubGeometryVOBase = (function () {
     SubGeometryVOBase.prototype._updateIndices = function (indexOffset) {
         if (indexOffset === void 0) { indexOffset = 0; }
         this._indices = SubGeometryUtils.getSubIndices(this._subGeometry.indices, this._subGeometry.numVertices, this._indexMappings, indexOffset);
-        this._numElements = this._indices.count;
-        indexOffset = this._indices.count;
+        this._numIndices = this._indices.count * this._subGeometry.indices.dimensions;
+        indexOffset += this._numIndices;
         //check if there is more to split
-        if (indexOffset < this._subGeometry.indices.count) {
+        if (indexOffset < this._subGeometry.indices.count * this._subGeometry.indices.dimensions) {
             if (!this._overflow)
                 this._overflow = this._pGetOverflowSubGeometry();
             this._overflow._updateIndices(indexOffset);
@@ -14773,11 +14774,11 @@ var TriangleSubGeometryVO = (function (_super) {
         this.activateVertexBufferVO(0, this._triangleSubGeometry.positions, stage);
         _super.prototype._render.call(this, shader, stage);
     };
-    TriangleSubGeometryVO.prototype._drawElements = function (firstIndex, numElements, stage) {
-        this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numElements);
+    TriangleSubGeometryVO.prototype._drawElements = function (firstIndex, numIndices, stage) {
+        this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
     };
-    TriangleSubGeometryVO.prototype._drawArrays = function (firstIndex, numVertices, stage) {
-        stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstIndex, numVertices);
+    TriangleSubGeometryVO.prototype._drawArrays = function (firstVertex, numVertices, stage) {
+        stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
     };
     /**
      * //TODO
