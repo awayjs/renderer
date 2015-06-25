@@ -3,8 +3,7 @@ import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetLoader					= require("awayjs-core/lib/library/AssetLoader");
-import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
+import LoaderSession				= require("awayjs-core/lib/library/LoaderSession");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import Debug						= require("awayjs-core/lib/utils/Debug");
 
@@ -16,14 +15,12 @@ import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTor
 import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-//import SkyboxMaterial				= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
 
 class CubeTextures
 {
 	private _view:View;
 	private _timer:RequestAnimationFrame;
 	private _skyboxSingleCubeTexture:SingleCubeTexture;
-	//private _skyboxMaterial:SkyboxMaterial;
 
 	private _skybox:Skybox;
 
@@ -40,8 +37,9 @@ class CubeTextures
 		this._view.camera.projection.far = 14000;
 		this._view.backgroundColor = 0x2c2c32;
 
-		var token:AssetLoaderToken = AssetLibrary.load( new URLRequest('assets/SingleCubeTextureTest.cube'));
-		token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		var session:LoaderSession = AssetLibrary.getLoaderSession();
+		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session.load(new URLRequest('assets/SingleCubeTextureTest.cube'));
 
 		window.onresize = (event:UIEvent) => this.onResize(event);
 
@@ -53,7 +51,7 @@ class CubeTextures
 
 	public onResourceComplete(event:LoaderEvent)
 	{
-		var loader:AssetLoader = <AssetLoader> event.target;
+		var loader:LoaderSession = <LoaderSession> event.target;
 
 		switch(event.url) {
 			case 'assets/SingleCubeTextureTest.cube':

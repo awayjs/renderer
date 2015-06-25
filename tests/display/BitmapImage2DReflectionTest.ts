@@ -1,7 +1,6 @@
 import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetLoader					= require("awayjs-core/lib/library/AssetLoader");
-import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
+import LoaderSession				= require("awayjs-core/lib/library/LoaderSession");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
@@ -27,15 +26,16 @@ class BitmapImage2DReflectionTest
 		this.view = new View(new DefaultRenderer());
 		this.raf = new RequestAnimationFrame(this.render, this);
 
-		var token:AssetLoaderToken = AssetLibrary.load( new URLRequest('assets/dots.png'));
-		token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		var session:LoaderSession = AssetLibrary.getLoaderSession();
+		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session.load(new URLRequest('assets/dots.png'));
 
 		window.onresize = (event:UIEvent) => this.onResize(event);
 	}
 
 	private onResourceComplete(event:LoaderEvent)
 	{
-		var loader:AssetLoader   = <AssetLoader> event.target;
+		var loader:LoaderSession   = <LoaderSession> event.target;
 		var l:number = loader.baseDependency.assets.length;
 
 		for (var c:number = 0; c < l; c++) {
