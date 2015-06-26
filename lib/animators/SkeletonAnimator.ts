@@ -622,8 +622,10 @@ class SkeletonAnimator extends AnimatorBase
 		switch(event.attributesView) {
 			case subGeometry.uvs:
 				morphGeometry.setUVs(subGeometry.uvs.get(subGeometry.numVertices));
+				break;
 			case subGeometry.secondaryUVs:
 				morphGeometry.setSecondaryUVs(subGeometry.secondaryUVs.get(subGeometry.numVertices));
+				break;
 		}
 	}
 }
