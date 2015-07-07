@@ -30,9 +30,12 @@ var DefaultRenderer = (function (_super) {
      * @param antiAlias The amount of anti-aliasing to use.
      * @param renderMode The render mode to use.
      */
-    function DefaultRenderer(stage) {
+    function DefaultRenderer(stage, forceSoftware, profile, mode) {
         if (stage === void 0) { stage = null; }
-        _super.call(this, stage);
+        if (forceSoftware === void 0) { forceSoftware = false; }
+        if (profile === void 0) { profile = "baseline"; }
+        if (mode === void 0) { mode = "auto"; }
+        _super.call(this, stage, forceSoftware, profile, mode);
         this._skyboxProjection = new Matrix3D();
         this._pRenderablePool = new RenderablePool(this._pStage);
         if (stage)
@@ -520,9 +523,12 @@ var RendererBase = (function (_super) {
     /**
      * Creates a new RendererBase object.
      */
-    function RendererBase(stage) {
+    function RendererBase(stage, forceSoftware, profile, mode) {
         var _this = this;
         if (stage === void 0) { stage = null; }
+        if (forceSoftware === void 0) { forceSoftware = false; }
+        if (profile === void 0) { profile = "baseline"; }
+        if (mode === void 0) { mode = "auto"; }
         _super.call(this);
         this._numUsedStreams = 0;
         this._numUsedTextures = 0;
@@ -548,7 +554,7 @@ var RendererBase = (function (_super) {
         //default sorting algorithm
         this.renderableSorter = new RenderableMergeSort();
         //set stage
-        this._pStage = stage || StageManager.getInstance().getFreeStage();
+        this._pStage = stage || StageManager.getInstance().getFreeStage(forceSoftware, profile, mode);
         this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
         this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
         this._pStage.addEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);

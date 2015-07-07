@@ -247,7 +247,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(stage:Stage = null)
+	constructor(stage:Stage = null, forceSoftware:boolean = false, profile:string = "baseline", mode:string = "auto")
 	{
 		super();
 
@@ -258,7 +258,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 		this.renderableSorter = new RenderableMergeSort();
 
 		//set stage
-		this._pStage = stage || StageManager.getInstance().getFreeStage();
+		this._pStage = stage || StageManager.getInstance().getFreeStage(forceSoftware, profile, mode);
 
 		this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
