@@ -121,9 +121,9 @@ class DefaultRenderer extends RendererBase
 	 * @param antiAlias The amount of anti-aliasing to use.
 	 * @param renderMode The render mode to use.
 	 */
-	constructor(stage:Stage = null)
+	constructor(stage:Stage = null, forceSoftware:boolean = false, profile:string = "baseline", mode:string = "auto")
 	{
-		super(stage);
+		super(stage, forceSoftware, profile, mode);
 
 		this._pRenderablePool = new RenderablePool(this._pStage);
 		
