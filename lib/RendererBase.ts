@@ -793,18 +793,10 @@ class RendererBase extends EventDispatcher implements IRenderer
 
 	public _iApplyRenderableOwner(renderableOwner:IRenderableOwner)
 	{
-		this.applyRenderable(this._pRenderablePool.getItem(renderableOwner));
-	}
+		var renderable:RenderableBase = this._pRenderablePool.getItem(renderableOwner);
 
-	/**
-	 *
-	 * @param renderable
-	 * @protected
-	 */
-	public applyRenderable(renderable:RenderableBase)
-	{
 		//set local vars for faster referencing
-		var render:RenderBase = this._pRenderablePool.getRenderPool(renderable.renderableOwner).getItem(renderable.renderOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
+		var render:RenderBase = this._pRenderablePool.getRenderPool(renderableOwner).getItem(renderable.renderOwner || DefaultMaterialManager.getDefaultMaterial(renderableOwner));
 		
 		renderable.render = render;
 		renderable.renderId = render.renderId;
