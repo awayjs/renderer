@@ -1,23 +1,3 @@
-declare module "awayjs-renderergl/lib/DepthRenderer" {
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
-	/**
-	 * The DepthRenderer class renders 32-bit depth information encoded as RGBA
-	 *
-	 * @class away.render.DepthRenderer
-	 */
-	class DepthRenderer extends RendererBase {
-	    /**
-	     * Creates a new DepthRenderer object.
-	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
-	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
-	     */
-	    constructor(stage?: Stage);
-	}
-	export = DepthRenderer;
-	
-}
-
 declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	import ImageBase = require("awayjs-core/lib/data/ImageBase");
 	import BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
@@ -92,6 +72,26 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	    private initDepthTexture(context);
 	}
 	export = DefaultRenderer;
+	
+}
+
+declare module "awayjs-renderergl/lib/DepthRenderer" {
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
+	/**
+	 * The DepthRenderer class renders 32-bit depth information encoded as RGBA
+	 *
+	 * @class away.render.DepthRenderer
+	 */
+	class DepthRenderer extends RendererBase {
+	    /**
+	     * Creates a new DepthRenderer object.
+	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
+	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
+	     */
+	    constructor(stage?: Stage);
+	}
+	export = DepthRenderer;
 	
 }
 
@@ -342,12 +342,6 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	     */
 	    updateGlobalPos(): void;
 	    _iApplyRenderableOwner(renderableOwner: IRenderableOwner): void;
-	    /**
-	     *
-	     * @param renderable
-	     * @protected
-	     */
-	    applyRenderable(renderable: RenderableBase): void;
 	}
 	export = RendererBase;
 	

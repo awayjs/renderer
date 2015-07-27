@@ -1109,16 +1109,9 @@ var RendererBase = (function (_super) {
         this.notifyScissorUpdate();
     };
     RendererBase.prototype._iApplyRenderableOwner = function (renderableOwner) {
-        this.applyRenderable(this._pRenderablePool.getItem(renderableOwner));
-    };
-    /**
-     *
-     * @param renderable
-     * @protected
-     */
-    RendererBase.prototype.applyRenderable = function (renderable) {
+        var renderable = this._pRenderablePool.getItem(renderableOwner);
         //set local vars for faster referencing
-        var render = this._pRenderablePool.getRenderPool(renderable.renderableOwner).getItem(renderable.renderOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
+        var render = this._pRenderablePool.getRenderPool(renderableOwner).getItem(renderable.renderOwner || DefaultMaterialManager.getDefaultMaterial(renderableOwner));
         renderable.render = render;
         renderable.renderId = render.renderId;
         renderable.renderOrderId = render.renderOrderId;
