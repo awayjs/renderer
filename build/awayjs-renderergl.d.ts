@@ -157,6 +157,7 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
 	import IEntitySorter = require("awayjs-display/lib/sort/IEntitySorter");
 	import IRenderer = require("awayjs-display/lib/IRenderer");
+	import DisplayObject = require("awayjs-display/lib/base/DisplayObject");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
 	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
@@ -174,6 +175,10 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	 * @class away.render.RendererBase
 	 */
 	class RendererBase extends EventDispatcher implements IRenderer {
+	    private _maskConfig;
+	    private _activeMasksDirty;
+	    private _activeMasksConfig;
+	    private _registeredMasks;
 	    private _numUsedStreams;
 	    private _numUsedTextures;
 	    _pRenderablePool: RenderablePool;
@@ -342,6 +347,10 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	     */
 	    updateGlobalPos(): void;
 	    _iApplyRenderableOwner(renderableOwner: IRenderableOwner): void;
+	    private _registerMask(obj);
+	    _renderMasks(masks: DisplayObject[][]): void;
+	    private _drawMask(renderable);
+	    private _checkMasksConfig(masksConfig);
 	}
 	export = RendererBase;
 	
@@ -5240,6 +5249,14 @@ declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
 	     *
 	     */
 	    zIndex: number;
+	    /**
+	     *
+	     */
+	    maskId: number;
+	    /**
+	     *
+	     */
+	    masksConfig: Array<Array<number>>;
 	    /**
 	     *
 	     */

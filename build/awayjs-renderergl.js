@@ -530,6 +530,8 @@ var RendererBase = (function (_super) {
         if (profile === void 0) { profile = "baseline"; }
         if (mode === void 0) { mode = "auto"; }
         _super.call(this);
+        this._activeMasksConfig = new Array();
+        this._registeredMasks = new Array();
         this._numUsedStreams = 0;
         this._numUsedTextures = 0;
         this._viewPort = new Rectangle();
@@ -881,8 +883,10 @@ var RendererBase = (function (_super) {
             item = item.next;
         }
         //sort the resulting renderables
-        this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
-        this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+        if (this.renderableSorter) {
+            this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
+            this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+        }
     };
     /**
      * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
@@ -983,17 +987,42 @@ var RendererBase = (function (_super) {
         var passes;
         var pass;
         var camera = entityCollector.camera;
+        this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
+        this._registeredMasks.length = 0;
+        var gl = this._pContext["_gl"];
+        gl.disable(gl.STENCIL_TEST);
+        this._maskConfig = 0;
         while (renderable) {
             render = renderable.render;
             passes = render.passes;
-            // otherwise this would result in depth rendered anyway because fragment shader kil is ignored
-            if (this._disableColor && render._renderOwner.alphaThreshold != 0) {
+            if (renderable.maskId !== -1) {
+                renderable2 = renderable.next;
+                //console.log("Registering mask: " + renderable.sourceEntity["hierarchicalMaskID"], renderable.sourceEntity.name);
+                this._registerMask(renderable);
+            }
+            else if (this._disableColor && render._renderOwner.alphaThreshold != 0) {
                 renderable2 = renderable;
                 do {
                     renderable2 = renderable2.next;
                 } while (renderable2 && renderable2.render == render);
             }
             else {
+                if (this._activeMasksDirty || this._checkMasksConfig(renderable.masksConfig)) {
+                    this._activeMasksConfig = renderable.masksConfig;
+                    if (!this._activeMasksConfig.length) {
+                        // disable stencil
+                        //this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
+                        gl.disable(gl.STENCIL_TEST);
+                        gl.stencilFunc(gl.ALWAYS, 0, 0xff);
+                        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+                    }
+                    else {
+                        //console.log("Rendering masks with configID " + newMaskConfigID);
+                        //this._pContext.setStencilReferenceValue(newMaskConfigID);
+                        this._renderMasks(renderable.sourceEntity._iAssignedMasks());
+                    }
+                    this._activeMasksDirty = false;
+                }
                 //iterate through each shader object
                 len = passes.length;
                 for (i = 0; i < len; i++) {
@@ -1003,7 +1032,7 @@ var RendererBase = (function (_super) {
                     do {
                         renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
                         renderable2 = renderable2.next;
-                    } while (renderable2 && renderable2.render == render);
+                    } while (renderable2 && renderable2.render == render && renderable2.maskId == -1 && !(this._activeMasksDirty = this._checkMasksConfig(renderable2.masksConfig)));
                     this.deactivatePass(renderable, pass);
                 }
             }
@@ -1127,6 +1156,8 @@ var RendererBase = (function (_super) {
         // project onto camera's z-axis
         position = this._iEntryPoint.subtract(position);
         renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
+        renderable.maskId = entity._iAssignedMaskId();
+        renderable.masksConfig = entity._iMasksConfig();
         //store reference to scene transform
         renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
         if (render.requiresBlending) {
@@ -1138,6 +1169,85 @@ var RendererBase = (function (_super) {
             this._pOpaqueRenderableHead = renderable;
         }
         this._pNumElements += renderable.subGeometryVO.subGeometry.numElements;
+    };
+    RendererBase.prototype._registerMask = function (obj) {
+        //console.log("registerMask");
+        this._registeredMasks.push(obj);
+    };
+    RendererBase.prototype._renderMasks = function (masks) {
+        var gl = this._pContext["_gl"];
+        //var oldRenderTarget = this._stage.renderTarget;
+        //this._stage.setRenderTarget(this._image);
+        //this._stage.clear();
+        this._pContext.setColorMask(false, false, false, false);
+        // TODO: Could we create masks within masks by providing a previous configID, and supply "clear/keep" on stencil fail
+        //context.setStencilActions("frontAndBack", "always", "set", "set", "set");
+        gl.enable(gl.STENCIL_TEST);
+        this._maskConfig++;
+        gl.stencilFunc(gl.ALWAYS, this._maskConfig, 0xff);
+        gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
+        var numLayers = masks.length;
+        var numRenderables = this._registeredMasks.length;
+        var renderable;
+        var children;
+        var numChildren;
+        var mask;
+        for (var i = 0; i < numLayers; ++i) {
+            if (i != 0) {
+                gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
+                gl.stencilOp(gl.KEEP, gl.INCR, gl.INCR);
+                this._maskConfig++;
+            }
+            children = masks[i];
+            numChildren = children.length;
+            for (var j = 0; j < numChildren; ++j) {
+                mask = children[j];
+                for (var k = 0; k < numRenderables; ++k) {
+                    renderable = this._registeredMasks[k];
+                    //console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
+                    if (renderable.maskId == mask.maskId) {
+                        //console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
+                        this._drawMask(renderable);
+                    }
+                }
+            }
+        }
+        gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
+        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+        this._pContext.setColorMask(true, true, true, true);
+        //this._stage.setRenderTarget(oldRenderTarget);
+    };
+    RendererBase.prototype._drawMask = function (renderable) {
+        var render = renderable.render;
+        var passes = render.passes;
+        var len = passes.length;
+        var pass = passes[len - 1];
+        this.activatePass(renderable, pass, this._pCamera);
+        // only render last pass for now
+        renderable._iRender(pass, this._pCamera, this._pRttViewProjectionMatrix);
+        this.deactivatePass(renderable, pass);
+    };
+    RendererBase.prototype._checkMasksConfig = function (masksConfig) {
+        if (this._activeMasksConfig.length != masksConfig.length)
+            return true;
+        var numLayers = masksConfig.length;
+        var numChildren;
+        var childConfig;
+        var activeNumChildren;
+        var activeChildConfig;
+        for (var i = 0; i < numLayers; i++) {
+            childConfig = masksConfig[i];
+            numChildren = childConfig.length;
+            activeChildConfig = this._activeMasksConfig[i];
+            activeNumChildren = activeChildConfig.length;
+            if (activeNumChildren != numChildren)
+                return true;
+            for (var j = 0; j < numChildren; j++) {
+                if (activeChildConfig[j] != childConfig[j])
+                    return true;
+            }
+        }
+        return false;
     };
     return RendererBase;
 })(EventDispatcher);
