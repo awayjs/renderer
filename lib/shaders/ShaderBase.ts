@@ -135,6 +135,11 @@ class ShaderBase
 	public ambientB:number = 0xFF;
 
 	/**
+	 *
+	 */
+	public usesCommonData:boolean;
+
+	/**
 	 * Indicates whether the pass requires any fragment animation code.
 	 */
 	public usesFragmentAnimation:boolean;
@@ -333,6 +338,7 @@ class ShaderBase
 		this.secondaryUVDependencies = 0;
 		this.globalPosDependencies = 0;
 		this.tangentDependencies = 0;
+		this.usesCommonData = false;
 		this.usesGlobalPosFragment = false;
 		this.usesLocalPosFragment = false;
 		this.usesFragmentAnimation = false;
@@ -380,10 +386,12 @@ class ShaderBase
 		this.fragmentConstantData.length = this.numUsedFragmentConstants*4;
 
 		//Initializes commonly required constant values.
-		this.fragmentConstantData[this.commonsDataIndex] = .5;
-		this.fragmentConstantData[this.commonsDataIndex + 1] = 0;
-		this.fragmentConstantData[this.commonsDataIndex + 2] = 1/255;
-		this.fragmentConstantData[this.commonsDataIndex + 3] = 1;
+		if (this.commonsDataIndex >= 0) {
+			this.fragmentConstantData[this.commonsDataIndex] = .5;
+			this.fragmentConstantData[this.commonsDataIndex + 1] = 0;
+			this.fragmentConstantData[this.commonsDataIndex + 2] = 1/255;
+			this.fragmentConstantData[this.commonsDataIndex + 3] = 1;
+		}
 
 		//Initializes the default UV transformation matrix.
 		if (this.uvTransformIndex >= 0) {

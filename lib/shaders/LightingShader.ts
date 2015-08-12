@@ -122,6 +122,7 @@ class LightingShader extends ShaderBase
 		var combinedLightSources:number = diffuseLightSources | specularLightSources;
 
 		this.usesLightFallOff = this._lightingPass.enableLightFallOff && this.profile != ContextGLProfile.BASELINE_CONSTRAINED;
+		this.usesCommonData = this.usesLightFallOff;
 		this.numLights = numAllLights + numLightProbes;
 		this.usesLights = numAllLights > 0 && (combinedLightSources & LightSources.LIGHTS) != 0;
 		this.usesProbes = numLightProbes > 0 && (combinedLightSources & LightSources.PROBES) != 0;
@@ -144,17 +145,6 @@ class LightingShader extends ShaderBase
 	public createCompiler(renderableClass:IRenderableClass, pass:ILightingPass):CompilerBase
 	{
 		return new LightingCompiler(renderableClass, pass, this);
-	}
-
-	/**
-	 * Clears dependency counts for all registers. Called when recompiling a pass.
-	 */
-	public reset()
-	{
-		super.reset();
-
-		this.numLights = 0;
-		this.usesLightFallOff = true;
 	}
 
 

@@ -352,8 +352,10 @@ class CompilerBase
 		this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.localPosition = this._pRegisterCache.getFreeVertexVectorTemp(), 1);
 
 		//create commonly shared constant registers
-		this._pSharedRegisters.commons = this._pRegisterCache.getFreeFragmentConstant();
-		this._pShader.commonsDataIndex = this._pSharedRegisters.commons.index*4;
+		if (this._pShader.usesCommonData || this._pShader.normalDependencies > 0) {
+			this._pSharedRegisters.commons = this._pRegisterCache.getFreeFragmentConstant();
+			this._pShader.commonsDataIndex = this._pSharedRegisters.commons.index*4;
+		}
 
 		//Creates the registers to contain the tangent data.
 		// need to be created FIRST and in this order (for when using tangent space)
