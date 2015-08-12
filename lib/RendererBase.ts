@@ -17,6 +17,7 @@ import IEntitySorter				= require("awayjs-display/lib/sort/IEntitySorter");
 import RenderableMergeSort			= require("awayjs-display/lib/sort/RenderableMergeSort");
 import IRenderer					= require("awayjs-display/lib/IRenderer");
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
+import DisplayObject				= require("awayjs-display/lib/base/DisplayObject");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import IEntity						= require("awayjs-display/lib/entities/IEntity");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
@@ -51,6 +52,10 @@ import RenderablePool				= require("awayjs-renderergl/lib/renderables/Renderable
  */
 class RendererBase extends EventDispatcher implements IRenderer
 {
+	private _maskConfig:number;
+	private _activeMasksDirty:boolean;
+	private _activeMasksConfig:Array<Array<number>> = new Array<Array<number>>();
+	private _registeredMasks : Array<RenderableBase> = new Array<RenderableBase>();
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
 
@@ -270,6 +275,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 		 */
 		if (this._pStage.context)
 			this._pContext = <IContextGL> this._pStage.context;
+
 	}
 
 	public activatePass(renderable:RenderableBase, pass:IPass, camera:Camera)
@@ -505,8 +511,10 @@ class RendererBase extends EventDispatcher implements IRenderer
 		}
 
 		//sort the resulting renderables
-		this._pOpaqueRenderableHead = <RenderableBase> this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
-		this._pBlendedRenderableHead = <RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+		if (this.renderableSorter) {
+			this._pOpaqueRenderableHead = <RenderableBase> this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
+			this._pBlendedRenderableHead = <RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+		}
 	}
 
 	/**
@@ -626,13 +634,24 @@ class RendererBase extends EventDispatcher implements IRenderer
 		var pass:IPass;
 		var camera:Camera = entityCollector.camera;
 
+		this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
+
+		this._registeredMasks.length = 0;
+		var gl = this._pContext["_gl"];
+		gl.disable(gl.STENCIL_TEST);
+		this._maskConfig = 0;
 
 		while (renderable) {
 			render = renderable.render;
 			passes = render.passes;
 
+			if (renderable.maskId !== -1) {
+				renderable2 = renderable.next;
+				//console.log("Registering mask: " + renderable.sourceEntity["hierarchicalMaskID"], renderable.sourceEntity.name);
+				this._registerMask(renderable);
+			}
 			// otherwise this would result in depth rendered anyway because fragment shader kil is ignored
-			if (this._disableColor && render._renderOwner.alphaThreshold != 0) {
+			else if (this._disableColor && render._renderOwner.alphaThreshold != 0) {
 				renderable2 = renderable;
 				// fast forward
 				do {
@@ -640,6 +659,25 @@ class RendererBase extends EventDispatcher implements IRenderer
 
 				} while (renderable2 && renderable2.render == render);
 			} else {
+				if (this._activeMasksDirty || this._checkMasksConfig(renderable.masksConfig)) {
+					this._activeMasksConfig = renderable.masksConfig;
+					if (!this._activeMasksConfig.length) {
+						// disable stencil
+						//this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
+						gl.disable(gl.STENCIL_TEST);
+						gl.stencilFunc(gl.ALWAYS, 0, 0xff);
+						gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+						//console.log("Let's not use stencil!");
+					} else {
+						//console.log("Rendering masks with configID " + newMaskConfigID);
+						//this._pContext.setStencilReferenceValue(newMaskConfigID);
+						this._renderMasks(renderable.sourceEntity._iAssignedMasks());
+						//this._pContext.setStencilActions("frontAndBack", "equal", "keep", "keep", "keep");
+					}
+					this._activeMasksDirty = false;
+				}
+
+
 				//iterate through each shader object
 				len = passes.length;
 				for (i = 0; i < len; i++) {
@@ -653,7 +691,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 
 						renderable2 = renderable2.next;
 
-					} while (renderable2 && renderable2.render == render);
+					} while (renderable2 && renderable2.render == render && renderable2.maskId == -1 && !(this._activeMasksDirty = this._checkMasksConfig(renderable2.masksConfig)));
 
 					this.deactivatePass(renderable, pass);
 				}
@@ -810,6 +848,8 @@ class RendererBase extends EventDispatcher implements IRenderer
 		// project onto camera's z-axis
 		position = this._iEntryPoint.subtract(position);
 		renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
+		renderable.maskId = entity._iAssignedMaskId();
+		renderable.masksConfig = entity._iMasksConfig();
 
 		//store reference to scene transform
 		renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
@@ -823,6 +863,104 @@ class RendererBase extends EventDispatcher implements IRenderer
 		}
 
 		this._pNumElements += renderable.subGeometryVO.subGeometry.numElements;
+	}
+
+	private _registerMask(obj:RenderableBase)
+	{
+		//console.log("registerMask");
+		this._registeredMasks.push(obj);
+	}
+
+	public _renderMasks(masks:DisplayObject[][])
+	{
+		var gl = this._pContext["_gl"];
+		//var oldRenderTarget = this._stage.renderTarget;
+
+		//this._stage.setRenderTarget(this._image);
+		//this._stage.clear();
+		this._pContext.setColorMask(false, false, false, false);
+		// TODO: Could we create masks within masks by providing a previous configID, and supply "clear/keep" on stencil fail
+		//context.setStencilActions("frontAndBack", "always", "set", "set", "set");
+		gl.enable(gl.STENCIL_TEST);
+		this._maskConfig++;
+		gl.stencilFunc(gl.ALWAYS, this._maskConfig, 0xff);
+		gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
+
+		var numLayers:number = masks.length;
+		var numRenderables:number = this._registeredMasks.length;
+		var renderable:RenderableBase;
+		var children:Array<DisplayObject>;
+		var numChildren:number;
+		var mask:DisplayObject;
+
+		for (var i:number = 0; i < numLayers; ++i) {
+			if (i != 0) {
+				gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
+				gl.stencilOp(gl.KEEP, gl.INCR, gl.INCR);
+				this._maskConfig++;
+			}
+
+			children = masks[i];
+			numChildren = children.length;
+
+			for (var j:number = 0; j < numChildren; ++j) {
+				mask = children[j];
+				for (var k:number = 0; k < numRenderables; ++k) {
+					renderable = this._registeredMasks[k];
+					//console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
+					if (renderable.maskId == mask.maskId) {
+						//console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
+						this._drawMask(renderable);
+					}
+				}
+			}
+		}
+
+		gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
+		gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+
+		this._pContext.setColorMask(true, true, true, true);
+		//this._stage.setRenderTarget(oldRenderTarget);
+	}
+
+	private _drawMask(renderable:RenderableBase)
+	{
+		var render = renderable.render;
+		var passes = render.passes;
+		var len = passes.length;
+		var pass = passes[len-1];
+
+		this.activatePass(renderable, pass, this._pCamera);
+		// only render last pass for now
+		renderable._iRender(pass, this._pCamera, this._pRttViewProjectionMatrix);
+		this.deactivatePass(renderable, pass);
+	}
+
+	private _checkMasksConfig(masksConfig:Array<Array<number>>):boolean
+	{
+		if (this._activeMasksConfig.length != masksConfig.length)
+			return true;
+
+			var numLayers:number = masksConfig.length;
+			var numChildren:number;
+			var childConfig:Array<number>;
+			var activeNumChildren:number;
+			var activeChildConfig:Array<number>;
+			for (var i:number = 0; i < numLayers; i++) {
+				childConfig = masksConfig[i];
+				numChildren = childConfig.length;
+				activeChildConfig = this._activeMasksConfig[i];
+				activeNumChildren = activeChildConfig.length;
+				if (activeNumChildren != numChildren)
+					return true;
+
+				for (var j:number = 0; j < numChildren; j++) {
+					if (activeChildConfig[j] != childConfig[j])
+						return true;
+				}
+			}
+
+		return false;
 	}
 }
 

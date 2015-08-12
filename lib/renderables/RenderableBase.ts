@@ -70,6 +70,16 @@ class RenderableBase implements IRenderable
 	/**
 	 *
 	 */
+	public maskId:number;
+
+	/**
+	 *
+	 */
+	public masksConfig:Array<Array<number>>;
+
+	/**
+	 *
+	 */
 	public cascaded:boolean;
 
 	/**
