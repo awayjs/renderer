@@ -11934,6 +11934,7 @@ var LightingShader = (function (_super) {
         var specularLightSources = this._lightingPass._iUsesSpecular(this) ? this._lightingPass.specularLightSources : 0x00;
         var combinedLightSources = diffuseLightSources | specularLightSources;
         this.usesLightFallOff = this._lightingPass.enableLightFallOff && this.profile != ContextGLProfile.BASELINE_CONSTRAINED;
+        this.usesCommonData = this.usesLightFallOff;
         this.numLights = numAllLights + numLightProbes;
         this.usesLights = numAllLights > 0 && (combinedLightSources & LightSources.LIGHTS) != 0;
         this.usesProbes = numLightProbes > 0 && (combinedLightSources & LightSources.PROBES) != 0;
@@ -11953,14 +11954,6 @@ var LightingShader = (function (_super) {
      */
     LightingShader.prototype.createCompiler = function (renderableClass, pass) {
         return new LightingCompiler(renderableClass, pass, this);
-    };
-    /**
-     * Clears dependency counts for all registers. Called when recompiling a pass.
-     */
-    LightingShader.prototype.reset = function () {
-        _super.prototype.reset.call(this);
-        this.numLights = 0;
-        this.usesLightFallOff = true;
     };
     /**
      *
@@ -12397,6 +12390,7 @@ var ShaderBase = (function () {
         this.secondaryUVDependencies = 0;
         this.globalPosDependencies = 0;
         this.tangentDependencies = 0;
+        this.usesCommonData = false;
         this.usesGlobalPosFragment = false;
         this.usesLocalPosFragment = false;
         this.usesFragmentAnimation = false;
@@ -12437,10 +12431,12 @@ var ShaderBase = (function () {
         this.vertexConstantData.length = this.numUsedVertexConstants * 4;
         this.fragmentConstantData.length = this.numUsedFragmentConstants * 4;
         //Initializes commonly required constant values.
-        this.fragmentConstantData[this.commonsDataIndex] = .5;
-        this.fragmentConstantData[this.commonsDataIndex + 1] = 0;
-        this.fragmentConstantData[this.commonsDataIndex + 2] = 1 / 255;
-        this.fragmentConstantData[this.commonsDataIndex + 3] = 1;
+        if (this.commonsDataIndex >= 0) {
+            this.fragmentConstantData[this.commonsDataIndex] = .5;
+            this.fragmentConstantData[this.commonsDataIndex + 1] = 0;
+            this.fragmentConstantData[this.commonsDataIndex + 2] = 1 / 255;
+            this.fragmentConstantData[this.commonsDataIndex + 3] = 1;
+        }
         //Initializes the default UV transformation matrix.
         if (this.uvTransformIndex >= 0) {
             this.vertexConstantData[this.uvTransformIndex] = 1;
@@ -13228,8 +13224,10 @@ var CompilerBase = (function () {
         this._pPostAnimationFragmentCode = "";
         this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.localPosition = this._pRegisterCache.getFreeVertexVectorTemp(), 1);
         //create commonly shared constant registers
-        this._pSharedRegisters.commons = this._pRegisterCache.getFreeFragmentConstant();
-        this._pShader.commonsDataIndex = this._pSharedRegisters.commons.index * 4;
+        if (this._pShader.usesCommonData || this._pShader.normalDependencies > 0) {
+            this._pSharedRegisters.commons = this._pRegisterCache.getFreeFragmentConstant();
+            this._pShader.commonsDataIndex = this._pSharedRegisters.commons.index * 4;
+        }
         //Creates the registers to contain the tangent data.
         // need to be created FIRST and in this order (for when using tangent space)
         if (this._pShader.tangentDependencies > 0 || this._pShader.outputsNormals) {

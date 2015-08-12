@@ -5578,10 +5578,6 @@ declare module "awayjs-renderergl/lib/shaders/LightingShader" {
 	     */
 	    createCompiler(renderableClass: IRenderableClass, pass: ILightingPass): CompilerBase;
 	    /**
-	     * Clears dependency counts for all registers. Called when recompiling a pass.
-	     */
-	    reset(): void;
-	    /**
 	     *
 	     *
 	     * @param renderable
@@ -5759,6 +5755,10 @@ declare module "awayjs-renderergl/lib/shaders/ShaderBase" {
 	    ambientR: number;
 	    ambientG: number;
 	    ambientB: number;
+	    /**
+	     *
+	     */
+	    usesCommonData: boolean;
 	    /**
 	     * Indicates whether the pass requires any fragment animation code.
 	     */
