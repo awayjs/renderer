@@ -908,7 +908,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 				for (var k:number = 0; k < numRenderables; ++k) {
 					renderable = this._registeredMasks[k];
 					//console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
-					if (renderable.maskId == mask.maskId) {
+					if (renderable.maskId == mask.id) {
 						//console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
 						this._drawMask(renderable);
 					}
