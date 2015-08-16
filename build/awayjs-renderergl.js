@@ -995,12 +995,8 @@ var RendererBase = (function (_super) {
         while (renderable) {
             render = renderable.render;
             passes = render.passes;
-            if (renderable.maskId !== -1) {
-                renderable2 = renderable.next;
-                //console.log("Registering mask: " + renderable.sourceEntity["hierarchicalMaskID"], renderable.sourceEntity.name);
-                this._registerMask(renderable);
-            }
-            else if (this._disableColor && render._renderOwner.alphaThreshold != 0) {
+            // otherwise this would result in depth rendered anyway because fragment shader kil is ignored
+            if (this._disableColor && render._renderOwner.alphaThreshold != 0) {
                 renderable2 = renderable;
                 do {
                     renderable2 = renderable2.next;
@@ -1030,9 +1026,15 @@ var RendererBase = (function (_super) {
                     pass = passes[i];
                     this.activatePass(renderable, pass, camera);
                     do {
-                        renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+                        if (renderable2.maskId !== -1) {
+                            if (i == 0)
+                                this._registerMask(renderable2);
+                        }
+                        else {
+                            renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+                        }
                         renderable2 = renderable2.next;
-                    } while (renderable2 && renderable2.render == render && renderable2.maskId == -1 && !(this._activeMasksDirty = this._checkMasksConfig(renderable2.masksConfig)));
+                    } while (renderable2 && renderable2.render == render && !(this._activeMasksDirty = this._checkMasksConfig(renderable2.masksConfig)));
                     this.deactivatePass(renderable, pass);
                 }
             }

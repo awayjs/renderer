@@ -1203,7 +1203,7 @@ declare module "awayjs-renderergl/lib/animators/data/AnimationSubGeometry" {
 	    _iUniqueId: number;
 	    constructor();
 	    createVertexData(numVertices: number, totalLenOfOneVertex: number): void;
-	    activateVertexBuffer(index: number, bufferOffset: number, stage: Stage, format: string): void;
+	    activateVertexBuffer(index: number, bufferOffset: number, stage: Stage, format: number): void;
 	    dispose(): void;
 	    invalidateBuffer(): void;
 	    vertexData: Array<number>;
@@ -5392,56 +5392,6 @@ declare module "awayjs-renderergl/lib/renderables/RenderablePool" {
 	
 }
 
-declare module "awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable" {
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
-	import TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
-	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
-	import RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
-	import PassBase = require("awayjs-renderergl/lib/render/passes/PassBase");
-	/**
-	 * @class away.pool.TriangleSubMeshRenderable
-	 */
-	class TriangleSubMeshRenderable extends RenderableBase {
-	    static assetClass: IAssetClass;
-	    static vertexAttributesOffset: number;
-	    /**
-	     *
-	     */
-	    subMesh: TriangleSubMesh;
-	    /**
-	     * //TODO
-	     *
-	     * @param pool
-	     * @param subMesh
-	     * @param level
-	     * @param indexOffset
-	     */
-	    constructor(pool: RenderablePool, subMesh: TriangleSubMesh, stage: Stage);
-	    /**
-	     *
-	     * @returns {SubGeometryBase}
-	     * @protected
-	     */
-	    _pGetSubGeometry(): TriangleSubGeometry;
-	    static _iIncludeDependencies(shader: ShaderBase): void;
-	    static _iGetVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    static _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    _setRenderState(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
-	}
-	export = TriangleSubMeshRenderable;
-	
-}
-
 declare module "awayjs-renderergl/lib/renderables/SkyboxRenderable" {
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
@@ -5492,6 +5442,56 @@ declare module "awayjs-renderergl/lib/renderables/SkyboxRenderable" {
 	    _setRenderState(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
 	}
 	export = SkyboxRenderable;
+	
+}
+
+declare module "awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable" {
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
+	import TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
+	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+	import RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
+	import PassBase = require("awayjs-renderergl/lib/render/passes/PassBase");
+	/**
+	 * @class away.pool.TriangleSubMeshRenderable
+	 */
+	class TriangleSubMeshRenderable extends RenderableBase {
+	    static assetClass: IAssetClass;
+	    static vertexAttributesOffset: number;
+	    /**
+	     *
+	     */
+	    subMesh: TriangleSubMesh;
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param subMesh
+	     * @param level
+	     * @param indexOffset
+	     */
+	    constructor(pool: RenderablePool, subMesh: TriangleSubMesh, stage: Stage);
+	    /**
+	     *
+	     * @returns {SubGeometryBase}
+	     * @protected
+	     */
+	    _pGetSubGeometry(): TriangleSubGeometry;
+	    static _iIncludeDependencies(shader: ShaderBase): void;
+	    static _iGetVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    static _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    _setRenderState(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
+	}
+	export = TriangleSubMeshRenderable;
 	
 }
 
