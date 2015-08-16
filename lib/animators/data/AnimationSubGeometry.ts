@@ -49,7 +49,7 @@ class AnimationSubGeometry
 		this._pVertexData = new Array<number>(numVertices*totalLenOfOneVertex);
 	}
 
-	public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stage:Stage, format:string)
+	public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stage:Stage, format:number)
 	{
 		var contextIndex:number /*int*/ = stage.stageIndex;
 		var context:IContextGL = <IContextGL> stage.context;
