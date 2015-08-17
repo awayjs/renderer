@@ -280,7 +280,7 @@ class SkeletonAnimator extends AnimatorBase
 		// convert pose to matrix
 		var mtxOffset:number /*uint*/ = 0;
 		var globalPoses:Array<JointPose> = this._globalPose.jointPoses;
-		var raw:Array<number>;
+		var raw:Float32Array;
 		var ox:number, oy:number, oz:number, ow:number;
 		var xy2:number, xz2:number, xw2:number;
 		var yz2:number, yw2:number, zw2:number;

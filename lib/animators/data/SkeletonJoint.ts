@@ -20,7 +20,7 @@ class SkeletonJoint
 	/**
 	 * The inverse bind pose matrix, as raw data, used to transform vertices to bind joint space in preparation for transformation using the joint matrix.
 	 */
-	public inverseBindPose:Array<number>;
+	public inverseBindPose:Float32Array;
 
 	/**
 	 * Creates a new <code>SkeletonJoint</code> object
