@@ -29,7 +29,7 @@ class VertexAnimator extends AnimatorBase
 	private _subGeometryVOPool:SubGeometryVOPool;
 	private _vertexAnimationSet:VertexAnimationSet;
 	private _poses:Array<Geometry> = new Array<Geometry>();
-	private _weights:Array<number> = Array<number>(1, 0, 0, 0);
+	private _weights:Float32Array = new Float32Array([1, 0, 0, 0]);
 	private _numPoses:number /*uint*/;
 	private _blendMode:string;
 	private _activeVertexState:IVertexAnimationState;

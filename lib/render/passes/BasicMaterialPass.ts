@@ -115,7 +115,7 @@ class BasicMaterialPass extends PassBase
 				this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;
 		} else if (this._shader.colorBufferIndex == -1) {
 			var index:number = this._fragmentConstantsIndex;
-			var data:Array<number> = this._shader.fragmentConstantData;
+			var data:Float32Array = this._shader.fragmentConstantData;
 			data[index] = this._diffuseR;
 			data[index + 1] = this._diffuseG;
 			data[index + 2] = this._diffuseB;

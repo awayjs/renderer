@@ -27,10 +27,10 @@ class LineSubMeshRenderable extends RenderableBase
 {
 	public static assetClass:IAssetClass = LineSubMesh;
 
-	public static pONE_VECTOR:Array<number> = Array<number>(1, 1, 1, 1);
-	public static pFRONT_VECTOR:Array<number> = Array<number>(0, 0, -1, 0);
+	public static pONE_VECTOR:Float32Array = new Float32Array([1, 1, 1, 1]);
+	public static pFRONT_VECTOR:Float32Array = new Float32Array([0, 0, -1, 0]);
 
-	private _constants:Array<number> = new Array<number>(0, 0, 0, 0);
+	private _constants:Float32Array = new Float32Array([0, 0, 0, 0]);
 	private _calcMatrix:Matrix3D;
 	private _thickness:number = 1.25;
 

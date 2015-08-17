@@ -30,13 +30,13 @@ import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/renderables/T
  */
 class SkeletonAnimator extends AnimatorBase
 {
-	private _globalMatrices:Array<number>;
+	private _globalMatrices:Float32Array;
 	private _globalPose:SkeletonPose = new SkeletonPose();
 	private _globalPropertiesDirty:boolean;
 	private _numJoints:number /*uint*/;
 	private _morphedSubGeometry:Object = new Object();
 	private _morphedSubGeometryDirty:Object = new Object();
-	private _condensedMatrices:Array<number>;
+	private _condensedMatrices:Float32Array;
 
 	private _skeleton:Skeleton;
 	private _forceCPU:boolean;
@@ -53,7 +53,7 @@ class SkeletonAnimator extends AnimatorBase
 	 *
 	 * @see #globalPose
 	 */
-	public get globalMatrices():Array<number>
+	public get globalMatrices():Float32Array
 	{
 		if (this._globalPropertiesDirty)
 			this.updateGlobalProperties();
@@ -123,7 +123,7 @@ class SkeletonAnimator extends AnimatorBase
 		this._jointsPerVertex = animationSet.jointsPerVertex;
 
 		this._numJoints = this._skeleton.numJoints;
-		this._globalMatrices = new Array<number>(this._numJoints*12);
+		this._globalMatrices = new Float32Array(this._numJoints*12);
 
 		var j:number /*int*/ = 0;
 		for (var i:number /*uint*/ = 0; i < this._numJoints; ++i) {
@@ -256,11 +256,11 @@ class SkeletonAnimator extends AnimatorBase
 	private updateCondensedMatrices(condensedIndexLookUp:Array<number>)
 	{
 		var j:number = 0, k:number = 0;
+		var len:number = condensedIndexLookUp.length;
 		var srcIndex:number /*uint*/;
 
-		this._condensedMatrices = new Array<number>();
+		this._condensedMatrices = new Float32Array(len*12);
 
-		var len:number = condensedIndexLookUp.length;
 		for (var i:number = 0; i < len; i++) {
 			srcIndex = condensedIndexLookUp[i]*12; //12 required for the three 4-component vectors that store the matrix
 			k = 12;

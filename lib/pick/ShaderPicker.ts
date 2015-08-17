@@ -58,9 +58,9 @@ class ShaderPicker implements IPicker
 	private _objectProgram:IProgram;
 	private _triangleProgram:IProgram;
 	private _bitmapImage2D:BitmapImage2D;
-	private _viewportData:Array<number>;
-	private _boundOffsetScale:Array<number>;
-	private _id:Array<number>;
+	private _viewportData:Float32Array;
+	private _boundOffsetScale:Float32Array;
+	private _id:Float32Array;
 
 	private _interactives:Array<RenderableBase> = new Array<RenderableBase>();
 	private _interactiveId:number;
@@ -107,9 +107,9 @@ class ShaderPicker implements IPicker
 	{
 		this._shaderPickingDetails = shaderPickingDetails;
 
-		this._id = new Array<number>(4);
-		this._viewportData = new Array<number>(4); // first 2 contain scale, last 2 translation
-		this._boundOffsetScale = new Array<number>(8); // first 2 contain scale, last 2 translation
+		this._id = new Float32Array(4);
+		this._viewportData = new Float32Array(4); // first 2 contain scale, last 2 translation
+		this._boundOffsetScale = new Float32Array(8); // first 2 contain scale, last 2 translation
 		this._boundOffsetScale[3] = 0;
 		this._boundOffsetScale[7] = 1;
 	}
@@ -522,7 +522,7 @@ class ShaderPicker implements IPicker
 		var rx:number, ry:number, rz:number;
 		var ox:number, oy:number, oz:number;
 		var t:number;
-		var raw:Array<number> = Matrix3DUtils.RAW_DATA_CONTAINER;
+		var raw:Float32Array = Matrix3DUtils.RAW_DATA_CONTAINER;
 		var cx:number = this._rayPos.x, cy:number = this._rayPos.y, cz:number = this._rayPos.z;
 
 		// unprojected projection point, gives ray dir in cam space

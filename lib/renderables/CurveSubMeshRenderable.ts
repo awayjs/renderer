@@ -127,9 +127,9 @@ class CurveSubMeshRenderable extends RenderableBase
 		var fixa:string = free1 + ".y";
 		var fixb:string = free1 + ".z";
 
-		var _aa:string = "fc7.z";
-		var _0:string = "fc7.x";
-		var _1:string = "fc7.y";
+		var _aa:string = "fc2.z";
+		var _0:string = "fc2.x";
+		var _1:string = "fc2.y";
 
 		var nl:string = "\n";
 
@@ -179,7 +179,7 @@ class CurveSubMeshRenderable extends RenderableBase
 		code.push("mov", out+".w", _1, nl);
 		return code.join(" ");
 	}
-    private _constants:Array<number> = new Array<number>(0, 1, 1, 0.5);
+    private _constants:Float32Array = new Float32Array([0, 1, 1, 0.5]);
     /**
      * @inheritDoc
      */
@@ -189,7 +189,7 @@ class CurveSubMeshRenderable extends RenderableBase
 
         var context:IContextGL = this._stage.context;
 
-        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 7, this._constants, 1);
+        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 2, this._constants, 1);
 
     }
 	/**

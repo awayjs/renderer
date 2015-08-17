@@ -197,8 +197,8 @@ class AnimationRegisterCache extends ShaderRegisterCache
 		return new ShaderRegisterElement(temp[0], parseInt(temp[1]));
 	}
 
-	public vertexConstantData:Array<number> = new Array<number>();
-	public fragmentConstantData:Array<number> = new Array<number>();
+	public vertexConstantData:Float32Array;
+	public fragmentConstantData:Float32Array;
 
 	private _numVertexConstant:number /*int*/;
 	private _numFragmentConstant:number /*int*/;
@@ -217,8 +217,8 @@ class AnimationRegisterCache extends ShaderRegisterCache
 	{
 		this._numVertexConstant = this.numUsedVertexConstants - this.vertexConstantOffset;
 		this._numFragmentConstant = this.numUsedFragmentConstants - this.fragmentConstantOffset;
-		this.vertexConstantData.length = this._numVertexConstant*4;
-		this.fragmentConstantData.length = this._numFragmentConstant*4;
+		this.vertexConstantData = new Float32Array(this._numVertexConstant*4);
+		this.fragmentConstantData = new Float32Array(this._numFragmentConstant*4);
 	}
 
 	public setVertexConst(index:number /*int*/, x:number = 0, y:number = 0, z:number = 0, w:number = 0)
@@ -239,7 +239,7 @@ class AnimationRegisterCache extends ShaderRegisterCache
 
 	public setVertexConstFromMatrix(index:number /*int*/, matrix:Matrix3D)
 	{
-		var rawData:Array<number> = matrix.rawData;
+		var rawData:Float32Array = matrix.rawData;
 		var _index:number /*int*/ = (index - this.vertexConstantOffset)*4;
 		this.vertexConstantData[_index++] = rawData[0];
 		this.vertexConstantData[_index++] = rawData[4];

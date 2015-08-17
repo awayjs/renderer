@@ -69,7 +69,7 @@ class Sampler2DVO extends SamplerVOBase
 
 		if (this.sampler2D.imageRect) {
 			var index:number = this.fragmentIndex;
-			var data:Array<number> = shader.fragmentConstantData;
+			var data:Float32Array = shader.fragmentConstantData;
 			data[index] = this.sampler2D.scaleX;
 			data[index + 1] = this.sampler2D.scaleY;
 			data[index + 2] = this.sampler2D.offsetX;

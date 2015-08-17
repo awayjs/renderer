@@ -33,7 +33,7 @@ class SkyboxRenderable extends RenderableBase
 	 */
 	private static _geometry:TriangleSubGeometry;
 
-	private _vertexArray:Array<number>;
+	private _vertexArray:Float32Array;
 
 	/**
 	 * //TODO
@@ -45,7 +45,7 @@ class SkyboxRenderable extends RenderableBase
 	{
 		super(pool, skybox, skybox, skybox, stage);
 
-		this._vertexArray = new Array<number>(0, 0, 0, 0, 1, 1, 1, 1);
+		this._vertexArray = new Float32Array([0, 0, 0, 0, 1, 1, 1, 1]);
 	}
 
 	/**

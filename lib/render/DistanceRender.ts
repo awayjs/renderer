@@ -44,7 +44,7 @@ class DistanceRender extends RenderPassBase
 		super._iInitConstantData(shader);
 
 		var index:number = this._fragmentConstantsIndex;
-		var data:Array<number> = shader.fragmentConstantData;
+		var data:Float32Array = shader.fragmentConstantData;
 		data[index + 4] = 1.0/255.0;
 		data[index + 5] = 1.0/255.0;
 		data[index + 6] = 1.0/255.0;
@@ -117,7 +117,7 @@ class DistanceRender extends RenderPassBase
 		f = 1/(2*f*f);
 		// sqrt(f*f+f*f) is largest possible distance for any frustum, so we need to divide by it. Rarely a tight fit, but with 32 bits precision, it's enough.
 		var index:number = this._fragmentConstantsIndex;
-		var data:Array<number> = this._shader.fragmentConstantData;
+		var data:Float32Array = this._shader.fragmentConstantData;
 		data[index] = 1.0*f;
 		data[index + 1] = 255.0*f;
 		data[index + 2] = 65025.0*f;

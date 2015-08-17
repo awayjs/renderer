@@ -55,7 +55,7 @@ class DepthRender extends RenderPassBase
 		super._iInitConstantData(shader);
 
 		var index:number = this._fragmentConstantsIndex;
-		var data:Array<number> = shader.fragmentConstantData;
+		var data:Float32Array = shader.fragmentConstantData;
 		data[index] = 1.0;
 		data[index + 1] = 255.0;
 		data[index + 2] = 65025.0;

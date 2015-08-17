@@ -83,7 +83,7 @@ class ShaderBase
 
 	private _defaultCulling:string = ContextGLTriangleFace.BACK;
 
-	public _pInverseSceneMatrix:Array<number> = new Array<number>();
+	public _pInverseSceneMatrix:Float32Array = new Float32Array(16);
 
 	public animationRegisterCache:AnimationRegisterCache;
 
@@ -216,8 +216,8 @@ class ShaderBase
 	 */
 	public usesLocalPosFragment:boolean = false;
 
-	public vertexConstantData:Array<number> = new Array<number>();
-	public fragmentConstantData:Array<number> = new Array<number>();
+	public vertexConstantData:Float32Array;
+	public fragmentConstantData:Float32Array;
 
 	/**
 	 * The index for the common data register.
@@ -382,8 +382,8 @@ class ShaderBase
 		this.uvSource = uvSource;
 		this.uvTarget = uvTarget;
 
-		this.vertexConstantData.length = this.numUsedVertexConstants*4;
-		this.fragmentConstantData.length = this.numUsedFragmentConstants*4;
+		this.vertexConstantData = new Float32Array(this.numUsedVertexConstants*4);
+		this.fragmentConstantData = new Float32Array(this.numUsedFragmentConstants*4);
 
 		//Initializes commonly required constant values.
 		if (this.commonsDataIndex >= 0) {
