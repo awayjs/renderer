@@ -2323,7 +2323,7 @@ var SkeletonAnimator = (function (_super) {
         this._forceCPU = forceCPU;
         this._jointsPerVertex = animationSet.jointsPerVertex;
         this._numJoints = this._skeleton.numJoints;
-        this._globalMatrices = new Array(this._numJoints * 12);
+        this._globalMatrices = new Float32Array(this._numJoints * 12);
         var j = 0;
         for (var i = 0; i < this._numJoints; ++i) {
             this._globalMatrices[j++] = 1;
@@ -2496,9 +2496,9 @@ var SkeletonAnimator = (function (_super) {
     };
     SkeletonAnimator.prototype.updateCondensedMatrices = function (condensedIndexLookUp) {
         var j = 0, k = 0;
-        var srcIndex /*uint*/;
-        this._condensedMatrices = new Array();
         var len = condensedIndexLookUp.length;
+        var srcIndex /*uint*/;
+        this._condensedMatrices = new Float32Array(len * 12);
         for (var i = 0; i < len; i++) {
             srcIndex = condensedIndexLookUp[i] * 12; //12 required for the three 4-component vectors that store the matrix
             k = 12;
@@ -3010,7 +3010,7 @@ var VertexAnimator = (function (_super) {
     function VertexAnimator(vertexAnimationSet) {
         _super.call(this, vertexAnimationSet);
         this._poses = new Array();
-        this._weights = Array(1, 0, 0, 0);
+        this._weights = new Float32Array([1, 0, 0, 0]);
         this._vertexAnimationSet = vertexAnimationSet;
         this._numPoses = vertexAnimationSet.numPoses;
         this._blendMode = vertexAnimationSet.blendMode;
@@ -3149,8 +3149,6 @@ var AnimationRegisterCache = (function (_super) {
     function AnimationRegisterCache(profile) {
         _super.call(this, profile);
         this.indexDictionary = new Object();
-        this.vertexConstantData = new Array();
-        this.fragmentConstantData = new Array();
     }
     AnimationRegisterCache.prototype.reset = function () {
         _super.prototype.reset.call(this);
@@ -3274,8 +3272,8 @@ var AnimationRegisterCache = (function (_super) {
     AnimationRegisterCache.prototype.setDataLength = function () {
         this._numVertexConstant = this.numUsedVertexConstants - this.vertexConstantOffset;
         this._numFragmentConstant = this.numUsedFragmentConstants - this.fragmentConstantOffset;
-        this.vertexConstantData.length = this._numVertexConstant * 4;
-        this.fragmentConstantData.length = this._numFragmentConstant * 4;
+        this.vertexConstantData = new Float32Array(this._numVertexConstant * 4);
+        this.fragmentConstantData = new Float32Array(this._numFragmentConstant * 4);
     };
     AnimationRegisterCache.prototype.setVertexConst = function (index /*int*/, x, y, z, w) {
         if (x === void 0) { x = 0; }
@@ -9814,9 +9812,9 @@ var ShaderPicker = (function () {
         this._rayPos = new Vector3D();
         this._rayDir = new Vector3D();
         this._shaderPickingDetails = shaderPickingDetails;
-        this._id = new Array(4);
-        this._viewportData = new Array(4); // first 2 contain scale, last 2 translation
-        this._boundOffsetScale = new Array(8); // first 2 contain scale, last 2 translation
+        this._id = new Float32Array(4);
+        this._viewportData = new Float32Array(4); // first 2 contain scale, last 2 translation
+        this._boundOffsetScale = new Float32Array(8); // first 2 contain scale, last 2 translation
         this._boundOffsetScale[3] = 0;
         this._boundOffsetScale[7] = 1;
     }
@@ -11203,7 +11201,7 @@ var CurveSubMeshRenderable = (function (_super) {
      */
     function CurveSubMeshRenderable(pool, subMesh, stage) {
         _super.call(this, pool, subMesh.parentMesh, subMesh, subMesh.material, stage);
-        this._constants = new Array(0, 1, 1, 0.5);
+        this._constants = new Float32Array([0, 1, 1, 0.5]);
         this.subMesh = subMesh;
     }
     /**
@@ -11264,9 +11262,9 @@ var CurveSubMeshRenderable = (function (_super) {
         var d2 = free1 + ".x";
         var fixa = free1 + ".y";
         var fixb = free1 + ".z";
-        var _aa = "fc7.z";
-        var _0 = "fc7.x";
-        var _1 = "fc7.y";
+        var _aa = "fc2.z";
+        var _0 = "fc2.x";
+        var _1 = "fc2.y";
         var nl = "\n";
         var code = new Array();
         //distance from curve
@@ -11310,7 +11308,7 @@ var CurveSubMeshRenderable = (function (_super) {
     CurveSubMeshRenderable.prototype._iActivate = function (pass, camera) {
         _super.prototype._iActivate.call(this, pass, camera);
         var context = this._stage.context;
-        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 7, this._constants, 1);
+        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 2, this._constants, 1);
     };
     /**
      * @inheritDoc
@@ -11367,7 +11365,7 @@ var LineSegmentRenderable = (function (_super) {
      */
     function LineSegmentRenderable(pool, lineSegment, stage) {
         _super.call(this, pool, lineSegment, lineSegment, lineSegment.material, stage);
-        this._constants = new Array(0, 0, 0, 0);
+        this._constants = new Float32Array([0, 0, 0, 0]);
         this._thickness = 1.25;
         this._lineSegment = lineSegment;
         this._calcMatrix = new Matrix3D();
@@ -11455,8 +11453,8 @@ var LineSegmentRenderable = (function (_super) {
     };
     LineSegmentRenderable.assetClass = LineSegment;
     LineSegmentRenderable._lineGeometry = new Object();
-    LineSegmentRenderable.pONE_VECTOR = Array(1, 1, 1, 1);
-    LineSegmentRenderable.pFRONT_VECTOR = Array(0, 0, -1, 0);
+    LineSegmentRenderable.pONE_VECTOR = new Float32Array([1, 1, 1, 1]);
+    LineSegmentRenderable.pFRONT_VECTOR = new Float32Array([0, 0, -1, 0]);
     LineSegmentRenderable.vertexAttributesOffset = 3;
     return LineSegmentRenderable;
 })(RenderableBase);
@@ -11488,7 +11486,7 @@ var LineSubMeshRenderable = (function (_super) {
      */
     function LineSubMeshRenderable(pool, subMesh, stage) {
         _super.call(this, pool, subMesh.parentMesh, subMesh, subMesh.material, stage);
-        this._constants = new Array(0, 0, 0, 0);
+        this._constants = new Float32Array([0, 0, 0, 0]);
         this._thickness = 1.25;
         this.subMesh = subMesh;
         this._calcMatrix = new Matrix3D();
@@ -11541,8 +11539,8 @@ var LineSubMeshRenderable = (function (_super) {
         context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
     };
     LineSubMeshRenderable.assetClass = LineSubMesh;
-    LineSubMeshRenderable.pONE_VECTOR = Array(1, 1, 1, 1);
-    LineSubMeshRenderable.pFRONT_VECTOR = Array(0, 0, -1, 0);
+    LineSubMeshRenderable.pONE_VECTOR = new Float32Array([1, 1, 1, 1]);
+    LineSubMeshRenderable.pFRONT_VECTOR = new Float32Array([0, 0, -1, 0]);
     LineSubMeshRenderable.vertexAttributesOffset = 3;
     return LineSubMeshRenderable;
 })(RenderableBase);
@@ -11760,7 +11758,7 @@ var SkyboxRenderable = (function (_super) {
      */
     function SkyboxRenderable(pool, skybox, stage) {
         _super.call(this, pool, skybox, skybox, skybox, stage);
-        this._vertexArray = new Array(0, 0, 0, 0, 1, 1, 1, 1);
+        this._vertexArray = new Float32Array([0, 0, 0, 0, 1, 1, 1, 1]);
     }
     /**
      * //TODO
@@ -12333,7 +12331,7 @@ var ShaderBase = (function () {
          */
         this.writeDepth = true;
         this._defaultCulling = ContextGLTriangleFace.BACK;
-        this._pInverseSceneMatrix = new Array();
+        this._pInverseSceneMatrix = new Float32Array(16);
         //set ambient values to default
         this.ambientR = 0xFF;
         this.ambientG = 0xFF;
@@ -12346,8 +12344,6 @@ var ShaderBase = (function () {
          * Indicates whether there are any dependencies on the local position vector.
          */
         this.usesLocalPosFragment = false;
-        this.vertexConstantData = new Array();
-        this.fragmentConstantData = new Array();
         this._renderableClass = renderableClass;
         this._pass = pass;
         this._stage = stage;
@@ -12430,8 +12426,8 @@ var ShaderBase = (function () {
         this.animationTargetRegisters = animationTargetRegisters;
         this.uvSource = uvSource;
         this.uvTarget = uvTarget;
-        this.vertexConstantData.length = this.numUsedVertexConstants * 4;
-        this.fragmentConstantData.length = this.numUsedFragmentConstants * 4;
+        this.vertexConstantData = new Float32Array(this.numUsedVertexConstants * 4);
+        this.fragmentConstantData = new Float32Array(this.numUsedFragmentConstants * 4);
         //Initializes commonly required constant values.
         if (this.commonsDataIndex >= 0) {
             this.fragmentConstantData[this.commonsDataIndex] = .5;
@@ -14073,7 +14069,22 @@ var PerspectiveMatrix3D = (function (_super) {
     PerspectiveMatrix3D.prototype.perspectiveFieldOfViewLH = function (fieldOfViewY, aspectRatio, zNear, zFar) {
         var yScale = 1 / Math.tan(fieldOfViewY / 2);
         var xScale = yScale / aspectRatio;
-        this.copyRawDataFrom([xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zFar / (zFar - zNear), 1.0, 0.0, 0.0, (zNear * zFar) / (zNear - zFar), 0.0]);
+        this.rawData[0] = xScale;
+        this.rawData[1] = 0.0;
+        this.rawData[2] = 0.0;
+        this.rawData[3] = 0.0;
+        this.rawData[4] = 0.0;
+        this.rawData[5] = yScale;
+        this.rawData[6] = 0.0;
+        this.rawData[7] = 0.0;
+        this.rawData[8] = 0.0;
+        this.rawData[9] = 0.0;
+        this.rawData[10] = zFar / (zFar - zNear);
+        this.rawData[11] = 1.0;
+        this.rawData[12] = 0.0;
+        this.rawData[13] = 0.0;
+        this.rawData[14] = (zNear * zFar) / (zNear - zFar);
+        this.rawData[15] = 0.0;
     };
     return PerspectiveMatrix3D;
 })(Matrix3D);

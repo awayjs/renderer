@@ -907,7 +907,7 @@ declare module "awayjs-renderergl/lib/animators/SkeletonAnimator" {
 	     *
 	     * @see #globalPose
 	     */
-	    globalMatrices: Array<number>;
+	    globalMatrices: Float32Array;
 	    /**
 	     * returns the current skeleton pose output from the animator.
 	     *
@@ -1160,8 +1160,8 @@ declare module "awayjs-renderergl/lib/animators/data/AnimationRegisterCache" {
 	    getColorPassCode(): string;
 	    getColorCombinationCode(shadedTarget: string): string;
 	    private getRegisterFromString(code);
-	    vertexConstantData: Array<number>;
-	    fragmentConstantData: Array<number>;
+	    vertexConstantData: Float32Array;
+	    fragmentConstantData: Float32Array;
 	    private _numVertexConstant;
 	    private _numFragmentConstant;
 	    numVertexConstant: number;
@@ -2293,83 +2293,6 @@ declare module "awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode
 	
 }
 
-declare module "awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode" {
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-	import ParticleProperties = require("awayjs-renderergl/lib/animators/data/ParticleProperties");
-	import ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-	import ParticleSpriteSheetState = require("awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState");
-	/**
-	 * A particle animation node used when a spritesheet texture is required to animate the particle.
-	 * NB: to enable use of this node, the <code>repeat</code> property on the material has to be set to true.
-	 */
-	class ParticleSpriteSheetNode extends ParticleNodeBase {
-	    /** @private */
-	    _iUsesCycle: boolean;
-	    /** @private */
-	    _iUsesPhase: boolean;
-	    /** @private */
-	    _iTotalFrames: number;
-	    /** @private */
-	    _iNumColumns: number;
-	    /** @private */
-	    _iNumRows: number;
-	    /** @private */
-	    _iCycleDuration: number;
-	    /** @private */
-	    _iCyclePhase: number;
-	    /**
-	     * Reference for spritesheet node properties on a single particle (when in local property mode).
-	     * Expects a <code>Vector3D</code> representing the cycleDuration (x), optional phaseTime (y).
-	     */
-	    static UV_VECTOR3D: string;
-	    /**
-	     * Defines the number of columns in the spritesheet, when in global mode. Defaults to 1. Read only.
-	     */
-	    numColumns: number;
-	    /**
-	     * Defines the number of rows in the spritesheet, when in global mode. Defaults to 1. Read only.
-	     */
-	    numRows: number;
-	    /**
-	     * Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows. Read only.
-	     */
-	    totalFrames: number;
-	    /**
-	     * Creates a new <code>ParticleSpriteSheetNode</code>
-	     *
-	     * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
-	     * @param    [optional] numColumns      Defines the number of columns in the spritesheet, when in global mode. Defaults to 1.
-	     * @param    [optional] numRows         Defines the number of rows in the spritesheet, when in global mode. Defaults to 1.
-	     * @param    [optional] cycleDuration   Defines the default cycle duration in seconds, when in global mode. Defaults to 1.
-	     * @param    [optional] cyclePhase      Defines the default cycle phase, when in global mode. Defaults to 0.
-	     * @param    [optional] totalFrames     Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows.
-	     * @param    [optional] looping         Defines whether the spritesheet animation is set to loop indefinitely. Defaults to true.
-	     */
-	    constructor(mode: number, usesCycle: boolean, usesPhase: boolean, numColumns?: number, numRows?: number, cycleDuration?: number, cyclePhase?: number, totalFrames?: number);
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALUVCode(shader: ShaderBase, animationRegisterCache: AnimationRegisterCache): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    getAnimationState(animator: AnimatorBase): ParticleSpriteSheetState;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iProcessAnimationSetting(particleAnimationSet: ParticleAnimationSet): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iGeneratePropertyOfOneParticle(param: ParticleProperties): void;
-	}
-	export = ParticleSpriteSheetNode;
-	
-}
-
 declare module "awayjs-renderergl/lib/animators/nodes/ParticleTimeNode" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -2588,6 +2511,83 @@ declare module "awayjs-renderergl/lib/animators/nodes/SkeletonClipNode" {
 	    _pUpdateStitch(): void;
 	}
 	export = SkeletonClipNode;
+	
+}
+
+declare module "awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode" {
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
+	import ParticleProperties = require("awayjs-renderergl/lib/animators/data/ParticleProperties");
+	import ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
+	import ParticleSpriteSheetState = require("awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState");
+	/**
+	 * A particle animation node used when a spritesheet texture is required to animate the particle.
+	 * NB: to enable use of this node, the <code>repeat</code> property on the material has to be set to true.
+	 */
+	class ParticleSpriteSheetNode extends ParticleNodeBase {
+	    /** @private */
+	    _iUsesCycle: boolean;
+	    /** @private */
+	    _iUsesPhase: boolean;
+	    /** @private */
+	    _iTotalFrames: number;
+	    /** @private */
+	    _iNumColumns: number;
+	    /** @private */
+	    _iNumRows: number;
+	    /** @private */
+	    _iCycleDuration: number;
+	    /** @private */
+	    _iCyclePhase: number;
+	    /**
+	     * Reference for spritesheet node properties on a single particle (when in local property mode).
+	     * Expects a <code>Vector3D</code> representing the cycleDuration (x), optional phaseTime (y).
+	     */
+	    static UV_VECTOR3D: string;
+	    /**
+	     * Defines the number of columns in the spritesheet, when in global mode. Defaults to 1. Read only.
+	     */
+	    numColumns: number;
+	    /**
+	     * Defines the number of rows in the spritesheet, when in global mode. Defaults to 1. Read only.
+	     */
+	    numRows: number;
+	    /**
+	     * Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows. Read only.
+	     */
+	    totalFrames: number;
+	    /**
+	     * Creates a new <code>ParticleSpriteSheetNode</code>
+	     *
+	     * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+	     * @param    [optional] numColumns      Defines the number of columns in the spritesheet, when in global mode. Defaults to 1.
+	     * @param    [optional] numRows         Defines the number of rows in the spritesheet, when in global mode. Defaults to 1.
+	     * @param    [optional] cycleDuration   Defines the default cycle duration in seconds, when in global mode. Defaults to 1.
+	     * @param    [optional] cyclePhase      Defines the default cycle phase, when in global mode. Defaults to 0.
+	     * @param    [optional] totalFrames     Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows.
+	     * @param    [optional] looping         Defines whether the spritesheet animation is set to loop indefinitely. Defaults to true.
+	     */
+	    constructor(mode: number, usesCycle: boolean, usesPhase: boolean, numColumns?: number, numRows?: number, cycleDuration?: number, cyclePhase?: number, totalFrames?: number);
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALUVCode(shader: ShaderBase, animationRegisterCache: AnimationRegisterCache): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    getAnimationState(animator: AnimatorBase): ParticleSpriteSheetState;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iProcessAnimationSetting(particleAnimationSet: ParticleAnimationSet): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iGeneratePropertyOfOneParticle(param: ParticleProperties): void;
+	}
+	export = ParticleSpriteSheetNode;
 	
 }
 
@@ -5084,8 +5084,8 @@ declare module "awayjs-renderergl/lib/renderables/LineSegmentRenderable" {
 	class LineSegmentRenderable extends RenderableBase {
 	    static assetClass: IAssetClass;
 	    private static _lineGeometry;
-	    static pONE_VECTOR: Array<number>;
-	    static pFRONT_VECTOR: Array<number>;
+	    static pONE_VECTOR: Float32Array;
+	    static pFRONT_VECTOR: Float32Array;
 	    private _constants;
 	    private _calcMatrix;
 	    private _thickness;
@@ -5158,8 +5158,8 @@ declare module "awayjs-renderergl/lib/renderables/LineSubMeshRenderable" {
 	 */
 	class LineSubMeshRenderable extends RenderableBase {
 	    static assetClass: IAssetClass;
-	    static pONE_VECTOR: Array<number>;
-	    static pFRONT_VECTOR: Array<number>;
+	    static pONE_VECTOR: Float32Array;
+	    static pFRONT_VECTOR: Float32Array;
 	    private _constants;
 	    private _calcMatrix;
 	    private _thickness;
@@ -5716,7 +5716,7 @@ declare module "awayjs-renderergl/lib/shaders/ShaderBase" {
 	    profile: string;
 	    usesAnimation: boolean;
 	    private _defaultCulling;
-	    _pInverseSceneMatrix: Array<number>;
+	    _pInverseSceneMatrix: Float32Array;
 	    animationRegisterCache: AnimationRegisterCache;
 	    /**
 	     * The amount of used vertex constants in the vertex code. Used by the animation code generation to know from which index on registers are available.
@@ -5821,8 +5821,8 @@ declare module "awayjs-renderergl/lib/shaders/ShaderBase" {
 	     * Indicates whether there are any dependencies on the local position vector.
 	     */
 	    usesLocalPosFragment: boolean;
-	    vertexConstantData: Array<number>;
-	    fragmentConstantData: Array<number>;
+	    vertexConstantData: Float32Array;
+	    fragmentConstantData: Float32Array;
 	    /**
 	     * The index for the common data register.
 	     */
@@ -6402,7 +6402,7 @@ declare module "awayjs-renderergl/lib/utils/PerspectiveMatrix3D" {
 	 *
 	 */
 	class PerspectiveMatrix3D extends Matrix3D {
-	    constructor(v?: Array<number>);
+	    constructor(v?: Float32Array);
 	    perspectiveFieldOfViewLH(fieldOfViewY: number, aspectRatio: number, zNear: number, zFar: number): void;
 	}
 	export = PerspectiveMatrix3D;
