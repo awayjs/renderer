@@ -539,7 +539,7 @@ class ShaderBase
 		}
 		if (this.usesColorTransform) {
 
-			var colorTransform:ColorTransform = renderable.renderableOwner.colorTransform;
+			var colorTransform:ColorTransform = renderable.sourceEntity._iAssignedColorTransform();
 
 			if (colorTransform) {
 				this.fragmentConstantData[this.colorTransformIndex] = colorTransform.redMultiplier;
