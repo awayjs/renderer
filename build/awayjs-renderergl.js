@@ -12557,7 +12557,7 @@ var ShaderBase = (function () {
             }
         }
         if (this.usesColorTransform) {
-            var colorTransform = renderable.renderableOwner.colorTransform;
+            var colorTransform = renderable.sourceEntity._iAssignedColorTransform();
             if (colorTransform) {
                 this.fragmentConstantData[this.colorTransformIndex] = colorTransform.redMultiplier;
                 this.fragmentConstantData[this.colorTransformIndex + 1] = colorTransform.greenMultiplier;
