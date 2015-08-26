@@ -990,7 +990,9 @@ var RendererBase = (function (_super) {
         this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
         this._registeredMasks.length = 0;
         var gl = this._pContext["_gl"];
-        gl.disable(gl.STENCIL_TEST);
+        if (gl) {
+            gl.disable(gl.STENCIL_TEST);
+        }
         this._maskConfig = 0;
         while (renderable) {
             render = renderable.render;
@@ -1008,9 +1010,11 @@ var RendererBase = (function (_super) {
                     if (!this._activeMasksConfig.length) {
                         // disable stencil
                         //this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
-                        gl.disable(gl.STENCIL_TEST);
-                        gl.stencilFunc(gl.ALWAYS, 0, 0xff);
-                        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+                        if (gl) {
+                            gl.disable(gl.STENCIL_TEST);
+                            gl.stencilFunc(gl.ALWAYS, 0, 0xff);
+                            gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+                        }
                     }
                     else {
                         //console.log("Rendering masks with configID " + newMaskConfigID);
