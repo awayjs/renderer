@@ -638,7 +638,10 @@ class RendererBase extends EventDispatcher implements IRenderer
 
 		this._registeredMasks.length = 0;
 		var gl = this._pContext["_gl"];
-		gl.disable(gl.STENCIL_TEST);
+		if(gl) {
+			gl.disable(gl.STENCIL_TEST);
+		}
+
 		this._maskConfig = 0;
 
 		while (renderable) {
@@ -658,9 +661,11 @@ class RendererBase extends EventDispatcher implements IRenderer
 					this._activeMasksConfig = renderable.masksConfig;
 					if (!this._activeMasksConfig.length) {
 						// disable stencil
-						gl.disable(gl.STENCIL_TEST);
-						gl.stencilFunc(gl.ALWAYS, 0, 0xff);
-						gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+						if(gl) {
+							gl.disable(gl.STENCIL_TEST);
+							gl.stencilFunc(gl.ALWAYS, 0, 0xff);
+							gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+						}
 					} else {
 						this._renderMasks(renderable.sourceEntity._iAssignedMasks());
 					}
