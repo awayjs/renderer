@@ -1009,7 +1009,6 @@ var RendererBase = (function (_super) {
                     this._activeMasksConfig = renderable.masksConfig;
                     if (!this._activeMasksConfig.length) {
                         // disable stencil
-                        //this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
                         if (gl) {
                             gl.disable(gl.STENCIL_TEST);
                             gl.stencilFunc(gl.ALWAYS, 0, 0xff);
@@ -1017,8 +1016,6 @@ var RendererBase = (function (_super) {
                         }
                     }
                     else {
-                        //console.log("Rendering masks with configID " + newMaskConfigID);
-                        //this._pContext.setStencilReferenceValue(newMaskConfigID);
                         this._renderMasks(renderable.sourceEntity._iAssignedMasks());
                     }
                     this._activeMasksDirty = false;
@@ -11588,6 +11585,7 @@ var RenderableBase = (function () {
         configurable: true
     });
     RenderableBase.prototype.dispose = function () {
+        this.renderableOwner.removeEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate);
         this._pool.disposeItem(this.renderableOwner);
     };
     RenderableBase.prototype.invalidateGeometry = function () {
@@ -11690,7 +11688,7 @@ var RenderablePool = (function () {
      */
     RenderablePool.prototype.disposeItem = function (renderableOwner) {
         renderableOwner._iRemoveRenderable(this._pool[renderableOwner.id]);
-        this._pool[renderableOwner.id] = null;
+        delete this._pool[renderableOwner.id];
     };
     /**
      * //TODO
