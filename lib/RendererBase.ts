@@ -658,16 +658,11 @@ class RendererBase extends EventDispatcher implements IRenderer
 					this._activeMasksConfig = renderable.masksConfig;
 					if (!this._activeMasksConfig.length) {
 						// disable stencil
-						//this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
 						gl.disable(gl.STENCIL_TEST);
 						gl.stencilFunc(gl.ALWAYS, 0, 0xff);
 						gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-						//console.log("Let's not use stencil!");
 					} else {
-						//console.log("Rendering masks with configID " + newMaskConfigID);
-						//this._pContext.setStencilReferenceValue(newMaskConfigID);
 						this._renderMasks(renderable.sourceEntity._iAssignedMasks());
-						//this._pContext.setStencilActions("frontAndBack", "equal", "keep", "keep", "keep");
 					}
 					this._activeMasksDirty = false;
 				}

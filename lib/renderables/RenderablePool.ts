@@ -68,7 +68,7 @@ class RenderablePool
 	{
 		renderableOwner._iRemoveRenderable(this._pool[renderableOwner.id]);
 
-		this._pool[renderableOwner.id] = null;
+		delete this._pool[renderableOwner.id];
 	}
 
 	/**

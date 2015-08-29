@@ -137,13 +137,14 @@ class RenderableBase implements IRenderable
 
 		this.renderableOwner = renderableOwner;
 
-		this.renderableOwner.addEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate)
+		this.renderableOwner.addEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate);
 
 		this.renderOwner = renderOwner;
 	}
 
 	public dispose()
 	{
+		this.renderableOwner.removeEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate);
 		this._pool.disposeItem(this.renderableOwner);
 	}
 
