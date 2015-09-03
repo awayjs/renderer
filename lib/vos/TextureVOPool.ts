@@ -47,7 +47,7 @@ class TextureVOPool
 	{
 		texture._iRemoveTextureVO(this._pool[texture.id]);
 
-		this._pool[texture.id] = null;
+		delete this._pool[texture.id];
 	}
 
 	public dispose()

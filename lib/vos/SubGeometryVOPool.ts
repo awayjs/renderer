@@ -48,7 +48,7 @@ class SubGeometryVOPool
 	{
 		subGeometry._iRemoveSubGeometryVO(this._pool[subGeometry.id]);
 
-		this._pool[subGeometry.id] = null;
+		delete this._pool[subGeometry.id];
 	}
 
 	/**

@@ -35,6 +35,17 @@ class LineSubGeometryVO extends SubGeometryVOBase
 		this.invalidateVertices(this._lineSubGeometry.colors);
 	}
 
+	public dispose()
+	{
+		super.dispose();
+
+		this.disposeVertices(this._lineSubGeometry.positions);
+		this.disposeVertices(this._lineSubGeometry.thickness);
+		this.disposeVertices(this._lineSubGeometry.colors);
+
+		this._lineSubGeometry = null;
+	}
+
 	public _render(shader:ShaderBase, stage:Stage)
 	{
 		if (shader.colorBufferIndex >= 0)

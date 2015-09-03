@@ -52,11 +52,8 @@ class Filter3DRenderer
 
 	public getMainInputTexture(stage:Stage):ITexture
 	{
-		if (this._filterTasksInvalid) {
-
+		if (this._filterTasksInvalid)
 			this.updateFilterTasks(stage);
-
-		}
 
 		return this._mainInputTexture;
 	}
@@ -74,23 +71,12 @@ class Filter3DRenderer
 
 		this._requireDepthRender = false;
 
-		if (!this._filters) {
-
+		if (!this._filters)
 			return;
 
-		}
-
-		for (var i:number = 0; i < this._filters.length; ++i) {
-
-			// TODO: check logic:
-			// this._requireDepthRender ||=  Boolean ( this._filters[i].requireDepthRender )
-
-			var s:any = this._filters[i];
-			var b:boolean = <boolean> ( s.requireDepthRender == null )? false : s.requireDepthRender;
-
-			this._requireDepthRender = this._requireDepthRender || b;
-
-		}
+		for (var i:number = 0; i < this._filters.length; ++i)
+			if (this._filters[i].requireDepthRender)
+				this._requireDepthRender = true;
 
 		this._filterSizesInvalid = true;
 
@@ -100,11 +86,8 @@ class Filter3DRenderer
 	{
 		var len:number;
 
-		if (this._filterSizesInvalid) {
-
+		if (this._filterSizesInvalid)
 			this.updateFilterSizes();
-
-		}
 
 		if (!this._filters) {
 			this._tasks = null;
@@ -121,9 +104,6 @@ class Filter3DRenderer
 
 			// make sure all internal tasks are linked together
 			filter = this._filters[i];
-
-			// TODO: check logic
-			// filter.setRenderTargets(i == len? null : Filter3DBase(_filters[i + 1]).getMainInputTexture(stage), stage);
 
 			filter.setRenderTargets(i == len? null : this._filters[i + 1].getMainInputTexture(stage), stage);
 
@@ -146,23 +126,19 @@ class Filter3DRenderer
 
 		var vertexBuffer:IVertexBuffer = this._rttManager.renderToTextureVertexBuffer;
 
-		if (!this._filters) {
+		if (!this._filters)
 			return;
-		}
 
-		if (this._filterSizesInvalid) {
+		if (this._filterSizesInvalid)
 			this.updateFilterSizes();
-		}
 
-		if (this._filterTasksInvalid) {
+		if (this._filterTasksInvalid)
 			this.updateFilterTasks(stage);
-		}
 
 		len = this._filters.length;
 
-		for (i = 0; i < len; ++i) {
+		for (i = 0; i < len; ++i)
 			this._filters[i].update(stage, camera);
-		}
 
 		len = this._tasks.length;
 
@@ -211,7 +187,6 @@ class Filter3DRenderer
 		}
 
 		this._filterSizesInvalid = true;
-
 	}
 
 	public dispose()

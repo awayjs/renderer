@@ -35,6 +35,17 @@ class CurveSubGeometryVO extends SubGeometryVOBase
 		this.invalidateVertices(this._curveSubGeometry.uvs);
 	}
 
+	public dispose()
+	{
+		super.dispose();
+
+		this.disposeVertices(this._curveSubGeometry.positions);
+		this.disposeVertices(this._curveSubGeometry.curves);
+		this.disposeVertices(this._curveSubGeometry.uvs);
+
+		this._curveSubGeometry = null;
+	}
+
 	public _render(shader:ShaderBase, stage:Stage)
 	{
 		if (shader.uvBufferIndex >= 0)

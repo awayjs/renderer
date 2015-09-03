@@ -166,8 +166,10 @@ class SubGeometryVOBase implements ISubGeometryVO
 
 		var bufferId:number = attributesView.buffer.id;
 
-		this._vertices[bufferId].dispose();
-		this._vertices[bufferId] = null;
+		if (this._vertices[bufferId]) {
+			this._vertices[bufferId].dispose();
+			delete this._vertices[bufferId];
+		}
 	}
 
 	/**
@@ -176,6 +178,15 @@ class SubGeometryVOBase implements ISubGeometryVO
 	public dispose()
 	{
 		this._pool.disposeItem(this._subGeometry);
+		this._pool = null;
+
+		this._subGeometry.removeEventListener(SubGeometryEvent.INDICES_DISPOSED, this._onIndicesDisposedDelegate);
+		this._subGeometry.removeEventListener(SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdatedDelegate);
+
+		this._subGeometry.removeEventListener(SubGeometryEvent.VERTICES_DISPOSED, this._onVerticesDisposedDelegate);
+		this._subGeometry.removeEventListener(SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdatedDelegate);
+
+		this._subGeometry = null;
 
 		this.disposeIndices();
 

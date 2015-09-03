@@ -27,9 +27,7 @@ class Filter3DTaskBase
 
 	constructor(requireDepthRender:boolean = false)
 	{
-
 		this._requireDepthRender = requireDepthRender;
-
 	}
 
 	/**

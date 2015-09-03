@@ -39,6 +39,21 @@ class TriangleSubGeometryVO extends SubGeometryVOBase
 		this.invalidateVertices(this._triangleSubGeometry.jointWeights);
 	}
 
+	public dispose()
+	{
+		super.dispose();
+
+		this.disposeVertices(this._triangleSubGeometry.positions);
+		this.disposeVertices(this._triangleSubGeometry.normals);
+		this.disposeVertices(this._triangleSubGeometry.tangents);
+		this.disposeVertices(this._triangleSubGeometry.uvs);
+		this.disposeVertices(this._triangleSubGeometry.secondaryUVs);
+		this.disposeVertices(this._triangleSubGeometry.jointIndices);
+		this.disposeVertices(this._triangleSubGeometry.jointWeights);
+
+		this._triangleSubGeometry = null;
+	}
+
 	public _render(shader:ShaderBase, stage:Stage)
 	{
 		if (shader.uvBufferIndex >= 0)
