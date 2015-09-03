@@ -115,38 +115,6 @@ declare module "awayjs-renderergl/lib/DistanceRenderer" {
 	
 }
 
-declare module "awayjs-renderergl/lib/Filter3DRenderer" {
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
-	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
-	/**
-	 * @class away.render.Filter3DRenderer
-	 */
-	class Filter3DRenderer {
-	    private _filters;
-	    private _tasks;
-	    private _filterTasksInvalid;
-	    private _mainInputTexture;
-	    private _requireDepthRender;
-	    private _rttManager;
-	    private _stage;
-	    private _filterSizesInvalid;
-	    private _onRTTResizeDelegate;
-	    constructor(stage: Stage);
-	    private onRTTResize(event);
-	    requireDepthRender: boolean;
-	    getMainInputTexture(stage: Stage): ITexture;
-	    filters: Filter3DBase[];
-	    private updateFilterTasks(stage);
-	    render(stage: Stage, camera: Camera, depthTexture: ITexture): void;
-	    private updateFilterSizes();
-	    dispose(): void;
-	}
-	export = Filter3DRenderer;
-	
-}
-
 declare module "awayjs-renderergl/lib/RendererBase" {
 	import ImageBase = require("awayjs-core/lib/data/ImageBase");
 	import BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
@@ -353,6 +321,38 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	    private _checkMasksConfig(masksConfig);
 	}
 	export = RendererBase;
+	
+}
+
+declare module "awayjs-renderergl/lib/Filter3DRenderer" {
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
+	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+	/**
+	 * @class away.render.Filter3DRenderer
+	 */
+	class Filter3DRenderer {
+	    private _filters;
+	    private _tasks;
+	    private _filterTasksInvalid;
+	    private _mainInputTexture;
+	    private _requireDepthRender;
+	    private _rttManager;
+	    private _stage;
+	    private _filterSizesInvalid;
+	    private _onRTTResizeDelegate;
+	    constructor(stage: Stage);
+	    private onRTTResize(event);
+	    requireDepthRender: boolean;
+	    getMainInputTexture(stage: Stage): ITexture;
+	    filters: Filter3DBase[];
+	    private updateFilterTasks(stage);
+	    render(stage: Stage, camera: Camera, depthTexture: ITexture): void;
+	    private updateFilterSizes();
+	    dispose(): void;
+	}
+	export = Filter3DRenderer;
 	
 }
 
@@ -6427,6 +6427,7 @@ declare module "awayjs-renderergl/lib/vos/CurveSubGeometryVO" {
 	    static assetClass: IAssetClass;
 	    private _curveSubGeometry;
 	    constructor(pool: SubGeometryVOPool, curveSubGeometry: CurveSubGeometry);
+	    dispose(): void;
 	    _render(shader: ShaderBase, stage: Stage): void;
 	    _drawElements(firstIndex: number, numIndices: number, stage: Stage): void;
 	    _drawArrays(firstVertex: number, numVertices: number, stage: Stage): void;
@@ -6507,6 +6508,7 @@ declare module "awayjs-renderergl/lib/vos/LineSubGeometryVO" {
 	    static assetClass: IAssetClass;
 	    private _lineSubGeometry;
 	    constructor(pool: SubGeometryVOPool, lineSubGeometry: LineSubGeometry);
+	    dispose(): void;
 	    _render(shader: ShaderBase, stage: Stage): void;
 	    _drawElements(firstIndex: number, numIndices: number, stage: Stage): void;
 	    _drawArrays(firstVertex: number, numVertices: number, stage: Stage): void;
@@ -6970,6 +6972,7 @@ declare module "awayjs-renderergl/lib/vos/TriangleSubGeometryVO" {
 	    static assetClass: IAssetClass;
 	    private _triangleSubGeometry;
 	    constructor(pool: SubGeometryVOPool, triangleSubGeometry: TriangleSubGeometry);
+	    dispose(): void;
 	    _render(shader: ShaderBase, stage: Stage): void;
 	    _drawElements(firstIndex: number, numIndices: number, stage: Stage): void;
 	    _drawArrays(firstVertex: number, numVertices: number, stage: Stage): void;

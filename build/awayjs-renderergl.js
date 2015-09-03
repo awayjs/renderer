@@ -380,9 +380,8 @@ var Filter3DRenderer = (function () {
         configurable: true
     });
     Filter3DRenderer.prototype.getMainInputTexture = function (stage) {
-        if (this._filterTasksInvalid) {
+        if (this._filterTasksInvalid)
             this.updateFilterTasks(stage);
-        }
         return this._mainInputTexture;
     };
     Object.defineProperty(Filter3DRenderer.prototype, "filters", {
@@ -393,16 +392,11 @@ var Filter3DRenderer = (function () {
             this._filters = value;
             this._filterTasksInvalid = true;
             this._requireDepthRender = false;
-            if (!this._filters) {
+            if (!this._filters)
                 return;
-            }
-            for (var i = 0; i < this._filters.length; ++i) {
-                // TODO: check logic:
-                // this._requireDepthRender ||=  Boolean ( this._filters[i].requireDepthRender )
-                var s = this._filters[i];
-                var b = (s.requireDepthRender == null) ? false : s.requireDepthRender;
-                this._requireDepthRender = this._requireDepthRender || b;
-            }
+            for (var i = 0; i < this._filters.length; ++i)
+                if (this._filters[i].requireDepthRender)
+                    this._requireDepthRender = true;
             this._filterSizesInvalid = true;
         },
         enumerable: true,
@@ -410,9 +404,8 @@ var Filter3DRenderer = (function () {
     });
     Filter3DRenderer.prototype.updateFilterTasks = function (stage) {
         var len;
-        if (this._filterSizesInvalid) {
+        if (this._filterSizesInvalid)
             this.updateFilterSizes();
-        }
         if (!this._filters) {
             this._tasks = null;
             return;
@@ -423,8 +416,6 @@ var Filter3DRenderer = (function () {
         for (var i = 0; i <= len; ++i) {
             // make sure all internal tasks are linked together
             filter = this._filters[i];
-            // TODO: check logic
-            // filter.setRenderTargets(i == len? null : Filter3DBase(_filters[i + 1]).getMainInputTexture(stage), stage);
             filter.setRenderTargets(i == len ? null : this._filters[i + 1].getMainInputTexture(stage), stage);
             this._tasks = this._tasks.concat(filter.tasks);
         }
@@ -437,19 +428,15 @@ var Filter3DRenderer = (function () {
         var context = stage.context;
         var indexBuffer = this._rttManager.indexBuffer;
         var vertexBuffer = this._rttManager.renderToTextureVertexBuffer;
-        if (!this._filters) {
+        if (!this._filters)
             return;
-        }
-        if (this._filterSizesInvalid) {
+        if (this._filterSizesInvalid)
             this.updateFilterSizes();
-        }
-        if (this._filterTasksInvalid) {
+        if (this._filterTasksInvalid)
             this.updateFilterTasks(stage);
-        }
         len = this._filters.length;
-        for (i = 0; i < len; ++i) {
+        for (i = 0; i < len; ++i)
             this._filters[i].update(stage, camera);
-        }
         len = this._tasks.length;
         if (len > 1) {
             context.setVertexBufferAt(0, vertexBuffer, 0, ContextGLVertexBufferFormat.FLOAT_2);
@@ -10746,7 +10733,7 @@ var RenderPool = (function () {
      */
     RenderPool.prototype.disposeItem = function (renderOwner) {
         renderOwner._iRemoveRender(this._pool[renderOwner.id]);
-        this._pool[renderOwner.id] = null;
+        delete this._pool[renderOwner.id];
     };
     /**
      *
@@ -14115,6 +14102,13 @@ var CurveSubGeometryVO = (function (_super) {
         this.invalidateVertices(this._curveSubGeometry.curves);
         this.invalidateVertices(this._curveSubGeometry.uvs);
     }
+    CurveSubGeometryVO.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this.disposeVertices(this._curveSubGeometry.positions);
+        this.disposeVertices(this._curveSubGeometry.curves);
+        this.disposeVertices(this._curveSubGeometry.uvs);
+        this._curveSubGeometry = null;
+    };
     CurveSubGeometryVO.prototype._render = function (shader, stage) {
         if (shader.uvBufferIndex >= 0)
             this.activateVertexBufferVO(shader.uvBufferIndex, this._curveSubGeometry.uvs, stage);
@@ -14176,6 +14170,13 @@ var LineSubGeometryVO = (function (_super) {
         this.invalidateVertices(this._lineSubGeometry.thickness);
         this.invalidateVertices(this._lineSubGeometry.colors);
     }
+    LineSubGeometryVO.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this.disposeVertices(this._lineSubGeometry.positions);
+        this.disposeVertices(this._lineSubGeometry.thickness);
+        this.disposeVertices(this._lineSubGeometry.colors);
+        this._lineSubGeometry = null;
+    };
     LineSubGeometryVO.prototype._render = function (shader, stage) {
         if (shader.colorBufferIndex >= 0)
             this.activateVertexBufferVO(shader.colorBufferIndex, this._lineSubGeometry.colors, stage);
@@ -14554,14 +14555,22 @@ var SubGeometryVOBase = (function () {
         if (!attributesView)
             return;
         var bufferId = attributesView.buffer.id;
-        this._vertices[bufferId].dispose();
-        this._vertices[bufferId] = null;
+        if (this._vertices[bufferId]) {
+            this._vertices[bufferId].dispose();
+            delete this._vertices[bufferId];
+        }
     };
     /**
      *
      */
     SubGeometryVOBase.prototype.dispose = function () {
         this._pool.disposeItem(this._subGeometry);
+        this._pool = null;
+        this._subGeometry.removeEventListener(SubGeometryEvent.INDICES_DISPOSED, this._onIndicesDisposedDelegate);
+        this._subGeometry.removeEventListener(SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdatedDelegate);
+        this._subGeometry.removeEventListener(SubGeometryEvent.VERTICES_DISPOSED, this._onVerticesDisposedDelegate);
+        this._subGeometry.removeEventListener(SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdatedDelegate);
+        this._subGeometry = null;
         this.disposeIndices();
         if (this._overflow) {
             this._overflow.dispose();
@@ -14720,7 +14729,7 @@ var SubGeometryVOPool = (function () {
      */
     SubGeometryVOPool.prototype.disposeItem = function (subGeometry) {
         subGeometry._iRemoveSubGeometryVO(this._pool[subGeometry.id]);
-        this._pool[subGeometry.id] = null;
+        delete this._pool[subGeometry.id];
     };
     /**
      * //TODO
@@ -14825,7 +14834,7 @@ var TextureVOPool = (function () {
      */
     TextureVOPool.prototype.disposeItem = function (texture) {
         texture._iRemoveTextureVO(this._pool[texture.id]);
-        this._pool[texture.id] = null;
+        delete this._pool[texture.id];
     };
     TextureVOPool.prototype.dispose = function () {
         for (var id in this._pool)
@@ -14882,6 +14891,17 @@ var TriangleSubGeometryVO = (function (_super) {
         this.invalidateVertices(this._triangleSubGeometry.jointIndices);
         this.invalidateVertices(this._triangleSubGeometry.jointWeights);
     }
+    TriangleSubGeometryVO.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this.disposeVertices(this._triangleSubGeometry.positions);
+        this.disposeVertices(this._triangleSubGeometry.normals);
+        this.disposeVertices(this._triangleSubGeometry.tangents);
+        this.disposeVertices(this._triangleSubGeometry.uvs);
+        this.disposeVertices(this._triangleSubGeometry.secondaryUVs);
+        this.disposeVertices(this._triangleSubGeometry.jointIndices);
+        this.disposeVertices(this._triangleSubGeometry.jointWeights);
+        this._triangleSubGeometry = null;
+    };
     TriangleSubGeometryVO.prototype._render = function (shader, stage) {
         if (shader.uvBufferIndex >= 0)
             this.activateVertexBufferVO(shader.uvBufferIndex, this._triangleSubGeometry.uvs, stage);
