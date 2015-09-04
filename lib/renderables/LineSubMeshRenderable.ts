@@ -61,6 +61,14 @@ class LineSubMeshRenderable extends RenderableBase
 		this._constants[1] = 1/255;
 	}
 
+
+	public dispose()
+	{
+		super.dispose();
+
+		this.subMesh = null;
+	}
+
 	/**
 	 * //TODO
 	 *

@@ -49,6 +49,13 @@ class TriangleSubMeshRenderable extends RenderableBase
 		this.subMesh = subMesh;
 	}
 
+	public dispose()
+	{
+		super.dispose();
+
+		this.subMesh = null;
+	}
+
 	/**
 	 *
 	 * @returns {SubGeometryBase}

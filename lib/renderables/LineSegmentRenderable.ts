@@ -64,6 +64,13 @@ class LineSegmentRenderable extends RenderableBase
 		this._constants[1] = 1/255;
 	}
 
+	public dispose()
+	{
+		super.dispose();
+
+		this._lineSegment = null;
+	}
+
 	/**
 	 * //TODO
 	 *

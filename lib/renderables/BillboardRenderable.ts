@@ -51,6 +51,13 @@ class BillboardRenderable extends RenderableBase
 		this._billboard = billboard;
 	}
 
+	public dispose()
+	{
+		super.dispose();
+
+		this._billboard = null;
+	}
+
 	/**
 	 * //TODO
 	 *

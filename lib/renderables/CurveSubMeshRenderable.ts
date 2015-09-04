@@ -25,6 +25,8 @@ import RenderablePool				= require("awayjs-renderergl/lib/renderables/Renderable
  */
 class CurveSubMeshRenderable extends RenderableBase
 {
+	private static _constants:Float32Array = new Float32Array([0, 1, 1, 0.5]);
+
 	public static assetClass:IAssetClass = CurveSubMesh;
 
 	public static vertexAttributesOffset:number = 2;
@@ -48,6 +50,13 @@ class CurveSubMeshRenderable extends RenderableBase
 		super(pool, subMesh.parentMesh, subMesh, subMesh.material, stage);
 
 		this.subMesh = subMesh;
+	}
+
+	public dispose()
+	{
+		super.dispose();
+
+		this.subMesh = null;
 	}
 
 	/**
@@ -179,7 +188,7 @@ class CurveSubMeshRenderable extends RenderableBase
 		code.push("mov", out+".w", _1, nl);
 		return code.join(" ");
 	}
-    private _constants:Float32Array = new Float32Array([0, 1, 1, 0.5]);
+
     /**
      * @inheritDoc
      */
@@ -189,7 +198,7 @@ class CurveSubMeshRenderable extends RenderableBase
 
         var context:IContextGL = this._stage.context;
 
-        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 2, this._constants, 1);
+        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 2, CurveSubMeshRenderable._constants, 1);
 
     }
 	/**

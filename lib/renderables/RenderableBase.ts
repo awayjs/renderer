@@ -147,6 +147,10 @@ class RenderableBase implements IRenderable
 
 	public dispose()
 	{
+		this.next = null;
+		this.masksConfig = null;
+		this.renderSceneTransform = null;
+
 		this._pool.disposeItem(this.renderableOwner);
 		this._pool = null;
 		this._stage = null;
