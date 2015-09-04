@@ -493,7 +493,6 @@ var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
 var RenderableMergeSort = require("awayjs-display/lib/sort/RenderableMergeSort");
 var RendererEvent = require("awayjs-display/lib/events/RendererEvent");
 var EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
-var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
 var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
 var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
@@ -1135,9 +1134,8 @@ var RendererBase = (function (_super) {
     };
     RendererBase.prototype._iApplyRenderableOwner = function (renderableOwner) {
         var renderable = this._pRenderablePool.getItem(renderableOwner);
+        var render = renderable.render;
         //set local vars for faster referencing
-        var render = this._pRenderablePool.getRenderPool(renderableOwner).getItem(renderable.renderOwner || DefaultMaterialManager.getDefaultMaterial(renderableOwner));
-        renderable.render = render;
         renderable.renderId = render.renderId;
         renderable.renderOrderId = render.renderOrderId;
         renderable.cascaded = false;
@@ -1243,7 +1241,7 @@ var RendererBase = (function (_super) {
 })(EventDispatcher);
 module.exports = RendererBase;
 
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/sort/RenderableMergeSort":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
+},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/sort/RenderableMergeSort":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10194,6 +10192,10 @@ var BasicMaterialRender = (function (_super) {
         this._material = material;
         this._pAddPass(this._pass = new BasicMaterialPass(this, material, renderableClass, this._stage));
     }
+    BasicMaterialRender.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._material = null;
+    };
     /**
      * @inheritDoc
      */
@@ -10411,6 +10413,7 @@ var RenderBase = (function (_super) {
     function RenderBase(pool, renderOwner, renderableClass, stage) {
         var _this = this;
         _super.call(this);
+        this.usages = 0;
         this._forceSeparateMVP = false;
         this._invalidAnimation = true;
         this._invalidRender = true;
@@ -10472,12 +10475,17 @@ var RenderBase = (function (_super) {
      *
      */
     RenderBase.prototype.dispose = function () {
-        this._pClearPasses();
-        var len = this._passes.length;
-        for (var i = 0; i < len; i++)
-            this._passes[i].dispose();
-        this._passes = null;
         this._pool.disposeItem(this._renderOwner);
+        this._pool = null;
+        this._renderOwner = null;
+        this._renderableClass = null;
+        this._stage = null;
+        var len = this._passes.length;
+        for (var i = 0; i < len; i++) {
+            this._passes[i].removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
+            this._passes[i].dispose();
+        }
+        this._passes = null;
     };
     /**
      *
@@ -10627,8 +10635,10 @@ var RenderPassBase = (function (_super) {
      */
     RenderPassBase.prototype.dispose = function () {
         _super.prototype.dispose.call(this);
-        this._shader.dispose();
-        this._shader = null;
+        if (this._shader) {
+            this._shader.dispose();
+            this._shader = null;
+        }
     };
     /**
      * Renders the current pass. Before calling pass, activatePass needs to be called with the same index.
@@ -10783,6 +10793,12 @@ var SkyboxRender = (function (_super) {
         this._cubeTexture = this._shader.getTextureVO(this._skybox.cubeMap);
         this._pAddPass(this);
     }
+    SkyboxRender.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._skybox = null;
+        this._cubeTexture.dispose();
+        this._cubeTexture = null;
+    };
     /**
      * @inheritDoc
      */
@@ -10985,8 +11001,14 @@ var PassBase = (function (_super) {
      * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
      */
     PassBase.prototype.dispose = function () {
-        this._shader.dispose();
-        this._shader = null;
+        this._render = null;
+        this._renderOwner = null;
+        this._renderableClass = null;
+        this._stage = null;
+        if (this._shader) {
+            this._shader.dispose();
+            this._shader = null;
+        }
     };
     /**
      * Renders the current pass. Before calling pass, activatePass needs to be called with the same index.
@@ -11537,6 +11559,7 @@ module.exports = LineSubMeshRenderable;
 },{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/base/LineSubMesh":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables/RenderableBase":[function(require,module,exports){
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var RenderableOwnerEvent = require("awayjs-display/lib/events/RenderableOwnerEvent");
+var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
 var SubGeometryVOPool = require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
 /**
  * @class RenderableListItem
@@ -11561,6 +11584,8 @@ var RenderableBase = (function () {
         this.renderableOwner = renderableOwner;
         this.renderableOwner.addEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate);
         this.renderOwner = renderOwner;
+        this.render = pool.getRenderPool(renderableOwner).getItem(renderOwner || DefaultMaterialManager.getDefaultMaterial(renderableOwner));
+        this.render.usages++;
     }
     Object.defineProperty(RenderableBase.prototype, "subGeometryVO", {
         get: function () {
@@ -11572,8 +11597,24 @@ var RenderableBase = (function () {
         configurable: true
     });
     RenderableBase.prototype.dispose = function () {
-        this.renderableOwner.removeEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate);
         this._pool.disposeItem(this.renderableOwner);
+        this._pool = null;
+        this._stage = null;
+        this._subGeometryVOPool = null;
+        this.sourceEntity = null;
+        this.renderableOwner.removeEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate);
+        this.renderableOwner = null;
+        this.renderOwner = null;
+        this.render.usages--;
+        if (!this.render.usages)
+            this.render.dispose();
+        this.render = null;
+        if (this._subGeometryVO) {
+            this._subGeometryVO.usages--;
+            if (!this._subGeometryVO.usages)
+                this._subGeometryVO.dispose();
+            this._subGeometryVO = null;
+        }
     };
     RenderableBase.prototype.invalidateGeometry = function () {
         this._geometryDirty = true;
@@ -11620,18 +11661,28 @@ var RenderableBase = (function () {
      * @private
      */
     RenderableBase.prototype._updateGeometry = function () {
+        if (this._subGeometryVO) {
+            this._subGeometryVO.usages--;
+            if (!this._subGeometryVO.usages)
+                this._subGeometryVO.dispose();
+        }
         this._subGeometryVO = this._subGeometryVOPool.getItem(this._pGetSubGeometry());
+        this._subGeometryVO.usages++;
         this._geometryDirty = false;
     };
     RenderableBase.prototype._onRenderOwnerUpdated = function (event) {
-        //TODO flag unused renders for deletion
         this.renderOwner = event.renderOwner;
+        this.render.usages--;
+        if (!this.render.usages)
+            this.render.dispose();
+        this.render = this._pool.getRenderPool(this.renderableOwner).getItem(this.renderOwner || DefaultMaterialManager.getDefaultMaterial(this.renderableOwner));
+        this.render.usages++;
     };
     return RenderableBase;
 })();
 module.exports = RenderableBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/events/RenderableOwnerEvent":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOPool":"awayjs-renderergl/lib/vos/SubGeometryVOPool"}],"awayjs-renderergl/lib/renderables/RenderablePool":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/events/RenderableOwnerEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOPool":"awayjs-renderergl/lib/vos/SubGeometryVOPool"}],"awayjs-renderergl/lib/renderables/RenderablePool":[function(require,module,exports){
 var RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
 var BillboardRenderable = require("awayjs-renderergl/lib/renderables/BillboardRenderable");
 var LineSegmentRenderable = require("awayjs-renderergl/lib/renderables/LineSegmentRenderable");
@@ -12589,6 +12640,10 @@ var ShaderBase = (function () {
         this._invalidProgram = true;
     };
     ShaderBase.prototype.dispose = function () {
+        if (this.texture) {
+            this.texture.dispose();
+            this.texture = null;
+        }
         this._programData.dispose();
         this._programData = null;
     };
@@ -14226,29 +14281,40 @@ var SamplerVOBase = require("awayjs-renderergl/lib/vos/SamplerVOBase");
  */
 var Sampler2DVO = (function (_super) {
     __extends(Sampler2DVO, _super);
-    function Sampler2DVO(stage) {
+    function Sampler2DVO(stage, sampler2D) {
         _super.call(this, stage);
+        this._sampler2D = sampler2D;
+        this._imageObject = this._stage.getImageObject(this._sampler2D.image2D);
+        this._imageObject.usages++;
     }
-    Sampler2DVO.prototype.initProperties = function (sampler2D, regCache) {
-        this.sampler2D = sampler2D;
+    Sampler2DVO.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._sampler2D = null;
+        this._imageObject.usages--;
+        if (!this._imageObject.usages) {
+            this._imageObject.dispose();
+            this._imageObject = null;
+        }
+    };
+    Sampler2DVO.prototype.initProperties = function (regCache) {
         this.samplerReg = regCache.getFreeTextureReg();
         this.samplerIndex = this.samplerReg.index;
-        if (this.sampler2D.imageRect) {
-            this.fragmentReg = regCache.getFreeFragmentConstant();
-            this.fragmentIndex = this.fragmentReg.index * 4;
+        if (this._sampler2D.imageRect) {
+            this._fragmentReg = regCache.getFreeFragmentConstant();
+            this._fragmentIndex = this._fragmentReg.index * 4;
         }
     };
     Sampler2DVO.prototype.getFragmentCode = function (shader, targetReg, regCache, inputReg) {
         var code = "";
         var wrap = (shader.repeatTextures ? "wrap" : "clamp");
-        var format = this.getFormatString(this.sampler2D);
+        var format = this.getFormatString(this._sampler2D);
         var filter = (shader.useSmoothTextures) ? (shader.useMipmapping ? "linear,miplinear" : "linear") : (shader.useMipmapping ? "nearest,mipnearest" : "nearest");
         var temp;
         //handles texture atlasing
-        if (this.sampler2D.imageRect) {
+        if (this._sampler2D.imageRect) {
             temp = regCache.getFreeFragmentVectorTemp();
-            code += "mul " + temp + ", " + inputReg + ", " + this.fragmentReg + ".xy\n";
-            code += "add " + temp + ", " + temp + ", " + this.fragmentReg + ".zw\n";
+            code += "mul " + temp + ", " + inputReg + ", " + this._fragmentReg + ".xy\n";
+            code += "add " + temp + ", " + temp + ", " + this._fragmentReg + ".zw\n";
         }
         else {
             temp = inputReg;
@@ -14257,14 +14323,14 @@ var Sampler2DVO = (function (_super) {
         return code;
     };
     Sampler2DVO.prototype.activate = function (shader) {
-        this._stage.getImageObject(this.sampler2D.image2D).activate(this.samplerIndex, this.sampler2D.repeat || shader.repeatTextures, this.sampler2D.smooth || shader.useSmoothTextures, this.sampler2D.mipmap || shader.useMipmapping);
-        if (this.sampler2D.imageRect) {
-            var index = this.fragmentIndex;
+        this._imageObject.activate(this.samplerIndex, this._sampler2D.repeat || shader.repeatTextures, this._sampler2D.smooth || shader.useSmoothTextures, this._sampler2D.mipmap || shader.useMipmapping);
+        if (this._sampler2D.imageRect) {
+            var index = this._fragmentIndex;
             var data = shader.fragmentConstantData;
-            data[index] = this.sampler2D.scaleX;
-            data[index + 1] = this.sampler2D.scaleY;
-            data[index + 2] = this.sampler2D.offsetX;
-            data[index + 3] = this.sampler2D.offsetY;
+            data[index] = this._sampler2D.scaleX;
+            data[index + 1] = this._sampler2D.scaleY;
+            data[index + 2] = this._sampler2D.offsetX;
+            data[index + 3] = this._sampler2D.offsetY;
         }
     };
     return Sampler2DVO;
@@ -14285,22 +14351,33 @@ var SamplerVOBase = require("awayjs-renderergl/lib/vos/SamplerVOBase");
  */
 var SamplerCubeVO = (function (_super) {
     __extends(SamplerCubeVO, _super);
-    function SamplerCubeVO(stage) {
+    function SamplerCubeVO(stage, samplerCube) {
         _super.call(this, stage);
+        this._samplerCube = samplerCube;
+        this._imageObject = this._stage.getImageObject(this._samplerCube.imageCube);
+        this._imageObject.usages++;
     }
-    SamplerCubeVO.prototype.initProperties = function (samplerCube, regCache) {
-        this.samplerCube = samplerCube;
+    SamplerCubeVO.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._samplerCube = null;
+        this._imageObject.usages--;
+        if (!this._imageObject.usages) {
+            this._imageObject.dispose();
+            this._imageObject = null;
+        }
+    };
+    SamplerCubeVO.prototype.initProperties = function (regCache) {
         this.samplerReg = regCache.getFreeTextureReg();
         this.samplerIndex = this.samplerReg.index;
     };
     SamplerCubeVO.prototype.getFragmentCode = function (shader, targetReg, regCache, inputReg) {
         var filter;
-        var format = this.getFormatString(this.samplerCube);
+        var format = this.getFormatString(this._samplerCube);
         var filter = (shader.useSmoothTextures) ? (shader.useMipmapping ? "linear,miplinear" : "linear") : (shader.useMipmapping ? "nearest,mipnearest" : "nearest");
         return "tex " + targetReg + ", " + inputReg + ", " + this.samplerReg + " <cube," + format + filter + ">\n";
     };
     SamplerCubeVO.prototype.activate = function (shader) {
-        this._stage.getImageObject(this.samplerCube.imageCube).activate(this.samplerIndex, false, this.samplerCube.smooth || shader.useSmoothTextures, this.samplerCube.mipmap || shader.useMipmapping);
+        this._imageObject.activate(this.samplerIndex, false, this._samplerCube.smooth || shader.useSmoothTextures, this._samplerCube.mipmap || shader.useMipmapping);
     };
     return SamplerCubeVO;
 })(SamplerVOBase);
@@ -14316,6 +14393,9 @@ var SamplerVOBase = (function () {
     function SamplerVOBase(stage) {
         this._stage = stage;
     }
+    SamplerVOBase.prototype.dispose = function () {
+        this._stage = null;
+    };
     /**
      * Generates a texture format string for the sample instruction.
      * @param texture The texture for which to get the format string.
@@ -14358,10 +14438,16 @@ var Single2DTextureVO = (function (_super) {
     function Single2DTextureVO(pool, single2DTexture, stage) {
         _super.call(this, pool, single2DTexture, stage);
         this._single2DTexture = single2DTexture;
-        this._sampler2DVO = new Sampler2DVO(stage);
+        this._sampler2DVO = new Sampler2DVO(stage, this._single2DTexture.sampler2D);
     }
+    Single2DTextureVO.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._single2DTexture = null;
+        this._sampler2DVO.dispose();
+        this._sampler2DVO = null;
+    };
     Single2DTextureVO.prototype._iInitRegisters = function (shader, regCache) {
-        this._sampler2DVO.initProperties(this._single2DTexture.sampler2D, regCache);
+        this._sampler2DVO.initProperties(regCache);
     };
     /**
      *
@@ -14405,15 +14491,21 @@ var SingleCubeTextureVO = (function (_super) {
     function SingleCubeTextureVO(pool, singleCubeTexture, stage) {
         _super.call(this, pool, singleCubeTexture, stage);
         this._singleCubeTexture = singleCubeTexture;
-        this._samplerCubeVO = new SamplerCubeVO(stage);
+        this._samplerCubeVO = new SamplerCubeVO(stage, this._singleCubeTexture.samplerCube);
     }
+    SingleCubeTextureVO.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._singleCubeTexture = null;
+        this._samplerCubeVO.dispose();
+        this._samplerCubeVO = null;
+    };
     SingleCubeTextureVO.prototype._iIncludeDependencies = function (shader, includeInput) {
         if (includeInput === void 0) { includeInput = true; }
         if (includeInput)
             shader.usesLocalPosFragment = true;
     };
     SingleCubeTextureVO.prototype._iInitRegisters = function (shader, regCache) {
-        this._samplerCubeVO.initProperties(this._singleCubeTexture.samplerCube, regCache);
+        this._samplerCubeVO.initProperties(regCache);
     };
     /**
      *
@@ -14449,7 +14541,9 @@ var SubGeometryUtils = require("awayjs-display/lib/utils/SubGeometryUtils");
 var SubGeometryVOBase = (function () {
     function SubGeometryVOBase(pool, subGeometry) {
         var _this = this;
+        this.usages = 0;
         this._vertices = new Object();
+        this._vertexBuffers = new Object();
         this._verticesDirty = new Object();
         this._indexMappings = Array();
         this._pool = pool;
@@ -14499,7 +14593,7 @@ var SubGeometryVOBase = (function () {
     SubGeometryVOBase.prototype.getIndexBufferVO = function (stage) {
         if (this._indicesDirty)
             this._updateIndices();
-        return stage.getAttributesBufferVO(this._indices);
+        return (this._indexBuffer = stage.getAttributesBufferVO(this._indices));
     };
     /**
      *
@@ -14510,7 +14604,7 @@ var SubGeometryVOBase = (function () {
             this._updateIndices();
         if (this._verticesDirty[bufferId])
             this._updateVertices(attributesView);
-        return stage.getAttributesBufferVO(this._vertices[bufferId]);
+        return (this._vertexBuffers[bufferId] = stage.getAttributesBufferVO(this._vertices[bufferId]));
     };
     /**
      *
@@ -14532,10 +14626,11 @@ var SubGeometryVOBase = (function () {
      *
      */
     SubGeometryVOBase.prototype.disposeIndices = function () {
-        if (this._indices) {
-            this._indices.dispose();
-            this._indices = null;
+        if (this._indexBuffer) {
+            this._indexBuffer.dispose();
+            this._indexBuffer = null;
         }
+        this._indices = null;
     };
     /**
      * //TODO
@@ -14555,10 +14650,11 @@ var SubGeometryVOBase = (function () {
         if (!attributesView)
             return;
         var bufferId = attributesView.buffer.id;
-        if (this._vertices[bufferId]) {
-            this._vertices[bufferId].dispose();
-            delete this._vertices[bufferId];
+        if (this._vertexBuffers[bufferId]) {
+            this._vertexBuffers[bufferId].dispose();
+            delete this._vertexBuffers[bufferId];
         }
+        this._vertices = null;
     };
     /**
      *
@@ -14784,6 +14880,9 @@ var TextureVOBase = (function () {
      */
     TextureVOBase.prototype.dispose = function () {
         this._pool.disposeItem(this._texture);
+        this._pool = null;
+        this._texture = null;
+        this._stage = null;
     };
     /**
      *

@@ -115,6 +115,38 @@ declare module "awayjs-renderergl/lib/DistanceRenderer" {
 	
 }
 
+declare module "awayjs-renderergl/lib/Filter3DRenderer" {
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
+	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+	/**
+	 * @class away.render.Filter3DRenderer
+	 */
+	class Filter3DRenderer {
+	    private _filters;
+	    private _tasks;
+	    private _filterTasksInvalid;
+	    private _mainInputTexture;
+	    private _requireDepthRender;
+	    private _rttManager;
+	    private _stage;
+	    private _filterSizesInvalid;
+	    private _onRTTResizeDelegate;
+	    constructor(stage: Stage);
+	    private onRTTResize(event);
+	    requireDepthRender: boolean;
+	    getMainInputTexture(stage: Stage): ITexture;
+	    filters: Filter3DBase[];
+	    private updateFilterTasks(stage);
+	    render(stage: Stage, camera: Camera, depthTexture: ITexture): void;
+	    private updateFilterSizes();
+	    dispose(): void;
+	}
+	export = Filter3DRenderer;
+	
+}
+
 declare module "awayjs-renderergl/lib/RendererBase" {
 	import ImageBase = require("awayjs-core/lib/data/ImageBase");
 	import BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
@@ -321,38 +353,6 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	    private _checkMasksConfig(masksConfig);
 	}
 	export = RendererBase;
-	
-}
-
-declare module "awayjs-renderergl/lib/Filter3DRenderer" {
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
-	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
-	/**
-	 * @class away.render.Filter3DRenderer
-	 */
-	class Filter3DRenderer {
-	    private _filters;
-	    private _tasks;
-	    private _filterTasksInvalid;
-	    private _mainInputTexture;
-	    private _requireDepthRender;
-	    private _rttManager;
-	    private _stage;
-	    private _filterSizesInvalid;
-	    private _onRTTResizeDelegate;
-	    constructor(stage: Stage);
-	    private onRTTResize(event);
-	    requireDepthRender: boolean;
-	    getMainInputTexture(stage: Stage): ITexture;
-	    filters: Filter3DBase[];
-	    private updateFilterTasks(stage);
-	    render(stage: Stage, camera: Camera, depthTexture: ITexture): void;
-	    private updateFilterSizes();
-	    dispose(): void;
-	}
-	export = Filter3DRenderer;
 	
 }
 
@@ -4364,6 +4364,7 @@ declare module "awayjs-renderergl/lib/render/BasicMaterialRender" {
 	    private _material;
 	    private _pass;
 	    constructor(pool: RenderPool, material: BasicMaterial, renderableClass: IRenderableClass, stage: Stage);
+	    dispose(): void;
 	    /**
 	     * @inheritDoc
 	     */
@@ -4488,6 +4489,7 @@ declare module "awayjs-renderergl/lib/render/RenderBase" {
 	 * @class away.pool.Passes
 	 */
 	class RenderBase extends EventDispatcher implements IRender {
+	    usages: number;
 	    _forceSeparateMVP: boolean;
 	    private _pool;
 	    _renderOwner: IRenderOwner;
@@ -4704,6 +4706,7 @@ declare module "awayjs-renderergl/lib/render/SkyboxRender" {
 	    _skybox: Skybox;
 	    _cubeTexture: TextureVOBase;
 	    constructor(pool: RenderPool, skybox: Skybox, renderableClass: IRenderableClass, stage: Stage);
+	    dispose(): void;
 	    /**
 	     * @inheritDoc
 	     */
@@ -6540,11 +6543,13 @@ declare module "awayjs-renderergl/lib/vos/Sampler2DVO" {
 	 * @class away.pool.Sampler2DVO
 	 */
 	class Sampler2DVO extends SamplerVOBase {
-	    sampler2D: Sampler2D;
-	    fragmentReg: ShaderRegisterElement;
-	    fragmentIndex: number;
-	    constructor(stage: Stage);
-	    initProperties(sampler2D: Sampler2D, regCache: ShaderRegisterCache): void;
+	    private _imageObject;
+	    private _sampler2D;
+	    private _fragmentReg;
+	    private _fragmentIndex;
+	    constructor(stage: Stage, sampler2D: Sampler2D);
+	    dispose(): void;
+	    initProperties(regCache: ShaderRegisterCache): void;
 	    getFragmentCode(shader: ShaderBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg: ShaderRegisterElement): string;
 	    activate(shader: ShaderBase): void;
 	}
@@ -6564,9 +6569,11 @@ declare module "awayjs-renderergl/lib/vos/SamplerCubeVO" {
 	 * @class away.pool.BitmapObject
 	 */
 	class SamplerCubeVO extends SamplerVOBase {
-	    samplerCube: SamplerCube;
-	    constructor(stage: Stage);
-	    initProperties(samplerCube: SamplerCube, regCache: ShaderRegisterCache): void;
+	    private _imageObject;
+	    private _samplerCube;
+	    constructor(stage: Stage, samplerCube: SamplerCube);
+	    dispose(): void;
+	    initProperties(regCache: ShaderRegisterCache): void;
 	    getFragmentCode(shader: ShaderBase, targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, inputReg: ShaderRegisterElement): string;
 	    activate(shader: ShaderBase): void;
 	}
@@ -6587,6 +6594,7 @@ declare module "awayjs-renderergl/lib/vos/SamplerVOBase" {
 	    samplerReg: ShaderRegisterElement;
 	    samplerIndex: number;
 	    constructor(stage: Stage);
+	    dispose(): void;
 	    /**
 	     * Generates a texture format string for the sample instruction.
 	     * @param texture The texture for which to get the format string.
@@ -6621,6 +6629,7 @@ declare module "awayjs-renderergl/lib/vos/Single2DTextureVO" {
 	    private _single2DTexture;
 	    private _sampler2DVO;
 	    constructor(pool: TextureVOPool, single2DTexture: Single2DTexture, stage: Stage);
+	    dispose(): void;
 	    _iInitRegisters(shader: ShaderBase, regCache: ShaderRegisterCache): void;
 	    /**
 	     *
@@ -6659,6 +6668,7 @@ declare module "awayjs-renderergl/lib/vos/SingleCubeTextureVO" {
 	    private _singleCubeTexture;
 	    private _samplerCubeVO;
 	    constructor(pool: TextureVOPool, singleCubeTexture: SingleCubeTexture, stage: Stage);
+	    dispose(): void;
 	    _iIncludeDependencies(shader: ShaderBase, includeInput?: boolean): void;
 	    _iInitRegisters(shader: ShaderBase, regCache: ShaderRegisterCache): void;
 	    /**
@@ -6692,6 +6702,7 @@ declare module "awayjs-renderergl/lib/vos/SubGeometryVOBase" {
 	 * @class away.pool.SubGeometryVOBaseBase
 	 */
 	class SubGeometryVOBase implements ISubGeometryVO {
+	    usages: number;
 	    _pool: SubGeometryVOPool;
 	    private _subGeometry;
 	    private _onIndicesUpdatedDelegate;
@@ -6700,8 +6711,10 @@ declare module "awayjs-renderergl/lib/vos/SubGeometryVOBase" {
 	    private _onVerticesDisposedDelegate;
 	    private _overflow;
 	    private _indices;
+	    private _indexBuffer;
 	    private _indicesDirty;
 	    private _vertices;
+	    private _vertexBuffers;
 	    private _verticesDirty;
 	    _indexMappings: Array<number>;
 	    private _numIndices;
