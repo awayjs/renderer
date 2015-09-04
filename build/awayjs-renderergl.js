@@ -11109,6 +11109,10 @@ var BillboardRenderable = (function (_super) {
         _super.call(this, pool, billboard, billboard, billboard.material, stage);
         this._billboard = billboard;
     }
+    BillboardRenderable.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._billboard = null;
+    };
     /**
      * //TODO
      *
@@ -11211,9 +11215,12 @@ var CurveSubMeshRenderable = (function (_super) {
      */
     function CurveSubMeshRenderable(pool, subMesh, stage) {
         _super.call(this, pool, subMesh.parentMesh, subMesh, subMesh.material, stage);
-        this._constants = new Float32Array([0, 1, 1, 0.5]);
         this.subMesh = subMesh;
     }
+    CurveSubMeshRenderable.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this.subMesh = null;
+    };
     /**
      *
      * @returns {SubGeometryBase}
@@ -11318,7 +11325,7 @@ var CurveSubMeshRenderable = (function (_super) {
     CurveSubMeshRenderable.prototype._iActivate = function (pass, camera) {
         _super.prototype._iActivate.call(this, pass, camera);
         var context = this._stage.context;
-        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 2, this._constants, 1);
+        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 2, CurveSubMeshRenderable._constants, 1);
     };
     /**
      * @inheritDoc
@@ -11340,6 +11347,7 @@ var CurveSubMeshRenderable = (function (_super) {
         context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shader.vertexConstantData, shader.numUsedVertexConstants);
         context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
     };
+    CurveSubMeshRenderable._constants = new Float32Array([0, 1, 1, 0.5]);
     CurveSubMeshRenderable.assetClass = CurveSubMesh;
     CurveSubMeshRenderable.vertexAttributesOffset = 2;
     return CurveSubMeshRenderable;
@@ -11381,6 +11389,10 @@ var LineSegmentRenderable = (function (_super) {
         this._calcMatrix = new Matrix3D();
         this._constants[1] = 1 / 255;
     }
+    LineSegmentRenderable.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._lineSegment = null;
+    };
     /**
      * //TODO
      *
@@ -11502,6 +11514,10 @@ var LineSubMeshRenderable = (function (_super) {
         this._calcMatrix = new Matrix3D();
         this._constants[1] = 1 / 255;
     }
+    LineSubMeshRenderable.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this.subMesh = null;
+    };
     /**
      * //TODO
      *
@@ -11597,6 +11613,9 @@ var RenderableBase = (function () {
         configurable: true
     });
     RenderableBase.prototype.dispose = function () {
+        this.next = null;
+        this.masksConfig = null;
+        this.renderSceneTransform = null;
         this._pool.disposeItem(this.renderableOwner);
         this._pool = null;
         this._stage = null;
@@ -11876,6 +11895,10 @@ var TriangleSubMeshRenderable = (function (_super) {
         _super.call(this, pool, subMesh.parentMesh, subMesh, subMesh.material, stage);
         this.subMesh = subMesh;
     }
+    TriangleSubMeshRenderable.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this.subMesh = null;
+    };
     /**
      *
      * @returns {SubGeometryBase}

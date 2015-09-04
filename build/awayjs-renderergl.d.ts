@@ -4963,6 +4963,7 @@ declare module "awayjs-renderergl/lib/renderables/BillboardRenderable" {
 	     * @param billboard
 	     */
 	    constructor(pool: RenderablePool, billboard: Billboard, stage: Stage);
+	    dispose(): void;
 	    /**
 	     * //TODO
 	     *
@@ -4998,6 +4999,7 @@ declare module "awayjs-renderergl/lib/renderables/CurveSubMeshRenderable" {
 	 * @class away.pool.TriangleSubMeshRenderable
 	 */
 	class CurveSubMeshRenderable extends RenderableBase {
+	    private static _constants;
 	    static assetClass: IAssetClass;
 	    static vertexAttributesOffset: number;
 	    /**
@@ -5013,6 +5015,7 @@ declare module "awayjs-renderergl/lib/renderables/CurveSubMeshRenderable" {
 	     * @param indexOffset
 	     */
 	    constructor(pool: RenderablePool, subMesh: CurveSubMesh, stage: Stage);
+	    dispose(): void;
 	    /**
 	     *
 	     * @returns {SubGeometryBase}
@@ -5025,7 +5028,6 @@ declare module "awayjs-renderergl/lib/renderables/CurveSubMeshRenderable" {
 	     * @inheritDoc
 	     */
 	    static _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    private _constants;
 	    /**
 	     * @inheritDoc
 	     */
@@ -5106,6 +5108,7 @@ declare module "awayjs-renderergl/lib/renderables/LineSegmentRenderable" {
 	     * @param dataOffset
 	     */
 	    constructor(pool: RenderablePool, lineSegment: LineSegment, stage: Stage);
+	    dispose(): void;
 	    /**
 	     * //TODO
 	     *
@@ -5180,6 +5183,7 @@ declare module "awayjs-renderergl/lib/renderables/LineSubMeshRenderable" {
 	     * @param dataOffset
 	     */
 	    constructor(pool: RenderablePool, subMesh: LineSubMesh, stage: Stage);
+	    dispose(): void;
 	    /**
 	     * //TODO
 	     *
@@ -5480,6 +5484,7 @@ declare module "awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable" {
 	     * @param indexOffset
 	     */
 	    constructor(pool: RenderablePool, subMesh: TriangleSubMesh, stage: Stage);
+	    dispose(): void;
 	    /**
 	     *
 	     * @returns {SubGeometryBase}
