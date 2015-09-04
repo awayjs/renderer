@@ -105,9 +105,15 @@ class PassBase extends EventDispatcher implements IPass
 	 */
 	public dispose()
 	{
-		this._shader.dispose();
+		this._render = null;
+		this._renderOwner = null;
+		this._renderableClass = null;
+		this._stage = null;
 
-		this._shader = null;
+		if (this._shader) {
+			this._shader.dispose();
+			this._shader = null;
+		}
 	}
 
 	/**

@@ -8,8 +8,8 @@ import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import TextureVOPool				= require("awayjs-renderergl/lib/vos/TextureVOPool");
-import TextureVOBase					= require("awayjs-renderergl/lib/vos/TextureVOBase");
-import Sampler2DVO				= require("awayjs-renderergl/lib/vos/Sampler2DVO");
+import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
+import Sampler2DVO					= require("awayjs-renderergl/lib/vos/Sampler2DVO");
 
 /**
  *
@@ -32,12 +32,22 @@ class Single2DTextureVO extends TextureVOBase
 
 		this._single2DTexture = single2DTexture;
 
-		this._sampler2DVO = new Sampler2DVO(stage);
+		this._sampler2DVO = new Sampler2DVO(stage, this._single2DTexture.sampler2D);
+	}
+
+	public dispose()
+	{
+		super.dispose();
+
+		this._single2DTexture = null;
+
+		this._sampler2DVO.dispose();
+		this._sampler2DVO = null;
 	}
 
 	public _iInitRegisters(shader:ShaderBase, regCache:ShaderRegisterCache)
 	{
-		this._sampler2DVO.initProperties(this._single2DTexture.sampler2D, regCache);
+		this._sampler2DVO.initProperties(regCache);
 	}
 
 	/**

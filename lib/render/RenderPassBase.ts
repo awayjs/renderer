@@ -49,9 +49,10 @@ class RenderPassBase extends RenderBase implements IPass
 	{
 		super.dispose();
 
-		this._shader.dispose();
-
-		this._shader = null;
+		if (this._shader) {
+			this._shader.dispose();
+			this._shader = null;
+		}
 	}
 
 	/**

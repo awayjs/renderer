@@ -33,7 +33,18 @@ class SingleCubeTextureVO extends TextureVOBase
 
 		this._singleCubeTexture = singleCubeTexture;
 
-		this._samplerCubeVO = new SamplerCubeVO(stage);
+		this._samplerCubeVO = new SamplerCubeVO(stage, this._singleCubeTexture.samplerCube);
+	}
+
+
+	public dispose()
+	{
+		super.dispose();
+
+		this._singleCubeTexture = null;
+
+		this._samplerCubeVO.dispose();
+		this._samplerCubeVO = null;
 	}
 
 	public _iIncludeDependencies(shader:ShaderBase, includeInput:boolean = true)
@@ -44,7 +55,7 @@ class SingleCubeTextureVO extends TextureVOBase
 
 	public _iInitRegisters(shader:ShaderBase, regCache:ShaderRegisterCache)
 	{
-		this._samplerCubeVO.initProperties(this._singleCubeTexture.samplerCube, regCache);
+		this._samplerCubeVO.initProperties(regCache);
 	}
 
 	/**

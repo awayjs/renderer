@@ -41,6 +41,9 @@ class TextureVOBase implements ITextureVO
 	public dispose()
 	{
 		this._pool.disposeItem(this._texture);
+		this._pool = null;
+		this._texture = null;
+		this._stage = null;
 	}
 
 	/**

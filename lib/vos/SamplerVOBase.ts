@@ -23,6 +23,11 @@ class SamplerVOBase
 		this._stage = stage;
 	}
 
+	public dispose()
+	{
+		this._stage = null;
+	}
+
 	/**
 	 * Generates a texture format string for the sample instruction.
 	 * @param texture The texture for which to get the format string.

@@ -25,6 +25,7 @@ import RenderableBase				= require("awayjs-renderergl/lib/renderables/Renderable
  */
 class RenderBase extends EventDispatcher implements IRender
 {
+	public usages:number = 0;
 	public _forceSeparateMVP:boolean = false;
 
 	private _pool:RenderPool;
@@ -109,15 +110,19 @@ class RenderBase extends EventDispatcher implements IRender
 	 */
 	public dispose()
 	{
-		this._pClearPasses();
+		this._pool.disposeItem(this._renderOwner);
+		this._pool = null;
+		this._renderOwner = null;
+		this._renderableClass = null;
+		this._stage = null;
 
 		var len:number = this._passes.length;
-		for (var i:number = 0; i < len; i++)
+		for (var i:number = 0; i < len; i++) {
+			this._passes[i].removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
 			this._passes[i].dispose();
+		}
 
 		this._passes = null;
-
-		this._pool.disposeItem(this._renderOwner);
 	}
 
 	/**

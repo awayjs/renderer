@@ -39,6 +39,16 @@ class SkyboxRender extends RenderPassBase
 		this._pAddPass(this);
 	}
 
+	public dispose()
+	{
+		super.dispose();
+
+		this._skybox = null;
+
+		this._cubeTexture.dispose();
+		this._cubeTexture = null;
+	}
+
 	/**
 	 * @inheritDoc
 	 */

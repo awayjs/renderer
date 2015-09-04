@@ -591,6 +591,11 @@ class ShaderBase
 
 	public dispose()
 	{
+		if (this.texture) {
+			this.texture.dispose();
+			this.texture = null;
+		}
+
 		this._programData.dispose();
 		this._programData = null;
 	}

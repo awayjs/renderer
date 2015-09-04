@@ -29,6 +29,13 @@ class BasicMaterialRender extends RenderBase
 		this._pAddPass(this._pass = new BasicMaterialPass(this, material, renderableClass, this._stage));
 	}
 
+	public dispose()
+	{
+		super.dispose();
+
+		this._material = null;
+	}
+
 	/**
 	 * @inheritDoc
 	 */

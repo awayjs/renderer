@@ -26,7 +26,6 @@ import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
 import CollectorBase				= require("awayjs-display/lib/traverse/CollectorBase");
 import ShadowCasterCollector		= require("awayjs-display/lib/traverse/ShadowCasterCollector");
-import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
 
 import AGALMiniAssembler			= require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
 import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
@@ -832,11 +831,9 @@ class RendererBase extends EventDispatcher implements IRenderer
 	public _iApplyRenderableOwner(renderableOwner:IRenderableOwner)
 	{
 		var renderable:RenderableBase = this._pRenderablePool.getItem(renderableOwner);
+		var render:RenderBase = renderable.render;
 
 		//set local vars for faster referencing
-		var render:RenderBase = this._pRenderablePool.getRenderPool(renderableOwner).getItem(renderable.renderOwner || DefaultMaterialManager.getDefaultMaterial(renderableOwner));
-		
-		renderable.render = render;
 		renderable.renderId = render.renderId;
 		renderable.renderOrderId = render.renderOrderId;
 

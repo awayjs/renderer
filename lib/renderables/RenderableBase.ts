@@ -11,7 +11,7 @@ import IEntity						= require("awayjs-display/lib/entities/IEntity");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import RenderableOwnerEvent			= require("awayjs-display/lib/events/RenderableOwnerEvent");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
-
+import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
 
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
@@ -140,12 +140,38 @@ class RenderableBase implements IRenderable
 		this.renderableOwner.addEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate);
 
 		this.renderOwner = renderOwner;
+
+		this.render = pool.getRenderPool(renderableOwner).getItem(renderOwner || DefaultMaterialManager.getDefaultMaterial(renderableOwner));
+		this.render.usages++;
 	}
 
 	public dispose()
 	{
-		this.renderableOwner.removeEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate);
 		this._pool.disposeItem(this.renderableOwner);
+		this._pool = null;
+		this._stage = null;
+		this._subGeometryVOPool = null;
+		this.sourceEntity = null;
+
+		this.renderableOwner.removeEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate);
+		this.renderableOwner = null;
+		this.renderOwner = null;
+
+		this.render.usages--;
+
+		if (!this.render.usages)
+			this.render.dispose();
+
+		this.render = null;
+
+		if (this._subGeometryVO) {
+			this._subGeometryVO.usages--;
+
+			if (!this._subGeometryVO.usages)
+				this._subGeometryVO.dispose();
+
+			this._subGeometryVO = null;
+		}
 	}
 
 	public invalidateGeometry()
@@ -208,15 +234,30 @@ class RenderableBase implements IRenderable
 	 */
 	private _updateGeometry()
 	{
+		if (this._subGeometryVO) {
+			this._subGeometryVO.usages--;
+
+			if (!this._subGeometryVO.usages)
+				this._subGeometryVO.dispose();
+		}
+
 		this._subGeometryVO = this._subGeometryVOPool.getItem(this._pGetSubGeometry());
+		this._subGeometryVO.usages++;
 
 		this._geometryDirty = false;
 	}
 
 	private _onRenderOwnerUpdated(event:RenderableOwnerEvent)
 	{
-		//TODO flag unused renders for deletion
 		this.renderOwner = event.renderOwner;
+
+		this.render.usages--;
+
+		if (!this.render.usages)
+			this.render.dispose();
+
+		this.render = this._pool.getRenderPool(this.renderableOwner).getItem(this.renderOwner || DefaultMaterialManager.getDefaultMaterial(this.renderableOwner));
+		this.render.usages++;
 	}
 }
 

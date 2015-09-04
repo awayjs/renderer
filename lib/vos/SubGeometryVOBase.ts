@@ -21,6 +21,7 @@ import SubGeometryVOPool			= require("awayjs-renderergl/lib/vos/SubGeometryVOPoo
  */
 class SubGeometryVOBase implements ISubGeometryVO
 {
+	public usages:number = 0;
 	public _pool:SubGeometryVOPool;
 	private _subGeometry:SubGeometryBase;
 	private _onIndicesUpdatedDelegate:(event:SubGeometryEvent) => void;
@@ -29,8 +30,10 @@ class SubGeometryVOBase implements ISubGeometryVO
 	private _onVerticesDisposedDelegate:(event:SubGeometryEvent) => void;
 	private _overflow:SubGeometryVOBase;
 	private _indices:AttributesBuffer;
+	private _indexBuffer:AttributesBufferVO;
 	private _indicesDirty:boolean;
 	private _vertices:Object = new Object();
+	private _vertexBuffers:Object = new Object();
 	private _verticesDirty:Object = new Object();
 
 	public _indexMappings:Array<number> = Array<number>();
@@ -91,7 +94,7 @@ class SubGeometryVOBase implements ISubGeometryVO
 		if (this._indicesDirty)
 			this._updateIndices();
 
-		return stage.getAttributesBufferVO(this._indices);
+		return (this._indexBuffer = stage.getAttributesBufferVO(this._indices));
 	}
 
 
@@ -107,7 +110,7 @@ class SubGeometryVOBase implements ISubGeometryVO
 		if (this._verticesDirty[bufferId])
 			this._updateVertices(attributesView);
 
-		return stage.getAttributesBufferVO(this._vertices[bufferId]);
+		return (this._vertexBuffers[bufferId] = stage.getAttributesBufferVO(this._vertices[bufferId]));
 	}
 	
 	/**
@@ -134,10 +137,12 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 */
 	public disposeIndices()
 	{
-		if (this._indices) {
-			this._indices.dispose();
-			this._indices = null;
+		if (this._indexBuffer) {
+			this._indexBuffer.dispose();
+			this._indexBuffer = null;
 		}
+
+		this._indices = null;
 	}
 
 
@@ -166,10 +171,12 @@ class SubGeometryVOBase implements ISubGeometryVO
 
 		var bufferId:number = attributesView.buffer.id;
 
-		if (this._vertices[bufferId]) {
-			this._vertices[bufferId].dispose();
-			delete this._vertices[bufferId];
+		if (this._vertexBuffers[bufferId]) {
+			this._vertexBuffers[bufferId].dispose();
+			delete this._vertexBuffers[bufferId];
 		}
+
+		this._vertices = null;
 	}
 
 	/**
