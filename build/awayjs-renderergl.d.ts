@@ -116,9 +116,9 @@ declare module "awayjs-renderergl/lib/DistanceRenderer" {
 }
 
 declare module "awayjs-renderergl/lib/Filter3DRenderer" {
+	import Image2D = require("awayjs-core/lib/data/Image2D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
 	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
 	/**
 	 * @class away.render.Filter3DRenderer
@@ -136,10 +136,10 @@ declare module "awayjs-renderergl/lib/Filter3DRenderer" {
 	    constructor(stage: Stage);
 	    private onRTTResize(event);
 	    requireDepthRender: boolean;
-	    getMainInputTexture(stage: Stage): ITexture;
+	    getMainInputTexture(stage: Stage): Image2D;
 	    filters: Filter3DBase[];
 	    private updateFilterTasks(stage);
-	    render(stage: Stage, camera: Camera, depthTexture: ITexture): void;
+	    render(stage: Stage, camera: Camera, depthTexture: Image2D): void;
 	    private updateFilterSizes();
 	    dispose(): void;
 	}
@@ -4121,10 +4121,56 @@ declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
 	
 }
 
+declare module "awayjs-renderergl/lib/filters/BlurFilter3D" {
+	import Image2D = require("awayjs-core/lib/data/Image2D");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+	class BlurFilter3D extends Filter3DBase {
+	    private _hBlurTask;
+	    private _vBlurTask;
+	    /**
+	     * Creates a new BlurFilter3D object
+	     * @param blurX The amount of horizontal blur to apply
+	     * @param blurY The amount of vertical blur to apply
+	     * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
+	     */
+	    constructor(blurX?: number, blurY?: number, stepSize?: number);
+	    blurX: number;
+	    blurY: number;
+	    /**
+	     * The distance between two blur samples. Set to -1 to autodetect with acceptable quality (default value).
+	     * Higher values provide better performance at the cost of reduces quality.
+	     */
+	    stepSize: number;
+	    setRenderTargets(mainTarget: Image2D, stage: Stage): void;
+	}
+	export = BlurFilter3D;
+	
+}
+
+declare module "awayjs-renderergl/lib/filters/CompositeFilter3D" {
+	import Image2D = require("awayjs-core/lib/data/Image2D");
+	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+	class CompositeFilter3D extends Filter3DBase {
+	    private _compositeTask;
+	    /**
+	     * Creates a new CompositeFilter3D object
+	     * @param blurX The amount of horizontal blur to apply
+	     * @param blurY The amount of vertical blur to apply
+	     * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
+	     */
+	    constructor(blendMode: string, exposure?: number);
+	    exposure: number;
+	    overlayTexture: Image2D;
+	}
+	export = CompositeFilter3D;
+	
+}
+
 declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
+	import Image2D = require("awayjs-core/lib/data/Image2D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
 	import Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
 	class Filter3DBase {
 	    private _tasks;
@@ -4133,12 +4179,12 @@ declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
 	    private _textureHeight;
 	    constructor();
 	    requireDepthRender: boolean;
-	    pAddTask(filter: Filter3DTaskBase): void;
+	    addTask(filter: Filter3DTaskBase): void;
 	    tasks: Filter3DTaskBase[];
-	    getMainInputTexture(stage: Stage): ITexture;
+	    getMainInputTexture(stage: Stage): Image2D;
 	    textureWidth: number;
 	    textureHeight: number;
-	    setRenderTargets(mainTarget: ITexture, stage: Stage): void;
+	    setRenderTargets(mainTarget: Image2D, stage: Stage): void;
 	    dispose(): void;
 	    update(stage: Stage, camera: Camera): void;
 	}
@@ -4146,17 +4192,66 @@ declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
 	
 }
 
+declare module "awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask" {
+	import Image2D = require("awayjs-core/lib/data/Image2D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+	class Filter3DCompositeTask extends Filter3DTaskBase {
+	    private _data;
+	    private _overlayTexture;
+	    private _blendMode;
+	    constructor(blendMode: string, exposure?: number);
+	    overlayTexture: Image2D;
+	    exposure: number;
+	    getFragmentCode(): string;
+	    activate(stage: Stage, camera3D: Camera, depthTexture: Image2D): void;
+	    deactivate(stage: Stage): void;
+	}
+	export = Filter3DCompositeTask;
+	
+}
+
+declare module "awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask" {
+	import Image2D = require("awayjs-core/lib/data/Image2D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+	class Filter3DHBlurTask extends Filter3DTaskBase {
+	    private static MAX_AUTO_SAMPLES;
+	    private _amount;
+	    private _data;
+	    private _stepSize;
+	    private _realStepSize;
+	    /**
+	     * Creates a new Filter3DHDepthOfFFieldTask
+	     * @param amount The maximum amount of blur to apply in pixels at the most out-of-focus areas
+	     * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
+	     */
+	    constructor(amount: number, stepSize?: number);
+	    amount: number;
+	    stepSize: number;
+	    getFragmentCode(): string;
+	    activate(stage: Stage, camera3D: Camera, depthTexture: Image2D): void;
+	    updateTextures(stage: Stage): void;
+	    private updateBlurData();
+	    private calculateStepSize();
+	}
+	export = Filter3DHBlurTask;
+	
+}
+
 declare module "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase" {
+	import Image2D = require("awayjs-core/lib/data/Image2D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import IProgram = require("awayjs-stagegl/lib/base/IProgram");
-	import ITexture = require("awayjs-stagegl/lib/base/ITexture");
 	class Filter3DTaskBase {
 	    private _mainInputTexture;
 	    private _scaledTextureWidth;
 	    private _scaledTextureHeight;
-	    private _textureWidth;
-	    private _textureHeight;
+	    _textureWidth: number;
+	    _textureHeight: number;
 	    private _textureDimensionsInvalid;
 	    private _program3DInvalid;
 	    private _program3D;
@@ -4168,22 +4263,51 @@ declare module "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase" {
 	     * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
 	     */
 	    textureScale: number;
-	    target: ITexture;
+	    target: Image2D;
 	    textureWidth: number;
 	    textureHeight: number;
-	    getMainInputTexture(stage: Stage): ITexture;
+	    getMainInputTexture(stage: Stage): Image2D;
 	    dispose(): void;
-	    pInvalidateProgram(): void;
-	    pUpdateProgram(stage: Stage): void;
-	    pGetVertexCode(): string;
-	    pGetFragmentCode(): string;
-	    pUpdateTextures(stage: Stage): void;
+	    invalidateProgram(): void;
+	    updateProgram(stage: Stage): void;
+	    getVertexCode(): string;
+	    getFragmentCode(): string;
+	    updateTextures(stage: Stage): void;
 	    getProgram(stage: Stage): IProgram;
-	    activate(stage: Stage, camera: Camera, depthTexture: ITexture): void;
+	    activate(stage: Stage, camera: Camera, depthTexture: Image2D): void;
 	    deactivate(stage: Stage): void;
 	    requireDepthRender: boolean;
 	}
 	export = Filter3DTaskBase;
+	
+}
+
+declare module "awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask" {
+	import Image2D = require("awayjs-core/lib/data/Image2D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+	class Filter3DVBlurTask extends Filter3DTaskBase {
+	    private static MAX_AUTO_SAMPLES;
+	    private _amount;
+	    private _data;
+	    private _stepSize;
+	    private _realStepSize;
+	    /**
+	     *
+	     * @param amount
+	     * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
+	     */
+	    constructor(amount: number, stepSize?: number);
+	    amount: number;
+	    stepSize: number;
+	    getFragmentCode(): string;
+	    activate(stage: Stage, camera3D: Camera, depthTexture: Image2D): void;
+	    updateTextures(stage: Stage): void;
+	    private updateBlurData();
+	    private calculateStepSize();
+	}
+	export = Filter3DVBlurTask;
 	
 }
 

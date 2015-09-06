@@ -135,6 +135,8 @@ var DefaultRenderer = (function (_super) {
         if (this._depthPrepass)
             this.pRenderDepthPrepass(entityCollector);
         if (this._pFilter3DRenderer && this._pContext) {
+            this._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+            this._pFilter3DRenderer.render(this._pStage, entityCollector.camera, this._pDepthRender);
         }
         else {
             if (this._shareContext)
@@ -142,7 +144,6 @@ var DefaultRenderer = (function (_super) {
             else
                 this._iRender(entityCollector);
         }
-        _super.prototype.render.call(this, entityCollector);
         if (!this._shareContext && this._pContext)
             this._pContext.present();
         // register that a view has been rendered
@@ -238,6 +239,9 @@ var DefaultRenderer = (function (_super) {
     DefaultRenderer.prototype.pRenderDepthPrepass = function (entityCollector) {
         this._pDepthRenderer.disableColor = true;
         if (this._pFilter3DRenderer) {
+            this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
+            this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
+            this._pDepthRenderer._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
         }
         else {
             this._pDepthRenderer.textureRatioX = 1;
@@ -439,24 +443,25 @@ var Filter3DRenderer = (function () {
             this._filters[i].update(stage, camera);
         len = this._tasks.length;
         if (len > 1) {
+            context.setProgram(this._tasks[0].getProgram(stage));
             context.setVertexBufferAt(0, vertexBuffer, 0, ContextGLVertexBufferFormat.FLOAT_2);
-            context.setVertexBufferAt(1, vertexBuffer, 2, ContextGLVertexBufferFormat.FLOAT_2);
+            context.setVertexBufferAt(1, vertexBuffer, 8, ContextGLVertexBufferFormat.FLOAT_2);
         }
         for (i = 0; i < len; ++i) {
             task = this._tasks[i];
-            //stage.setRenderTarget(task.target); //TODO
+            stage.setRenderTarget(task.target);
+            context.setProgram(task.getProgram(stage));
+            stage.getImageObject(task.getMainInputTexture(stage)).activate(0, false, true, false);
             if (!task.target) {
                 stage.scissorRect = null;
                 vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
                 context.setVertexBufferAt(0, vertexBuffer, 0, ContextGLVertexBufferFormat.FLOAT_2);
-                context.setVertexBufferAt(1, vertexBuffer, 2, ContextGLVertexBufferFormat.FLOAT_2);
+                context.setVertexBufferAt(1, vertexBuffer, 8, ContextGLVertexBufferFormat.FLOAT_2);
             }
-            context.setTextureAt(0, task.getMainInputTexture(stage));
-            context.setProgram(task.getProgram(stage));
             context.clear(0.0, 0.0, 0.0, 0.0);
             task.activate(stage, camera, depthTexture);
             context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-            context.drawIndices(ContextGLDrawMode.TRIANGLES, indexBuffer, 0, 2);
+            context.drawIndices(ContextGLDrawMode.TRIANGLES, indexBuffer, 0, 6);
             task.deactivate(stage);
         }
         context.setTextureAt(0, null);
@@ -9341,7 +9346,125 @@ var ShadingMethodEvent = (function (_super) {
 })(Event);
 module.exports = ShadingMethodEvent;
 
-},{"awayjs-core/lib/events/Event":undefined}],"awayjs-renderergl/lib/filters/Filter3DBase":[function(require,module,exports){
+},{"awayjs-core/lib/events/Event":undefined}],"awayjs-renderergl/lib/filters/BlurFilter3D":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Filter3DHBlurTask = require("awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask");
+var Filter3DVBlurTask = require("awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask");
+var Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+var BlurFilter3D = (function (_super) {
+    __extends(BlurFilter3D, _super);
+    /**
+     * Creates a new BlurFilter3D object
+     * @param blurX The amount of horizontal blur to apply
+     * @param blurY The amount of vertical blur to apply
+     * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
+     */
+    function BlurFilter3D(blurX, blurY, stepSize) {
+        if (blurX === void 0) { blurX = 3; }
+        if (blurY === void 0) { blurY = 3; }
+        if (stepSize === void 0) { stepSize = -1; }
+        _super.call(this);
+        this._hBlurTask = new Filter3DHBlurTask(blurX, stepSize);
+        this._vBlurTask = new Filter3DVBlurTask(blurY, stepSize);
+        this.addTask(this._hBlurTask);
+        this.addTask(this._vBlurTask);
+    }
+    Object.defineProperty(BlurFilter3D.prototype, "blurX", {
+        get: function () {
+            return this._hBlurTask.amount;
+        },
+        set: function (value) {
+            this._hBlurTask.amount = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BlurFilter3D.prototype, "blurY", {
+        get: function () {
+            return this._vBlurTask.amount;
+        },
+        set: function (value) {
+            this._vBlurTask.amount = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BlurFilter3D.prototype, "stepSize", {
+        /**
+         * The distance between two blur samples. Set to -1 to autodetect with acceptable quality (default value).
+         * Higher values provide better performance at the cost of reduces quality.
+         */
+        get: function () {
+            return this._hBlurTask.stepSize;
+        },
+        set: function (value) {
+            this._hBlurTask.stepSize = value;
+            this._vBlurTask.stepSize = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BlurFilter3D.prototype.setRenderTargets = function (mainTarget, stage) {
+        this._hBlurTask.target = this._vBlurTask.getMainInputTexture(stage);
+        _super.prototype.setRenderTargets.call(this, mainTarget, stage);
+    };
+    return BlurFilter3D;
+})(Filter3DBase);
+module.exports = BlurFilter3D;
+
+},{"awayjs-renderergl/lib/filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask":"awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask","awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask":"awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask"}],"awayjs-renderergl/lib/filters/CompositeFilter3D":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Filter3DCompositeTask = require("awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask");
+var Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+var CompositeFilter3D = (function (_super) {
+    __extends(CompositeFilter3D, _super);
+    /**
+     * Creates a new CompositeFilter3D object
+     * @param blurX The amount of horizontal blur to apply
+     * @param blurY The amount of vertical blur to apply
+     * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
+     */
+    function CompositeFilter3D(blendMode, exposure) {
+        if (exposure === void 0) { exposure = 1; }
+        _super.call(this);
+        this._compositeTask = new Filter3DCompositeTask(blendMode, exposure);
+        this.addTask(this._compositeTask);
+    }
+    Object.defineProperty(CompositeFilter3D.prototype, "exposure", {
+        get: function () {
+            return this._compositeTask.exposure;
+        },
+        set: function (value) {
+            this._compositeTask.exposure = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CompositeFilter3D.prototype, "overlayTexture", {
+        get: function () {
+            return this._compositeTask.overlayTexture;
+        },
+        set: function (value) {
+            this._compositeTask.overlayTexture = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return CompositeFilter3D;
+})(Filter3DBase);
+module.exports = CompositeFilter3D;
+
+},{"awayjs-renderergl/lib/filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask":"awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask"}],"awayjs-renderergl/lib/filters/Filter3DBase":[function(require,module,exports){
 var Filter3DBase = (function () {
     function Filter3DBase() {
         this._tasks = new Array();
@@ -9353,7 +9476,7 @@ var Filter3DBase = (function () {
         enumerable: true,
         configurable: true
     });
-    Filter3DBase.prototype.pAddTask = function (filter) {
+    Filter3DBase.prototype.addTask = function (filter) {
         this._tasks.push(filter);
         if (this._requireDepthRender == null)
             this._requireDepthRender = filter.requireDepthRender;
@@ -9406,10 +9529,179 @@ var Filter3DBase = (function () {
 })();
 module.exports = Filter3DBase;
 
-},{}],"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":[function(require,module,exports){
+},{}],"awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
+var Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+var Filter3DCompositeTask = (function (_super) {
+    __extends(Filter3DCompositeTask, _super);
+    function Filter3DCompositeTask(blendMode, exposure) {
+        if (exposure === void 0) { exposure = 1; }
+        _super.call(this);
+        this._data = new Float32Array([exposure, 0.5, 2.0, -1]);
+        this._blendMode = blendMode;
+    }
+    Object.defineProperty(Filter3DCompositeTask.prototype, "overlayTexture", {
+        get: function () {
+            return this._overlayTexture;
+        },
+        set: function (value) {
+            this._overlayTexture = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filter3DCompositeTask.prototype, "exposure", {
+        get: function () {
+            return this._data[0];
+        },
+        set: function (value) {
+            this._data[0] = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Filter3DCompositeTask.prototype.getFragmentCode = function () {
+        var code;
+        var op;
+        code = "tex ft0, v0, fs0 <2d,linear,clamp>\n" + "tex ft1, v0, fs1 <2d,linear,clamp>\n" + "mul ft1, ft1, fc0.xxx\n" + "add ft1, ft1, fc0.xxx\n";
+        switch (this._blendMode) {
+            case "multiply":
+                code += "mul oc, ft0, ft1\n";
+                break;
+            case "add":
+                code += "add oc, ft0, ft1\n";
+                break;
+            case "subtract":
+                code += "sub oc, ft0, ft1\n";
+                break;
+            case "overlay":
+                code += "sge ft2, ft0, fc0.yyy\n"; // t2 = (blend >= 0.5)? 1 : 0
+                code += "sub ft0, ft2, ft0\n"; // base = (1 : 0 - base)
+                code += "sub ft1, ft1, ft2\n"; // blend = (blend - 1 : 0)
+                code += "mul ft1, ft1, ft0\n"; // blend = blend * base
+                code += "sub ft3, ft2, fc0.yyy\n"; // t3 = (blend >= 0.5)? 0.5 : -0.5
+                code += "div ft1, ft1, ft3\n"; // blend = blend / ( 0.5 : -0.5)
+                code += "add oc, ft1, ft2\n";
+                break;
+            case "normal":
+                // for debugging purposes
+                code += "mov oc, ft0\n";
+                break;
+            default:
+                throw new Error("Unknown blend mode");
+        }
+        return code;
+    };
+    Filter3DCompositeTask.prototype.activate = function (stage, camera3D, depthTexture) {
+        var context = stage.context;
+        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 1);
+        stage.getImageObject(this._overlayTexture).activate(1, false, true, false);
+    };
+    Filter3DCompositeTask.prototype.deactivate = function (stage) {
+        stage.context.setTextureAt(1, null);
+    };
+    return Filter3DCompositeTask;
+})(Filter3DTaskBase);
+module.exports = Filter3DCompositeTask;
+
+},{"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
+var Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+var Filter3DHBlurTask = (function (_super) {
+    __extends(Filter3DHBlurTask, _super);
+    /**
+     * Creates a new Filter3DHDepthOfFFieldTask
+     * @param amount The maximum amount of blur to apply in pixels at the most out-of-focus areas
+     * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
+     */
+    function Filter3DHBlurTask(amount, stepSize) {
+        if (stepSize === void 0) { stepSize = -1; }
+        _super.call(this);
+        this._stepSize = 1;
+        this._amount = amount;
+        this._data = new Float32Array([0, 0, 0, 1]);
+        this.stepSize = stepSize;
+    }
+    Object.defineProperty(Filter3DHBlurTask.prototype, "amount", {
+        get: function () {
+            return this._amount;
+        },
+        set: function (value) {
+            if (this._amount == value)
+                return;
+            this._amount = value;
+            this.invalidateProgram();
+            this.updateBlurData();
+            this.calculateStepSize();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filter3DHBlurTask.prototype, "stepSize", {
+        get: function () {
+            return this._stepSize;
+        },
+        set: function (value) {
+            if (this._stepSize == value)
+                return;
+            this._stepSize = value;
+            this.calculateStepSize();
+            this.invalidateProgram();
+            this.updateBlurData();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Filter3DHBlurTask.prototype.getFragmentCode = function () {
+        var code;
+        var numSamples = 1;
+        code = "mov ft0, v0	\n" + "sub ft0.x, v0.x, fc0.x\n";
+        code += "tex ft1, ft0, fs0 <2d,linear,clamp>\n";
+        for (var x = this._realStepSize; x <= this._amount; x += this._realStepSize) {
+            code += "add ft0.x, ft0.x, fc0.y\n" + "tex ft2, ft0, fs0 <2d,linear,clamp>\n" + "add ft1, ft1, ft2\n";
+            ++numSamples;
+        }
+        code += "mul oc, ft1, fc0.z\n";
+        this._data[2] = 1 / numSamples;
+        return code;
+    };
+    Filter3DHBlurTask.prototype.activate = function (stage, camera3D, depthTexture) {
+        stage.context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 1);
+    };
+    Filter3DHBlurTask.prototype.updateTextures = function (stage) {
+        _super.prototype.updateTextures.call(this, stage);
+        this.updateBlurData();
+    };
+    Filter3DHBlurTask.prototype.updateBlurData = function () {
+        // todo: must be normalized using view size ratio instead of texture
+        var invW = 1 / this._textureWidth;
+        this._data[0] = this._amount * .5 * invW;
+        this._data[1] = this._realStepSize * invW;
+    };
+    Filter3DHBlurTask.prototype.calculateStepSize = function () {
+        this._realStepSize = this._stepSize > 0 ? this._stepSize : this._amount > Filter3DHBlurTask.MAX_AUTO_SAMPLES ? this._amount / Filter3DHBlurTask.MAX_AUTO_SAMPLES : 1;
+    };
+    Filter3DHBlurTask.MAX_AUTO_SAMPLES = 15;
+    return Filter3DHBlurTask;
+})(Filter3DTaskBase);
+module.exports = Filter3DHBlurTask;
+
+},{"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":[function(require,module,exports){
+var Image2D = require("awayjs-core/lib/data/Image2D");
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
-var ContextGLTextureFormat = require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
 var Filter3DTaskBase = (function () {
     function Filter3DTaskBase(requireDepthRender) {
         if (requireDepthRender === void 0) { requireDepthRender = false; }
@@ -9480,7 +9772,7 @@ var Filter3DTaskBase = (function () {
     });
     Filter3DTaskBase.prototype.getMainInputTexture = function (stage) {
         if (this._textureDimensionsInvalid)
-            this.pUpdateTextures(stage);
+            this.updateTextures(stage);
         return this._mainInputTexture;
     };
     Filter3DTaskBase.prototype.dispose = function () {
@@ -9489,35 +9781,34 @@ var Filter3DTaskBase = (function () {
         if (this._program3D)
             this._program3D.dispose();
     };
-    Filter3DTaskBase.prototype.pInvalidateProgram = function () {
+    Filter3DTaskBase.prototype.invalidateProgram = function () {
         this._program3DInvalid = true;
     };
-    Filter3DTaskBase.prototype.pUpdateProgram = function (stage) {
+    Filter3DTaskBase.prototype.updateProgram = function (stage) {
         if (this._program3D)
             this._program3D.dispose();
         this._program3D = stage.context.createProgram();
-        var vertexByteCode = (new AGALMiniAssembler().assemble("part vertex 1\n" + this.pGetVertexCode() + "endpart"))['vertex'].data;
-        var fragmentByteCode = (new AGALMiniAssembler().assemble("part fragment 1\n" + this.pGetFragmentCode() + "endpart"))['fragment'].data;
+        var vertexByteCode = (new AGALMiniAssembler().assemble("part vertex 1\n" + this.getVertexCode() + "endpart"))['vertex'].data;
+        var fragmentByteCode = (new AGALMiniAssembler().assemble("part fragment 1\n" + this.getFragmentCode() + "endpart"))['fragment'].data;
         this._program3D.upload(vertexByteCode, fragmentByteCode);
         this._program3DInvalid = false;
     };
-    Filter3DTaskBase.prototype.pGetVertexCode = function () {
-        // TODO: imeplement AGAL <> GLSL
+    Filter3DTaskBase.prototype.getVertexCode = function () {
         return "mov op, va0\n" + "mov v0, va1\n";
     };
-    Filter3DTaskBase.prototype.pGetFragmentCode = function () {
+    Filter3DTaskBase.prototype.getFragmentCode = function () {
         throw new AbstractMethodError();
         return null;
     };
-    Filter3DTaskBase.prototype.pUpdateTextures = function (stage) {
+    Filter3DTaskBase.prototype.updateTextures = function (stage) {
         if (this._mainInputTexture)
             this._mainInputTexture.dispose();
-        this._mainInputTexture = stage.context.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, ContextGLTextureFormat.BGRA, true);
+        this._mainInputTexture = new Image2D(this._scaledTextureWidth, this._scaledTextureHeight);
         this._textureDimensionsInvalid = false;
     };
     Filter3DTaskBase.prototype.getProgram = function (stage) {
         if (this._program3DInvalid)
-            this.pUpdateProgram(stage);
+            this.updateProgram(stage);
         return this._program3D;
     };
     Filter3DTaskBase.prototype.activate = function (stage, camera, depthTexture) {
@@ -9535,7 +9826,95 @@ var Filter3DTaskBase = (function () {
 })();
 module.exports = Filter3DTaskBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
+},{"awayjs-core/lib/data/Image2D":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
+var Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+var Filter3DVBlurTask = (function (_super) {
+    __extends(Filter3DVBlurTask, _super);
+    /**
+     *
+     * @param amount
+     * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
+     */
+    function Filter3DVBlurTask(amount, stepSize) {
+        if (stepSize === void 0) { stepSize = -1; }
+        _super.call(this);
+        this._stepSize = 1;
+        this._amount = amount;
+        this._data = new Float32Array([0, 0, 0, 1]);
+        this.stepSize = stepSize;
+    }
+    Object.defineProperty(Filter3DVBlurTask.prototype, "amount", {
+        get: function () {
+            return this._amount;
+        },
+        set: function (value) {
+            if (this._amount == value)
+                return;
+            this._amount = value;
+            this.invalidateProgram();
+            this.updateBlurData();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filter3DVBlurTask.prototype, "stepSize", {
+        get: function () {
+            return this._stepSize;
+        },
+        set: function (value) {
+            if (this._stepSize == value)
+                return;
+            this._stepSize = value;
+            this.calculateStepSize();
+            this.invalidateProgram();
+            this.updateBlurData();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Filter3DVBlurTask.prototype.getFragmentCode = function () {
+        var code;
+        var numSamples = 1;
+        code = "mov ft0, v0	\n" + "sub ft0.y, v0.y, fc0.x\n";
+        code += "tex ft1, ft0, fs0 <2d,linear,clamp>\n";
+        for (var x = this._realStepSize; x <= this._amount; x += this._realStepSize) {
+            code += "add ft0.y, ft0.y, fc0.y\n";
+            code += "tex ft2, ft0, fs0 <2d,linear,clamp>\n" + "add ft1, ft1, ft2\n";
+            ++numSamples;
+        }
+        code += "mul oc, ft1, fc0.z\n";
+        this._data[2] = 1 / numSamples;
+        return code;
+    };
+    Filter3DVBlurTask.prototype.activate = function (stage, camera3D, depthTexture) {
+        stage.context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 1);
+    };
+    Filter3DVBlurTask.prototype.updateTextures = function (stage) {
+        _super.prototype.updateTextures.call(this, stage);
+        this.updateBlurData();
+    };
+    Filter3DVBlurTask.prototype.updateBlurData = function () {
+        // todo: must be normalized using view size ratio instead of texture
+        var invH = 1 / this._textureHeight;
+        this._data[0] = this._amount * .5 * invH;
+        this._data[1] = this._realStepSize * invH;
+    };
+    Filter3DVBlurTask.prototype.calculateStepSize = function () {
+        this._realStepSize = this._stepSize > 0 ? this._stepSize : this._amount > Filter3DVBlurTask.MAX_AUTO_SAMPLES ? this._amount / Filter3DVBlurTask.MAX_AUTO_SAMPLES : 1;
+    };
+    Filter3DVBlurTask.MAX_AUTO_SAMPLES = 15;
+    return Filter3DVBlurTask;
+})(Filter3DTaskBase);
+module.exports = Filter3DVBlurTask;
+
+},{"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9727,9 +10106,9 @@ var RTTBufferManager = (function (_super) {
         var x;
         var y;
         if (this._renderToTextureVertexBuffer == null)
-            this._renderToTextureVertexBuffer = context.createVertexBuffer(4, 5);
+            this._renderToTextureVertexBuffer = context.createVertexBuffer(4, 20);
         if (this._renderToScreenVertexBuffer == null)
-            this._renderToScreenVertexBuffer = context.createVertexBuffer(4, 5);
+            this._renderToScreenVertexBuffer = context.createVertexBuffer(4, 20);
         if (!this._indexBuffer) {
             this._indexBuffer = context.createIndexBuffer(6);
             this._indexBuffer.uploadFromArray([2, 1, 0, 3, 2, 0], 0, 6);
@@ -9738,8 +10117,8 @@ var RTTBufferManager = (function (_super) {
         this._textureRatioY = y = Math.min(this._viewHeight / this._textureHeight, 1);
         var u1 = (1 - x) * .5;
         var u2 = (x + 1) * .5;
-        var v1 = (y + 1) * .5;
-        var v2 = (1 - y) * .5;
+        var v1 = (1 - y) * .5;
+        var v2 = (y + 1) * .5;
         // last element contains indices for data per vertex that can be passed to the vertex shader if necessary (ie: frustum corners for deferred rendering)
         textureVerts = [-x, -y, u1, v1, 0, x, -y, u2, v1, 1, x, y, u2, v2, 2, -x, y, u1, v2, 3];
         screenVerts = [-1, -1, u1, v1, 0, 1, -1, u2, v1, 1, 1, 1, u2, v2, 2, -1, 1, u1, v2, 3];
@@ -13091,13 +13470,10 @@ var CompilerBase = (function () {
         //compile custom vertex & fragment codes
         this._pVertexCode += this._pRenderPass._iGetVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
         this._pPostAnimationFragmentCode += this._pRenderPass._iGetFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
-        console.log("uses ct:", this._pShader.usesColorTransform);
-        if (this._pShader.usesColorTransform) {
+        if (this._pShader.usesColorTransform)
             this.compileColorTransformCode();
-        }
-        else {
+        else
             this._pShader.colorTransformIndex = -1;
-        }
         //assign the final output color to the output register
         this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
         this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
