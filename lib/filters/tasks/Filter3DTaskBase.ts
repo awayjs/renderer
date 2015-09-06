@@ -1,3 +1,5 @@
+import Image2D						= require("awayjs-core/lib/data/Image2D");
+
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
 import ByteArray					= require("awayjs-core/lib/utils/ByteArray");
 
@@ -8,20 +10,19 @@ import AGALMiniAssembler			= require("awayjs-stagegl/lib/aglsl/assembler/AGALMin
 import ContextGLTextureFormat		= require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import IProgram						= require("awayjs-stagegl/lib/base/IProgram");
-import ITexture						= require("awayjs-stagegl/lib/base/ITexture");
 
 class Filter3DTaskBase
 {
-	private _mainInputTexture:ITexture;
+	private _mainInputTexture:Image2D;
 
 	private _scaledTextureWidth:number = -1;
 	private _scaledTextureHeight:number = -1;
-	private _textureWidth:number = -1;
-	private _textureHeight:number = -1;
+	public _textureWidth:number = -1;
+	public _textureHeight:number = -1;
 	private _textureDimensionsInvalid:boolean = true;
 	private _program3DInvalid:boolean = true;
 	private _program3D:IProgram;
-	private _target:ITexture;
+	private _target:Image2D;
 	private _requireDepthRender:boolean;
 	private _textureScale:number = 0;
 
@@ -49,12 +50,12 @@ class Filter3DTaskBase
 		this._textureDimensionsInvalid = true;
 	}
 
-	public get target():ITexture
+	public get target():Image2D
 	{
 		return this._target;
 	}
 
-	public set target(value:ITexture)
+	public set target(value:Image2D)
 	{
 		this._target = value;
 	}
@@ -89,10 +90,10 @@ class Filter3DTaskBase
 		this._textureDimensionsInvalid = true;
 	}
 
-	public getMainInputTexture(stage:Stage):ITexture
+	public getMainInputTexture(stage:Stage):Image2D
 	{
 		if (this._textureDimensionsInvalid)
-			this.pUpdateTextures(stage);
+			this.updateTextures(stage);
 
 		return this._mainInputTexture;
 	}
@@ -106,44 +107,42 @@ class Filter3DTaskBase
 			this._program3D.dispose();
 	}
 
-	public pInvalidateProgram()
+	public invalidateProgram()
 	{
 		this._program3DInvalid = true;
 	}
 
-	public pUpdateProgram(stage:Stage)
+	public updateProgram(stage:Stage)
 	{
 		if (this._program3D)
 			this._program3D.dispose();
 
 		this._program3D = stage.context.createProgram();
 
-		var vertexByteCode:ByteArray = (new AGALMiniAssembler().assemble("part vertex 1\n" + this.pGetVertexCode() + "endpart"))['vertex'].data;
-		var fragmentByteCode:ByteArray = (new AGALMiniAssembler().assemble("part fragment 1\n" + this.pGetFragmentCode() + "endpart"))['fragment'].data;
+		var vertexByteCode:ByteArray = (new AGALMiniAssembler().assemble("part vertex 1\n" + this.getVertexCode() + "endpart"))['vertex'].data;
+		var fragmentByteCode:ByteArray = (new AGALMiniAssembler().assemble("part fragment 1\n" + this.getFragmentCode() + "endpart"))['fragment'].data;
 		this._program3D.upload(vertexByteCode, fragmentByteCode);
 		this._program3DInvalid = false;
 	}
 
-	public pGetVertexCode():string
+	public getVertexCode():string
 	{
-		// TODO: imeplement AGAL <> GLSL
-
 		return "mov op, va0\n" + "mov v0, va1\n";
 	}
 
-	public pGetFragmentCode():string
+	public getFragmentCode():string
 	{
 		throw new AbstractMethodError();
 
 		return null;
 	}
 
-	public pUpdateTextures(stage:Stage)
+	public updateTextures(stage:Stage)
 	{
 		if (this._mainInputTexture)
 			this._mainInputTexture.dispose();
 
-		this._mainInputTexture = stage.context.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, ContextGLTextureFormat.BGRA, true);
+		this._mainInputTexture = new Image2D(this._scaledTextureWidth, this._scaledTextureHeight);
 
 		this._textureDimensionsInvalid = false;
 	}
@@ -151,12 +150,12 @@ class Filter3DTaskBase
 	public getProgram(stage:Stage):IProgram
 	{
 		if (this._program3DInvalid)
-			this.pUpdateProgram(stage);
+			this.updateProgram(stage);
 
 		return this._program3D;
 	}
 
-	public activate(stage:Stage, camera:Camera, depthTexture:ITexture)
+	public activate(stage:Stage, camera:Camera, depthTexture:Image2D)
 	{
 	}
 

@@ -230,10 +230,10 @@ class RTTBufferManager extends EventDispatcher
 		var y:number;
 
 		if (this._renderToTextureVertexBuffer == null)
-			this._renderToTextureVertexBuffer = context.createVertexBuffer(4, 5);
+			this._renderToTextureVertexBuffer = context.createVertexBuffer(4, 20);
 
 		if (this._renderToScreenVertexBuffer == null)
-			this._renderToScreenVertexBuffer = context.createVertexBuffer(4, 5);
+			this._renderToScreenVertexBuffer = context.createVertexBuffer(4, 20);
 
 		if (!this._indexBuffer) {
 			this._indexBuffer = context.createIndexBuffer(6);
@@ -246,8 +246,8 @@ class RTTBufferManager extends EventDispatcher
 
 		var u1:number = (1 - x)*.5;
 		var u2:number = (x + 1)*.5;
-		var v1:number = (y + 1)*.5;
-		var v2:number = (1 - y)*.5;
+		var v1:number = (1 - y)*.5;
+		var v2:number = (y + 1)*.5;
 
 		// last element contains indices for data per vertex that can be passed to the vertex shader if necessary (ie: frustum corners for deferred rendering)
 		textureVerts = [    -x, -y, u1, v1, 0, x, -y, u2, v1, 1, x, y, u2, v2, 2, -x, y, u1, v2, 3 ];

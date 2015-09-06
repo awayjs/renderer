@@ -1,4 +1,5 @@
 import Event						= require("awayjs-core/lib/events/Event");
+import Image2D						= require("awayjs-core/lib/data/Image2D");
 
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
@@ -8,7 +9,6 @@ import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendF
 import ContextGLVertexBufferFormat	= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import IIndexBuffer					= require("awayjs-stagegl/lib/base/IIndexBuffer");
-import ITexture						= require("awayjs-stagegl/lib/base/ITexture");
 import IVertexBuffer				= require("awayjs-stagegl/lib/base/IVertexBuffer");
 
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
@@ -23,7 +23,7 @@ class Filter3DRenderer
 	private _filters:Array<Filter3DBase>;
 	private _tasks:Array<Filter3DTaskBase>;
 	private _filterTasksInvalid:boolean;
-	private _mainInputTexture:ITexture;
+	private _mainInputTexture:Image2D;
 	private _requireDepthRender:boolean;
 	private _rttManager:RTTBufferManager;
 	private _stage:Stage;
@@ -50,7 +50,7 @@ class Filter3DRenderer
 		return this._requireDepthRender;
 	}
 
-	public getMainInputTexture(stage:Stage):ITexture
+	public getMainInputTexture(stage:Stage):Image2D
 	{
 		if (this._filterTasksInvalid)
 			this.updateFilterTasks(stage);
@@ -79,7 +79,6 @@ class Filter3DRenderer
 				this._requireDepthRender = true;
 
 		this._filterSizesInvalid = true;
-
 	}
 
 	private updateFilterTasks(stage:Stage)
@@ -115,7 +114,7 @@ class Filter3DRenderer
 
 	}
 
-	public render(stage:Stage, camera:Camera, depthTexture:ITexture)
+	public render(stage:Stage, camera:Camera, depthTexture:Image2D)
 	{
 		var len:number;
 		var i:number;
@@ -143,33 +142,35 @@ class Filter3DRenderer
 		len = this._tasks.length;
 
 		if (len > 1) {
+			context.setProgram(this._tasks[0].getProgram(stage));
 			context.setVertexBufferAt(0, vertexBuffer, 0, ContextGLVertexBufferFormat.FLOAT_2);
-			context.setVertexBufferAt(1, vertexBuffer, 2, ContextGLVertexBufferFormat.FLOAT_2);
+			context.setVertexBufferAt(1, vertexBuffer, 8, ContextGLVertexBufferFormat.FLOAT_2);
 		}
 
 		for (i = 0; i < len; ++i) {
 
 			task = this._tasks[i];
 
-			//stage.setRenderTarget(task.target); //TODO
+			stage.setRenderTarget(task.target);
+
+			context.setProgram(task.getProgram(stage));
+			stage.getImageObject(task.getMainInputTexture(stage)).activate(0, false, true, false);
+
 
 			if (!task.target) {
 
 				stage.scissorRect = null;
 				vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
 				context.setVertexBufferAt(0, vertexBuffer, 0, ContextGLVertexBufferFormat.FLOAT_2);
-				context.setVertexBufferAt(1, vertexBuffer, 2, ContextGLVertexBufferFormat.FLOAT_2);
+				context.setVertexBufferAt(1, vertexBuffer, 8, ContextGLVertexBufferFormat.FLOAT_2);
 
 			}
-
-			context.setTextureAt(0, task.getMainInputTexture(stage));
-			context.setProgram(task.getProgram(stage));
 			context.clear(0.0, 0.0, 0.0, 0.0);
 
 			task.activate(stage, camera, depthTexture);
 
 			context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-			context.drawIndices(ContextGLDrawMode.TRIANGLES, indexBuffer, 0, 2);
+			context.drawIndices(ContextGLDrawMode.TRIANGLES, indexBuffer, 0, 6);
 
 			task.deactivate(stage);
 		}

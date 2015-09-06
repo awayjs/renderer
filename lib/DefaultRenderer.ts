@@ -176,9 +176,8 @@ class DefaultRenderer extends RendererBase
 			this.pRenderDepthPrepass(<EntityCollector> entityCollector);
 
 		if (this._pFilter3DRenderer && this._pContext) { //TODO
-			//this._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
-			//this._pFilter3DRenderer.render(this._pStage, entityCollector.camera, this._pDepthRender);
-
+			this._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+			this._pFilter3DRenderer.render(this._pStage, entityCollector.camera, this._pDepthRender);
 		} else {
 
 			if (this._shareContext)
@@ -186,8 +185,6 @@ class DefaultRenderer extends RendererBase
 			else
 				this._iRender(entityCollector);
 		}
-
-		super.render(entityCollector);
 
 		if (!this._shareContext && this._pContext)
 			this._pContext.present();
@@ -325,10 +322,10 @@ class DefaultRenderer extends RendererBase
 	{
 		this._pDepthRenderer.disableColor = true;
 
-		if (this._pFilter3DRenderer) { //TODO
-//				this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
-//				this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-//				this._pDepthRenderer._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+		if (this._pFilter3DRenderer) {
+			this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
+			this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
+			this._pDepthRenderer._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
 		} else {
 			this._pDepthRenderer.textureRatioX = 1;
 			this._pDepthRenderer.textureRatioY = 1;

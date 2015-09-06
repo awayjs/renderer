@@ -1,7 +1,8 @@
+import Image2D						= require("awayjs-core/lib/data/Image2D");
+
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import ITexture						= require("awayjs-stagegl/lib/base/ITexture");
 
 import Filter3DTaskBase				= require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
 
@@ -22,7 +23,7 @@ class Filter3DBase
 		return this._requireDepthRender;
 	}
 
-	public pAddTask(filter:Filter3DTaskBase)
+	public addTask(filter:Filter3DTaskBase)
 	{
 		this._tasks.push(filter);
 
@@ -35,7 +36,7 @@ class Filter3DBase
 		return this._tasks;
 	}
 
-	public getMainInputTexture(stage:Stage):ITexture
+	public getMainInputTexture(stage:Stage):Image2D
 	{
 		return this._tasks[0].getMainInputTexture(stage);
 	}
@@ -67,7 +68,7 @@ class Filter3DBase
 	}
 
 	// link up the filters correctly with the next filter
-	public setRenderTargets(mainTarget:ITexture, stage:Stage)
+	public setRenderTargets(mainTarget:Image2D, stage:Stage)
 	{
 		this._tasks[this._tasks.length - 1].target = mainTarget;
 	}
