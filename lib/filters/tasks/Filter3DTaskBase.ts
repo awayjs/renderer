@@ -15,8 +15,8 @@ class Filter3DTaskBase
 {
 	private _mainInputTexture:Image2D;
 
-	private _scaledTextureWidth:number = -1;
-	private _scaledTextureHeight:number = -1;
+	public _scaledTextureWidth:number = -1;
+	public _scaledTextureHeight:number = -1;
 	public _textureWidth:number = -1;
 	public _textureHeight:number = -1;
 	private _textureDimensionsInvalid:boolean = true;

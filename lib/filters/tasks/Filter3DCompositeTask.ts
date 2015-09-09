@@ -13,12 +13,14 @@ class Filter3DCompositeTask extends Filter3DTaskBase
 {
 	private _data:Float32Array;
 	private _overlayTexture:Image2D;
+	private _overlayWidth:number;
+	private _overlayHeight:number;
 	private _blendMode:string;
 	
 	constructor(blendMode:string, exposure:number = 1)
 	{
 		super();
-		this._data = new Float32Array([exposure, 0.5, 2.0, -1 ]);
+		this._data = new Float32Array([exposure, 0.5, 2.0, -1, 0.0, 0.0, 0.0, 0.0 ]);
 		this._blendMode = blendMode;
 	}
 	
@@ -30,6 +32,8 @@ class Filter3DCompositeTask extends Filter3DTaskBase
 	public set overlayTexture(value:Image2D)
 	{
 		this._overlayTexture = value;
+		this._overlayWidth = this._overlayTexture.width;
+		this._overlayHeight = this._overlayTexture.height;
 	}
 	
 	public get exposure():number
@@ -48,7 +52,9 @@ class Filter3DCompositeTask extends Filter3DTaskBase
 		var code:string;
 		var op:string;
 		code = "tex ft0, v0, fs0 <2d,linear,clamp>\n" +
-			"tex ft1, v0, fs1 <2d,linear,clamp>\n" +
+			"mul ft1, v0, fc1.zw\n" +
+			"add ft1, ft1, fc1.xy\n" +
+			"tex ft1, ft1, fs1 <2d,linear,clamp>\n" +
 			"mul ft1, ft1, fc0.xxx\n" +
 			"add ft1, ft1, fc0.xxx\n";
 		switch (this._blendMode) {
@@ -82,8 +88,14 @@ class Filter3DCompositeTask extends Filter3DTaskBase
 	
 	public activate(stage:Stage, camera3D:Camera, depthTexture:Image2D)
 	{
+		this._data[4] = -0.5*(this._scaledTextureWidth - this._overlayWidth)/this._overlayWidth;
+		this._data[5] = -0.5*(this._scaledTextureHeight - this._overlayHeight)/this._overlayHeight;
+
+		this._data[6] = this._scaledTextureWidth/this._overlayWidth;
+		this._data[7] = this._scaledTextureHeight/this._overlayHeight;
+
 		var context:IContextGL = stage.context;
-		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 1);
+		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 2);
 		stage.getImageObject(this._overlayTexture).activate(1, false, true, false);
 	}
 	
