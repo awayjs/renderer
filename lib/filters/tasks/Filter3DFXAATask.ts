@@ -137,7 +137,7 @@ class Filter3DFXAATask extends Filter3DTaskBase
 		var temp:string = tex;
 		var tempxy:string = temp + ".xy";
 		
-		var code:Array = [];
+		var code:Array<string> =  new Array<string>();
 
 		//lumas
 		code.push(tex, tex, uv_in, sample, "2d", "wrap", "linear", "\n");
