@@ -9543,7 +9543,7 @@ var Filter3DCompositeTask = (function (_super) {
     function Filter3DCompositeTask(blendMode, exposure) {
         if (exposure === void 0) { exposure = 1; }
         _super.call(this);
-        this._data = new Float32Array([exposure, 0.5, 2.0, -1]);
+        this._data = new Float32Array([exposure, 0.5, 2.0, -1, 0.0, 0.0, 0.0, 0.0]);
         this._blendMode = blendMode;
     }
     Object.defineProperty(Filter3DCompositeTask.prototype, "overlayTexture", {
@@ -9552,6 +9552,8 @@ var Filter3DCompositeTask = (function (_super) {
         },
         set: function (value) {
             this._overlayTexture = value;
+            this._overlayWidth = this._overlayTexture.width;
+            this._overlayHeight = this._overlayTexture.height;
         },
         enumerable: true,
         configurable: true
@@ -9569,7 +9571,7 @@ var Filter3DCompositeTask = (function (_super) {
     Filter3DCompositeTask.prototype.getFragmentCode = function () {
         var code;
         var op;
-        code = "tex ft0, v0, fs0 <2d,linear,clamp>\n" + "tex ft1, v0, fs1 <2d,linear,clamp>\n" + "mul ft1, ft1, fc0.xxx\n" + "add ft1, ft1, fc0.xxx\n";
+        code = "tex ft0, v0, fs0 <2d,linear,clamp>\n" + "mul ft1, v0, fc1.zw\n" + "add ft1, ft1, fc1.xy\n" + "tex ft1, ft1, fs1 <2d,linear,clamp>\n" + "mul ft1, ft1, fc0.xxx\n" + "add ft1, ft1, fc0.xxx\n";
         switch (this._blendMode) {
             case "multiply":
                 code += "mul oc, ft0, ft1\n";
@@ -9599,8 +9601,12 @@ var Filter3DCompositeTask = (function (_super) {
         return code;
     };
     Filter3DCompositeTask.prototype.activate = function (stage, camera3D, depthTexture) {
+        this._data[4] = -0.5 * (this._scaledTextureWidth - this._overlayWidth) / this._overlayWidth;
+        this._data[5] = -0.5 * (this._scaledTextureHeight - this._overlayHeight) / this._overlayHeight;
+        this._data[6] = this._scaledTextureWidth / this._overlayWidth;
+        this._data[7] = this._scaledTextureHeight / this._overlayHeight;
         var context = stage.context;
-        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 1);
+        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 2);
         stage.getImageObject(this._overlayTexture).activate(1, false, true, false);
     };
     Filter3DCompositeTask.prototype.deactivate = function (stage) {

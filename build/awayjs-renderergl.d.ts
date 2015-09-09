@@ -3510,33 +3510,6 @@ declare module "awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState"
 	
 }
 
-declare module "awayjs-renderergl/lib/animators/states/ParticleStateBase" {
-	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import ParticleAnimator = require("awayjs-renderergl/lib/animators/ParticleAnimator");
-	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-	import AnimationSubGeometry = require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
-	import ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-	import AnimationStateBase = require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
-	/**
-	 * ...
-	 */
-	class ParticleStateBase extends AnimationStateBase {
-	    private _particleNode;
-	    _pDynamicProperties: Array<Vector3D>;
-	    _pDynamicPropertiesDirty: Object;
-	    _pNeedUpdateTime: boolean;
-	    constructor(animator: ParticleAnimator, particleNode: ParticleNodeBase, needUpdateTime?: boolean);
-	    needUpdateTime: boolean;
-	    setRenderState(stage: Stage, renderable: RenderableBase, animationSubGeometry: AnimationSubGeometry, animationRegisterCache: AnimationRegisterCache, camera: Camera): void;
-	    _pUpdateDynamicProperties(animationSubGeometry: AnimationSubGeometry): void;
-	}
-	export = ParticleStateBase;
-	
-}
-
 declare module "awayjs-renderergl/lib/animators/states/ParticleTimeState" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
@@ -3582,6 +3555,33 @@ declare module "awayjs-renderergl/lib/animators/states/ParticleUVState" {
 	    setRenderState(stage: Stage, renderable: RenderableBase, animationSubGeometry: AnimationSubGeometry, animationRegisterCache: AnimationRegisterCache, camera: Camera): void;
 	}
 	export = ParticleUVState;
+	
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ParticleStateBase" {
+	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ParticleAnimator = require("awayjs-renderergl/lib/animators/ParticleAnimator");
+	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
+	import AnimationSubGeometry = require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
+	import ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
+	import AnimationStateBase = require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
+	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+	/**
+	 * ...
+	 */
+	class ParticleStateBase extends AnimationStateBase {
+	    private _particleNode;
+	    _pDynamicProperties: Array<Vector3D>;
+	    _pDynamicPropertiesDirty: Object;
+	    _pNeedUpdateTime: boolean;
+	    constructor(animator: ParticleAnimator, particleNode: ParticleNodeBase, needUpdateTime?: boolean);
+	    needUpdateTime: boolean;
+	    setRenderState(stage: Stage, renderable: RenderableBase, animationSubGeometry: AnimationSubGeometry, animationRegisterCache: AnimationRegisterCache, camera: Camera): void;
+	    _pUpdateDynamicProperties(animationSubGeometry: AnimationSubGeometry): void;
+	}
+	export = ParticleStateBase;
 	
 }
 
@@ -4200,6 +4200,8 @@ declare module "awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask" {
 	class Filter3DCompositeTask extends Filter3DTaskBase {
 	    private _data;
 	    private _overlayTexture;
+	    private _overlayWidth;
+	    private _overlayHeight;
 	    private _blendMode;
 	    constructor(blendMode: string, exposure?: number);
 	    overlayTexture: Image2D;
@@ -4248,8 +4250,8 @@ declare module "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase" {
 	import IProgram = require("awayjs-stagegl/lib/base/IProgram");
 	class Filter3DTaskBase {
 	    private _mainInputTexture;
-	    private _scaledTextureWidth;
-	    private _scaledTextureHeight;
+	    _scaledTextureWidth: number;
+	    _scaledTextureHeight: number;
 	    _textureWidth: number;
 	    _textureHeight: number;
 	    private _textureDimensionsInvalid;
