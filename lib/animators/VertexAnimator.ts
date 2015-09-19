@@ -157,7 +157,7 @@ class VertexAnimator extends AnimatorBase
 			subGeom = <TriangleSubGeometry> this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
 
 			subGeometryVO = this._subGeometryVOPool.getItem(subGeom);
-			subGeometryVO._indexMappings = this._subGeometryVOPool.getItem(subMesh.subGeometry).indexMappings;
+			subGeometryVO._indexMappings = this._subGeometryVOPool.getItem(subMesh.subGeometry).getIndexMappings(stage);
 
 			subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeom.positions, stage);
 

@@ -29,11 +29,9 @@ class SubGeometryVOBase implements ISubGeometryVO
 	private _onVerticesUpdatedDelegate:(event:SubGeometryEvent) => void;
 	private _onVerticesDisposedDelegate:(event:SubGeometryEvent) => void;
 	private _overflow:SubGeometryVOBase;
-	private _indices:AttributesBuffer;
-	private _indexBuffer:AttributesBufferVO;
+	private _indices:AttributesBufferVO;
 	private _indicesDirty:boolean;
 	private _vertices:Object = new Object();
-	private _vertexBuffers:Object = new Object();
 	private _verticesDirty:Object = new Object();
 
 	public _indexMappings:Array<number> = Array<number>();
@@ -78,10 +76,10 @@ class SubGeometryVOBase implements ISubGeometryVO
 	/**
 	 *
 	 */
-	public get indexMappings():Array<number>
+	public getIndexMappings(stage:Stage):Array<number>
 	{
 		if (this._indicesDirty)
-			this._updateIndices();
+			this._updateIndices(stage);
 
 		return this._indexMappings;
 	}
@@ -92,9 +90,9 @@ class SubGeometryVOBase implements ISubGeometryVO
 	public getIndexBufferVO(stage:Stage):AttributesBufferVO
 	{
 		if (this._indicesDirty)
-			this._updateIndices();
+			this._updateIndices(stage);
 
-		return (this._indexBuffer = stage.getAttributesBufferVO(this._indices));
+		return this._indices;
 	}
 
 
@@ -103,14 +101,16 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 */
 	public getVertexBufferVO(attributesView:AttributesView, stage:Stage):AttributesBufferVO
 	{
-		var bufferId:number = attributesView.buffer.id;
+		//first check if indices need updating which may affect vertices
 		if (this._indicesDirty)
-			this._updateIndices();
+			this._updateIndices(stage);
+
+		var bufferId:number = attributesView.buffer.id;
 
 		if (this._verticesDirty[bufferId])
-			this._updateVertices(attributesView);
+			this._updateVertices(attributesView, stage);
 
-		return (this._vertexBuffers[bufferId] = stage.getAttributesBufferVO(this._vertices[bufferId]));
+		return this._vertices[bufferId];
 	}
 	
 	/**
@@ -137,12 +137,10 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 */
 	public disposeIndices()
 	{
-		if (this._indexBuffer) {
-			this._indexBuffer.dispose();
-			this._indexBuffer = null;
+		if (this._indices) {
+			this._indices.dispose();
+			this._indices = null;
 		}
-
-		this._indices = null;
 	}
 
 
@@ -171,12 +169,10 @@ class SubGeometryVOBase implements ISubGeometryVO
 
 		var bufferId:number = attributesView.buffer.id;
 
-		if (this._vertexBuffers[bufferId]) {
-			this._vertexBuffers[bufferId].dispose();
-			delete this._vertexBuffers[bufferId];
+		if (this._vertices[bufferId]) {
+			this._vertices[bufferId].dispose();
+			delete this._vertices[bufferId];
 		}
-
-		this._vertices = null;
 	}
 
 	/**
@@ -219,7 +215,7 @@ class SubGeometryVOBase implements ISubGeometryVO
 	public _iRender(shader:ShaderBase, stage:Stage)
 	{
 		if (this._indicesDirty)
-			this._updateIndices();
+			this._updateIndices(stage);
 
 		this._render(shader, stage);
 
@@ -250,11 +246,11 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 *
 	 * @private
 	 */
-	public _updateIndices(indexOffset:number = 0)
+	public _updateIndices(stage:Stage, indexOffset:number = 0)
 	{
-		this._indices = SubGeometryUtils.getSubIndices(this._subGeometry.indices, this._subGeometry.numVertices, this._indexMappings, indexOffset);
+		this._indices = stage.getAttributesBufferVO(SubGeometryUtils.getSubIndices(this._subGeometry.indices, this._subGeometry.numVertices, this._indexMappings, indexOffset));
 
-		this._numIndices = this._indices.count*this._subGeometry.indices.dimensions;
+		this._numIndices = this._indices._attributesBuffer.count*this._subGeometry.indices.dimensions;
 
 		indexOffset += this._numIndices;
 
@@ -263,7 +259,7 @@ class SubGeometryVOBase implements ISubGeometryVO
 			if (!this._overflow)
 				this._overflow = this._pGetOverflowSubGeometry();
 
-			this._overflow._updateIndices(indexOffset);
+			this._overflow._updateIndices(stage, indexOffset);
 		} else if (this._overflow) {
 			this._overflow.dispose();
 			this._overflow = null;
@@ -284,13 +280,13 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 * @param attributesView
 	 * @private
 	 */
-	private _updateVertices(attributesView:AttributesView)
+	private _updateVertices(attributesView:AttributesView, stage:Stage)
 	{
 		this._numVertices = attributesView.count;
 
 		var bufferId:number = attributesView.buffer.id;
 
-		this._vertices[bufferId] = SubGeometryUtils.getSubVertices(attributesView.buffer, this._indexMappings);
+		this._vertices[bufferId] =  stage.getAttributesBufferVO(SubGeometryUtils.getSubVertices(attributesView.buffer, this._indexMappings));
 
 		this._verticesDirty[bufferId] = false;
 	}
