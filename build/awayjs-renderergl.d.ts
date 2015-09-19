@@ -2860,20 +2860,6 @@ declare module "awayjs-renderergl/lib/animators/states/IAnimationState" {
 	
 }
 
-declare module "awayjs-renderergl/lib/animators/states/ISkeletonAnimationState" {
-	import IAnimationState = require("awayjs-renderergl/lib/animators/states/IAnimationState");
-	import Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
-	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-	interface ISkeletonAnimationState extends IAnimationState {
-	    /**
-	     * Returns the output skeleton pose of the animation node.
-	     */
-	    getSkeletonPose(skeleton: Skeleton): SkeletonPose;
-	}
-	export = ISkeletonAnimationState;
-	
-}
-
 declare module "awayjs-renderergl/lib/animators/states/IVertexAnimationState" {
 	import Geometry = require("awayjs-display/lib/base/Geometry");
 	import IAnimationState = require("awayjs-renderergl/lib/animators/states/IAnimationState");
@@ -2898,6 +2884,20 @@ declare module "awayjs-renderergl/lib/animators/states/IVertexAnimationState" {
 	    blendWeight: number;
 	}
 	export = IVertexAnimationState;
+	
+}
+
+declare module "awayjs-renderergl/lib/animators/states/ISkeletonAnimationState" {
+	import IAnimationState = require("awayjs-renderergl/lib/animators/states/IAnimationState");
+	import Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
+	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
+	interface ISkeletonAnimationState extends IAnimationState {
+	    /**
+	     * Returns the output skeleton pose of the animation node.
+	     */
+	    getSkeletonPose(skeleton: Skeleton): SkeletonPose;
+	}
+	export = ISkeletonAnimationState;
 	
 }
 
