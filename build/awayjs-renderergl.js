@@ -3088,7 +3088,7 @@ var VertexAnimator = (function (_super) {
         for (; i < len; ++i) {
             subGeom = this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
             subGeometryVO = this._subGeometryVOPool.getItem(subGeom);
-            subGeometryVO._indexMappings = this._subGeometryVOPool.getItem(subMesh.subGeometry).indexMappings;
+            subGeometryVO._indexMappings = this._subGeometryVOPool.getItem(subMesh.subGeometry).getIndexMappings(stage);
             subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeom.positions, stage);
             if (shader.normalDependencies > 0)
                 subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeom.normals, stage);
@@ -14948,7 +14948,6 @@ var SubGeometryVOBase = (function () {
         var _this = this;
         this.usages = 0;
         this._vertices = new Object();
-        this._vertexBuffers = new Object();
         this._verticesDirty = new Object();
         this._indexMappings = Array();
         this._pool = pool;
@@ -14980,36 +14979,33 @@ var SubGeometryVOBase = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SubGeometryVOBase.prototype, "indexMappings", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._indicesDirty)
-                this._updateIndices();
-            return this._indexMappings;
-        },
-        enumerable: true,
-        configurable: true
-    });
+    /**
+     *
+     */
+    SubGeometryVOBase.prototype.getIndexMappings = function (stage) {
+        if (this._indicesDirty)
+            this._updateIndices(stage);
+        return this._indexMappings;
+    };
     /**
      *
      */
     SubGeometryVOBase.prototype.getIndexBufferVO = function (stage) {
         if (this._indicesDirty)
-            this._updateIndices();
-        return (this._indexBuffer = stage.getAttributesBufferVO(this._indices));
+            this._updateIndices(stage);
+        return this._indices;
     };
     /**
      *
      */
     SubGeometryVOBase.prototype.getVertexBufferVO = function (attributesView, stage) {
-        var bufferId = attributesView.buffer.id;
+        //first check if indices need updating which may affect vertices
         if (this._indicesDirty)
-            this._updateIndices();
+            this._updateIndices(stage);
+        var bufferId = attributesView.buffer.id;
         if (this._verticesDirty[bufferId])
-            this._updateVertices(attributesView);
-        return (this._vertexBuffers[bufferId] = stage.getAttributesBufferVO(this._vertices[bufferId]));
+            this._updateVertices(attributesView, stage);
+        return this._vertices[bufferId];
     };
     /**
      *
@@ -15031,11 +15027,10 @@ var SubGeometryVOBase = (function () {
      *
      */
     SubGeometryVOBase.prototype.disposeIndices = function () {
-        if (this._indexBuffer) {
-            this._indexBuffer.dispose();
-            this._indexBuffer = null;
+        if (this._indices) {
+            this._indices.dispose();
+            this._indices = null;
         }
-        this._indices = null;
     };
     /**
      * //TODO
@@ -15055,11 +15050,10 @@ var SubGeometryVOBase = (function () {
         if (!attributesView)
             return;
         var bufferId = attributesView.buffer.id;
-        if (this._vertexBuffers[bufferId]) {
-            this._vertexBuffers[bufferId].dispose();
-            delete this._vertexBuffers[bufferId];
+        if (this._vertices[bufferId]) {
+            this._vertices[bufferId].dispose();
+            delete this._vertices[bufferId];
         }
-        this._vertices = null;
     };
     /**
      *
@@ -15090,7 +15084,7 @@ var SubGeometryVOBase = (function () {
     };
     SubGeometryVOBase.prototype._iRender = function (shader, stage) {
         if (this._indicesDirty)
-            this._updateIndices();
+            this._updateIndices(stage);
         this._render(shader, stage);
         if (this._overflow)
             this._overflow._iRender(shader, stage);
@@ -15112,16 +15106,16 @@ var SubGeometryVOBase = (function () {
      *
      * @private
      */
-    SubGeometryVOBase.prototype._updateIndices = function (indexOffset) {
+    SubGeometryVOBase.prototype._updateIndices = function (stage, indexOffset) {
         if (indexOffset === void 0) { indexOffset = 0; }
-        this._indices = SubGeometryUtils.getSubIndices(this._subGeometry.indices, this._subGeometry.numVertices, this._indexMappings, indexOffset);
-        this._numIndices = this._indices.count * this._subGeometry.indices.dimensions;
+        this._indices = stage.getAttributesBufferVO(SubGeometryUtils.getSubIndices(this._subGeometry.indices, this._subGeometry.numVertices, this._indexMappings, indexOffset));
+        this._numIndices = this._indices._attributesBuffer.count * this._subGeometry.indices.dimensions;
         indexOffset += this._numIndices;
         //check if there is more to split
         if (indexOffset < this._subGeometry.indices.count * this._subGeometry.indices.dimensions) {
             if (!this._overflow)
                 this._overflow = this._pGetOverflowSubGeometry();
-            this._overflow._updateIndices(indexOffset);
+            this._overflow._updateIndices(stage, indexOffset);
         }
         else if (this._overflow) {
             this._overflow.dispose();
@@ -15139,10 +15133,10 @@ var SubGeometryVOBase = (function () {
      * @param attributesView
      * @private
      */
-    SubGeometryVOBase.prototype._updateVertices = function (attributesView) {
+    SubGeometryVOBase.prototype._updateVertices = function (attributesView, stage) {
         this._numVertices = attributesView.count;
         var bufferId = attributesView.buffer.id;
-        this._vertices[bufferId] = SubGeometryUtils.getSubVertices(attributesView.buffer, this._indexMappings);
+        this._vertices[bufferId] = stage.getAttributesBufferVO(SubGeometryUtils.getSubVertices(attributesView.buffer, this._indexMappings));
         this._verticesDirty[bufferId] = false;
     };
     /**
