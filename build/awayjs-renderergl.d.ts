@@ -4214,6 +4214,35 @@ declare module "awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask" {
 	
 }
 
+declare module "awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask" {
+	import Image2D = require("awayjs-core/lib/data/Image2D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+	class Filter3DFXAATask extends Filter3DTaskBase {
+	    private _data;
+	    private static MAX_AUTO_SAMPLES;
+	    private _amount;
+	    private _stepSize;
+	    private _realStepSize;
+	    /**
+	     *
+	     * @param amount
+	     * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
+	     */
+	    constructor(amount: number, stepSize?: number);
+	    amount: number;
+	    stepSize: number;
+	    getFragmentCode(): string;
+	    activate(stage: Stage, camera3D: Camera, depthTexture: Image2D): void;
+	    updateTextures(stage: Stage): void;
+	    private updateBlurData();
+	    private calculateStepSize();
+	}
+	export = Filter3DFXAATask;
+	
+}
+
 declare module "awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask" {
 	import Image2D = require("awayjs-core/lib/data/Image2D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
