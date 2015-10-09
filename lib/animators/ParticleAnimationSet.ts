@@ -1,7 +1,6 @@
 import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
 import IAnimationSet					= require("awayjs-display/lib/animators/IAnimationSet");
 import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");

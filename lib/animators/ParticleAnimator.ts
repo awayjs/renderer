@@ -1,4 +1,3 @@
-import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
 import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
 import Camera							= require("awayjs-display/lib/entities/Camera");
 
