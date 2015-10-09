@@ -1,5 +1,6 @@
 import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
 import Camera							= require("awayjs-display/lib/entities/Camera");
+import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
 
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
