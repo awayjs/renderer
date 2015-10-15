@@ -172,3 +172,24 @@ gulp.task('publish', ['push'], function(callback){
             throw err;
         }).on('end', callback);
 });
+gulp.task('compile', function() {
+    var tsProject = typescript.createProject({
+        declarationFiles: true,
+        noExternalResolve: true,
+        target: 'ES5',
+        module: 'commonjs',
+        sourceRoot: './awayjs-renderergl/lib/',
+        moduleResolution: 'classic'
+    });
+
+    var tsResult = gulp.src([
+        './lib/**/*.ts',
+        './node_modules/awayjs-**/build/*.d.ts'
+    ])
+        //.pipe(sourcemaps.init())
+        .pipe(typescript(tsProject));
+
+    return tsResult.js
+        //.pipe(sourcemaps.write({sourceRoot: '../'}))
+        .pipe(gulp.dest('./lib'));
+});
