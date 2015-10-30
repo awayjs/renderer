@@ -1,4 +1,5 @@
 import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import Sampler2D					= require("awayjs-core/lib/data/Sampler2D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
@@ -23,6 +24,10 @@ class AtlasTest
 	//engine variables
 	private _view:View;
 	private _cameraController:HoverController;
+
+	//scene variables
+	private _material:BasicMaterial;
+	private _samplers:Array<Sampler2D> = new Array<Sampler2D>();
 
 	//navigation variables
 	private _timer:RequestAnimationFrame;
@@ -116,25 +121,33 @@ class AtlasTest
 
 				case "assets/atlas.xml":
 
-					var material:BasicMaterial = new BasicMaterial(new Single2DTexture(<BitmapImage2D> asset));
-					material.alphaBlending = true;
-
-					//var size:number = this.getRandom(50 , 500);
-					var s:Billboard = new Billboard(material);
-					s.pivot = new Vector3D(s.width/2, s.height/2, 0);
-					//s.width = size;
-					//s.height = size;
-					s.orientationMode = OrientationMode.CAMERA_PLANE;
-					s.alignmentMode = AlignmentMode.PIVOT_POINT;
-						s.x =  this.getRandom(-400 , 400);
-						s.y =  this.getRandom(-400 , 400);
-						s.z =  this.getRandom(-400 , 400);
-					this._view.scene.addChild(s);
-
-					this._timer.start();
-					break;
+					if (asset.isAsset(BitmapImage2D)) {
+						this._material = new BasicMaterial(new Single2DTexture(<BitmapImage2D> asset));
+						this._material.alphaBlending = true;
+						this._material.imageRect = true;
+					} else if (asset.isAsset(Sampler2D)) {
+						this._samplers.push(<Sampler2D> asset);
+					}
 			}
 		}
+
+		var len:number = this._samplers.length;
+		for (var i:number = 0; i < len; i++) {
+			//var size:number = this.getRandom(50 , 500);
+			var s:Billboard = new Billboard(this._material);
+			s.addSamplerAt(this._samplers[i], this._material.texture);
+			s.pivot = new Vector3D(s.width/2, s.height/2, 0);
+			//s.width = size;
+			//s.height = size;
+			s.orientationMode = OrientationMode.CAMERA_PLANE;
+			s.alignmentMode = AlignmentMode.PIVOT_POINT;
+			s.x =  this.getRandom(-400 , 400);
+			s.y =  this.getRandom(-400 , 400);
+			s.z =  this.getRandom(-400 , 400);
+			this._view.scene.addChild(s);
+		}
+
+		this._timer.start();
 	}
 
 	/**
