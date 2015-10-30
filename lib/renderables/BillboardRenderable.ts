@@ -1,4 +1,6 @@
 import AttributesBuffer				= require("awayjs-core/lib/attributes/AttributesBuffer");
+import Image2D						= require("awayjs-core/lib/data/Image2D");
+import Sampler2D					= require("awayjs-core/lib/data/Sampler2D");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
@@ -29,7 +31,7 @@ class BillboardRenderable extends RenderableBase
 {
 	public static assetClass:IAssetClass = Billboard;
 
-	private static _materialGeometry:Object = new Object();
+	private static _samplerGeometry:Object = new Object();
 
 	public static vertexAttributesOffset:number = 1;
 
@@ -66,21 +68,26 @@ class BillboardRenderable extends RenderableBase
 	public _pGetSubGeometry():SubGeometryBase
 	{
 		var material:MaterialBase = this._billboard.material;
+
+		var id:number = (material.texture)? (<Sampler2D> this._billboard.getSamplerAt(material.texture)).id : -1;
+
+		var geometry:TriangleSubGeometry = BillboardRenderable._samplerGeometry[id];
+
+		var width:number = this._billboard.billboardWidth;
+		var height:number = this._billboard.billboardHeight;
 		var billboardRect:Rectangle = this._billboard.billboardRect;
 
-		var geometry:TriangleSubGeometry = BillboardRenderable._materialGeometry[material.id];
-
 		if (!geometry) {
-			geometry = BillboardRenderable._materialGeometry[material.id] = new TriangleSubGeometry(new AttributesBuffer(11, 4));
+			geometry = BillboardRenderable._samplerGeometry[id] = new TriangleSubGeometry(new AttributesBuffer(11, 4));
 			geometry.autoDeriveNormals = false;
 			geometry.autoDeriveTangents = false;
 			geometry.setIndices(Array<number>(0, 1, 2, 0, 2, 3));
-			geometry.setPositions(Array<number>(-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
+			geometry.setPositions(Array<number>(-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
 			geometry.setNormals(Array<number>(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
 			geometry.setTangents(Array<number>(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
 			geometry.setUVs(Array<number>(0, 0, 1, 0, 1, 1, 0, 1));
 		} else {
-			geometry.setPositions(Array<number>(-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, material.height-billboardRect.y, 0, material.width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
+			geometry.setPositions(Array<number>(-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
 		}
 
 		return geometry;

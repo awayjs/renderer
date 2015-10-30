@@ -6,7 +6,7 @@ import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderReg
 class ShaderRegisterData
 {
 	public normalVarying:ShaderRegisterElement;
-	public colorVarying:ShaderRegisterElement
+	public colorVarying:ShaderRegisterElement;
 	public tangentVarying:ShaderRegisterElement;
 	public bitangentVarying:ShaderRegisterElement;
 	public uvVarying:ShaderRegisterElement;
@@ -28,6 +28,7 @@ class ShaderRegisterData
 	public normalFragment:ShaderRegisterElement;
 	public viewDirFragment:ShaderRegisterElement;
 	public bitangent:ShaderRegisterElement;
+	public textures:Array<ShaderRegisterElement> = Array<ShaderRegisterElement>();
 
 	constructor()
 	{

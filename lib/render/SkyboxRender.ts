@@ -1,4 +1,5 @@
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
+import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
@@ -8,6 +9,7 @@ import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompar
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
+import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
 import RenderPassBase				= require("awayjs-renderergl/lib/render/RenderPassBase");
 import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
@@ -73,11 +75,14 @@ class SkyboxRender extends RenderPassBase
 	 */
 	public _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
-		this._cubeTexture._iInitRegisters(shader, registerCache);
-
-		return this._cubeTexture._iGetFragmentCode(shader, sharedRegisters.shadedTarget, registerCache, sharedRegisters.localPositionVarying);
+		return this._cubeTexture._iGetFragmentCode(shader, sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.localPositionVarying);
 	}
 
+
+	public _iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	{
+		this._cubeTexture._setRenderState(renderable, this._shader);
+	}
 	/**
 	 * @inheritDoc
 	 */
@@ -85,8 +90,8 @@ class SkyboxRender extends RenderPassBase
 	{
 		super._iActivate(camera);
 
-		var context:IContextGL = this._stage.context;
-		context.setDepthTest(false, ContextGLCompareMode.LESS);
+		this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS);
+
 		this._cubeTexture.activate(this._shader);
 	}
 }

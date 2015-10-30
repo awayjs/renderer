@@ -89,10 +89,9 @@ class DistanceRender extends RenderPassBase
 			"mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
 
 		if (shader.alphaThreshold > 0) {
-			shader.texture._iInitRegisters(shader, registerCache);
 
 			var albedo:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
-			code += shader.texture._iGetFragmentCode(shader, albedo, registerCache, sharedRegisters.uvVarying);
+			code += shader.texture._iGetFragmentCode(shader, albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
 
 			var cutOffReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 

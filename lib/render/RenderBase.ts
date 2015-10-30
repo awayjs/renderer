@@ -91,7 +91,7 @@ class RenderBase extends EventDispatcher implements IRender
 		shader.alphaThreshold = this._renderOwner.alphaThreshold;
 		shader.useMipmapping = this._renderOwner.mipmap;
 		shader.useSmoothTextures = this._renderOwner.smooth;
-
+		shader.useImageRect = this._renderOwner.imageRect;
 		if (this._renderOwner instanceof MaterialBase) {
 			var material:MaterialBase = <MaterialBase> this._renderOwner;
 			shader.useAlphaPremultiplied = material.alphaPremultiplied;
@@ -99,8 +99,9 @@ class RenderBase extends EventDispatcher implements IRender
 			shader.repeatTextures = material.repeat;
 			shader.usesUVTransform = material.animateUVs;
 			shader.usesColorTransform = material.useColorTransform;
-			if (material.texture)
+			if (material.texture) {
 				shader.texture = shader.getTextureVO(material.texture);
+			}
 			shader.color = material.color;
 		}
 	}

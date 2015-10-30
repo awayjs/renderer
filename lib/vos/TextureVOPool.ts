@@ -2,10 +2,11 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
-import ITextureVOClass			= require("awayjs-renderergl/lib/vos/ITextureVOClass");
-import TextureVOBase					= require("awayjs-renderergl/lib/vos/TextureVOBase");
-import Single2DTextureVO		= require("awayjs-renderergl/lib/vos/Single2DTextureVO");
-import SingleCubeTextureVO		= require("awayjs-renderergl/lib/vos/SingleCubeTextureVO");
+import ITextureVOClass				= require("awayjs-renderergl/lib/vos/ITextureVOClass");
+import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
+import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
+import Single2DTextureVO			= require("awayjs-renderergl/lib/vos/Single2DTextureVO");
+import SingleCubeTextureVO			= require("awayjs-renderergl/lib/vos/SingleCubeTextureVO");
 
 /**
  * @class away.pool.TextureVOPool
@@ -14,7 +15,8 @@ class TextureVOPool
 {
 	private static classPool:Object = new Object();
 
-	public _stage:Stage;
+	private _shader:ShaderBase;
+	private _stage:Stage;
 	private _pool:Object = new Object();
 
 	/**
@@ -22,8 +24,9 @@ class TextureVOPool
 	 *
 	 * @param textureDataClass
 	 */
-	constructor(stage:Stage)
+	constructor(shader:ShaderBase, stage:Stage)
 	{
+		this._shader = shader;
 		this._stage = stage;
 	}
 
@@ -35,7 +38,7 @@ class TextureVOPool
 	 */
 	public getItem(texture:TextureBase):TextureVOBase
 	{
-		return (this._pool[texture.id] || (this._pool[texture.id] = texture._iAddTextureVO(new (TextureVOPool.getClass(texture))(this, texture, this._stage))));
+		return (this._pool[texture.id] || (this._pool[texture.id] = texture._iAddTextureVO(new (TextureVOPool.getClass(texture))(this, texture, this._shader, this._stage))));
 	}
 
 	/**

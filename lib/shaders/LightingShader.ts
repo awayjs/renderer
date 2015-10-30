@@ -6,7 +6,6 @@ import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLig
 import LightProbe					= require("awayjs-display/lib/entities/LightProbe");
 import PointLight					= require("awayjs-display/lib/entities/PointLight");
 import LightPickerBase				= require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
-import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import LightSources					= require("awayjs-display/lib/materials/LightSources");
 
 import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile");

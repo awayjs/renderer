@@ -72,9 +72,7 @@ class BasicMaterialPass extends PassBase
 
 		if (shader.texture != null) {
 
-			shader.texture._iInitRegisters(shader, regCache);
-
-			code += shader.texture._iGetFragmentCode(shader, targetReg, regCache, sharedReg.uvVarying);
+			code += shader.texture._iGetFragmentCode(shader, targetReg, regCache, sharedReg, sharedReg.uvVarying);
 
 			if (shader.alphaThreshold > 0) {
 				var cutOffReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
@@ -101,6 +99,11 @@ class BasicMaterialPass extends PassBase
 		return code;
 	}
 
+	public _iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	{
+		if (this._shader.texture != null)
+			this._shader.texture._setRenderState(renderable, this._shader);
+	}
 	/**
 	 * @inheritDoc
 	 */

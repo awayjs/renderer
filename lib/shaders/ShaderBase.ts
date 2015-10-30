@@ -1,15 +1,10 @@
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
-import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
-import Event						= require("awayjs-core/lib/events/Event");
 import ArgumentError				= require("awayjs-core/lib/errors/ArgumentError");
 
-import LineSubGeometry				= require("awayjs-display/lib/base/LineSubGeometry");
-import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
@@ -18,6 +13,7 @@ import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompar
 import ContextGLTriangleFace		= require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
+import ImageObjectBase				= require("awayjs-stagegl/lib/pool/ImageObjectBase");
 
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -63,6 +59,8 @@ class ShaderBase
 	}
 
 	public usesBlending:boolean = false;
+
+	public useImageRect:boolean = false;
 
 	/**
 	 * The depth compare mode used to render the renderables using this material.
@@ -289,6 +287,8 @@ class ShaderBase
 	 */
 	public jointWeightIndex:number;
 
+	public images:Array<ImageObjectBase> = new Array<ImageObjectBase>();
+
 	/**
 	 * Creates a new MethodCompilerVO object.
 	 */
@@ -299,7 +299,7 @@ class ShaderBase
 		this._stage = stage;
 		this.profile = this._stage.profile;
 
-		this._textureVOPool = new TextureVOPool(this._stage);
+		this._textureVOPool = new TextureVOPool(this, this._stage);
 	}
 
 	public getTextureVO(texture:TextureBase):TextureVOBase
@@ -362,6 +362,7 @@ class ShaderBase
 		this.sceneNormalMatrixIndex = -1;
 		this.jointIndexIndex = -1;
 		this.jointWeightIndex = -1;
+		this.images.length = 0;
 	}
 
 	/**
