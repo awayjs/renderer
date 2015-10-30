@@ -10876,9 +10876,8 @@ var DepthRender = (function (_super) {
         //codeF += "mov ft1.w, fc1.w	\n" +
         //    "mov ft0.w, fc0.x	\n";
         if (shader.texture && shader.alphaThreshold > 0) {
-            shader.texture._iInitRegisters(shader, registerCache);
             var albedo = registerCache.getFreeFragmentVectorTemp();
-            code += shader.texture._iGetFragmentCode(shader, albedo, registerCache, sharedRegisters.uvVarying);
+            code += shader.texture._iGetFragmentCode(shader, albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
             var cutOffReg = registerCache.getFreeFragmentConstant();
             code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
         }
@@ -10963,9 +10962,8 @@ var DistanceRender = (function (_super) {
         // squared distance to view
         code = "dp3 " + temp1 + ".z, " + sharedRegisters.viewDirVarying + ".xyz, " + sharedRegisters.viewDirVarying + ".xyz\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
         if (shader.alphaThreshold > 0) {
-            shader.texture._iInitRegisters(shader, registerCache);
             var albedo = registerCache.getFreeFragmentVectorTemp();
-            code += shader.texture._iGetFragmentCode(shader, albedo, registerCache, sharedRegisters.uvVarying);
+            code += shader.texture._iGetFragmentCode(shader, albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
             var cutOffReg = registerCache.getFreeFragmentConstant();
             code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
         }
@@ -11062,6 +11060,7 @@ var RenderBase = (function (_super) {
         shader.alphaThreshold = this._renderOwner.alphaThreshold;
         shader.useMipmapping = this._renderOwner.mipmap;
         shader.useSmoothTextures = this._renderOwner.smooth;
+        shader.useImageRect = this._renderOwner.imageRect;
         if (this._renderOwner instanceof MaterialBase) {
             var material = this._renderOwner;
             shader.useAlphaPremultiplied = material.alphaPremultiplied;
@@ -11069,8 +11068,9 @@ var RenderBase = (function (_super) {
             shader.repeatTextures = material.repeat;
             shader.usesUVTransform = material.animateUVs;
             shader.usesColorTransform = material.useColorTransform;
-            if (material.texture)
+            if (material.texture) {
                 shader.texture = shader.getTextureVO(material.texture);
+            }
             shader.color = material.color;
         }
     };
@@ -11418,16 +11418,17 @@ var SkyboxRender = (function (_super) {
      * @inheritDoc
      */
     SkyboxRender.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
-        this._cubeTexture._iInitRegisters(shader, registerCache);
-        return this._cubeTexture._iGetFragmentCode(shader, sharedRegisters.shadedTarget, registerCache, sharedRegisters.localPositionVarying);
+        return this._cubeTexture._iGetFragmentCode(shader, sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.localPositionVarying);
+    };
+    SkyboxRender.prototype._iRender = function (renderable, camera, viewProjection) {
+        this._cubeTexture._setRenderState(renderable, this._shader);
     };
     /**
      * @inheritDoc
      */
     SkyboxRender.prototype._iActivate = function (camera) {
         _super.prototype._iActivate.call(this, camera);
-        var context = this._stage.context;
-        context.setDepthTest(false, ContextGLCompareMode.LESS);
+        this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS);
         this._cubeTexture.activate(this._shader);
     };
     return SkyboxRender;
@@ -11475,8 +11476,7 @@ var BasicMaterialPass = (function (_super) {
         }
         var targetReg = sharedReg.shadedTarget;
         if (shader.texture != null) {
-            shader.texture._iInitRegisters(shader, regCache);
-            code += shader.texture._iGetFragmentCode(shader, targetReg, regCache, sharedReg.uvVarying);
+            code += shader.texture._iGetFragmentCode(shader, targetReg, regCache, sharedReg, sharedReg.uvVarying);
             if (shader.alphaThreshold > 0) {
                 var cutOffReg = regCache.getFreeFragmentConstant();
                 this._fragmentConstantsIndex = cutOffReg.index * 4;
@@ -11496,6 +11496,10 @@ var BasicMaterialPass = (function (_super) {
             regCache.removeFragmentTempUsage(alphaReg);
         }
         return code;
+    };
+    BasicMaterialPass.prototype._iRender = function (renderable, camera, viewProjection) {
+        if (this._shader.texture != null)
+            this._shader.texture._setRenderState(renderable, this._shader);
     };
     /**
      * @inheritDoc
@@ -11723,20 +11727,23 @@ var BillboardRenderable = (function (_super) {
      */
     BillboardRenderable.prototype._pGetSubGeometry = function () {
         var material = this._billboard.material;
+        var id = (material.texture) ? this._billboard.getSamplerAt(material.texture).id : -1;
+        var geometry = BillboardRenderable._samplerGeometry[id];
+        var width = this._billboard.billboardWidth;
+        var height = this._billboard.billboardHeight;
         var billboardRect = this._billboard.billboardRect;
-        var geometry = BillboardRenderable._materialGeometry[material.id];
         if (!geometry) {
-            geometry = BillboardRenderable._materialGeometry[material.id] = new TriangleSubGeometry(new AttributesBuffer(11, 4));
+            geometry = BillboardRenderable._samplerGeometry[id] = new TriangleSubGeometry(new AttributesBuffer(11, 4));
             geometry.autoDeriveNormals = false;
             geometry.autoDeriveTangents = false;
             geometry.setIndices(Array(0, 1, 2, 0, 2, 3));
-            geometry.setPositions(Array(-billboardRect.x, material.height - billboardRect.y, 0, material.width - billboardRect.x, material.height - billboardRect.y, 0, material.width - billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
+            geometry.setPositions(Array(-billboardRect.x, height - billboardRect.y, 0, width - billboardRect.x, height - billboardRect.y, 0, width - billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
             geometry.setNormals(Array(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
             geometry.setTangents(Array(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
             geometry.setUVs(Array(0, 0, 1, 0, 1, 1, 0, 1));
         }
         else {
-            geometry.setPositions(Array(-billboardRect.x, material.height - billboardRect.y, 0, material.width - billboardRect.x, material.height - billboardRect.y, 0, material.width - billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
+            geometry.setPositions(Array(-billboardRect.x, height - billboardRect.y, 0, width - billboardRect.x, height - billboardRect.y, 0, width - billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
         }
         return geometry;
     };
@@ -11786,7 +11793,7 @@ var BillboardRenderable = (function (_super) {
         context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
     };
     BillboardRenderable.assetClass = Billboard;
-    BillboardRenderable._materialGeometry = new Object();
+    BillboardRenderable._samplerGeometry = new Object();
     BillboardRenderable.vertexAttributesOffset = 1;
     return BillboardRenderable;
 })(RenderableBase);
@@ -12986,6 +12993,7 @@ var ShaderBase = (function () {
         this._animationVertexCode = "";
         this._animationFragmentCode = "";
         this.usesBlending = false;
+        this.useImageRect = false;
         /**
          * The depth compare mode used to render the renderables using this material.
          *
@@ -13010,11 +13018,12 @@ var ShaderBase = (function () {
          * Indicates whether there are any dependencies on the local position vector.
          */
         this.usesLocalPosFragment = false;
+        this.images = new Array();
         this._renderableClass = renderableClass;
         this._pass = pass;
         this._stage = stage;
         this.profile = this._stage.profile;
-        this._textureVOPool = new TextureVOPool(this._stage);
+        this._textureVOPool = new TextureVOPool(this, this._stage);
     }
     Object.defineProperty(ShaderBase.prototype, "programData", {
         get: function () {
@@ -13076,6 +13085,7 @@ var ShaderBase = (function () {
         this.sceneNormalMatrixIndex = -1;
         this.jointIndexIndex = -1;
         this.jointWeightIndex = -1;
+        this.images.length = 0;
     };
     /**
      * Initializes the unchanging constant data for this shader object.
@@ -13598,6 +13608,7 @@ module.exports = ShaderRegisterCache;
  */
 var ShaderRegisterData = (function () {
     function ShaderRegisterData() {
+        this.textures = Array();
     }
     return ShaderRegisterData;
 })();
@@ -14890,159 +14901,7 @@ var LineSubGeometryVO = (function (_super) {
 })(SubGeometryVOBase);
 module.exports = LineSubGeometryVO;
 
-},{"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}],"awayjs-renderergl/lib/vos/Sampler2DVO":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var SamplerVOBase = require("awayjs-renderergl/lib/vos/SamplerVOBase");
-/**
- *
- * @class away.pool.Sampler2DVO
- */
-var Sampler2DVO = (function (_super) {
-    __extends(Sampler2DVO, _super);
-    function Sampler2DVO(stage, sampler2D) {
-        _super.call(this, stage);
-        this._sampler2D = sampler2D;
-        this._imageObject = this._stage.getImageObject(this._sampler2D.image2D);
-        this._imageObject.usages++;
-    }
-    Sampler2DVO.prototype.dispose = function () {
-        _super.prototype.dispose.call(this);
-        this._sampler2D = null;
-        this._imageObject.usages--;
-        if (!this._imageObject.usages) {
-            this._imageObject.dispose();
-            this._imageObject = null;
-        }
-    };
-    Sampler2DVO.prototype.initProperties = function (regCache) {
-        this.samplerReg = regCache.getFreeTextureReg();
-        this.samplerIndex = this.samplerReg.index;
-        if (this._sampler2D.imageRect) {
-            this._fragmentReg = regCache.getFreeFragmentConstant();
-            this._fragmentIndex = this._fragmentReg.index * 4;
-        }
-    };
-    Sampler2DVO.prototype.getFragmentCode = function (shader, targetReg, regCache, inputReg) {
-        var code = "";
-        var wrap = (shader.repeatTextures ? "wrap" : "clamp");
-        var format = this.getFormatString(this._sampler2D);
-        var filter = (shader.useSmoothTextures) ? (shader.useMipmapping ? "linear,miplinear" : "linear") : (shader.useMipmapping ? "nearest,mipnearest" : "nearest");
-        var temp;
-        //handles texture atlasing
-        if (this._sampler2D.imageRect) {
-            temp = regCache.getFreeFragmentVectorTemp();
-            code += "mul " + temp + ", " + inputReg + ", " + this._fragmentReg + ".xy\n";
-            code += "add " + temp + ", " + temp + ", " + this._fragmentReg + ".zw\n";
-        }
-        else {
-            temp = inputReg;
-        }
-        code += "tex " + targetReg + ", " + temp + ", " + this.samplerReg + " <2d," + filter + "," + format + wrap + ">\n";
-        return code;
-    };
-    Sampler2DVO.prototype.activate = function (shader) {
-        this._imageObject.activate(this.samplerIndex, this._sampler2D.repeat || shader.repeatTextures, this._sampler2D.smooth || shader.useSmoothTextures, this._sampler2D.mipmap || shader.useMipmapping);
-        if (this._sampler2D.imageRect) {
-            var index = this._fragmentIndex;
-            var data = shader.fragmentConstantData;
-            data[index] = this._sampler2D.scaleX;
-            data[index + 1] = this._sampler2D.scaleY;
-            data[index + 2] = this._sampler2D.offsetX;
-            data[index + 3] = this._sampler2D.offsetY;
-        }
-    };
-    return Sampler2DVO;
-})(SamplerVOBase);
-module.exports = Sampler2DVO;
-
-},{"awayjs-renderergl/lib/vos/SamplerVOBase":"awayjs-renderergl/lib/vos/SamplerVOBase"}],"awayjs-renderergl/lib/vos/SamplerCubeVO":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var SamplerVOBase = require("awayjs-renderergl/lib/vos/SamplerVOBase");
-/**
- *
- * @class away.pool.BitmapObject
- */
-var SamplerCubeVO = (function (_super) {
-    __extends(SamplerCubeVO, _super);
-    function SamplerCubeVO(stage, samplerCube) {
-        _super.call(this, stage);
-        this._samplerCube = samplerCube;
-        this._imageObject = this._stage.getImageObject(this._samplerCube.imageCube);
-        this._imageObject.usages++;
-    }
-    SamplerCubeVO.prototype.dispose = function () {
-        _super.prototype.dispose.call(this);
-        this._samplerCube = null;
-        this._imageObject.usages--;
-        if (!this._imageObject.usages) {
-            this._imageObject.dispose();
-            this._imageObject = null;
-        }
-    };
-    SamplerCubeVO.prototype.initProperties = function (regCache) {
-        this.samplerReg = regCache.getFreeTextureReg();
-        this.samplerIndex = this.samplerReg.index;
-    };
-    SamplerCubeVO.prototype.getFragmentCode = function (shader, targetReg, regCache, inputReg) {
-        var filter;
-        var format = this.getFormatString(this._samplerCube);
-        var filter = (shader.useSmoothTextures) ? (shader.useMipmapping ? "linear,miplinear" : "linear") : (shader.useMipmapping ? "nearest,mipnearest" : "nearest");
-        return "tex " + targetReg + ", " + inputReg + ", " + this.samplerReg + " <cube," + format + filter + ">\n";
-    };
-    SamplerCubeVO.prototype.activate = function (shader) {
-        this._imageObject.activate(this.samplerIndex, false, this._samplerCube.smooth || shader.useSmoothTextures, this._samplerCube.mipmap || shader.useMipmapping);
-    };
-    return SamplerCubeVO;
-})(SamplerVOBase);
-module.exports = SamplerCubeVO;
-
-},{"awayjs-renderergl/lib/vos/SamplerVOBase":"awayjs-renderergl/lib/vos/SamplerVOBase"}],"awayjs-renderergl/lib/vos/SamplerVOBase":[function(require,module,exports){
-var ContextGLTextureFormat = require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
-/**
- *
- * @class away.pool.SamplerVOBase
- */
-var SamplerVOBase = (function () {
-    function SamplerVOBase(stage) {
-        this._stage = stage;
-    }
-    SamplerVOBase.prototype.dispose = function () {
-        this._stage = null;
-    };
-    /**
-     * Generates a texture format string for the sample instruction.
-     * @param texture The texture for which to get the format string.
-     * @return
-     *
-     * @protected
-     */
-    SamplerVOBase.prototype.getFormatString = function (bitmap) {
-        switch (bitmap.format) {
-            case ContextGLTextureFormat.COMPRESSED:
-                return "dxt1,";
-                break;
-            case ContextGLTextureFormat.COMPRESSED_ALPHA:
-                return "dxt5,";
-                break;
-            default:
-                return "";
-        }
-    };
-    return SamplerVOBase;
-})();
-module.exports = SamplerVOBase;
-
-},{"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/vos/Single2DTextureVO":[function(require,module,exports){
+},{"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}],"awayjs-renderergl/lib/vos/Single2DTextureVO":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -15051,26 +14910,19 @@ var __extends = this.__extends || function (d, b) {
 };
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var TextureVOBase = require("awayjs-renderergl/lib/vos/TextureVOBase");
-var Sampler2DVO = require("awayjs-renderergl/lib/vos/Sampler2DVO");
 /**
  *
  * @class away.pool.Single2DTextureVO
  */
 var Single2DTextureVO = (function (_super) {
     __extends(Single2DTextureVO, _super);
-    function Single2DTextureVO(pool, single2DTexture, stage) {
-        _super.call(this, pool, single2DTexture, stage);
+    function Single2DTextureVO(pool, single2DTexture, shader, stage) {
+        _super.call(this, pool, single2DTexture, shader, stage);
         this._single2DTexture = single2DTexture;
-        this._sampler2DVO = new Sampler2DVO(stage, this._single2DTexture.sampler2D);
     }
     Single2DTextureVO.prototype.dispose = function () {
         _super.prototype.dispose.call(this);
         this._single2DTexture = null;
-        this._sampler2DVO.dispose();
-        this._sampler2DVO = null;
-    };
-    Single2DTextureVO.prototype._iInitRegisters = function (shader, regCache) {
-        this._sampler2DVO.initProperties(regCache);
     };
     /**
      *
@@ -15081,11 +14933,41 @@ var Single2DTextureVO = (function (_super) {
      * @returns {string}
      * @private
      */
-    Single2DTextureVO.prototype._iGetFragmentCode = function (shader, targetReg, regCache, inputReg) {
-        return this._sampler2DVO.getFragmentCode(shader, targetReg, regCache, inputReg);
+    Single2DTextureVO.prototype._iGetFragmentCode = function (shader, targetReg, regCache, sharedReg, inputReg) {
+        var code = "";
+        var wrap = (shader.repeatTextures ? "wrap" : "clamp");
+        var format = this.getFormatString(this._single2DTexture.image2D);
+        var filter = (shader.useSmoothTextures) ? (shader.useMipmapping ? "linear,miplinear" : "linear") : (shader.useMipmapping ? "nearest,mipnearest" : "nearest");
+        var temp;
+        //handles texture atlasing
+        if (shader.useImageRect) {
+            var samplerReg = regCache.getFreeFragmentConstant();
+            this._samplerIndex = samplerReg.index * 4;
+            temp = regCache.getFreeFragmentVectorTemp();
+            code += "mul " + temp + ", " + inputReg + ", " + samplerReg + ".xy\n";
+            code += "add " + temp + ", " + temp + ", " + samplerReg + ".zw\n";
+        }
+        else {
+            temp = inputReg;
+        }
+        var textureReg = this.getTextureReg(this._single2DTexture.image2D, regCache, sharedReg);
+        this._textureIndex = textureReg.index;
+        code += "tex " + targetReg + ", " + temp + ", " + textureReg + " <2d," + filter + "," + format + wrap + ">\n";
+        return code;
+    };
+    Single2DTextureVO.prototype._setRenderState = function (renderable, shader) {
+        var sampler = renderable.renderableOwner.getSamplerAt(this._single2DTexture);
+        shader.images[this._textureIndex].activate(this._textureIndex, sampler.repeat || shader.repeatTextures, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
+        if (shader.useImageRect) {
+            var index = this._samplerIndex;
+            var data = shader.fragmentConstantData;
+            data[index] = sampler.imageRect.width / this._single2DTexture.image2D.width;
+            data[index + 1] = sampler.imageRect.height / this._single2DTexture.image2D.height;
+            data[index + 2] = sampler.imageRect.x / this._single2DTexture.image2D.width;
+            data[index + 3] = sampler.imageRect.y / this._single2DTexture.image2D.height;
+        }
     };
     Single2DTextureVO.prototype.activate = function (shader) {
-        this._sampler2DVO.activate(shader);
     };
     /**
      *
@@ -15095,7 +14977,7 @@ var Single2DTextureVO = (function (_super) {
 })(TextureVOBase);
 module.exports = Single2DTextureVO;
 
-},{"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-renderergl/lib/vos/Sampler2DVO":"awayjs-renderergl/lib/vos/Sampler2DVO","awayjs-renderergl/lib/vos/TextureVOBase":"awayjs-renderergl/lib/vos/TextureVOBase"}],"awayjs-renderergl/lib/vos/SingleCubeTextureVO":[function(require,module,exports){
+},{"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-renderergl/lib/vos/TextureVOBase":"awayjs-renderergl/lib/vos/TextureVOBase"}],"awayjs-renderergl/lib/vos/SingleCubeTextureVO":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -15104,31 +14986,24 @@ var __extends = this.__extends || function (d, b) {
 };
 var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
 var TextureVOBase = require("awayjs-renderergl/lib/vos/TextureVOBase");
-var SamplerCubeVO = require("awayjs-renderergl/lib/vos/SamplerCubeVO");
 /**
  *
  * @class away.pool.TextureDataBase
  */
 var SingleCubeTextureVO = (function (_super) {
     __extends(SingleCubeTextureVO, _super);
-    function SingleCubeTextureVO(pool, singleCubeTexture, stage) {
-        _super.call(this, pool, singleCubeTexture, stage);
+    function SingleCubeTextureVO(pool, singleCubeTexture, shader, stage) {
+        _super.call(this, pool, singleCubeTexture, shader, stage);
         this._singleCubeTexture = singleCubeTexture;
-        this._samplerCubeVO = new SamplerCubeVO(stage, this._singleCubeTexture.samplerCube);
     }
     SingleCubeTextureVO.prototype.dispose = function () {
         _super.prototype.dispose.call(this);
         this._singleCubeTexture = null;
-        this._samplerCubeVO.dispose();
-        this._samplerCubeVO = null;
     };
     SingleCubeTextureVO.prototype._iIncludeDependencies = function (shader, includeInput) {
         if (includeInput === void 0) { includeInput = true; }
         if (includeInput)
             shader.usesLocalPosFragment = true;
-    };
-    SingleCubeTextureVO.prototype._iInitRegisters = function (shader, regCache) {
-        this._samplerCubeVO.initProperties(regCache);
     };
     /**
      *
@@ -15139,11 +15014,19 @@ var SingleCubeTextureVO = (function (_super) {
      * @returns {string}
      * @private
      */
-    SingleCubeTextureVO.prototype._iGetFragmentCode = function (shader, targetReg, regCache, inputReg) {
-        return this._samplerCubeVO.getFragmentCode(shader, targetReg, regCache, inputReg);
+    SingleCubeTextureVO.prototype._iGetFragmentCode = function (shader, targetReg, regCache, sharedReg, inputReg) {
+        var filter;
+        var format = this.getFormatString(this._singleCubeTexture.imageCube);
+        var filter = (shader.useSmoothTextures) ? (shader.useMipmapping ? "linear,miplinear" : "linear") : (shader.useMipmapping ? "nearest,mipnearest" : "nearest");
+        var textureReg = this.getTextureReg(this._singleCubeTexture.imageCube, regCache, sharedReg);
+        this._textureIndex = textureReg.index;
+        return "tex " + targetReg + ", " + inputReg + ", " + textureReg + " <cube," + format + filter + ">\n";
+    };
+    SingleCubeTextureVO.prototype._setRenderState = function (renderable, shader) {
+        var sampler = renderable.renderableOwner.getSamplerAt(this._singleCubeTexture);
+        shader.images[this._textureIndex].activate(this._textureIndex, false, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
     };
     SingleCubeTextureVO.prototype.activate = function (shader) {
-        this._samplerCubeVO.activate(shader);
     };
     /**
      *
@@ -15153,7 +15036,7 @@ var SingleCubeTextureVO = (function (_super) {
 })(TextureVOBase);
 module.exports = SingleCubeTextureVO;
 
-},{"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-renderergl/lib/vos/SamplerCubeVO":"awayjs-renderergl/lib/vos/SamplerCubeVO","awayjs-renderergl/lib/vos/TextureVOBase":"awayjs-renderergl/lib/vos/TextureVOBase"}],"awayjs-renderergl/lib/vos/SubGeometryVOBase":[function(require,module,exports){
+},{"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-renderergl/lib/vos/TextureVOBase":"awayjs-renderergl/lib/vos/TextureVOBase"}],"awayjs-renderergl/lib/vos/SubGeometryVOBase":[function(require,module,exports){
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
 var SubGeometryUtils = require("awayjs-display/lib/utils/SubGeometryUtils");
@@ -15480,18 +15363,18 @@ module.exports = SubGeometryVOPool;
 
 },{"awayjs-renderergl/lib/vos/CurveSubGeometryVO":"awayjs-renderergl/lib/vos/CurveSubGeometryVO","awayjs-renderergl/lib/vos/LineSubGeometryVO":"awayjs-renderergl/lib/vos/LineSubGeometryVO","awayjs-renderergl/lib/vos/TriangleSubGeometryVO":"awayjs-renderergl/lib/vos/TriangleSubGeometryVO"}],"awayjs-renderergl/lib/vos/TextureVOBase":[function(require,module,exports){
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
+var ContextGLTextureFormat = require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
 /**
  *
  * @class away.pool.TextureVOBaseBase
  */
 var TextureVOBase = (function () {
-    function TextureVOBase(pool, texture, stage) {
+    function TextureVOBase(pool, texture, shader, stage) {
         this._pool = pool;
         this._texture = texture;
+        this._shader = shader;
         this._stage = stage;
     }
-    TextureVOBase.prototype._iInitRegisters = function (shader, regCache) {
-    };
     /**
      *
      */
@@ -15499,6 +15382,7 @@ var TextureVOBase = (function () {
         this._pool.disposeItem(this._texture);
         this._pool = null;
         this._texture = null;
+        this._shader = null;
         this._stage = null;
     };
     /**
@@ -15507,18 +15391,44 @@ var TextureVOBase = (function () {
     TextureVOBase.prototype.invalidate = function () {
         this.invalid = true;
     };
-    TextureVOBase.prototype._iGetFragmentCode = function (shader, targetReg, regCache, inputReg) {
+    TextureVOBase.prototype._iGetFragmentCode = function (shader, targetReg, regCache, sharedReg, inputReg) {
         if (inputReg === void 0) { inputReg = null; }
+        throw new AbstractMethodError();
+    };
+    TextureVOBase.prototype._setRenderState = function (renderable, shader) {
         throw new AbstractMethodError();
     };
     TextureVOBase.prototype.activate = function (shader) {
         throw new AbstractMethodError();
     };
+    TextureVOBase.prototype.getTextureReg = function (image, regCache, sharedReg) {
+        var imageObject = this._stage.getImageObject(image);
+        var index = this._shader.images.indexOf(imageObject);
+        if (index == -1) {
+            var textureReg = regCache.getFreeTextureReg();
+            sharedReg.textures.push(textureReg);
+            this._shader.images.push(imageObject);
+            return textureReg;
+        }
+        return sharedReg.textures[index];
+    };
+    TextureVOBase.prototype.getFormatString = function (image) {
+        switch (image.format) {
+            case ContextGLTextureFormat.COMPRESSED:
+                return "dxt1,";
+                break;
+            case ContextGLTextureFormat.COMPRESSED_ALPHA:
+                return "dxt5,";
+                break;
+            default:
+                return "";
+        }
+    };
     return TextureVOBase;
 })();
 module.exports = TextureVOBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-renderergl/lib/vos/TextureVOPool":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/vos/TextureVOPool":[function(require,module,exports){
 var Single2DTextureVO = require("awayjs-renderergl/lib/vos/Single2DTextureVO");
 var SingleCubeTextureVO = require("awayjs-renderergl/lib/vos/SingleCubeTextureVO");
 /**
@@ -15530,8 +15440,9 @@ var TextureVOPool = (function () {
      *
      * @param textureDataClass
      */
-    function TextureVOPool(stage) {
+    function TextureVOPool(shader, stage) {
         this._pool = new Object();
+        this._shader = shader;
         this._stage = stage;
     }
     /**
@@ -15541,7 +15452,7 @@ var TextureVOPool = (function () {
      * @returns ITexture
      */
     TextureVOPool.prototype.getItem = function (texture) {
-        return (this._pool[texture.id] || (this._pool[texture.id] = texture._iAddTextureVO(new (TextureVOPool.getClass(texture))(this, texture, this._stage))));
+        return (this._pool[texture.id] || (this._pool[texture.id] = texture._iAddTextureVO(new (TextureVOPool.getClass(texture))(this, texture, this._shader, this._stage))));
     };
     /**
      * //TODO
