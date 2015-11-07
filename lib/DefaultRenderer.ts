@@ -51,7 +51,7 @@ class DefaultRenderer extends RendererBase
 
 	public _pDepthRender:BitmapImage2D;
 
-	private _antiAlias:number;
+	private _antiAlias:number = 0;
 
 	public get antiAlias():number
 	{
