@@ -37,6 +37,7 @@ var DefaultRenderer = (function (_super) {
         if (mode === void 0) { mode = "auto"; }
         _super.call(this, stage, forceSoftware, profile, mode);
         this._skyboxProjection = new Matrix3D();
+        this._antiAlias = 0;
         this._pRenderablePool = new RenderablePool(this._pStage);
         if (stage)
             this._shareContext = true;
