@@ -1,4 +1,5 @@
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
+import ImageBase					= require("awayjs-core/lib/data/ImageBase");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import AssetBase					= require("awayjs-core/lib/library/AssetBase");
@@ -92,6 +93,11 @@ class RenderPassBase extends RenderBase implements IPass
 	public _iDeactivate()
 	{
 		this._shader._iDeactivate();
+	}
+
+	public getImageIndex(image:ImageBase):number
+	{
+		return this._renderOwner.getImageIndex(image);
 	}
 
 	/**

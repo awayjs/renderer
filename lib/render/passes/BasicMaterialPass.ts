@@ -101,6 +101,8 @@ class BasicMaterialPass extends PassBase
 
 	public _iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
+		super._iRender(renderable, camera, viewProjection);
+
 		if (this._shader.texture != null)
 			this._shader.texture._setRenderState(renderable, this._shader);
 	}

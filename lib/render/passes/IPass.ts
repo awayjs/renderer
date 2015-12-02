@@ -1,3 +1,4 @@
+import ImageBase					= require("awayjs-core/lib/data/ImageBase");
 import IEventDispatcher				= require("awayjs-core/lib/events/IEventDispatcher");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 
@@ -49,6 +50,8 @@ interface IPass extends IEventDispatcher
 	invalidatePass();
 
 	dispose();
+
+	getImageIndex(image:ImageBase):number;
 }
 
 export = IPass;

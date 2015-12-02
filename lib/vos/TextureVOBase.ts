@@ -74,13 +74,13 @@ class TextureVOBase implements ITextureVO
 
 	public getTextureReg(image:ImageBase, regCache:ShaderRegisterCache, sharedReg:ShaderRegisterData):ShaderRegisterElement
 	{
-		var imageObject:ImageObjectBase = this._stage.getImageObject(image);
-		var index:number = this._shader.images.indexOf(imageObject);
+		var imageIndex:number = this._shader.getImageIndex(image);
+		var index:number = this._shader.imageIndices.indexOf(imageIndex);
 
 		if (index == -1) {
 			var textureReg:ShaderRegisterElement = regCache.getFreeTextureReg();
 			sharedReg.textures.push(textureReg);
-			this._shader.images.push(imageObject);
+			this._shader.imageIndices.push(imageIndex);
 
 			return textureReg;
 		}

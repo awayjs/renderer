@@ -1,4 +1,5 @@
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
+import ImageBase					= require("awayjs-core/lib/data/ImageBase");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -287,7 +288,7 @@ class ShaderBase
 	 */
 	public jointWeightIndex:number;
 
-	public images:Array<ImageObjectBase> = new Array<ImageObjectBase>();
+	public imageIndices:Array<number> = new Array<number>();
 
 	/**
 	 * Creates a new MethodCompilerVO object.
@@ -305,6 +306,11 @@ class ShaderBase
 	public getTextureVO(texture:TextureBase):TextureVOBase
 	{
 		return this._textureVOPool.getItem(texture);
+	}
+
+	public getImageIndex(image:ImageBase):number
+	{
+		return this._pass.getImageIndex(image);
 	}
 
 	public _iIncludeDependencies()
@@ -362,7 +368,7 @@ class ShaderBase
 		this.sceneNormalMatrixIndex = -1;
 		this.jointIndexIndex = -1;
 		this.jointWeightIndex = -1;
-		this.images.length = 0;
+		this.imageIndices.length = 0;
 	}
 
 	/**

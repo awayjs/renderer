@@ -27,7 +27,7 @@ class Single2DTextureVO extends TextureVOBase
 	private _single2DTexture:Single2DTexture;
 	private _samplerIndex:number;
 	private _textureIndex:number;
-
+	private _imageIndex:number;
 
 	constructor(pool:TextureVOPool, single2DTexture:Single2DTexture, shader:ShaderBase, stage:Stage)
 	{
@@ -75,6 +75,7 @@ class Single2DTextureVO extends TextureVOBase
 
 		var textureReg:ShaderRegisterElement = this.getTextureReg(this._single2DTexture.image2D, regCache, sharedReg);
 		this._textureIndex = textureReg.index;
+		this._imageIndex = shader.getImageIndex(this._single2DTexture.image2D);
 		code += "tex " + targetReg + ", " + temp + ", " + textureReg + " <2d," + filter + "," + format + wrap + ">\n";
 
 		return code;
@@ -84,7 +85,7 @@ class Single2DTextureVO extends TextureVOBase
 	{
 		var sampler:Sampler2D = <Sampler2D> renderable.renderableOwner.getSamplerAt(this._single2DTexture);
 
-		shader.images[this._textureIndex].activate(this._textureIndex, sampler.repeat || shader.repeatTextures, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
+		renderable.imageObjects[this._imageIndex].activate(this._textureIndex, sampler.repeat || shader.repeatTextures, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
 
 		if (shader.useImageRect) {
 			var index:number = this._samplerIndex;

@@ -1,3 +1,4 @@
+import SamplerBase					= require("awayjs-core/lib/data/SamplerBase");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
 
@@ -15,6 +16,7 @@ import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMat
 
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import ImageObjectBase				= require("awayjs-stagegl/lib/pool/ImageObjectBase");
 
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
@@ -108,6 +110,9 @@ class RenderableBase implements IRenderable
 	 */
 	public render:RenderBase;
 
+	public imageObjects:Array<ImageObjectBase> = new Array<ImageObjectBase>();
+
+	public samplerObjects:Array<SamplerBase> = new Array<SamplerBase>();
 
 	public get subGeometryVO():SubGeometryVOBase
 	{
@@ -139,10 +144,7 @@ class RenderableBase implements IRenderable
 
 		this.renderableOwner.addEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate);
 
-		this.renderOwner = renderOwner;
-
-		this.render = pool.getRenderPool(renderableOwner).getItem(renderOwner || DefaultMaterialManager.getDefaultMaterial(renderableOwner));
-		this.render.usages++;
+		this._updateRenderOwner(renderOwner);
 	}
 
 	public dispose()
@@ -253,15 +255,36 @@ class RenderableBase implements IRenderable
 
 	private _onRenderOwnerUpdated(event:RenderableOwnerEvent)
 	{
-		this.renderOwner = event.renderOwner;
+		this._updateRenderOwner(event.renderOwner);
+	}
 
-		this.render.usages--;
+	private _updateRenderOwner(renderOwner:IRenderOwner)
+	{
+		this.renderOwner = renderOwner || DefaultMaterialManager.getDefaultMaterial(this.renderableOwner);
 
-		if (!this.render.usages)
-			this.render.dispose();
+		var render:RenderBase = this._pool.getRenderPool(this.renderableOwner).getItem(this.renderOwner);
 
-		this.render = this._pool.getRenderPool(this.renderableOwner).getItem(this.renderOwner || DefaultMaterialManager.getDefaultMaterial(this.renderableOwner));
-		this.render.usages++;
+		if (this.render != render) {
+
+			if (this.render) {
+				this.render.usages--;
+
+				//dispose current render object
+				if (!this.render.usages)
+					this.render.dispose();
+			}
+
+			this.render = render;
+
+			this.render.usages++;
+		}
+
+		//create a cache of image objects for the renderable
+		var numImages:number = this.renderOwner.getNumImages();
+
+		this.imageObjects.length = numImages;
+		for (var i:number = 0; i < numImages; i++)
+			this.imageObjects[i] = this._stage.getImageObject(this.renderableOwner.getImageAt(i) || this.renderOwner.getImageAt(i));
 	}
 }
 
