@@ -11277,6 +11277,9 @@ var RenderPassBase = (function (_super) {
     RenderPassBase.prototype._iDeactivate = function () {
         this._shader._iDeactivate();
     };
+    RenderPassBase.prototype.getImageIndex = function (image) {
+        return this._renderOwner.getImageIndex(image);
+    };
     /**
      * Marks the shader program as invalid, so it will be recompiled before the next render.
      *
@@ -11499,6 +11502,7 @@ var BasicMaterialPass = (function (_super) {
         return code;
     };
     BasicMaterialPass.prototype._iRender = function (renderable, camera, viewProjection) {
+        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
         if (this._shader.texture != null)
             this._shader.texture._setRenderState(renderable, this._shader);
     };
@@ -11604,6 +11608,9 @@ var PassBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    PassBase.prototype.getImageIndex = function (image) {
+        return this._renderOwner.getImageIndex(image);
+    };
     /**
      * Cleans up any resources used by the current object.
      * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
@@ -12202,6 +12209,8 @@ var RenderableBase = (function () {
     function RenderableBase(pool, sourceEntity, renderableOwner, renderOwner, stage) {
         var _this = this;
         this._geometryDirty = true;
+        this.imageObjects = new Array();
+        this.samplerObjects = new Array();
         this._onRenderOwnerUpdatedDelegate = function (event) { return _this._onRenderOwnerUpdated(event); };
         //store a reference to the pool for later disposal
         this._pool = pool;
@@ -12210,9 +12219,7 @@ var RenderableBase = (function () {
         this.sourceEntity = sourceEntity;
         this.renderableOwner = renderableOwner;
         this.renderableOwner.addEventListener(RenderableOwnerEvent.RENDER_OWNER_UPDATED, this._onRenderOwnerUpdatedDelegate);
-        this.renderOwner = renderOwner;
-        this.render = pool.getRenderPool(renderableOwner).getItem(renderOwner || DefaultMaterialManager.getDefaultMaterial(renderableOwner));
-        this.render.usages++;
+        this._updateRenderOwner(renderOwner);
     }
     Object.defineProperty(RenderableBase.prototype, "subGeometryVO", {
         get: function () {
@@ -12301,12 +12308,26 @@ var RenderableBase = (function () {
         this._geometryDirty = false;
     };
     RenderableBase.prototype._onRenderOwnerUpdated = function (event) {
-        this.renderOwner = event.renderOwner;
-        this.render.usages--;
-        if (!this.render.usages)
-            this.render.dispose();
-        this.render = this._pool.getRenderPool(this.renderableOwner).getItem(this.renderOwner || DefaultMaterialManager.getDefaultMaterial(this.renderableOwner));
-        this.render.usages++;
+        this._updateRenderOwner(event.renderOwner);
+    };
+    RenderableBase.prototype._updateRenderOwner = function (renderOwner) {
+        this.renderOwner = renderOwner || DefaultMaterialManager.getDefaultMaterial(this.renderableOwner);
+        var render = this._pool.getRenderPool(this.renderableOwner).getItem(this.renderOwner);
+        if (this.render != render) {
+            if (this.render) {
+                this.render.usages--;
+                //dispose current render object
+                if (!this.render.usages)
+                    this.render.dispose();
+            }
+            this.render = render;
+            this.render.usages++;
+        }
+        //create a cache of image objects for the renderable
+        var numImages = this.renderOwner.getNumImages();
+        this.imageObjects.length = numImages;
+        for (var i = 0; i < numImages; i++)
+            this.imageObjects[i] = this._stage.getImageObject(this.renderableOwner.getImageAt(i) || this.renderOwner.getImageAt(i));
     };
     return RenderableBase;
 })();
@@ -13019,7 +13040,7 @@ var ShaderBase = (function () {
          * Indicates whether there are any dependencies on the local position vector.
          */
         this.usesLocalPosFragment = false;
-        this.images = new Array();
+        this.imageIndices = new Array();
         this._renderableClass = renderableClass;
         this._pass = pass;
         this._stage = stage;
@@ -13037,6 +13058,9 @@ var ShaderBase = (function () {
     });
     ShaderBase.prototype.getTextureVO = function (texture) {
         return this._textureVOPool.getItem(texture);
+    };
+    ShaderBase.prototype.getImageIndex = function (image) {
+        return this._pass.getImageIndex(image);
     };
     ShaderBase.prototype._iIncludeDependencies = function () {
         this._pass._iIncludeDependencies(this);
@@ -13086,7 +13110,7 @@ var ShaderBase = (function () {
         this.sceneNormalMatrixIndex = -1;
         this.jointIndexIndex = -1;
         this.jointWeightIndex = -1;
-        this.images.length = 0;
+        this.imageIndices.length = 0;
     };
     /**
      * Initializes the unchanging constant data for this shader object.
@@ -14953,12 +14977,13 @@ var Single2DTextureVO = (function (_super) {
         }
         var textureReg = this.getTextureReg(this._single2DTexture.image2D, regCache, sharedReg);
         this._textureIndex = textureReg.index;
+        this._imageIndex = shader.getImageIndex(this._single2DTexture.image2D);
         code += "tex " + targetReg + ", " + temp + ", " + textureReg + " <2d," + filter + "," + format + wrap + ">\n";
         return code;
     };
     Single2DTextureVO.prototype._setRenderState = function (renderable, shader) {
         var sampler = renderable.renderableOwner.getSamplerAt(this._single2DTexture);
-        shader.images[this._textureIndex].activate(this._textureIndex, sampler.repeat || shader.repeatTextures, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
+        renderable.imageObjects[this._imageIndex].activate(this._textureIndex, sampler.repeat || shader.repeatTextures, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
         if (shader.useImageRect) {
             var index = this._samplerIndex;
             var data = shader.fragmentConstantData;
@@ -15021,11 +15046,12 @@ var SingleCubeTextureVO = (function (_super) {
         var filter = (shader.useSmoothTextures) ? (shader.useMipmapping ? "linear,miplinear" : "linear") : (shader.useMipmapping ? "nearest,mipnearest" : "nearest");
         var textureReg = this.getTextureReg(this._singleCubeTexture.imageCube, regCache, sharedReg);
         this._textureIndex = textureReg.index;
+        this._imageIndex = shader.getImageIndex(this._singleCubeTexture.imageCube);
         return "tex " + targetReg + ", " + inputReg + ", " + textureReg + " <cube," + format + filter + ">\n";
     };
     SingleCubeTextureVO.prototype._setRenderState = function (renderable, shader) {
         var sampler = renderable.renderableOwner.getSamplerAt(this._singleCubeTexture);
-        shader.images[this._textureIndex].activate(this._textureIndex, false, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
+        renderable.imageObjects[this._imageIndex].activate(this._textureIndex, false, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
     };
     SingleCubeTextureVO.prototype.activate = function (shader) {
     };
@@ -15403,12 +15429,12 @@ var TextureVOBase = (function () {
         throw new AbstractMethodError();
     };
     TextureVOBase.prototype.getTextureReg = function (image, regCache, sharedReg) {
-        var imageObject = this._stage.getImageObject(image);
-        var index = this._shader.images.indexOf(imageObject);
+        var imageIndex = this._shader.getImageIndex(image);
+        var index = this._shader.imageIndices.indexOf(imageIndex);
         if (index == -1) {
             var textureReg = regCache.getFreeTextureReg();
             sharedReg.textures.push(textureReg);
-            this._shader.images.push(imageObject);
+            this._shader.imageIndices.push(imageIndex);
             return textureReg;
         }
         return sharedReg.textures[index];

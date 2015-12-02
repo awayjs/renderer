@@ -1,3 +1,361 @@
+declare module "awayjs-renderergl/lib/DefaultRenderer" {
+	import ImageBase = require("awayjs-core/lib/data/ImageBase");
+	import BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
+	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
+	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
+	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
+	import Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
+	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+	/**
+	 * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
+	 * materials assigned to them.
+	 *
+	 * @class away.render.DefaultRenderer
+	 */
+	class DefaultRenderer extends RendererBase {
+	    _pRequireDepthRender: boolean;
+	    private _pDistanceRenderer;
+	    private _pDepthRenderer;
+	    private _skyboxProjection;
+	    _pFilter3DRenderer: Filter3DRenderer;
+	    _pDepthRender: BitmapImage2D;
+	    private _antiAlias;
+	    antiAlias: number;
+	    /**
+	     *
+	     */
+	    depthPrepass: boolean;
+	    /**
+	     *
+	     * @returns {*}
+	     */
+	    filters3d: Array<Filter3DBase>;
+	    /**
+	     * Creates a new DefaultRenderer object.
+	     *
+	     * @param antiAlias The amount of anti-aliasing to use.
+	     * @param renderMode The render mode to use.
+	     */
+	    constructor(stage?: Stage, forceSoftware?: boolean, profile?: string, mode?: string);
+	    render(entityCollector: CollectorBase): void;
+	    pExecuteRender(entityCollector: EntityCollector, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    private updateLights(entityCollector);
+	    /**
+	     * @inheritDoc
+	     */
+	    pDraw(entityCollector: EntityCollector): void;
+	    /**
+	     * Draw the skybox if present.
+	     *
+	     * @param entityCollector The EntityCollector containing all potentially visible information.
+	     */
+	    private drawSkybox(entityCollector);
+	    private updateSkyboxProjection(camera);
+	    dispose(): void;
+	    /**
+	     *
+	     */
+	    pRenderDepthPrepass(entityCollector: EntityCollector): void;
+	    /**
+	     *
+	     */
+	    pRenderSceneDepthToTexture(entityCollector: EntityCollector): void;
+	    /**
+	     * Updates the backbuffer dimensions.
+	     */
+	    pUpdateBackBuffer(): void;
+	    /**
+	     *
+	     */
+	    private initDepthTexture(context);
+	}
+	export = DefaultRenderer;
+	
+}
+
+declare module "awayjs-renderergl/lib/DepthRenderer" {
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
+	/**
+	 * The DepthRenderer class renders 32-bit depth information encoded as RGBA
+	 *
+	 * @class away.render.DepthRenderer
+	 */
+	class DepthRenderer extends RendererBase {
+	    /**
+	     * Creates a new DepthRenderer object.
+	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
+	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
+	     */
+	    constructor(stage?: Stage);
+	}
+	export = DepthRenderer;
+	
+}
+
+declare module "awayjs-renderergl/lib/DistanceRenderer" {
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
+	/**
+	 * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
+	 *
+	 * @class away.render.DistanceRenderer
+	 */
+	class DistanceRenderer extends RendererBase {
+	    /**
+	     * Creates a new DistanceRenderer object.
+	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
+	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
+	     */
+	    constructor(stage?: Stage);
+	}
+	export = DistanceRenderer;
+	
+}
+
+declare module "awayjs-renderergl/lib/Filter3DRenderer" {
+	import Image2D = require("awayjs-core/lib/data/Image2D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+	/**
+	 * @class away.render.Filter3DRenderer
+	 */
+	class Filter3DRenderer {
+	    private _filters;
+	    private _tasks;
+	    private _filterTasksInvalid;
+	    private _mainInputTexture;
+	    private _requireDepthRender;
+	    private _rttManager;
+	    private _stage;
+	    private _filterSizesInvalid;
+	    private _onRTTResizeDelegate;
+	    constructor(stage: Stage);
+	    private onRTTResize(event);
+	    requireDepthRender: boolean;
+	    getMainInputTexture(stage: Stage): Image2D;
+	    filters: Filter3DBase[];
+	    private updateFilterTasks(stage);
+	    render(stage: Stage, camera: Camera, depthTexture: Image2D): void;
+	    private updateFilterSizes();
+	    dispose(): void;
+	}
+	export = Filter3DRenderer;
+	
+}
+
+declare module "awayjs-renderergl/lib/RendererBase" {
+	import ImageBase = require("awayjs-core/lib/data/ImageBase");
+	import BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
+	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
+	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
+	import IEntitySorter = require("awayjs-display/lib/sort/IEntitySorter");
+	import IRenderer = require("awayjs-display/lib/IRenderer");
+	import DisplayObject = require("awayjs-display/lib/base/DisplayObject");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
+	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
+	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
+	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+	import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
+	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
+	import RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
+	/**
+	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
+	 * contents of a partition
+	 *
+	 * @class away.render.RendererBase
+	 */
+	class RendererBase extends EventDispatcher implements IRenderer {
+	    private _maskConfig;
+	    private _activeMasksDirty;
+	    private _activeMasksConfig;
+	    private _registeredMasks;
+	    private _numUsedStreams;
+	    private _numUsedTextures;
+	    _pRenderablePool: RenderablePool;
+	    _pContext: IContextGL;
+	    _pStage: Stage;
+	    _pCamera: Camera;
+	    _iEntryPoint: Vector3D;
+	    _pCameraForward: Vector3D;
+	    _pRttBufferManager: RTTBufferManager;
+	    private _viewPort;
+	    private _viewportDirty;
+	    private _scissorDirty;
+	    _pBackBufferInvalid: boolean;
+	    _pDepthTextureInvalid: boolean;
+	    _depthPrepass: boolean;
+	    private _backgroundR;
+	    private _backgroundG;
+	    private _backgroundB;
+	    private _backgroundAlpha;
+	    _shareContext: boolean;
+	    _width: number;
+	    _height: number;
+	    textureRatioX: number;
+	    textureRatioY: number;
+	    private _snapshotBitmapImage2D;
+	    private _snapshotRequired;
+	    _pRttViewProjectionMatrix: Matrix3D;
+	    private _localPos;
+	    private _globalPos;
+	    _pScissorRect: Rectangle;
+	    private _scissorUpdated;
+	    private _viewPortUpdated;
+	    private _onContextUpdateDelegate;
+	    private _onViewportUpdatedDelegate;
+	    _pNumElements: number;
+	    _pOpaqueRenderableHead: RenderableBase;
+	    _pBlendedRenderableHead: RenderableBase;
+	    _disableColor: boolean;
+	    _renderBlended: boolean;
+	    renderBlended: boolean;
+	    disableColor: boolean;
+	    /**
+	     *
+	     */
+	    numElements: number;
+	    /**
+	     *
+	     */
+	    renderableSorter: IEntitySorter;
+	    /**
+	     * A viewPort rectangle equivalent of the Stage size and position.
+	     */
+	    viewPort: Rectangle;
+	    /**
+	     * A scissor rectangle equivalent of the view size and position.
+	     */
+	    scissorRect: Rectangle;
+	    /**
+	     *
+	     */
+	    x: number;
+	    /**
+	     *
+	     */
+	    y: number;
+	    /**
+	     *
+	     */
+	    width: number;
+	    /**
+	     *
+	     */
+	    height: number;
+	    /**
+	     * Creates a new RendererBase object.
+	     */
+	    constructor(stage?: Stage, forceSoftware?: boolean, profile?: string, mode?: string);
+	    activatePass(renderable: RenderableBase, pass: IPass, camera: Camera): void;
+	    deactivatePass(renderable: RenderableBase, pass: IPass): void;
+	    _iCreateEntityCollector(): CollectorBase;
+	    /**
+	     * The background color's red component, used when clearing.
+	     *
+	     * @private
+	     */
+	    _iBackgroundR: number;
+	    /**
+	     * The background color's green component, used when clearing.
+	     *
+	     * @private
+	     */
+	    _iBackgroundG: number;
+	    /**
+	     * The background color's blue component, used when clearing.
+	     *
+	     * @private
+	     */
+	    _iBackgroundB: number;
+	    context: IContextGL;
+	    /**
+	     * The Stage that will provide the ContextGL used for rendering.
+	     */
+	    stage: Stage;
+	    /**
+	     * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
+	     * to share the same ContextGL object.
+	     */
+	    shareContext: boolean;
+	    renderablePool: RenderablePool;
+	    /**
+	     * Disposes the resources used by the RendererBase.
+	     */
+	    dispose(): void;
+	    render(entityCollector: CollectorBase): void;
+	    /**
+	     * Renders the potentially visible geometry to the back buffer or texture.
+	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+	     * @param target An option target texture to render to.
+	     * @param surfaceSelector The index of a CubeTexture's face to render to.
+	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
+	     */
+	    _iRender(entityCollector: CollectorBase, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: ImageBase, numCascades: number, scissorRects: Array<Rectangle>, cameras: Array<Camera>): void;
+	    private _applyCollector(entityCollector);
+	    /**
+	     * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
+	     *
+	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+	     * @param target An option target texture to render to.
+	     * @param surfaceSelector The index of a CubeTexture's face to render to.
+	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
+	     */
+	    pExecuteRender(entityCollector: CollectorBase, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    queueSnapshot(bmd: BitmapImage2D): void;
+	    /**
+	     * Performs the actual drawing of geometry to the target.
+	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+	     */
+	    pDraw(entityCollector: CollectorBase): void;
+	    /**
+	     * Draw a list of renderables.
+	     *
+	     * @param renderables The renderables to draw.
+	     * @param entityCollector The EntityCollector containing all potentially visible information.
+	     */
+	    drawRenderables(renderable: RenderableBase, entityCollector: CollectorBase): void;
+	    /**
+	     * Assign the context once retrieved
+	     */
+	    private onContextUpdate(event);
+	    _iBackgroundAlpha: number;
+	    /**
+	     * @private
+	     */
+	    private notifyScissorUpdate();
+	    /**
+	     * @private
+	     */
+	    private notifyViewportUpdate();
+	    /**
+	     *
+	     */
+	    onViewportUpdated(event: StageEvent): void;
+	    /**
+	     *
+	     */
+	    updateGlobalPos(): void;
+	    _iApplyRenderableOwner(renderableOwner: IRenderableOwner): void;
+	    private _registerMask(obj);
+	    _renderMasks(masks: DisplayObject[][]): void;
+	    private _drawMask(renderable);
+	    private _checkMasksConfig(masksConfig);
+	}
+	export = RendererBase;
+	
+}
+
 declare module "awayjs-renderergl/lib/animators/AnimationSetBase" {
 	import IAsset = require("awayjs-core/lib/library/IAsset");
 	import AssetBase = require("awayjs-core/lib/library/AssetBase");
@@ -282,6 +640,476 @@ declare module "awayjs-renderergl/lib/animators/AnimatorBase" {
 	    getRenderableSubGeometry(renderable: TriangleSubMeshRenderable, sourceSubGeometry: TriangleSubGeometry): TriangleSubGeometry;
 	}
 	export = AnimatorBase;
+	
+}
+
+declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
+	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
+	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+	import ISubMesh = require("awayjs-display/lib/base/ISubMesh");
+	import Mesh = require("awayjs-display/lib/entities/Mesh");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
+	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
+	import ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	/**
+	 * The animation data set used by particle-based animators, containing particle animation data.
+	 *
+	 * @see away.animators.ParticleAnimator
+	 */
+	class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet {
+	    /** @private */
+	    _iAnimationRegisterCache: AnimationRegisterCache;
+	    private _timeNode;
+	    /**
+	     * Property used by particle nodes that require compilers at the end of the shader
+	     */
+	    static POST_PRIORITY: number;
+	    /**
+	     * Property used by particle nodes that require color compilers
+	     */
+	    static COLOR_PRIORITY: number;
+	    private _animationSubGeometries;
+	    private _particleNodes;
+	    private _localDynamicNodes;
+	    private _localStaticNodes;
+	    private _totalLenOfOneVertex;
+	    hasUVNode: boolean;
+	    needVelocity: boolean;
+	    hasBillboard: boolean;
+	    hasColorMulNode: boolean;
+	    hasColorAddNode: boolean;
+	    /**
+	     * Initialiser function for static particle properties. Needs to reference a with the following format
+	     *
+	     * <code>
+	     * initParticleFunc(prop:ParticleProperties)
+	     * {
+	     * 		//code for settings local properties
+	     * }
+	     * </code>
+	     *
+	     * Aside from setting any properties required in particle animation nodes using local static properties, the initParticleFunc function
+	     * is required to time node requirements as they may be needed. These properties on the ParticleProperties object can include
+	     * <code>startTime</code>, <code>duration</code> and <code>delay</code>. The use of these properties is determined by the setting
+	     * arguments passed in the constructor of the particle animation set. By default, only the <code>startTime</code> property is required.
+	     */
+	    initParticleFunc: Function;
+	    /**
+	     * Initialiser function scope for static particle properties
+	     */
+	    initParticleScope: Object;
+	    /**
+	     * Creates a new <code>ParticleAnimationSet</code>
+	     *
+	     * @param    [optional] usesDuration    Defines whether the animation set uses the <code>duration</code> data in its static properties to determine how long a particle is visible for. Defaults to false.
+	     * @param    [optional] usesLooping     Defines whether the animation set uses a looping timeframe for each particle determined by the <code>startTime</code>, <code>duration</code> and <code>delay</code> data in its static properties function. Defaults to false. Requires <code>usesDuration</code> to be true.
+	     * @param    [optional] usesDelay       Defines whether the animation set uses the <code>delay</code> data in its static properties to determine how long a particle is hidden for. Defaults to false. Requires <code>usesLooping</code> to be true.
+	     */
+	    constructor(usesDuration?: boolean, usesLooping?: boolean, usesDelay?: boolean);
+	    /**
+	     * Returns a vector of the particle animation nodes contained within the set.
+	     */
+	    particleNodes: Array<ParticleNodeBase>;
+	    /**
+	     * @inheritDoc
+	     */
+	    addAnimation(node: AnimationNodeBase): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    activate(shader: ShaderBase, stage: Stage): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    deactivate(shader: ShaderBase, stage: Stage): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALVertexCode(shader: ShaderBase): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALUVCode(shader: ShaderBase): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALFragmentCode(shader: ShaderBase, shadedTarget: string): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    doneAGALCode(shader: ShaderBase): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    usesCPU: boolean;
+	    /**
+	     * @inheritDoc
+	     */
+	    cancelGPUCompatibility(): void;
+	    dispose(): void;
+	    getAnimationSubGeometry(subMesh: ISubMesh): any;
+	    /** @private */
+	    _iGenerateAnimationSubGeometries(mesh: Mesh): void;
+	}
+	export = ParticleAnimationSet;
+	
+}
+
+declare module "awayjs-renderergl/lib/animators/ParticleAnimator" {
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+	/**
+	 * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
+	 * and controlling the various available states of animation through an interative playhead that can be
+	 * automatically updated or manually triggered.
+	 *
+	 * Requires that the containing geometry of the parent mesh is particle geometry
+	 *
+	 * @see away.base.ParticleGeometry
+	 */
+	class ParticleAnimator extends AnimatorBase {
+	    private _particleAnimationSet;
+	    private _animationParticleStates;
+	    private _animatorParticleStates;
+	    private _timeParticleStates;
+	    private _totalLenOfOneVertex;
+	    private _animatorSubGeometries;
+	    /**
+	     * Creates a new <code>ParticleAnimator</code> object.
+	     *
+	     * @param particleAnimationSet The animation data set containing the particle animations used by the animator.
+	     */
+	    constructor(particleAnimationSet: ParticleAnimationSet);
+	    /**
+	     * @inheritDoc
+	     */
+	    clone(): AnimatorBase;
+	    /**
+	     * @inheritDoc
+	     */
+	    setRenderState(shader: ShaderBase, renderable: RenderableBase, stage: Stage, camera: Camera, vertexConstantOffset: number, vertexStreamOffset: number): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    testGPUCompatibility(shader: ShaderBase): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    start(): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _pUpdateDeltaTime(dt: number): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    resetTime(offset?: number): void;
+	    dispose(): void;
+	    private getAnimatorSubGeometry(subMesh);
+	}
+	export = ParticleAnimator;
+	
+}
+
+declare module "awayjs-renderergl/lib/animators/SkeletonAnimationSet" {
+	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	/**
+	 * The animation data set used by skeleton-based animators, containing skeleton animation data.
+	 *
+	 * @see away.animators.SkeletonAnimator
+	 */
+	class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet {
+	    private _jointsPerVertex;
+	    /**
+	     * Returns the amount of skeleton joints that can be linked to a single vertex via skinned weight values. For GPU-base animation, the
+	     * maximum allowed value is 4.
+	     */
+	    jointsPerVertex: number;
+	    /**
+	     * Creates a new <code>SkeletonAnimationSet</code> object.
+	     *
+	     * @param jointsPerVertex Sets the amount of skeleton joints that can be linked to a single vertex via skinned weight values. For GPU-base animation, the maximum allowed value is 4. Defaults to 4.
+	     */
+	    constructor(jointsPerVertex?: number);
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALVertexCode(shader: ShaderBase): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    activate(shader: ShaderBase, stage: Stage): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    deactivate(shader: ShaderBase, stage: Stage): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALFragmentCode(shader: ShaderBase, shadedTarget: string): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALUVCode(shader: ShaderBase): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    doneAGALCode(shader: ShaderBase): void;
+	}
+	export = SkeletonAnimationSet;
+	
+}
+
+declare module "awayjs-renderergl/lib/animators/SkeletonAnimator" {
+	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import SkeletonAnimationSet = require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
+	import Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
+	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
+	import IAnimationTransition = require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+	import TriangleSubMeshRenderable = require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
+	/**
+	 * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects
+	 * and controlling the various available states of animation through an interative playhead that can be
+	 * automatically updated or manually triggered.
+	 */
+	class SkeletonAnimator extends AnimatorBase {
+	    private _globalMatrices;
+	    private _globalPose;
+	    private _globalPropertiesDirty;
+	    private _numJoints;
+	    private _morphedSubGeometry;
+	    private _morphedSubGeometryDirty;
+	    private _condensedMatrices;
+	    private _skeleton;
+	    private _forceCPU;
+	    private _useCondensedIndices;
+	    private _jointsPerVertex;
+	    private _activeSkeletonState;
+	    private _onTransitionCompleteDelegate;
+	    private _onIndicesUpdateDelegate;
+	    private _onVerticesUpdateDelegate;
+	    /**
+	     * returns the calculated global matrices of the current skeleton pose.
+	     *
+	     * @see #globalPose
+	     */
+	    globalMatrices: Float32Array;
+	    /**
+	     * returns the current skeleton pose output from the animator.
+	     *
+	     * @see away.animators.data.SkeletonPose
+	     */
+	    globalPose: SkeletonPose;
+	    /**
+	     * Returns the skeleton object in use by the animator - this defines the number and heirarchy of joints used by the
+	     * skinned geoemtry to which skeleon animator is applied.
+	     */
+	    skeleton: Skeleton;
+	    /**
+	     * Indicates whether the skeleton animator is disabled by default for GPU rendering, something that allows the animator to perform calculation on the GPU.
+	     * Defaults to false.
+	     */
+	    forceCPU: boolean;
+	    /**
+	     * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
+	     * by condensing the number of joint index values required per mesh. Only applicable to
+	     * skeleton animations that utilise more than one mesh object. Defaults to false.
+	     */
+	    useCondensedIndices: boolean;
+	    /**
+	     * Creates a new <code>SkeletonAnimator</code> object.
+	     *
+	     * @param skeletonAnimationSet The animation data set containing the skeleton animations used by the animator.
+	     * @param skeleton The skeleton object used for calculating the resulting global matrices for transforming skinned mesh data.
+	     * @param forceCPU Optional value that only allows the animator to perform calculation on the CPU. Defaults to false.
+	     */
+	    constructor(animationSet: SkeletonAnimationSet, skeleton: Skeleton, forceCPU?: boolean);
+	    /**
+	     * @inheritDoc
+	     */
+	    clone(): AnimatorBase;
+	    /**
+	     * Plays an animation state registered with the given name in the animation data set.
+	     *
+	     * @param name The data set name of the animation state to be played.
+	     * @param transition An optional transition object that determines how the animator will transition from the currently active animation state.
+	     * @param offset An option offset time (in milliseconds) that resets the state's internal clock to the absolute time of the animator plus the offset value. Required for non-looping animation states.
+	     */
+	    play(name: string, transition?: IAnimationTransition, offset?: number): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    setRenderState(shader: ShaderBase, renderable: RenderableBase, stage: Stage, camera: Camera, vertexConstantOffset: number, vertexStreamOffset: number): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    testGPUCompatibility(shader: ShaderBase): void;
+	    /**
+	     * Applies the calculated time delta to the active animation state node or state transition object.
+	     */
+	    _pUpdateDeltaTime(dt: number): void;
+	    private updateCondensedMatrices(condensedIndexLookUp);
+	    private updateGlobalProperties();
+	    getRenderableSubGeometry(renderable: TriangleSubMeshRenderable, sourceSubGeometry: TriangleSubGeometry): TriangleSubGeometry;
+	    /**
+	     * If the animation can't be performed on GPU, transform vertices manually
+	     * @param subGeom The subgeometry containing the weights and joint index data per vertex.
+	     * @param pass The material pass for which we need to transform the vertices
+	     */
+	    morphSubGeometry(renderable: TriangleSubMeshRenderable, sourceSubGeometry: TriangleSubGeometry): void;
+	    /**
+	     * Converts a local hierarchical skeleton pose to a global pose
+	     * @param targetPose The SkeletonPose object that will contain the global pose.
+	     * @param skeleton The skeleton containing the joints, and as such, the hierarchical data to transform to global poses.
+	     */
+	    private localToGlobalPose(sourcePose, targetPose, skeleton);
+	    private onTransitionComplete(event);
+	    private onIndicesUpdate(event);
+	    private onVerticesUpdate(event);
+	}
+	export = SkeletonAnimator;
+	
+}
+
+declare module "awayjs-renderergl/lib/animators/VertexAnimationSet" {
+	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	/**
+	 * The animation data set used by vertex-based animators, containing vertex animation state data.
+	 *
+	 * @see VertexAnimator
+	 */
+	class VertexAnimationSet extends AnimationSetBase implements IAnimationSet {
+	    private _numPoses;
+	    private _blendMode;
+	    /**
+	     * Returns the number of poses made available at once to the GPU animation code.
+	     */
+	    numPoses: number;
+	    /**
+	     * Returns the active blend mode of the vertex animator object.
+	     */
+	    blendMode: string;
+	    /**
+	     * Returns whether or not normal data is used in last set GPU pass of the vertex shader.
+	     */
+	    /**
+	     * Creates a new <code>VertexAnimationSet</code> object.
+	     *
+	     * @param numPoses The number of poses made available at once to the GPU animation code.
+	     * @param blendMode Optional value for setting the animation mode of the vertex animator object.
+	     *
+	     * @see away3d.animators.data.VertexAnimationMode
+	     */
+	    constructor(numPoses?: number, blendMode?: string);
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALVertexCode(shader: ShaderBase): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    activate(shader: ShaderBase, stage: Stage): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    deactivate(shader: ShaderBase, stage: Stage): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALFragmentCode(shader: ShaderBase, shadedTarget: string): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    getAGALUVCode(shader: ShaderBase): string;
+	    /**
+	     * @inheritDoc
+	     */
+	    doneAGALCode(shader: ShaderBase): void;
+	    /**
+	     * Generates the vertex AGAL code for absolute blending.
+	     */
+	    private getAbsoluteAGALCode(shader);
+	    /**
+	     * Generates the vertex AGAL code for additive blending.
+	     */
+	    private getAdditiveAGALCode(shader);
+	}
+	export = VertexAnimationSet;
+	
+}
+
+declare module "awayjs-renderergl/lib/animators/VertexAnimator" {
+	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
+	import VertexAnimationSet = require("awayjs-renderergl/lib/animators/VertexAnimationSet");
+	import IAnimationTransition = require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
+	import TriangleSubMeshRenderable = require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
+	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	/**
+	 * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
+	 * and controlling the various available states of animation through an interative playhead that can be
+	 * automatically updated or manually triggered.
+	 */
+	class VertexAnimator extends AnimatorBase {
+	    private _subGeometryVOPool;
+	    private _vertexAnimationSet;
+	    private _poses;
+	    private _weights;
+	    private _numPoses;
+	    private _blendMode;
+	    private _activeVertexState;
+	    /**
+	     * Creates a new <code>VertexAnimator</code> object.
+	     *
+	     * @param vertexAnimationSet The animation data set containing the vertex animations used by the animator.
+	     */
+	    constructor(vertexAnimationSet: VertexAnimationSet);
+	    /**
+	     * @inheritDoc
+	     */
+	    clone(): AnimatorBase;
+	    /**
+	     * Plays a sequence with a given name. If the sequence is not found, it may not be loaded yet, and it will retry every frame.
+	     * @param sequenceName The name of the clip to be played.
+	     */
+	    play(name: string, transition?: IAnimationTransition, offset?: number): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _pUpdateDeltaTime(dt: number): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    setRenderState(shader: ShaderBase, renderable: RenderableBase, stage: Stage, camera: Camera, vertexConstantOffset: number, vertexStreamOffset: number): void;
+	    private setNullPose(shader, subGeometry, stage, vertexConstantOffset, vertexStreamOffset);
+	    /**
+	     * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
+	     * Needs to be called if gpu code is potentially required.
+	     */
+	    testGPUCompatibility(shader: ShaderBase): void;
+	    getRenderableSubGeometry(renderable: TriangleSubMeshRenderable, sourceSubGeometry: TriangleSubGeometry): TriangleSubGeometry;
+	}
+	export = VertexAnimator;
 	
 }
 
@@ -1901,348 +2729,6 @@ declare module "awayjs-renderergl/lib/animators/nodes/VertexClipNode" {
 	
 }
 
-declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
-	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
-	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-	import ISubMesh = require("awayjs-display/lib/base/ISubMesh");
-	import Mesh = require("awayjs-display/lib/entities/Mesh");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
-	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-	import ParticleNodeBase = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	/**
-	 * The animation data set used by particle-based animators, containing particle animation data.
-	 *
-	 * @see away.animators.ParticleAnimator
-	 */
-	class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet {
-	    /** @private */
-	    _iAnimationRegisterCache: AnimationRegisterCache;
-	    private _timeNode;
-	    /**
-	     * Property used by particle nodes that require compilers at the end of the shader
-	     */
-	    static POST_PRIORITY: number;
-	    /**
-	     * Property used by particle nodes that require color compilers
-	     */
-	    static COLOR_PRIORITY: number;
-	    private _animationSubGeometries;
-	    private _particleNodes;
-	    private _localDynamicNodes;
-	    private _localStaticNodes;
-	    private _totalLenOfOneVertex;
-	    hasUVNode: boolean;
-	    needVelocity: boolean;
-	    hasBillboard: boolean;
-	    hasColorMulNode: boolean;
-	    hasColorAddNode: boolean;
-	    /**
-	     * Initialiser function for static particle properties. Needs to reference a with the following format
-	     *
-	     * <code>
-	     * initParticleFunc(prop:ParticleProperties)
-	     * {
-	     * 		//code for settings local properties
-	     * }
-	     * </code>
-	     *
-	     * Aside from setting any properties required in particle animation nodes using local static properties, the initParticleFunc function
-	     * is required to time node requirements as they may be needed. These properties on the ParticleProperties object can include
-	     * <code>startTime</code>, <code>duration</code> and <code>delay</code>. The use of these properties is determined by the setting
-	     * arguments passed in the constructor of the particle animation set. By default, only the <code>startTime</code> property is required.
-	     */
-	    initParticleFunc: Function;
-	    /**
-	     * Initialiser function scope for static particle properties
-	     */
-	    initParticleScope: Object;
-	    /**
-	     * Creates a new <code>ParticleAnimationSet</code>
-	     *
-	     * @param    [optional] usesDuration    Defines whether the animation set uses the <code>duration</code> data in its static properties to determine how long a particle is visible for. Defaults to false.
-	     * @param    [optional] usesLooping     Defines whether the animation set uses a looping timeframe for each particle determined by the <code>startTime</code>, <code>duration</code> and <code>delay</code> data in its static properties function. Defaults to false. Requires <code>usesDuration</code> to be true.
-	     * @param    [optional] usesDelay       Defines whether the animation set uses the <code>delay</code> data in its static properties to determine how long a particle is hidden for. Defaults to false. Requires <code>usesLooping</code> to be true.
-	     */
-	    constructor(usesDuration?: boolean, usesLooping?: boolean, usesDelay?: boolean);
-	    /**
-	     * Returns a vector of the particle animation nodes contained within the set.
-	     */
-	    particleNodes: Array<ParticleNodeBase>;
-	    /**
-	     * @inheritDoc
-	     */
-	    addAnimation(node: AnimationNodeBase): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    activate(shader: ShaderBase, stage: Stage): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    deactivate(shader: ShaderBase, stage: Stage): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALVertexCode(shader: ShaderBase): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALUVCode(shader: ShaderBase): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALFragmentCode(shader: ShaderBase, shadedTarget: string): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    doneAGALCode(shader: ShaderBase): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    usesCPU: boolean;
-	    /**
-	     * @inheritDoc
-	     */
-	    cancelGPUCompatibility(): void;
-	    dispose(): void;
-	    getAnimationSubGeometry(subMesh: ISubMesh): any;
-	    /** @private */
-	    _iGenerateAnimationSubGeometries(mesh: Mesh): void;
-	}
-	export = ParticleAnimationSet;
-	
-}
-
-declare module "awayjs-renderergl/lib/animators/ParticleAnimator" {
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import ParticleAnimationSet = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
-	/**
-	 * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
-	 * and controlling the various available states of animation through an interative playhead that can be
-	 * automatically updated or manually triggered.
-	 *
-	 * Requires that the containing geometry of the parent mesh is particle geometry
-	 *
-	 * @see away.base.ParticleGeometry
-	 */
-	class ParticleAnimator extends AnimatorBase {
-	    private _particleAnimationSet;
-	    private _animationParticleStates;
-	    private _animatorParticleStates;
-	    private _timeParticleStates;
-	    private _totalLenOfOneVertex;
-	    private _animatorSubGeometries;
-	    /**
-	     * Creates a new <code>ParticleAnimator</code> object.
-	     *
-	     * @param particleAnimationSet The animation data set containing the particle animations used by the animator.
-	     */
-	    constructor(particleAnimationSet: ParticleAnimationSet);
-	    /**
-	     * @inheritDoc
-	     */
-	    clone(): AnimatorBase;
-	    /**
-	     * @inheritDoc
-	     */
-	    setRenderState(shader: ShaderBase, renderable: RenderableBase, stage: Stage, camera: Camera, vertexConstantOffset: number, vertexStreamOffset: number): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    testGPUCompatibility(shader: ShaderBase): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    start(): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _pUpdateDeltaTime(dt: number): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    resetTime(offset?: number): void;
-	    dispose(): void;
-	    private getAnimatorSubGeometry(subMesh);
-	}
-	export = ParticleAnimator;
-	
-}
-
-declare module "awayjs-renderergl/lib/animators/SkeletonAnimationSet" {
-	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	/**
-	 * The animation data set used by skeleton-based animators, containing skeleton animation data.
-	 *
-	 * @see away.animators.SkeletonAnimator
-	 */
-	class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet {
-	    private _jointsPerVertex;
-	    /**
-	     * Returns the amount of skeleton joints that can be linked to a single vertex via skinned weight values. For GPU-base animation, the
-	     * maximum allowed value is 4.
-	     */
-	    jointsPerVertex: number;
-	    /**
-	     * Creates a new <code>SkeletonAnimationSet</code> object.
-	     *
-	     * @param jointsPerVertex Sets the amount of skeleton joints that can be linked to a single vertex via skinned weight values. For GPU-base animation, the maximum allowed value is 4. Defaults to 4.
-	     */
-	    constructor(jointsPerVertex?: number);
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALVertexCode(shader: ShaderBase): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    activate(shader: ShaderBase, stage: Stage): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    deactivate(shader: ShaderBase, stage: Stage): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALFragmentCode(shader: ShaderBase, shadedTarget: string): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALUVCode(shader: ShaderBase): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    doneAGALCode(shader: ShaderBase): void;
-	}
-	export = SkeletonAnimationSet;
-	
-}
-
-declare module "awayjs-renderergl/lib/animators/SkeletonAnimator" {
-	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import SkeletonAnimationSet = require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
-	import Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
-	import SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-	import IAnimationTransition = require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
-	import TriangleSubMeshRenderable = require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
-	/**
-	 * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects
-	 * and controlling the various available states of animation through an interative playhead that can be
-	 * automatically updated or manually triggered.
-	 */
-	class SkeletonAnimator extends AnimatorBase {
-	    private _globalMatrices;
-	    private _globalPose;
-	    private _globalPropertiesDirty;
-	    private _numJoints;
-	    private _morphedSubGeometry;
-	    private _morphedSubGeometryDirty;
-	    private _condensedMatrices;
-	    private _skeleton;
-	    private _forceCPU;
-	    private _useCondensedIndices;
-	    private _jointsPerVertex;
-	    private _activeSkeletonState;
-	    private _onTransitionCompleteDelegate;
-	    private _onIndicesUpdateDelegate;
-	    private _onVerticesUpdateDelegate;
-	    /**
-	     * returns the calculated global matrices of the current skeleton pose.
-	     *
-	     * @see #globalPose
-	     */
-	    globalMatrices: Float32Array;
-	    /**
-	     * returns the current skeleton pose output from the animator.
-	     *
-	     * @see away.animators.data.SkeletonPose
-	     */
-	    globalPose: SkeletonPose;
-	    /**
-	     * Returns the skeleton object in use by the animator - this defines the number and heirarchy of joints used by the
-	     * skinned geoemtry to which skeleon animator is applied.
-	     */
-	    skeleton: Skeleton;
-	    /**
-	     * Indicates whether the skeleton animator is disabled by default for GPU rendering, something that allows the animator to perform calculation on the GPU.
-	     * Defaults to false.
-	     */
-	    forceCPU: boolean;
-	    /**
-	     * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
-	     * by condensing the number of joint index values required per mesh. Only applicable to
-	     * skeleton animations that utilise more than one mesh object. Defaults to false.
-	     */
-	    useCondensedIndices: boolean;
-	    /**
-	     * Creates a new <code>SkeletonAnimator</code> object.
-	     *
-	     * @param skeletonAnimationSet The animation data set containing the skeleton animations used by the animator.
-	     * @param skeleton The skeleton object used for calculating the resulting global matrices for transforming skinned mesh data.
-	     * @param forceCPU Optional value that only allows the animator to perform calculation on the CPU. Defaults to false.
-	     */
-	    constructor(animationSet: SkeletonAnimationSet, skeleton: Skeleton, forceCPU?: boolean);
-	    /**
-	     * @inheritDoc
-	     */
-	    clone(): AnimatorBase;
-	    /**
-	     * Plays an animation state registered with the given name in the animation data set.
-	     *
-	     * @param name The data set name of the animation state to be played.
-	     * @param transition An optional transition object that determines how the animator will transition from the currently active animation state.
-	     * @param offset An option offset time (in milliseconds) that resets the state's internal clock to the absolute time of the animator plus the offset value. Required for non-looping animation states.
-	     */
-	    play(name: string, transition?: IAnimationTransition, offset?: number): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    setRenderState(shader: ShaderBase, renderable: RenderableBase, stage: Stage, camera: Camera, vertexConstantOffset: number, vertexStreamOffset: number): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    testGPUCompatibility(shader: ShaderBase): void;
-	    /**
-	     * Applies the calculated time delta to the active animation state node or state transition object.
-	     */
-	    _pUpdateDeltaTime(dt: number): void;
-	    private updateCondensedMatrices(condensedIndexLookUp);
-	    private updateGlobalProperties();
-	    getRenderableSubGeometry(renderable: TriangleSubMeshRenderable, sourceSubGeometry: TriangleSubGeometry): TriangleSubGeometry;
-	    /**
-	     * If the animation can't be performed on GPU, transform vertices manually
-	     * @param subGeom The subgeometry containing the weights and joint index data per vertex.
-	     * @param pass The material pass for which we need to transform the vertices
-	     */
-	    morphSubGeometry(renderable: TriangleSubMeshRenderable, sourceSubGeometry: TriangleSubGeometry): void;
-	    /**
-	     * Converts a local hierarchical skeleton pose to a global pose
-	     * @param targetPose The SkeletonPose object that will contain the global pose.
-	     * @param skeleton The skeleton containing the joints, and as such, the hierarchical data to transform to global poses.
-	     */
-	    private localToGlobalPose(sourcePose, targetPose, skeleton);
-	    private onTransitionComplete(event);
-	    private onIndicesUpdate(event);
-	    private onVerticesUpdate(event);
-	}
-	export = SkeletonAnimator;
-	
-}
-
 declare module "awayjs-renderergl/lib/animators/states/AnimationClipState" {
 	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 	import AnimationClipNodeBase = require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
@@ -3515,134 +4001,6 @@ declare module "awayjs-renderergl/lib/animators/transitions/IAnimationTransition
 	
 }
 
-declare module "awayjs-renderergl/lib/animators/VertexAnimationSet" {
-	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	/**
-	 * The animation data set used by vertex-based animators, containing vertex animation state data.
-	 *
-	 * @see VertexAnimator
-	 */
-	class VertexAnimationSet extends AnimationSetBase implements IAnimationSet {
-	    private _numPoses;
-	    private _blendMode;
-	    /**
-	     * Returns the number of poses made available at once to the GPU animation code.
-	     */
-	    numPoses: number;
-	    /**
-	     * Returns the active blend mode of the vertex animator object.
-	     */
-	    blendMode: string;
-	    /**
-	     * Returns whether or not normal data is used in last set GPU pass of the vertex shader.
-	     */
-	    /**
-	     * Creates a new <code>VertexAnimationSet</code> object.
-	     *
-	     * @param numPoses The number of poses made available at once to the GPU animation code.
-	     * @param blendMode Optional value for setting the animation mode of the vertex animator object.
-	     *
-	     * @see away3d.animators.data.VertexAnimationMode
-	     */
-	    constructor(numPoses?: number, blendMode?: string);
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALVertexCode(shader: ShaderBase): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    activate(shader: ShaderBase, stage: Stage): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    deactivate(shader: ShaderBase, stage: Stage): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALFragmentCode(shader: ShaderBase, shadedTarget: string): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    getAGALUVCode(shader: ShaderBase): string;
-	    /**
-	     * @inheritDoc
-	     */
-	    doneAGALCode(shader: ShaderBase): void;
-	    /**
-	     * Generates the vertex AGAL code for absolute blending.
-	     */
-	    private getAbsoluteAGALCode(shader);
-	    /**
-	     * Generates the vertex AGAL code for additive blending.
-	     */
-	    private getAdditiveAGALCode(shader);
-	}
-	export = VertexAnimationSet;
-	
-}
-
-declare module "awayjs-renderergl/lib/animators/VertexAnimator" {
-	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
-	import VertexAnimationSet = require("awayjs-renderergl/lib/animators/VertexAnimationSet");
-	import IAnimationTransition = require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
-	import TriangleSubMeshRenderable = require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	/**
-	 * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
-	 * and controlling the various available states of animation through an interative playhead that can be
-	 * automatically updated or manually triggered.
-	 */
-	class VertexAnimator extends AnimatorBase {
-	    private _subGeometryVOPool;
-	    private _vertexAnimationSet;
-	    private _poses;
-	    private _weights;
-	    private _numPoses;
-	    private _blendMode;
-	    private _activeVertexState;
-	    /**
-	     * Creates a new <code>VertexAnimator</code> object.
-	     *
-	     * @param vertexAnimationSet The animation data set containing the vertex animations used by the animator.
-	     */
-	    constructor(vertexAnimationSet: VertexAnimationSet);
-	    /**
-	     * @inheritDoc
-	     */
-	    clone(): AnimatorBase;
-	    /**
-	     * Plays a sequence with a given name. If the sequence is not found, it may not be loaded yet, and it will retry every frame.
-	     * @param sequenceName The name of the clip to be played.
-	     */
-	    play(name: string, transition?: IAnimationTransition, offset?: number): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _pUpdateDeltaTime(dt: number): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    setRenderState(shader: ShaderBase, renderable: RenderableBase, stage: Stage, camera: Camera, vertexConstantOffset: number, vertexStreamOffset: number): void;
-	    private setNullPose(shader, subGeometry, stage, vertexConstantOffset, vertexStreamOffset);
-	    /**
-	     * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
-	     * Needs to be called if gpu code is potentially required.
-	     */
-	    testGPUCompatibility(shader: ShaderBase): void;
-	    getRenderableSubGeometry(renderable: TriangleSubMeshRenderable, sourceSubGeometry: TriangleSubGeometry): TriangleSubGeometry;
-	}
-	export = VertexAnimator;
-	
-}
-
 declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
 	import Geometry = require("awayjs-display/lib/base/Geometry");
 	import ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
@@ -3654,123 +4012,6 @@ declare module "awayjs-renderergl/lib/base/ParticleGeometry" {
 	    numParticles: number;
 	}
 	export = ParticleGeometry;
-	
-}
-
-declare module "awayjs-renderergl/lib/DefaultRenderer" {
-	import ImageBase = require("awayjs-core/lib/data/ImageBase");
-	import BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
-	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
-	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
-	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
-	import Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
-	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
-	/**
-	 * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
-	 * materials assigned to them.
-	 *
-	 * @class away.render.DefaultRenderer
-	 */
-	class DefaultRenderer extends RendererBase {
-	    _pRequireDepthRender: boolean;
-	    private _pDistanceRenderer;
-	    private _pDepthRenderer;
-	    private _skyboxProjection;
-	    _pFilter3DRenderer: Filter3DRenderer;
-	    _pDepthRender: BitmapImage2D;
-	    private _antiAlias;
-	    antiAlias: number;
-	    /**
-	     *
-	     */
-	    depthPrepass: boolean;
-	    /**
-	     *
-	     * @returns {*}
-	     */
-	    filters3d: Array<Filter3DBase>;
-	    /**
-	     * Creates a new DefaultRenderer object.
-	     *
-	     * @param antiAlias The amount of anti-aliasing to use.
-	     * @param renderMode The render mode to use.
-	     */
-	    constructor(stage?: Stage, forceSoftware?: boolean, profile?: string, mode?: string);
-	    render(entityCollector: CollectorBase): void;
-	    pExecuteRender(entityCollector: EntityCollector, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
-	    private updateLights(entityCollector);
-	    /**
-	     * @inheritDoc
-	     */
-	    pDraw(entityCollector: EntityCollector): void;
-	    /**
-	     * Draw the skybox if present.
-	     *
-	     * @param entityCollector The EntityCollector containing all potentially visible information.
-	     */
-	    private drawSkybox(entityCollector);
-	    private updateSkyboxProjection(camera);
-	    dispose(): void;
-	    /**
-	     *
-	     */
-	    pRenderDepthPrepass(entityCollector: EntityCollector): void;
-	    /**
-	     *
-	     */
-	    pRenderSceneDepthToTexture(entityCollector: EntityCollector): void;
-	    /**
-	     * Updates the backbuffer dimensions.
-	     */
-	    pUpdateBackBuffer(): void;
-	    /**
-	     *
-	     */
-	    private initDepthTexture(context);
-	}
-	export = DefaultRenderer;
-	
-}
-
-declare module "awayjs-renderergl/lib/DepthRenderer" {
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
-	/**
-	 * The DepthRenderer class renders 32-bit depth information encoded as RGBA
-	 *
-	 * @class away.render.DepthRenderer
-	 */
-	class DepthRenderer extends RendererBase {
-	    /**
-	     * Creates a new DepthRenderer object.
-	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
-	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
-	     */
-	    constructor(stage?: Stage);
-	}
-	export = DepthRenderer;
-	
-}
-
-declare module "awayjs-renderergl/lib/DistanceRenderer" {
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
-	/**
-	 * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
-	 *
-	 * @class away.render.DistanceRenderer
-	 */
-	class DistanceRenderer extends RendererBase {
-	    /**
-	     * Creates a new DistanceRenderer object.
-	     * @param renderBlended Indicates whether semi-transparent objects should be rendered.
-	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
-	     */
-	    constructor(stage?: Stage);
-	}
-	export = DistanceRenderer;
 	
 }
 
@@ -3877,38 +4118,6 @@ declare module "awayjs-renderergl/lib/events/ShadingMethodEvent" {
 	    constructor(type: string);
 	}
 	export = ShadingMethodEvent;
-	
-}
-
-declare module "awayjs-renderergl/lib/Filter3DRenderer" {
-	import Image2D = require("awayjs-core/lib/data/Image2D");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
-	/**
-	 * @class away.render.Filter3DRenderer
-	 */
-	class Filter3DRenderer {
-	    private _filters;
-	    private _tasks;
-	    private _filterTasksInvalid;
-	    private _mainInputTexture;
-	    private _requireDepthRender;
-	    private _rttManager;
-	    private _stage;
-	    private _filterSizesInvalid;
-	    private _onRTTResizeDelegate;
-	    constructor(stage: Stage);
-	    private onRTTResize(event);
-	    requireDepthRender: boolean;
-	    getMainInputTexture(stage: Stage): Image2D;
-	    filters: Filter3DBase[];
-	    private updateFilterTasks(stage);
-	    render(stage: Stage, camera: Camera, depthTexture: Image2D): void;
-	    private updateFilterSizes();
-	    dispose(): void;
-	}
-	export = Filter3DRenderer;
 	
 }
 
@@ -4421,216 +4630,6 @@ declare module "awayjs-renderergl/lib/render/IRenderClass" {
 	
 }
 
-declare module "awayjs-renderergl/lib/render/passes/BasicMaterialPass" {
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import IRenderOwner = require("awayjs-display/lib/base/IRenderOwner");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
-	import RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
-	import PassBase = require("awayjs-renderergl/lib/render/passes/PassBase");
-	/**
-	 * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
-	 * using material methods to define their appearance.
-	 */
-	class BasicMaterialPass extends PassBase {
-	    private _diffuseR;
-	    private _diffuseG;
-	    private _diffuseB;
-	    private _diffuseA;
-	    private _fragmentConstantsIndex;
-	    constructor(render: RenderBase, renderOwner: IRenderOwner, renderableClass: IRenderableClass, stage: Stage);
-	    _iIncludeDependencies(shader: ShaderBase): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iGetFragmentCode(shader: ShaderBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
-	    _iRender(renderable: RenderableBase, camera: Camera, viewProjection: Matrix3D): void;
-	    /**
-	     * @inheritDoc
-	     */
-	    _iActivate(camera: Camera): void;
-	}
-	export = BasicMaterialPass;
-	
-}
-
-declare module "awayjs-renderergl/lib/render/passes/ILightingPass" {
-	import LightPickerBase = require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
-	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
-	import LightingShader = require("awayjs-renderergl/lib/shaders/LightingShader");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-	import ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-	/**
-	 *
-	 * @class away.pool.Passes
-	 */
-	interface ILightingPass extends IPass {
-	    enableLightFallOff: boolean;
-	    diffuseLightSources: number;
-	    specularLightSources: number;
-	    numDirectionalLights: number;
-	    numPointLights: number;
-	    numLightProbes: number;
-	    pointLightsOffset: number;
-	    directionalLightsOffset: number;
-	    lightProbesOffset: number;
-	    lightPicker: LightPickerBase;
-	    _iGetPerLightDiffuseFragmentCode(shader: LightingShader, lightDirReg: ShaderRegisterElement, diffuseColorReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetPerLightSpecularFragmentCode(shader: LightingShader, lightDirReg: ShaderRegisterElement, specularColorReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetPerProbeDiffuseFragmentCode(shader: LightingShader, texReg: ShaderRegisterElement, weightReg: string, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetPerProbeSpecularFragmentCode(shader: LightingShader, texReg: ShaderRegisterElement, weightReg: string, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetPostLightingVertexCode(shader: LightingShader, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetPostLightingFragmentCode(shader: LightingShader, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    /**
-	     * Indicates whether the shader uses any shadows.
-	     */
-	    _iUsesShadows(shader: LightingShader): boolean;
-	    /**
-	     * Indicates whether the shader uses any specular component.
-	     */
-	    _iUsesSpecular(shader: LightingShader): boolean;
-	    /**
-	     * Indicates whether the shader uses any diffuse component.
-	     */
-	    _iUsesDiffuse(shader: LightingShader): boolean;
-	}
-	export = ILightingPass;
-	
-}
-
-declare module "awayjs-renderergl/lib/render/passes/IPass" {
-	import IEventDispatcher = require("awayjs-core/lib/events/IEventDispatcher");
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
-	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
-	/**
-	 *
-	 * @class away.pool.Passes
-	 */
-	interface IPass extends IEventDispatcher {
-	    shader: ShaderBase;
-	    animationSet: AnimationSetBase;
-	    _iIncludeDependencies(shader: ShaderBase): any;
-	    _iInitConstantData(shader: ShaderBase): any;
-	    _iGetPreLightingVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetPreLightingFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetNormalVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetNormalFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iActivate(camera: Camera): any;
-	    _iRender(renderable: RenderableBase, camera: Camera, viewProjection: Matrix3D): any;
-	    _iDeactivate(): any;
-	    invalidatePass(): any;
-	    dispose(): any;
-	}
-	export = IPass;
-	
-}
-
-declare module "awayjs-renderergl/lib/render/passes/PassBase" {
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import IRenderOwner = require("awayjs-display/lib/base/IRenderOwner");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
-	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
-	import RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
-	/**
-	 * PassBase provides an abstract base class for material shader passes. A material pass constitutes at least
-	 * a render call per required renderable.
-	 */
-	class PassBase extends EventDispatcher implements IPass {
-	    private _render;
-	    _renderOwner: IRenderOwner;
-	    _renderableClass: IRenderableClass;
-	    _stage: Stage;
-	    _shader: ShaderBase;
-	    private _preserveAlpha;
-	    private _forceSeparateMVP;
-	    shader: ShaderBase;
-	    animationSet: AnimationSetBase;
-	    /**
-	     * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
-	     */
-	    preserveAlpha: boolean;
-	    /**
-	     * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
-	     * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
-	     * projection code.
-	     */
-	    forceSeparateMVP: boolean;
-	    /**
-	     * Creates a new PassBase object.
-	     */
-	    constructor(render: RenderBase, renderOwner: IRenderOwner, renderableClass: IRenderableClass, stage: Stage);
-	    /**
-	     * Cleans up any resources used by the current object.
-	     * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
-	     */
-	    dispose(): void;
-	    /**
-	     * Renders the current pass. Before calling pass, activatePass needs to be called with the same index.
-	     * @param pass The pass used to render the renderable.
-	     * @param renderable The IRenderable object to draw.
-	     * @param stage The Stage object used for rendering.
-	     * @param entityCollector The EntityCollector object that contains the visible scene data.
-	     * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
-	     * camera.viewProjection as it includes the scaling factors when rendering to textures.
-	     *
-	     * @internal
-	     */
-	    _iRender(renderable: RenderableBase, camera: Camera, viewProjection: Matrix3D): void;
-	    /**
-	     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
-	     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
-	     * @param stage The Stage object which is currently used for rendering.
-	     * @param camera The camera from which the scene is viewed.
-	     * @private
-	     */
-	    _iActivate(camera: Camera): void;
-	    /**
-	     * Clears the render state for the pass. This needs to be called before activating another pass.
-	     * @param stage The Stage used for rendering
-	     *
-	     * @private
-	     */
-	    _iDeactivate(): void;
-	    /**
-	     * Marks the shader program as invalid, so it will be recompiled before the next render.
-	     *
-	     * @param updateMaterial Indicates whether the invalidation should be performed on the entire material. Should always pass "true" unless it's called from the material itself.
-	     */
-	    invalidatePass(): void;
-	    _iIncludeDependencies(shader: ShaderBase): void;
-	    _iInitConstantData(shader: ShaderBase): void;
-	    _iGetPreLightingVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetPreLightingFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetNormalVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	    _iGetNormalFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
-	}
-	export = PassBase;
-	
-}
-
 declare module "awayjs-renderergl/lib/render/RenderBase" {
 	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
 	import IRender = require("awayjs-display/lib/pool/IRender");
@@ -4724,6 +4723,7 @@ declare module "awayjs-renderergl/lib/render/RenderBase" {
 }
 
 declare module "awayjs-renderergl/lib/render/RenderPassBase" {
+	import ImageBase = require("awayjs-core/lib/data/ImageBase");
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
@@ -4773,6 +4773,7 @@ declare module "awayjs-renderergl/lib/render/RenderPassBase" {
 	     * @private
 	     */
 	    _iDeactivate(): void;
+	    getImageIndex(image: ImageBase): number;
 	    /**
 	     * Marks the shader program as invalid, so it will be recompiled before the next render.
 	     *
@@ -4881,6 +4882,220 @@ declare module "awayjs-renderergl/lib/render/SkyboxRender" {
 	    _iActivate(camera: Camera): void;
 	}
 	export = SkyboxRender;
+	
+}
+
+declare module "awayjs-renderergl/lib/render/passes/BasicMaterialPass" {
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import IRenderOwner = require("awayjs-display/lib/base/IRenderOwner");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+	import RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
+	import PassBase = require("awayjs-renderergl/lib/render/passes/PassBase");
+	/**
+	 * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
+	 * using material methods to define their appearance.
+	 */
+	class BasicMaterialPass extends PassBase {
+	    private _diffuseR;
+	    private _diffuseG;
+	    private _diffuseB;
+	    private _diffuseA;
+	    private _fragmentConstantsIndex;
+	    constructor(render: RenderBase, renderOwner: IRenderOwner, renderableClass: IRenderableClass, stage: Stage);
+	    _iIncludeDependencies(shader: ShaderBase): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iGetFragmentCode(shader: ShaderBase, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string;
+	    _iRender(renderable: RenderableBase, camera: Camera, viewProjection: Matrix3D): void;
+	    /**
+	     * @inheritDoc
+	     */
+	    _iActivate(camera: Camera): void;
+	}
+	export = BasicMaterialPass;
+	
+}
+
+declare module "awayjs-renderergl/lib/render/passes/ILightingPass" {
+	import LightPickerBase = require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
+	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
+	import LightingShader = require("awayjs-renderergl/lib/shaders/LightingShader");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+	/**
+	 *
+	 * @class away.pool.Passes
+	 */
+	interface ILightingPass extends IPass {
+	    enableLightFallOff: boolean;
+	    diffuseLightSources: number;
+	    specularLightSources: number;
+	    numDirectionalLights: number;
+	    numPointLights: number;
+	    numLightProbes: number;
+	    pointLightsOffset: number;
+	    directionalLightsOffset: number;
+	    lightProbesOffset: number;
+	    lightPicker: LightPickerBase;
+	    _iGetPerLightDiffuseFragmentCode(shader: LightingShader, lightDirReg: ShaderRegisterElement, diffuseColorReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetPerLightSpecularFragmentCode(shader: LightingShader, lightDirReg: ShaderRegisterElement, specularColorReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetPerProbeDiffuseFragmentCode(shader: LightingShader, texReg: ShaderRegisterElement, weightReg: string, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetPerProbeSpecularFragmentCode(shader: LightingShader, texReg: ShaderRegisterElement, weightReg: string, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetPostLightingVertexCode(shader: LightingShader, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetPostLightingFragmentCode(shader: LightingShader, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    /**
+	     * Indicates whether the shader uses any shadows.
+	     */
+	    _iUsesShadows(shader: LightingShader): boolean;
+	    /**
+	     * Indicates whether the shader uses any specular component.
+	     */
+	    _iUsesSpecular(shader: LightingShader): boolean;
+	    /**
+	     * Indicates whether the shader uses any diffuse component.
+	     */
+	    _iUsesDiffuse(shader: LightingShader): boolean;
+	}
+	export = ILightingPass;
+	
+}
+
+declare module "awayjs-renderergl/lib/render/passes/IPass" {
+	import ImageBase = require("awayjs-core/lib/data/ImageBase");
+	import IEventDispatcher = require("awayjs-core/lib/events/IEventDispatcher");
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
+	/**
+	 *
+	 * @class away.pool.Passes
+	 */
+	interface IPass extends IEventDispatcher {
+	    shader: ShaderBase;
+	    animationSet: AnimationSetBase;
+	    _iIncludeDependencies(shader: ShaderBase): any;
+	    _iInitConstantData(shader: ShaderBase): any;
+	    _iGetPreLightingVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetPreLightingFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetNormalVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetNormalFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iActivate(camera: Camera): any;
+	    _iRender(renderable: RenderableBase, camera: Camera, viewProjection: Matrix3D): any;
+	    _iDeactivate(): any;
+	    invalidatePass(): any;
+	    dispose(): any;
+	    getImageIndex(image: ImageBase): number;
+	}
+	export = IPass;
+	
+}
+
+declare module "awayjs-renderergl/lib/render/passes/PassBase" {
+	import ImageBase = require("awayjs-core/lib/data/ImageBase");
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+	import Camera = require("awayjs-display/lib/entities/Camera");
+	import IRenderOwner = require("awayjs-display/lib/base/IRenderOwner");
+	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
+	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
+	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+	import RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
+	/**
+	 * PassBase provides an abstract base class for material shader passes. A material pass constitutes at least
+	 * a render call per required renderable.
+	 */
+	class PassBase extends EventDispatcher implements IPass {
+	    private _render;
+	    _renderOwner: IRenderOwner;
+	    _renderableClass: IRenderableClass;
+	    _stage: Stage;
+	    _shader: ShaderBase;
+	    private _preserveAlpha;
+	    private _forceSeparateMVP;
+	    shader: ShaderBase;
+	    animationSet: AnimationSetBase;
+	    /**
+	     * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
+	     */
+	    preserveAlpha: boolean;
+	    /**
+	     * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
+	     * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
+	     * projection code.
+	     */
+	    forceSeparateMVP: boolean;
+	    /**
+	     * Creates a new PassBase object.
+	     */
+	    constructor(render: RenderBase, renderOwner: IRenderOwner, renderableClass: IRenderableClass, stage: Stage);
+	    getImageIndex(image: ImageBase): number;
+	    /**
+	     * Cleans up any resources used by the current object.
+	     * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
+	     */
+	    dispose(): void;
+	    /**
+	     * Renders the current pass. Before calling pass, activatePass needs to be called with the same index.
+	     * @param pass The pass used to render the renderable.
+	     * @param renderable The IRenderable object to draw.
+	     * @param stage The Stage object used for rendering.
+	     * @param entityCollector The EntityCollector object that contains the visible scene data.
+	     * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
+	     * camera.viewProjection as it includes the scaling factors when rendering to textures.
+	     *
+	     * @internal
+	     */
+	    _iRender(renderable: RenderableBase, camera: Camera, viewProjection: Matrix3D): void;
+	    /**
+	     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
+	     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
+	     * @param stage The Stage object which is currently used for rendering.
+	     * @param camera The camera from which the scene is viewed.
+	     * @private
+	     */
+	    _iActivate(camera: Camera): void;
+	    /**
+	     * Clears the render state for the pass. This needs to be called before activating another pass.
+	     * @param stage The Stage used for rendering
+	     *
+	     * @private
+	     */
+	    _iDeactivate(): void;
+	    /**
+	     * Marks the shader program as invalid, so it will be recompiled before the next render.
+	     *
+	     * @param updateMaterial Indicates whether the invalidation should be performed on the entire material. Should always pass "true" unless it's called from the material itself.
+	     */
+	    invalidatePass(): void;
+	    _iIncludeDependencies(shader: ShaderBase): void;
+	    _iInitConstantData(shader: ShaderBase): void;
+	    _iGetPreLightingVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetPreLightingFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetNormalVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	    _iGetNormalFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	}
+	export = PassBase;
 	
 }
 
@@ -5163,6 +5378,7 @@ declare module "awayjs-renderergl/lib/renderables/LineSubMeshRenderable" {
 }
 
 declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
+	import SamplerBase = require("awayjs-core/lib/data/SamplerBase");
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
 	import IRenderOwner = require("awayjs-display/lib/base/IRenderOwner");
@@ -5171,6 +5387,7 @@ declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
 	import IEntity = require("awayjs-display/lib/entities/IEntity");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import ImageObjectBase = require("awayjs-stagegl/lib/pool/ImageObjectBase");
 	import RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
 	import RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
 	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
@@ -5240,6 +5457,8 @@ declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
 	     *
 	     */
 	    render: RenderBase;
+	    imageObjects: Array<ImageObjectBase>;
+	    samplerObjects: Array<SamplerBase>;
 	    subGeometryVO: SubGeometryVOBase;
 	    /**
 	     *
@@ -5281,6 +5500,7 @@ declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
 	     */
 	    private _updateGeometry();
 	    private _onRenderOwnerUpdated(event);
+	    private _updateRenderOwner(renderOwner);
 	}
 	export = RenderableBase;
 	
@@ -5452,358 +5672,6 @@ declare module "awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable" {
 	    _setRenderState(pass: PassBase, camera: Camera, viewProjection: Matrix3D): void;
 	}
 	export = TriangleSubMeshRenderable;
-	
-}
-
-declare module "awayjs-renderergl/lib/RendererBase" {
-	import ImageBase = require("awayjs-core/lib/data/ImageBase");
-	import BitmapImage2D = require("awayjs-core/lib/data/BitmapImage2D");
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
-	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
-	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-	import IRenderableOwner = require("awayjs-display/lib/base/IRenderableOwner");
-	import IEntitySorter = require("awayjs-display/lib/sort/IEntitySorter");
-	import IRenderer = require("awayjs-display/lib/IRenderer");
-	import DisplayObject = require("awayjs-display/lib/base/DisplayObject");
-	import Camera = require("awayjs-display/lib/entities/Camera");
-	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
-	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
-	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
-	import Stage = require("awayjs-stagegl/lib/base/Stage");
-	import StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
-	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
-	import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
-	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
-	import RenderablePool = require("awayjs-renderergl/lib/renderables/RenderablePool");
-	/**
-	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
-	 * contents of a partition
-	 *
-	 * @class away.render.RendererBase
-	 */
-	class RendererBase extends EventDispatcher implements IRenderer {
-	    private _maskConfig;
-	    private _activeMasksDirty;
-	    private _activeMasksConfig;
-	    private _registeredMasks;
-	    private _numUsedStreams;
-	    private _numUsedTextures;
-	    _pRenderablePool: RenderablePool;
-	    _pContext: IContextGL;
-	    _pStage: Stage;
-	    _pCamera: Camera;
-	    _iEntryPoint: Vector3D;
-	    _pCameraForward: Vector3D;
-	    _pRttBufferManager: RTTBufferManager;
-	    private _viewPort;
-	    private _viewportDirty;
-	    private _scissorDirty;
-	    _pBackBufferInvalid: boolean;
-	    _pDepthTextureInvalid: boolean;
-	    _depthPrepass: boolean;
-	    private _backgroundR;
-	    private _backgroundG;
-	    private _backgroundB;
-	    private _backgroundAlpha;
-	    _shareContext: boolean;
-	    _width: number;
-	    _height: number;
-	    textureRatioX: number;
-	    textureRatioY: number;
-	    private _snapshotBitmapImage2D;
-	    private _snapshotRequired;
-	    _pRttViewProjectionMatrix: Matrix3D;
-	    private _localPos;
-	    private _globalPos;
-	    _pScissorRect: Rectangle;
-	    private _scissorUpdated;
-	    private _viewPortUpdated;
-	    private _onContextUpdateDelegate;
-	    private _onViewportUpdatedDelegate;
-	    _pNumElements: number;
-	    _pOpaqueRenderableHead: RenderableBase;
-	    _pBlendedRenderableHead: RenderableBase;
-	    _disableColor: boolean;
-	    _renderBlended: boolean;
-	    renderBlended: boolean;
-	    disableColor: boolean;
-	    /**
-	     *
-	     */
-	    numElements: number;
-	    /**
-	     *
-	     */
-	    renderableSorter: IEntitySorter;
-	    /**
-	     * A viewPort rectangle equivalent of the Stage size and position.
-	     */
-	    viewPort: Rectangle;
-	    /**
-	     * A scissor rectangle equivalent of the view size and position.
-	     */
-	    scissorRect: Rectangle;
-	    /**
-	     *
-	     */
-	    x: number;
-	    /**
-	     *
-	     */
-	    y: number;
-	    /**
-	     *
-	     */
-	    width: number;
-	    /**
-	     *
-	     */
-	    height: number;
-	    /**
-	     * Creates a new RendererBase object.
-	     */
-	    constructor(stage?: Stage, forceSoftware?: boolean, profile?: string, mode?: string);
-	    activatePass(renderable: RenderableBase, pass: IPass, camera: Camera): void;
-	    deactivatePass(renderable: RenderableBase, pass: IPass): void;
-	    _iCreateEntityCollector(): CollectorBase;
-	    /**
-	     * The background color's red component, used when clearing.
-	     *
-	     * @private
-	     */
-	    _iBackgroundR: number;
-	    /**
-	     * The background color's green component, used when clearing.
-	     *
-	     * @private
-	     */
-	    _iBackgroundG: number;
-	    /**
-	     * The background color's blue component, used when clearing.
-	     *
-	     * @private
-	     */
-	    _iBackgroundB: number;
-	    context: IContextGL;
-	    /**
-	     * The Stage that will provide the ContextGL used for rendering.
-	     */
-	    stage: Stage;
-	    /**
-	     * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
-	     * to share the same ContextGL object.
-	     */
-	    shareContext: boolean;
-	    renderablePool: RenderablePool;
-	    /**
-	     * Disposes the resources used by the RendererBase.
-	     */
-	    dispose(): void;
-	    render(entityCollector: CollectorBase): void;
-	    /**
-	     * Renders the potentially visible geometry to the back buffer or texture.
-	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-	     * @param target An option target texture to render to.
-	     * @param surfaceSelector The index of a CubeTexture's face to render to.
-	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
-	     */
-	    _iRender(entityCollector: CollectorBase, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
-	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: ImageBase, numCascades: number, scissorRects: Array<Rectangle>, cameras: Array<Camera>): void;
-	    private _applyCollector(entityCollector);
-	    /**
-	     * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
-	     *
-	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-	     * @param target An option target texture to render to.
-	     * @param surfaceSelector The index of a CubeTexture's face to render to.
-	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
-	     */
-	    pExecuteRender(entityCollector: CollectorBase, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
-	    queueSnapshot(bmd: BitmapImage2D): void;
-	    /**
-	     * Performs the actual drawing of geometry to the target.
-	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
-	     */
-	    pDraw(entityCollector: CollectorBase): void;
-	    /**
-	     * Draw a list of renderables.
-	     *
-	     * @param renderables The renderables to draw.
-	     * @param entityCollector The EntityCollector containing all potentially visible information.
-	     */
-	    drawRenderables(renderable: RenderableBase, entityCollector: CollectorBase): void;
-	    /**
-	     * Assign the context once retrieved
-	     */
-	    private onContextUpdate(event);
-	    _iBackgroundAlpha: number;
-	    /**
-	     * @private
-	     */
-	    private notifyScissorUpdate();
-	    /**
-	     * @private
-	     */
-	    private notifyViewportUpdate();
-	    /**
-	     *
-	     */
-	    onViewportUpdated(event: StageEvent): void;
-	    /**
-	     *
-	     */
-	    updateGlobalPos(): void;
-	    _iApplyRenderableOwner(renderableOwner: IRenderableOwner): void;
-	    private _registerMask(obj);
-	    _renderMasks(masks: DisplayObject[][]): void;
-	    private _drawMask(renderable);
-	    private _checkMasksConfig(masksConfig);
-	}
-	export = RendererBase;
-	
-}
-
-declare module "awayjs-renderergl/lib/shaders/compilers/CompilerBase" {
-	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
-	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
-	/**
-	 * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
-	 * material. Concrete subclasses are used by the default materials.
-	 *
-	 * @see away.materials.ShadingMethodBase
-	 */
-	class CompilerBase {
-	    _pShader: ShaderBase;
-	    _pSharedRegisters: ShaderRegisterData;
-	    _pRegisterCache: ShaderRegisterCache;
-	    _pRenderableClass: IRenderableClass;
-	    _pRenderPass: IPass;
-	    _pVertexCode: string;
-	    _pFragmentCode: string;
-	    _pPostAnimationFragmentCode: string;
-	    _pAnimatableAttributes: Array<string>;
-	    _pAnimationTargetRegisters: Array<string>;
-	    private _uvTarget;
-	    private _uvSource;
-	    /**
-	     * Creates a new CompilerBase object.
-	     * @param profile The compatibility profile of the renderer.
-	     */
-	    constructor(renderableClass: IRenderableClass, pass: IPass, shader: ShaderBase);
-	    /**
-	     * Compiles the code after all setup on the compiler has finished.
-	     */
-	    compile(): void;
-	    /**
-	     * Calculate the transformed colours
-	     */
-	    private compileColorTransformCode();
-	    /**
-	     * Compile the code for the methods.
-	     */
-	    pCompileDependencies(): void;
-	    private compileGlobalPositionCode();
-	    private compileLocalPositionCode();
-	    /**
-	     * Calculate the (possibly animated) UV coordinates.
-	     */
-	    private compileUVCode();
-	    /**
-	     * Provide the secondary UV coordinates.
-	     */
-	    private compileSecondaryUVCode();
-	    /**
-	     * Calculate the view direction.
-	     */
-	    compileViewDirCode(): void;
-	    /**
-	     * Calculate the normal.
-	     */
-	    compileNormalCode(): void;
-	    /**
-	     * Reset all the indices to "unused".
-	     */
-	    pInitRegisterIndices(): void;
-	    /**
-	     * Disposes all resources used by the compiler.
-	     */
-	    dispose(): void;
-	    /**
-	     * The generated vertex code.
-	     */
-	    vertexCode: string;
-	    /**
-	     * The generated fragment code.
-	     */
-	    fragmentCode: string;
-	    /**
-	     * The generated fragment code.
-	     */
-	    postAnimationFragmentCode: string;
-	    /**
-	     * The register name containing the final shaded colour.
-	     */
-	    shadedTarget: string;
-	}
-	export = CompilerBase;
-	
-}
-
-declare module "awayjs-renderergl/lib/shaders/compilers/LightingCompiler" {
-	import LightingShader = require("awayjs-renderergl/lib/shaders/LightingShader");
-	import CompilerBase = require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
-	import ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-	import ILightingPass = require("awayjs-renderergl/lib/render/passes/ILightingPass");
-	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
-	/**
-	 * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
-	 * material. Concrete subclasses are used by the default materials.
-	 *
-	 * @see away.materials.ShadingMethodBase
-	 */
-	class LightingCompiler extends CompilerBase {
-	    private _shaderLightingObject;
-	    private _lightingPass;
-	    _pointLightFragmentConstants: Array<ShaderRegisterElement>;
-	    _pointLightVertexConstants: Array<ShaderRegisterElement>;
-	    _dirLightFragmentConstants: Array<ShaderRegisterElement>;
-	    _dirLightVertexConstants: Array<ShaderRegisterElement>;
-	    _pNumProbeRegisters: number;
-	    /**
-	     * Creates a new CompilerBase object.
-	     * @param profile The compatibility profile of the renderer.
-	     */
-	    constructor(renderableClass: IRenderableClass, lightingPass: ILightingPass, shaderLightingObject: LightingShader);
-	    /**
-	     * Compile the code for the methods.
-	     */
-	    pCompileDependencies(): void;
-	    /**
-	     * Provides the code to provide shadow mapping.
-	     */
-	    pCompileShadowCode(): void;
-	    /**
-	     * Initializes constant registers to contain light data.
-	     */
-	    private initLightRegisters();
-	    /**
-	     * Compiles the shading code for directional and point lights.
-	     */
-	    private compileLightCode();
-	    /**
-	     * Compiles shading code for light probes.
-	     */
-	    private compileLightProbeCode();
-	    /**
-	     * Reset all the indices to "unused".
-	     */
-	    pInitRegisterIndices(): void;
-	}
-	export = LightingCompiler;
 	
 }
 
@@ -5981,12 +5849,12 @@ declare module "awayjs-renderergl/lib/shaders/RegisterPool" {
 }
 
 declare module "awayjs-renderergl/lib/shaders/ShaderBase" {
+	import ImageBase = require("awayjs-core/lib/data/ImageBase");
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import TextureBase = require("awayjs-display/lib/textures/TextureBase");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import ProgramData = require("awayjs-stagegl/lib/pool/ProgramData");
-	import ImageObjectBase = require("awayjs-stagegl/lib/pool/ImageObjectBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
 	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
@@ -6193,12 +6061,13 @@ declare module "awayjs-renderergl/lib/shaders/ShaderBase" {
 	     *
 	     */
 	    jointWeightIndex: number;
-	    images: Array<ImageObjectBase>;
+	    imageIndices: Array<number>;
 	    /**
 	     * Creates a new MethodCompilerVO object.
 	     */
 	    constructor(renderableClass: IRenderableClass, pass: IPass, stage: Stage);
 	    getTextureVO(texture: TextureBase): TextureVOBase;
+	    getImageIndex(image: ImageBase): number;
 	    _iIncludeDependencies(): void;
 	    /**
 	     * Factory method to create a concrete compiler object for this object
@@ -6471,6 +6340,149 @@ declare module "awayjs-renderergl/lib/shaders/ShaderRegisterElement" {
 	
 }
 
+declare module "awayjs-renderergl/lib/shaders/compilers/CompilerBase" {
+	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+	import IPass = require("awayjs-renderergl/lib/render/passes/IPass");
+	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
+	/**
+	 * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
+	 * material. Concrete subclasses are used by the default materials.
+	 *
+	 * @see away.materials.ShadingMethodBase
+	 */
+	class CompilerBase {
+	    _pShader: ShaderBase;
+	    _pSharedRegisters: ShaderRegisterData;
+	    _pRegisterCache: ShaderRegisterCache;
+	    _pRenderableClass: IRenderableClass;
+	    _pRenderPass: IPass;
+	    _pVertexCode: string;
+	    _pFragmentCode: string;
+	    _pPostAnimationFragmentCode: string;
+	    _pAnimatableAttributes: Array<string>;
+	    _pAnimationTargetRegisters: Array<string>;
+	    private _uvTarget;
+	    private _uvSource;
+	    /**
+	     * Creates a new CompilerBase object.
+	     * @param profile The compatibility profile of the renderer.
+	     */
+	    constructor(renderableClass: IRenderableClass, pass: IPass, shader: ShaderBase);
+	    /**
+	     * Compiles the code after all setup on the compiler has finished.
+	     */
+	    compile(): void;
+	    /**
+	     * Calculate the transformed colours
+	     */
+	    private compileColorTransformCode();
+	    /**
+	     * Compile the code for the methods.
+	     */
+	    pCompileDependencies(): void;
+	    private compileGlobalPositionCode();
+	    private compileLocalPositionCode();
+	    /**
+	     * Calculate the (possibly animated) UV coordinates.
+	     */
+	    private compileUVCode();
+	    /**
+	     * Provide the secondary UV coordinates.
+	     */
+	    private compileSecondaryUVCode();
+	    /**
+	     * Calculate the view direction.
+	     */
+	    compileViewDirCode(): void;
+	    /**
+	     * Calculate the normal.
+	     */
+	    compileNormalCode(): void;
+	    /**
+	     * Reset all the indices to "unused".
+	     */
+	    pInitRegisterIndices(): void;
+	    /**
+	     * Disposes all resources used by the compiler.
+	     */
+	    dispose(): void;
+	    /**
+	     * The generated vertex code.
+	     */
+	    vertexCode: string;
+	    /**
+	     * The generated fragment code.
+	     */
+	    fragmentCode: string;
+	    /**
+	     * The generated fragment code.
+	     */
+	    postAnimationFragmentCode: string;
+	    /**
+	     * The register name containing the final shaded colour.
+	     */
+	    shadedTarget: string;
+	}
+	export = CompilerBase;
+	
+}
+
+declare module "awayjs-renderergl/lib/shaders/compilers/LightingCompiler" {
+	import LightingShader = require("awayjs-renderergl/lib/shaders/LightingShader");
+	import CompilerBase = require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
+	import ShaderRegisterElement = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+	import ILightingPass = require("awayjs-renderergl/lib/render/passes/ILightingPass");
+	import IRenderableClass = require("awayjs-renderergl/lib/renderables/IRenderableClass");
+	/**
+	 * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
+	 * material. Concrete subclasses are used by the default materials.
+	 *
+	 * @see away.materials.ShadingMethodBase
+	 */
+	class LightingCompiler extends CompilerBase {
+	    private _shaderLightingObject;
+	    private _lightingPass;
+	    _pointLightFragmentConstants: Array<ShaderRegisterElement>;
+	    _pointLightVertexConstants: Array<ShaderRegisterElement>;
+	    _dirLightFragmentConstants: Array<ShaderRegisterElement>;
+	    _dirLightVertexConstants: Array<ShaderRegisterElement>;
+	    _pNumProbeRegisters: number;
+	    /**
+	     * Creates a new CompilerBase object.
+	     * @param profile The compatibility profile of the renderer.
+	     */
+	    constructor(renderableClass: IRenderableClass, lightingPass: ILightingPass, shaderLightingObject: LightingShader);
+	    /**
+	     * Compile the code for the methods.
+	     */
+	    pCompileDependencies(): void;
+	    /**
+	     * Provides the code to provide shadow mapping.
+	     */
+	    pCompileShadowCode(): void;
+	    /**
+	     * Initializes constant registers to contain light data.
+	     */
+	    private initLightRegisters();
+	    /**
+	     * Compiles the shading code for directional and point lights.
+	     */
+	    private compileLightCode();
+	    /**
+	     * Compiles shading code for light probes.
+	     */
+	    private compileLightProbeCode();
+	    /**
+	     * Reset all the indices to "unused".
+	     */
+	    pInitRegisterIndices(): void;
+	}
+	export = LightingCompiler;
+	
+}
+
 declare module "awayjs-renderergl/lib/tools/commands/Merge" {
 	import DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
 	import Mesh = require("awayjs-display/lib/entities/Mesh");
@@ -6725,6 +6737,7 @@ declare module "awayjs-renderergl/lib/vos/Single2DTextureVO" {
 	    private _single2DTexture;
 	    private _samplerIndex;
 	    private _textureIndex;
+	    private _imageIndex;
 	    constructor(pool: TextureVOPool, single2DTexture: Single2DTexture, shader: ShaderBase, stage: Stage);
 	    dispose(): void;
 	    /**
@@ -6766,6 +6779,7 @@ declare module "awayjs-renderergl/lib/vos/SingleCubeTextureVO" {
 	    static assetClass: IAssetClass;
 	    private _singleCubeTexture;
 	    private _textureIndex;
+	    private _imageIndex;
 	    constructor(pool: TextureVOPool, singleCubeTexture: SingleCubeTexture, shader: ShaderBase, stage: Stage);
 	    dispose(): void;
 	    _iIncludeDependencies(shader: ShaderBase, includeInput?: boolean): void;
