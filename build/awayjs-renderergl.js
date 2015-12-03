@@ -11280,6 +11280,10 @@ var RenderPassBase = (function (_super) {
     RenderPassBase.prototype.getImageIndex = function (image) {
         return this._renderOwner.getImageIndex(image);
     };
+    RenderPassBase.prototype.getSamplerIndex = function (texture, index) {
+        if (index === void 0) { index = 0; }
+        return this._renderOwner.getSamplerIndex(texture, index);
+    };
     /**
      * Marks the shader program as invalid, so it will be recompiled before the next render.
      *
@@ -11611,6 +11615,10 @@ var PassBase = (function (_super) {
     PassBase.prototype.getImageIndex = function (image) {
         return this._renderOwner.getImageIndex(image);
     };
+    PassBase.prototype.getSamplerIndex = function (texture, index) {
+        if (index === void 0) { index = 0; }
+        return this._renderOwner.getSamplerIndex(texture, index);
+    };
     /**
      * Cleans up any resources used by the current object.
      * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
@@ -11735,7 +11743,11 @@ var BillboardRenderable = (function (_super) {
      */
     BillboardRenderable.prototype._pGetSubGeometry = function () {
         var material = this._billboard.material;
-        var id = (material.texture) ? this._billboard.getSamplerAt(material.texture).id : -1;
+        var id = -1;
+        if (material.texture) {
+            var index = material.getSamplerIndex(material.texture);
+            id = (this._billboard.getSamplerAt(index) || material.getSamplerAt(index)).id;
+        }
         var geometry = BillboardRenderable._samplerGeometry[id];
         var width = this._billboard.billboardWidth;
         var height = this._billboard.billboardHeight;
@@ -12210,7 +12222,7 @@ var RenderableBase = (function () {
         var _this = this;
         this._geometryDirty = true;
         this.imageObjects = new Array();
-        this.samplerObjects = new Array();
+        this.samplers = new Array();
         this._onRenderOwnerUpdatedDelegate = function (event) { return _this._onRenderOwnerUpdated(event); };
         //store a reference to the pool for later disposal
         this._pool = pool;
@@ -12328,6 +12340,11 @@ var RenderableBase = (function () {
         this.imageObjects.length = numImages;
         for (var i = 0; i < numImages; i++)
             this.imageObjects[i] = this._stage.getImageObject(this.renderableOwner.getImageAt(i) || this.renderOwner.getImageAt(i));
+        //create a cache of sampler objects for the renderable
+        var numSamplers = this.renderOwner.getNumSamplers();
+        this.samplers.length = numSamplers;
+        for (var i = 0; i < numSamplers; i++)
+            this.samplers[i] = this.renderableOwner.getSamplerAt(i) || this.renderOwner.getSamplerAt(i);
     };
     return RenderableBase;
 })();
@@ -13061,6 +13078,10 @@ var ShaderBase = (function () {
     };
     ShaderBase.prototype.getImageIndex = function (image) {
         return this._pass.getImageIndex(image);
+    };
+    ShaderBase.prototype.getSamplerIndex = function (texture, index) {
+        if (index === void 0) { index = 0; }
+        return this._pass.getSamplerIndex(texture, index);
     };
     ShaderBase.prototype._iIncludeDependencies = function () {
         this._pass._iIncludeDependencies(this);
@@ -14978,11 +14999,12 @@ var Single2DTextureVO = (function (_super) {
         var textureReg = this.getTextureReg(this._single2DTexture.image2D, regCache, sharedReg);
         this._textureIndex = textureReg.index;
         this._imageIndex = shader.getImageIndex(this._single2DTexture.image2D);
+        this._samplerIndex = shader.getSamplerIndex(this._single2DTexture, 0);
         code += "tex " + targetReg + ", " + temp + ", " + textureReg + " <2d," + filter + "," + format + wrap + ">\n";
         return code;
     };
     Single2DTextureVO.prototype._setRenderState = function (renderable, shader) {
-        var sampler = renderable.renderableOwner.getSamplerAt(this._single2DTexture);
+        var sampler = renderable.samplers[this._samplerIndex];
         renderable.imageObjects[this._imageIndex].activate(this._textureIndex, sampler.repeat || shader.repeatTextures, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
         if (shader.useImageRect) {
             var index = this._samplerIndex;
@@ -15047,10 +15069,11 @@ var SingleCubeTextureVO = (function (_super) {
         var textureReg = this.getTextureReg(this._singleCubeTexture.imageCube, regCache, sharedReg);
         this._textureIndex = textureReg.index;
         this._imageIndex = shader.getImageIndex(this._singleCubeTexture.imageCube);
+        this._samplerIndex = shader.getSamplerIndex(this._singleCubeTexture, 0);
         return "tex " + targetReg + ", " + inputReg + ", " + textureReg + " <cube," + format + filter + ">\n";
     };
     SingleCubeTextureVO.prototype._setRenderState = function (renderable, shader) {
-        var sampler = renderable.renderableOwner.getSamplerAt(this._singleCubeTexture);
+        var sampler = renderable.samplers[this._samplerIndex];
         renderable.imageObjects[this._imageIndex].activate(this._textureIndex, false, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
     };
     SingleCubeTextureVO.prototype.activate = function (shader) {

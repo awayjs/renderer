@@ -4726,6 +4726,7 @@ declare module "awayjs-renderergl/lib/render/RenderPassBase" {
 	import ImageBase = require("awayjs-core/lib/data/ImageBase");
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
+	import TextureBase = require("awayjs-display/lib/textures/TextureBase");
 	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
@@ -4774,6 +4775,7 @@ declare module "awayjs-renderergl/lib/render/RenderPassBase" {
 	     */
 	    _iDeactivate(): void;
 	    getImageIndex(image: ImageBase): number;
+	    getSamplerIndex(texture: TextureBase, index?: number): number;
 	    /**
 	     * Marks the shader program as invalid, so it will be recompiled before the next render.
 	     *
@@ -4973,6 +4975,7 @@ declare module "awayjs-renderergl/lib/render/passes/IPass" {
 	import IEventDispatcher = require("awayjs-core/lib/events/IEventDispatcher");
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import Camera = require("awayjs-display/lib/entities/Camera");
+	import TextureBase = require("awayjs-display/lib/textures/TextureBase");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
@@ -4999,6 +5002,7 @@ declare module "awayjs-renderergl/lib/render/passes/IPass" {
 	    invalidatePass(): any;
 	    dispose(): any;
 	    getImageIndex(image: ImageBase): number;
+	    getSamplerIndex(texture: TextureBase, index?: number): number;
 	}
 	export = IPass;
 	
@@ -5010,6 +5014,7 @@ declare module "awayjs-renderergl/lib/render/passes/PassBase" {
 	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import IRenderOwner = require("awayjs-display/lib/base/IRenderOwner");
+	import TextureBase = require("awayjs-display/lib/textures/TextureBase");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
@@ -5048,6 +5053,7 @@ declare module "awayjs-renderergl/lib/render/passes/PassBase" {
 	     */
 	    constructor(render: RenderBase, renderOwner: IRenderOwner, renderableClass: IRenderableClass, stage: Stage);
 	    getImageIndex(image: ImageBase): number;
+	    getSamplerIndex(texture: TextureBase, index?: number): number;
 	    /**
 	     * Cleans up any resources used by the current object.
 	     * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
@@ -5458,7 +5464,7 @@ declare module "awayjs-renderergl/lib/renderables/RenderableBase" {
 	     */
 	    render: RenderBase;
 	    imageObjects: Array<ImageObjectBase>;
-	    samplerObjects: Array<SamplerBase>;
+	    samplers: Array<SamplerBase>;
 	    subGeometryVO: SubGeometryVOBase;
 	    /**
 	     *
@@ -6068,6 +6074,7 @@ declare module "awayjs-renderergl/lib/shaders/ShaderBase" {
 	    constructor(renderableClass: IRenderableClass, pass: IPass, stage: Stage);
 	    getTextureVO(texture: TextureBase): TextureVOBase;
 	    getImageIndex(image: ImageBase): number;
+	    getSamplerIndex(texture: TextureBase, index?: number): number;
 	    _iIncludeDependencies(): void;
 	    /**
 	     * Factory method to create a concrete compiler object for this object
@@ -6735,9 +6742,9 @@ declare module "awayjs-renderergl/lib/vos/Single2DTextureVO" {
 	     */
 	    static assetClass: IAssetClass;
 	    private _single2DTexture;
-	    private _samplerIndex;
 	    private _textureIndex;
 	    private _imageIndex;
+	    private _samplerIndex;
 	    constructor(pool: TextureVOPool, single2DTexture: Single2DTexture, shader: ShaderBase, stage: Stage);
 	    dispose(): void;
 	    /**
@@ -6780,6 +6787,7 @@ declare module "awayjs-renderergl/lib/vos/SingleCubeTextureVO" {
 	    private _singleCubeTexture;
 	    private _textureIndex;
 	    private _imageIndex;
+	    private _samplerIndex;
 	    constructor(pool: TextureVOPool, singleCubeTexture: SingleCubeTexture, shader: ShaderBase, stage: Stage);
 	    dispose(): void;
 	    _iIncludeDependencies(shader: ShaderBase, includeInput?: boolean): void;
