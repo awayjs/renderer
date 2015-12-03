@@ -25,9 +25,9 @@ class Single2DTextureVO extends TextureVOBase
 	public static assetClass:IAssetClass = Single2DTexture;
 
 	private _single2DTexture:Single2DTexture;
-	private _samplerIndex:number;
 	private _textureIndex:number;
 	private _imageIndex:number;
+	private _samplerIndex:number;
 
 	constructor(pool:TextureVOPool, single2DTexture:Single2DTexture, shader:ShaderBase, stage:Stage)
 	{
@@ -76,6 +76,7 @@ class Single2DTextureVO extends TextureVOBase
 		var textureReg:ShaderRegisterElement = this.getTextureReg(this._single2DTexture.image2D, regCache, sharedReg);
 		this._textureIndex = textureReg.index;
 		this._imageIndex = shader.getImageIndex(this._single2DTexture.image2D);
+		this._samplerIndex = shader.getSamplerIndex(this._single2DTexture, 0);
 		code += "tex " + targetReg + ", " + temp + ", " + textureReg + " <2d," + filter + "," + format + wrap + ">\n";
 
 		return code;
@@ -83,7 +84,7 @@ class Single2DTextureVO extends TextureVOBase
 
 	public _setRenderState(renderable:RenderableBase, shader:ShaderBase)
 	{
-		var sampler:Sampler2D = <Sampler2D> renderable.renderableOwner.getSamplerAt(this._single2DTexture);
+		var sampler:Sampler2D = <Sampler2D> renderable.samplers[this._samplerIndex];
 
 		renderable.imageObjects[this._imageIndex].activate(this._textureIndex, sampler.repeat || shader.repeatTextures, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
 

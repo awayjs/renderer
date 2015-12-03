@@ -29,6 +29,7 @@ class SingleCubeTextureVO extends TextureVOBase
 	private _singleCubeTexture:SingleCubeTexture;
 	private _textureIndex:number;
 	private _imageIndex:number;
+	private _samplerIndex:number;
 
 	constructor(pool:TextureVOPool, singleCubeTexture:SingleCubeTexture, shader:ShaderBase, stage:Stage)
 	{
@@ -69,13 +70,14 @@ class SingleCubeTextureVO extends TextureVOBase
 		var textureReg:ShaderRegisterElement = this.getTextureReg(this._singleCubeTexture.imageCube, regCache, sharedReg);
 		this._textureIndex = textureReg.index;
 		this._imageIndex = shader.getImageIndex(this._singleCubeTexture.imageCube);
+		this._samplerIndex = shader.getSamplerIndex(this._singleCubeTexture, 0);
 
 		return "tex " + targetReg + ", " + inputReg + ", " + textureReg + " <cube," + format + filter + ">\n";
 	}
 
 	public _setRenderState(renderable:RenderableBase, shader:ShaderBase)
 	{
-		var sampler:SamplerCube = <SamplerCube> renderable.renderableOwner.getSamplerAt(this._singleCubeTexture);
+		var sampler:SamplerCube = <SamplerCube> renderable.samplers[this._samplerIndex];
 
 		renderable.imageObjects[this._imageIndex].activate(this._textureIndex, false, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
 	}

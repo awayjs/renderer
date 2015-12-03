@@ -69,7 +69,12 @@ class BillboardRenderable extends RenderableBase
 	{
 		var material:MaterialBase = this._billboard.material;
 
-		var id:number = (material.texture)? (<Sampler2D> this._billboard.getSamplerAt(material.texture)).id : -1;
+		var id:number = -1;
+
+		if (material.texture) {
+			var index:number = material.getSamplerIndex(material.texture);
+			id = (this._billboard.getSamplerAt(index) || material.getSamplerAt(index)).id;
+		}
 
 		var geometry:TriangleSubGeometry = BillboardRenderable._samplerGeometry[id];
 

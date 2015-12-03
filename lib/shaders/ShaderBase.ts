@@ -1,5 +1,6 @@
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import ImageBase					= require("awayjs-core/lib/data/ImageBase");
+import SamplerBase					= require("awayjs-core/lib/data/SamplerBase");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -311,6 +312,11 @@ class ShaderBase
 	public getImageIndex(image:ImageBase):number
 	{
 		return this._pass.getImageIndex(image);
+	}
+
+	public getSamplerIndex(texture:TextureBase, index:number = 0):number
+	{
+		return this._pass.getSamplerIndex(texture, index);
 	}
 
 	public _iIncludeDependencies()

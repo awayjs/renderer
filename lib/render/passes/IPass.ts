@@ -3,6 +3,7 @@ import IEventDispatcher				= require("awayjs-core/lib/events/IEventDispatcher");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 
 import Camera						= require("awayjs-display/lib/entities/Camera");
+import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
@@ -52,6 +53,8 @@ interface IPass extends IEventDispatcher
 	dispose();
 
 	getImageIndex(image:ImageBase):number;
+
+	getSamplerIndex(texture:TextureBase, index?:number):number;
 }
 
 export = IPass;

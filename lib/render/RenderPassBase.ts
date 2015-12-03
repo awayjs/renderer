@@ -10,6 +10,7 @@ import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import LightPickerBase				= require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
 import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
+import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage")
 
@@ -98,6 +99,11 @@ class RenderPassBase extends RenderBase implements IPass
 	public getImageIndex(image:ImageBase):number
 	{
 		return this._renderOwner.getImageIndex(image);
+	}
+
+	public getSamplerIndex(texture:TextureBase, index:number = 0):number
+	{
+		return this._renderOwner.getSamplerIndex(texture, index);
 	}
 
 	/**

@@ -1,5 +1,6 @@
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import ImageBase					= require("awayjs-core/lib/data/ImageBase");
+import SamplerBase					= require("awayjs-core/lib/data/SamplerBase");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import AssetBase					= require("awayjs-core/lib/library/AssetBase");
@@ -10,6 +11,7 @@ import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import LightPickerBase				= require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
 import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
+import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage")
 
@@ -103,6 +105,12 @@ class PassBase extends EventDispatcher implements IPass
 	public getImageIndex(image:ImageBase):number
 	{
 		return this._renderOwner.getImageIndex(image);
+	}
+
+
+	public getSamplerIndex(texture:TextureBase, index:number = 0):number
+	{
+		return this._renderOwner.getSamplerIndex(texture, index);
 	}
 
 	/**

@@ -112,7 +112,7 @@ class RenderableBase implements IRenderable
 
 	public imageObjects:Array<ImageObjectBase> = new Array<ImageObjectBase>();
 
-	public samplerObjects:Array<SamplerBase> = new Array<SamplerBase>();
+	public samplers:Array<SamplerBase> = new Array<SamplerBase>();
 
 	public get subGeometryVO():SubGeometryVOBase
 	{
@@ -285,6 +285,13 @@ class RenderableBase implements IRenderable
 		this.imageObjects.length = numImages;
 		for (var i:number = 0; i < numImages; i++)
 			this.imageObjects[i] = this._stage.getImageObject(this.renderableOwner.getImageAt(i) || this.renderOwner.getImageAt(i));
+
+		//create a cache of sampler objects for the renderable
+		var numSamplers:number = this.renderOwner.getNumSamplers();
+
+		this.samplers.length = numSamplers;
+		for (var i:number = 0; i < numSamplers; i++)
+			this.samplers[i] = this.renderableOwner.getSamplerAt(i) || this.renderOwner.getSamplerAt(i);
 	}
 }
 
