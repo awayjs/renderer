@@ -1,5 +1,5 @@
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import Sampler2D					= require("awayjs-core/lib/data/Sampler2D");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
@@ -92,7 +92,7 @@ class AtlasTest
 	 */
 	private loadTexture():void
 	{
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onLoadComplete(event));
 		AssetLibrary.load(new URLRequest("assets/atlas.xml"));
 	}
 
@@ -107,9 +107,9 @@ class AtlasTest
 	}
 
 	/**
-	 * Listener function for resource complete event on asset library
+	 * Listener function for load complete event on asset library
 	 */
-	private onResourceComplete(event:LoaderEvent)
+	private onLoadComplete(event:LoaderEvent)
 	{
 		var assets:Array<IAsset> = event.assets;
 		var length:number = assets.length;
@@ -135,7 +135,7 @@ class AtlasTest
 		for (var i:number = 0; i < len; i++) {
 			//var size:number = this.getRandom(50 , 500);
 			var s:Billboard = new Billboard(this._material);
-			s.addSamplerAt(this._samplers[i], this._material.texture);
+			s.addSamplerAt(this._samplers[i], 0);
 			s.pivot = new Vector3D(s.width/2, s.height/2, 0);
 			//s.width = size;
 			//s.height = size;

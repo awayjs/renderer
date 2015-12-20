@@ -3,7 +3,6 @@ import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/containers/View");

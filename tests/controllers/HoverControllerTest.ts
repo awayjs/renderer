@@ -1,6 +1,5 @@
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
@@ -11,7 +10,6 @@ import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 class HoverControllerTest
 {
-
 	private _view:View;
 	private _timer:RequestAnimationFrame;
 	private _hoverControl:HoverController;
@@ -42,10 +40,9 @@ class HoverControllerTest
 		document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
 		document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
 
-
 		this.onResize();
 
-		this._timer = new RequestAnimationFrame(this.render , this);
+		this._timer = new RequestAnimationFrame(this.render, this);
 		this._timer.start();
 	}
 

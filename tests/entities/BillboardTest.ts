@@ -1,4 +1,4 @@
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
@@ -87,7 +87,7 @@ class BillboardTest
 	 */
 	private loadTexture():void
 	{
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onLoadComplete(event));
 		AssetLibrary.load(new URLRequest("assets/130909wall_big.png"));
 	}
 
@@ -102,9 +102,9 @@ class BillboardTest
 	}
 
 	/**
-	 * Listener function for resource complete event on asset library
+	 * Listener function for load complete event on asset library
 	 */
-	private onResourceComplete(event:LoaderEvent)
+	private onLoadComplete(event:LoaderEvent)
 	{
 		var assets:Array<IAsset> = event.assets;
 		var length:number = assets.length;

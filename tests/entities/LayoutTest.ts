@@ -1,4 +1,4 @@
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");
@@ -38,18 +38,18 @@ class LayoutTest
 	constructor()
 	{
 		//listen for a resource complete event
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE , (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE , (event:LoaderEvent) => this.onLoadComplete(event));
 
 		//load an image
 		AssetLibrary.load(new URLRequest('assets/256x256.png') );
 	}
 
 	/**
-	 * Listener for resource complete event
+	 * Listener for load complete event
 	 *
 	 * @param event
 	 */
-	private onResourceComplete(event:LoaderEvent)
+	private onLoadComplete(event:LoaderEvent)
 	{
 		//get the texture
 		this._texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);

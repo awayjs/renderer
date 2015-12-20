@@ -1,9 +1,9 @@
-import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
+import BitmapImageCube				= require("awayjs-core/lib/image/BitmapImageCube");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderSession				= require("awayjs-core/lib/library/LoaderSession");
+import Loader						= require("awayjs-core/lib/library/Loader");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import Debug						= require("awayjs-core/lib/utils/Debug");
 
@@ -37,8 +37,8 @@ class CubeTextures
 		this._view.camera.projection.far = 14000;
 		this._view.backgroundColor = 0x2c2c32;
 
-		var session:LoaderSession = AssetLibrary.getLoaderSession();
-		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		var session:Loader = AssetLibrary.getLoader();
+		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onLoadComplete(event));
 		session.load(new URLRequest('assets/SingleCubeTextureTest.cube'));
 
 		window.onresize = (event:UIEvent) => this.onResize(event);
@@ -49,9 +49,9 @@ class CubeTextures
 		this._timer.start();
 	}
 
-	public onResourceComplete(event:LoaderEvent)
+	public onLoadComplete(event:LoaderEvent)
 	{
-		var loader:LoaderSession = <LoaderSession> event.target;
+		var loader:Loader = <Loader> event.target;
 
 		switch(event.url) {
 			case 'assets/SingleCubeTextureTest.cube':

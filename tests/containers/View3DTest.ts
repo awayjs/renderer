@@ -11,7 +11,6 @@ import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 class View3DTest
 {
-
 	private view:View;
 	private torus:PrimitiveTorusPrefab;
 
@@ -21,19 +20,18 @@ class View3DTest
 
 	constructor()
 	{
-
 		Debug.THROW_ERRORS = false;
 		Debug.LOG_PI_ERRORS = false;
 
 		this.meshes = new Array<Mesh>();
 		this.light = new PointLight();
-		this.view = new View(new DefaultRenderer())
+		this.view = new View(new DefaultRenderer());
 		this.view.camera.z = 0;
 		this.view.backgroundColor = 0x776655;
 		this.torus = new PrimitiveTorusPrefab(150 , 50 , 32 , 32 , false);
 
-		var l:number        = 10;
-		var radius:number        = 1000;
+		var l:number = 10;
+		var radius:number = 1000;
 		var matB:BasicMaterial = new BasicMaterial();
 
 		this.torus.material = matB;
@@ -54,7 +52,7 @@ class View3DTest
 
 		this.view.scene.addChild(this.light);
 
-		this.raf = new RequestAnimationFrame(this.tick , this);
+		this.raf = new RequestAnimationFrame(this.tick, this);
 		this.raf.start();
 		this.resize( null );
 
@@ -64,7 +62,6 @@ class View3DTest
 
 	private tick(e)
 	{
-
 		for (var c:number = 0; c < this.meshes.length; c++)
 			this.meshes[c].rotationY += 2;
 
