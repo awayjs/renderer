@@ -1,12 +1,8 @@
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
-import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
-
 import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
 import DistanceRender				= require("awayjs-renderergl/lib/render/DistanceRender");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
-
 
 /**
  * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
@@ -22,10 +18,8 @@ class DistanceRenderer extends RendererBase
 	 */
 	constructor(stage:Stage = null)
 	{
-		super(stage);
-		
-		this._pRenderablePool = new RenderablePool(this._pStage, DistanceRender);
-		
+		super(stage, DistanceRender);
+
 		this._iBackgroundR = 1;
 		this._iBackgroundG = 1;
 		this._iBackgroundB = 1;

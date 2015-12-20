@@ -1,9 +1,10 @@
-import ImageBase					= require("awayjs-core/lib/data/ImageBase");
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import ImageBase					= require("awayjs-core/lib/image/ImageBase");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 
+import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import LightBase					= require("awayjs-display/lib/base/LightBase");
 import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
@@ -29,7 +30,6 @@ import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
 import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
 import SkyboxRenderable				= require("awayjs-renderergl/lib/renderables/SkyboxRenderable");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
 import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
@@ -123,10 +123,8 @@ class DefaultRenderer extends RendererBase
 	 */
 	constructor(stage:Stage = null, forceSoftware:boolean = false, profile:string = "baseline", mode:string = "auto")
 	{
-		super(stage, forceSoftware, profile, mode);
+		super(stage, null, forceSoftware, profile, mode);
 
-		this._pRenderablePool = new RenderablePool(this._pStage);
-		
 		if (stage)
 			this._shareContext = true;
 
@@ -250,13 +248,13 @@ class DefaultRenderer extends RendererBase
 	 */
 	private drawSkybox(entityCollector:EntityCollector)
 	{
-		var renderable:RenderableBase = this._pRenderablePool.getItem(entityCollector.skyBox);
+		var renderable:RenderableBase = this.getAbstraction(entityCollector.skyBox);
 
 		var camera:Camera = entityCollector.camera;
 
 		this.updateSkyboxProjection(camera);
 
-		var render:RenderBase = this._pRenderablePool.getRenderPool(renderable.renderableOwner).getItem(renderable.renderOwner);
+		var render:RenderBase = this.getRenderPool(renderable.renderableOwner).getAbstraction(renderable.render.renderOwner);
 
 		var pass:IPass = render.passes[0];
 

@@ -1,34 +1,37 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import Event						= require("awayjs-core/lib/events/Event");
-import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
+import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
 
-import IRender						= require("awayjs-display/lib/pool/IRender");
 import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import Camera						= require("awayjs-display/lib/entities/Camera");
+import RenderOwnerEvent				= require("awayjs-display/lib/events/RenderOwnerEvent");
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
+import PassEvent					= require("awayjs-renderergl/lib/events/PassEvent");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
 import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
 import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
 
 /**
  *
  * @class away.pool.Passes
  */
-class RenderBase extends EventDispatcher implements IRender
+class RenderBase extends AbstractionBase
 {
+	private _onInvalidateAnimationDelegate:(event:RenderOwnerEvent) => void;
+	private _onInvalidatePassesDelegate:(event:RenderOwnerEvent) => void;
+
 	public usages:number = 0;
 	public _forceSeparateMVP:boolean = false;
 
-	private _pool:RenderPool;
 	public _renderOwner:IRenderOwner;
 	public _renderableClass:IRenderableClass;
 	public _stage:Stage;
@@ -42,7 +45,7 @@ class RenderBase extends EventDispatcher implements IRender
 
 	public _pRequiresBlending:boolean = false;
 
-	private _onPassChangeDelegate:(event:Event) => void;
+	private _onPassInvalidateDelegate:(event:PassEvent) => void;
 
 	public renderId:number;
 
@@ -70,18 +73,27 @@ class RenderBase extends EventDispatcher implements IRender
 		return this._passes;
 	}
 
-	constructor(pool:RenderPool, renderOwner:IRenderOwner, renderableClass:IRenderableClass, stage:Stage)
+	public get renderOwner():IRenderOwner
 	{
-		super();
+		return this._renderOwner;
+	}
 
-		this._pool = pool;
+	constructor(renderOwner:IRenderOwner, renderableClass:IRenderableClass, renderPool:RenderPool)
+	{
+		super(renderOwner, renderPool);
+
+		this._onInvalidateAnimationDelegate = (event:RenderOwnerEvent) => this.onInvalidateAnimation(event);
+		this._onInvalidatePassesDelegate = (event:RenderOwnerEvent) => this.onInvalidatePasses(event);
+
 		this.renderId = renderOwner.id;
 		this._renderOwner = renderOwner;
 		this._renderableClass = renderableClass;
-		this._stage = stage;
+		this._stage = renderPool.stage;
 
+		this._renderOwner.addEventListener(RenderOwnerEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
+		this._renderOwner.addEventListener(RenderOwnerEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
 
-		this._onPassChangeDelegate = (event:Event) => this.onPassChange(event);
+		this._onPassInvalidateDelegate = (event:PassEvent) => this.onPassInvalidate(event);
 	}
 
 	public _iIncludeDependencies(shader:ShaderBase)
@@ -92,6 +104,8 @@ class RenderBase extends EventDispatcher implements IRender
 		shader.useMipmapping = this._renderOwner.mipmap;
 		shader.useSmoothTextures = this._renderOwner.smooth;
 		shader.useImageRect = this._renderOwner.imageRect;
+		//shader.useUVBuffer = this._renderOwner.uvBuffer;
+
 		if (this._renderOwner instanceof MaterialBase) {
 			var material:MaterialBase = <MaterialBase> this._renderOwner;
 			shader.useAlphaPremultiplied = material.alphaPremultiplied;
@@ -99,9 +113,7 @@ class RenderBase extends EventDispatcher implements IRender
 			shader.repeatTextures = material.repeat;
 			shader.usesUVTransform = material.animateUVs;
 			shader.usesColorTransform = material.useColorTransform;
-			if (material.texture) {
-				shader.texture = shader.getTextureVO(material.texture);
-			}
+			shader.texture = material.texture;
 			shader.color = material.color;
 		}
 	}
@@ -109,17 +121,17 @@ class RenderBase extends EventDispatcher implements IRender
 	/**
 	 *
 	 */
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		this._pool.disposeItem(this._renderOwner);
-		this._pool = null;
+		super.onClear(event);
+
 		this._renderOwner = null;
 		this._renderableClass = null;
 		this._stage = null;
 
 		var len:number = this._passes.length;
 		for (var i:number = 0; i < len; i++) {
-			this._passes[i].removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
+			this._passes[i].removeEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
 			this._passes[i].dispose();
 		}
 
@@ -129,8 +141,10 @@ class RenderBase extends EventDispatcher implements IRender
 	/**
 	 *
 	 */
-	public invalidateRender()
+	public onInvalidate(event:AssetEvent)
 	{
+		super.onInvalidate(event);
+
 		this._invalidRender = true;
 		this._invalidAnimation = true;
 	}
@@ -138,11 +152,11 @@ class RenderBase extends EventDispatcher implements IRender
 	/**
 	 *
 	 */
-	public invalidatePasses()
+	public onInvalidatePasses(event:RenderOwnerEvent)
 	{
 		var len:number = this._passes.length;
 		for (var i:number = 0; i < len; i++)
-			this._passes[i].invalidatePass();
+			this._passes[i].invalidate();
 
 		this._invalidAnimation = true;
 	}
@@ -150,7 +164,7 @@ class RenderBase extends EventDispatcher implements IRender
 	/**
 	 *
 	 */
-	public invalidateAnimation()
+	public onInvalidateAnimation(event:RenderOwnerEvent)
 	{
 		this._invalidAnimation = true;
 	}
@@ -205,7 +219,7 @@ class RenderBase extends EventDispatcher implements IRender
 	 */
 	public _pRemovePass(pass:IPass)
 	{
-		pass.removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
+		pass.removeEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
 		this._passes.splice(this._passes.indexOf(pass), 1);
 	}
 
@@ -216,7 +230,7 @@ class RenderBase extends EventDispatcher implements IRender
 	{
 		var len:number = this._passes.length;
 		for (var i:number = 0; i < len; ++i)
-			this._passes[i].removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
+			this._passes[i].removeEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
 
 		this._passes.length = 0;
 	}
@@ -228,15 +242,15 @@ class RenderBase extends EventDispatcher implements IRender
 	public _pAddPass(pass:IPass)
 	{
 		this._passes.push(pass);
-		pass.addEventListener(Event.CHANGE, this._onPassChangeDelegate);
+		pass.addEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
 	}
 
 	/**
 	 * Listener for when a pass's shader code changes. It recalculates the render order id.
 	 */
-	private onPassChange(event:Event)
+	private onPassInvalidate(event:PassEvent)
 	{
-		this.invalidateAnimation();
+		this._invalidAnimation = true;
 	}
 
 

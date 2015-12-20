@@ -4,8 +4,6 @@ import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-
 import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
 import RenderPassBase				= require("awayjs-renderergl/lib/render/RenderPassBase");
 import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
@@ -29,9 +27,9 @@ class DepthRender extends RenderPassBase
 	 * @param renderableClass
 	 * @param stage
 	 */
-	constructor(pool:RenderPool, renderOwner:IRenderOwner, renderableClass:IRenderableClass, stage:Stage)
+	constructor(renderOwner:IRenderOwner, renderableClass:IRenderableClass, renderPool:RenderPool)
 	{
-		super(pool, renderOwner, renderableClass, stage);
+		super(renderOwner, renderableClass, renderPool);
 
 		this._shader = new ShaderBase(renderableClass, this, this._stage);
 
@@ -91,10 +89,10 @@ class DepthRender extends RenderPassBase
 		//codeF += "mov ft1.w, fc1.w	\n" +
 		//    "mov ft0.w, fc0.x	\n";
 
-		if (shader.texture && shader.alphaThreshold > 0) {
+		if (shader.textureVO && shader.alphaThreshold > 0) {
 
 			var albedo:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
-			code += shader.texture._iGetFragmentCode(shader, albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+			code += shader.textureVO._iGetFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
 
 			var cutOffReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 
@@ -117,8 +115,8 @@ class DepthRender extends RenderPassBase
 	{
 		super._iActivate(camera);
 
-		if (this._shader.texture && this._shader.alphaThreshold > 0) {
-			this._shader.texture.activate(this._shader);
+		if (this._shader.textureVO && this._shader.alphaThreshold > 0) {
+			this._shader.textureVO.activate();
 
 			this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
 		}

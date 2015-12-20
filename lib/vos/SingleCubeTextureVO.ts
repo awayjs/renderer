@@ -1,7 +1,6 @@
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
-import SamplerCube					= require("awayjs-core/lib/data/SamplerCube");
-
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import SamplerCube					= require("awayjs-core/lib/image/SamplerCube");
 
 import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
 
@@ -11,7 +10,6 @@ import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import TextureVOPool				= require("awayjs-renderergl/lib/vos/TextureVOPool");
 import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
 
 /**
@@ -31,25 +29,25 @@ class SingleCubeTextureVO extends TextureVOBase
 	private _imageIndex:number;
 	private _samplerIndex:number;
 
-	constructor(pool:TextureVOPool, singleCubeTexture:SingleCubeTexture, shader:ShaderBase, stage:Stage)
+	constructor(singleCubeTexture:SingleCubeTexture, shader:ShaderBase)
 	{
-		super(pool, singleCubeTexture, shader, stage);
+		super(singleCubeTexture, shader);
 
 		this._singleCubeTexture = singleCubeTexture;
 	}
 
 
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		super.dispose();
+		super.onClear(event);
 
 		this._singleCubeTexture = null;
 	}
 
-	public _iIncludeDependencies(shader:ShaderBase, includeInput:boolean = true)
+	public _iIncludeDependencies(includeInput:boolean = true)
 	{
 		if (includeInput)
-			shader.usesLocalPosFragment = true;
+			this._shader.usesLocalPosFragment = true;
 	}
 
 	/**
@@ -61,30 +59,25 @@ class SingleCubeTextureVO extends TextureVOBase
 	 * @returns {string}
 	 * @private
 	 */
-	public _iGetFragmentCode(shader:ShaderBase, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedReg:ShaderRegisterData, inputReg:ShaderRegisterElement):string
+	public _iGetFragmentCode(targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedReg:ShaderRegisterData, inputReg:ShaderRegisterElement):string
 	{
 		var filter:string;
 		var format:string = this.getFormatString(this._singleCubeTexture.imageCube);
-		var filter:string = (shader.useSmoothTextures)? (shader.useMipmapping? "linear,miplinear" : "linear") : (shader.useMipmapping? "nearest,mipnearest" : "nearest");
+		var filter:string = (this._shader.useSmoothTextures)? (this._shader.useMipmapping? "linear,miplinear" : "linear") : (this._shader.useMipmapping? "nearest,mipnearest" : "nearest");
 
 		var textureReg:ShaderRegisterElement = this.getTextureReg(this._singleCubeTexture.imageCube, regCache, sharedReg);
 		this._textureIndex = textureReg.index;
-		this._imageIndex = shader.getImageIndex(this._singleCubeTexture.imageCube);
-		this._samplerIndex = shader.getSamplerIndex(this._singleCubeTexture, 0);
+		this._imageIndex = this._shader.getImageIndex(this._singleCubeTexture.imageCube);
+		this._samplerIndex = this._shader.getSamplerIndex(this._singleCubeTexture, 0);
 
 		return "tex " + targetReg + ", " + inputReg + ", " + textureReg + " <cube," + format + filter + ">\n";
 	}
 
-	public _setRenderState(renderable:RenderableBase, shader:ShaderBase)
+	public _setRenderState(renderable:RenderableBase)
 	{
 		var sampler:SamplerCube = <SamplerCube> renderable.samplers[this._samplerIndex];
 
-		renderable.imageObjects[this._imageIndex].activate(this._textureIndex, false, sampler.smooth || shader.useSmoothTextures, sampler.mipmap || shader.useMipmapping);
-	}
-
-	public activate(shader:ShaderBase)
-	{
-
+		renderable.images[this._imageIndex].activate(this._textureIndex, false, sampler.smooth || this._shader.useSmoothTextures, sampler.mipmap || this._shader.useMipmapping);
 	}
 }
 

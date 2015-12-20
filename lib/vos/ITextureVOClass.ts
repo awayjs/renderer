@@ -1,11 +1,6 @@
-import IWrapperClass				= require("awayjs-core/lib/library/IWrapperClass");
-
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-
-import ITextureVO					= require("awayjs-display/lib/pool/ITextureVO");
 import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
-import TextureVOPool				= require("awayjs-renderergl/lib/vos/TextureVOPool");
+import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 
 /**
@@ -14,12 +9,12 @@ import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
  *
  * @class away.render.ITextureVOClass
  */
-interface ITextureVOClass extends IWrapperClass
+interface ITextureVOClass
 {
 	/**
 	 *
 	 */
-	new(pool:TextureVOPool, texture:TextureBase, shader:ShaderBase, stage:Stage):ITextureVO;
+	new(texture:TextureBase, shader:ShaderBase):TextureVOBase;
 }
 
 export = ITextureVOClass;

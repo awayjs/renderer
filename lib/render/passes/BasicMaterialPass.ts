@@ -1,4 +1,4 @@
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
+import BlendMode					= require("awayjs-core/lib/image/BlendMode");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
@@ -49,7 +49,7 @@ class BasicMaterialPass extends PassBase
 	{
 		super._iIncludeDependencies(shader);
 
-		if (shader.texture != null)
+		if (shader.textureVO != null)
 			shader.uvDependencies++;
     }
 
@@ -70,9 +70,9 @@ class BasicMaterialPass extends PassBase
 
 		var targetReg:ShaderRegisterElement = sharedReg.shadedTarget;
 
-		if (shader.texture != null) {
+		if (shader.textureVO != null) {
 
-			code += shader.texture._iGetFragmentCode(shader, targetReg, regCache, sharedReg, sharedReg.uvVarying);
+			code += shader.textureVO._iGetFragmentCode(targetReg, regCache, sharedReg, sharedReg.uvVarying);
 
 			if (shader.alphaThreshold > 0) {
 				var cutOffReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
@@ -103,8 +103,8 @@ class BasicMaterialPass extends PassBase
 	{
 		super._iRender(renderable, camera, viewProjection);
 
-		if (this._shader.texture != null)
-			this._shader.texture._setRenderState(renderable, this._shader);
+		if (this._shader.textureVO != null)
+			this._shader.textureVO._setRenderState(renderable);
 	}
 	/**
 	 * @inheritDoc
@@ -113,8 +113,8 @@ class BasicMaterialPass extends PassBase
 	{
 		super._iActivate(camera);
 
-		if (this._shader.texture != null) {
-			this._shader.texture.activate(this._shader);
+		if (this._shader.textureVO != null) {
+			this._shader.textureVO.activate();
 
 			if (this._shader.alphaThreshold > 0)
 				this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;

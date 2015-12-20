@@ -1,7 +1,8 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 
+import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import TriangleSubMesh				= require("awayjs-display/lib/base/TriangleSubMesh");
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
@@ -11,12 +12,13 @@ import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 
+import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
+import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
 import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
 
 /**
@@ -24,8 +26,6 @@ import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
  */
 class TriangleSubMeshRenderable extends RenderableBase
 {
-	public static assetClass:IAssetClass = TriangleSubMesh;
-
 	public static vertexAttributesOffset:number = 1;
 
 	/**
@@ -42,16 +42,16 @@ class TriangleSubMeshRenderable extends RenderableBase
 	 * @param level
 	 * @param indexOffset
 	 */
-	constructor(pool:RenderablePool, subMesh:TriangleSubMesh, stage:Stage)
+	constructor(subMesh:TriangleSubMesh, renderer:RendererBase)
 	{
-		super(pool, subMesh.parentMesh, subMesh, subMesh.material, stage);
+		super(subMesh, subMesh.parentMesh, subMesh.material, renderer);
 
 		this.subMesh = subMesh;
 	}
 
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		super.dispose();
+		super.onClear(event);
 
 		this.subMesh = null;
 	}
@@ -63,9 +63,14 @@ class TriangleSubMeshRenderable extends RenderableBase
 	 */
 	public _pGetSubGeometry():TriangleSubGeometry
 	{
-		return (this.subMesh.animator)? <TriangleSubGeometry> this.subMesh.animator.getRenderableSubGeometry(this, this.subMesh.subGeometry) : this.subMesh.subGeometry;
+		return (this.subMesh.animator)? <TriangleSubGeometry> (<AnimatorBase> this.subMesh.animator).getRenderableSubGeometry(this, this.subMesh.subGeometry) : this.subMesh.subGeometry;
 	}
 
+
+	public _pGetRenderOwner():IRenderOwner
+	{
+		return this.subMesh.material;
+	}
 
 	public static _iIncludeDependencies(shader:ShaderBase)
 	{

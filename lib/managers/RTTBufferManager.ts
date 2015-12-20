@@ -1,5 +1,4 @@
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
-import Event						= require("awayjs-core/lib/events/Event");
 import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
 import ImageUtils					= require("awayjs-core/lib/utils/ImageUtils");
 
@@ -7,6 +6,7 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import IIndexBuffer					= require("awayjs-stagegl/lib/base/IIndexBuffer");
 import IVertexBuffer				= require("awayjs-stagegl/lib/base/IVertexBuffer");
+import RTTEvent						= require("awayjs-renderergl/lib/events/RTTEvent");
 
 class RTTBufferManager extends EventDispatcher
 {
@@ -69,7 +69,7 @@ class RTTBufferManager extends EventDispatcher
 		var r:RTTBufferManagerVO;
 
 		for (var c:number = 0; c < l; c++) {
-			r = RTTBufferManager._instances[ c ];
+			r = RTTBufferManager._instances[c];
 
 			if (r.stage3d === stage)
 				return r.rttbfm;
@@ -84,7 +84,7 @@ class RTTBufferManager extends EventDispatcher
 		var r:RTTBufferManagerVO;
 
 		for (var c:number = 0; c < l; c++) {
-			r = RTTBufferManager._instances[ c ];
+			r = RTTBufferManager._instances[c];
 
 			if (r.stage3d === stage) {
 				RTTBufferManager._instances.splice(c, 1);
@@ -133,7 +133,7 @@ class RTTBufferManager extends EventDispatcher
 			this._renderToTextureRect.width = this._textureWidth;
 		}
 
-		this.dispatchEvent(new Event(Event.RESIZE));
+		this.dispatchEvent(new RTTEvent(RTTEvent.RESIZE, this));
 	}
 
 	public get viewHeight():number
@@ -160,7 +160,7 @@ class RTTBufferManager extends EventDispatcher
 			this._renderToTextureRect.height = this._textureHeight;
 		}
 
-		this.dispatchEvent(new Event(Event.RESIZE));
+		this.dispatchEvent(new RTTEvent(RTTEvent.RESIZE, this));
 	}
 
 	public get renderToTextureVertexBuffer():IVertexBuffer

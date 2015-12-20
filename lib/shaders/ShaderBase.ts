@@ -1,12 +1,18 @@
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
-import ImageBase					= require("awayjs-core/lib/data/ImageBase");
-import SamplerBase					= require("awayjs-core/lib/data/SamplerBase");
+import BlendMode					= require("awayjs-core/lib/image/BlendMode");
+import ImageBase					= require("awayjs-core/lib/image/ImageBase");
+import SamplerBase					= require("awayjs-core/lib/image/SamplerBase");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
 import ArgumentError				= require("awayjs-core/lib/errors/ArgumentError");
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
+import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
+import IAsset						= require("awayjs-core/lib/library/IAsset");
+import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
+import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
 
+import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
@@ -14,8 +20,7 @@ import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendF
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import ContextGLTriangleFace		= require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
-import ImageObjectBase				= require("awayjs-stagegl/lib/pool/ImageObjectBase");
+import ProgramData					= require("awayjs-stagegl/lib/image/ProgramData");
 
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -25,7 +30,7 @@ import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRendera
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import CompilerBase					= require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import TextureVOPool				= require("awayjs-renderergl/lib/vos/TextureVOPool");
+import ITextureVOClass				= require("awayjs-renderergl/lib/vos/ITextureVOClass");
 import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
 
 /**
@@ -36,11 +41,15 @@ import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
  *
  * @see RegisterPool.addUsage
  */
-class ShaderBase
+class ShaderBase implements IAbstractionPool
 {
-	private _textureVOPool:TextureVOPool;
+	public static _abstractionClassPool:Object = new Object();
+
+	private _abstractionPool:Object = new Object();
+
 	private _renderableClass:IRenderableClass;
 	private _pass:IPass;
+	private _texture:TextureBase;
 	public _stage:Stage;
 	private _programData:ProgramData;
 
@@ -63,6 +72,12 @@ class ShaderBase
 	public usesBlending:boolean = false;
 
 	public useImageRect:boolean = false;
+
+
+	/**
+	 *
+	 */
+	public usesUVBuffer:boolean = false;
 
 	/**
 	 * The depth compare mode used to render the renderables using this material.
@@ -125,7 +140,7 @@ class ShaderBase
 	public usesUVTransform:boolean;
 	public usesColorTransform:boolean;
 	public alphaThreshold:number;
-	public texture:TextureVOBase;
+	public textureVO:TextureVOBase;
 	public color:number;
 
 
@@ -289,8 +304,29 @@ class ShaderBase
 	 */
 	public jointWeightIndex:number;
 
+	/**
+	 *
+	 */
 	public imageIndices:Array<number> = new Array<number>();
 
+	public get texture():TextureBase
+	{
+		return this._texture;
+	}
+
+	public set texture(value:TextureBase)
+	{
+		if (this._texture == value)
+			return;
+
+		if (this._texture)
+			this.textureVO.onClear(new AssetEvent(AssetEvent.CLEAR, this._texture));
+
+		this._texture = value;
+
+		if (this._texture)
+			this.textureVO = this.getAbstraction(this._texture);
+	}
 	/**
 	 * Creates a new MethodCompilerVO object.
 	 */
@@ -300,13 +336,29 @@ class ShaderBase
 		this._pass = pass;
 		this._stage = stage;
 		this.profile = this._stage.profile;
-
-		this._textureVOPool = new TextureVOPool(this, this._stage);
 	}
 
-	public getTextureVO(texture:TextureBase):TextureVOBase
+	public getAbstraction(texture:TextureBase):TextureVOBase
 	{
-		return this._textureVOPool.getItem(texture);
+		return (this._abstractionPool[texture.id] || (this._abstractionPool[texture.id] = new (<ITextureVOClass> ShaderBase._abstractionClassPool[texture.assetType])(texture, this)));
+	}
+
+	/**
+	 *
+	 * @param image
+	 */
+	public clearAbstraction(renderableOwner:IRenderableOwner)
+	{
+		this._abstractionPool[renderableOwner.id] = null;
+	}
+
+	/**
+	 *
+	 * @param imageObjectClass
+	 */
+	public static registerAbstraction(texture:ITextureVOClass, assetClass:IAssetClass)
+	{
+		ShaderBase._abstractionClassPool[assetClass.assetType] = texture;
 	}
 
 	public getImageIndex(image:ImageBase):number
@@ -604,10 +656,8 @@ class ShaderBase
 
 	public dispose()
 	{
-		if (this.texture) {
-			this.texture.dispose();
+		if (this.texture)
 			this.texture = null;
-		}
 
 		this._programData.dispose();
 		this._programData = null;

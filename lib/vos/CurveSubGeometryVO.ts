@@ -1,14 +1,15 @@
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import CurveSubGeometry				= require("awayjs-display/lib/base/CurveSubGeometry");
+import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
 
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import SubGeometryVOPool			= require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
 import SubGeometryVOBase			= require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
 
 /**
@@ -24,47 +25,43 @@ class CurveSubGeometryVO extends SubGeometryVOBase
 
 	private _curveSubGeometry:CurveSubGeometry;
 
-	constructor(pool:SubGeometryVOPool, curveSubGeometry:CurveSubGeometry)
+	constructor(curveSubGeometry:CurveSubGeometry, stage:Stage)
 	{
-		super(pool, curveSubGeometry);
+		super(curveSubGeometry, stage);
 
 		this._curveSubGeometry = curveSubGeometry;
-
-		this.invalidateVertices(this._curveSubGeometry.positions);
-		this.invalidateVertices(this._curveSubGeometry.curves);
-		this.invalidateVertices(this._curveSubGeometry.uvs);
 	}
 
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		super.dispose();
+		super.onClear(event);
 
-		this.disposeVertices(this._curveSubGeometry.positions);
-		this.disposeVertices(this._curveSubGeometry.curves);
-		this.disposeVertices(this._curveSubGeometry.uvs);
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._curveSubGeometry.positions));
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._curveSubGeometry.curves));
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._curveSubGeometry.uvs));
 
 		this._curveSubGeometry = null;
 	}
 
-	public _render(shader:ShaderBase, stage:Stage)
+	public _render(shader:ShaderBase)
 	{
 		if (shader.uvBufferIndex >= 0)
-			this.activateVertexBufferVO(shader.uvBufferIndex, this._curveSubGeometry.uvs, stage);
+			this.activateVertexBufferVO(shader.uvBufferIndex, this._curveSubGeometry.uvs);
 
-		this.activateVertexBufferVO(0, this._curveSubGeometry.positions, stage);
-		this.activateVertexBufferVO(1, this._curveSubGeometry.curves, stage);
+		this.activateVertexBufferVO(0, this._curveSubGeometry.positions);
+		this.activateVertexBufferVO(1, this._curveSubGeometry.curves);
 
-		super._render(shader, stage);
+		super._render(shader);
 	}
 
-	public _drawElements(firstIndex:number, numIndices:number, stage:Stage)
+	public _drawElements(firstIndex:number, numIndices:number)
 	{
-		this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, firstIndex, numIndices);
+		this.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, firstIndex, numIndices);
 	}
 
-	public _drawArrays(firstVertex:number, numVertices:number, stage:Stage)
+	public _drawArrays(firstVertex:number, numVertices:number)
 	{
-		stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
+		this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
 	}
 
 	/**
@@ -79,7 +76,7 @@ class CurveSubGeometryVO extends SubGeometryVOBase
 	 */
 	public _pGetOverflowSubGeometry():SubGeometryVOBase
 	{
-		return new CurveSubGeometryVO(this._pool, this._curveSubGeometry);
+		return new CurveSubGeometryVO(this._curveSubGeometry, this._stage);
 	}
 }
 

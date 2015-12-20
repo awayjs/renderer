@@ -1,4 +1,5 @@
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
+import BlendMode					= require("awayjs-core/lib/image/BlendMode");
 
 import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
@@ -20,18 +21,18 @@ class BasicMaterialRender extends RenderBase
 	private _pass:BasicMaterialPass;
 
 
-	constructor(pool:RenderPool, material:BasicMaterial, renderableClass:IRenderableClass, stage:Stage)
+	constructor(material:BasicMaterial, renderableClass:IRenderableClass, renderPool:RenderPool)
 	{
-		super(pool, material, renderableClass, stage);
+		super(material, renderableClass, renderPool);
 
 		this._material = material;
 
 		this._pAddPass(this._pass = new BasicMaterialPass(this, material, renderableClass, this._stage));
 	}
 
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		super.dispose();
+		super.onClear(event);
 
 		this._material = null;
 	}

@@ -1,11 +1,10 @@
 import AttributesBuffer				= require("awayjs-core/lib/attributes/AttributesBuffer");
-import Image2D						= require("awayjs-core/lib/data/Image2D");
-import Sampler2D					= require("awayjs-core/lib/data/Sampler2D");
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
+import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
@@ -16,20 +15,19 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 
+import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
 
 /**
  * @class away.pool.RenderableListItem
  */
 class BillboardRenderable extends RenderableBase
 {
-	public static assetClass:IAssetClass = Billboard;
 
 	private static _samplerGeometry:Object = new Object();
 
@@ -46,16 +44,16 @@ class BillboardRenderable extends RenderableBase
 	 * @param pool
 	 * @param billboard
 	 */
-	constructor(pool:RenderablePool, billboard:Billboard, stage:Stage)
+	constructor(billboard:Billboard, renderer:RendererBase)
 	{
-		super(pool, billboard, billboard, billboard.material, stage);
+		super(billboard, billboard, billboard.material, renderer);
 
 		this._billboard = billboard;
 	}
 
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		super.dispose();
+		super.onClear(event);
 
 		this._billboard = null;
 	}
@@ -96,6 +94,11 @@ class BillboardRenderable extends RenderableBase
 		}
 
 		return geometry;
+	}
+
+	public _pGetRenderOwner():IRenderOwner
+	{
+		return this._billboard.material;
 	}
 
 	public static _iIncludeDependencies(shader:ShaderBase)

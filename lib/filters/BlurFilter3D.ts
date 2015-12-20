@@ -1,4 +1,4 @@
-import Image2D						= require("awayjs-core/lib/data/Image2D");
+import Image2D						= require("awayjs-core/lib/image/Image2D");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 

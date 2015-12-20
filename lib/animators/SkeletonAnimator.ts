@@ -380,8 +380,8 @@ class SkeletonAnimator extends AnimatorBase
 			targetSubGeometry.autoDeriveTangents = false;
 			targetSubGeometry.autoDeriveUVs = false;
 			//add event listeners for any changes in UV values on the source geometry
-			sourceSubGeometry.addEventListener(SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdateDelegate);
-			sourceSubGeometry.addEventListener(SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdateDelegate);
+			sourceSubGeometry.addEventListener(SubGeometryEvent.INVALIDATE_INDICES, this._onIndicesUpdateDelegate);
+			sourceSubGeometry.addEventListener(SubGeometryEvent.INVALIDATE_VERTICES, this._onVerticesUpdateDelegate);
 		}
 
 		return targetSubGeometry;

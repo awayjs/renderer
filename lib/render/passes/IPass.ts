@@ -1,4 +1,4 @@
-import ImageBase					= require("awayjs-core/lib/data/ImageBase");
+import ImageBase					= require("awayjs-core/lib/image/ImageBase");
 import IEventDispatcher				= require("awayjs-core/lib/events/IEventDispatcher");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 
@@ -48,7 +48,7 @@ interface IPass extends IEventDispatcher
 
 	_iDeactivate();
 
-	invalidatePass();
+	invalidate();
 
 	dispose();
 

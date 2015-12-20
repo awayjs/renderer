@@ -1,9 +1,7 @@
-import IWrapperClass				= require("awayjs-core/lib/library/IWrapperClass");
+import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
 import ISubGeometryVO				= require("awayjs-display/lib/vos/ISubGeometryVO");
-
-import SubGeometryVOPool			= require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
 
 /**
  * ISubGeometryVOClass is an interface for the constructable class definition ISubGeometryVO that is used to
@@ -11,12 +9,12 @@ import SubGeometryVOPool			= require("awayjs-renderergl/lib/vos/SubGeometryVOPoo
  *
  * @class away.render.ISubGeometryVOClass
  */
-interface ISubGeometryVOClass extends IWrapperClass
+interface ISubGeometryVOClass
 {
 	/**
 	 *
 	 */
-	new(pool:SubGeometryVOPool, subGeometry:SubGeometryBase):ISubGeometryVO;
+	new(subGeometry:SubGeometryBase, stage:Stage):ISubGeometryVO;
 }
 
 export = ISubGeometryVOClass;

@@ -1,4 +1,5 @@
 import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
+import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
@@ -16,15 +17,20 @@ import SkyboxRender					= require("awayjs-renderergl/lib/render/SkyboxRender");
 /**
  * @class away.pool.RenderPool
  */
-class RenderPool
+class RenderPool implements IAbstractionPool
 {
-	private static _classPool:Object = new Object();
+	private static _abstractionPool:Object = new Object();
 	
 	private _pool:Object = new Object();
 	private _renderableClass:IRenderableClass;
 	private _stage:Stage;
 	private _renderClass:IRenderClass;
-	
+
+	get stage():Stage
+	{
+		return this._stage;
+	}
+
 	/**
 	 * //TODO
 	 *
@@ -43,9 +49,9 @@ class RenderPool
 	 * @param renderableOwner
 	 * @returns IRenderable
 	 */
-	public getItem(renderOwner:IRenderOwner):RenderBase
+	public getAbstraction(renderOwner:IRenderOwner):RenderBase
 	{
-		return (this._pool[renderOwner.id] || (this._pool[renderOwner.id] = renderOwner._iAddRender(new (this._renderClass || RenderPool.getClass(renderOwner))(this, renderOwner, this._renderableClass, this._stage))))
+		return (this._pool[renderOwner.id] || (this._pool[renderOwner.id] = new (<IRenderClass> this._renderClass || RenderPool._abstractionPool[renderOwner.assetType])(renderOwner, this._renderableClass, this)));
 	}
 
 	/**
@@ -53,10 +59,8 @@ class RenderPool
 	 *
 	 * @param renderableOwner
 	 */
-	public disposeItem(renderOwner:IRenderOwner)
+	public clearAbstraction(renderOwner:IRenderOwner)
 	{
-		renderOwner._iRemoveRender(this._pool[renderOwner.id]);
-
 		delete this._pool[renderOwner.id];
 	}
 	
@@ -64,9 +68,9 @@ class RenderPool
 	 *
 	 * @param imageObjectClass
 	 */
-	public static registerClass(renderClass:IRenderClass, assetClass:IAssetClass)
+	public static registerAbstraction(renderClass:IRenderClass, assetClass:IAssetClass)
 	{
-		RenderPool._classPool[assetClass.assetType] = renderClass;
+		RenderPool._abstractionPool[assetClass.assetType] = renderClass;
 	}
 
 	/**
@@ -75,16 +79,7 @@ class RenderPool
 	 */
 	public static getClass(renderOwner:IRenderOwner):IRenderClass
 	{
-		return RenderPool._classPool[renderOwner.assetType];
-	}
-	
-
-	private static main = RenderPool.addDefaults();
-
-	private static addDefaults()
-	{
-		RenderPool.registerClass(BasicMaterialRender, BasicMaterial);
-		RenderPool.registerClass(SkyboxRender, Skybox);
+		return RenderPool._abstractionPool[renderOwner.assetType];
 	}
 }
 

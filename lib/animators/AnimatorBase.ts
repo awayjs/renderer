@@ -7,7 +7,7 @@ import getTimer						= require("awayjs-core/lib/utils/getTimer");
 import IAnimationSet				= require("awayjs-display/lib/animators/IAnimationSet");
 import IAnimator					= require("awayjs-display/lib/animators/IAnimator");
 import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
+import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 
@@ -15,7 +15,6 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import IAnimationState				= require("awayjs-renderergl/lib/animators/states/IAnimationState");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import TriangleSubMeshRenderable	= require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
 import AnimatorEvent				= require("awayjs-renderergl/lib/events/AnimatorEvent");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 
@@ -387,7 +386,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	}
 
 
-	public getRenderableSubGeometry(renderable:TriangleSubMeshRenderable, sourceSubGeometry:TriangleSubGeometry):TriangleSubGeometry
+	public getRenderableSubGeometry(renderable:RenderableBase, sourceSubGeometry:SubGeometryBase):SubGeometryBase
 	{
 		//nothing to do here
 		return sourceSubGeometry;

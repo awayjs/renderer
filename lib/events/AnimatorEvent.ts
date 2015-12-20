@@ -1,26 +1,26 @@
-import Event						= require("awayjs-core/lib/events/Event");
+import EventBase					= require("awayjs-core/lib/events/EventBase");
 
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 
 /**
  * Dispatched to notify changes in an animator's state.
  */
-class AnimatorEvent extends Event
+class AnimatorEvent extends EventBase
 {
 	/**
 	 * Defines the value of the type property of a start event object.
 	 */
-	public static START:string = "start";
+	public static START:string = "animatorStart";
 
 	/**
 	 * Defines the value of the type property of a stop event object.
 	 */
-	public static STOP:string = "stop";
+	public static STOP:string = "animatorStop";
 
 	/**
 	 * Defines the value of the type property of a cycle complete event object.
 	 */
-	public static CYCLE_COMPLETE:string = "cycle_complete";
+	public static CYCLE_COMPLETE:string = "animatorCycleComplete";
 
 	private _animator:AnimatorBase;
 
@@ -46,7 +46,7 @@ class AnimatorEvent extends Event
 	 *
 	 * @return An exact duplicate of the current event object.
 	 */
-	public clone():Event
+	public clone():AnimatorEvent
 	{
 		return new AnimatorEvent(this.type, this._animator);
 	}

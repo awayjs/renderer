@@ -1,6 +1,7 @@
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
+import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import LineSubMesh					= require("awayjs-display/lib/base/LineSubMesh");
 import LineSubGeometry				= require("awayjs-display/lib/base/LineSubGeometry");
@@ -12,12 +13,12 @@ import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
+import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
 import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
 
 /**
@@ -25,8 +26,6 @@ import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
  */
 class LineSubMeshRenderable extends RenderableBase
 {
-	public static assetClass:IAssetClass = LineSubMesh;
-
 	public static pONE_VECTOR:Float32Array = new Float32Array([1, 1, 1, 1]);
 	public static pFRONT_VECTOR:Float32Array = new Float32Array([0, 0, -1, 0]);
 
@@ -50,9 +49,9 @@ class LineSubMeshRenderable extends RenderableBase
 	 * @param level
 	 * @param dataOffset
 	 */
-	constructor(pool:RenderablePool, subMesh:LineSubMesh, stage:Stage)
+	constructor(subMesh:LineSubMesh, renderer:RendererBase)
 	{
-		super(pool, subMesh.parentMesh, subMesh, subMesh.material, stage);
+		super(subMesh, subMesh.parentMesh, subMesh.material, renderer);
 
 		this.subMesh = subMesh;
 
@@ -62,9 +61,9 @@ class LineSubMeshRenderable extends RenderableBase
 	}
 
 
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		super.dispose();
+		super.onClear(event);
 
 		this.subMesh = null;
 	}
@@ -78,6 +77,11 @@ class LineSubMeshRenderable extends RenderableBase
 	public _pGetSubGeometry():LineSubGeometry
 	{
 		return this.subMesh.subGeometry;
+	}
+
+	public _pGetRenderOwner():IRenderOwner
+	{
+		return this.subMesh.material;
 	}
 
 	public static _iIncludeDependencies(shader:ShaderBase)

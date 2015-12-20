@@ -4,8 +4,6 @@ import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-
 import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
 import RenderPassBase				= require("awayjs-renderergl/lib/render/RenderPassBase");
 import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
@@ -27,9 +25,9 @@ class DistanceRender extends RenderPassBase
 	 *
 	 * @param material The material to which this pass belongs.
 	 */
-	constructor(pool:RenderPool, renderOwner:IRenderOwner, renderableClass:IRenderableClass, stage:Stage)
+	constructor(renderOwner:IRenderOwner, renderableClass:IRenderableClass, renderPool:RenderPool)
 	{
-		super(pool, renderOwner, renderableClass, stage);
+		super(renderOwner, renderableClass, renderPool);
 
 		this._shader = new ShaderBase(renderableClass, this, this._stage);
 
@@ -88,10 +86,10 @@ class DistanceRender extends RenderPassBase
 			"frc " + temp1 + ", " + temp1 + "\n" +
 			"mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
 
-		if (shader.alphaThreshold > 0) {
+		if (shader.textureVO && shader.alphaThreshold > 0) {
 
 			var albedo:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
-			code += shader.texture._iGetFragmentCode(shader, albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+			code += shader.textureVO._iGetFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
 
 			var cutOffReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 
@@ -122,8 +120,8 @@ class DistanceRender extends RenderPassBase
 		data[index + 2] = 65025.0*f;
 		data[index + 3] = 16581375.0*f;
 
-		if (this._shader.alphaThreshold > 0) {
-			this._shader.texture.activate(this._shader);
+		if (this._shader.textureVO && this._shader.alphaThreshold > 0) {
+			this._shader.textureVO.activate();
 
 			data[index + 8] = this._shader.alphaThreshold;
 		}

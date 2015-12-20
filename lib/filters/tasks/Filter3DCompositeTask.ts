@@ -1,10 +1,11 @@
-import Image2D						= require("awayjs-core/lib/data/Image2D");
+import Image2D						= require("awayjs-core/lib/image/Image2D");
 
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import GL_ImageBase					= require("awayjs-stagegl/lib/image/GL_ImageBase");
 
 import Filter3DTaskBase				= require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
 
@@ -96,7 +97,7 @@ class Filter3DCompositeTask extends Filter3DTaskBase
 
 		var context:IContextGL = stage.context;
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 2);
-		stage.getImageObject(this._overlayTexture).activate(1, false, true, false);
+		(<GL_ImageBase> stage.getAbstraction(this._overlayTexture)).activate(1, false, true, false);
 	}
 	
 	public deactivate(stage:Stage)

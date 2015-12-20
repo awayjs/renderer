@@ -1,8 +1,10 @@
 import AttributesBuffer				= require("awayjs-core/lib/attributes/AttributesBuffer");
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
+import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import Camera						= require("awayjs-display/lib/entities/Camera");
@@ -11,12 +13,12 @@ import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
+import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
 import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
 
 /**
@@ -24,8 +26,6 @@ import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
  */
 class SkyboxRenderable extends RenderableBase
 {
-	public static assetClass:IAssetClass = Skybox;
-
 	public static vertexAttributesOffset:number = 1;
 
 	/**
@@ -36,14 +36,21 @@ class SkyboxRenderable extends RenderableBase
 	private _vertexArray:Float32Array;
 
 	/**
+	 *
+	 */
+	private _skybox:Skybox;
+
+	/**
 	 * //TODO
 	 *
 	 * @param pool
 	 * @param skybox
 	 */
-	constructor(pool:RenderablePool, skybox:Skybox, stage:Stage)
+	constructor(skybox:Skybox, renderer:RendererBase)
 	{
-		super(pool, skybox, skybox, skybox, stage);
+		super(skybox, skybox, skybox, renderer);
+
+		this._skybox = skybox;
 
 		this._vertexArray = new Float32Array([0, 0, 0, 0, 1, 1, 1, 1]);
 	}
@@ -67,6 +74,11 @@ class SkyboxRenderable extends RenderableBase
 		}
 
 		return geometry;
+	}
+
+	public _pGetRenderOwner():IRenderOwner
+	{
+		return this._skybox;
 	}
 
 	public static _iIncludeDependencies(shader:ShaderBase)

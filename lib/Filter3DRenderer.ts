@@ -1,7 +1,8 @@
-import Event						= require("awayjs-core/lib/events/Event");
-import Image2D						= require("awayjs-core/lib/data/Image2D");
+import Image2D						= require("awayjs-core/lib/image/Image2D");
 
 import Camera						= require("awayjs-display/lib/entities/Camera");
+
+import GL_ImageBase					= require("awayjs-stagegl/lib/image/GL_ImageBase");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
@@ -11,6 +12,7 @@ import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import IIndexBuffer					= require("awayjs-stagegl/lib/base/IIndexBuffer");
 import IVertexBuffer				= require("awayjs-stagegl/lib/base/IVertexBuffer");
 
+import RTTEvent						= require("awayjs-renderergl/lib/events/RTTEvent");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
 import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
 import Filter3DTaskBase				= require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
@@ -28,19 +30,19 @@ class Filter3DRenderer
 	private _rttManager:RTTBufferManager;
 	private _stage:Stage;
 	private _filterSizesInvalid:boolean = true;
-	private _onRTTResizeDelegate:(event:Event) => void;
+	private _onRTTResizeDelegate:(event:RTTEvent) => void;
 
 	constructor(stage:Stage)
 	{
-		this._onRTTResizeDelegate = (event:Event) => this.onRTTResize(event);
+		this._onRTTResizeDelegate = (event:RTTEvent) => this.onRTTResize(event);
 
 		this._stage = stage;
 		this._rttManager = RTTBufferManager.getInstance(stage);
-		this._rttManager.addEventListener(Event.RESIZE, this._onRTTResizeDelegate);
+		this._rttManager.addEventListener(RTTEvent.RESIZE, this._onRTTResizeDelegate);
 
 	}
 
-	private onRTTResize(event:Event)
+	private onRTTResize(event:RTTEvent)
 	{
 		this._filterSizesInvalid = true;
 	}
@@ -154,7 +156,7 @@ class Filter3DRenderer
 			stage.setRenderTarget(task.target);
 
 			context.setProgram(task.getProgram(stage));
-			stage.getImageObject(task.getMainInputTexture(stage)).activate(0, false, true, false);
+			(<GL_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(0, false, true, false);
 
 
 			if (!task.target) {
@@ -192,7 +194,7 @@ class Filter3DRenderer
 
 	public dispose()
 	{
-		this._rttManager.removeEventListener(Event.RESIZE, this._onRTTResizeDelegate);
+		this._rttManager.removeEventListener(RTTEvent.RESIZE, this._onRTTResizeDelegate);
 		this._rttManager = null;
 		this._stage = null;
 	}

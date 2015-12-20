@@ -1,6 +1,6 @@
 import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 
-import Event							= require("awayjs-core/lib/events/Event");
+import EventBase						= require("awayjs-core/lib/events/EventBase");
 
 import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import IAnimationState					= require("awayjs-renderergl/lib/animators/states/IAnimationState");
@@ -8,7 +8,7 @@ import IAnimationState					= require("awayjs-renderergl/lib/animators/states/IAn
 /**
  * Dispatched to notify changes in an animation state's state.
  */
-class AnimationStateEvent extends Event
+class AnimationStateEvent extends EventBase
 {
 	/**
 	 * Dispatched when a non-looping clip node inside an animation state reaches the end of its timeline.
@@ -66,7 +66,7 @@ class AnimationStateEvent extends Event
 	 *
 	 * @return An exact duplicate of the current object.
 	 */
-	public clone():Event
+	public clone():AnimationStateEvent
 	{
 		return new AnimationStateEvent(this.type, this._animator, this._animationState, this._animationNode);
 	}

@@ -1,7 +1,8 @@
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
+import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import LineSubGeometry				= require("awayjs-display/lib/base/LineSubGeometry");
 import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
@@ -13,12 +14,12 @@ import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
+import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
 import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
 
 /**
@@ -26,8 +27,6 @@ import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
  */
 class LineSegmentRenderable extends RenderableBase
 {
-	public static assetClass:IAssetClass = LineSegment;
-
 	private static _lineGeometry:Object = new Object();
 
 	public static pONE_VECTOR:Float32Array = new Float32Array([1, 1, 1, 1]);
@@ -53,9 +52,9 @@ class LineSegmentRenderable extends RenderableBase
 	 * @param level
 	 * @param dataOffset
 	 */
-	constructor(pool:RenderablePool, lineSegment:LineSegment, stage:Stage)
+	constructor(lineSegment:LineSegment, renderer:RendererBase)
 	{
-		super(pool, lineSegment, lineSegment, lineSegment.material, stage);
+		super(lineSegment, lineSegment, lineSegment.material, renderer);
 
 		this._lineSegment = lineSegment;
 
@@ -64,9 +63,9 @@ class LineSegmentRenderable extends RenderableBase
 		this._constants[1] = 1/255;
 	}
 
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		super.dispose();
+		super.onClear(event);
 
 		this._lineSegment = null;
 	}
@@ -107,6 +106,11 @@ class LineSegmentRenderable extends RenderableBase
 		geometry.setThickness(thickness);
 
 		return geometry;
+	}
+
+	public _pGetRenderOwner():IRenderOwner
+	{
+		return this._lineSegment.material;
 	}
 
 	public static _iIncludeDependencies(shader:ShaderBase)
@@ -230,7 +234,7 @@ class LineSegmentRenderable extends RenderableBase
 	 */
 	public _pGetOverflowRenderable(indexOffset:number):RenderableBase
 	{
-		return new LineSegmentRenderable(this._pool, <LineSegment> this.renderableOwner, this._stage);
+		return new LineSegmentRenderable(<LineSegment> this.renderableOwner, this._renderer);
 	}
 }
 

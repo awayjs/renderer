@@ -1,7 +1,8 @@
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
+import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import CurveSubMesh				    = require("awayjs-display/lib/base/CurveSubMesh");
 import CurveSubGeometry		    	= require("awayjs-display/lib/base/CurveSubGeometry");
@@ -12,13 +13,14 @@ import ContextWebGL					= require("awayjs-stagegl/lib/base/ContextWebGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 
+import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
+import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool")
 
 /**
  * @class away.pool.TriangleSubMeshRenderable
@@ -26,8 +28,6 @@ import RenderablePool				= require("awayjs-renderergl/lib/renderables/Renderable
 class CurveSubMeshRenderable extends RenderableBase
 {
 	private static _constants:Float32Array = new Float32Array([0, 1, 1, 0.5]);
-
-	public static assetClass:IAssetClass = CurveSubMesh;
 
 	public static vertexAttributesOffset:number = 2;
 
@@ -45,16 +45,16 @@ class CurveSubMeshRenderable extends RenderableBase
 	 * @param level
 	 * @param indexOffset
 	 */
-	constructor(pool:RenderablePool, subMesh:CurveSubMesh, stage:Stage)
+	constructor(subMesh:CurveSubMesh, renderer:RendererBase)
 	{
-		super(pool, subMesh.parentMesh, subMesh, subMesh.material, stage);
+		super(subMesh, subMesh.parentMesh, subMesh.material, renderer);
 
 		this.subMesh = subMesh;
 	}
 
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		super.dispose();
+		super.onClear(event);
 
 		this.subMesh = null;
 	}
@@ -66,7 +66,12 @@ class CurveSubMeshRenderable extends RenderableBase
 	 */
 	public _pGetSubGeometry():CurveSubGeometry
 	{
-		return (this.subMesh.animator)? <CurveSubGeometry> this.subMesh.animator.getRenderableSubGeometry(this, this.subMesh.subGeometry) : this.subMesh.subGeometry;
+		return (this.subMesh.animator)? <CurveSubGeometry> (<AnimatorBase> this.subMesh.animator).getRenderableSubGeometry(this, this.subMesh.subGeometry) : this.subMesh.subGeometry;
+	}
+
+	public _pGetRenderOwner():IRenderOwner
+	{
+		return this.subMesh.material;
 	}
 
 

@@ -11,6 +11,7 @@ import LightSources					= require("awayjs-display/lib/materials/LightSources");
 import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
+import GL_ImageBase					= require("awayjs-stagegl/lib/image/GL_ImageBase");
 
 import ILightingPass				= require("awayjs-renderergl/lib/render/passes/ILightingPass");
 
@@ -159,7 +160,7 @@ class LightingShader extends ShaderBase
 		super._iRender(renderable, camera, viewProjection);
 
 		if (this._lightingPass.lightPicker)
-			this._lightingPass.lightPicker.collectLights(renderable);
+			this._lightingPass.lightPicker.collectLights(renderable.sourceEntity);
 
 		if (this.usesLights)
 			this.updateLights();
@@ -357,10 +358,10 @@ class LightingShader extends ShaderBase
 			probe = lightProbes[ this._lightingPass.lightProbesOffset + i];
 
 			if (addDiff)
-				this._stage.getImageObject(probe.diffuseMap).activate(this.lightProbeDiffuseIndices[i], false, this.useSmoothTextures, this.useMipmapping);
+				(<GL_ImageBase> this._stage.getAbstraction(probe.diffuseMap)).activate(this.lightProbeDiffuseIndices[i], false, this.useSmoothTextures, this.useMipmapping);
 
 			if (addSpec)
-				this._stage.getImageObject(probe.specularMap).activate(this.lightProbeSpecularIndices[i], false, this.useSmoothTextures, this.useMipmapping);
+				(<GL_ImageBase> this._stage.getAbstraction(probe.specularMap)).activate(this.lightProbeSpecularIndices[i], false, this.useSmoothTextures, this.useMipmapping);
 		}
 
 		for (i = 0; i < len; ++i)

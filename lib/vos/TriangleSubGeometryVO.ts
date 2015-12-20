@@ -1,3 +1,4 @@
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
@@ -5,10 +6,11 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 
+import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
+
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import SubGeometryVOPool			= require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
 import SubGeometryVOBase			= require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
 
 /**
@@ -24,70 +26,62 @@ class TriangleSubGeometryVO extends SubGeometryVOBase
 
 	private _triangleSubGeometry:TriangleSubGeometry;
 
-	constructor(pool:SubGeometryVOPool, triangleSubGeometry:TriangleSubGeometry)
+	constructor(triangleSubGeometry:TriangleSubGeometry, stage:Stage)
 	{
-		super(pool, triangleSubGeometry);
+		super(triangleSubGeometry, stage);
 
 		this._triangleSubGeometry = triangleSubGeometry;
-
-		this.invalidateVertices(this._triangleSubGeometry.positions);
-		this.invalidateVertices(this._triangleSubGeometry.normals);
-		this.invalidateVertices(this._triangleSubGeometry.tangents);
-		this.invalidateVertices(this._triangleSubGeometry.uvs);
-		this.invalidateVertices(this._triangleSubGeometry.secondaryUVs);
-		this.invalidateVertices(this._triangleSubGeometry.jointIndices);
-		this.invalidateVertices(this._triangleSubGeometry.jointWeights);
 	}
 
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		super.dispose();
+		super.onClear(event);
 
-		this.disposeVertices(this._triangleSubGeometry.positions);
-		this.disposeVertices(this._triangleSubGeometry.normals);
-		this.disposeVertices(this._triangleSubGeometry.tangents);
-		this.disposeVertices(this._triangleSubGeometry.uvs);
-		this.disposeVertices(this._triangleSubGeometry.secondaryUVs);
-		this.disposeVertices(this._triangleSubGeometry.jointIndices);
-		this.disposeVertices(this._triangleSubGeometry.jointWeights);
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._triangleSubGeometry.positions));
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._triangleSubGeometry.normals));
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._triangleSubGeometry.tangents));
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._triangleSubGeometry.uvs));
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._triangleSubGeometry.secondaryUVs));
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._triangleSubGeometry.jointIndices));
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._triangleSubGeometry.jointWeights));
 
 		this._triangleSubGeometry = null;
 	}
 
-	public _render(shader:ShaderBase, stage:Stage)
+	public _render(shader:ShaderBase)
 	{
 		if (shader.uvBufferIndex >= 0)
-			this.activateVertexBufferVO(shader.uvBufferIndex, this._triangleSubGeometry.uvs, stage);
+			this.activateVertexBufferVO(shader.uvBufferIndex, this._triangleSubGeometry.uvs);
 
 		if (shader.secondaryUVBufferIndex >= 0)
-			this.activateVertexBufferVO(shader.secondaryUVBufferIndex, this._triangleSubGeometry.secondaryUVs, stage);
+			this.activateVertexBufferVO(shader.secondaryUVBufferIndex, this._triangleSubGeometry.secondaryUVs);
 
 		if (shader.normalBufferIndex >= 0)
-			this.activateVertexBufferVO(shader.normalBufferIndex, this._triangleSubGeometry.normals, stage);
+			this.activateVertexBufferVO(shader.normalBufferIndex, this._triangleSubGeometry.normals);
 
 		if (shader.tangentBufferIndex >= 0)
-			this.activateVertexBufferVO(shader.tangentBufferIndex, this._triangleSubGeometry.tangents, stage);
+			this.activateVertexBufferVO(shader.tangentBufferIndex, this._triangleSubGeometry.tangents);
 
 		if (shader.jointIndexIndex >= 0)
-			this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleSubGeometry.jointIndices, stage);
+			this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleSubGeometry.jointIndices);
 
 		if (shader.jointWeightIndex >= 0)
-			this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleSubGeometry.jointWeights, stage);
+			this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleSubGeometry.jointWeights);
 
-		this.activateVertexBufferVO(0, this._triangleSubGeometry.positions, stage);
+		this.activateVertexBufferVO(0, this._triangleSubGeometry.positions);
 
 
-		super._render(shader, stage);
+		super._render(shader);
 	}
 
-	public _drawElements(firstIndex:number, numIndices:number, stage:Stage)
+	public _drawElements(firstIndex:number, numIndices:number)
 	{
-		this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
+		this.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
 	}
 
-	public _drawArrays(firstVertex:number, numVertices:number, stage:Stage)
+	public _drawArrays(firstVertex:number, numVertices:number)
 	{
-		stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
+		this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
 	}
 
 	/**
@@ -102,7 +96,7 @@ class TriangleSubGeometryVO extends SubGeometryVOBase
 	 */
 	public _pGetOverflowSubGeometry():SubGeometryVOBase
 	{
-		return new TriangleSubGeometryVO(this._pool, this._triangleSubGeometry);
+		return new TriangleSubGeometryVO(this._triangleSubGeometry, this._stage);
 	}
 }
 

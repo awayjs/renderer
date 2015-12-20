@@ -1,6 +1,6 @@
-import Error						= require("awayjs-core/lib/errors/Error");
+import ErrorBase					= require("awayjs-core/lib/errors/ErrorBase");
 
-class AnimationSetError extends Error
+class AnimationSetError extends ErrorBase
 {
 	constructor(message:string)
 	{

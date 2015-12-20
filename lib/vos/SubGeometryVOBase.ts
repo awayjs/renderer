@@ -1,46 +1,43 @@
 import AttributesView				= require("awayjs-core/lib/attributes/AttributesView");
 import AttributesBuffer				= require("awayjs-core/lib/attributes/AttributesBuffer");
+import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
-import SubGeometryUtils				= require("awayjs-display/lib/utils/SubGeometryUtils");
-import AttributesBufferVO			= require("awayjs-stagegl/lib/vos/AttributesBufferVO");
+import GL_AttributesBuffer			= require("awayjs-stagegl/lib/attributes/GL_AttributesBuffer");
 
 import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
-import ISubGeometryVO				= require("awayjs-display/lib/vos/ISubGeometryVO");
+import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
+import SubGeometryUtils				= require("awayjs-display/lib/utils/SubGeometryUtils");
 
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import SubGeometryVOPool			= require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
-
 /**
  *
  * @class away.pool.SubGeometryVOBaseBase
  */
-class SubGeometryVOBase implements ISubGeometryVO
+class SubGeometryVOBase extends AbstractionBase
 {
 	public usages:number = 0;
-	public _pool:SubGeometryVOPool;
 	private _subGeometry:SubGeometryBase;
-	private _onIndicesUpdatedDelegate:(event:SubGeometryEvent) => void;
-	private _onIndicesDisposedDelegate:(event:SubGeometryEvent) => void;
-	private _onVerticesUpdatedDelegate:(event:SubGeometryEvent) => void;
-	private _onVerticesDisposedDelegate:(event:SubGeometryEvent) => void;
+	public _stage:Stage;
+	private _onInvalidateIndicesDelegate:(event:SubGeometryEvent) => void;
+	private _onClearIndicesDelegate:(event:SubGeometryEvent) => void;
+	private _onInvalidateVerticesDelegate:(event:SubGeometryEvent) => void;
+	private _onClearVerticesDelegate:(event:SubGeometryEvent) => void;
 	private _overflow:SubGeometryVOBase;
-	private _indices:AttributesBufferVO;
-	private _indicesDirty:boolean;
+	private _indices:GL_AttributesBuffer;
+	private _indicesUpdated:boolean;
 	private _vertices:Object = new Object();
-	private _verticesDirty:Object = new Object();
+	private _verticesUpdated:Object = new Object();
 
 	public _indexMappings:Array<number> = Array<number>();
 	
 	private _numIndices:number;
 
 	private _numVertices:number;
-
-	public invalid:boolean;
 
 	public get subGeometry()
 	{
@@ -54,32 +51,32 @@ class SubGeometryVOBase implements ISubGeometryVO
 		return this._numIndices;
 	}
 
-	constructor(pool:SubGeometryVOPool, subGeometry:SubGeometryBase)
+	constructor(subGeometry:SubGeometryBase, stage:Stage)
 	{
-		this._pool = pool;
+		super(subGeometry, stage);
+		
 		this._subGeometry = subGeometry;
+		this._stage = stage;
 
-		this._onIndicesUpdatedDelegate = (event:SubGeometryEvent) => this._onIndicesUpdated(event);
-		this._onIndicesDisposedDelegate = (event:SubGeometryEvent) => this._onIndicesDisposed(event);
-		this._onVerticesUpdatedDelegate = (event:SubGeometryEvent) => this._onVerticesUpdated(event);
-		this._onVerticesDisposedDelegate = (event:SubGeometryEvent) => this._onVerticesDisposed(event);
+		this._onInvalidateIndicesDelegate = (event:SubGeometryEvent) => this._onInvalidateIndices(event);
+		this._onClearIndicesDelegate = (event:SubGeometryEvent) => this._onClearIndices(event);
+		this._onInvalidateVerticesDelegate = (event:SubGeometryEvent) => this._onInvalidateVertices(event);
+		this._onClearVerticesDelegate = (event:SubGeometryEvent) => this._onClearVertices(event);
 
-		this._subGeometry.addEventListener(SubGeometryEvent.INDICES_DISPOSED, this._onIndicesDisposedDelegate);
-		this._subGeometry.addEventListener(SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdatedDelegate);
+		this._subGeometry.addEventListener(SubGeometryEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
+		this._subGeometry.addEventListener(SubGeometryEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
 
-		this._subGeometry.addEventListener(SubGeometryEvent.VERTICES_DISPOSED, this._onVerticesDisposedDelegate);
-		this._subGeometry.addEventListener(SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdatedDelegate);
-
-		this.invalidateIndices();
+		this._subGeometry.addEventListener(SubGeometryEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
+		this._subGeometry.addEventListener(SubGeometryEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
 	}
 
 	/**
 	 *
 	 */
-	public getIndexMappings(stage:Stage):Array<number>
+	public getIndexMappings():Array<number>
 	{
-		if (this._indicesDirty)
-			this._updateIndices(stage);
+		if (!this._indicesUpdated)
+			this._updateIndices();
 
 		return this._indexMappings;
 	}
@@ -87,10 +84,10 @@ class SubGeometryVOBase implements ISubGeometryVO
 	/**
 	 *
 	 */
-	public getIndexBufferVO(stage:Stage):AttributesBufferVO
+	public getIndexBufferVO():GL_AttributesBuffer
 	{
-		if (this._indicesDirty)
-			this._updateIndices(stage);
+		if (!this._indicesUpdated)
+			this._updateIndices();
 
 		return this._indices;
 	}
@@ -99,16 +96,16 @@ class SubGeometryVOBase implements ISubGeometryVO
 	/**
 	 *
 	 */
-	public getVertexBufferVO(attributesView:AttributesView, stage:Stage):AttributesBufferVO
+	public getVertexBufferVO(attributesView:AttributesView):GL_AttributesBuffer
 	{
 		//first check if indices need updating which may affect vertices
-		if (this._indicesDirty)
-			this._updateIndices(stage);
+		if (!this._indicesUpdated)
+			this._updateIndices();
 
 		var bufferId:number = attributesView.buffer.id;
 
-		if (this._verticesDirty[bufferId])
-			this._updateVertices(attributesView, stage);
+		if (!this._verticesUpdated[bufferId])
+			this._updateVertices(attributesView);
 
 		return this._vertices[bufferId];
 	}
@@ -116,95 +113,32 @@ class SubGeometryVOBase implements ISubGeometryVO
 	/**
 	 *
 	 */
-	public activateVertexBufferVO(index:number, attributesView:AttributesView, stage:Stage, dimensions:number = 0, offset:number = 0)
+	public activateVertexBufferVO(index:number, attributesView:AttributesView, dimensions:number = 0, offset:number = 0)
 	{
-		this.getVertexBufferVO(attributesView, stage).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset);
-	}
-	
-	/**
-	 *
-	 */
-	public invalidateIndices()
-	{
-		if (!this._subGeometry.indices)
-			return;
-
-		this._indicesDirty = true;
+		this.getVertexBufferVO(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset);
 	}
 
 	/**
 	 *
 	 */
-	public disposeIndices()
+	public onClear(event:AssetEvent)
 	{
-		if (this._indices) {
-			this._indices.dispose();
-			this._indices = null;
-		}
-	}
+		super.onClear(event);
 
+		this._subGeometry.removeEventListener(SubGeometryEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
+		this._subGeometry.removeEventListener(SubGeometryEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
 
-	/**
-	 * //TODO
-	 *
-	 * @param attributesView
-	 */
-	public invalidateVertices(attributesView:AttributesView)
-	{
-		if (!attributesView)
-			return;
+		this._subGeometry.removeEventListener(SubGeometryEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
+		this._subGeometry.removeEventListener(SubGeometryEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
 
-		var bufferId:number = attributesView.buffer.id;
-
-		this._verticesDirty[bufferId] = true;
-	}
-	
-	/**
-	 *
-	 */
-	public disposeVertices(attributesView:AttributesView)
-	{
-		if (!attributesView)
-			return;
-
-		var bufferId:number = attributesView.buffer.id;
-
-		if (this._vertices[bufferId]) {
-			this._vertices[bufferId].dispose();
-			delete this._vertices[bufferId];
-		}
-	}
-
-	/**
-	 *
-	 */
-	public dispose()
-	{
-		this._pool.disposeItem(this._subGeometry);
-		this._pool = null;
-
-		this._subGeometry.removeEventListener(SubGeometryEvent.INDICES_DISPOSED, this._onIndicesDisposedDelegate);
-		this._subGeometry.removeEventListener(SubGeometryEvent.INDICES_UPDATED, this._onIndicesUpdatedDelegate);
-
-		this._subGeometry.removeEventListener(SubGeometryEvent.VERTICES_DISPOSED, this._onVerticesDisposedDelegate);
-		this._subGeometry.removeEventListener(SubGeometryEvent.VERTICES_UPDATED, this._onVerticesUpdatedDelegate);
+		this._onClearIndices(new SubGeometryEvent(SubGeometryEvent.CLEAR_INDICES, this._subGeometry.indices));
 
 		this._subGeometry = null;
 
-		this.disposeIndices();
-
 		if (this._overflow) {
-			this._overflow.dispose();
+			this._overflow.onClear(event);
 			this._overflow = null;
 		}
-	}
-
-	/**
-	 *
-	 */
-	public invalidate()
-	{
-		this.invalid = true;
 	}
 
 	public _iGetFragmentCode(shader:ShaderBase, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, inputReg:ShaderRegisterElement = null):string
@@ -212,31 +146,31 @@ class SubGeometryVOBase implements ISubGeometryVO
 		throw new AbstractMethodError();
 	}
 
-	public _iRender(shader:ShaderBase, stage:Stage)
+	public _iRender(shader:ShaderBase)
 	{
-		if (this._indicesDirty)
-			this._updateIndices(stage);
+		if (!this._verticesUpdated)
+			this._updateIndices();
 
-		this._render(shader, stage);
+		this._render(shader);
 
 		if (this._overflow)
-			this._overflow._iRender(shader, stage);
+			this._overflow._iRender(shader);
 	}
 
-	public _render(shader:ShaderBase, stage:Stage)
+	public _render(shader:ShaderBase)
 	{
 		if (this._indices)
-			this._drawElements(0, this._numIndices, stage);
+			this._drawElements(0, this._numIndices);
 		else
-			this._drawArrays(0, this._numVertices, stage);
+			this._drawArrays(0, this._numVertices);
 	}
 
-	public _drawElements(firstIndex:number, numIndices:number, stage:Stage)
+	public _drawElements(firstIndex:number, numIndices:number)
 	{
 		throw new AbstractMethodError();
 	}
 
-	public _drawArrays(firstVertex:number, numVertices:number, stage:Stage)
+	public _drawArrays(firstVertex:number, numVertices:number)
 	{
 		throw new AbstractMethodError();
 	}
@@ -246,9 +180,9 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 *
 	 * @private
 	 */
-	public _updateIndices(stage:Stage, indexOffset:number = 0)
+	public _updateIndices(indexOffset:number = 0)
 	{
-		this._indices = stage.getAttributesBufferVO(SubGeometryUtils.getSubIndices(this._subGeometry.indices, this._subGeometry.numVertices, this._indexMappings, indexOffset));
+		this._indices = <GL_AttributesBuffer> this._pool.getAbstraction(SubGeometryUtils.getSubIndices(this._subGeometry.indices, this._subGeometry.numVertices, this._indexMappings, indexOffset));
 
 		this._numIndices = this._indices._attributesBuffer.count*this._subGeometry.indices.dimensions;
 
@@ -259,18 +193,18 @@ class SubGeometryVOBase implements ISubGeometryVO
 			if (!this._overflow)
 				this._overflow = this._pGetOverflowSubGeometry();
 
-			this._overflow._updateIndices(stage, indexOffset);
+			this._overflow._updateIndices(indexOffset);
 		} else if (this._overflow) {
-			this._overflow.dispose();
+			this._overflow.onClear(new AssetEvent(AssetEvent.CLEAR, this._subGeometry));
 			this._overflow = null;
 		}
 
-		this._indicesDirty = false;
-		
+		this._indicesUpdated = true;
+
 		//invalidate vertices if index mappings exist
 		if (this._indexMappings.length)
-			for (var key in this._verticesDirty)
-				this._verticesDirty[key] = true;
+			for (var key in this._verticesUpdated)
+				this._verticesUpdated[key] = false;
 	}
 
 
@@ -280,15 +214,15 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 * @param attributesView
 	 * @private
 	 */
-	private _updateVertices(attributesView:AttributesView, stage:Stage)
+	private _updateVertices(attributesView:AttributesView)
 	{
 		this._numVertices = attributesView.count;
 
 		var bufferId:number = attributesView.buffer.id;
 
-		this._vertices[bufferId] =  stage.getAttributesBufferVO(SubGeometryUtils.getSubVertices(attributesView.buffer, this._indexMappings));
+		this._vertices[bufferId] = <GL_AttributesBuffer> this._pool.getAbstraction(SubGeometryUtils.getSubVertices(attributesView.buffer, this._indexMappings));
 
-		this._verticesDirty[bufferId] = false;
+		this._verticesUpdated[bufferId] = true;
 	}
 
 	/**
@@ -297,9 +231,12 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 * @param event
 	 * @private
 	 */
-	private _onIndicesUpdated(event:SubGeometryEvent)
+	public _onInvalidateIndices(event:SubGeometryEvent)
 	{
-		this.invalidateIndices();
+		if (!event.attributesView)
+			return;
+
+		this._indicesUpdated = false;
 	}
 
 	/**
@@ -308,9 +245,13 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 * @param event
 	 * @private
 	 */
-	private _onIndicesDisposed(event:SubGeometryEvent)
+	public _onClearIndices(event:SubGeometryEvent)
 	{
-		this.disposeIndices();
+		if (!event.attributesView)
+			return;
+
+		this._indices.onClear(new AssetEvent(AssetEvent.CLEAR, event.attributesView));
+		this._indices = null;
 	}
 
 	/**
@@ -319,9 +260,14 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 * @param event
 	 * @private
 	 */
-	private _onVerticesUpdated(event:SubGeometryEvent)
+	public _onInvalidateVertices(event:SubGeometryEvent)
 	{
-		this.invalidateVertices(event.attributesView);
+		if (!event.attributesView)
+			return;
+
+		var bufferId:number = event.attributesView.buffer.id;
+
+		this._verticesUpdated[bufferId] = false;
 	}
 	
 	/**
@@ -330,9 +276,17 @@ class SubGeometryVOBase implements ISubGeometryVO
 	 * @param event
 	 * @private
 	 */
-	private _onVerticesDisposed(event:SubGeometryEvent)
+	public _onClearVertices(event:SubGeometryEvent)
 	{
-		this.disposeVertices(event.attributesView);
+		if (!event.attributesView)
+			return;
+
+		var bufferId:number = event.attributesView.buffer.id;
+
+		if (this._vertices[bufferId]) {
+			this._vertices[bufferId].onClear(new AssetEvent(AssetEvent.CLEAR, event.attributesView));
+			delete this._vertices[bufferId];
+		}
 	}
 
 	/**

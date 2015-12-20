@@ -1,7 +1,5 @@
 import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-
 import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
 import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
 import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
@@ -17,7 +15,7 @@ interface IRenderClass
 	/**
 	 *
 	 */
-	new(pool:RenderPool, renderOwner:IRenderOwner, renderableClass:IRenderableClass, stage:Stage):RenderBase;
+	new(renderOwner:IRenderOwner, renderableClass:IRenderableClass, pool:RenderPool):RenderBase;
 }
 
 export = IRenderClass;

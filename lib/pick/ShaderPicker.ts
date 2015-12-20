@@ -1,5 +1,5 @@
 import Debug							= require("awayjs-core/lib/utils/Debug");
-import BitmapImage2D					= require("awayjs-core/lib/data/BitmapImage2D");
+import BitmapImage2D					= require("awayjs-core/lib/image/BitmapImage2D");
 import Box								= require("awayjs-core/lib/geom/Box");
 import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils					= require("awayjs-core/lib/geom/Matrix3DUtils");
@@ -33,7 +33,6 @@ import ITextureBase						= require("awayjs-stagegl/lib/base/ITextureBase");
 import DefaultRenderer					= require("awayjs-renderergl/lib/DefaultRenderer");
 import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import SubGeometryVOBase				= require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
-import SubGeometryVOPool				= require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
 
 /**
  * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
@@ -238,7 +237,7 @@ class ShaderPicker implements IPicker
 
 			this._potentialFound = true;
 
-			this._context.setCulling((<MaterialBase> renderable.renderOwner).bothSides? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
+			this._context.setCulling((<MaterialBase> renderable.render.renderOwner).bothSides? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
 
 			this._interactives[this._interactiveId++] = renderable;
 			// color code so that reading from bitmapdata will contain the correct value
@@ -252,8 +251,8 @@ class ShaderPicker implements IPicker
 
 			var subGeometryVO:SubGeometryVOBase = this._hitRenderable.subGeometryVO;
 
-			subGeometryVO.activateVertexBufferVO(0, (<TriangleSubGeometry> subGeometryVO.subGeometry).positions, this._stage);
-			subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numIndices);
+			subGeometryVO.activateVertexBufferVO(0, (<TriangleSubGeometry> subGeometryVO.subGeometry).positions);
+			subGeometryVO.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numIndices);
 
 			renderable = renderable.next;
 		}
@@ -349,8 +348,8 @@ class ShaderPicker implements IPicker
 
 		var subGeometryVO:SubGeometryVOBase = this._hitRenderable.subGeometryVO;
 
-		subGeometryVO.activateVertexBufferVO(0, (<TriangleSubGeometry> subGeometryVO.subGeometry).positions, this._stage);
-		subGeometryVO.getIndexBufferVO(this._stage).draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numIndices);
+		subGeometryVO.activateVertexBufferVO(0, (<TriangleSubGeometry> subGeometryVO.subGeometry).positions);
+		subGeometryVO.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numIndices);
 
 		this._context.drawToBitmapImage2D(this._bitmapImage2D);
 

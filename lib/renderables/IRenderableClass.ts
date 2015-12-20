@@ -1,14 +1,12 @@
-import IWrapperClass				= require("awayjs-core/lib/library/IWrapperClass");
-
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
-import IRenderable					= require("awayjs-display/lib/pool/IRenderable");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
+import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
+import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
 
 /**
  * IRenderableClass is an interface for the constructable class definition IRenderable that is used to
@@ -16,14 +14,14 @@ import RenderablePool				= require("awayjs-renderergl/lib/renderables/Renderable
  *
  * @class away.render.IRenderableClass
  */
-interface IRenderableClass extends IWrapperClass
+interface IRenderableClass
 {
 	vertexAttributesOffset:number;
 
 	/**
 	 *
 	 */
-	new(pool:RenderablePool, renderableOwner:IRenderableOwner, stage:Stage):IRenderable;
+	new(renderableOwner:IRenderableOwner, renderer:RendererBase):RenderableBase;
 
 	_iIncludeDependencies(shader:ShaderBase);
 

@@ -1,14 +1,15 @@
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import LineSubGeometry				= require("awayjs-display/lib/base/LineSubGeometry");
+import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
 
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import SubGeometryVOPool			= require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
 import SubGeometryVOBase			= require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
 
 /**
@@ -24,48 +25,44 @@ class LineSubGeometryVO extends SubGeometryVOBase
 
 	private _lineSubGeometry:LineSubGeometry;
 
-	constructor(pool:SubGeometryVOPool, lineSubGeometry:LineSubGeometry)
+	constructor(lineSubGeometry:LineSubGeometry, stage:Stage)
 	{
-		super(pool, lineSubGeometry);
+		super(lineSubGeometry, stage);
 
 		this._lineSubGeometry = lineSubGeometry;
-
-		this.invalidateVertices(this._lineSubGeometry.positions);
-		this.invalidateVertices(this._lineSubGeometry.thickness);
-		this.invalidateVertices(this._lineSubGeometry.colors);
 	}
 
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		super.dispose();
+		super.onClear(event);
 
-		this.disposeVertices(this._lineSubGeometry.positions);
-		this.disposeVertices(this._lineSubGeometry.thickness);
-		this.disposeVertices(this._lineSubGeometry.colors);
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._lineSubGeometry.positions));
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._lineSubGeometry.thickness));
+		this._onClearVertices(new SubGeometryEvent(SubGeometryEvent.CLEAR_VERTICES, this._lineSubGeometry.colors));
 
 		this._lineSubGeometry = null;
 	}
 
-	public _render(shader:ShaderBase, stage:Stage)
+	public _render(shader:ShaderBase)
 	{
 		if (shader.colorBufferIndex >= 0)
-			this.activateVertexBufferVO(shader.colorBufferIndex, this._lineSubGeometry.colors, stage);
+			this.activateVertexBufferVO(shader.colorBufferIndex, this._lineSubGeometry.colors);
 
-		this.activateVertexBufferVO(0, this._lineSubGeometry.positions, stage, 3);
-		this.activateVertexBufferVO(1, this._lineSubGeometry.positions, stage, 3, 12);
-		this.activateVertexBufferVO(2, this._lineSubGeometry.thickness, stage);
+		this.activateVertexBufferVO(0, this._lineSubGeometry.positions, 3);
+		this.activateVertexBufferVO(1, this._lineSubGeometry.positions, 3, 12);
+		this.activateVertexBufferVO(2, this._lineSubGeometry.thickness);
 
-		super._render(shader, stage);
+		super._render(shader);
 	}
 
-	public _drawElements(firstIndex:number, numIndices:number, stage:Stage)
+	public _drawElements(firstIndex:number, numIndices:number)
 	{
-		this.getIndexBufferVO(stage).draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
+		this.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
 	}
 
-	public _drawArrays(firstVertex:number, numVertices:number, stage:Stage)
+	public _drawArrays(firstVertex:number, numVertices:number)
 	{
-		stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
+		this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
 	}
 
 	/**
@@ -80,7 +77,7 @@ class LineSubGeometryVO extends SubGeometryVOBase
 	 */
 	public _pGetOverflowSubGeometry():SubGeometryVOBase
 	{
-		return new LineSubGeometryVO(this._pool, this._lineSubGeometry);
+		return new LineSubGeometryVO(this._lineSubGeometry, this._stage);
 	}
 }
 

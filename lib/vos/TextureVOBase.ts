@@ -1,12 +1,12 @@
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
-import ImageBase					= require("awayjs-core/lib/data/ImageBase");
-import SamplerBase					= require("awayjs-core/lib/data/SamplerBase");
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
+import ImageBase					= require("awayjs-core/lib/image/ImageBase");
+import SamplerBase					= require("awayjs-core/lib/image/SamplerBase");
+import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
 
 import ContextGLTextureFormat		= require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import ImageObjectBase				= require("awayjs-stagegl/lib/pool/ImageObjectBase");
 
-import ITextureVO					= require("awayjs-display/lib/pool/ITextureVO");
 import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
@@ -14,62 +14,51 @@ import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import TextureVOPool				= require("awayjs-renderergl/lib/vos/TextureVOPool");
 
 /**
  *
  * @class away.pool.TextureVOBaseBase
  */
-class TextureVOBase implements ITextureVO
+class TextureVOBase extends AbstractionBase
 {
-	private _pool:TextureVOPool;
 	private _texture:TextureBase;
 	public _shader:ShaderBase;
 	public _stage:Stage;
 
-	public invalid:boolean;
-
-	constructor(pool:TextureVOPool, texture:TextureBase, shader:ShaderBase, stage:Stage)
+	constructor(texture:TextureBase, shader:ShaderBase)
 	{
-		this._pool = pool;
+		super(texture, shader);
+
 		this._texture = texture;
 		this._shader = shader;
-		this._stage = stage;
+		this._stage = shader._stage;
 	}
 
 	/**
 	 *
 	 */
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		this._pool.disposeItem(this._texture);
-		this._pool = null;
+		super.onClear(event);
+
 		this._texture = null;
 		this._shader = null;
 		this._stage = null;
 	}
 
-	/**
-	 *
-	 */
-	public invalidate()
-	{
-		this.invalid = true;
-	}
-
-	public _iGetFragmentCode(shader:ShaderBase, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedReg:ShaderRegisterData, inputReg:ShaderRegisterElement = null):string
+	public _iGetFragmentCode(targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedReg:ShaderRegisterData, inputReg:ShaderRegisterElement = null):string
 	{
 		throw new AbstractMethodError();
 	}
 
-	public _setRenderState(renderable:RenderableBase, shader:ShaderBase)
+	public _setRenderState(renderable:RenderableBase)
 	{
-		throw new AbstractMethodError();
+		//overidden for state logic
 	}
 
-	public activate(shader:ShaderBase)
+	public activate()
 	{
-		throw new AbstractMethodError();
+		//overridden for activation logic
 	}
 
 	public getTextureReg(image:ImageBase, regCache:ShaderRegisterCache, sharedReg:ShaderRegisterData):ShaderRegisterElement

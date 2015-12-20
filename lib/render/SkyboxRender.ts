@@ -1,5 +1,6 @@
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import BlendMode					= require("awayjs-core/lib/image/BlendMode");
 
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
@@ -7,7 +8,6 @@ import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
@@ -28,27 +28,27 @@ class SkyboxRender extends RenderPassBase
 	public _skybox:Skybox;
 	public _cubeTexture:TextureVOBase;
 
-	constructor(pool:RenderPool, skybox:Skybox, renderableClass:IRenderableClass, stage:Stage)
+	constructor(skybox:Skybox, renderableClass:IRenderableClass, renderPool:RenderPool)
 	{
-		super(pool, skybox, renderableClass, stage);
+		super(skybox, renderableClass, renderPool);
 
 		this._skybox = skybox;
 
 		this._shader = new ShaderBase(renderableClass, this, this._stage);
 
-		this._cubeTexture = this._shader.getTextureVO(this._skybox.cubeMap);
+		this._cubeTexture = <TextureVOBase> this._shader.getAbstraction(this._skybox.cubeMap);
 
 		this._pAddPass(this);
 	}
 
-	public dispose()
+	public onClear(event:AssetEvent)
 	{
-		super.dispose();
+		super.onClear(event);
+
+		this._cubeTexture.onClear(new AssetEvent(AssetEvent.CLEAR, this._skybox.cubeMap));
+		this._cubeTexture = null;
 
 		this._skybox = null;
-
-		this._cubeTexture.dispose();
-		this._cubeTexture = null;
 	}
 
 	/**
@@ -75,13 +75,13 @@ class SkyboxRender extends RenderPassBase
 	 */
 	public _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
-		return this._cubeTexture._iGetFragmentCode(shader, sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.localPositionVarying);
+		return this._cubeTexture._iGetFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.localPositionVarying);
 	}
 
 
 	public _iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		this._cubeTexture._setRenderState(renderable, this._shader);
+		this._cubeTexture._setRenderState(renderable);
 	}
 	/**
 	 * @inheritDoc
@@ -92,7 +92,7 @@ class SkyboxRender extends RenderPassBase
 
 		this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS);
 
-		this._cubeTexture.activate(this._shader);
+		this._cubeTexture.activate();
 	}
 }
 

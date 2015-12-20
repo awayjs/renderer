@@ -1,11 +1,10 @@
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
-import ImageBase					= require("awayjs-core/lib/data/ImageBase");
-import SamplerBase					= require("awayjs-core/lib/data/SamplerBase");
+import BlendMode					= require("awayjs-core/lib/image/BlendMode");
+import ImageBase					= require("awayjs-core/lib/image/ImageBase");
+import SamplerBase					= require("awayjs-core/lib/image/SamplerBase");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import AssetBase					= require("awayjs-core/lib/library/AssetBase");
 import ArgumentError				= require("awayjs-core/lib/errors/ArgumentError");
-import Event						= require("awayjs-core/lib/events/Event");
 import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
 
 import Camera						= require("awayjs-display/lib/entities/Camera");
@@ -17,6 +16,7 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage")
 
 import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
+import PassEvent					= require("awayjs-renderergl/lib/events/PassEvent");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
@@ -66,7 +66,7 @@ class PassBase extends EventDispatcher implements IPass
 
 		this._preserveAlpha = value;
 
-		this.invalidatePass();
+		this.invalidate();
 	}
 
 	/**
@@ -86,7 +86,7 @@ class PassBase extends EventDispatcher implements IPass
 
 		this._forceSeparateMVP = value;
 
-		this.invalidatePass();
+		this.invalidate();
 	}
 
 	/**
@@ -111,6 +111,16 @@ class PassBase extends EventDispatcher implements IPass
 	public getSamplerIndex(texture:TextureBase, index:number = 0):number
 	{
 		return this._renderOwner.getSamplerIndex(texture, index);
+	}
+
+	/**
+	 * Marks the shader program as invalid, so it will be recompiled before the next render.
+	 */
+	public invalidate()
+	{
+		this._shader.invalidateShader();
+
+		this.dispatchEvent(new PassEvent(PassEvent.INVALIDATE, this));
 	}
 
 	/**
@@ -167,18 +177,6 @@ class PassBase extends EventDispatcher implements IPass
 	public _iDeactivate()
 	{
 		this._shader._iDeactivate();
-	}
-
-	/**
-	 * Marks the shader program as invalid, so it will be recompiled before the next render.
-	 *
-	 * @param updateMaterial Indicates whether the invalidation should be performed on the entire material. Should always pass "true" unless it's called from the material itself.
-	 */
-	public invalidatePass()
-	{
-		this._shader.invalidateShader();
-
-		this.dispatchEvent(new Event(Event.CHANGE));
 	}
 
 	public _iIncludeDependencies(shader:ShaderBase)

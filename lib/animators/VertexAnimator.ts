@@ -17,7 +17,6 @@ import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/renderables/T
 import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import SubGeometryVOBase				= require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
-import SubGeometryVOPool				= require("awayjs-renderergl/lib/vos/SubGeometryVOPool");
 
 /**
  * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
@@ -26,7 +25,6 @@ import SubGeometryVOPool				= require("awayjs-renderergl/lib/vos/SubGeometryVOPo
  */
 class VertexAnimator extends AnimatorBase
 {
-	private _subGeometryVOPool:SubGeometryVOPool;
 	private _vertexAnimationSet:VertexAnimationSet;
 	private _poses:Array<Geometry> = new Array<Geometry>();
 	private _weights:Float32Array = new Float32Array([1, 0, 0, 0]);
@@ -46,7 +44,6 @@ class VertexAnimator extends AnimatorBase
 		this._vertexAnimationSet = vertexAnimationSet;
 		this._numPoses = vertexAnimationSet.numPoses;
 		this._blendMode = vertexAnimationSet.blendMode;
-		this._subGeometryVOPool = SubGeometryVOPool.getPool();
 	}
 
 	/**
@@ -156,13 +153,13 @@ class VertexAnimator extends AnimatorBase
 		for (; i < len; ++i) {
 			subGeom = <TriangleSubGeometry> this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
 
-			subGeometryVO = this._subGeometryVOPool.getItem(subGeom);
-			subGeometryVO._indexMappings = this._subGeometryVOPool.getItem(subMesh.subGeometry).getIndexMappings(stage);
+			subGeometryVO = <SubGeometryVOBase> stage.getAbstraction(subGeom);
+			subGeometryVO._indexMappings = (<SubGeometryVOBase> stage.getAbstraction(subMesh.subGeometry)).getIndexMappings();
 
-			subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeom.positions, stage);
+			subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeom.positions);
 
 			if (shader.normalDependencies > 0)
-				subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeom.normals, stage);
+				subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeom.normals);
 		}
 	}
 
@@ -170,15 +167,15 @@ class VertexAnimator extends AnimatorBase
 	{
 		stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
-		var subGeometryVO:SubGeometryVOBase = this._subGeometryVOPool.getItem(subGeometry);
+		var subGeometryVO:SubGeometryVOBase = <SubGeometryVOBase> stage.getAbstraction(subGeometry);
 
 		if (this._blendMode == VertexAnimationMode.ABSOLUTE) {
 			var len:number /*uint*/ = this._numPoses;
 			for (var i:number /*uint*/ = 1; i < len; ++i) {
-				subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeometry.positions, stage);
+				subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeometry.positions);
 
 				if (shader.normalDependencies > 0)
-					subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeometry.normals, stage);
+					subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeometry.normals);
 			}
 		}
 		// todo: set temp data for additive?

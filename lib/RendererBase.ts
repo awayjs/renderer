@@ -1,5 +1,5 @@
-import ImageBase					= require("awayjs-core/lib/data/ImageBase");
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import ImageBase					= require("awayjs-core/lib/image/ImageBase");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Plane3D						= require("awayjs-core/lib/geom/Plane3D");
 import Point						= require("awayjs-core/lib/geom/Point");
@@ -7,14 +7,14 @@ import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
 import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
+import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
+import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
 import ByteArray					= require("awayjs-core/lib/utils/ByteArray");
 
 import LineSubMesh					= require("awayjs-display/lib/base/LineSubMesh");
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import TriangleSubMesh				= require("awayjs-display/lib/base/TriangleSubMesh");
 import EntityListItem				= require("awayjs-display/lib/pool/EntityListItem");
-import IEntitySorter				= require("awayjs-display/lib/sort/IEntitySorter");
-import RenderableMergeSort			= require("awayjs-display/lib/sort/RenderableMergeSort");
 import IRenderer					= require("awayjs-display/lib/IRenderer");
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import DisplayObject				= require("awayjs-display/lib/base/DisplayObject");
@@ -34,13 +34,17 @@ import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import StageEvent					= require("awayjs-stagegl/lib/events/StageEvent");
 import StageManager					= require("awayjs-stagegl/lib/managers/StageManager");
-import ProgramData					= require("awayjs-stagegl/lib/pool/ProgramData");
+import ProgramData					= require("awayjs-stagegl/lib/image/ProgramData");
 
+import IRenderClass					= require("awayjs-renderergl/lib/render/IRenderClass");
 import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
+import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
 import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
-import RenderablePool				= require("awayjs-renderergl/lib/renderables/RenderablePool");
+import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
+import IEntitySorter				= require("awayjs-renderergl/lib/sort/IEntitySorter");
+import RenderableMergeSort			= require("awayjs-renderergl/lib/sort/RenderableMergeSort");
 
 
 /**
@@ -49,16 +53,19 @@ import RenderablePool				= require("awayjs-renderergl/lib/renderables/Renderable
  *
  * @class away.render.RendererBase
  */
-class RendererBase extends EventDispatcher implements IRenderer
+class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPool
 {
+	public static _abstractionClassPool:Object = new Object();
+
+	private _objectPools:Object = new Object();
+	private _abstractionPool:Object = new Object();
+
 	private _maskConfig:number;
 	private _activeMasksDirty:boolean;
 	private _activeMasksConfig:Array<Array<number>> = new Array<Array<number>>();
 	private _registeredMasks : Array<RenderableBase> = new Array<RenderableBase>();
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
-
-	public _pRenderablePool:RenderablePool;
 
 	public _pContext:IContextGL;
 	public _pStage:Stage;
@@ -100,8 +107,8 @@ class RendererBase extends EventDispatcher implements IRenderer
 	private _scissorUpdated:RendererEvent;
 	private _viewPortUpdated:RendererEvent;
 
-	private _onContextUpdateDelegate:Function;
-	private _onViewportUpdatedDelegate;
+	private _onContextUpdateDelegate:(event:StageEvent) => void;
+	private _onViewportUpdatedDelegate:(event:StageEvent) => void;
 
 	public _pNumElements:number = 0;
 
@@ -251,12 +258,12 @@ class RendererBase extends EventDispatcher implements IRenderer
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(stage:Stage = null, forceSoftware:boolean = false, profile:string = "baseline", mode:string = "auto")
+	constructor(stage:Stage = null, renderClass:IRenderClass = null, forceSoftware:boolean = false, profile:string = "baseline", mode:string = "auto")
 	{
 		super();
 
 		this._onViewportUpdatedDelegate = (event:StageEvent) => this.onViewportUpdated(event);
-		this._onContextUpdateDelegate = (event:Event) => this.onContextUpdate(event);
+		this._onContextUpdateDelegate = (event:StageEvent) => this.onContextUpdate(event);
 
 		//default sorting algorithm
 		this.renderableSorter = new RenderableMergeSort();
@@ -275,6 +282,43 @@ class RendererBase extends EventDispatcher implements IRenderer
 		if (this._pStage.context)
 			this._pContext = <IContextGL> this._pStage.context;
 
+		for (var i in RendererBase._abstractionClassPool)
+			this._objectPools[i] = new RenderPool(RendererBase._abstractionClassPool[i], this._pStage, renderClass);
+	}
+
+
+	public getAbstraction(renderableOwner:IRenderableOwner):RenderableBase
+	{
+		return (this._abstractionPool[renderableOwner.id] || (this._abstractionPool[renderableOwner.id] = new (<IRenderableClass> RendererBase._abstractionClassPool[renderableOwner.assetType])(renderableOwner, this)));
+	}
+
+	/**
+	 *
+	 * @param image
+	 */
+	public clearAbstraction(renderableOwner:IRenderableOwner)
+	{
+		this._abstractionPool[renderableOwner.id] = null;
+	}
+
+	/**
+	 * //TODO
+	 *
+	 * @param renderableClass
+	 * @returns RenderPool
+	 */
+	public getRenderPool(renderableOwner:IRenderableOwner):RenderPool
+	{
+		return this._objectPools[renderableOwner.assetType];
+	}
+
+	/**
+	 *
+	 * @param imageObjectClass
+	 */
+	public static registerAbstraction(renderable:IRenderableClass, assetClass:IAssetClass)
+	{
+		RendererBase._abstractionClassPool[assetClass.assetType] = renderable;
 	}
 
 	public activatePass(renderable:RenderableBase, pass:IPass, camera:Camera)
@@ -400,17 +444,15 @@ class RendererBase extends EventDispatcher implements IRenderer
 		return this._shareContext;
 	}
 
-	public get renderablePool():RenderablePool
-	{
-		return this._pRenderablePool;
-	}
-
 	/**
 	 * Disposes the resources used by the RendererBase.
 	 */
 	public dispose()
 	{
-		this._pRenderablePool.dispose();
+		for (var id in this._abstractionPool)
+			this._abstractionPool[id].clear();
+
+		this._abstractionPool = null;
 
 		this._pStage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._pStage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
@@ -703,7 +745,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 	/**
 	 * Assign the context once retrieved
 	 */
-	private onContextUpdate(event:Event)
+	private onContextUpdate(event:StageEvent)
 	{
 		this._pContext = <IContextGL> this._pStage.context;
 	}
@@ -830,7 +872,7 @@ class RendererBase extends EventDispatcher implements IRenderer
 
 	public _iApplyRenderableOwner(renderableOwner:IRenderableOwner)
 	{
-		var renderable:RenderableBase = this._pRenderablePool.getItem(renderableOwner);
+		var renderable:RenderableBase = this.getAbstraction(renderableOwner);
 		var render:RenderBase = renderable.render;
 
 		//set local vars for faster referencing
