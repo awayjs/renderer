@@ -2,7 +2,6 @@ import AttributesBuffer				= require("awayjs-core/lib/attributes/AttributesBuffe
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");

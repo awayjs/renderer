@@ -1,3 +1,4 @@
+import Short3Attributes				= require("awayjs-core/lib/attributes/Short3Attributes");
 import AttributesView				= require("awayjs-core/lib/attributes/AttributesView");
 import AttributesBuffer				= require("awayjs-core/lib/attributes/AttributesBuffer");
 import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
@@ -35,7 +36,7 @@ class SubGeometryVOBase extends AbstractionBase
 
 	public _indexMappings:Array<number> = Array<number>();
 	
-	private _numIndices:number;
+	private _numIndices:number = 0;
 
 	private _numVertices:number;
 
@@ -182,14 +183,20 @@ class SubGeometryVOBase extends AbstractionBase
 	 */
 	public _updateIndices(indexOffset:number = 0)
 	{
-		this._indices = <GL_AttributesBuffer> this._pool.getAbstraction(SubGeometryUtils.getSubIndices(this._subGeometry.indices, this._subGeometry.numVertices, this._indexMappings, indexOffset));
-
-		this._numIndices = this._indices._attributesBuffer.count*this._subGeometry.indices.dimensions;
+		var indices:Short3Attributes = this._subGeometry.indices;
+		if (indices) {
+			this._indices = <GL_AttributesBuffer> this._pool.getAbstraction(SubGeometryUtils.getSubIndices(indices, this._subGeometry.numVertices, this._indexMappings, indexOffset));
+			this._numIndices = this._indices._attributesBuffer.count*indices.dimensions;
+		} else {
+			this._indices = null;
+			this._numIndices = 0;
+			this._indexMappings  = Array<number>();
+		}
 
 		indexOffset += this._numIndices;
 
 		//check if there is more to split
-		if (indexOffset < this._subGeometry.indices.count*this._subGeometry.indices.dimensions) {
+		if (indices && indexOffset < indices.count*this._subGeometry.indices.dimensions) {
 			if (!this._overflow)
 				this._overflow = this._pGetOverflowSubGeometry();
 

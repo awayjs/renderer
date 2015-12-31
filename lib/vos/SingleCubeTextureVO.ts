@@ -1,5 +1,4 @@
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 import SamplerCube					= require("awayjs-core/lib/image/SamplerCube");
 
 import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
@@ -18,12 +17,6 @@ import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
  */
 class SingleCubeTextureVO extends TextureVOBase
 {
-	/**
-	 *
-	 */
-	public static assetClass:IAssetClass = SingleCubeTexture;
-
-
 	private _singleCubeTexture:SingleCubeTexture;
 	private _textureIndex:number;
 	private _imageIndex:number;

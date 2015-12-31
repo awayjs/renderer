@@ -1,5 +1,4 @@
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 
 import MappingMode					= require("awayjs-display/lib/textures/MappingMode");
@@ -18,10 +17,6 @@ import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
  */
 class Single2DTextureVO extends TextureVOBase
 {
-	/**
-	 *
-	 */
-	public static assetClass:IAssetClass = Single2DTexture;
 
 	private _single2DTexture:Single2DTexture;
 	private _textureIndex:number;

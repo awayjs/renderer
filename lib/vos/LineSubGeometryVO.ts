@@ -1,5 +1,4 @@
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
@@ -18,10 +17,6 @@ import SubGeometryVOBase			= require("awayjs-renderergl/lib/vos/SubGeometryVOBas
  */
 class LineSubGeometryVO extends SubGeometryVOBase
 {
-	/**
-	 *
-	 */
-	public static assetClass:IAssetClass = LineSubGeometry;
 
 	private _lineSubGeometry:LineSubGeometry;
 

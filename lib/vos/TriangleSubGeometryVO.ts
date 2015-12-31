@@ -1,5 +1,4 @@
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 
 import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
@@ -19,11 +18,6 @@ import SubGeometryVOBase			= require("awayjs-renderergl/lib/vos/SubGeometryVOBas
  */
 class TriangleSubGeometryVO extends SubGeometryVOBase
 {
-	/**
-	 *
-	 */
-	public static assetClass:IAssetClass = TriangleSubGeometry;
-
 	private _triangleSubGeometry:TriangleSubGeometry;
 
 	constructor(triangleSubGeometry:TriangleSubGeometry, stage:Stage)

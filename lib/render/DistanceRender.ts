@@ -1,6 +1,4 @@
-﻿import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
-
-import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
+﻿import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
