@@ -15113,7 +15113,6 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
-var CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
 var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
 var SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
 /**
@@ -15159,15 +15158,11 @@ var CurveSubGeometryVO = (function (_super) {
     CurveSubGeometryVO.prototype._pGetOverflowSubGeometry = function () {
         return new CurveSubGeometryVO(this._curveSubGeometry, this._stage);
     };
-    /**
-     *
-     */
-    CurveSubGeometryVO.assetClass = CurveSubGeometry;
     return CurveSubGeometryVO;
 })(SubGeometryVOBase);
 module.exports = CurveSubGeometryVO;
 
-},{"awayjs-display/lib/base/CurveSubGeometry":undefined,"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}],"awayjs-renderergl/lib/vos/ISubGeometryVOClass":[function(require,module,exports){
+},{"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}],"awayjs-renderergl/lib/vos/ISubGeometryVOClass":[function(require,module,exports){
 
 },{}],"awayjs-renderergl/lib/vos/ITextureVOClass":[function(require,module,exports){
 
@@ -15179,7 +15174,6 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
-var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
 var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
 var SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
 /**
@@ -15226,15 +15220,11 @@ var LineSubGeometryVO = (function (_super) {
     LineSubGeometryVO.prototype._pGetOverflowSubGeometry = function () {
         return new LineSubGeometryVO(this._lineSubGeometry, this._stage);
     };
-    /**
-     *
-     */
-    LineSubGeometryVO.assetClass = LineSubGeometry;
     return LineSubGeometryVO;
 })(SubGeometryVOBase);
 module.exports = LineSubGeometryVO;
 
-},{"awayjs-display/lib/base/LineSubGeometry":undefined,"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}],"awayjs-renderergl/lib/vos/Single2DTextureVO":[function(require,module,exports){
+},{"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}],"awayjs-renderergl/lib/vos/Single2DTextureVO":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -15242,7 +15232,6 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var MappingMode = require("awayjs-display/lib/textures/MappingMode");
-var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var TextureVOBase = require("awayjs-renderergl/lib/vos/TextureVOBase");
 /**
  *
@@ -15306,22 +15295,17 @@ var Single2DTextureVO = (function (_super) {
             data[index + 3] = sampler.imageRect.y / this._single2DTexture.image2D.height;
         }
     };
-    /**
-     *
-     */
-    Single2DTextureVO.assetClass = Single2DTexture;
     return Single2DTextureVO;
 })(TextureVOBase);
 module.exports = Single2DTextureVO;
 
-},{"awayjs-display/lib/textures/MappingMode":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-renderergl/lib/vos/TextureVOBase":"awayjs-renderergl/lib/vos/TextureVOBase"}],"awayjs-renderergl/lib/vos/SingleCubeTextureVO":[function(require,module,exports){
+},{"awayjs-display/lib/textures/MappingMode":undefined,"awayjs-renderergl/lib/vos/TextureVOBase":"awayjs-renderergl/lib/vos/TextureVOBase"}],"awayjs-renderergl/lib/vos/SingleCubeTextureVO":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
 var TextureVOBase = require("awayjs-renderergl/lib/vos/TextureVOBase");
 /**
  *
@@ -15365,15 +15349,11 @@ var SingleCubeTextureVO = (function (_super) {
         var sampler = renderable.samplers[this._samplerIndex];
         renderable.images[this._imageIndex].activate(this._textureIndex, false, sampler.smooth || this._shader.useSmoothTextures, sampler.mipmap || this._shader.useMipmapping);
     };
-    /**
-     *
-     */
-    SingleCubeTextureVO.assetClass = SingleCubeTexture;
     return SingleCubeTextureVO;
 })(TextureVOBase);
 module.exports = SingleCubeTextureVO;
 
-},{"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-renderergl/lib/vos/TextureVOBase":"awayjs-renderergl/lib/vos/TextureVOBase"}],"awayjs-renderergl/lib/vos/SubGeometryVOBase":[function(require,module,exports){
+},{"awayjs-renderergl/lib/vos/TextureVOBase":"awayjs-renderergl/lib/vos/TextureVOBase"}],"awayjs-renderergl/lib/vos/SubGeometryVOBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -15398,6 +15378,7 @@ var SubGeometryVOBase = (function (_super) {
         this._vertices = new Object();
         this._verticesUpdated = new Object();
         this._indexMappings = Array();
+        this._numIndices = 0;
         this._subGeometry = subGeometry;
         this._stage = stage;
         this._onInvalidateIndicesDelegate = function (event) { return _this._onInvalidateIndices(event); };
@@ -15508,11 +15489,19 @@ var SubGeometryVOBase = (function (_super) {
      */
     SubGeometryVOBase.prototype._updateIndices = function (indexOffset) {
         if (indexOffset === void 0) { indexOffset = 0; }
-        this._indices = this._pool.getAbstraction(SubGeometryUtils.getSubIndices(this._subGeometry.indices, this._subGeometry.numVertices, this._indexMappings, indexOffset));
-        this._numIndices = this._indices._attributesBuffer.count * this._subGeometry.indices.dimensions;
+        var indices = this._subGeometry.indices;
+        if (indices) {
+            this._indices = this._pool.getAbstraction(SubGeometryUtils.getSubIndices(indices, this._subGeometry.numVertices, this._indexMappings, indexOffset));
+            this._numIndices = this._indices._attributesBuffer.count * indices.dimensions;
+        }
+        else {
+            this._indices = null;
+            this._numIndices = 0;
+            this._indexMappings = Array();
+        }
         indexOffset += this._numIndices;
         //check if there is more to split
-        if (indexOffset < this._subGeometry.indices.count * this._subGeometry.indices.dimensions) {
+        if (indices && indexOffset < indices.count * this._subGeometry.indices.dimensions) {
             if (!this._overflow)
                 this._overflow = this._pGetOverflowSubGeometry();
             this._overflow._updateIndices(indexOffset);
@@ -15682,7 +15671,6 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
 var SubGeometryVOBase = require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
 /**
@@ -15741,15 +15729,11 @@ var TriangleSubGeometryVO = (function (_super) {
     TriangleSubGeometryVO.prototype._pGetOverflowSubGeometry = function () {
         return new TriangleSubGeometryVO(this._triangleSubGeometry, this._stage);
     };
-    /**
-     *
-     */
-    TriangleSubGeometryVO.assetClass = TriangleSubGeometry;
     return TriangleSubGeometryVO;
 })(SubGeometryVOBase);
 module.exports = TriangleSubGeometryVO;
 
-},{"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}]},{},["awayjs-renderergl/lib/RendererGL"])
+},{"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}]},{},["awayjs-renderergl/lib/RendererGL"])
 
 
 //# sourceMappingURL=awayjs-renderergl.js.map

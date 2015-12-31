@@ -6675,7 +6675,6 @@ declare module "awayjs-renderergl/lib/utils/PerspectiveMatrix3D" {
 
 declare module "awayjs-renderergl/lib/vos/CurveSubGeometryVO" {
 	import AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
@@ -6685,10 +6684,6 @@ declare module "awayjs-renderergl/lib/vos/CurveSubGeometryVO" {
 	 * @class away.pool.CurveSubGeometryVO
 	 */
 	class CurveSubGeometryVO extends SubGeometryVOBase {
-	    /**
-	     *
-	     */
-	    static assetClass: IAssetClass;
 	    private _curveSubGeometry;
 	    constructor(curveSubGeometry: CurveSubGeometry, stage: Stage);
 	    onClear(event: AssetEvent): void;
@@ -6753,7 +6748,6 @@ declare module "awayjs-renderergl/lib/vos/ITextureVOClass" {
 
 declare module "awayjs-renderergl/lib/vos/LineSubGeometryVO" {
 	import AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
@@ -6763,10 +6757,6 @@ declare module "awayjs-renderergl/lib/vos/LineSubGeometryVO" {
 	 * @class away.pool.LineSubGeometryVO
 	 */
 	class LineSubGeometryVO extends SubGeometryVOBase {
-	    /**
-	     *
-	     */
-	    static assetClass: IAssetClass;
 	    private _lineSubGeometry;
 	    constructor(lineSubGeometry: LineSubGeometry, stage: Stage);
 	    onClear(event: AssetEvent): void;
@@ -6791,7 +6781,6 @@ declare module "awayjs-renderergl/lib/vos/LineSubGeometryVO" {
 
 declare module "awayjs-renderergl/lib/vos/Single2DTextureVO" {
 	import AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
@@ -6804,10 +6793,6 @@ declare module "awayjs-renderergl/lib/vos/Single2DTextureVO" {
 	 * @class away.pool.Single2DTextureVO
 	 */
 	class Single2DTextureVO extends TextureVOBase {
-	    /**
-	     *
-	     */
-	    static assetClass: IAssetClass;
 	    private _single2DTexture;
 	    private _textureIndex;
 	    private _imageIndex;
@@ -6832,7 +6817,6 @@ declare module "awayjs-renderergl/lib/vos/Single2DTextureVO" {
 
 declare module "awayjs-renderergl/lib/vos/SingleCubeTextureVO" {
 	import AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
 	import RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
@@ -6845,10 +6829,6 @@ declare module "awayjs-renderergl/lib/vos/SingleCubeTextureVO" {
 	 * @class away.pool.TextureDataBase
 	 */
 	class SingleCubeTextureVO extends TextureVOBase {
-	    /**
-	     *
-	     */
-	    static assetClass: IAssetClass;
 	    private _singleCubeTexture;
 	    private _textureIndex;
 	    private _imageIndex;
@@ -7027,7 +7007,6 @@ declare module "awayjs-renderergl/lib/vos/TextureVOBase" {
 
 declare module "awayjs-renderergl/lib/vos/TriangleSubGeometryVO" {
 	import AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
@@ -7037,10 +7016,6 @@ declare module "awayjs-renderergl/lib/vos/TriangleSubGeometryVO" {
 	 * @class away.pool.TriangleSubGeometryVO
 	 */
 	class TriangleSubGeometryVO extends SubGeometryVOBase {
-	    /**
-	     *
-	     */
-	    static assetClass: IAssetClass;
 	    private _triangleSubGeometry;
 	    constructor(triangleSubGeometry: TriangleSubGeometry, stage: Stage);
 	    onClear(event: AssetEvent): void;
