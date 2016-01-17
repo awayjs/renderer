@@ -1,5 +1,9 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
+import ImageBase					= require("awayjs-core/lib/image/ImageBase");
+import SamplerBase					= require("awayjs-core/lib/image/SamplerBase");
+import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
+
 import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
 
 import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
@@ -7,8 +11,12 @@ import Camera						= require("awayjs-display/lib/entities/Camera");
 import RenderOwnerEvent				= require("awayjs-display/lib/events/RenderOwnerEvent");
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
+import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
+import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import GL_ImageBase					= require("awayjs-stagegl/lib/image/GL_ImageBase");
+import GL_SamplerBase				= require("awayjs-stagegl/lib/image/GL_SamplerBase");
 
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import PassEvent					= require("awayjs-renderergl/lib/events/PassEvent");
@@ -39,7 +47,11 @@ class RenderBase extends AbstractionBase
 	private _renderOrderId:number;
 	private _invalidAnimation:boolean = true;
 	private _invalidRender:boolean = true;
+	private _invalidImages:boolean = true;
 	private _passes:Array<IPass> = new Array<IPass>();
+	private _imageIndices:Object = new Object();
+	private _numImages:number;
+
 
 
 
@@ -48,6 +60,9 @@ class RenderBase extends AbstractionBase
 	private _onPassInvalidateDelegate:(event:PassEvent) => void;
 
 	public renderId:number;
+
+	public images:Array<GL_ImageBase> = new Array<GL_ImageBase>();
+	public samplers:Array<GL_SamplerBase> = new Array<GL_SamplerBase>();
 
 	/**
 	 * Indicates whether or not the renderable requires alpha blending during rendering.
@@ -78,6 +93,14 @@ class RenderBase extends AbstractionBase
 		return this._renderOwner;
 	}
 
+	public get numImages():number
+	{
+		if (this._invalidImages)
+			this._updateImages();
+
+		return this._numImages;
+	}
+
 	constructor(renderOwner:IRenderOwner, renderableClass:IRenderableClass, renderPool:RenderPool)
 	{
 		super(renderOwner, renderPool);
@@ -101,8 +124,6 @@ class RenderBase extends AbstractionBase
 		this._renderableClass._iIncludeDependencies(shader);
 
 		shader.alphaThreshold = this._renderOwner.alphaThreshold;
-		shader.useMipmapping = this._renderOwner.mipmap;
-		shader.useSmoothTextures = this._renderOwner.smooth;
 		shader.useImageRect = this._renderOwner.imageRect;
 		//shader.useUVBuffer = this._renderOwner.uvBuffer;
 
@@ -110,12 +131,17 @@ class RenderBase extends AbstractionBase
 			var material:MaterialBase = <MaterialBase> this._renderOwner;
 			shader.useAlphaPremultiplied = material.alphaPremultiplied;
 			shader.useBothSides = material.bothSides;
-			shader.repeatTextures = material.repeat;
 			shader.usesUVTransform = material.animateUVs;
 			shader.usesColorTransform = material.useColorTransform;
-			shader.texture = material.texture;
-			shader.color = material.color;
 		}
+	}
+
+	public getImageIndex(texture:TextureBase, index:number = 0):number
+	{
+		if (this._invalidImages)
+			this._updateImages();
+
+		return this._imageIndices[texture.id][index];
 	}
 
 	/**
@@ -159,6 +185,7 @@ class RenderBase extends AbstractionBase
 			this._passes[i].invalidate();
 
 		this._invalidAnimation = true;
+		this._invalidImages = true;
 	}
 
 	/**
@@ -199,6 +226,36 @@ class RenderBase extends AbstractionBase
 		}
 
 		this._renderOrderId = renderOrderId;
+	}
+
+	private _updateImages()
+	{
+		this._invalidImages = false;
+
+		var numTextures:number = this._renderOwner.getNumTextures();
+		var texture:TextureBase;
+		var numImages:number;
+		var images:Array<number>;
+		var image:ImageBase;
+		var sampler:SamplerBase;
+		var index:number = 0;
+
+		for (var i:number = 0; i < numTextures; i++) {
+			texture = this._renderOwner.getTextureAt(i);
+			numImages = texture.getNumImages();
+			images = this._imageIndices[texture.id] = new Array<number>();
+			for (var j:number = 0; j < numImages; j++) {
+				image = texture.getImageAt(j) || (this._renderOwner.style? this._renderOwner.style.getImageAt(texture, j) : null) || DefaultMaterialManager.getDefaultImage2D();
+				this.images[index] = <GL_ImageBase> this._stage.getAbstraction(image);
+
+				sampler = texture.getSamplerAt(j) || (this._renderOwner.style? this._renderOwner.style.getSamplerAt(texture, j) : null) || DefaultMaterialManager.getDefaultSampler();
+				this.samplers[index] = <GL_SamplerBase> this._stage.getAbstraction(sampler);
+
+				images[j] = index++;
+			}
+		}
+
+		this._numImages = index;
 	}
 
 	/**

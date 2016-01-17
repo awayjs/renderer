@@ -9,6 +9,7 @@ import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
 
 /**
  * DepthRender forms an abstract base class for the default shaded materials provided by Stage,
@@ -17,6 +18,7 @@ import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderReg
 class DepthRender extends RenderPassBase
 {
 	private _fragmentConstantsIndex:number;
+	private _textureVO:TextureVOBase;
 
 	/**
 	 *
@@ -34,6 +36,12 @@ class DepthRender extends RenderPassBase
 		this._pAddPass(this);
 	}
 
+	public invalidate()
+	{
+		super.invalidate();
+
+		this._textureVO = this._renderOwner.getTextureAt(0)? this._shader.getAbstraction(this._renderOwner.getTextureAt(0)) : null;
+	}
 
 	public _iIncludeDependencies(shader:ShaderBase)
 	{
@@ -87,10 +95,10 @@ class DepthRender extends RenderPassBase
 		//codeF += "mov ft1.w, fc1.w	\n" +
 		//    "mov ft0.w, fc0.x	\n";
 
-		if (shader.textureVO && shader.alphaThreshold > 0) {
+		if (this._textureVO && shader.alphaThreshold > 0) {
 
 			var albedo:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
-			code += shader.textureVO._iGetFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+			code += this._textureVO._iGetFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
 
 			var cutOffReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 
@@ -113,8 +121,8 @@ class DepthRender extends RenderPassBase
 	{
 		super._iActivate(camera);
 
-		if (this._shader.textureVO && this._shader.alphaThreshold > 0) {
-			this._shader.textureVO.activate();
+		if (this._textureVO && this._shader.alphaThreshold > 0) {
+			this._textureVO.activate(this);
 
 			this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
 		}

@@ -93,17 +93,6 @@ class RenderPassBase extends RenderBase implements IPass
 		this._shader._iDeactivate();
 	}
 
-	public getImageIndex(image:ImageBase):number
-	{
-		return this._renderOwner.getImageIndex(image);
-	}
-
-	public getSamplerIndex(texture:TextureBase, index:number = 0):number
-	{
-		return this._renderOwner.getSamplerIndex(texture, index);
-	}
-
-
 	public _iInitConstantData(shader:ShaderBase)
 	{
 

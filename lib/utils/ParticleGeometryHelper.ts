@@ -7,7 +7,6 @@ import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 import Geometry							= require("awayjs-display/lib/base/Geometry");
 import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
-import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
 import ParticleData						= require("awayjs-renderergl/lib/animators/data/ParticleData");
 import ParticleGeometry					= require("awayjs-renderergl/lib/base/ParticleGeometry");

@@ -1,10 +1,11 @@
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import SamplerCube					= require("awayjs-core/lib/image/SamplerCube");
+
+import GL_SamplerCube				= require("awayjs-stagegl/lib/image/GL_SamplerCube");
 
 import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
 
+import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
@@ -20,7 +21,6 @@ class SingleCubeTextureVO extends TextureVOBase
 	private _singleCubeTexture:SingleCubeTexture;
 	private _textureIndex:number;
 	private _imageIndex:number;
-	private _samplerIndex:number;
 
 	constructor(singleCubeTexture:SingleCubeTexture, shader:ShaderBase)
 	{
@@ -54,23 +54,39 @@ class SingleCubeTextureVO extends TextureVOBase
 	 */
 	public _iGetFragmentCode(targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedReg:ShaderRegisterData, inputReg:ShaderRegisterElement):string
 	{
-		var filter:string;
-		var format:string = this.getFormatString(this._singleCubeTexture.imageCube);
-		var filter:string = (this._shader.useSmoothTextures)? (this._shader.useMipmapping? "linear,miplinear" : "linear") : (this._shader.useMipmapping? "nearest,mipnearest" : "nearest");
+		var format:string = "";//this.getFormatString(this._singleCubeTexture.imageCube);
+		var filter:string = "linear,miplinear";
 
-		var textureReg:ShaderRegisterElement = this.getTextureReg(this._singleCubeTexture.imageCube, regCache, sharedReg);
+		this._imageIndex = this._shader.getImageIndex(this._singleCubeTexture, 0);
+
+		var textureReg:ShaderRegisterElement = this.getTextureReg(this._imageIndex, regCache, sharedReg);
 		this._textureIndex = textureReg.index;
-		this._imageIndex = this._shader.getImageIndex(this._singleCubeTexture.imageCube);
-		this._samplerIndex = this._shader.getSamplerIndex(this._singleCubeTexture, 0);
 
 		return "tex " + targetReg + ", " + inputReg + ", " + textureReg + " <cube," + format + filter + ">\n";
 	}
 
+
+	public activate(render:RenderBase)
+	{
+		var sampler:GL_SamplerCube = <GL_SamplerCube> render.samplers[this._imageIndex];
+
+		if (sampler)
+			sampler.activate(this._textureIndex);
+
+		if (render.images[this._imageIndex])
+			render.images[this._imageIndex].activate(this._textureIndex, sampler._sampler.mipmap);
+
+	}
+
 	public _setRenderState(renderable:RenderableBase)
 	{
-		var sampler:SamplerCube = <SamplerCube> renderable.samplers[this._samplerIndex];
+		var sampler:GL_SamplerCube = <GL_SamplerCube> renderable.samplers[this._imageIndex];
 
-		renderable.images[this._imageIndex].activate(this._textureIndex, false, sampler.smooth || this._shader.useSmoothTextures, sampler.mipmap || this._shader.useMipmapping);
+		if (sampler)
+			sampler.activate(this._textureIndex);
+
+		if (renderable.images[this._imageIndex] && sampler) //TODO: allow image to be re-written without accompanying sampler on the renderable
+			renderable.images[this._imageIndex].activate(this._textureIndex, sampler._sampler.mipmap);
 	}
 }
 

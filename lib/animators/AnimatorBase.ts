@@ -335,7 +335,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 		if (dist > 0) {
 			len = this._pOwners.length;
 			for (var i:number /*uint*/ = 0; i < len; ++i)
-				this._pOwners[i].translateLocal(delta, dist);
+				this._pOwners[i].transform.translateLocal(delta, dist);
 		}
 	}
 

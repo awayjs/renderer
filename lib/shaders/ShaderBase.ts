@@ -49,7 +49,6 @@ class ShaderBase implements IAbstractionPool
 
 	private _renderableClass:IRenderableClass;
 	private _pass:IPass;
-	private _texture:TextureBase;
 	public _stage:Stage;
 	private _programData:ProgramData;
 
@@ -127,6 +126,8 @@ class ShaderBase implements IAbstractionPool
 	 */
 	public numUsedVaryings:number;
 
+	public numLights:number;
+
 	public animatableAttributes:Array<string>;
 	public animationTargetRegisters:Array<string>;
 	public uvSource:string;
@@ -134,14 +135,9 @@ class ShaderBase implements IAbstractionPool
 
 	public useAlphaPremultiplied:boolean;
 	public useBothSides:boolean;
-	public useMipmapping:boolean;
-	public useSmoothTextures:boolean;
-	public repeatTextures:boolean;
 	public usesUVTransform:boolean;
 	public usesColorTransform:boolean;
 	public alphaThreshold:number;
-	public textureVO:TextureVOBase;
-	public color:number;
 
 
 	//set ambient values to default
@@ -309,24 +305,6 @@ class ShaderBase implements IAbstractionPool
 	 */
 	public imageIndices:Array<number> = new Array<number>();
 
-	public get texture():TextureBase
-	{
-		return this._texture;
-	}
-
-	public set texture(value:TextureBase)
-	{
-		if (this._texture == value)
-			return;
-
-		if (this._texture)
-			this.textureVO.onClear(new AssetEvent(AssetEvent.CLEAR, this._texture));
-
-		this._texture = value;
-
-		if (this._texture)
-			this.textureVO = this.getAbstraction(this._texture);
-	}
 	/**
 	 * Creates a new MethodCompilerVO object.
 	 */
@@ -361,14 +339,9 @@ class ShaderBase implements IAbstractionPool
 		ShaderBase._abstractionClassPool[assetClass.assetType] = texture;
 	}
 
-	public getImageIndex(image:ImageBase):number
+	public getImageIndex(texture:TextureBase, index:number = 0):number
 	{
-		return this._pass.getImageIndex(image);
-	}
-
-	public getSamplerIndex(texture:TextureBase, index:number = 0):number
-	{
-		return this._pass.getSamplerIndex(texture, index);
+		return this._pass.getImageIndex(texture, index);
 	}
 
 	public _iIncludeDependencies()
@@ -656,9 +629,6 @@ class ShaderBase implements IAbstractionPool
 
 	public dispose()
 	{
-		if (this.texture)
-			this.texture = null;
-
 		this._programData.dispose();
 		this._programData = null;
 	}

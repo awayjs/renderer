@@ -44,6 +44,13 @@ class TriangleSubGeometryVO extends SubGeometryVOBase
 
 	public _render(shader:ShaderBase)
 	{
+		//TODO: find a better way to update a concatenated buffer when autoderiving
+		if (shader.normalBufferIndex >= 0 && this._triangleSubGeometry.autoDeriveNormals)
+			this._triangleSubGeometry.normals;
+
+		if (shader.tangentBufferIndex >= 0 && this._triangleSubGeometry.autoDeriveTangents)
+			this._triangleSubGeometry.tangents;
+
 		if (shader.uvBufferIndex >= 0)
 			this.activateVertexBufferVO(shader.uvBufferIndex, this._triangleSubGeometry.uvs);
 
@@ -70,7 +77,7 @@ class TriangleSubGeometryVO extends SubGeometryVOBase
 
 	public _drawElements(firstIndex:number, numIndices:number)
 	{
-		this.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
+		this.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, firstIndex, numIndices);
 	}
 
 	public _drawArrays(firstVertex:number, numVertices:number)

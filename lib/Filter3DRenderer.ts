@@ -156,7 +156,7 @@ class Filter3DRenderer
 			stage.setRenderTarget(task.target);
 
 			context.setProgram(task.getProgram(stage));
-			(<GL_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(0, false, true, false);
+			(<GL_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(0, false);
 
 
 			if (!task.target) {

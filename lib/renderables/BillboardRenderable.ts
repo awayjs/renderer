@@ -9,7 +9,9 @@ import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
 import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
+import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
 import Camera						= require("awayjs-display/lib/entities/Camera");
+import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
@@ -65,14 +67,12 @@ class BillboardRenderable extends RenderableBase
 	 */
 	public _pGetSubGeometry():SubGeometryBase
 	{
-		var material:MaterialBase = this._billboard.material;
+		var texture:TextureBase = this._billboard.material.getTextureAt(0);
 
 		var id:number = -1;
 
-		if (material.texture) {
-			var index:number = material.getSamplerIndex(material.texture);
-			id = (this._billboard.getSamplerAt(index) || material.getSamplerAt(index)).id;
-		}
+		if (texture)
+			id = ((this.renderableOwner.style? this.renderableOwner.style.getSamplerAt(texture) || texture.getSamplerAt(0) : texture.getSamplerAt(0)) || DefaultMaterialManager.getDefaultSampler()).id;
 
 		var geometry:TriangleSubGeometry = BillboardRenderable._samplerGeometry[id];
 

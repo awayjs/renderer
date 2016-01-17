@@ -26,7 +26,7 @@ import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
 class SkyboxRender extends RenderPassBase
 {
 	public _skybox:Skybox;
-	public _cubeTexture:TextureVOBase;
+	public _texture:TextureVOBase;
 
 	constructor(skybox:Skybox, renderableClass:IRenderableClass, renderPool:RenderPool)
 	{
@@ -36,7 +36,7 @@ class SkyboxRender extends RenderPassBase
 
 		this._shader = new ShaderBase(renderableClass, this, this._stage);
 
-		this._cubeTexture = <TextureVOBase> this._shader.getAbstraction(this._skybox.cubeMap);
+		this._texture = <TextureVOBase> this._shader.getAbstraction(this._skybox.texture);
 
 		this._pAddPass(this);
 	}
@@ -45,8 +45,8 @@ class SkyboxRender extends RenderPassBase
 	{
 		super.onClear(event);
 
-		this._cubeTexture.onClear(new AssetEvent(AssetEvent.CLEAR, this._skybox.cubeMap));
-		this._cubeTexture = null;
+		this._texture.onClear(new AssetEvent(AssetEvent.CLEAR, this._skybox.texture));
+		this._texture = null;
 
 		this._skybox = null;
 	}
@@ -75,13 +75,15 @@ class SkyboxRender extends RenderPassBase
 	 */
 	public _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
-		return this._cubeTexture._iGetFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.localPositionVarying);
+		return this._texture._iGetFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.localPositionVarying);
 	}
 
 
 	public _iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		this._cubeTexture._setRenderState(renderable);
+		super._iRender(renderable, camera, viewProjection);
+
+		this._texture._setRenderState(renderable);
 	}
 	/**
 	 * @inheritDoc
@@ -92,7 +94,7 @@ class SkyboxRender extends RenderPassBase
 
 		this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS);
 
-		this._cubeTexture.activate();
+		this._texture.activate(this);
 	}
 }
 

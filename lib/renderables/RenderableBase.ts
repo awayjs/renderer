@@ -1,6 +1,7 @@
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import ImageBase					= require("awayjs-core/lib/image/ImageBase");
 import SamplerBase					= require("awayjs-core/lib/image/SamplerBase");
 import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
 
@@ -12,12 +13,12 @@ import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeome
 import IEntity						= require("awayjs-display/lib/entities/IEntity");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import RenderableOwnerEvent			= require("awayjs-display/lib/events/RenderableOwnerEvent");
-import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
-
+import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import GL_ImageBase					= require("awayjs-stagegl/lib/image/GL_ImageBase");
+import GL_SamplerBase				= require("awayjs-stagegl/lib/image/GL_SamplerBase");
 
 import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
@@ -105,7 +106,7 @@ class RenderableBase extends AbstractionBase
 
 	public images:Array<GL_ImageBase> = new Array<GL_ImageBase>();
 
-	public samplers:Array<SamplerBase> = new Array<SamplerBase>();
+	public samplers:Array<GL_SamplerBase> = new Array<GL_SamplerBase>();
 
 	public get subGeometryVO():SubGeometryVOBase
 	{
@@ -190,7 +191,7 @@ class RenderableBase extends AbstractionBase
 
 	private _onRenderOwnerUpdated(event:RenderableOwnerEvent)
 	{
-		this._geometryDirty = true;
+		this._renderOwnerDirty = true;
 	}
 
 	public _pGetSubGeometry():SubGeometryBase
@@ -288,19 +289,30 @@ class RenderableBase extends AbstractionBase
 			this._render.usages++;
 		}
 
-		//create a cache of image objects for the renderable
-		var numImages:number = renderOwner.getNumImages();
+		//create a cache of image & sampler objects for the renderable
+		var numImages:number = render.numImages;
 
 		this.images.length = numImages;
-		for (var i:number = 0; i < numImages; i++)
-			this.images[i] = <GL_ImageBase> this._stage.getAbstraction(this.renderableOwner.getImageAt(i) || renderOwner.getImageAt(i));
+		this.samplers.length = numImages;
 
-		//create a cache of sampler objects for the renderable
-		var numSamplers:number = renderOwner.getNumSamplers();
+		var numTextures:number = renderOwner.getNumTextures();
+		var texture:TextureBase;
+		var numImages:number;
+		var image:ImageBase;
+		var sampler:SamplerBase;
+		var index:number;
 
-		this.samplers.length = numSamplers;
-		for (var i:number = 0; i < numSamplers; i++)
-			this.samplers[i] = this.renderableOwner.getSamplerAt(i) || renderOwner.getSamplerAt(i);
+		for (var i:number = 0; i < numTextures; i++) {
+			texture = renderOwner.getTextureAt(i);
+			numImages = texture.getNumImages();
+			for (var j:number = 0; j < numImages; j++) {
+				index = render.getImageIndex(texture, j);
+				image =  this.renderableOwner.style? this.renderableOwner.style.getImageAt(texture, j) : null;
+				this.images[index] = image? <GL_ImageBase> this._stage.getAbstraction(image) : null;
+				sampler = this.renderableOwner.style? this.renderableOwner.style.getSamplerAt(texture, j) : null;
+				this.samplers[index] = sampler? <GL_SamplerBase> this._stage.getAbstraction(sampler) : null;
+			}
+		}
 	}
 }
 

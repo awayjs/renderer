@@ -60,7 +60,6 @@ class LightingShader extends ShaderBase
 	 */
 	public probeWeightsIndex:number;
 
-	public numLights:number;
 	public numDirectionalLights:number;
 	public numPointLights:number;
 	public numLightProbes:number;
@@ -358,10 +357,10 @@ class LightingShader extends ShaderBase
 			probe = lightProbes[ this._lightingPass.lightProbesOffset + i];
 
 			if (addDiff)
-				(<GL_ImageBase> this._stage.getAbstraction(probe.diffuseMap)).activate(this.lightProbeDiffuseIndices[i], false, this.useSmoothTextures, this.useMipmapping);
+				(<GL_ImageBase> this._stage.getAbstraction(probe.diffuseMap)).activate(this.lightProbeDiffuseIndices[i], probe.diffuseSampler.mipmap);
 
 			if (addSpec)
-				(<GL_ImageBase> this._stage.getAbstraction(probe.specularMap)).activate(this.lightProbeSpecularIndices[i], false, this.useSmoothTextures, this.useMipmapping);
+				(<GL_ImageBase> this._stage.getAbstraction(probe.specularMap)).activate(this.lightProbeSpecularIndices[i], probe.diffuseSampler.mipmap);
 		}
 
 		for (i = 0; i < len; ++i)

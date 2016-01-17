@@ -97,7 +97,7 @@ class Filter3DCompositeTask extends Filter3DTaskBase
 
 		var context:IContextGL = stage.context;
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 2);
-		(<GL_ImageBase> stage.getAbstraction(this._overlayTexture)).activate(1, false, true, false);
+		(<GL_ImageBase> stage.getAbstraction(this._overlayTexture)).activate(1, false);
 	}
 	
 	public deactivate(stage:Stage)

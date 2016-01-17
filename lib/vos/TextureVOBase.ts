@@ -9,6 +9,7 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
+import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
@@ -56,15 +57,14 @@ class TextureVOBase extends AbstractionBase
 		//overidden for state logic
 	}
 
-	public activate()
+	public activate(render:RenderBase)
 	{
 		//overridden for activation logic
 	}
 
-	public getTextureReg(image:ImageBase, regCache:ShaderRegisterCache, sharedReg:ShaderRegisterData):ShaderRegisterElement
+	public getTextureReg(imageIndex:number, regCache:ShaderRegisterCache, sharedReg:ShaderRegisterData):ShaderRegisterElement
 	{
-		var imageIndex:number = this._shader.getImageIndex(image);
-		var index:number = this._shader.imageIndices.indexOf(imageIndex);
+		var index:number = this._shader.imageIndices.indexOf(imageIndex); //todo: collapse the index based on duplicate image objects to save registrations
 
 		if (index == -1) {
 			var textureReg:ShaderRegisterElement = regCache.getFreeTextureReg();

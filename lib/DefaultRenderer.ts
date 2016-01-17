@@ -12,7 +12,6 @@ import CollectorBase				= require("awayjs-display/lib/traverse/CollectorBase");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
 import PointLight					= require("awayjs-display/lib/entities/PointLight");
-import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import ShadowMapperBase				= require("awayjs-display/lib/materials/shadowmappers/ShadowMapperBase");
 
 

@@ -1,10 +1,10 @@
 import BlendMode					= require("awayjs-core/lib/image/BlendMode");
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 
 import Camera						= require("awayjs-display/lib/entities/Camera");
-import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
@@ -23,7 +23,7 @@ import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegis
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
 import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
-
+import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
 
 /**
  * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
@@ -31,6 +31,7 @@ import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
  */
 class BasicMaterialPass extends PassBase
 {
+	private _textureVO:TextureVOBase;
 	private _diffuseR:number = 1;
 	private _diffuseG:number = 1;
 	private _diffuseB:number = 1;
@@ -43,15 +44,34 @@ class BasicMaterialPass extends PassBase
 		super(render, renderOwner, renderableClass, stage);
 
 		this._shader = new ShaderBase(renderableClass, this, this._stage);
+
+		this.invalidate();
 	}
 
 	public _iIncludeDependencies(shader:ShaderBase)
 	{
 		super._iIncludeDependencies(shader);
 
-		if (shader.textureVO != null)
+		if (this._textureVO != null)
 			shader.uvDependencies++;
     }
+
+	public invalidate()
+	{
+		super.invalidate();
+
+		this._textureVO = this._renderOwner.getTextureAt(0)? this._shader.getAbstraction(this._renderOwner.getTextureAt(0)) : null;
+	}
+
+	public dispose()
+	{
+		if (this._textureVO) {
+			this._textureVO.onClear(new AssetEvent(AssetEvent.CLEAR, this._renderOwner.getTextureAt(0)));
+			this._textureVO = null;
+		}
+
+		super.dispose();
+	}
 
 	/**
 	 * @inheritDoc
@@ -70,9 +90,9 @@ class BasicMaterialPass extends PassBase
 
 		var targetReg:ShaderRegisterElement = sharedReg.shadedTarget;
 
-		if (shader.textureVO != null) {
+		if (this._textureVO != null) {
 
-			code += shader.textureVO._iGetFragmentCode(targetReg, regCache, sharedReg, sharedReg.uvVarying);
+			code += this._textureVO._iGetFragmentCode(targetReg, regCache, sharedReg, sharedReg.uvVarying);
 
 			if (shader.alphaThreshold > 0) {
 				var cutOffReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
@@ -103,8 +123,8 @@ class BasicMaterialPass extends PassBase
 	{
 		super._iRender(renderable, camera, viewProjection);
 
-		if (this._shader.textureVO != null)
-			this._shader.textureVO._setRenderState(renderable);
+		if (this._textureVO != null)
+			this._textureVO._setRenderState(renderable);
 	}
 	/**
 	 * @inheritDoc
@@ -113,8 +133,8 @@ class BasicMaterialPass extends PassBase
 	{
 		super._iActivate(camera);
 
-		if (this._shader.textureVO != null) {
-			this._shader.textureVO.activate();
+		if (this._textureVO != null) {
+			this._textureVO.activate(this._render);
 
 			if (this._shader.alphaThreshold > 0)
 				this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;
