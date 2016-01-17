@@ -16,6 +16,7 @@ import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
+import Style						= require("awayjs-display/lib/base/Style");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
@@ -122,7 +123,7 @@ class AtlasTest
 				case "assets/atlas.xml":
 
 					if (asset.isAsset(BitmapImage2D)) {
-						this._material = new BasicMaterial(new Single2DTexture(<BitmapImage2D> asset));
+						this._material = new BasicMaterial(<BitmapImage2D> asset);
 						this._material.alphaBlending = true;
 						this._material.imageRect = true;
 					} else if (asset.isAsset(Sampler2D)) {
@@ -135,7 +136,9 @@ class AtlasTest
 		for (var i:number = 0; i < len; i++) {
 			//var size:number = this.getRandom(50 , 500);
 			var s:Billboard = new Billboard(this._material);
-			s.addSamplerAt(this._samplers[i], 0);
+			var style:Style = new Style();
+			style.addSamplerAt(this._samplers[i], this._material.texture);
+			s.style =  style;
 			s.pivot = new Vector3D(s.width/2, s.height/2, 0);
 			//s.width = size;
 			//s.height = size;

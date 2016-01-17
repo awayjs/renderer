@@ -70,7 +70,7 @@ class TorusVortex
 
 	private onLoadComplete(event)
 	{
-		var matTx:BasicMaterial = new BasicMaterial(new Single2DTexture(ParserUtils.imageToBitmapImage2D(this._image)));
+		var matTx:BasicMaterial = new BasicMaterial(ParserUtils.imageToBitmapImage2D(this._image));
 
 		matTx.blendMode = BlendMode.ADD;
 		matTx.bothSides = true;
@@ -97,7 +97,7 @@ class TorusVortex
 	public render(dt:number = null):void
 	{
 
-		this._view.camera.rotate(this._cameraAxis, 1);
+		this._view.camera.transform.rotate(this._cameraAxis, 1);
 		this._mesh.rotationY += 1;
 		this._mesh2.rotationX += 0.4;
 		this._mesh2.rotationY += 0.4;

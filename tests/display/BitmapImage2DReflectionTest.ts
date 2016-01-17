@@ -46,7 +46,6 @@ class BitmapImage2DReflectionTest
 				case BitmapImage2D.assetType:
 
 					var prefab:PrimitivePlanePrefab = new PrimitivePlanePrefab(500 , 500, 1, 1, false);
-					var tx:Single2DTexture = new Single2DTexture(<BitmapImage2D> asset);
 					var bitmap:BitmapImage2D = new BitmapImage2D(1024, 1024, true, 0x00000000);
 
 					var imageCanvas:HTMLCanvasElement = <HTMLCanvasElement> document.createElement("canvas");
@@ -75,14 +74,11 @@ class BitmapImage2DReflectionTest
 
 					document.body.appendChild(bitmap.getCanvas());
 
-					var bmpTX:Single2DTexture = new Single2DTexture(bitmapClone);
-
-					var material:BasicMaterial = new BasicMaterial(bmpTX);
+					var material:BasicMaterial = new BasicMaterial(bitmapClone);
 					material.bothSides = true;
 					material.alphaBlending = true;
-					material.mipmap = false;
 
-					var material2:BasicMaterial = new BasicMaterial(tx);
+					var material2:BasicMaterial = new BasicMaterial(<BitmapImage2D> asset);
 					material2.bothSides = true;
 					material2.alphaBlending = true;
 

@@ -20,9 +20,6 @@ class CubeTextures
 {
 	private _view:View;
 	private _timer:RequestAnimationFrame;
-	private _skyboxSingleCubeTexture:SingleCubeTexture;
-
-	private _skybox:Skybox;
 
 	constructor()
 	{
@@ -55,10 +52,7 @@ class CubeTextures
 
 		switch(event.url) {
 			case 'assets/SingleCubeTextureTest.cube':
-				this._skyboxSingleCubeTexture = new SingleCubeTexture(<BitmapImageCube> loader.baseDependency.assets[0]);
-
-				this._skybox = new Skybox(this._skyboxSingleCubeTexture);
-				this._view.scene.addChild(this._skybox);
+				this._view.scene.addChild(new Skybox(<BitmapImageCube> loader.baseDependency.assets[0]));
 
 				break;
 		}

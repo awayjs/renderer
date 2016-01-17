@@ -116,7 +116,7 @@ class BillboardTest
 
 				case "assets/130909wall_big.png":
 
-					var material:BasicMaterial = new BasicMaterial(new Single2DTexture(<BitmapImage2D> asset));
+					var material:BasicMaterial = new BasicMaterial(<BitmapImage2D> asset);
 
 					var s:Billboard;
 						s = new Billboard(material);

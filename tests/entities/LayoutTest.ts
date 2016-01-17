@@ -51,9 +51,6 @@ class LayoutTest
 	 */
 	private onLoadComplete(event:LoaderEvent)
 	{
-		//get the texture
-		this._texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
-
 		//create the view
 		this._view = new View(new DefaultRenderer());
 
@@ -67,7 +64,7 @@ class LayoutTest
 		this._projection.originY = 0;
 
 		//create a bitmap material
-		this._bitmapMaterial = new BasicMaterial(this._texture);
+		this._bitmapMaterial = new BasicMaterial(<BitmapImage2D> event.assets[0]);
 
 		var billboard:Billboard;
 		var numHBillboards:number = 2;
