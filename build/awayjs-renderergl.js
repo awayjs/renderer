@@ -15201,9 +15201,7 @@ var CurveSubGeometryVO = (function (_super) {
 })(SubGeometryVOBase);
 module.exports = CurveSubGeometryVO;
 
-},{"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}],"awayjs-renderergl/lib/vos/ISubGeometryVOClass":[function(require,module,exports){
-
-},{}],"awayjs-renderergl/lib/vos/ITextureVOClass":[function(require,module,exports){
+},{"awayjs-display/lib/events/SubGeometryEvent":undefined,"awayjs-renderergl/lib/vos/SubGeometryVOBase":"awayjs-renderergl/lib/vos/SubGeometryVOBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined}],"awayjs-renderergl/lib/vos/ITextureVOClass":[function(require,module,exports){
 
 },{}],"awayjs-renderergl/lib/vos/LineSubGeometryVO":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
