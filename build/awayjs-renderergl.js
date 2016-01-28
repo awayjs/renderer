@@ -13431,7 +13431,7 @@ var ShaderBase = (function () {
         if (renderable.renderableOwner.animator)
             renderable.renderableOwner.animator.setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
         if (this.usesUVTransform) {
-            var uvTransform = renderable.renderableOwner.uvTransform.matrix;
+            var uvTransform = renderable.renderableOwner.uvTransform;
             if (uvTransform) {
                 this.vertexConstantData[this.uvTransformIndex] = uvTransform.a;
                 this.vertexConstantData[this.uvTransformIndex + 1] = uvTransform.b;
@@ -15301,6 +15301,13 @@ var Single2DTextureVO = (function (_super) {
         var temp;
         //modify depending on mapping mode
         if (this._single2DTexture.mappingMode == MappingMode.RADIAL_GRADIENT) {
+            temp = regCache.getFreeFragmentVectorTemp();
+            code += "mul " + temp + ".xy, " + inputReg + ", " + inputReg + "\n";
+            code += "mul " + temp + ".xy, " + inputReg + ", " + inputReg + "\n";
+            code += "add " + temp + ".x, " + temp + ".x, " + temp + ".y\n";
+            code += "sub " + temp + ".y, " + temp + ".y, " + temp + ".y\n";
+            code += "sqt " + temp + ".x, " + temp + ".x, " + temp + ".x\n";
+            inputReg = temp;
         }
         //handles texture atlasing
         if (this._shader.useImageRect) {
@@ -15309,14 +15316,12 @@ var Single2DTextureVO = (function (_super) {
             temp = regCache.getFreeFragmentVectorTemp();
             code += "mul " + temp + ", " + inputReg + ", " + samplerReg + ".xy\n";
             code += "add " + temp + ", " + temp + ", " + samplerReg + ".zw\n";
-        }
-        else {
-            temp = inputReg;
+            inputReg = temp;
         }
         this._imageIndex = this._shader.getImageIndex(this._single2DTexture, 0);
         var textureReg = this.getTextureReg(this._imageIndex, regCache, sharedReg);
         this._textureIndex = textureReg.index;
-        code += "tex " + targetReg + ", " + temp + ", " + textureReg + " <2d," + filter + "," + format + wrap + ">\n";
+        code += "tex " + targetReg + ", " + inputReg + ", " + textureReg + " <2d," + filter + "," + format + wrap + ">\n";
         return code;
     };
     Single2DTextureVO.prototype.activate = function (render) {
