@@ -61,7 +61,13 @@ class Single2DTextureVO extends TextureVOBase
 
 		//modify depending on mapping mode
 		if (this._single2DTexture.mappingMode == MappingMode.RADIAL_GRADIENT) {
-
+			temp = regCache.getFreeFragmentVectorTemp();
+			code += "mul " + temp + ".xy, " + inputReg + ", " + inputReg + "\n";
+			code += "mul " + temp + ".xy, " + inputReg + ", " + inputReg + "\n";
+			code += "add " + temp + ".x, " + temp + ".x, " + temp + ".y\n";
+			code += "sub " + temp + ".y, " + temp + ".y, " + temp + ".y\n";
+			code += "sqt " + temp + ".x, " + temp + ".x, " + temp + ".x\n";
+			inputReg = temp;
 		}
 
 		//handles texture atlasing
@@ -72,8 +78,7 @@ class Single2DTextureVO extends TextureVOBase
 
 			code += "mul " + temp + ", " + inputReg + ", " + samplerReg + ".xy\n";
 			code += "add " + temp + ", " + temp + ", " + samplerReg + ".zw\n";
-		} else {
-			temp = inputReg;
+			inputReg = temp;
 		}
 
 		this._imageIndex = this._shader.getImageIndex(this._single2DTexture, 0);
@@ -81,7 +86,7 @@ class Single2DTextureVO extends TextureVOBase
 		var textureReg:ShaderRegisterElement = this.getTextureReg(this._imageIndex, regCache, sharedReg);
 		this._textureIndex = textureReg.index;
 
-		code += "tex " + targetReg + ", " + temp + ", " + textureReg + " <2d," + filter + "," + format + wrap + ">\n";
+		code += "tex " + targetReg + ", " + inputReg + ", " + textureReg + " <2d," + filter + "," + format + wrap + ">\n";
 
 		return code;
 	}

@@ -557,7 +557,7 @@ class ShaderBase implements IAbstractionPool
 			(<AnimatorBase> renderable.renderableOwner.animator).setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
 
 		if (this.usesUVTransform) {
-			var uvTransform:Matrix = renderable.renderableOwner.uvTransform.matrix;
+			var uvTransform:Matrix = renderable.renderableOwner.uvTransform;
 
 			if (uvTransform) {
 				this.vertexConstantData[this.uvTransformIndex] = uvTransform.a;
