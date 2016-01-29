@@ -141,9 +141,11 @@ class CurveSubMeshRenderable extends RenderableBase
 		var fixa:string = free1 + ".y";
 		var fixb:string = free1 + ".z";
 
-		var _aa:string = "fc2.z";
-		var _0:string = "fc2.x";
-		var _1:string = "fc2.y";
+		var constantsReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+
+		var _aa:string = constantsReg + ".z";
+		var _0:string = constantsReg + ".x";
+		var _1:string = constantsReg + ".y";
 
 		var nl:string = "\n";
 
@@ -203,8 +205,12 @@ class CurveSubMeshRenderable extends RenderableBase
 
         var context:IContextGL = this._stage.context;
 
-        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 2, CurveSubMeshRenderable._constants, 1);
+		var data:Float32Array = pass.shader.fragmentConstantData;
 
+		data[0] = CurveSubMeshRenderable._constants[0];
+		data[1] = CurveSubMeshRenderable._constants[1];
+		data[2] = CurveSubMeshRenderable._constants[2];
+		data[3] = CurveSubMeshRenderable._constants[3];
     }
 	/**
 	 * @inheritDoc

@@ -109,10 +109,10 @@ class Single2DTextureVO extends TextureVOBase
 				data[index + 3] = 0;
 			} else {
 				var renderImage:Image2D = <Image2D> image._asset;
-				data[index] = sampler._sampler.imageRect.width/renderImage.width;
-				data[index + 1] = sampler._sampler.imageRect.height/renderImage.height;
-				data[index + 2] = sampler._sampler.imageRect.x/renderImage.width;
-				data[index + 3] = sampler._sampler.imageRect.y/renderImage.height;
+				data[index] = sampler._sampler.imageRect.width;
+				data[index + 1] = sampler._sampler.imageRect.height;
+				data[index + 2] = sampler._sampler.imageRect.x;
+				data[index + 3] = sampler._sampler.imageRect.y;
 
 			}
 		}
@@ -141,10 +141,10 @@ class Single2DTextureVO extends TextureVOBase
 				data[index + 3] = 0;
 			} else {
 				var renderableImage:Image2D = <Image2D> (image? image._asset : renderable.render.images[this._imageIndex]._asset);
-				data[index] = sampler._sampler.imageRect.width/renderableImage.width;
-				data[index + 1] = sampler._sampler.imageRect.height/renderableImage.height;
-				data[index + 2] = sampler._sampler.imageRect.x/renderableImage.width;
-				data[index + 3] = sampler._sampler.imageRect.y/renderableImage.height;
+				data[index] = sampler._sampler.imageRect.width;
+				data[index + 1] = sampler._sampler.imageRect.height;
+				data[index + 2] = sampler._sampler.imageRect.x;
+				data[index + 3] = sampler._sampler.imageRect.y;
 
 			}
 		}
