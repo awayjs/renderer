@@ -12117,9 +12117,10 @@ var CurveSubMeshRenderable = (function (_super) {
         var d2 = free1 + ".x";
         var fixa = free1 + ".y";
         var fixb = free1 + ".z";
-        var _aa = "fc2.z";
-        var _0 = "fc2.x";
-        var _1 = "fc2.y";
+        var constantsReg = registerCache.getFreeFragmentConstant();
+        var _aa = constantsReg + ".z";
+        var _0 = constantsReg + ".x";
+        var _1 = constantsReg + ".y";
         var nl = "\n";
         var code = new Array();
         //distance from curve
@@ -12163,7 +12164,11 @@ var CurveSubMeshRenderable = (function (_super) {
     CurveSubMeshRenderable.prototype._iActivate = function (pass, camera) {
         _super.prototype._iActivate.call(this, pass, camera);
         var context = this._stage.context;
-        context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 2, CurveSubMeshRenderable._constants, 1);
+        var data = pass.shader.fragmentConstantData;
+        data[0] = CurveSubMeshRenderable._constants[0];
+        data[1] = CurveSubMeshRenderable._constants[1];
+        data[2] = CurveSubMeshRenderable._constants[2];
+        data[3] = CurveSubMeshRenderable._constants[3];
     };
     /**
      * @inheritDoc
@@ -15340,10 +15345,10 @@ var Single2DTextureVO = (function (_super) {
             }
             else {
                 var renderImage = image._asset;
-                data[index] = sampler._sampler.imageRect.width / renderImage.width;
-                data[index + 1] = sampler._sampler.imageRect.height / renderImage.height;
-                data[index + 2] = sampler._sampler.imageRect.x / renderImage.width;
-                data[index + 3] = sampler._sampler.imageRect.y / renderImage.height;
+                data[index] = sampler._sampler.imageRect.width;
+                data[index + 1] = sampler._sampler.imageRect.height;
+                data[index + 2] = sampler._sampler.imageRect.x;
+                data[index + 3] = sampler._sampler.imageRect.y;
             }
         }
     };
@@ -15365,10 +15370,10 @@ var Single2DTextureVO = (function (_super) {
             }
             else {
                 var renderableImage = (image ? image._asset : renderable.render.images[this._imageIndex]._asset);
-                data[index] = sampler._sampler.imageRect.width / renderableImage.width;
-                data[index + 1] = sampler._sampler.imageRect.height / renderableImage.height;
-                data[index + 2] = sampler._sampler.imageRect.x / renderableImage.width;
-                data[index + 3] = sampler._sampler.imageRect.y / renderableImage.height;
+                data[index] = sampler._sampler.imageRect.width;
+                data[index + 1] = sampler._sampler.imageRect.height;
+                data[index + 2] = sampler._sampler.imageRect.x;
+                data[index + 3] = sampler._sampler.imageRect.y;
             }
         }
     };
