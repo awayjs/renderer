@@ -21,20 +21,25 @@ class Filter3DFXAATask extends Filter3DTaskBase
 	 * @param amount
 	 * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
 	 */
-	constructor(amount:number, stepSize:number = -1)
+	constructor(amount:number = 1, stepSize:number = -1)
 	{
 		super();
 
-		this._data =  new Float32Array(16);
+		this._data =  new Float32Array(24);
 		//luma
 		this._data.set([0.299, 0.587, 0.114, 1],0);//0.212, 0.716, 0.072
 		//helpers
-		this._data.set([0.25, 0.5, 0.75, 8], 4);
+		this._data.set([0.25, 0.5, 0.75, 4.3], 4);
 		//settings (screen x, screen y, ...)
-		this._data.set([1/1024, 1/1024, 1/128, 1/8], 8);
+		this._data.set([1/1024, 1/1024, 1.75, 1/16], 8);
 		//deltas
-		this._data.set([1.0/3.0 - 0.5, 2.0/3.0 - 0.5, 0.0/3.0 - 0.5, 3.0/3.0 - 0.5], 12);
+		this._data.set([0, -1, 1, 0], 12);
+		//deltas
+		this._data.set([1.0/3.0 - 0.5, 2.0/3.0 - 0.5, 0.0/3.0 - 0.5, 3.0/3.0 - 0.5], 16);
+		//deltas
+		this._data.set([1/128, 1/8, 0, 8], 20);
 
+		this.amount = amount;
 		this.stepSize = stepSize;
 	}
 
@@ -80,10 +85,10 @@ class Filter3DFXAATask extends Filter3DTaskBase
 		var div:string = "fc1.w";	//	4.3
 
 		var pix:string = "fc2.xy";
-		var dx:string = "fc2.x";
-		var dy:string = "fc2.y";
-		var mOne:string = "fc3.w";
-		var mul:string = "fc3.x";
+		var dx:string = "fc2.x"; // 1/1024
+		var dy:string = "fc2.y"; // 1/1024
+		var mOne:string = "fc3.y"; // -1.0
+		var mul:string = "fc3.z"; // 1.0  -- one for now
 
 		var delta1:string = "fc4.x";	//1.0/3.0 - 0.5
 		var delta2:string = "fc4.y";	//2.0/3.0 - 0.5
@@ -124,9 +129,9 @@ class Filter3DFXAATask extends Filter3DTaskBase
 		var result1:string = "ft6";
 		var result2:string = "ft7";
 
-		var fxaaReduceMin :string = "fc2.x";	//1/128
-		var fxaaReduceMul :string = "fc2.y";	//1/8
-		var fxaaSpanMax :string = "fc1.w";		//8
+		var fxaaReduceMin :string = "fc5.x";	//1/128
+		var fxaaReduceMul :string = "fc5.y";	//1/8
+		var fxaaSpanMax :string = "fc5.w";		//8
 
 		var lumaMin:string = "ft5.x";
 		var lumaMax:string = "ft5.y";
@@ -246,7 +251,7 @@ class Filter3DFXAATask extends Filter3DTaskBase
 
 	public activate(stage:Stage, camera3D:Camera, depthTexture:Image2D)
 	{
-		stage.context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 1);
+		stage.context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 6);
 	}
 
 	public updateTextures(stage:Stage)
