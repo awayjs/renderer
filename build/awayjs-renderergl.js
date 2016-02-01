@@ -9836,18 +9836,24 @@ var Filter3DFXAATask = (function (_super) {
      * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
      */
     function Filter3DFXAATask(amount, stepSize) {
+        if (amount === void 0) { amount = 1; }
         if (stepSize === void 0) { stepSize = -1; }
         _super.call(this);
         this._stepSize = 1;
-        this._data = new Float32Array(16);
+        this._data = new Float32Array(24);
         //luma
         this._data.set([0.299, 0.587, 0.114, 1], 0); //0.212, 0.716, 0.072
         //helpers
-        this._data.set([0.25, 0.5, 0.75, 8], 4);
+        this._data.set([0.25, 0.5, 0.75, 4.3], 4);
         //settings (screen x, screen y, ...)
-        this._data.set([1 / 1024, 1 / 1024, 1 / 128, 1 / 8], 8);
+        this._data.set([1 / 1024, 1 / 1024, 1.75, 1 / 16], 8);
         //deltas
-        this._data.set([1.0 / 3.0 - 0.5, 2.0 / 3.0 - 0.5, 0.0 / 3.0 - 0.5, 3.0 / 3.0 - 0.5], 12);
+        this._data.set([0, -1, 1, 0], 12);
+        //deltas
+        this._data.set([1.0 / 3.0 - 0.5, 2.0 / 3.0 - 0.5, 0.0 / 3.0 - 0.5, 3.0 / 3.0 - 0.5], 16);
+        //deltas
+        this._data.set([1 / 128, 1 / 8, 0, 8], 20);
+        this.amount = amount;
         this.stepSize = stepSize;
     }
     Object.defineProperty(Filter3DFXAATask.prototype, "amount", {
@@ -9886,10 +9892,10 @@ var Filter3DFXAATask = (function (_super) {
         var s = "fc2.w"; //	1/16
         var div = "fc1.w"; //	4.3
         var pix = "fc2.xy";
-        var dx = "fc2.x";
-        var dy = "fc2.y";
-        var mOne = "fc3.w";
-        var mul = "fc3.x";
+        var dx = "fc2.x"; // 1/1024
+        var dy = "fc2.y"; // 1/1024
+        var mOne = "fc3.y"; // -1.0
+        var mul = "fc3.z"; // 1.0  -- one for now
         var delta1 = "fc4.x"; //1.0/3.0 - 0.5
         var delta2 = "fc4.y"; //2.0/3.0 - 0.5
         var delta3 = "fc4.z"; //0.0/3.0 - 0.5
@@ -9919,9 +9925,9 @@ var Filter3DFXAATask = (function (_super) {
         var inverseDirAdjustment = "ft5.y";
         var result1 = "ft6";
         var result2 = "ft7";
-        var fxaaReduceMin = "fc2.x"; //1/128
-        var fxaaReduceMul = "fc2.y"; //1/8
-        var fxaaSpanMax = "fc1.w"; //8
+        var fxaaReduceMin = "fc5.x"; //1/128
+        var fxaaReduceMul = "fc5.y"; //1/8
+        var fxaaSpanMax = "fc5.w"; //8
         var lumaMin = "ft5.x";
         var lumaMax = "ft5.y";
         var sample = "fs0";
@@ -10016,7 +10022,7 @@ var Filter3DFXAATask = (function (_super) {
         return code.join(" ");
     };
     Filter3DFXAATask.prototype.activate = function (stage, camera3D, depthTexture) {
-        stage.context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 1);
+        stage.context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 6);
     };
     Filter3DFXAATask.prototype.updateTextures = function (stage) {
         _super.prototype.updateTextures.call(this, stage);

@@ -4328,7 +4328,7 @@ declare module "awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask" {
 	     * @param amount
 	     * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
 	     */
-	    constructor(amount: number, stepSize?: number);
+	    constructor(amount?: number, stepSize?: number);
 	    amount: number;
 	    stepSize: number;
 	    getFragmentCode(): string;
