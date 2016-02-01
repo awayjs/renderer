@@ -4248,6 +4248,23 @@ declare module "awayjs-renderergl/lib/filters/CompositeFilter3D" {
 	
 }
 
+declare module "awayjs-renderergl/lib/filters/FXAAFilter3D" {
+	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+	class FXAAFilter3D extends Filter3DBase {
+	    private _fxaaTask;
+	    /**
+	     * Creates a new FXAAFilter3D object
+	     * @param amount
+	     * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
+	     */
+	    constructor(amount: number, stepSize?: number);
+	    amount: number;
+	    stepSize: number;
+	}
+	export = FXAAFilter3D;
+	
+}
+
 declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
 	import Image2D = require("awayjs-core/lib/image/Image2D");
 	import Camera = require("awayjs-display/lib/entities/Camera");

@@ -9621,7 +9621,53 @@ var CompositeFilter3D = (function (_super) {
 })(Filter3DBase);
 module.exports = CompositeFilter3D;
 
-},{"awayjs-renderergl/lib/filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask":"awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask"}],"awayjs-renderergl/lib/filters/Filter3DBase":[function(require,module,exports){
+},{"awayjs-renderergl/lib/filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask":"awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask"}],"awayjs-renderergl/lib/filters/FXAAFilter3D":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Filter3DFXAATask = require("awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask");
+var Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+var FXAAFilter3D = (function (_super) {
+    __extends(FXAAFilter3D, _super);
+    /**
+     * Creates a new FXAAFilter3D object
+     * @param amount
+     * @param stepSize The distance between samples. Set to -1 to autodetect with acceptable quality.
+     */
+    function FXAAFilter3D(amount, stepSize) {
+        if (stepSize === void 0) { stepSize = -1; }
+        _super.call(this);
+        this._fxaaTask = new Filter3DFXAATask(amount, stepSize);
+        this.addTask(this._fxaaTask);
+    }
+    Object.defineProperty(FXAAFilter3D.prototype, "amount", {
+        get: function () {
+            return this._fxaaTask.amount;
+        },
+        set: function (value) {
+            this._fxaaTask.amount = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FXAAFilter3D.prototype, "stepSize", {
+        get: function () {
+            return this._fxaaTask.stepSize;
+        },
+        set: function (value) {
+            this._fxaaTask.stepSize = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return FXAAFilter3D;
+})(Filter3DBase);
+module.exports = FXAAFilter3D;
+
+},{"awayjs-renderergl/lib/filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask":"awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask"}],"awayjs-renderergl/lib/filters/Filter3DBase":[function(require,module,exports){
 var Filter3DBase = (function () {
     function Filter3DBase() {
         this._tasks = new Array();
@@ -9883,25 +9929,25 @@ var Filter3DFXAATask = (function (_super) {
         var tempxy = temp + ".xy";
         var code = new Array();
         //lumas
-        code.push(tex, tex, uv_in, sample, "2d", "wrap", "linear", "\n");
+        code.push("tex", tex, uv_in, sample, "<2d wrap linear>", "\n");
         code.push("dp3", M, tex, lum, "\n");
         code.push("mov", uv, uv_in, "\n");
         code.push("sub", uv, uv, pix, "\n");
-        code.push("tex", tex, uv, sample, "2d", "wrap", "linear", "\n");
+        code.push("tex", tex, uv, sample, "<2d wrap linear>", "\n");
         code.push("dp3", TL, tex, lum, "\n");
         code.push("mov", uv, uv_in, "\n");
         code.push("add", uv, uv, pix, "\n");
-        code.push("tex", tex, uv, sample, "2d", "wrap", "linear", "\n");
+        code.push("tex", tex, uv, sample, "<2d wrap linear>", "\n");
         code.push("dp3", BR, tex, lum, "\n");
         code.push("mov", uv, uv_in, "\n");
         code.push("sub", uvy, uvy, dy, "\n");
         code.push("add", uvx, uvx, dx, "\n");
-        code.push("tex", tex, uv, sample, "2d", "wrap", "linear", "\n");
+        code.push("tex", tex, uv, sample, "<2d wrap linear>", "\n");
         code.push("dp3", TR, tex, lum, "\n");
         code.push("mov", uv, uv_in, "\n");
         code.push("add", uvy, uvy, dy, "\n");
         code.push("sub", uvx, uvx, dx, "\n");
-        code.push("tex", tex, uv, sample, "2d", "wrap", "linear", "\n");
+        code.push("tex", tex, uv, sample, "<2d wrap linear>", "\n");
         code.push("dp3", BL, tex, lum, "\n");
         //dir
         code.push("add", tempf1, TL, TR, "\n");
@@ -9934,18 +9980,18 @@ var Filter3DFXAATask = (function (_super) {
         code.push("mul", diry, tempf1, dy, "\n");
         code.push("mul", tempxy, dirxy, delta1, "\n");
         code.push("add", uv, uv_in, tempxy, "\n");
-        code.push("tex", result1, uv, sample, "2d", "wrap", "linear", "\n");
+        code.push("tex", result1, uv, sample, "<2d wrap linear>", "\n");
         code.push("mul", tempxy, dirxy, delta2, "\n");
         code.push("add", uv, uv_in, tempxy, "\n");
-        code.push("tex", tex, uv, sample, "2d", "wrap", "linear", "\n");
+        code.push("tex", tex, uv, sample, "<2d wrap linear>", "\n");
         code.push("add", result1, result1, tex, "\n");
         code.push("mul", result1, result1, _05, "\n");
         code.push("mul", tempxy, dirxy, delta3, "\n");
         code.push("add", uv, uv_in, tempxy, "\n");
-        code.push("tex", result2, uv, sample, "2d", "wrap", "linear", "\n");
+        code.push("tex", result2, uv, sample, "<2d wrap linear>", "\n");
         code.push("mul", tempxy, dirxy, delta4, "\n");
         code.push("add", uv, uv_in, tempxy, "\n");
-        code.push("tex", tex, uv, sample, "2d", "wrap", "linear", "\n");
+        code.push("tex", tex, uv, sample, "<2d wrap linear>", "\n");
         code.push("add", result2, result2, tex, "\n");
         code.push("mul", result2, result2, _025, "\n");
         code.push("mul", tex, result1, _05, "\n");
