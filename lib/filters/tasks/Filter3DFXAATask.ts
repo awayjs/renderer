@@ -140,25 +140,25 @@ class Filter3DFXAATask extends Filter3DTaskBase
 		var code:Array<string> =  new Array<string>();
 
 		//lumas
-		code.push(tex, tex, uv_in, sample, "2d", "wrap", "linear", "\n");
+		code.push("tex", tex, uv_in, sample, "<2d wrap linear>", "\n");
 		code.push("dp3", M, tex, lum, "\n");
 		code.push("mov", uv, uv_in, "\n");
 		code.push("sub", uv, uv, pix, "\n");
-		code.push("tex", tex, uv, sample, "2d", "wrap", "linear", "\n");
+		code.push("tex", tex, uv, sample, "<2d wrap linear>", "\n");
 		code.push("dp3", TL, tex, lum, "\n");
 		code.push("mov", uv, uv_in, "\n");
 		code.push("add", uv, uv, pix, "\n");
-		code.push("tex", tex, uv, sample, "2d", "wrap", "linear", "\n");
+		code.push("tex", tex, uv, sample, "<2d wrap linear>", "\n");
 		code.push("dp3",  BR, tex, lum, "\n");
 		code.push("mov", uv, uv_in, "\n");
 		code.push("sub", uvy, uvy, dy, "\n");
 		code.push("add", uvx, uvx, dx, "\n");
-		code.push("tex", tex, uv, sample, "2d", "wrap", "linear", "\n");
+		code.push("tex", tex, uv, sample, "<2d wrap linear>", "\n");
 		code.push("dp3", TR, tex, lum, "\n");
 		code.push("mov", uv, uv_in, "\n");
 		code.push("add", uvy, uvy, dy, "\n");
 		code.push("sub", uvx, uvx, dx, "\n");
-		code.push("tex", tex, uv, sample, "2d", "wrap", "linear", "\n");
+		code.push("tex", tex, uv, sample, "<2d wrap linear>", "\n");
 		code.push("dp3", BL, tex, lum, "\n");
 
 		//dir
@@ -199,19 +199,19 @@ class Filter3DFXAATask extends Filter3DTaskBase
 
 		code.push("mul", tempxy, dirxy, delta1, "\n");
 		code.push("add", uv, uv_in, tempxy, "\n");
-		code.push("tex", result1, uv, sample, "2d", "wrap", "linear", "\n");
+		code.push("tex", result1, uv, sample, "<2d wrap linear>", "\n");
 		code.push("mul", tempxy, dirxy, delta2, "\n");
 		code.push("add", uv, uv_in, tempxy, "\n");
-		code.push("tex", tex, uv, sample, "2d", "wrap", "linear", "\n");
+		code.push("tex", tex, uv, sample, "<2d wrap linear>", "\n");
 		code.push("add", result1, result1, tex, "\n");
 		code.push("mul", result1, result1, _05, "\n");
 
 		code.push("mul", tempxy, dirxy, delta3, "\n");
 		code.push("add", uv, uv_in, tempxy, "\n");
-		code.push("tex", result2, uv, sample, "2d", "wrap", "linear", "\n");
+		code.push("tex", result2, uv, sample, "<2d wrap linear>", "\n");
 		code.push("mul", tempxy, dirxy, delta4, "\n");
 		code.push("add", uv, uv_in, tempxy, "\n");
-		code.push("tex", tex, uv, sample, "2d", "wrap", "linear", "\n");
+		code.push("tex", tex, uv, sample, "<2d wrap linear>", "\n");
 		code.push("add", result2, result2, tex, "\n");
 		code.push("mul", result2, result2, _025, "\n");
 		code.push("mul", tex, result1, _05, "\n");
