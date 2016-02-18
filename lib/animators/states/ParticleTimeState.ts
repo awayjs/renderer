@@ -5,7 +5,7 @@ import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/base/ContextGL
 
 import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
+import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 import ParticleTimeNode					= require("awayjs-renderergl/lib/animators/nodes/ParticleTimeNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
@@ -31,9 +31,9 @@ class ParticleTimeState extends ParticleStateBase
 		this._particleTimeNode = particleTimeNode;
 	}
 
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
-		animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
+		animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 
 		var particleTime:number = this._pTime/1000;
 		animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_CONSTANT_INDEX), particleTime, particleTime, particleTime, particleTime);

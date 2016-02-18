@@ -10,13 +10,13 @@ import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
+import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
 
 /**
  *
  * @class away.pool.TextureDataBase
  */
-class SingleCubeTextureVO extends TextureVOBase
+class GL_SingleCubeTexture extends GL_TextureBase
 {
 	private _singleCubeTexture:SingleCubeTexture;
 	private _textureIndex:number;
@@ -40,7 +40,7 @@ class SingleCubeTextureVO extends TextureVOBase
 	public _iIncludeDependencies(includeInput:boolean = true)
 	{
 		if (includeInput)
-			this._shader.usesLocalPosFragment = true;
+			this._shader.usesPositionFragment = true;
 	}
 
 	/**
@@ -90,4 +90,4 @@ class SingleCubeTextureVO extends TextureVOBase
 	}
 }
 
-export = SingleCubeTextureVO;
+export = GL_SingleCubeTexture;

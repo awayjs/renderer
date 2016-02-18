@@ -1,4 +1,4 @@
-import Geometry							= require("awayjs-display/lib/base/Geometry");
+import Graphics							= require("awayjs-display/lib/graphics/Graphics");
 
 import IAnimationState					= require("awayjs-renderergl/lib/animators/states/IAnimationState");
 
@@ -12,12 +12,12 @@ interface IVertexAnimationState extends IAnimationState
 	/**
 	 * Returns the current geometry frame of animation in the clip based on the internal playhead position.
 	 */
-	currentGeometry:Geometry; //GET
+	currentGraphics:Graphics; //GET
 
 	/**
 	 * Returns the current geometry frame of animation in the clip based on the internal playhead position.
 	 */
-	nextGeometry:Geometry; //GET
+	nextGraphics:Graphics; //GET
 
 	/**
 	 * Returns a fractional value between 0 and 1 representing the blending ratio of the current playhead position

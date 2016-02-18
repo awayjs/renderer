@@ -8,7 +8,7 @@ import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/base/ContextGL
 
 import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
+import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 import ParticleColorNode				= require("awayjs-renderergl/lib/animators/nodes/ParticleColorNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
@@ -127,7 +127,7 @@ class ParticleColorState extends ParticleStateBase
 		this.updateColorData();
 	}
 
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
 		if (animationRegisterCache.needFragmentAnimation) {
 			var dataOffset:number /*uint*/ = this._particleColorNode._iDataOffset;
@@ -136,9 +136,9 @@ class ParticleColorState extends ParticleStateBase
 
 			if (this._usesMultiplier) {
 				if (this._particleColorNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
-					animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
+					animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 					dataOffset += 4;
-					animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
+					animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 					dataOffset += 4;
 				} else {
 					animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), this._startMultiplierData.x, this._startMultiplierData.y, this._startMultiplierData.z, this._startMultiplierData.w);
@@ -147,9 +147,9 @@ class ParticleColorState extends ParticleStateBase
 			}
 			if (this._usesOffset) {
 				if (this._particleColorNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
-					animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
+					animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 					dataOffset += 4;
-					animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
+					animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 					dataOffset += 4;
 				} else {
 					animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);

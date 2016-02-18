@@ -26,12 +26,13 @@ import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationS
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import AnimationRegisterCache		= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
-import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
+import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
+import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import CompilerBase					= require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ITextureVOClass				= require("awayjs-renderergl/lib/vos/ITextureVOClass");
-import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
+import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
+import GL_IAssetClass				= require("awayjs-stagegl/lib/library/GL_IAssetClass");
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -47,7 +48,9 @@ class ShaderBase implements IAbstractionPool
 
 	private _abstractionPool:Object = new Object();
 
-	private _renderableClass:IRenderableClass;
+	public _elementsPool:ElementsPool;
+
+	private _elementsClass:IElementsClassGL;
 	private _pass:IPass;
 	public _stage:Stage;
 	private _programData:ProgramData;
@@ -72,11 +75,7 @@ class ShaderBase implements IAbstractionPool
 
 	public useImageRect:boolean = false;
 
-
-	/**
-	 *
-	 */
-	public usesUVBuffer:boolean = false;
+	public usesCurves:boolean = false;
 
 	/**
 	 * The depth compare mode used to render the renderables using this material.
@@ -225,7 +224,7 @@ class ShaderBase implements IAbstractionPool
 	/**
 	 * Indicates whether there are any dependencies on the local position vector.
 	 */
-	public usesLocalPosFragment:boolean = false;
+	public usesPositionFragment:boolean = false;
 
 	public vertexConstantData:Float32Array;
 	public fragmentConstantData:Float32Array;
@@ -234,6 +233,11 @@ class ShaderBase implements IAbstractionPool
 	 * The index for the common data register.
 	 */
 	public commonsDataIndex:number;
+
+	/**
+	 * The index for the curve vertex attribute stream.
+	 */
+	public curvesIndex:number;
 
 	/**
 	 * The index for the UV vertex attribute stream.
@@ -308,35 +312,38 @@ class ShaderBase implements IAbstractionPool
 	/**
 	 * Creates a new MethodCompilerVO object.
 	 */
-	constructor(renderableClass:IRenderableClass, pass:IPass, stage:Stage)
+	constructor(elementsClass:IElementsClassGL, pass:IPass, stage:Stage)
 	{
-		this._renderableClass = renderableClass;
+		this._elementsClass = elementsClass;
 		this._pass = pass;
 		this._stage = stage;
+
 		this.profile = this._stage.profile;
+
+		this._elementsPool = new ElementsPool(this, elementsClass);
 	}
 
-	public getAbstraction(texture:TextureBase):TextureVOBase
+	public getAbstraction(texture:TextureBase):GL_TextureBase
 	{
-		return (this._abstractionPool[texture.id] || (this._abstractionPool[texture.id] = new (<ITextureVOClass> ShaderBase._abstractionClassPool[texture.assetType])(texture, this)));
+		return (this._abstractionPool[texture.id] || (this._abstractionPool[texture.id] = new (<GL_IAssetClass> ShaderBase._abstractionClassPool[texture.assetType])(texture, this)));
 	}
 
 	/**
 	 *
 	 * @param image
 	 */
-	public clearAbstraction(renderableOwner:IRenderableOwner)
+	public clearAbstraction(texture:TextureBase)
 	{
-		this._abstractionPool[renderableOwner.id] = null;
+		this._abstractionPool[texture.id] = null;
 	}
 
 	/**
 	 *
 	 * @param imageObjectClass
 	 */
-	public static registerAbstraction(texture:ITextureVOClass, assetClass:IAssetClass)
+	public static registerAbstraction(gl_assetClass:GL_IAssetClass, assetClass:IAssetClass)
 	{
-		ShaderBase._abstractionClassPool[assetClass.assetType] = texture;
+		ShaderBase._abstractionClassPool[assetClass.assetType] = gl_assetClass;
 	}
 
 	public getImageIndex(texture:TextureBase, index:number = 0):number
@@ -352,14 +359,14 @@ class ShaderBase implements IAbstractionPool
 	/**
 	 * Factory method to create a concrete compiler object for this object
 	 *
-	 * @param renderableClass
+	 * @param elementsClass
 	 * @param pass
 	 * @param stage
 	 * @returns {CompilerBase}
 	 */
-	public createCompiler(renderableClass:IRenderableClass, pass:IPass):CompilerBase
+	public createCompiler(elementsClass:IElementsClassGL, pass:IPass):CompilerBase
 	{
-		return new CompilerBase(renderableClass, pass, this);
+		return new CompilerBase(elementsClass, pass, this);
 	}
 
 	/**
@@ -377,7 +384,7 @@ class ShaderBase implements IAbstractionPool
 		this.tangentDependencies = 0;
 		this.usesCommonData = false;
 		this.usesGlobalPosFragment = false;
-		this.usesLocalPosFragment = false;
+		this.usesPositionFragment = false;
 		this.usesFragmentAnimation = false;
 		this.usesTangentSpace = false;
 		this.outputsNormals = false;
@@ -388,6 +395,7 @@ class ShaderBase implements IAbstractionPool
 	{
 		this.commonsDataIndex = -1;
 		this.cameraPositionIndex = -1;
+		this.curvesIndex = -1;
 		this.uvBufferIndex = -1;
 		this.uvTransformIndex = -1;
 		this.colorTransformIndex = -1;
@@ -615,7 +623,7 @@ class ShaderBase implements IAbstractionPool
 			this.vertexConstantData[this.cameraPositionIndex + 2] = this._pInverseSceneMatrix[2]*x + this._pInverseSceneMatrix[6]*y + this._pInverseSceneMatrix[10]*z + this._pInverseSceneMatrix[14];
 		}
 	}
-	
+
 	public invalidateProgram()
 	{
 		this._invalidProgram = true;
@@ -642,7 +650,7 @@ class ShaderBase implements IAbstractionPool
 		if (this._invalidShader) {
 			this._invalidShader = false;
 
-			compiler = this.createCompiler(this._renderableClass, this._pass);
+			compiler = this.createCompiler(this._elementsClass, this._pass);
 			compiler.compile();
 		}
 

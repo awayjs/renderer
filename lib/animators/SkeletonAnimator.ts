@@ -1,10 +1,10 @@
 import Quaternion						= require("awayjs-core/lib/geom/Quaternion");
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
-import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
-import TriangleSubMesh					= require("awayjs-display/lib/base/TriangleSubMesh");
+import TriangleElements					= require("awayjs-display/lib/graphics/TriangleElements");
+import Graphic							= require("awayjs-display/lib/graphics/Graphic");
 import Camera							= require("awayjs-display/lib/entities/Camera");
-import SubGeometryEvent					= require("awayjs-display/lib/events/SubGeometryEvent");
+import ElementsEvent					= require("awayjs-display/lib/events/ElementsEvent");
 
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
@@ -20,7 +20,7 @@ import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transi
 import AnimationStateEvent				= require("awayjs-renderergl/lib/events/AnimationStateEvent");
 import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
+import GraphicRenderable				= require("awayjs-renderergl/lib/renderables/GraphicRenderable");
 
 /**
  * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects
@@ -33,8 +33,8 @@ class SkeletonAnimator extends AnimatorBase
 	private _globalPose:SkeletonPose = new SkeletonPose();
 	private _globalPropertiesDirty:boolean;
 	private _numJoints:number /*uint*/;
-	private _morphedSubGeometry:Object = new Object();
-	private _morphedSubGeometryDirty:Object = new Object();
+	private _morphedElements:Object = new Object();
+	private _morphedElementsDirty:Object = new Object();
 	private _condensedMatrices:Float32Array;
 
 	private _skeleton:Skeleton;
@@ -44,8 +44,8 @@ class SkeletonAnimator extends AnimatorBase
 	private _activeSkeletonState:ISkeletonAnimationState;
 	private _onTransitionCompleteDelegate:(event:AnimationStateEvent) => void;
 
-	private _onIndicesUpdateDelegate:(event:SubGeometryEvent) => void;
-	private _onVerticesUpdateDelegate:(event:SubGeometryEvent) => void;
+	private _onIndicesUpdateDelegate:(event:ElementsEvent) => void;
+	private _onVerticesUpdateDelegate:(event:ElementsEvent) => void;
 
 	/**
 	 * returns the calculated global matrices of the current skeleton pose.
@@ -141,8 +141,8 @@ class SkeletonAnimator extends AnimatorBase
 		}
 
 		this._onTransitionCompleteDelegate = (event:AnimationStateEvent) => this.onTransitionComplete(event);
-		this._onIndicesUpdateDelegate = (event:SubGeometryEvent) => this.onIndicesUpdate(event);
-		this._onVerticesUpdateDelegate = (event:SubGeometryEvent) => this.onVerticesUpdate(event);
+		this._onIndicesUpdateDelegate = (event:ElementsEvent) => this.onIndicesUpdate(event);
+		this._onVerticesUpdateDelegate = (event:ElementsEvent) => this.onVerticesUpdate(event);
 	}
 
 	/**
@@ -205,18 +205,18 @@ class SkeletonAnimator extends AnimatorBase
 		if (this._globalPropertiesDirty)
 			this.updateGlobalProperties();
 
-		var subGeometry:TriangleSubGeometry = <TriangleSubGeometry> (<TriangleSubMesh> (<TriangleSubMeshRenderable> renderable).subMesh).subGeometry;
+		var elements:TriangleElements = <TriangleElements> (<GraphicRenderable> renderable).graphic.elements;
 
-		subGeometry.useCondensedIndices = this._useCondensedIndices;
+		elements.useCondensedIndices = this._useCondensedIndices;
 
 		if (this._useCondensedIndices) {
 			// using a condensed data set
-			this.updateCondensedMatrices(subGeometry.condensedIndexLookUp);
+			this.updateCondensedMatrices(elements.condensedIndexLookUp);
 			stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, this._condensedMatrices.length/4);
 		} else {
 			if (this._pAnimationSet.usesCPU) {
-				if (this._morphedSubGeometryDirty[subGeometry.id])
-					this.morphSubGeometry(<TriangleSubMeshRenderable> renderable, subGeometry);
+				if (this._morphedElementsDirty[elements.id])
+					this.morphElements(<GraphicRenderable> renderable, elements);
 
 				return
 			}
@@ -248,8 +248,8 @@ class SkeletonAnimator extends AnimatorBase
 
 		//trigger geometry invalidation if using CPU animation
 		if (this._pAnimationSet.usesCPU)
-			for (var key in this._morphedSubGeometryDirty)
-				this._morphedSubGeometryDirty[key] = true;
+			for (var key in this._morphedElementsDirty)
+				this._morphedElementsDirty[key] = true;
 	}
 
 	private updateCondensedMatrices(condensedIndexLookUp:Array<number>)
@@ -362,29 +362,28 @@ class SkeletonAnimator extends AnimatorBase
 	}
 
 
-	public getRenderableSubGeometry(renderable:TriangleSubMeshRenderable, sourceSubGeometry:TriangleSubGeometry):TriangleSubGeometry
+	public getRenderableElements(renderable:GraphicRenderable, sourceElements:TriangleElements):TriangleElements
 	{
-		this._morphedSubGeometryDirty[sourceSubGeometry.id] = true;
+		this._morphedElementsDirty[sourceElements.id] = true;
 
 		//early out for GPU animations
 		if (!this._pAnimationSet.usesCPU)
-			return sourceSubGeometry;
+			return sourceElements;
 
-		var targetSubGeometry:TriangleSubGeometry;
+		var targetElements:TriangleElements;
 
-		if (!(targetSubGeometry = this._morphedSubGeometry[sourceSubGeometry.id])) {
+		if (!(targetElements = this._morphedElements[sourceElements.id])) {
 			//not yet stored
-			targetSubGeometry = this._morphedSubGeometry[sourceSubGeometry.id] = sourceSubGeometry.clone();
+			targetElements = this._morphedElements[sourceElements.id] = sourceElements.clone();
 			//turn off auto calculations on the morphed geometry
-			targetSubGeometry.autoDeriveNormals = false;
-			targetSubGeometry.autoDeriveTangents = false;
-			targetSubGeometry.autoDeriveUVs = false;
+			targetElements.autoDeriveNormals = false;
+			targetElements.autoDeriveTangents = false;
 			//add event listeners for any changes in UV values on the source geometry
-			sourceSubGeometry.addEventListener(SubGeometryEvent.INVALIDATE_INDICES, this._onIndicesUpdateDelegate);
-			sourceSubGeometry.addEventListener(SubGeometryEvent.INVALIDATE_VERTICES, this._onVerticesUpdateDelegate);
+			sourceElements.addEventListener(ElementsEvent.INVALIDATE_INDICES, this._onIndicesUpdateDelegate);
+			sourceElements.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onVerticesUpdateDelegate);
 		}
 
-		return targetSubGeometry;
+		return targetElements;
 	}
 
 	/**
@@ -392,31 +391,34 @@ class SkeletonAnimator extends AnimatorBase
 	 * @param subGeom The subgeometry containing the weights and joint index data per vertex.
 	 * @param pass The material pass for which we need to transform the vertices
 	 */
-	public morphSubGeometry(renderable:TriangleSubMeshRenderable, sourceSubGeometry:TriangleSubGeometry)
+	public morphElements(renderable:GraphicRenderable, sourceElements:TriangleElements)
 	{
-		this._morphedSubGeometryDirty[sourceSubGeometry.id] = false;
+		this._morphedElementsDirty[sourceElements.id] = false;
 
-		var numVertices:number = sourceSubGeometry.numVertices;
-		var sourcePositions:Float32Array = sourceSubGeometry.positions.get(numVertices);
-		var sourceNormals:Float32Array = sourceSubGeometry.normals.get(numVertices);
-		var sourceTangents:Float32Array = sourceSubGeometry.tangents.get(numVertices);
+		var numVertices:number = sourceElements.numVertices;
+		var sourcePositions:ArrayBufferView = sourceElements.positions.get(numVertices);
+		var sourceNormals:Float32Array = sourceElements.normals.get(numVertices);
+		var sourceTangents:Float32Array = sourceElements.tangents.get(numVertices);
 
-		var jointIndices:Float32Array = <Float32Array> sourceSubGeometry.jointIndices.get(numVertices);
-		var jointWeights:Float32Array = <Float32Array> sourceSubGeometry.jointWeights.get(numVertices);
+		var posDim:number = sourceElements.positions.dimensions;
 
-		var targetSubGeometry:TriangleSubGeometry = this._morphedSubGeometry[sourceSubGeometry.id];
+		var jointIndices:Float32Array = <Float32Array> sourceElements.jointIndices.get(numVertices);
+		var jointWeights:Float32Array = <Float32Array> sourceElements.jointWeights.get(numVertices);
 
-		var targetPositions:Float32Array = targetSubGeometry.positions.get(numVertices);
-		var targetNormals:Float32Array = targetSubGeometry.normals.get(numVertices);
-		var targetTangents:Float32Array = targetSubGeometry.tangents.get(numVertices);
+		var targetElements:TriangleElements = this._morphedElements[sourceElements.id];
+
+		var targetPositions:ArrayBufferView = targetElements.positions.get(numVertices);
+		var targetNormals:Float32Array = targetElements.normals.get(numVertices);
+		var targetTangents:Float32Array = targetElements.tangents.get(numVertices);
 
 		var index:number /*uint*/ = 0;
+		var i0:number /*uint*/ = 0;
+		var i1:number /*uint*/ = 0;
 		var j:number /*uint*/ = 0;
 		var k:number /*uint*/;
 		var vx:number, vy:number, vz:number;
 		var nx:number, ny:number, nz:number;
 		var tx:number, ty:number, tz:number;
-		var len:number /*int*/ = sourcePositions.length;
 		var weight:number;
 		var vertX:number, vertY:number, vertZ:number;
 		var normX:number, normY:number, normZ:number;
@@ -425,16 +427,18 @@ class SkeletonAnimator extends AnimatorBase
 		var m21:number, m22:number, m23:number, m24:number;
 		var m31:number, m32:number, m33:number, m34:number;
 
-		while (index < len) {
-			vertX = sourcePositions[index];
-			vertY = sourcePositions[index + 1];
-			vertZ = sourcePositions[index + 2];
-			normX = sourceNormals[index];
-			normY = sourceNormals[index + 1];
-			normZ = sourceNormals[index + 2];
-			tangX = sourceTangents[index];
-			tangY = sourceTangents[index + 1];
-			tangZ = sourceTangents[index + 2];
+		while (index < numVertices) {
+			i0 = index*posDim;
+			vertX = sourcePositions[i0];
+			vertY = sourcePositions[i0 + 1];
+			vertZ = (posDim == 3)? sourcePositions[i0 + 2] : 0;
+			i1 = index*3;
+			normX = sourceNormals[i1];
+			normY = sourceNormals[i1 + 1];
+			normZ = sourceNormals[i1 + 2];
+			tangX = sourceTangents[i1];
+			tangY = sourceTangents[i1 + 1];
+			tangZ = sourceTangents[i1 + 2];
 			vx = 0;
 			vy = 0;
 			vz = 0;
@@ -478,22 +482,22 @@ class SkeletonAnimator extends AnimatorBase
 				}
 			}
 
-			targetPositions[index] = vx;
-			targetPositions[index + 1] = vy;
-			targetPositions[index + 2] = vz;
-			targetNormals[index] = nx;
-			targetNormals[index + 1] = ny;
-			targetNormals[index + 2] = nz;
-			targetTangents[index] = tx;
-			targetTangents[index + 1] = ty;
-			targetTangents[index + 2] = tz;
+			targetPositions[i0] = vx;
+			targetPositions[i0 + 1] = vy;
+			if (posDim == 3) targetPositions[i0 + 2] = vz;
+			targetNormals[i1] = nx;
+			targetNormals[i1 + 1] = ny;
+			targetNormals[i1 + 2] = nz;
+			targetTangents[i1] = tx;
+			targetTangents[i1 + 1] = ty;
+			targetTangents[i1 + 2] = tz;
 
-			index += 3;
+			index++;
 		}
 
-		targetSubGeometry.setPositions(targetPositions);
-		targetSubGeometry.setNormals(targetNormals);
-		targetSubGeometry.setTangents(targetTangents);
+		targetElements.setPositions(targetPositions);
+		targetElements.setNormals(targetNormals);
+		targetElements.setTangents(targetTangents);
 	}
 
 	/**
@@ -606,24 +610,24 @@ class SkeletonAnimator extends AnimatorBase
 		}
 	}
 
-	private onIndicesUpdate(event:SubGeometryEvent)
+	private onIndicesUpdate(event:ElementsEvent)
 	{
-		var subGeometry:TriangleSubGeometry = <TriangleSubGeometry> event.target;
+		var elements:TriangleElements = <TriangleElements> event.target;
 
-		(<TriangleSubGeometry> this._morphedSubGeometry[subGeometry.id]).setIndices(subGeometry.indices);
+		(<TriangleElements> this._morphedElements[elements.id]).setIndices(elements.indices);
 	}
 
-	private onVerticesUpdate(event:SubGeometryEvent)
+	private onVerticesUpdate(event:ElementsEvent)
 	{
-		var subGeometry:TriangleSubGeometry = <TriangleSubGeometry> event.target;
-		var morphGeometry:TriangleSubGeometry = <TriangleSubGeometry> this._morphedSubGeometry[subGeometry.id];
+		var elements:TriangleElements = <TriangleElements> event.target;
+		var morphGraphics:TriangleElements = <TriangleElements> this._morphedElements[elements.id];
 
 		switch(event.attributesView) {
-			case subGeometry.uvs:
-				morphGeometry.setUVs(subGeometry.uvs.get(subGeometry.numVertices));
+			case elements.uvs:
+				morphGraphics.setUVs(elements.uvs.get(elements.numVertices));
 				break;
-			case subGeometry.secondaryUVs:
-				morphGeometry.setSecondaryUVs(subGeometry.secondaryUVs.get(subGeometry.numVertices));
+			case elements.getCustomAtributes("secondaryUVs"):
+				morphGraphics.setCustomAttributes("secondaryUVs", elements.getCustomAtributes("secondaryUVs").get(elements.numVertices));
 				break;
 		}
 	}

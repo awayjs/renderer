@@ -18,9 +18,9 @@ import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderReg
 
 /**
  *
- * @class away.pool.TextureVOBaseBase
+ * @class away.pool.GL_TextureBaseBase
  */
-class TextureVOBase extends AbstractionBase
+class GL_TextureBase extends AbstractionBase
 {
 	private _texture:TextureBase;
 	public _shader:ShaderBase;
@@ -92,4 +92,4 @@ class TextureVOBase extends AbstractionBase
 	}
 }
 
-export = TextureVOBase;
+export = GL_TextureBase;

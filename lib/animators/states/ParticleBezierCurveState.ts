@@ -7,7 +7,7 @@ import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/base/ContextGL
 
 import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
+import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 import ParticleBezierCurveNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
@@ -62,14 +62,14 @@ class ParticleBezierCurveState extends ParticleStateBase
 		this._endPoint = this._particleBezierCurveNode._iEndPoint;
 	}
 
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
 		var controlIndex:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_CONTROL_INDEX);
 		var endIndex:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_END_INDEX);
 
 		if (this._particleBezierCurveNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
-			animationSubGeometry.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
-			animationSubGeometry.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat.FLOAT_3);
+			animationElements.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
+			animationElements.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat.FLOAT_3);
 		} else {
 			animationRegisterCache.setVertexConst(controlIndex, this._controlPoint.x, this._controlPoint.y, this._controlPoint.z);
 			animationRegisterCache.setVertexConst(endIndex, this._endPoint.x, this._endPoint.y, this._endPoint.z);

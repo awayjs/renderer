@@ -10,14 +10,14 @@ import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompar
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
+import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 import RenderPassBase				= require("awayjs-renderergl/lib/render/RenderPassBase");
 import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
+import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
 
 /**
  * SkyboxRender forms an abstract base class for the default shaded materials provided by Stage,
@@ -26,17 +26,17 @@ import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
 class SkyboxRender extends RenderPassBase
 {
 	public _skybox:Skybox;
-	public _texture:TextureVOBase;
+	public _texture:GL_TextureBase;
 
-	constructor(skybox:Skybox, renderableClass:IRenderableClass, renderPool:RenderPool)
+	constructor(skybox:Skybox, elementsClass:IElementsClassGL, renderPool:RenderPool)
 	{
-		super(skybox, renderableClass, renderPool);
+		super(skybox, elementsClass, renderPool);
 
 		this._skybox = skybox;
 
-		this._shader = new ShaderBase(renderableClass, this, this._stage);
+		this._shader = new ShaderBase(elementsClass, this, this._stage);
 
-		this._texture = <TextureVOBase> this._shader.getAbstraction(this._skybox.texture);
+		this._texture = <GL_TextureBase> this._shader.getAbstraction(this._skybox.texture);
 
 		this._pAddPass(this);
 	}
@@ -67,7 +67,7 @@ class SkyboxRender extends RenderPassBase
 	{
 		super._iIncludeDependencies(shader);
 
-		shader.usesLocalPosFragment = true;
+		shader.usesPositionFragment = true;
 	}
 
 	/**
@@ -75,7 +75,7 @@ class SkyboxRender extends RenderPassBase
 	 */
 	public _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
-		return this._texture._iGetFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.localPositionVarying);
+		return this._texture._iGetFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.positionVarying);
 	}
 
 

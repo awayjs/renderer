@@ -7,7 +7,7 @@ import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/base/ContextGL
 
 import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
+import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 import ParticleSpriteSheetNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
@@ -81,7 +81,7 @@ class ParticleSpriteSheetState extends ParticleStateBase
 		this.updateSpriteSheetData();
 	}
 
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
 		if (animationRegisterCache.needUVAnimation) {
 			animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
@@ -89,9 +89,9 @@ class ParticleSpriteSheetState extends ParticleStateBase
 				var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_1);
 				if (this._particleSpriteSheetNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
 					if (this._usesPhase)
-						animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
+						animationElements.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 					else
-						animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_2);
+						animationElements.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_2);
 				} else
 					animationRegisterCache.setVertexConst(index, this._spriteSheetData[4], this._spriteSheetData[5]);
 			}

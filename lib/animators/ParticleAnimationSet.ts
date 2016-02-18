@@ -1,22 +1,22 @@
-import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
+import ElementsBase						= require("awayjs-display/lib/graphics/ElementsBase");
 import IAnimationSet					= require("awayjs-display/lib/animators/IAnimationSet");
+import ParticleData						= require("awayjs-display/lib/animators/data/ParticleData");
 import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
+import Graphic							= require("awayjs-display/lib/graphics/Graphic");
+import Graphics							= require("awayjs-display/lib/graphics/Graphics");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
 import AnimationSetBase					= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
+import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
 import ParticleProperties				= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-import ParticleData						= require("awayjs-renderergl/lib/animators/data/ParticleData");
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleTimeNode					= require("awayjs-renderergl/lib/animators/nodes/ParticleTimeNode");
-import ParticleGeometry					= require("awayjs-renderergl/lib/base/ParticleGeometry");
 import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
 
 
@@ -43,7 +43,7 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 	 */
 	public static COLOR_PRIORITY:number /*int*/ = 18;
 
-	private _animationSubGeometries:Object = new Object();
+	private _animationElements:Object = new Object();
 	private _particleNodes:Array<ParticleNodeBase> = new Array<ParticleNodeBase>();
 	private _localDynamicNodes:Array<ParticleNodeBase> = new Array<ParticleNodeBase>();
 	private _localStaticNodes:Array<ParticleNodeBase> = new Array<ParticleNodeBase>();
@@ -81,6 +81,11 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 	 * Initialiser function scope for static particle properties
 	 */
 	public initParticleScope:Object;
+
+	/**
+	 *
+	 */
+	public shareAnimationGraphics:boolean = true;
 
 	/**
 	 * Creates a new <code>ParticleAnimationSet</code>
@@ -265,68 +270,68 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 
 	public dispose()
 	{
-		for (var key in this._animationSubGeometries)
-			(<AnimationSubGeometry> this._animationSubGeometries[key]).dispose();
+		for (var key in this._animationElements)
+			(<AnimationElements> this._animationElements[key]).dispose();
 
 		super.dispose();
 	}
 
-	public getAnimationSubGeometry(subMesh:ISubMesh)
+	public getAnimationElements(graphic:Graphic)
 	{
-		var mesh:Mesh = subMesh.parentMesh;
-		var animationSubGeometry:AnimationSubGeometry = (mesh.shareAnimationGeometry)? this._animationSubGeometries[subMesh.subGeometry.id] : this._animationSubGeometries[subMesh.id];
+		var mesh:Mesh = <Mesh> graphic.parent.sourceEntity;
+		var animationElements:AnimationElements = (this.shareAnimationGraphics)? this._animationElements[graphic.elements.id] : this._animationElements[graphic.id];
 
-		if (animationSubGeometry)
-			return animationSubGeometry;
+		if (animationElements)
+			return animationElements;
 
-		this._iGenerateAnimationSubGeometries(mesh);
+		this._iGenerateAnimationElements(mesh);
 
-		return (mesh.shareAnimationGeometry)? this._animationSubGeometries[subMesh.subGeometry.id] : this._animationSubGeometries[subMesh.id];
+		return (this.shareAnimationGraphics)? this._animationElements[graphic.elements.id] : this._animationElements[graphic.id];
 	}
 
 
 	/** @private */
-	public _iGenerateAnimationSubGeometries(mesh:Mesh)
+	public _iGenerateAnimationElements(mesh:Mesh)
 	{
 		if (this.initParticleFunc == null)
 			throw(new Error("no initParticleFunc set"));
 
-		var geometry:ParticleGeometry = <ParticleGeometry> mesh.geometry;
+		var geometry:Graphics = <Graphics> mesh.graphics;
 
 		if (!geometry)
-			throw(new Error("Particle animation can only be performed on a ParticleGeometry object"));
+			throw(new Error("Particle animation can only be performed on a Graphics object"));
 
 		var i:number /*int*/, j:number /*int*/, k:number /*int*/;
-		var animationSubGeometry:AnimationSubGeometry;
-		var newAnimationSubGeometry:boolean = false;
-		var subGeometry:SubGeometryBase;
-		var subMesh:ISubMesh;
+		var animationElements:AnimationElements;
+		var newAnimationElements:boolean = false;
+		var elements:ElementsBase;
+		var graphic:Graphic;
 		var localNode:ParticleNodeBase;
 
-		for (i = 0; i < mesh.subMeshes.length; i++) {
-			subMesh = mesh.subMeshes[i];
-			subGeometry = subMesh.subGeometry;
-			if (mesh.shareAnimationGeometry) {
-				animationSubGeometry = this._animationSubGeometries[subGeometry.id];
+		for (i = 0; i < mesh.graphics.count; i++) {
+			graphic = mesh.graphics.getGraphicAt(i);
+			elements = graphic.elements;
+			if (this.shareAnimationGraphics) {
+				animationElements = this._animationElements[elements.id];
 
-				if (animationSubGeometry)
+				if (animationElements)
 					continue;
 			}
 
-			animationSubGeometry = new AnimationSubGeometry();
+			animationElements = new AnimationElements();
 
-			if (mesh.shareAnimationGeometry)
-				this._animationSubGeometries[subGeometry.id] = animationSubGeometry;
+			if (this.shareAnimationGraphics)
+				this._animationElements[elements.id] = animationElements;
 			else
-				this._animationSubGeometries[subMesh.id] = animationSubGeometry;
+				this._animationElements[graphic.id] = animationElements;
 
-			newAnimationSubGeometry = true;
+			newAnimationElements = true;
 
 			//create the vertexData vector that will be used for local node data
-			animationSubGeometry.createVertexData(subGeometry.numVertices, this._totalLenOfOneVertex);
+			animationElements.createVertexData(elements.numVertices, this._totalLenOfOneVertex);
 		}
 
-		if (!newAnimationSubGeometry)
+		if (!newAnimationElements)
 			return;
 
 		var particles:Array<ParticleData> = geometry.particles;
@@ -366,18 +371,18 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 
 			//loop through all particle data for the curent particle
 			while (j < particlesLength && (particle = particles[j]).particleIndex == i) {
-				//find the target animationSubGeometry
-				for (k = 0; k < mesh.subMeshes.length; k++) {
-					subMesh = mesh.subMeshes[k];
-					if (subMesh.subGeometry == particle.subGeometry) {
-						animationSubGeometry = (mesh.shareAnimationGeometry)? this._animationSubGeometries[subMesh.subGeometry.id] : this._animationSubGeometries[subMesh.id];
+				//find the target animationElements
+				for (k = 0; k < mesh.graphics.count; k++) {
+					graphic = mesh.graphics.getGraphicAt(k);
+					if (graphic.elements == particle.elements) {
+						animationElements = (this.shareAnimationGraphics)? this._animationElements[graphic.elements.id] : this._animationElements[graphic.id];
 						break;
 					}
 				}
 				numVertices = particle.numVertices;
-				vertexData = animationSubGeometry.vertexData;
+				vertexData = animationElements.vertexData;
 				vertexLength = numVertices*this._totalLenOfOneVertex;
-				startingOffset = animationSubGeometry.numProcessedVertices*this._totalLenOfOneVertex;
+				startingOffset = animationElements.numProcessedVertices*this._totalLenOfOneVertex;
 
 				//loop through each static local node in the animation set
 				for (k = 0; k < this._localStaticNodes.length; k++) {
@@ -399,9 +404,9 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 
 				//store particle properties if they need to be retreived for dynamic local nodes
 				if (this._localDynamicNodes.length)
-					animationSubGeometry.animationParticles.push(new ParticleAnimationData(i, particleProperties.startTime, particleProperties.duration, particleProperties.delay, particle));
+					animationElements.animationParticles.push(new ParticleAnimationData(i, particleProperties.startTime, particleProperties.duration, particleProperties.delay, particle));
 
-				animationSubGeometry.numProcessedVertices += numVertices;
+				animationElements.numProcessedVertices += numVertices;
 
 				//next index
 				j++;

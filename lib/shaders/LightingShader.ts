@@ -18,7 +18,7 @@ import ILightingPass				= require("awayjs-renderergl/lib/render/passes/ILighting
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import CompilerBase					= require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
 import LightingCompiler				= require("awayjs-renderergl/lib/shaders/compilers/LightingCompiler");
-import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
+import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
 
 /**
@@ -101,9 +101,9 @@ class LightingShader extends ShaderBase
 	/**
 	 * Creates a new MethodCompilerVO object.
 	 */
-	constructor(renderableClass:IRenderableClass, lightingPass:ILightingPass, stage:Stage)
+	constructor(elementsClass:IElementsClassGL, lightingPass:ILightingPass, stage:Stage)
 	{
-		super(renderableClass, lightingPass, stage);
+		super(elementsClass, lightingPass, stage);
 
 		this._lightingPass = lightingPass;
 	}
@@ -141,9 +141,9 @@ class LightingShader extends ShaderBase
 	 * @param materialPassVO
 	 * @returns {away.materials.LightingCompiler}
 	 */
-	public createCompiler(renderableClass:IRenderableClass, pass:ILightingPass):CompilerBase
+	public createCompiler(elementsClass:IElementsClassGL, pass:ILightingPass):CompilerBase
 	{
-		return new LightingCompiler(renderableClass, pass, this);
+		return new LightingCompiler(elementsClass, pass, this);
 	}
 
 

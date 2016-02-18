@@ -8,7 +8,7 @@ import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/base/ContextGL
 
 import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
+import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 import ParticleOrbitNode				= require("awayjs-renderergl/lib/animators/nodes/ParticleOrbitNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
@@ -112,15 +112,15 @@ class ParticleOrbitState extends ParticleStateBase
 		this.updateOrbitData();
 	}
 
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
 		var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.ORBIT_INDEX);
 
 		if (this._particleOrbitNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
 			if (this._usesPhase)
-				animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
+				animationElements.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 			else
-				animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
+				animationElements.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 		} else
 			animationRegisterCache.setVertexConst(index, this._orbitData.x, this._orbitData.y, this._orbitData.z, this._orbitData.w);
 

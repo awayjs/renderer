@@ -4,7 +4,7 @@ import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 /**
  * ...
  */
-class ParticleGeometryTransform
+class ParticleGraphicsTransform
 {
 	private _defaultVertexTransform:Matrix3D;
 	private _defaultInvVertexTransform:Matrix3D;
@@ -39,4 +39,4 @@ class ParticleGeometryTransform
 	}
 }
 
-export = ParticleGeometryTransform;
+export = ParticleGraphicsTransform;

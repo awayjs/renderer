@@ -7,7 +7,7 @@ import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/P
 /**
  * ...
  */
-class AnimationSubGeometry
+class AnimationElements
 {
 	public static SUBGEOM_ID_COUNT:number = 0;
 
@@ -39,7 +39,7 @@ class AnimationSubGeometry
 		for (var i:number /*int*/ = 0; i < 8; i++)
 			this._pBufferDirty[i] = true;
 
-		this._iUniqueId = AnimationSubGeometry.SUBGEOM_ID_COUNT++;
+		this._iUniqueId = AnimationElements.SUBGEOM_ID_COUNT++;
 	}
 
 	public createVertexData(numVertices:number /*uint*/, totalLenOfOneVertex:number /*uint*/)
@@ -99,4 +99,4 @@ class AnimationSubGeometry
 	}
 }
 
-export = AnimationSubGeometry;
+export = AnimationElements;

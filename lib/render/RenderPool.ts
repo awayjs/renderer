@@ -7,8 +7,7 @@ import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 
-import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 import BasicMaterialRender			= require("awayjs-renderergl/lib/render/BasicMaterialRender");
 import IRenderClass					= require("awayjs-renderergl/lib/render/IRenderClass");
 import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
@@ -19,10 +18,10 @@ import SkyboxRender					= require("awayjs-renderergl/lib/render/SkyboxRender");
  */
 class RenderPool implements IAbstractionPool
 {
-	private static _abstractionPool:Object = new Object();
-	
-	private _pool:Object = new Object();
-	private _renderableClass:IRenderableClass;
+	private static _abstractionClassPool:Object = new Object();
+
+	private _abstractionPool:Object = new Object();
+	private _elementsClass:IElementsClassGL;
 	private _stage:Stage;
 	private _renderClass:IRenderClass;
 
@@ -36,9 +35,9 @@ class RenderPool implements IAbstractionPool
 	 *
 	 * @param renderClass
 	 */
-	constructor(renderableClass:IRenderableClass, stage:Stage, renderClass:IRenderClass = null)
+	constructor(elementsClass:IElementsClassGL, stage:Stage, renderClass:IRenderClass = null)
 	{
-		this._renderableClass = renderableClass;
+		this._elementsClass = elementsClass;
 		this._stage = stage;
 		this._renderClass = renderClass;
 	}
@@ -46,40 +45,31 @@ class RenderPool implements IAbstractionPool
 	/**
 	 * //TODO
 	 *
-	 * @param renderableOwner
-	 * @returns IRenderable
+	 * @param elementsOwner
+	 * @returns IElements
 	 */
 	public getAbstraction(renderOwner:IRenderOwner):RenderBase
 	{
-		return (this._pool[renderOwner.id] || (this._pool[renderOwner.id] = new (<IRenderClass> this._renderClass || RenderPool._abstractionPool[renderOwner.assetType])(renderOwner, this._renderableClass, this)));
+		return (this._abstractionPool[renderOwner.id] || (this._abstractionPool[renderOwner.id] = new (<IRenderClass> this._renderClass || RenderPool._abstractionClassPool[renderOwner.assetType])(renderOwner, this._elementsClass, this)));
 	}
 
 	/**
 	 * //TODO
 	 *
-	 * @param renderableOwner
+	 * @param elementsOwner
 	 */
 	public clearAbstraction(renderOwner:IRenderOwner)
 	{
-		delete this._pool[renderOwner.id];
+		delete this._abstractionPool[renderOwner.id];
 	}
-	
+
 	/**
 	 *
 	 * @param imageObjectClass
 	 */
 	public static registerAbstraction(renderClass:IRenderClass, assetClass:IAssetClass)
 	{
-		RenderPool._abstractionPool[assetClass.assetType] = renderClass;
-	}
-
-	/**
-	 *
-	 * @param subGeometry
-	 */
-	public static getClass(renderOwner:IRenderOwner):IRenderClass
-	{
-		return RenderPool._abstractionPool[renderOwner.assetType];
+		RenderPool._abstractionClassPool[assetClass.assetType] = renderClass;
 	}
 }
 

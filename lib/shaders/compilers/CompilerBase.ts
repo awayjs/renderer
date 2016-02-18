@@ -4,7 +4,7 @@ import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegi
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
-import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
+import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 
 /**
  * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
@@ -17,7 +17,7 @@ class CompilerBase
 	public _pShader:ShaderBase;
 	public _pSharedRegisters:ShaderRegisterData;
 	public _pRegisterCache:ShaderRegisterCache;
-	public _pRenderableClass:IRenderableClass;
+	public _pElementsClass:IElementsClassGL;
 	public _pRenderPass:IPass;
 
 	public _pVertexCode:string = ''; // Changed to emtpy string- AwayTS
@@ -25,10 +25,10 @@ class CompilerBase
 	public _pPostAnimationFragmentCode:string = '';// Changed to emtpy string - AwayTS
 
 	//The attributes that need to be animated by animators.
-	public _pAnimatableAttributes:Array<string>;
+	public _pAnimatableAttributes:Array<string> = new Array<string>();
 
 	//The target registers for animated properties, written to by the animators.
-	public _pAnimationTargetRegisters:Array<string>;
+	public _pAnimationTargetRegisters:Array<string> = new Array<string>();
 
 	//The target register to place the animated UV coordinate.
 	private _uvTarget:string;
@@ -40,16 +40,16 @@ class CompilerBase
 	 * Creates a new CompilerBase object.
 	 * @param profile The compatibility profile of the renderer.
 	 */
-	constructor(renderableClass:IRenderableClass, pass:IPass, shader:ShaderBase)
+	constructor(elementsClass:IElementsClassGL, pass:IPass, shader:ShaderBase)
 	{
-		this._pRenderableClass = renderableClass;
+		this._pElementsClass = elementsClass;
 		this._pRenderPass = pass;
 		this._pShader = shader;
 
 		this._pSharedRegisters = new ShaderRegisterData();
 
 		this._pRegisterCache = new ShaderRegisterCache(shader.profile);
-		this._pRegisterCache.vertexAttributesOffset = renderableClass.vertexAttributesOffset;
+		this._pRegisterCache.vertexAttributesOffset = elementsClass.vertexAttributesOffset;
 		this._pRegisterCache.reset();
 	}
 
@@ -109,8 +109,11 @@ class CompilerBase
 			this.compileGlobalPositionCode();
 
         //compile the local-space position if required
-        if (this._pShader.usesLocalPosFragment)
-            this.compileLocalPositionCode();
+        if (this._pShader.usesPositionFragment)
+            this.compilePositionCode();
+
+		if (this._pShader.usesCurves)
+			this.compileCurvesCode();
 
 		//Calculate the (possibly animated) UV coordinates.
 		if (this._pShader.uvDependencies > 0)
@@ -126,8 +129,8 @@ class CompilerBase
 			this.compileViewDirCode();
 
 		//collect code from material
-		this._pVertexCode += this._pRenderableClass._iGetVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
-		this._pFragmentCode += this._pRenderableClass._iGetFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+		this._pVertexCode += this._pElementsClass._iGetVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+		this._pFragmentCode += this._pElementsClass._iGetFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
 
 		//collect code from pass
 		this._pVertexCode += this._pRenderPass._iGetPreLightingVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
@@ -145,18 +148,37 @@ class CompilerBase
 
 		this._pShader.sceneMatrixIndex = sceneMatrixReg.index*4;
 
-		this._pVertexCode += "m44 " + this._pSharedRegisters.globalPositionVertex + ", " + this._pSharedRegisters.localPosition + ", " + sceneMatrixReg + "\n";
+		this._pVertexCode += "m44 " + this._pSharedRegisters.globalPositionVertex + ", " + this._pSharedRegisters.animatedPosition + ", " + sceneMatrixReg + "\n";
 
 		if (this._pShader.usesGlobalPosFragment) {
 			this._pSharedRegisters.globalPositionVarying = this._pRegisterCache.getFreeVarying();
 			this._pVertexCode += "mov " + this._pSharedRegisters.globalPositionVarying + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
 		}
 	}
-    private compileLocalPositionCode()
+
+    private compilePositionCode()
     {
-        this._pSharedRegisters.localPositionVarying = this._pRegisterCache.getFreeVarying();
-        this._pVertexCode += "mov " + this._pSharedRegisters.localPositionVarying + ", " + this._pSharedRegisters.localPosition + "\n";
+        this._pSharedRegisters.positionVarying = this._pRegisterCache.getFreeVarying();
+        this._pVertexCode += "mov " + this._pSharedRegisters.positionVarying + ", " + this._pSharedRegisters.animatedPosition + "\n";
     }
+
+
+	private compileCurvesCode()
+	{
+		this._pSharedRegisters.curvesInput = this._pRegisterCache.getFreeVertexAttribute();
+		this._pShader.curvesIndex = this._pSharedRegisters.curvesInput.index;
+
+		this._pSharedRegisters.curvesVarying = this._pRegisterCache.getFreeVarying();
+		this._pVertexCode += "mov " + this._pSharedRegisters.curvesVarying + ", " + this._pSharedRegisters.curvesInput + "\n";
+
+		var temp:ShaderRegisterElement = this._pRegisterCache.getFreeFragmentSingleTemp();
+
+		this._pFragmentCode += "mul " + temp + ", " + this._pSharedRegisters.curvesVarying + ".y, " + this._pSharedRegisters.curvesVarying + ".y\n" +
+							"sub " + temp + ", " + temp + ", " + this._pSharedRegisters.curvesVarying + ".z\n" +
+							"mul " + temp + ", " + temp + ", " + this._pSharedRegisters.curvesVarying + ".x\n" +
+							"kil " + temp + "\n";
+	}
+
 	/**
 	 * Calculate the (possibly animated) UV coordinates.
 	 */
@@ -209,9 +231,9 @@ class CompilerBase
 
 		if (this._pShader.usesTangentSpace) {
 			var temp:ShaderRegisterElement = this._pRegisterCache.getFreeVertexVectorTemp();
-			this._pVertexCode += "sub " + temp + ", " + cameraPositionReg + ", " + this._pSharedRegisters.localPosition + "\n" +
+			this._pVertexCode += "sub " + temp + ", " + cameraPositionReg + ", " + this._pSharedRegisters.animatedPosition + "\n" +
 				"m33 " + this._pSharedRegisters.viewDirVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" +
-				"mov " + this._pSharedRegisters.viewDirVarying + ".w, " + this._pSharedRegisters.localPosition + ".w\n";
+				"mov " + this._pSharedRegisters.viewDirVarying + ".w, " + this._pSharedRegisters.animatedPosition + ".w\n";
 		} else {
 			this._pVertexCode += "sub " + this._pSharedRegisters.viewDirVarying + ", " + cameraPositionReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
 			this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.globalPositionVertex);
@@ -340,13 +362,15 @@ class CompilerBase
 	{
 		this._pShader.pInitRegisterIndices();
 
-		this._pAnimatableAttributes = new Array<string>("va0");
-		this._pAnimationTargetRegisters = new Array<string>("vt0");
+		this._pSharedRegisters.animatedPosition = this._pRegisterCache.getFreeVertexVectorTemp()
+		this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedPosition, 1);
+
+		this._pAnimatableAttributes.push("va0");
+		this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedPosition.toString());
 		this._pVertexCode = "";
 		this._pFragmentCode = "";
 		this._pPostAnimationFragmentCode = "";
 
-		this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.localPosition = this._pRegisterCache.getFreeVertexVectorTemp(), 1);
 
 		//create commonly shared constant registers
 		if (this._pShader.usesCommonData || this._pShader.normalDependencies > 0) {
@@ -355,7 +379,7 @@ class CompilerBase
 		}
 
 		//Creates the registers to contain the tangent data.
-		// need to be created FIRST and in this order (for when using tangent space)
+		//Needs to be created FIRST and in this order (for when using tangent space)
 		if (this._pShader.tangentDependencies > 0 || this._pShader.outputsNormals) {
 			this._pSharedRegisters.tangentInput = this._pRegisterCache.getFreeVertexAttribute();
 			this._pShader.tangentBufferIndex = this._pSharedRegisters.tangentInput.index;

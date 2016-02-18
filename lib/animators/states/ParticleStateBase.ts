@@ -6,7 +6,7 @@ import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
 import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
+import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import AnimationStateBase				= require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
@@ -37,18 +37,18 @@ class ParticleStateBase extends AnimationStateBase
 		return this._pNeedUpdateTime;
 	}
 
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
 
 	}
 
-	public _pUpdateDynamicProperties(animationSubGeometry:AnimationSubGeometry)
+	public _pUpdateDynamicProperties(animationElements:AnimationElements)
 	{
-		this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId] = true;
+		this._pDynamicPropertiesDirty[animationElements._iUniqueId] = true;
 
-		var animationParticles:Array<ParticleAnimationData> = animationSubGeometry.animationParticles;
-		var vertexData:Array<number> = animationSubGeometry.vertexData;
-		var totalLenOfOneVertex:number /*uint*/ = animationSubGeometry.totalLenOfOneVertex;
+		var animationParticles:Array<ParticleAnimationData> = animationElements.animationParticles;
+		var vertexData:Array<number> = animationElements.vertexData;
+		var totalLenOfOneVertex:number /*uint*/ = animationElements.totalLenOfOneVertex;
 		var dataLength:number /*uint*/ = this._particleNode.dataLength;
 		var dataOffset:number /*uint*/ = this._particleNode._iDataOffset;
 		var vertexLength:number /*uint*/;
@@ -102,7 +102,7 @@ class ParticleStateBase extends AnimationStateBase
 			i++;
 		}
 
-		animationSubGeometry.invalidateBuffer();
+		animationElements.invalidateBuffer();
 	}
 
 }

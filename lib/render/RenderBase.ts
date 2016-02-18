@@ -25,8 +25,8 @@ import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegi
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
 import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
-import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
-import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
+import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
+import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
 
 /**
  *
@@ -41,7 +41,7 @@ class RenderBase extends AbstractionBase
 	public _forceSeparateMVP:boolean = false;
 
 	public _renderOwner:IRenderOwner;
-	public _renderableClass:IRenderableClass;
+	public _elementsClass:IElementsClassGL;
 	public _stage:Stage;
 
 	private _renderOrderId:number;
@@ -101,7 +101,7 @@ class RenderBase extends AbstractionBase
 		return this._numImages;
 	}
 
-	constructor(renderOwner:IRenderOwner, renderableClass:IRenderableClass, renderPool:RenderPool)
+	constructor(renderOwner:IRenderOwner, elementsClass:IElementsClassGL, renderPool:RenderPool)
 	{
 		super(renderOwner, renderPool);
 
@@ -110,7 +110,7 @@ class RenderBase extends AbstractionBase
 
 		this.renderId = renderOwner.id;
 		this._renderOwner = renderOwner;
-		this._renderableClass = renderableClass;
+		this._elementsClass = elementsClass;
 		this._stage = renderPool.stage;
 
 		this._renderOwner.addEventListener(RenderOwnerEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
@@ -121,11 +121,11 @@ class RenderBase extends AbstractionBase
 
 	public _iIncludeDependencies(shader:ShaderBase)
 	{
-		this._renderableClass._iIncludeDependencies(shader);
+		this._elementsClass._iIncludeDependencies(shader);
 
 		shader.alphaThreshold = this._renderOwner.alphaThreshold;
 		shader.useImageRect = this._renderOwner.imageRect;
-		//shader.useUVBuffer = this._renderOwner.uvBuffer;
+		shader.usesCurves = this._renderOwner.curves;
 
 		if (this._renderOwner instanceof MaterialBase) {
 			var material:MaterialBase = <MaterialBase> this._renderOwner;
@@ -152,7 +152,7 @@ class RenderBase extends AbstractionBase
 		super.onClear(event);
 
 		this._renderOwner = null;
-		this._renderableClass = null;
+		this._elementsClass = null;
 		this._stage = null;
 
 		var len:number = this._passes.length;

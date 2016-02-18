@@ -4,7 +4,7 @@ import LightingShader				= require("awayjs-renderergl/lib/shaders/LightingShader
 import CompilerBase					= require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import ILightingPass				= require("awayjs-renderergl/lib/render/passes/ILightingPass");
-import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
+import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 
 /**
  * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
@@ -27,9 +27,9 @@ class LightingCompiler extends CompilerBase
 	 * Creates a new CompilerBase object.
 	 * @param profile The compatibility profile of the renderer.
 	 */
-	constructor(renderableClass:IRenderableClass, lightingPass:ILightingPass, shaderLightingObject:LightingShader)
+	constructor(elementsClass:IElementsClassGL, lightingPass:ILightingPass, shaderLightingObject:LightingShader)
 	{
-		super(renderableClass, lightingPass, shaderLightingObject);
+		super(elementsClass, lightingPass, shaderLightingObject);
 
 		this._shaderLightingObject = shaderLightingObject;
 		this._lightingPass = lightingPass;
@@ -185,9 +185,9 @@ class LightingCompiler extends CompilerBase
 			if (this._shaderLightingObject.usesTangentSpace) {
 				lightVarying = this._pRegisterCache.getFreeVarying();
 				var temp:ShaderRegisterElement = this._pRegisterCache.getFreeVertexVectorTemp();
-				this._pVertexCode += "sub " + temp + ", " + lightPosReg + ", " + this._pSharedRegisters.localPosition + "\n" +
+				this._pVertexCode += "sub " + temp + ", " + lightPosReg + ", " + this._pSharedRegisters.animatedPosition + "\n" +
 					"m33 " + lightVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" +
-					"mov " + lightVarying + ".w, " + this._pSharedRegisters.localPosition + ".w\n";
+					"mov " + lightVarying + ".w, " + this._pSharedRegisters.animatedPosition + ".w\n";
 			} else if (!this._shaderLightingObject.usesGlobalPosFragment) {
 				lightVarying = this._pRegisterCache.getFreeVarying();
 				this._pVertexCode += "sub " + lightVarying + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";

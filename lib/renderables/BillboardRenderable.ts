@@ -5,8 +5,8 @@ import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 
 import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
-import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
-import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
+import ElementsBase				= require("awayjs-display/lib/graphics/ElementsBase");
+import TriangleElements			= require("awayjs-display/lib/graphics/TriangleElements");
 import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
@@ -30,15 +30,14 @@ import RenderableBase				= require("awayjs-renderergl/lib/renderables/Renderable
  */
 class BillboardRenderable extends RenderableBase
 {
-
-	private static _samplerGeometry:Object = new Object();
-
-	public static vertexAttributesOffset:number = 1;
+	private static _samplerElements:Object = new Object();
 
 	/**
 	 *
 	 */
 	private _billboard:Billboard;
+
+	public _id:number;
 
 	/**
 	 * //TODO
@@ -48,7 +47,7 @@ class BillboardRenderable extends RenderableBase
 	 */
 	constructor(billboard:Billboard, renderer:RendererBase)
 	{
-		super(billboard, billboard, billboard.material, renderer);
+		super(billboard, billboard, renderer);
 
 		this._billboard = billboard;
 	}
@@ -63,9 +62,9 @@ class BillboardRenderable extends RenderableBase
 	/**
 	 * //TODO
 	 *
-	 * @returns {away.base.TriangleSubGeometry}
+	 * @returns {away.base.TriangleElements}
 	 */
-	public _pGetSubGeometry():SubGeometryBase
+	public _pGetElements():ElementsBase
 	{
 		var texture:TextureBase = this._billboard.material.getTextureAt(0);
 
@@ -74,26 +73,28 @@ class BillboardRenderable extends RenderableBase
 		if (texture)
 			id = ((this.renderableOwner.style? this.renderableOwner.style.getSamplerAt(texture) || texture.getSamplerAt(0) : texture.getSamplerAt(0)) || DefaultMaterialManager.getDefaultSampler()).id;
 
-		var geometry:TriangleSubGeometry = BillboardRenderable._samplerGeometry[id];
+		this._id = id;
+
+		var elements:TriangleElements = BillboardRenderable._samplerElements[id];
 
 		var width:number = this._billboard.billboardWidth;
 		var height:number = this._billboard.billboardHeight;
 		var billboardRect:Rectangle = this._billboard.billboardRect;
 
-		if (!geometry) {
-			geometry = BillboardRenderable._samplerGeometry[id] = new TriangleSubGeometry(new AttributesBuffer(11, 4));
-			geometry.autoDeriveNormals = false;
-			geometry.autoDeriveTangents = false;
-			geometry.setIndices(Array<number>(0, 1, 2, 0, 2, 3));
-			geometry.setPositions(Array<number>(-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
-			geometry.setNormals(Array<number>(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
-			geometry.setTangents(Array<number>(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
-			geometry.setUVs(Array<number>(0, 0, 1, 0, 1, 1, 0, 1));
+		if (!elements) {
+			elements = BillboardRenderable._samplerElements[id] = new TriangleElements(new AttributesBuffer(11, 4));
+			elements.autoDeriveNormals = false;
+			elements.autoDeriveTangents = false;
+			elements.setIndices(Array<number>(0, 1, 2, 0, 2, 3));
+			elements.setPositions(Array<number>(-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
+			elements.setNormals(Array<number>(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
+			elements.setTangents(Array<number>(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
+			elements.setUVs(Array<number>(0, 0, 1, 0, 1, 1, 0, 1));
 		} else {
-			geometry.setPositions(Array<number>(-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
+			elements.setPositions(Array<number>(-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
 		}
 
-		return geometry;
+		return elements;
 	}
 
 	public _pGetRenderOwner():IRenderOwner
@@ -101,68 +102,6 @@ class BillboardRenderable extends RenderableBase
 		return this._billboard.material;
 	}
 
-	public static _iIncludeDependencies(shader:ShaderBase)
-	{
-
-	}
-
-	public static _iGetVertexCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
-	{
-		var code:string = "";
-
-		//get the projection coordinates
-		var position:ShaderRegisterElement = (shader.globalPosDependencies > 0)? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
-
-		//reserving vertex constants for projection matrix
-		var viewMatrixReg:ShaderRegisterElement = registerCache.getFreeVertexConstant();
-		registerCache.getFreeVertexConstant();
-		registerCache.getFreeVertexConstant();
-		registerCache.getFreeVertexConstant();
-		shader.viewMatrixIndex = viewMatrixReg.index*4;
-
-		if (shader.projectionDependencies > 0) {
-			sharedRegisters.projectionFragment = registerCache.getFreeVarying();
-			var temp:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
-			code += "m44 " + temp + ", " + position + ", " + viewMatrixReg + "\n" +
-			"mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" +
-			"mov op, " + temp + "\n";
-		} else {
-			code += "m44 op, " + position + ", " + viewMatrixReg + "\n";
-		}
-
-		return code;
-	}
-
-	public static _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
-	{
-		return "";
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public _setRenderState(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
-	{
-		super._setRenderState(pass, camera, viewProjection);
-
-		var shader:ShaderBase = pass.shader;
-
-		if (shader.sceneMatrixIndex >= 0) {
-			this.sourceEntity.getRenderSceneTransform(camera).copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
-			viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
-		} else {
-			var matrix3D:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
-
-			matrix3D.copyFrom(this.sourceEntity.getRenderSceneTransform(camera));
-			matrix3D.append(viewProjection);
-
-			matrix3D.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
-		}
-
-		var context:IContextGL = this._stage.context;
-		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shader.vertexConstantData, shader.numUsedVertexConstants);
-		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
-	}
 }
 
 export = BillboardRenderable;

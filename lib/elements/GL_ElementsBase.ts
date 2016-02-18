@@ -8,27 +8,34 @@ import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import GL_AttributesBuffer			= require("awayjs-stagegl/lib/attributes/GL_AttributesBuffer");
 
-import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
-import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
-import SubGeometryUtils				= require("awayjs-display/lib/utils/SubGeometryUtils");
+import Camera						= require("awayjs-display/lib/entities/Camera");
+import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
+import ElementsEvent				= require("awayjs-display/lib/events/ElementsEvent");
+import ElementsUtils				= require("awayjs-display/lib/utils/ElementsUtils");
 
+import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+import IAbstractionPool 			= require("awayjs-core/lib/library/IAbstractionPool");
+import IEntity = require("awayjs-display/lib/entities/IEntity");
+import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+
 /**
  *
- * @class away.pool.SubGeometryVOBaseBase
+ * @class away.pool.GL_ElementsBaseBase
  */
-class SubGeometryVOBase extends AbstractionBase
+class GL_ElementsBase extends AbstractionBase
 {
 	public usages:number = 0;
-	private _subGeometry:SubGeometryBase;
+	private _elements:ElementsBase;
+	public _shader:ShaderBase;
 	public _stage:Stage;
-	private _onInvalidateIndicesDelegate:(event:SubGeometryEvent) => void;
-	private _onClearIndicesDelegate:(event:SubGeometryEvent) => void;
-	private _onInvalidateVerticesDelegate:(event:SubGeometryEvent) => void;
-	private _onClearVerticesDelegate:(event:SubGeometryEvent) => void;
-	private _overflow:SubGeometryVOBase;
+	private _onInvalidateIndicesDelegate:(event:ElementsEvent) => void;
+	private _onClearIndicesDelegate:(event:ElementsEvent) => void;
+	private _onInvalidateVerticesDelegate:(event:ElementsEvent) => void;
+	private _onClearVerticesDelegate:(event:ElementsEvent) => void;
+	private _overflow:GL_ElementsBase;
 	private _indices:GL_AttributesBuffer;
 	private _indicesUpdated:boolean;
 	private _vertices:Object = new Object();
@@ -40,9 +47,9 @@ class SubGeometryVOBase extends AbstractionBase
 
 	private _numVertices:number;
 
-	public get subGeometry()
+	public get elements()
 	{
-		return this._subGeometry;
+		return this._elements;
 	}
 	/**
 	 *
@@ -52,23 +59,24 @@ class SubGeometryVOBase extends AbstractionBase
 		return this._numIndices;
 	}
 
-	constructor(subGeometry:SubGeometryBase, stage:Stage)
+	constructor(elements:ElementsBase, shader:ShaderBase, pool:IAbstractionPool)
 	{
-		super(subGeometry, stage);
+		super(elements, pool);
 		
-		this._subGeometry = subGeometry;
-		this._stage = stage;
+		this._elements = elements;
+		this._shader = shader;
+		this._stage = shader._stage;
 
-		this._onInvalidateIndicesDelegate = (event:SubGeometryEvent) => this._onInvalidateIndices(event);
-		this._onClearIndicesDelegate = (event:SubGeometryEvent) => this._onClearIndices(event);
-		this._onInvalidateVerticesDelegate = (event:SubGeometryEvent) => this._onInvalidateVertices(event);
-		this._onClearVerticesDelegate = (event:SubGeometryEvent) => this._onClearVertices(event);
+		this._onInvalidateIndicesDelegate = (event:ElementsEvent) => this._onInvalidateIndices(event);
+		this._onClearIndicesDelegate = (event:ElementsEvent) => this._onClearIndices(event);
+		this._onInvalidateVerticesDelegate = (event:ElementsEvent) => this._onInvalidateVertices(event);
+		this._onClearVerticesDelegate = (event:ElementsEvent) => this._onClearVertices(event);
 
-		this._subGeometry.addEventListener(SubGeometryEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
-		this._subGeometry.addEventListener(SubGeometryEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
+		this._elements.addEventListener(ElementsEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
+		this._elements.addEventListener(ElementsEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
 
-		this._subGeometry.addEventListener(SubGeometryEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
-		this._subGeometry.addEventListener(SubGeometryEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+		this._elements.addEventListener(ElementsEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
+		this._elements.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
 	}
 
 	/**
@@ -126,15 +134,20 @@ class SubGeometryVOBase extends AbstractionBase
 	{
 		super.onClear(event);
 
-		this._subGeometry.removeEventListener(SubGeometryEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
-		this._subGeometry.removeEventListener(SubGeometryEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
+		this._elements.removeEventListener(ElementsEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
+		this._elements.removeEventListener(ElementsEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
 
-		this._subGeometry.removeEventListener(SubGeometryEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
-		this._subGeometry.removeEventListener(SubGeometryEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+		this._elements.removeEventListener(ElementsEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
+		this._elements.removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
 
-		this._onClearIndices(new SubGeometryEvent(SubGeometryEvent.CLEAR_INDICES, this._subGeometry.indices));
+		this._onClearIndices(new ElementsEvent(ElementsEvent.CLEAR_INDICES, this._elements.indices));
 
-		this._subGeometry = null;
+		var names:Array<string> = this._elements.getCustomAtributesNames();
+		var len:number = names.length;
+		for (var i:number = 0; i <len; i++)
+			this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._elements.getCustomAtributes(names[i])));
+
+		this._elements = null;
 
 		if (this._overflow) {
 			this._overflow.onClear(event);
@@ -142,23 +155,18 @@ class SubGeometryVOBase extends AbstractionBase
 		}
 	}
 
-	public _iGetFragmentCode(shader:ShaderBase, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, inputReg:ShaderRegisterElement = null):string
-	{
-		throw new AbstractMethodError();
-	}
-
-	public _iRender(shader:ShaderBase)
+	public _iRender(sourceEntity:IEntity, camera:Camera, viewProjection:Matrix3D)
 	{
 		if (!this._verticesUpdated)
 			this._updateIndices();
 
-		this._render(shader);
+		this._render(sourceEntity, camera, viewProjection);
 
 		if (this._overflow)
-			this._overflow._iRender(shader);
+			this._overflow._iRender(sourceEntity, camera, viewProjection);
 	}
 
-	public _render(shader:ShaderBase)
+	public _render(sourceEntity:IEntity, camera:Camera, viewProjection:Matrix3D)
 	{
 		if (this._indices)
 			this._drawElements(0, this._numIndices);
@@ -183,9 +191,9 @@ class SubGeometryVOBase extends AbstractionBase
 	 */
 	public _updateIndices(indexOffset:number = 0)
 	{
-		var indices:Short3Attributes = this._subGeometry.indices;
+		var indices:Short3Attributes = this._elements.indices;
 		if (indices) {
-			this._indices = <GL_AttributesBuffer> this._pool.getAbstraction(SubGeometryUtils.getSubIndices(indices, this._subGeometry.numVertices, this._indexMappings, indexOffset));
+			this._indices = <GL_AttributesBuffer> this._stage.getAbstraction(ElementsUtils.getSubIndices(indices, this._elements.numVertices, this._indexMappings, indexOffset));
 			this._numIndices = this._indices._attributesBuffer.count*indices.dimensions;
 		} else {
 			this._indices = null;
@@ -196,13 +204,13 @@ class SubGeometryVOBase extends AbstractionBase
 		indexOffset += this._numIndices;
 
 		//check if there is more to split
-		if (indices && indexOffset < indices.count*this._subGeometry.indices.dimensions) {
+		if (indices && indexOffset < indices.count*this._elements.indices.dimensions) {
 			if (!this._overflow)
-				this._overflow = this._pGetOverflowSubGeometry();
+				this._overflow = this._pGetOverflowElements();
 
 			this._overflow._updateIndices(indexOffset);
 		} else if (this._overflow) {
-			this._overflow.onClear(new AssetEvent(AssetEvent.CLEAR, this._subGeometry));
+			this._overflow.onClear(new AssetEvent(AssetEvent.CLEAR, this._elements));
 			this._overflow = null;
 		}
 
@@ -227,7 +235,7 @@ class SubGeometryVOBase extends AbstractionBase
 
 		var bufferId:number = attributesView.buffer.id;
 
-		this._vertices[bufferId] = <GL_AttributesBuffer> this._pool.getAbstraction(SubGeometryUtils.getSubVertices(attributesView.buffer, this._indexMappings));
+		this._vertices[bufferId] = <GL_AttributesBuffer> this._stage.getAbstraction(ElementsUtils.getSubVertices(attributesView.buffer, this._indexMappings));
 
 		this._verticesUpdated[bufferId] = true;
 	}
@@ -238,7 +246,7 @@ class SubGeometryVOBase extends AbstractionBase
 	 * @param event
 	 * @private
 	 */
-	public _onInvalidateIndices(event:SubGeometryEvent)
+	public _onInvalidateIndices(event:ElementsEvent)
 	{
 		if (!event.attributesView)
 			return;
@@ -252,7 +260,7 @@ class SubGeometryVOBase extends AbstractionBase
 	 * @param event
 	 * @private
 	 */
-	public _onClearIndices(event:SubGeometryEvent)
+	public _onClearIndices(event:ElementsEvent)
 	{
 		if (!event.attributesView)
 			return;
@@ -267,7 +275,7 @@ class SubGeometryVOBase extends AbstractionBase
 	 * @param event
 	 * @private
 	 */
-	public _onInvalidateVertices(event:SubGeometryEvent)
+	public _onInvalidateVertices(event:ElementsEvent)
 	{
 		if (!event.attributesView)
 			return;
@@ -283,7 +291,7 @@ class SubGeometryVOBase extends AbstractionBase
 	 * @param event
 	 * @private
 	 */
-	public _onClearVertices(event:SubGeometryEvent)
+	public _onClearVertices(event:ElementsEvent)
 	{
 		if (!event.attributesView)
 			return;
@@ -293,6 +301,7 @@ class SubGeometryVOBase extends AbstractionBase
 		if (this._vertices[bufferId]) {
 			this._vertices[bufferId].onClear(new AssetEvent(AssetEvent.CLEAR, event.attributesView));
 			delete this._vertices[bufferId];
+			delete this._verticesUpdated[bufferId];
 		}
 	}
 
@@ -303,13 +312,13 @@ class SubGeometryVOBase extends AbstractionBase
 	 * @param renderableOwner
 	 * @param level
 	 * @param indexOffset
-	 * @returns {away.pool.TriangleSubMeshRenderable}
+	 * @returns {away.pool.GraphicRenderable}
 	 * @protected
 	 */
-	public _pGetOverflowSubGeometry():SubGeometryVOBase
+	public _pGetOverflowElements():GL_ElementsBase
 	{
 		throw new AbstractMethodError();
 	}
 }
 
-export = SubGeometryVOBase;
+export = GL_ElementsBase;

@@ -8,7 +8,7 @@ import Rectangle						= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 import ByteArray						= require("awayjs-core/lib/utils/ByteArray");
 
-import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
+import TriangleElements				= require("awayjs-display/lib/graphics/TriangleElements");
 import Scene							= require("awayjs-display/lib/containers/Scene");
 import View								= require("awayjs-display/lib/containers/View");
 import IPicker							= require("awayjs-display/lib/pick/IPicker");
@@ -32,7 +32,7 @@ import ITextureBase						= require("awayjs-stagegl/lib/base/ITextureBase");
 
 import DefaultRenderer					= require("awayjs-renderergl/lib/DefaultRenderer");
 import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import SubGeometryVOBase				= require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
+import GL_ElementsBase					= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
 
 /**
  * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
@@ -72,7 +72,7 @@ class ShaderPicker implements IPicker
 	private _localHitPosition:Vector3D = new Vector3D();
 	private _hitUV:Point = new Point();
 	private _faceIndex:number;
-	private _subGeometryIndex:number;
+	private _elementsIndex:number;
 
 	private _localHitNormal:Vector3D = new Vector3D();
 
@@ -171,14 +171,14 @@ class ShaderPicker implements IPicker
 			_collisionVO.localNormal = this._localHitNormal;
 			_collisionVO.uv = this._hitUV;
 			_collisionVO.index = this._faceIndex;
-			//_collisionVO.subGeometryIndex = this._subGeometryIndex;
+			//_collisionVO.elementsIndex = this._elementsIndex;
 
 		} else {
 			_collisionVO.localPosition = null;
 			_collisionVO.localNormal = null;
 			_collisionVO.uv = null;
 			_collisionVO.index = 0;
-			//_collisionVO.subGeometryIndex = 0;
+			//_collisionVO.elementsIndex = 0;
 		}
 
 		return _collisionVO;
@@ -249,10 +249,10 @@ class ShaderPicker implements IPicker
 			this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
 			this._context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._id, 1);
 
-			var subGeometryVO:SubGeometryVOBase = this._hitRenderable.subGeometryVO;
+			//var positionAttributes:GL_AttributesBuffer = <GL_AttributesBuffer> this._stage.getAbstraction((<TriangleElements> renderable.elements).positions);
+			//positionAttributes.activate(0, positionAttributes.size, positionAttributes.dimensions, positionAttributes.offset);
 
-			subGeometryVO.activateVertexBufferVO(0, (<TriangleSubGeometry> subGeometryVO.subGeometry).positions);
-			subGeometryVO.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numIndices);
+			//elementsGL.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, elementsGL.numIndices);
 
 			renderable = renderable.next;
 		}
@@ -346,10 +346,10 @@ class ShaderPicker implements IPicker
 		this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, localViewProjection, true);
 		this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
 
-		var subGeometryVO:SubGeometryVOBase = this._hitRenderable.subGeometryVO;
-
-		subGeometryVO.activateVertexBufferVO(0, (<TriangleSubGeometry> subGeometryVO.subGeometry).positions);
-		subGeometryVO.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, subGeometryVO.numIndices);
+		//var elementsGL:GL_ElementsBase = this._hitRenderable.elementsGL;
+		//
+		//elementsGL.activateVertexBufferVO(0, (<TriangleElements> elementsGL.elements).positions);
+		//elementsGL.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, elementsGL.numIndices);
 
 		this._context.drawToBitmapImage2D(this._bitmapImage2D);
 
@@ -386,13 +386,13 @@ class ShaderPicker implements IPicker
 		var s0x:number, s0y:number, s0z:number;
 		var s1x:number, s1y:number, s1z:number;
 		var nl:number;
-		var subGeom:TriangleSubGeometry = <TriangleSubGeometry> this._hitRenderable._pGetSubGeometry();
+		var subGeom:TriangleElements = <TriangleElements> this._hitRenderable._pGetElements();
 		var indices:Uint16Array = subGeom.indices.get(subGeom.numElements);
 
-		var positions:Float32Array = subGeom.positions.get(subGeom.numVertices);
+		var positions:ArrayBufferView = subGeom.positions.get(subGeom.numVertices);
 		var posDim:number = subGeom.positions.dimensions;
 
-		var uvs:Float32Array = subGeom.uvs.get(subGeom.numVertices);
+		var uvs:ArrayBufferView = subGeom.uvs.get(subGeom.numVertices);
 		var uvDim:number = subGeom.uvs.dimensions;
 
 		var normals:Float32Array = subGeom.normals.get(subGeom.numVertices);
@@ -489,8 +489,8 @@ class ShaderPicker implements IPicker
 					this._hitUV.y = v + t*(uvs[ui2 + 1] - v) + s*(uvs[ui3 + 1] - v);
 
 					this._faceIndex = i;
-					//TODO add back subGeometryIndex value
-					//this._subGeometryIndex = away.utils.GeometryUtils.getMeshSubGeometryIndex(subGeom);
+					//TODO add back elementsIndex value
+					//this._elementsIndex = away.utils.GraphicsUtils.getMeshElementsIndex(subGeom);
 
 					return;
 				}

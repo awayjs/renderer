@@ -4,7 +4,8 @@ import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 
 import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
-import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
+import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
+import TriangleElements				= require("awayjs-display/lib/graphics/TriangleElements");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
@@ -30,7 +31,7 @@ class SkyboxRenderable extends RenderableBase
 	/**
 	 *
 	 */
-	private static _geometry:TriangleSubGeometry;
+	private static _geometry:TriangleElements;
 
 	private _vertexArray:Float32Array;
 
@@ -47,7 +48,7 @@ class SkyboxRenderable extends RenderableBase
 	 */
 	constructor(skybox:Skybox, renderer:RendererBase)
 	{
-		super(skybox, skybox, skybox, renderer);
+		super(skybox, skybox, renderer);
 
 		this._skybox = skybox;
 
@@ -57,15 +58,15 @@ class SkyboxRenderable extends RenderableBase
 	/**
 	 * //TODO
 	 *
-	 * @returns {away.base.TriangleSubGeometry}
+	 * @returns {away.base.TriangleElements}
 	 * @private
 	 */
-	public _pGetSubGeometry():TriangleSubGeometry
+	public _pGetElements():ElementsBase
 	{
-		var geometry:TriangleSubGeometry = SkyboxRenderable._geometry;
+		var geometry:TriangleElements = SkyboxRenderable._geometry;
 
 		if (!geometry) {
-			geometry = SkyboxRenderable._geometry = new TriangleSubGeometry(new AttributesBuffer(11, 4));
+			geometry = SkyboxRenderable._geometry = new TriangleElements(new AttributesBuffer(11, 4));
 			geometry.autoDeriveNormals = false;
 			geometry.autoDeriveTangents = false;
 			geometry.setIndices(Array<number>(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2));

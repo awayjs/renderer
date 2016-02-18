@@ -2,7 +2,7 @@ import LightPickerBase				= require("awayjs-display/lib/materials/lightpickers/L
 
 import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
+import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 import LightingShader				= require("awayjs-renderergl/lib/shaders/LightingShader");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");

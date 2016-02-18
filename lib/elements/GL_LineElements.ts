@@ -1,98 +1,41 @@
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 
-import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
-import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
-import LineSubMesh					= require("awayjs-display/lib/base/LineSubMesh");
-import LineSubGeometry				= require("awayjs-display/lib/base/LineSubGeometry");
-import SubGeometryEvent				= require("awayjs-display/lib/events/SubGeometryEvent");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
-
+import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
+import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
-import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
+import LineElements					= require("awayjs-display/lib/graphics/LineElements");
+import ElementsEvent				= require("awayjs-display/lib/events/ElementsEvent");
+import Camera						= require("awayjs-display/lib/entities/Camera");
+
+import GL_ElementsBase				= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
+import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
+import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+import IEntity = require("awayjs-display/lib/entities/IEntity");
+import IAbstractionPool = require("awayjs-core/lib/library/IAbstractionPool");
 
 /**
- * @class away.pool.LineSubMeshRenderable
+ *
+ * @class away.pool.GL_LineElements
  */
-class LineSubMeshRenderable extends RenderableBase
+class GL_LineElements extends GL_ElementsBase
 {
 	public static pONE_VECTOR:Float32Array = new Float32Array([1, 1, 1, 1]);
 	public static pFRONT_VECTOR:Float32Array = new Float32Array([0, 0, -1, 0]);
 
-	private _constants:Float32Array = new Float32Array([0, 0, 0, 0]);
-	private _calcMatrix:Matrix3D;
-	private _thickness:number = 1.25;
-
-
 	public static vertexAttributesOffset:number = 3;
-
-	/**
-	 *
-	 */
-	public subMesh:LineSubMesh;
-
-	/**
-	 * //TODO
-	 *
-	 * @param pool
-	 * @param subMesh
-	 * @param level
-	 * @param dataOffset
-	 */
-	constructor(subMesh:LineSubMesh, renderer:RendererBase)
-	{
-		super(subMesh, subMesh.parentMesh, subMesh.material, renderer);
-
-		this.subMesh = subMesh;
-
-		this._calcMatrix = new Matrix3D();
-
-		this._constants[1] = 1/255;
-	}
-
-
-	public onClear(event:AssetEvent)
-	{
-		super.onClear(event);
-
-		this.subMesh = null;
-	}
-
-	/**
-	 * //TODO
-	 *
-	 * @returns {base.LineSubGeometry}
-	 * @protected
-	 */
-	public _pGetSubGeometry():LineSubGeometry
-	{
-		return this.subMesh.subGeometry;
-	}
-
-	public _pGetRenderOwner():IRenderOwner
-	{
-		return this.subMesh.material;
-	}
 
 	public static _iIncludeDependencies(shader:ShaderBase)
 	{
 		shader.colorDependencies++;
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	public static _iGetVertexCode(shader:ShaderBase, regCache:ShaderRegisterCache, sharedReg:ShaderRegisterData):string
+	public static _iGetVertexCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		return "m44 vt0, va0, vc8			\n" + // transform Q0 to eye space
 			"m44 vt1, va1, vc8			\n" + // transform Q1 to eye space
@@ -157,41 +100,87 @@ class LineSubMeshRenderable extends RenderableBase
 		return "";
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	public _iActivate(pass:PassBase, camera:Camera)
+	private _constants:Float32Array = new Float32Array([0, 0, 0, 0]);
+	private _calcMatrix:Matrix3D = new Matrix3D();
+	private _thickness:number = 1.25;
+
+	private _lineElements:LineElements;
+
+	constructor(lineElements:LineElements, shader:ShaderBase, pool:IAbstractionPool)
 	{
-		super._iActivate(pass, camera);
+		super(lineElements, shader, pool);
+
+		this._lineElements = lineElements;
+
+		this._constants[1] = 1/255;
+	}
+
+	public onClear(event:AssetEvent)
+	{
+		super.onClear(event);
+
+
+		this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._lineElements.positions));
+		this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._lineElements.thickness));
+		this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._lineElements.colors));
+
+		this._lineElements = null;
+	}
+
+	public _render(sourceEntity:IEntity, camera:Camera, viewProjection:Matrix3D)
+	{
+		if (this._shader.colorBufferIndex >= 0)
+			this.activateVertexBufferVO(this._shader.colorBufferIndex, this._lineElements.colors);
+
+		var context:IContextGL = this._stage.context;
 
 		this._constants[0] = this._thickness/((this._stage.scissorRect)? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
 
 		// value to convert distance from camera to model length per pixel width
 		this._constants[2] = camera.projection.near;
 
-		var context:IContextGL = this._stage.context;
-
-		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, LineSubMeshRenderable.pONE_VECTOR, 1);
-		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 6, LineSubMeshRenderable.pFRONT_VECTOR, 1);
-		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 7, this._constants, 1);
-
 		// projection matrix
 		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
+
+		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, GL_LineElements.pONE_VECTOR, 1);
+		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 6, GL_LineElements.pFRONT_VECTOR, 1);
+		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 7, this._constants, 1);
+
+		this._calcMatrix.copyFrom(sourceEntity.sceneTransform);
+		this._calcMatrix.append(camera.inverseSceneTransform);
+		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
+
+		this.activateVertexBufferVO(0, this._lineElements.positions, 3);
+		this.activateVertexBufferVO(1, this._lineElements.positions, 3, 12);
+		this.activateVertexBufferVO(2, this._lineElements.thickness);
+
+		super._render(sourceEntity, camera, viewProjection);
+	}
+
+	public _drawElements(firstIndex:number, numIndices:number)
+	{
+		this.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
+	}
+
+	public _drawArrays(firstVertex:number, numVertices:number)
+	{
+		this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
 	}
 
 	/**
-	 * @inheritDoc
+	 * //TODO
+	 *
+	 * @param pool
+	 * @param renderableOwner
+	 * @param level
+	 * @param indexOffset
+	 * @returns {away.pool.LineSubMeshRenderable}
+	 * @protected
 	 */
-	public _setRenderState(pass:PassBase, camera:Camera, viewProjection:Matrix3D)
+	public _pGetOverflowElements():GL_ElementsBase
 	{
-		super._setRenderState(pass, camera, viewProjection);
-
-		var context:IContextGL = this._stage.context;
-		this._calcMatrix.copyFrom(this.sourceEntity.sceneTransform);
-		this._calcMatrix.append(camera.inverseSceneTransform);
-
-		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
+		return new GL_LineElements(this._lineElements, this._shader, this._pool);
 	}
 }
 
-export = LineSubMeshRenderable;
+export = GL_LineElements;

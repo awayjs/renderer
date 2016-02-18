@@ -19,7 +19,7 @@ import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
-import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
+import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
 
@@ -31,7 +31,7 @@ class PassBase extends EventDispatcher implements IPass
 {
 	public _render:RenderBase;
 	public _renderOwner:IRenderOwner;
-	public _renderableClass:IRenderableClass;
+	public _elementsClass:IElementsClassGL;
 	public _stage:Stage;
 	
 	public _shader:ShaderBase;
@@ -90,13 +90,13 @@ class PassBase extends EventDispatcher implements IPass
 	/**
 	 * Creates a new PassBase object.
 	 */
-	constructor(render:RenderBase, renderOwner:IRenderOwner, renderableClass:IRenderableClass, stage:Stage)
+	constructor(render:RenderBase, renderOwner:IRenderOwner, elementsClass:IElementsClassGL, stage:Stage)
 	{
 		super();
 
 		this._render = render;
 		this._renderOwner = renderOwner;
-		this._renderableClass = renderableClass;
+		this._elementsClass = elementsClass;
 		this._stage = stage;
 	}
 
@@ -123,7 +123,7 @@ class PassBase extends EventDispatcher implements IPass
 	{
 		this._render = null;
 		this._renderOwner = null;
-		this._renderableClass = null;
+		this._elementsClass = null;
 		this._stage = null;
 
 		if (this._shader) {

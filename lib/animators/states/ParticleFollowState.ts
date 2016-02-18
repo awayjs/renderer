@@ -9,7 +9,7 @@ import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/base/ContextGL
 
 import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
+import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
 import ParticleFollowNode				= require("awayjs-renderergl/lib/animators/nodes/ParticleFollowNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
@@ -69,7 +69,7 @@ class ParticleFollowState extends ParticleStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
 		if (this._followTarget) {
 			if (this._particleFollowNode._iUsesPosition) {
@@ -91,38 +91,38 @@ class ParticleFollowState extends ParticleStateBase
 			this._preEuler = this._targetEuler.clone();
 
 		var currentTime:number = this._pTime/1000;
-		var previousTime:number = animationSubGeometry.previousTime;
+		var previousTime:number = animationElements.previousTime;
 		var deltaTime:number = currentTime - previousTime;
 
 		var needProcess:boolean = previousTime != currentTime;
 
 		if (this._particleFollowNode._iUsesPosition && this._particleFollowNode._iUsesRotation) {
 			if (needProcess)
-				this.processPositionAndRotation(currentTime, deltaTime, animationSubGeometry);
+				this.processPositionAndRotation(currentTime, deltaTime, animationElements);
 
-			animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
-			animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat.FLOAT_3);
+			animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
+			animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat.FLOAT_3);
 		} else if (this._particleFollowNode._iUsesPosition) {
 			if (needProcess)
-				this.processPosition(currentTime, deltaTime, animationSubGeometry);
+				this.processPosition(currentTime, deltaTime, animationElements);
 
-			animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
+			animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 		} else if (this._particleFollowNode._iUsesRotation) {
 			if (needProcess)
-				this.precessRotation(currentTime, deltaTime, animationSubGeometry);
+				this.precessRotation(currentTime, deltaTime, animationElements);
 
-			animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
+			animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 		}
 
 		this._prePos.copyFrom(this._targetPos);
 		this._targetEuler.copyFrom(this._targetEuler);
-		animationSubGeometry.previousTime = currentTime;
+		animationElements.previousTime = currentTime;
 	}
 
-	private processPosition(currentTime:number, deltaTime:number, animationSubGeometry:AnimationSubGeometry)
+	private processPosition(currentTime:number, deltaTime:number, animationElements:AnimationElements)
 	{
-		var data:Array<ParticleAnimationData> = animationSubGeometry.animationParticles;
-		var vertexData:Array<number> = animationSubGeometry.vertexData;
+		var data:Array<ParticleAnimationData> = animationElements.animationParticles;
+		var vertexData:Array<number> = animationElements.vertexData;
 
 		var changed:boolean = false;
 		var len:number /*uint*/ = data.length;
@@ -137,7 +137,7 @@ class ParticleFollowState extends ParticleStateBase
 			var k:number = (currentTime - data[i].startTime)/data[i].totalTime;
 			var t:number = (k - Math.floor(k))*data[i].totalTime;
 			if (t - deltaTime <= 0) {
-				var inc:number /*int*/ = data[i].startVertexIndex*animationSubGeometry.totalLenOfOneVertex + this._particleFollowNode._iDataOffset;
+				var inc:number /*int*/ = data[i].startVertexIndex*animationElements.totalLenOfOneVertex + this._particleFollowNode._iDataOffset;
 
 				if (this._smooth) {
 					this._temp.copyFrom(posVelocity);
@@ -156,14 +156,14 @@ class ParticleFollowState extends ParticleStateBase
 			}
 		}
 		if (changed)
-			animationSubGeometry.invalidateBuffer();
+			animationElements.invalidateBuffer();
 
 	}
 
-	private precessRotation(currentTime:number, deltaTime:number, animationSubGeometry:AnimationSubGeometry)
+	private precessRotation(currentTime:number, deltaTime:number, animationElements:AnimationElements)
 	{
-		var data:Array<ParticleAnimationData> = animationSubGeometry.animationParticles;
-		var vertexData:Array<number> = animationSubGeometry.vertexData;
+		var data:Array<ParticleAnimationData> = animationElements.animationParticles;
+		var vertexData:Array<number> = animationElements.vertexData;
 
 		var changed:boolean = false;
 		var len:number /*uint*/ = data.length;
@@ -181,7 +181,7 @@ class ParticleFollowState extends ParticleStateBase
 			var k:number = (currentTime - data[i].startTime)/data[i].totalTime;
 			var t:number = (k - Math.floor(k))*data[i].totalTime;
 			if (t - deltaTime <= 0) {
-				var inc:number /*int*/ = data[i].startVertexIndex*animationSubGeometry.totalLenOfOneVertex + this._particleFollowNode._iDataOffset;
+				var inc:number /*int*/ = data[i].startVertexIndex*animationElements.totalLenOfOneVertex + this._particleFollowNode._iDataOffset;
 
 				if (this._smooth) {
 					this._temp.copyFrom(rotationVelocity);
@@ -200,14 +200,14 @@ class ParticleFollowState extends ParticleStateBase
 			}
 		}
 		if (changed)
-			animationSubGeometry.invalidateBuffer();
+			animationElements.invalidateBuffer();
 
 	}
 
-	private processPositionAndRotation(currentTime:number, deltaTime:number, animationSubGeometry:AnimationSubGeometry)
+	private processPositionAndRotation(currentTime:number, deltaTime:number, animationElements:AnimationElements)
 	{
-		var data:Array<ParticleAnimationData> = animationSubGeometry.animationParticles;
-		var vertexData:Array<number> = animationSubGeometry.vertexData;
+		var data:Array<ParticleAnimationData> = animationElements.animationParticles;
+		var vertexData:Array<number> = animationElements.vertexData;
 
 		var changed:boolean = false;
 		var len:number /*uint*/ = data.length;
@@ -231,7 +231,7 @@ class ParticleFollowState extends ParticleStateBase
 			var k:number = (currentTime - data[i].startTime)/data[i].totalTime;
 			var t:number = (k - Math.floor(k))*data[i].totalTime;
 			if (t - deltaTime <= 0) {
-				var inc:number /*int*/ = data[i].startVertexIndex*animationSubGeometry.totalLenOfOneVertex + this._particleFollowNode._iDataOffset;
+				var inc:number /*int*/ = data[i].startVertexIndex*animationElements.totalLenOfOneVertex + this._particleFollowNode._iDataOffset;
 				if (this._smooth) {
 					this._temp.copyFrom(posVelocity);
 					this._temp.scaleBy(t);
@@ -256,7 +256,7 @@ class ParticleFollowState extends ParticleStateBase
 			}
 		}
 		if (changed)
-			animationSubGeometry.invalidateBuffer();
+			animationElements.invalidateBuffer();
 	}
 
 }

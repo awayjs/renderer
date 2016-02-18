@@ -2,8 +2,8 @@ import AttributesBuffer					= require("awayjs-core/lib/attributes/AttributesBuff
 import Matrix3DUtils					= require("awayjs-core/lib/geom/Matrix3DUtils");
 
 import DisplayObjectContainer			= require("awayjs-display/lib/containers/DisplayObjectContainer");
-import Geometry							= require("awayjs-display/lib/base/Geometry");
-import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
+import Graphics							= require("awayjs-display/lib/graphics/Graphics");
+import TriangleElements				= require("awayjs-display/lib/graphics/TriangleElements");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
@@ -17,7 +17,7 @@ class Merge
 	private _objectSpace:boolean;
 	private _keepMaterial:boolean;
 	private _disposeSources:boolean;
-	private _geomVOs:Array<GeometryVO>;
+	private _graphicVOs:Array<GraphicVO>;
 	private _toDispose:Array<Mesh>;
 
 	/**
@@ -143,59 +143,48 @@ class Merge
 	private reset()
 	{
 		this._toDispose  = new Array<Mesh>();
-		this._geomVOs = new Array<GeometryVO>();
+		this._graphicVOs = new Array<GraphicVO>();
 	}
 
 	private merge(destMesh:Mesh, dispose:boolean)
 	{
 		var i:number /*uint*/;
-		var subIdx:number /*uint*/;
-		var oldGeom:Geometry;
-		var destGeom:Geometry;
+		//var oldGraphics:Graphics;
+		var destGraphics:Graphics;
 		var useSubMaterials:boolean;
 
-		oldGeom = destMesh.geometry;
-		destGeom = destMesh.geometry = new Geometry();
-		subIdx = destMesh.subMeshes.length;
+		//oldGraphics = destMesh.graphics.clone();
+		destGraphics = destMesh.graphics;
 
 		// Only apply materials directly to sub-meshes if necessary,
 		// i.e. if there is more than one material available.
-		useSubMaterials = (this._geomVOs.length > 1);
+		useSubMaterials = (this._graphicVOs.length > 1);
 
-		for (i = 0; i < this._geomVOs.length; i++) {
-			var s:number /*uint*/;
-			var data:GeometryVO;
-			var sub:TriangleSubGeometry = new TriangleSubGeometry(new AttributesBuffer());
-			sub.autoDeriveNormals = false;
-			sub.autoDeriveTangents = false;
+		for (i = 0; i < this._graphicVOs.length; i++) {
+			var elements:TriangleElements = new TriangleElements(new AttributesBuffer());
+			elements.autoDeriveNormals = false;
+			elements.autoDeriveTangents = false;
 
-			data = this._geomVOs[i];
-			sub.setIndices(data.indices);
-			sub.setPositions(data.vertices);
-			sub.setNormals(data.normals);
-			sub.setTangents(data.tangents);
-			sub.setUVs(data.uvs);
+			var data:GraphicVO = this._graphicVOs[i];
+			elements.setIndices(data.indices);
+			elements.setPositions(data.vertices);
+			elements.setNormals(data.normals);
+			elements.setTangents(data.tangents);
+			elements.setUVs(data.uvs);
 
-			destGeom.addSubGeometry(sub);
+			destGraphics.addGraphic(elements);
 
 			if (this._keepMaterial && useSubMaterials)
-				destMesh.subMeshes[subIdx].material = data.material;
+				destMesh.graphics[i].material = data.material;
 		}
 
-		if (this._keepMaterial && !useSubMaterials && this._geomVOs.length)
-			destMesh.material = this._geomVOs[0].material;
+		if (this._keepMaterial && !useSubMaterials && this._graphicVOs.length)
+			destMesh.material = this._graphicVOs[0].material;
 
 		if (dispose) {
-			var m:Mesh;
 			var len:number = this._toDispose.length;
-			for (var i:number; i < len; i++) {
-				m = this._toDispose[i];
-				m.geometry.dispose();
-				m.dispose();
-			}
-
-			//dispose of the original receiver geometry
-			oldGeom.dispose();
+			for (var i:number; i < len; i++)
+				this._toDispose[i].dispose();;
 		}
 
 		this._toDispose = null;
@@ -203,126 +192,123 @@ class Merge
 
 	private collect(mesh:Mesh, dispose:boolean)
 	{
-		if (mesh.geometry) {
-			var subIdx:number /*uint*/;
-			var subGeometries:Array<TriangleSubGeometry> = <Array<TriangleSubGeometry>> mesh.geometry.subGeometries;
-			var calc:number /*uint*/;
-			for (subIdx = 0; subIdx < subGeometries.length; subIdx++) {
-				var i:number /*uint*/;
-				var len:number /*uint*/;
-				var iIdx:number /*uint*/, vIdx:number /*uint*/, nIdx:number /*uint*/, tIdx:number /*uint*/, uIdx:number /*uint*/;
-				var indexOffset:number /*uint*/;
-				var subGeom:TriangleSubGeometry;
-				var vo:GeometryVO;
-				var vertices:Array<number>;
-				var normals:Array<number>;
-				var tangents:Array<number>;
-				var ind:Uint16Array, pd:Float32Array, nd:Float32Array, td:Float32Array, ud:Float32Array;
+		var subIdx:number /*uint*/;
+		var calc:number /*uint*/;
+		for (subIdx = 0; subIdx < mesh.graphics.count; subIdx++) {
+			var i:number /*uint*/;
+			var len:number /*uint*/;
+			var iIdx:number /*uint*/, vIdx:number /*uint*/, nIdx:number /*uint*/, tIdx:number /*uint*/, uIdx:number /*uint*/;
+			var indexOffset:number /*uint*/;
+			var elements:TriangleElements;
+			var vo:GraphicVO;
+			var vertices:Array<number>;
+			var normals:Array<number>;
+			var tangents:Array<number>;
+			var ind:Uint16Array, pd:ArrayBufferView, nd:Float32Array, td:Float32Array, ud:ArrayBufferView;
 
-				subGeom = subGeometries[subIdx];
-				pd = subGeom.positions.get(subGeom.numVertices);
-				nd = subGeom.normals.get(subGeom.numVertices);
-				td = subGeom.tangents.get(subGeom.numVertices);
-				ud = subGeom.uvs.get(subGeom.numVertices);
+			elements = <TriangleElements> mesh.graphics.getGraphicAt(subIdx).elements;
+			pd = elements.positions.get(elements.numVertices);
+			nd = elements.normals.get(elements.numVertices);
+			td = elements.tangents.get(elements.numVertices);
+			ud = elements.uvs.get(elements.numVertices);
 
-				// Get (or create) a VO for this material
-				vo = this.getSubGeomData(mesh.subMeshes[subIdx].material || mesh.material);
+			// Get (or create) a VO for this material
+			vo = this.getGraphicData(mesh.graphics.getGraphicAt(subIdx).material);
 
-				// Vertices and normals are copied to temporary vectors, to be transformed
-				// before concatenated onto those of the data. This is unnecessary if no
-				// transformation will be performed, i.e. for object space merging.
-				vertices = (this._objectSpace)? vo.vertices : new Array<number>();
-				normals = (this._objectSpace)? vo.normals : new Array<number>();
-				tangents = (this._objectSpace)? vo.tangents : new Array<number>();
+			// Vertices and normals are copied to temporary vectors, to be transformed
+			// before concatenated onto those of the data. This is unnecessary if no
+			// transformation will be performed, i.e. for object space merging.
+			vertices = (this._objectSpace)? vo.vertices : new Array<number>();
+			normals = (this._objectSpace)? vo.normals : new Array<number>();
+			tangents = (this._objectSpace)? vo.tangents : new Array<number>();
 
-				// Copy over vertex attributes
-				vIdx = vertices.length;
-				nIdx = normals.length;
-				tIdx = tangents.length;
-				uIdx = vo.uvs.length;
-				len = subGeom.numVertices;
-				for (i = 0; i < len; i++) {
-					calc = i*3;
+			// Copy over vertex attributes
+			vIdx = vertices.length;
+			nIdx = normals.length;
+			tIdx = tangents.length;
+			uIdx = vo.uvs.length;
+			len = elements.numVertices;
+			for (i = 0; i < len; i++) {
+				calc = i*3;
 
-					// Position
-					vertices[vIdx++] = pd[calc];
-					vertices[vIdx++] = pd[calc + 1];
-					vertices[vIdx++] = pd[calc + 2];
+				// Position
+				vertices[vIdx++] = pd[calc];
+				vertices[vIdx++] = pd[calc + 1];
+				vertices[vIdx++] = pd[calc + 2];
 
-					// Normal
-					normals[nIdx++] = nd[calc];
-					normals[nIdx++] = nd[calc + 1];
-					normals[nIdx++] = nd[calc + 2];
+				// Normal
+				normals[nIdx++] = nd[calc];
+				normals[nIdx++] = nd[calc + 1];
+				normals[nIdx++] = nd[calc + 2];
 
-					// Tangent
-					tangents[tIdx++] = td[calc];
-					tangents[tIdx++] = td[calc + 1];
-					tangents[tIdx++] = td[calc + 2];
+				// Tangent
+				tangents[tIdx++] = td[calc];
+				tangents[tIdx++] = td[calc + 1];
+				tangents[tIdx++] = td[calc + 2];
 
-					// UV
-					vo.uvs[uIdx++] = ud[i*2];
-					vo.uvs[uIdx++] = ud[i*2 + 1];
-				}
-
-				// Copy over triangle indices
-				indexOffset = (!this._objectSpace)? vo.vertices.length/3 :0;
-				iIdx = vo.indices.length;
-				len = subGeom.numElements;
-				ind = subGeom.indices.get(len);
-				for (i = 0; i < len; i++) {
-					calc = i*3;
-					vo.indices[iIdx++] = ind[calc] + indexOffset;
-					vo.indices[iIdx++] = ind[calc + 1] + indexOffset;
-					vo.indices[iIdx++] = ind[calc + 2] + indexOffset;
-				}
-
-				if (!this._objectSpace) {
-					mesh.sceneTransform.transformVectors(vertices, vertices);
-					Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, normals, normals);
-					Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, tangents, tangents);
-
-					// Copy vertex data from temporary (transformed) vectors
-					vIdx = vo.vertices.length;
-					nIdx = vo.normals.length;
-					tIdx = vo.tangents.length;
-					len = vertices.length;
-					for (i = 0; i < len; i++) {
-						vo.vertices[vIdx++] = vertices[i];
-						vo.normals[nIdx++] = normals[i];
-						vo.tangents[tIdx++] = tangents[i];
-					}
-				}
+				// UV
+				vo.uvs[uIdx++] = ud[i*2];
+				vo.uvs[uIdx++] = ud[i*2 + 1];
 			}
 
-			if (dispose)
-				this._toDispose.push(mesh);
+			// Copy over triangle indices
+			indexOffset = (!this._objectSpace)? vo.vertices.length/3 :0;
+			iIdx = vo.indices.length;
+			len = elements.numElements;
+			ind = elements.indices.get(len);
+			for (i = 0; i < len; i++) {
+				calc = i*3;
+				vo.indices[iIdx++] = ind[calc] + indexOffset;
+				vo.indices[iIdx++] = ind[calc + 1] + indexOffset;
+				vo.indices[iIdx++] = ind[calc + 2] + indexOffset;
+			}
+
+			if (!this._objectSpace) {
+				mesh.sceneTransform.transformVectors(vertices, vertices);
+				Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, normals, normals);
+				Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, tangents, tangents);
+
+				// Copy vertex data from temporary (transformed) vectors
+				vIdx = vo.vertices.length;
+				nIdx = vo.normals.length;
+				tIdx = vo.tangents.length;
+				len = vertices.length;
+				for (i = 0; i < len; i++) {
+					vo.vertices[vIdx++] = vertices[i];
+					vo.normals[nIdx++] = normals[i];
+					vo.tangents[tIdx++] = tangents[i];
+				}
+			}
 		}
+
+		if (dispose)
+			this._toDispose.push(mesh);
 	}
 
-	private getSubGeomData(material:MaterialBase):GeometryVO
+	private getGraphicData(material:MaterialBase):GraphicVO
 	{
-		var data:GeometryVO;
+		var data:GraphicVO;
 
 		if (this._keepMaterial) {
 			var i:number /*uint*/;
 			var len:number /*uint*/;
 
-			len = this._geomVOs.length;
+			len = this._graphicVOs.length;
 			for (i = 0; i < len; i++) {
-				if (this._geomVOs[i].material == material) {
-					data = this._geomVOs[i];
+				if (this._graphicVOs[i].material == material) {
+					data = this._graphicVOs[i];
 					break;
 				}
 			}
-		} else if (this._geomVOs.length) {
+		} else if (this._graphicVOs.length) {
 			// If materials are not to be kept, all data can be
 			// put into a single VO, so return that one.
-			data = this._geomVOs[0];
+			data = this._graphicVOs[0];
 		}
 
 		// No data (for this material) found, create new.
 		if (!data) {
-			data = new GeometryVO();
+			data = new GraphicVO();
 			data.vertices = new Array<number>();
 			data.normals = new Array<number>();
 			data.tangents = new Array<number>();
@@ -330,7 +316,7 @@ class Merge
 			data.indices = new Array<number /*uint*/>();
 			data.material = material;
 
-			this._geomVOs.push(data);
+			this._graphicVOs.push(data);
 		}
 
 		return data;
@@ -353,7 +339,7 @@ class Merge
 
 export = Merge;
 
-class GeometryVO
+class GraphicVO
 {
 	public uvs:Array<number>;
 	public vertices:Array<number>;

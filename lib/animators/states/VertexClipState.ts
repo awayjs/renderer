@@ -1,4 +1,4 @@
-import Geometry							= require("awayjs-display/lib/base/Geometry");
+import Graphics							= require("awayjs-display/lib/graphics/Graphics");
 
 import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import VertexAnimator					= require("awayjs-renderergl/lib/animators/VertexAnimator");
@@ -11,31 +11,31 @@ import IVertexAnimationState			= require("awayjs-renderergl/lib/animators/states
  */
 class VertexClipState extends AnimationClipState implements IVertexAnimationState
 {
-	private _frames:Array<Geometry>;
+	private _frames:Array<Graphics>;
 	private _vertexClipNode:VertexClipNode;
-	private _currentGeometry:Geometry;
-	private _nextGeometry:Geometry;
+	private _currentGraphics:Graphics;
+	private _nextGraphics:Graphics;
 
 	/**
 	 * @inheritDoc
 	 */
-	public get currentGeometry():Geometry
+	public get currentGraphics():Graphics
 	{
 		if (this._pFramesDirty)
 			this._pUpdateFrames();
 
-		return this._currentGeometry;
+		return this._currentGraphics;
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public get nextGeometry():Geometry
+	public get nextGraphics():Graphics
 	{
 		if (this._pFramesDirty)
 			this._pUpdateFrames();
 
-		return this._nextGeometry;
+		return this._nextGraphics;
 	}
 
 	constructor(animator:AnimatorBase, vertexClipNode:VertexClipNode)
@@ -53,13 +53,13 @@ class VertexClipState extends AnimationClipState implements IVertexAnimationStat
 	{
 		super._pUpdateFrames();
 
-		this._currentGeometry = this._frames[this._pCurrentFrame];
+		this._currentGraphics = this._frames[this._pCurrentFrame];
 
 		if (this._vertexClipNode.looping && this._pNextFrame >= this._vertexClipNode.lastFrame) {
-			this._nextGeometry = this._frames[0];
+			this._nextGraphics = this._frames[0];
 			(<VertexAnimator> this._pAnimator).dispatchCycleEvent();
 		} else
-			this._nextGeometry = this._frames[this._pNextFrame];
+			this._nextGraphics = this._frames[this._pNextFrame];
 	}
 
 	/**

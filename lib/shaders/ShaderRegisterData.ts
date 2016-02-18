@@ -5,29 +5,39 @@ import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderReg
  */
 class ShaderRegisterData
 {
-	public normalVarying:ShaderRegisterElement;
-	public colorVarying:ShaderRegisterElement;
-	public tangentVarying:ShaderRegisterElement;
-	public bitangentVarying:ShaderRegisterElement;
 	public uvVarying:ShaderRegisterElement;
 	public secondaryUVVarying:ShaderRegisterElement;
-	public viewDirVarying:ShaderRegisterElement;
 	public shadowTarget:ShaderRegisterElement;
 	public shadedTarget:ShaderRegisterElement;
 	public globalPositionVertex:ShaderRegisterElement;
 	public globalPositionVarying:ShaderRegisterElement;
-    public localPositionVarying:ShaderRegisterElement;
-	public localPosition:ShaderRegisterElement;
+
+	public animatedPosition:ShaderRegisterElement;
+	public positionVarying:ShaderRegisterElement;
+
+	public curvesInput:ShaderRegisterElement;
+	public curvesVarying:ShaderRegisterElement;
+
 	public normalInput:ShaderRegisterElement;
-	public colorInput:ShaderRegisterElement;
-	public tangentInput:ShaderRegisterElement;
 	public animatedNormal:ShaderRegisterElement;
+	public normalVarying:ShaderRegisterElement;
+	public normalFragment:ShaderRegisterElement;
+
+	public tangentInput:ShaderRegisterElement;
 	public animatedTangent:ShaderRegisterElement;
+	public tangentVarying:ShaderRegisterElement;
+	public bitangentVarying:ShaderRegisterElement;
+
+	public colorInput:ShaderRegisterElement;
+	public colorVarying:ShaderRegisterElement;
+
 	public commons:ShaderRegisterElement;
 	public projectionFragment:ShaderRegisterElement;
-	public normalFragment:ShaderRegisterElement;
+
+	public viewDirVarying:ShaderRegisterElement;
 	public viewDirFragment:ShaderRegisterElement;
 	public bitangent:ShaderRegisterElement;
+
 	public textures:Array<ShaderRegisterElement> = Array<ShaderRegisterElement>();
 
 	constructor()

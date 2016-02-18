@@ -8,8 +8,8 @@ import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
 import IRenderer					= require("awayjs-display/lib/IRenderer");
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
 import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
-import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
-import TriangleSubGeometry			= require("awayjs-display/lib/base/TriangleSubGeometry");
+import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
+import TriangleElements				= require("awayjs-display/lib/graphics/TriangleElements");
 import IEntity						= require("awayjs-display/lib/entities/IEntity");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import RenderableOwnerEvent			= require("awayjs-display/lib/events/RenderableOwnerEvent");
@@ -26,7 +26,8 @@ import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegi
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
 import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
-import SubGeometryVOBase			= require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
+import GL_ElementsBase				= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
+import AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 
 /**
  * @class RenderableListItem
@@ -34,12 +35,11 @@ import SubGeometryVOBase			= require("awayjs-renderergl/lib/vos/SubGeometryVOBas
 class RenderableBase extends AbstractionBase
 {
 	private _onRenderOwnerUpdatedDelegate:(event:RenderableOwnerEvent) => void;
-	private _onInvalidateGeometryDelegate:(event:RenderableOwnerEvent) => void;
+	private _onInvalidateElementsDelegate:(event:RenderableOwnerEvent) => void;
 
-	public _subGeometry:SubGeometryBase;
-	public _subGeometryVO:SubGeometryVOBase;
+	public _elements:ElementsBase;
 	public _render:RenderBase;
-	private _geometryDirty:boolean = true;
+	private _elementsDirty:boolean = true;
 	private _renderOwnerDirty:boolean = true;
 
 	public JOINT_INDEX_FORMAT:string;
@@ -108,12 +108,12 @@ class RenderableBase extends AbstractionBase
 
 	public samplers:Array<GL_SamplerBase> = new Array<GL_SamplerBase>();
 
-	public get subGeometryVO():SubGeometryVOBase
+	public get elements():ElementsBase
 	{
-		if (this._geometryDirty)
-			this._updateGeometry();
+		if (this._elementsDirty)
+			this._updateElements();
 
-		return this._subGeometryVO;
+		return this._elements;
 	}
 
 	public get render():RenderBase
@@ -132,12 +132,12 @@ class RenderableBase extends AbstractionBase
 	 * @param renderOwner
 	 * @param renderer
 	 */
-	constructor(renderableOwner:IRenderableOwner, sourceEntity:IEntity, renderOwner:IRenderOwner, renderer:RendererBase)
+	constructor(renderableOwner:IRenderableOwner, sourceEntity:IEntity, renderer:RendererBase)
 	{
 		super(renderableOwner, renderer);
 
 		this._onRenderOwnerUpdatedDelegate = (event:RenderableOwnerEvent) => this._onRenderOwnerUpdated(event);
-		this._onInvalidateGeometryDelegate = (event:RenderableOwnerEvent) => this.onInvalidateGeometry(event);
+		this._onInvalidateElementsDelegate = (event:RenderableOwnerEvent) => this.onInvalidateElements(event);
 
 		//store a reference to the pool for later disposal
 		this._renderer = renderer;
@@ -148,7 +148,7 @@ class RenderableBase extends AbstractionBase
 		this.renderableOwner = renderableOwner;
 
 		this.renderableOwner.addEventListener(RenderableOwnerEvent.INVALIDATE_RENDER_OWNER, this._onRenderOwnerUpdatedDelegate);
-		this.renderableOwner.addEventListener(RenderableOwnerEvent.INVALIDATE_GEOMETRY, this._onInvalidateGeometryDelegate);
+		this.renderableOwner.addEventListener(RenderableOwnerEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 	}
 
 	public onClear(event:AssetEvent)
@@ -159,7 +159,6 @@ class RenderableBase extends AbstractionBase
 		this.masksConfig = null;
 		this.renderSceneTransform = null;
 
-		this._renderer.clearAbstraction(this.renderableOwner);
 		this._renderer = null;
 		this._stage = null;
 		this.sourceEntity = null;
@@ -173,20 +172,12 @@ class RenderableBase extends AbstractionBase
 			this._render.onClear(new AssetEvent(AssetEvent.CLEAR, this._render.renderOwner));
 
 		this._render = null;
-
-		if (this._subGeometryVO) {
-			this._subGeometryVO.usages--;
-
-			if (!this._subGeometryVO.usages)
-				this._subGeometryVO.onClear(new AssetEvent(AssetEvent.CLEAR, this._subGeometry));
-
-			this._subGeometryVO = null;
-		}
+		this._elements = null;
 	}
 
-	public onInvalidateGeometry(event:RenderableOwnerEvent)
+	public onInvalidateElements(event:RenderableOwnerEvent)
 	{
-		this._geometryDirty = true;
+		this._elementsDirty = true;
 	}
 
 	private _onRenderOwnerUpdated(event:RenderableOwnerEvent)
@@ -194,7 +185,7 @@ class RenderableBase extends AbstractionBase
 		this._renderOwnerDirty = true;
 	}
 
-	public _pGetSubGeometry():SubGeometryBase
+	public _pGetElements():ElementsBase
 	{
 		throw new AbstractMethodError();
 	}
@@ -225,10 +216,10 @@ class RenderableBase extends AbstractionBase
 	{
 		this._setRenderState(pass, camera, viewProjection);
 
-		if (this._geometryDirty)
-			this._updateGeometry();
+		if (this._elementsDirty)
+			this._updateElements();
 
-		this._subGeometryVO._iRender(pass.shader);
+		pass.shader._elementsPool.getAbstraction((this.renderableOwner.animator)? (<AnimatorBase> this.renderableOwner.animator).getRenderableElements(this, this._elements) : this._elements)._iRender(this.sourceEntity, camera, viewProjection);
 	}
 
 	public _setRenderState(pass:IPass, camera:Camera, viewProjection:Matrix3D)
@@ -252,27 +243,18 @@ class RenderableBase extends AbstractionBase
 	 *
 	 * @private
 	 */
-	private _updateGeometry()
+	private _updateElements()
 	{
-		if (this._subGeometryVO) {
-			this._subGeometryVO.usages--;
+		this._elements = this._pGetElements();
 
-			if (!this._subGeometryVO.usages)
-				this._subGeometryVO.onClear(new AssetEvent(AssetEvent.CLEAR, this._subGeometry));
-		}
-
-		this._subGeometry = this._pGetSubGeometry();
-		this._subGeometryVO = <SubGeometryVOBase> this._stage.getAbstraction(this._subGeometry);
-		this._subGeometryVO.usages++;
-
-		this._geometryDirty = false;
+		this._elementsDirty = false;
 	}
 
 	private _updateRenderOwner()
 	{
 		var renderOwner:IRenderOwner = this._pGetRenderOwner() || DefaultMaterialManager.getDefaultMaterial(this.renderableOwner);
 
-		var render:RenderBase = this._renderer.getRenderPool(this.renderableOwner).getAbstraction(renderOwner);
+		var render:RenderBase = <RenderBase> this._renderer.getRenderPool(this.elements).getAbstraction(renderOwner);
 
 		if (this._render != render) {
 
@@ -313,6 +295,8 @@ class RenderableBase extends AbstractionBase
 				this.samplers[index] = sampler? <GL_SamplerBase> this._stage.getAbstraction(sampler) : null;
 			}
 		}
+
+		this._renderOwnerDirty = false;
 	}
 }
 

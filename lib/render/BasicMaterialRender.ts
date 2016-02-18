@@ -7,7 +7,7 @@ import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import BasicMaterialPass			= require("awayjs-renderergl/lib/render/passes/BasicMaterialPass");
-import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
+import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
 import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
 
@@ -21,13 +21,13 @@ class BasicMaterialRender extends RenderBase
 	private _pass:BasicMaterialPass;
 
 
-	constructor(material:BasicMaterial, renderableClass:IRenderableClass, renderPool:RenderPool)
+	constructor(material:BasicMaterial, elementsClass:IElementsClassGL, renderPool:RenderPool)
 	{
-		super(material, renderableClass, renderPool);
+		super(material, elementsClass, renderPool);
 
 		this._material = material;
 
-		this._pAddPass(this._pass = new BasicMaterialPass(this, material, renderableClass, this._stage));
+		this._pAddPass(this._pass = new BasicMaterialPass(this, material, elementsClass, this._stage));
 	}
 
 	public onClear(event:AssetEvent)

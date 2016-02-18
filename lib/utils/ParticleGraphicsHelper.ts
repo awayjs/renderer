@@ -4,22 +4,21 @@ import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 import Point							= require("awayjs-core/lib/geom/Point");
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
-import Geometry							= require("awayjs-display/lib/base/Geometry");
-import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
+import ParticleData						= require("awayjs-display/lib/animators/data/ParticleData");
+import Graphics							= require("awayjs-display/lib/graphics/Graphics");
+import TriangleElements					= require("awayjs-display/lib/graphics/TriangleElements");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 
-import ParticleData						= require("awayjs-renderergl/lib/animators/data/ParticleData");
-import ParticleGeometry					= require("awayjs-renderergl/lib/base/ParticleGeometry");
-import ParticleGeometryTransform		= require("awayjs-renderergl/lib/tools/data/ParticleGeometryTransform");
+import ParticleGraphicsTransform		= require("awayjs-renderergl/lib/tools/data/ParticleGraphicsTransform");
 
 /**
  * ...
  */
-class ParticleGeometryHelper
+class ParticleGraphicsHelper
 {
 	public static MAX_VERTEX:number /*int*/ = 65535;
 
-	public static generateGeometry(geometries:Array<Geometry>, transforms:Array<ParticleGeometryTransform> = null):ParticleGeometry
+	public static generateGraphics(output:Graphics, graphicsArray:Array<Graphics>, transforms:Array<ParticleGraphicsTransform> = null)
 	{
 		var indicesVector:Array<Array<number>> /*uint*/ = new Array<Array<number>>() /*uint*/;
 		var positionsVector:Array<Array<number>> = new Array<Array<number>>();
@@ -28,19 +27,19 @@ class ParticleGeometryHelper
 		var uvsVector:Array<Array<number>> = new Array<Array<number>>();
 		var vertexCounters:Array<number> /*uint*/ = new Array<number>() /*uint*/;
 		var particles:Array<ParticleData> = new Array<ParticleData>();
-		var subGeometries:Array<TriangleSubGeometry> = new Array<TriangleSubGeometry>();
-		var numParticles:number /*uint*/ = geometries.length;
+		var elementsArray:Array<TriangleElements> = new Array<TriangleElements>();
+		var numParticles:number /*uint*/ = graphicsArray.length;
 
-		var sourceSubGeometries:Array<TriangleSubGeometry>;
-		var sourceSubGeometry:TriangleSubGeometry;
-		var numSubGeometries:number /*uint*/;
+		var sourceGraphics:Graphics;
+		var sourceElements:TriangleElements;
+		var numGraphics:number /*uint*/;
 		var indices:Array<number> /*uint*/;
 		var positions:Array<number>;
 		var normals:Array<number>;
 		var tangents:Array<number>;
 		var uvs:Array<number>;
 		var vertexCounter:number /*uint*/;
-		var subGeometry:TriangleSubGeometry;
+		var elements:TriangleElements;
 		var i:number /*int*/;
 		var j:number /*int*/;
 		var sub2SubMap:Array<number> /*int*/ = new Array<number>() /*int*/;
@@ -51,33 +50,33 @@ class ParticleGeometryHelper
 		var tempUV:Point = new Point;
 
 		for (i = 0; i < numParticles; i++) {
-			sourceSubGeometries = <Array<TriangleSubGeometry>> geometries[i].subGeometries;
-			numSubGeometries = sourceSubGeometries.length;
-			for (var srcIndex:number /*int*/ = 0; srcIndex < numSubGeometries; srcIndex++) {
+			sourceGraphics = graphicsArray[i];
+			numGraphics = sourceGraphics.count;
+			for (var srcIndex:number /*int*/ = 0; srcIndex < numGraphics; srcIndex++) {
 				//create a different particle subgeometry group for each source subgeometry in a particle.
 				if (sub2SubMap.length <= srcIndex) {
-					sub2SubMap.push(subGeometries.length);
+					sub2SubMap.push(elementsArray.length);
 					indicesVector.push(new Array<number>() /*uint*/);
 					positionsVector.push(new Array<number>());
 					normalsVector.push(new Array<number>());
 					tangentsVector.push(new Array<number>());
 					uvsVector.push(new Array<number>());
-					subGeometries.push(new TriangleSubGeometry(new AttributesBuffer()));
+					elementsArray.push(new TriangleElements(new AttributesBuffer()));
 					vertexCounters.push(0);
 				}
 
-				sourceSubGeometry = sourceSubGeometries[srcIndex];
+				sourceElements = <TriangleElements> sourceGraphics.getGraphicAt(srcIndex).elements;
 
 				//add a new particle subgeometry if this source subgeometry will take us over the maxvertex limit
-				if (sourceSubGeometry.numVertices + vertexCounters[sub2SubMap[srcIndex]] > ParticleGeometryHelper.MAX_VERTEX) {
+				if (sourceElements.numVertices + vertexCounters[sub2SubMap[srcIndex]] > ParticleGraphicsHelper.MAX_VERTEX) {
 					//update submap and add new subgeom vectors
-					sub2SubMap[srcIndex] = subGeometries.length;
+					sub2SubMap[srcIndex] = elementsArray.length;
 					indicesVector.push(new Array<number>() /*uint*/);
 					positionsVector.push(new Array<number>());
 					normalsVector.push(new Array<number>());
 					tangentsVector.push(new Array<number>());
 					uvsVector.push(new Array<number>());
-					subGeometries.push(new TriangleSubGeometry(new AttributesBuffer()));
+					elementsArray.push(new TriangleElements(new AttributesBuffer()));
 					vertexCounters.push(0);
 				}
 
@@ -90,25 +89,25 @@ class ParticleGeometryHelper
 				tangents = tangentsVector[j];
 				uvs = uvsVector[j];
 				vertexCounter = vertexCounters[j];
-				subGeometry = subGeometries[j];
+				elements = elementsArray[j];
 
 				var particleData:ParticleData = new ParticleData();
-				particleData.numVertices = sourceSubGeometry.numVertices;
+				particleData.numVertices = sourceElements.numVertices;
 				particleData.startVertexIndex = vertexCounter;
 				particleData.particleIndex = i;
-				particleData.subGeometry = subGeometry;
+				particleData.elements = elements;
 				particles.push(particleData);
 
-				vertexCounters[j] += sourceSubGeometry.numVertices;
+				vertexCounters[j] += sourceElements.numVertices;
 
 				var k:number /*int*/;
 				var tempLen:number /*int*/;
-				var compact:TriangleSubGeometry = sourceSubGeometry;
+				var compact:TriangleElements = sourceElements;
 				var product:number /*uint*/;
-				var sourcePositions:Float32Array;
+				var sourcePositions:ArrayBufferView;
 				var sourceNormals:Float32Array;
 				var sourceTangents:Float32Array;
-				var sourceUVs:Float32Array;
+				var sourceUVs:ArrayBufferView;
 
 				if (compact) {
 					tempLen = compact.numVertices;
@@ -118,10 +117,10 @@ class ParticleGeometryHelper
 					sourceUVs = compact.uvs.get(tempLen);
 
 					if (transforms) {
-						var particleGeometryTransform:ParticleGeometryTransform = transforms[i];
-						var vertexTransform:Matrix3D = particleGeometryTransform.vertexTransform;
-						var invVertexTransform:Matrix3D = particleGeometryTransform.invVertexTransform;
-						var UVTransform:Matrix = particleGeometryTransform.UVTransform;
+						var particleGraphicsTransform:ParticleGraphicsTransform = transforms[i];
+						var vertexTransform:Matrix3D = particleGraphicsTransform.vertexTransform;
+						var invVertexTransform:Matrix3D = particleGraphicsTransform.invVertexTransform;
+						var UVTransform:Matrix = particleGraphicsTransform.UVTransform;
 
 						for (k = 0; k < tempLen; k++) {
 							/*
@@ -169,8 +168,8 @@ class ParticleGeometryHelper
 					//Todo
 				}
 
-				tempLen = sourceSubGeometry.numElements;
-				var sourceIndices:Uint16Array = sourceSubGeometry.indices.get(tempLen);
+				tempLen = sourceElements.numElements;
+				var sourceIndices:Uint16Array = sourceElements.indices.get(tempLen);
 				for (k = 0; k < tempLen; k++) {
 					product = k*3;
 					indices.push(sourceIndices[product] + vertexCounter, sourceIndices[product + 1] + vertexCounter, sourceIndices[product + 2] + vertexCounter);
@@ -178,25 +177,22 @@ class ParticleGeometryHelper
 			}
 		}
 
-		var particleGeometry:ParticleGeometry = new ParticleGeometry();
-		particleGeometry.particles = particles;
-		particleGeometry.numParticles = numParticles;
+		output.particles = particles;
+		output.numParticles = numParticles;
 
-		numParticles = subGeometries.length;
+		numParticles = elementsArray.length;
 		for (i = 0; i < numParticles; i++) {
-			subGeometry = subGeometries[i];
-			subGeometry.autoDeriveNormals = false;
-			subGeometry.autoDeriveTangents = false;
-			subGeometry.setIndices(indicesVector[i]);
-			subGeometry.setPositions(positionsVector[i]);
-			subGeometry.setNormals(normalsVector[i]);
-			subGeometry.setTangents(tangentsVector[i]);
-			subGeometry.setUVs(uvsVector[i]);
-			particleGeometry.addSubGeometry(subGeometry);
+			elements = elementsArray[i];
+			elements.autoDeriveNormals = false;
+			elements.autoDeriveTangents = false;
+			elements.setIndices(indicesVector[i]);
+			elements.setPositions(positionsVector[i]);
+			elements.setNormals(normalsVector[i]);
+			elements.setTangents(tangentsVector[i]);
+			elements.setUVs(uvsVector[i]);
+			output.addGraphic(elements);
 		}
-
-		return particleGeometry;
 	}
 }
 
-export = ParticleGeometryHelper;
+export = ParticleGraphicsHelper;

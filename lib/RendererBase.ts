@@ -12,7 +12,7 @@ import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool")
 import ByteArray					= require("awayjs-core/lib/utils/ByteArray");
 
 import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
-import EntityListItem				= require("awayjs-display/lib/pool/EntityListItem");
+import RenderableListItem			= require("awayjs-display/lib/pool/RenderableListItem");
 import IRenderer					= require("awayjs-display/lib/IRenderer");
 import DisplayObject				= require("awayjs-display/lib/base/DisplayObject");
 import Camera						= require("awayjs-display/lib/entities/Camera");
@@ -30,6 +30,7 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import StageEvent					= require("awayjs-stagegl/lib/events/StageEvent");
 import StageManager					= require("awayjs-stagegl/lib/managers/StageManager");
 import ProgramData					= require("awayjs-stagegl/lib/image/ProgramData");
+import GL_IAssetClass				= require("awayjs-stagegl/lib/library/GL_IAssetClass");
 
 import IRenderClass					= require("awayjs-renderergl/lib/render/IRenderClass");
 import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
@@ -37,9 +38,10 @@ import RenderableBase				= require("awayjs-renderergl/lib/renderables/Renderable
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
 import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
 import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
-import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
+import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
 import IEntitySorter				= require("awayjs-renderergl/lib/sort/IEntitySorter");
 import RenderableMergeSort			= require("awayjs-renderergl/lib/sort/RenderableMergeSort");
+import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
 
 
 /**
@@ -277,14 +279,14 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		if (this._pStage.context)
 			this._pContext = <IContextGL> this._pStage.context;
 
-		for (var i in RendererBase._abstractionClassPool)
-			this._objectPools[i] = new RenderPool(RendererBase._abstractionClassPool[i], this._pStage, renderClass);
+		for (var i in ElementsPool._abstractionClassPool)
+			this._objectPools[i] = new RenderPool(ElementsPool._abstractionClassPool[i], this._pStage, renderClass);
 	}
 
 
 	public getAbstraction(renderableOwner:IRenderableOwner):RenderableBase
 	{
-		return (this._abstractionPool[renderableOwner.id] || (this._abstractionPool[renderableOwner.id] = new (<IRenderableClass> RendererBase._abstractionClassPool[renderableOwner.assetType])(renderableOwner, this)));
+		return this._abstractionPool[renderableOwner.id] || (this._abstractionPool[renderableOwner.id] = new (<GL_IAssetClass> RendererBase._abstractionClassPool[renderableOwner.assetType])(renderableOwner, this));
 	}
 
 	/**
@@ -299,21 +301,21 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	/**
 	 * //TODO
 	 *
-	 * @param renderableClass
+	 * @param elementsClass
 	 * @returns RenderPool
 	 */
-	public getRenderPool(renderableOwner:IRenderableOwner):RenderPool
+	public getRenderPool(elements:ElementsBase):RenderPool
 	{
-		return this._objectPools[renderableOwner.assetType];
+		return this._objectPools[elements.assetType];
 	}
 
 	/**
 	 *
 	 * @param imageObjectClass
 	 */
-	public static registerAbstraction(renderable:IRenderableClass, assetClass:IAssetClass)
+	public static registerAbstraction(renderableClass:GL_IAssetClass, assetClass:IAssetClass)
 	{
-		RendererBase._abstractionClassPool[assetClass.assetType] = renderable;
+		RendererBase._abstractionClassPool[assetClass.assetType] = renderableClass;
 	}
 
 	public activatePass(renderable:RenderableBase, pass:IPass, camera:Camera)
@@ -532,8 +534,8 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		this._pOpaqueRenderableHead = null;
 		this._pNumElements = 0;
 
-		//grab entity head
-		var item:EntityListItem = entityCollector.entityHead;
+		//grab renderable head
+		var item:RenderableListItem = entityCollector.renderableHead;
 
 		//set temp values for entry point and camera forward vector
 		this._pCamera = entityCollector.camera;
@@ -542,7 +544,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 
 		//iterate through all entities
 		while (item) {
-			item.entity._applyRenderer(this);
+			this._iApplyRenderableOwner(item.renderable);
 			item = item.next;
 		}
 
@@ -896,7 +898,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 			this._pOpaqueRenderableHead = renderable;
 		}
 
-		this._pNumElements += renderable.subGeometryVO.subGeometry.numElements;
+		this._pNumElements += renderable.elements.numElements;
 	}
 
 	private _registerMask(obj:RenderableBase)

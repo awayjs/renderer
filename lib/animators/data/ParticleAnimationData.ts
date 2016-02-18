@@ -1,4 +1,4 @@
-import ParticleData						= require("awayjs-renderergl/lib/animators/data/ParticleData");
+import ParticleData						= require("awayjs-display/lib/animators/data/ParticleData");
 
 /**
  * ...

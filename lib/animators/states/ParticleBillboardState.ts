@@ -9,7 +9,7 @@ import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
 import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
+import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ParticleBillboardNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
@@ -36,7 +36,7 @@ class ParticleBillboardState extends ParticleStateBase
 		this._billboardAxis = particleNode._iBillboardAxis;
 	}
 
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
 		var comps:Array<Vector3D>;
 		if (this._billboardAxis) {

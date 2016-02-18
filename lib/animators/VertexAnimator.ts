@@ -1,7 +1,7 @@
-import Geometry							= require("awayjs-display/lib/base/Geometry");
-import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
-import TriangleSubGeometry				= require("awayjs-display/lib/base/TriangleSubGeometry");
-import TriangleSubMesh					= require("awayjs-display/lib/base/TriangleSubMesh");
+import Graphics							= require("awayjs-display/lib/graphics/Graphics");
+import ElementsBase						= require("awayjs-display/lib/graphics/ElementsBase"	);
+import TriangleElements					= require("awayjs-display/lib/graphics/TriangleElements");
+import Graphic							= require("awayjs-display/lib/graphics/Graphic");
 import Camera							= require("awayjs-display/lib/entities/Camera");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 
@@ -13,10 +13,10 @@ import VertexAnimationSet				= require("awayjs-renderergl/lib/animators/VertexAn
 import VertexAnimationMode				= require("awayjs-renderergl/lib/animators/data/VertexAnimationMode");
 import IVertexAnimationState			= require("awayjs-renderergl/lib/animators/states/IVertexAnimationState");
 import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
-import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
+import GraphicRenderable				= require("awayjs-renderergl/lib/renderables/GraphicRenderable");
 import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import SubGeometryVOBase				= require("awayjs-renderergl/lib/vos/SubGeometryVOBase");
+import GL_ElementsBase					= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
 
 /**
  * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
@@ -26,7 +26,7 @@ import SubGeometryVOBase				= require("awayjs-renderergl/lib/vos/SubGeometryVOBa
 class VertexAnimator extends AnimatorBase
 {
 	private _vertexAnimationSet:VertexAnimationSet;
-	private _poses:Array<Geometry> = new Array<Geometry>();
+	private _poses:Array<Graphics> = new Array<Graphics>();
 	private _weights:Float32Array = new Float32Array([1, 0, 0, 0]);
 	private _numPoses:number /*uint*/;
 	private _blendMode:string;
@@ -98,13 +98,13 @@ class VertexAnimator extends AnimatorBase
 
 		var geometryFlag:boolean = false;
 
-		if (this._poses[0] != this._activeVertexState.currentGeometry) {
-			this._poses[0] = this._activeVertexState.currentGeometry;
+		if (this._poses[0] != this._activeVertexState.currentGraphics) {
+			this._poses[0] = this._activeVertexState.currentGraphics;
 			geometryFlag = true;
 		}
 
-		if (this._poses[1] != this._activeVertexState.nextGeometry) {
-			this._poses[1] = this._activeVertexState.nextGeometry;
+		if (this._poses[1] != this._activeVertexState.nextGraphics) {
+			this._poses[1] = this._activeVertexState.nextGraphics;
 			geometryFlag = true;
 		}
 
@@ -116,7 +116,7 @@ class VertexAnimator extends AnimatorBase
 			var len:number = this._pOwners.length;
 			for (var i:number = 0; i < len; i++) {
 				mesh = this._pOwners[i];
-				mesh._iInvalidateRenderableGeometries();
+				mesh.graphics.invalidateElements();
 			}
 		}
 	}
@@ -128,12 +128,12 @@ class VertexAnimator extends AnimatorBase
 	{
 		// todo: add code for when running on cpu
 		// this type of animation can only be SubMesh
-		var subMesh:TriangleSubMesh = <TriangleSubMesh> (<TriangleSubMeshRenderable> renderable).subMesh;
-		var subGeom:TriangleSubGeometry = subMesh.subGeometry;
+		var graphic:Graphic = <Graphic> (<GraphicRenderable> renderable).graphic;
+		var elements:ElementsBase = graphic.elements;
 
 		// if no poses defined, set temp data
 		if (!this._poses.length) {
-			this.setNullPose(shader, subGeom, stage, vertexConstantOffset, vertexStreamOffset);
+			this.setNullPose(shader, elements, stage, vertexConstantOffset, vertexStreamOffset);
 			return;
 		}
 
@@ -148,34 +148,38 @@ class VertexAnimator extends AnimatorBase
 		else
 			i = 0;
 
-		var subGeometryVO:SubGeometryVOBase;
+		var elementsGL:GL_ElementsBase;
 
 		for (; i < len; ++i) {
-			subGeom = <TriangleSubGeometry> this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
+			elements = this._poses[i].getGraphicAt(graphic._iIndex).elements || graphic.elements;
 
-			subGeometryVO = <SubGeometryVOBase> stage.getAbstraction(subGeom);
-			subGeometryVO._indexMappings = (<SubGeometryVOBase> stage.getAbstraction(subMesh.subGeometry)).getIndexMappings();
+			elementsGL = shader._elementsPool.getAbstraction(elements);
+			elementsGL._indexMappings = shader._elementsPool.getAbstraction(graphic.elements).getIndexMappings();
 
-			subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeom.positions);
+			if (elements.isAsset(TriangleElements)) {
+				elementsGL.activateVertexBufferVO(vertexStreamOffset++, (<TriangleElements> elements).positions);
 
-			if (shader.normalDependencies > 0)
-				subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeom.normals);
+				if (shader.normalDependencies > 0)
+					elementsGL.activateVertexBufferVO(vertexStreamOffset++, (<TriangleElements> elements).normals);
+			}
 		}
 	}
 
-	private setNullPose(shader:ShaderBase, subGeometry:TriangleSubGeometry, stage:Stage, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	private setNullPose(shader:ShaderBase, elements:ElementsBase, stage:Stage, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 	{
 		stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
-		var subGeometryVO:SubGeometryVOBase = <SubGeometryVOBase> stage.getAbstraction(subGeometry);
+		var elementsGL:GL_ElementsBase = shader._elementsPool.getAbstraction(elements);
 
 		if (this._blendMode == VertexAnimationMode.ABSOLUTE) {
 			var len:number /*uint*/ = this._numPoses;
 			for (var i:number /*uint*/ = 1; i < len; ++i) {
-				subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeometry.positions);
+				if (elements.isAsset(TriangleElements)) {
+					elementsGL.activateVertexBufferVO(vertexStreamOffset++, (<TriangleElements> elements).positions);
 
-				if (shader.normalDependencies > 0)
-					subGeometryVO.activateVertexBufferVO(vertexStreamOffset++, subGeometry.normals);
+					if (shader.normalDependencies > 0)
+						elementsGL.activateVertexBufferVO(vertexStreamOffset++, (<TriangleElements> elements).normals);
+				}
 			}
 		}
 		// todo: set temp data for additive?
@@ -189,13 +193,13 @@ class VertexAnimator extends AnimatorBase
 	{
 	}
 
-	public getRenderableSubGeometry(renderable:TriangleSubMeshRenderable, sourceSubGeometry:TriangleSubGeometry):TriangleSubGeometry
+	public getRenderableElements(renderable:GraphicRenderable, sourceElements:TriangleElements):TriangleElements
 	{
 		if (this._blendMode == VertexAnimationMode.ABSOLUTE && this._poses.length)
-			return <TriangleSubGeometry> this._poses[0].subGeometries[renderable.subMesh._iIndex] || sourceSubGeometry;
+			return <TriangleElements> this._poses[0].getGraphicAt(renderable.graphic._iIndex).elements || sourceElements;
 
 		//nothing to do here
-		return sourceSubGeometry;
+		return sourceElements;
 	}
 }
 

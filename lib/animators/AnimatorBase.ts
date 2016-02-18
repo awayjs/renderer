@@ -7,7 +7,7 @@ import getTimer						= require("awayjs-core/lib/utils/getTimer");
 import IAnimationSet				= require("awayjs-display/lib/animators/IAnimationSet");
 import IAnimator					= require("awayjs-display/lib/animators/IAnimator");
 import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
+import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 
@@ -386,10 +386,10 @@ class AnimatorBase extends AssetBase implements IAnimator
 	}
 
 
-	public getRenderableSubGeometry(renderable:RenderableBase, sourceSubGeometry:SubGeometryBase):SubGeometryBase
+	public getRenderableElements(renderable:RenderableBase, sourceElements:ElementsBase):ElementsBase
 	{
 		//nothing to do here
-		return sourceSubGeometry;
+		return sourceElements;
 	}
 }
 

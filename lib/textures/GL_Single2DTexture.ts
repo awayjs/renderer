@@ -13,13 +13,13 @@ import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
+import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
 
 /**
  *
- * @class away.pool.Single2DTextureVO
+ * @class away.pool.GL_Single2DTexture
  */
-class Single2DTextureVO extends TextureVOBase
+class GL_Single2DTexture extends GL_TextureBase
 {
 
 	private _single2DTexture:Single2DTexture;
@@ -108,7 +108,6 @@ class Single2DTextureVO extends TextureVOBase
 				data[index + 2] = 0;
 				data[index + 3] = 0;
 			} else {
-				var renderImage:Image2D = <Image2D> image._asset;
 				data[index] = sampler._sampler.imageRect.width;
 				data[index + 1] = sampler._sampler.imageRect.height;
 				data[index + 2] = sampler._sampler.imageRect.x;
@@ -140,7 +139,6 @@ class Single2DTextureVO extends TextureVOBase
 				data[index + 2] = 0;
 				data[index + 3] = 0;
 			} else {
-				var renderableImage:Image2D = <Image2D> (image? image._asset : renderable.render.images[this._imageIndex]._asset);
 				data[index] = sampler._sampler.imageRect.width;
 				data[index + 1] = sampler._sampler.imageRect.height;
 				data[index + 2] = sampler._sampler.imageRect.x;
@@ -151,4 +149,4 @@ class Single2DTextureVO extends TextureVOBase
 	}
 }
 
-export = Single2DTextureVO;
+export = GL_Single2DTexture;

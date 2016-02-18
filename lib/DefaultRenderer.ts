@@ -26,12 +26,14 @@ import DepthRenderer				= require("awayjs-renderergl/lib/DepthRenderer");
 import DistanceRenderer				= require("awayjs-renderergl/lib/DistanceRenderer");
 import Filter3DRenderer				= require("awayjs-renderergl/lib/Filter3DRenderer");
 import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
+import GL_SkyboxElements			= require("awayjs-renderergl/lib/elements/GL_SkyboxElements");
 import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
 import SkyboxRenderable				= require("awayjs-renderergl/lib/renderables/SkyboxRenderable");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
 import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
+import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -45,6 +47,7 @@ class DefaultRenderer extends RendererBase
 
 	private _pDistanceRenderer:DepthRenderer;
 	private _pDepthRenderer:DepthRenderer;
+	private _skyBoxRenderPool:RenderPool;
 	private _skyboxProjection:Matrix3D = new Matrix3D();
 	public _pFilter3DRenderer:Filter3DRenderer;
 
@@ -141,6 +144,8 @@ class DefaultRenderer extends RendererBase
 			this.height = window.innerHeight;
 		else
 			this._pRttBufferManager.viewHeight = this._height;
+
+		this._skyBoxRenderPool = new RenderPool(GL_SkyboxElements, this._pStage);
 	}
 
 	public render(entityCollector:CollectorBase)
@@ -253,7 +258,7 @@ class DefaultRenderer extends RendererBase
 
 		this.updateSkyboxProjection(camera);
 
-		var render:RenderBase = this.getRenderPool(renderable.renderableOwner).getAbstraction(renderable.render.renderOwner);
+		var render:RenderBase = this._skyBoxRenderPool.getAbstraction(renderable.render.renderOwner);
 
 		var pass:IPass = render.passes[0];
 

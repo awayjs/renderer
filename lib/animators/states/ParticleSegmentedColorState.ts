@@ -8,7 +8,7 @@ import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/base/ContextGL
 
 import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
+import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ColorSegmentPoint				= require("awayjs-renderergl/lib/animators/data/ColorSegmentPoint");
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 import ParticleSegmentedColorNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode");
@@ -114,7 +114,7 @@ class ParticleSegmentedColorState extends ParticleStateBase
 		this.updateColorData();
 	}
 
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
 		if (animationRegisterCache.needFragmentAnimation) {
 			if (this._numSegmentPoint > 0)

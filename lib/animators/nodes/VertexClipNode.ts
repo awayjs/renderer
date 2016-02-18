@@ -1,6 +1,6 @@
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
-import Geometry							= require("awayjs-display/lib/base/Geometry");
+import Graphics							= require("awayjs-display/lib/graphics/Graphics");
 
 import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 
@@ -12,13 +12,13 @@ import VertexClipState					= require("awayjs-renderergl/lib/animators/states/Ver
  */
 class VertexClipNode extends AnimationClipNodeBase
 {
-	private _frames:Array<Geometry> = new Array<Geometry>();
+	private _frames:Array<Graphics> = new Array<Graphics>();
 	private _translations:Array<Vector3D> = new Array<Vector3D>();
 
 	/**
 	 * Returns a vector of geometry frames representing the vertex values of each animation frame in the clip.
 	 */
-	public get frames():Array<Geometry>
+	public get frames():Array<Graphics>
 	{
 		return this._frames;
 	}
@@ -40,7 +40,7 @@ class VertexClipNode extends AnimationClipNodeBase
 	 * @param duration The specified duration of the frame in milliseconds.
 	 * @param translation The absolute translation of the frame, used in root delta calculations for mesh movement.
 	 */
-	public addFrame(geometry:Geometry, duration:number /*uint*/, translation:Vector3D = null)
+	public addFrame(geometry:Graphics, duration:number /*uint*/, translation:Vector3D = null)
 	{
 		this._frames.push(geometry);
 		this._pDurations.push(duration);

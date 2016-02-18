@@ -1,6 +1,6 @@
-import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
+import ElementsBase						= require("awayjs-display/lib/graphics/ElementsBase");
 import Camera							= require("awayjs-display/lib/entities/Camera");
-import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
+import Graphic							= require("awayjs-display/lib/graphics/Graphic");
 
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
@@ -8,14 +8,14 @@ import Stage							= require("awayjs-stagegl/lib/base/Stage");
 import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
 import ParticleAnimationSet				= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-import AnimationSubGeometry				= require("awayjs-renderergl/lib/animators/data/AnimationSubGeometry");
+import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
 import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/renderables/TriangleSubMeshRenderable");
+import GraphicRenderable			= require("awayjs-renderergl/lib/renderables/GraphicRenderable");
 
 /**
  * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
@@ -24,7 +24,7 @@ import TriangleSubMeshRenderable		= require("awayjs-renderergl/lib/renderables/T
  *
  * Requires that the containing geometry of the parent mesh is particle geometry
  *
- * @see away.base.ParticleGeometry
+ * @see away.base.ParticleGraphics
  */
 class ParticleAnimator extends AnimatorBase
 {
@@ -79,24 +79,24 @@ class ParticleAnimator extends AnimatorBase
 	{
 		var animationRegisterCache:AnimationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
 
-		var subMesh:ISubMesh = (<TriangleSubMeshRenderable> renderable).subMesh;
+		var graphic:Graphic = (<GraphicRenderable> renderable).graphic;
 		var state:ParticleStateBase;
 		var i:number;
 
-		if (!subMesh)
-			throw(new Error("Must be subMesh"));
+		if (!graphic)
+			throw(new Error("Must be graphic"));
 
 		//process animation sub geometries
-		var animationSubGeometry:AnimationSubGeometry = this._particleAnimationSet.getAnimationSubGeometry(subMesh);
+		var animationElements:AnimationElements = this._particleAnimationSet.getAnimationElements(graphic);
 
 		for (i = 0; i < this._animationParticleStates.length; i++)
-			this._animationParticleStates[i].setRenderState(stage, renderable, animationSubGeometry, animationRegisterCache, camera);
+			this._animationParticleStates[i].setRenderState(stage, renderable, animationElements, animationRegisterCache, camera);
 
 		//process animator subgeometries
-		var animatorSubGeometry:AnimationSubGeometry = this.getAnimatorSubGeometry(subMesh);
+		var animatorElements:AnimationElements = this.getAnimatorElements(graphic);
 
 		for (i = 0; i < this._animatorParticleStates.length; i++)
-			this._animatorParticleStates[i].setRenderState(stage, renderable, animatorSubGeometry, animationRegisterCache, camera);
+			this._animatorParticleStates[i].setRenderState(stage, renderable, animatorElements, animationRegisterCache, camera);
 
 		stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, animationRegisterCache.vertexConstantOffset, animationRegisterCache.vertexConstantData, animationRegisterCache.numVertexConstant);
 
@@ -147,22 +147,22 @@ class ParticleAnimator extends AnimatorBase
 	public dispose()
 	{
 		for (var key in this._animatorSubGeometries)
-			(<AnimationSubGeometry> this._animatorSubGeometries[key]).dispose();
+			(<AnimationElements> this._animatorSubGeometries[key]).dispose();
 	}
 
-	private getAnimatorSubGeometry(subMesh:ISubMesh):AnimationSubGeometry
+	private getAnimatorElements(graphic:Graphic):AnimationElements
 	{
 		if (!this._animatorParticleStates.length)
 			return;
 
-		var subGeometry:SubGeometryBase = subMesh.subGeometry;
-		var animatorSubGeometry:AnimationSubGeometry = this._animatorSubGeometries[subGeometry.id] = new AnimationSubGeometry();
+		var elements:ElementsBase = graphic.elements;
+		var animatorElements:AnimationElements = this._animatorSubGeometries[elements.id] = new AnimationElements();
 
 		//create the vertexData vector that will be used for local state data
-		animatorSubGeometry.createVertexData(subGeometry.numVertices, this._totalLenOfOneVertex);
+		animatorElements.createVertexData(elements.numVertices, this._totalLenOfOneVertex);
 
-		//pass the particles data to the animator subGeometry
-		animatorSubGeometry.animationParticles = this._particleAnimationSet.getAnimationSubGeometry(subMesh).animationParticles;
+		//pass the particles data to the animator elements
+		animatorElements.animationParticles = this._particleAnimationSet.getAnimationElements(graphic).animationParticles;
 	}
 }
 

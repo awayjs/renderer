@@ -21,9 +21,9 @@ import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import IRenderableClass				= require("awayjs-renderergl/lib/renderables/IRenderableClass");
+import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
-import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
+import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
 
 /**
  * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
@@ -31,7 +31,7 @@ import TextureVOBase				= require("awayjs-renderergl/lib/vos/TextureVOBase");
  */
 class BasicMaterialPass extends PassBase
 {
-	private _textureVO:TextureVOBase;
+	private _textureVO:GL_TextureBase;
 	private _diffuseR:number = 1;
 	private _diffuseG:number = 1;
 	private _diffuseB:number = 1;
@@ -39,11 +39,11 @@ class BasicMaterialPass extends PassBase
 
 	private _fragmentConstantsIndex:number;
 
-	constructor(render:RenderBase, renderOwner:IRenderOwner, renderableClass:IRenderableClass, stage:Stage)
+	constructor(render:RenderBase, renderOwner:IRenderOwner, elementsClass:IElementsClassGL, stage:Stage)
 	{
-		super(render, renderOwner, renderableClass, stage);
+		super(render, renderOwner, elementsClass, stage);
 
-		this._shader = new ShaderBase(renderableClass, this, this._stage);
+		this._shader = new ShaderBase(elementsClass, this, this._stage);
 
 		this.invalidate();
 	}
@@ -60,7 +60,7 @@ class BasicMaterialPass extends PassBase
 	{
 		super.invalidate();
 
-		this._textureVO = this._renderOwner.getTextureAt(0)? this._shader.getAbstraction(this._renderOwner.getTextureAt(0)) : null;
+		this._textureVO = this._renderOwner.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._renderOwner.getTextureAt(0)) : null;
 	}
 
 	public dispose()
