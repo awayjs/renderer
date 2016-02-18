@@ -13,6 +13,7 @@ import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class BitmapImage2DReflectionTest
 {
@@ -45,7 +46,7 @@ class BitmapImage2DReflectionTest
 			switch (asset.assetType) {
 				case BitmapImage2D.assetType:
 
-					var prefab:PrimitivePlanePrefab = new PrimitivePlanePrefab(500 , 500, 1, 1, false);
+					var prefab:PrimitivePlanePrefab = new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, 500 , 500, 1, 1, false);
 					var bitmap:BitmapImage2D = new BitmapImage2D(1024, 1024, true, 0x00000000);
 
 					var imageCanvas:HTMLCanvasElement = <HTMLCanvasElement> document.createElement("canvas");

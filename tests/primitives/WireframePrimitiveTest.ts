@@ -13,6 +13,7 @@ import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePla
 import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class WireframePrimitiveTest
 {
@@ -43,19 +44,17 @@ class WireframePrimitiveTest
 	{
 
 		var primitives:Array<PrimitivePrefabBase> = new Array<PrimitivePrefabBase>();
-		primitives.push(new PrimitivePolygonPrefab());
-		primitives.push(new PrimitiveSpherePrefab());
-		primitives.push(new PrimitiveSpherePrefab());
-		primitives.push(new PrimitiveCylinderPrefab());
-		primitives.push(new PrimitivePlanePrefab());
-		primitives.push(new PrimitiveConePrefab());
-		primitives.push(new PrimitiveCubePrefab());
+		primitives.push(new PrimitivePolygonPrefab(null, ElementsType.LINE));
+		primitives.push(new PrimitiveSpherePrefab(null, ElementsType.LINE));
+		primitives.push(new PrimitiveSpherePrefab(null, ElementsType.LINE));
+		primitives.push(new PrimitiveCylinderPrefab(null, ElementsType.LINE));
+		primitives.push(new PrimitivePlanePrefab(null, ElementsType.LINE));
+		primitives.push(new PrimitiveConePrefab(null, ElementsType.LINE));
+		primitives.push(new PrimitiveCubePrefab(null, ElementsType.LINE));
 
 		var mesh:Mesh;
 
 		for (var c:number = 0; c < primitives.length; c++) {
-			primitives[c].geometryType = "lineSubGeometry";
-
 			var t:number = Math.PI*2*c/primitives.length;
 
 			mesh = <Mesh> primitives[c].getNewObject();

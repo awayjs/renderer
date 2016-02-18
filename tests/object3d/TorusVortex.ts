@@ -17,13 +17,11 @@ import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTor
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class TorusVortex
 {
 	private _view:View;
-
-	private _cube:PrimitiveCubePrefab;
-	private _torus:PrimitiveTorusPrefab;
 	private _mesh:Mesh;
 	private _mesh2:Mesh;
 
@@ -45,9 +43,6 @@ class TorusVortex
 
 		this._view.camera.projection = new PerspectiveProjection(120);
 		this._view.camera.projection.near = 0.1;
-
-		this._cube = new PrimitiveCubePrefab(20.0, 20.0, 20.0);
-		this._torus = new PrimitiveTorusPrefab(150, 80, 32, 16, true);
 
 		this.loadResources();
 	}
@@ -75,11 +70,11 @@ class TorusVortex
 		matTx.blendMode = BlendMode.ADD;
 		matTx.bothSides = true;
 
-		this._torus.material = matTx;
-		this._cube.material = matTx;
+		var cube:PrimitiveCubePrefab = new PrimitiveCubePrefab(matTx, ElementsType.TRIANGLE, 20.0, 20.0, 20.0);
+		var torus:PrimitiveTorusPrefab = new PrimitiveTorusPrefab(matTx, ElementsType.TRIANGLE, 150, 80, 32, 16, true);
 
-		this._mesh = <Mesh> this._torus.getNewObject();
-		this._mesh2 = <Mesh> this._cube.getNewObject();
+		this._mesh = <Mesh> torus.getNewObject();
+		this._mesh2 = <Mesh> cube.getNewObject();
 		this._mesh2.x = 130;
 		this._mesh2.z = 40;
 

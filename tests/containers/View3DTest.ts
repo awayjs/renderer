@@ -8,6 +8,7 @@ import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTor
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class View3DTest
 {
@@ -23,18 +24,16 @@ class View3DTest
 		Debug.THROW_ERRORS = false;
 		Debug.LOG_PI_ERRORS = false;
 
+		var l:number = 10;
+		var radius:number = 1000;
+		var matB:BasicMaterial = new BasicMaterial();
+
 		this.meshes = new Array<Mesh>();
 		this.light = new PointLight();
 		this.view = new View(new DefaultRenderer());
 		this.view.camera.z = 0;
 		this.view.backgroundColor = 0x776655;
-		this.torus = new PrimitiveTorusPrefab(150 , 50 , 32 , 32 , false);
-
-		var l:number = 10;
-		var radius:number = 1000;
-		var matB:BasicMaterial = new BasicMaterial();
-
-		this.torus.material = matB;
+		this.torus = new PrimitiveTorusPrefab(matB, ElementsType.TRIANGLE, 150, 50 , 32 , 32 , false);
 
 		for (var c:number = 0; c < l; c++) {
 

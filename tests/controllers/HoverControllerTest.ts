@@ -7,6 +7,7 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class HoverControllerTest
 {
@@ -27,8 +28,7 @@ class HoverControllerTest
 		this._view = new View(new DefaultRenderer());
 		this._view.backgroundColor = 0x222222;
 
-		this._cube = new PrimitiveCubePrefab(400, 400, 400);
-		this._cube.geometryType = "lineSubGeometry";
+		this._cube = new PrimitiveCubePrefab(null, ElementsType.LINE, 400, 400, 400);
 		this._mesh = <Mesh> this._cube.getNewObject();
 		this._view.scene.addChild(this._mesh);
 
