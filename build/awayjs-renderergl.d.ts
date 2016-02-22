@@ -4550,9 +4550,11 @@ declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import Filter3DTaskBase = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+	import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
 	class Filter3DBase {
 	    private _tasks;
 	    private _requireDepthRender;
+	    private _rttManager;
 	    private _textureWidth;
 	    private _textureHeight;
 	    constructor();
@@ -4561,6 +4563,7 @@ declare module "awayjs-renderergl/lib/filters/Filter3DBase" {
 	    tasks: Filter3DTaskBase[];
 	    getMainInputTexture(stage: Stage): Image2D;
 	    textureWidth: number;
+	    rttManager: RTTBufferManager;
 	    textureHeight: number;
 	    setRenderTargets(mainTarget: Image2D, stage: Stage): void;
 	    dispose(): void;
@@ -4655,10 +4658,12 @@ declare module "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase" {
 	import Camera = require("awayjs-display/lib/entities/Camera");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import IProgram = require("awayjs-stagegl/lib/base/IProgram");
+	import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
 	class Filter3DTaskBase {
 	    private _mainInputTexture;
 	    _scaledTextureWidth: number;
 	    _scaledTextureHeight: number;
+	    _rttManager: RTTBufferManager;
 	    _textureWidth: number;
 	    _textureHeight: number;
 	    private _textureDimensionsInvalid;
@@ -4673,6 +4678,7 @@ declare module "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase" {
 	     */
 	    textureScale: number;
 	    target: Image2D;
+	    rttManager: RTTBufferManager;
 	    textureWidth: number;
 	    textureHeight: number;
 	    getMainInputTexture(stage: Stage): Image2D;

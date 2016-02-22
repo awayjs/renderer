@@ -470,6 +470,7 @@ var Filter3DRenderer = (function () {
         for (var i = 0; i < this._filters.length; ++i) {
             this._filters[i].textureWidth = this._rttManager.textureWidth;
             this._filters[i].textureHeight = this._rttManager.textureHeight;
+            this._filters[i].rttManager = this._rttManager;
         }
         this._filterSizesInvalid = true;
     };
@@ -10210,6 +10211,18 @@ var Filter3DBase = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Filter3DBase.prototype, "rttManager", {
+        get: function () {
+            return this._rttManager;
+        },
+        set: function (value) {
+            this._rttManager = value;
+            for (var i = 0; i < this._tasks.length; ++i)
+                this._tasks[i].rttManager = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Filter3DBase.prototype, "textureHeight", {
         get: function () {
             return this._textureHeight;
@@ -10344,19 +10357,17 @@ var Filter3DFXAATask = (function (_super) {
         if (stepSize === void 0) { stepSize = -1; }
         _super.call(this);
         this._stepSize = 1;
-        this._data = new Float32Array(24);
+        this._data = new Float32Array(20);
         //luma
-        this._data.set([0.299, 0.587, 0.114, 1], 0); //0.212, 0.716, 0.072
+        this._data.set([0.299, 0.587, 0.114, 0], 0); //0.212, 0.716, 0.072
         //helpers
-        this._data.set([0.25, 0.5, 0.75, 4.3], 4);
+        this._data.set([0.25, 0.5, 0.75, 1], 4);
         //settings (screen x, screen y, ...)
-        this._data.set([1 / 1024, 1 / 1024, 1.75, 1 / 16], 8);
+        this._data.set([1 / 1024, 1 / 1024, -1, 1], 8);
         //deltas
-        this._data.set([0, -1, 1, 0], 12);
+        this._data.set([1 / 128, 1 / 8, 8, 0], 12);
         //deltas
         this._data.set([1.0 / 3.0 - 0.5, 2.0 / 3.0 - 0.5, 0.0 / 3.0 - 0.5, 3.0 / 3.0 - 0.5], 16);
-        //deltas
-        this._data.set([1 / 128, 1 / 8, 0, 8], 20);
         this.amount = amount;
         this.stepSize = stepSize;
     }
@@ -10390,25 +10401,25 @@ var Filter3DFXAATask = (function (_super) {
         configurable: true
     });
     Filter3DFXAATask.prototype.getFragmentCode = function () {
-        var uv_in = "v0";
-        var w = "fc2.z"; //	1.75
         var lum = "fc0"; //	0.299, 0.587, 0.114
-        var s = "fc2.w"; //	1/16
-        var div = "fc1.w"; //	4.3
+        var _0 = "fc0.w";
+        var _025 = "fc1.x";
+        var _05 = "fc1.y";
+        var _075 = "fc1.z";
+        var _1 = "fc1.w";
         var pix = "fc2.xy";
         var dx = "fc2.x"; // 1/1024
         var dy = "fc2.y"; // 1/1024
-        var mOne = "fc3.y"; // -1.0
-        var mul = "fc3.z"; // 1.0  -- one for now
+        var mOne = "fc2.z"; // -1.0
+        var mul = "fc2.w"; // 1.0  -- one for now
+        var fxaaReduceMin = "fc3.x"; //1/128
+        var fxaaReduceMul = "fc3.y"; //1/8
+        var fxaaSpanMax = "fc3.z"; //8
         var delta1 = "fc4.x"; //1.0/3.0 - 0.5
         var delta2 = "fc4.y"; //2.0/3.0 - 0.5
         var delta3 = "fc4.z"; //0.0/3.0 - 0.5
         var delta4 = "fc4.w"; //3.0/3.0 - 0.5
-        var _0 = "fc3.x";
-        var _025 = "fc1.x";
-        var _05 = "fc1.y";
-        var _075 = "fc1.z";
-        var _1 = "fc0.w";
+        var uv_in = "v0";
         var uv = "ft0.xy";
         var uvx = "ft0.x";
         var uvy = "ft0.y";
@@ -10429,9 +10440,6 @@ var Filter3DFXAATask = (function (_super) {
         var inverseDirAdjustment = "ft5.y";
         var result1 = "ft6";
         var result2 = "ft7";
-        var fxaaReduceMin = "fc5.x"; //1/128
-        var fxaaReduceMul = "fc5.y"; //1/8
-        var fxaaSpanMax = "fc5.w"; //8
         var lumaMin = "ft5.x";
         var lumaMax = "ft5.y";
         var sample = "fs0";
@@ -10534,9 +10542,10 @@ var Filter3DFXAATask = (function (_super) {
     };
     Filter3DFXAATask.prototype.updateBlurData = function () {
         // todo: must be normalized using view size ratio instead of texture
-        var invH = 1 / this._textureHeight;
-        this._data[0] = this._amount * .5 * invH;
-        this._data[1] = this._realStepSize * invH;
+        if (this._rttManager) {
+            this._data[8] = 1 / this._textureWidth;
+            this._data[9] = 1 / this._textureHeight;
+        }
     };
     Filter3DFXAATask.prototype.calculateStepSize = function () {
         this._realStepSize = 1; //this._stepSize > 0? this._stepSize : this._amount > Filter3DVBlurTask.MAX_AUTO_SAMPLES? this._amount/Filter3DVBlurTask.MAX_AUTO_SAMPLES : 1;
@@ -10675,6 +10684,19 @@ var Filter3DTaskBase = (function () {
         },
         set: function (value) {
             this._target = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filter3DTaskBase.prototype, "rttManager", {
+        get: function () {
+            return this._rttManager;
+        },
+        set: function (value) {
+            if (this._rttManager == value)
+                return;
+            this._rttManager = value;
+            this._textureDimensionsInvalid = true;
         },
         enumerable: true,
         configurable: true
