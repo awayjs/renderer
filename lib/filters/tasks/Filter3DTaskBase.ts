@@ -10,6 +10,7 @@ import AGALMiniAssembler			= require("awayjs-stagegl/lib/aglsl/assembler/AGALMin
 import ContextGLTextureFormat		= require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import IProgram						= require("awayjs-stagegl/lib/base/IProgram");
+import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
 
 class Filter3DTaskBase
 {
@@ -17,6 +18,7 @@ class Filter3DTaskBase
 
 	public _scaledTextureWidth:number = -1;
 	public _scaledTextureHeight:number = -1;
+	public _rttManager:RTTBufferManager;
 	public _textureWidth:number = -1;
 	public _textureHeight:number = -1;
 	private _textureDimensionsInvalid:boolean = true;
@@ -58,6 +60,20 @@ class Filter3DTaskBase
 	public set target(value:Image2D)
 	{
 		this._target = value;
+	}
+
+	public get rttManager():RTTBufferManager
+	{
+		return this._rttManager;
+	}
+
+	public set rttManager(value:RTTBufferManager)
+	{
+		if (this._rttManager == value)
+			return;
+
+		this._rttManager = value;
+		this._textureDimensionsInvalid = true;
 	}
 
 	public get textureWidth():number

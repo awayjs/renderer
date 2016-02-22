@@ -5,11 +5,13 @@ import Camera						= require("awayjs-display/lib/entities/Camera");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import Filter3DTaskBase				= require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
 
 class Filter3DBase
 {
 	private _tasks:Array<Filter3DTaskBase>;
 	private _requireDepthRender:boolean;
+	private _rttManager:RTTBufferManager;
 	private _textureWidth:number;
 	private _textureHeight:number;
 
@@ -52,6 +54,20 @@ class Filter3DBase
 
 		for (var i:number = 0; i < this._tasks.length; ++i)
 			this._tasks[i].textureWidth = value;
+	}
+
+
+	public get rttManager():RTTBufferManager
+	{
+		return this._rttManager;
+	}
+
+	public set rttManager(value:RTTBufferManager)
+	{
+		this._rttManager = value;
+
+		for (var i:number = 0; i < this._tasks.length; ++i)
+			this._tasks[i].rttManager = value;
 	}
 
 	public get textureHeight():number

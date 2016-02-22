@@ -187,6 +187,7 @@ class Filter3DRenderer
 		for (var i:number = 0; i < this._filters.length; ++i) {
 			this._filters[i].textureWidth = this._rttManager.textureWidth;
 			this._filters[i].textureHeight = this._rttManager.textureHeight;
+			this._filters[i].rttManager = this._rttManager;
 		}
 
 		this._filterSizesInvalid = true;

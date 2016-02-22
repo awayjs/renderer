@@ -25,19 +25,18 @@ class Filter3DFXAATask extends Filter3DTaskBase
 	{
 		super();
 
-		this._data =  new Float32Array(24);
+		this._data =  new Float32Array(20);
 		//luma
-		this._data.set([0.299, 0.587, 0.114, 1],0);//0.212, 0.716, 0.072
+		this._data.set([0.299, 0.587, 0.114, 0],0);//0.212, 0.716, 0.072
 		//helpers
-		this._data.set([0.25, 0.5, 0.75, 4.3], 4);
+		this._data.set([0.25, 0.5, 0.75, 1], 4);
 		//settings (screen x, screen y, ...)
-		this._data.set([1/1024, 1/1024, 1.75, 1/16], 8);
+		this._data.set([1/1024, 1/1024, -1, 1], 8);
 		//deltas
-		this._data.set([0, -1, 1, 0], 12);
+		this._data.set([1/128, 1/8, 8, 0], 12);
 		//deltas
 		this._data.set([1.0/3.0 - 0.5, 2.0/3.0 - 0.5, 0.0/3.0 - 0.5, 3.0/3.0 - 0.5], 16);
-		//deltas
-		this._data.set([1/128, 1/8, 0, 8], 20);
+
 
 		this.amount = amount;
 		this.stepSize = stepSize;
@@ -76,31 +75,31 @@ class Filter3DFXAATask extends Filter3DTaskBase
 
 	public getFragmentCode():string
 	{
-		var uv_in:string = "v0";
-
-		var w:string = "fc2.z";		//	1.75
-
 		var lum:string = "fc0";		//	0.299, 0.587, 0.114
-		var s:string = "fc2.w";		//	1/16
-		var div:string = "fc1.w";	//	4.3
+		var _0:string = "fc0.w";
+
+		var _025:string = "fc1.x";
+		var _05:string = "fc1.y";
+		var _075:string = "fc1.z";
+		var _1:string = "fc1.w";
 
 		var pix:string = "fc2.xy";
 		var dx:string = "fc2.x"; // 1/1024
 		var dy:string = "fc2.y"; // 1/1024
-		var mOne:string = "fc3.y"; // -1.0
-		var mul:string = "fc3.z"; // 1.0  -- one for now
+
+		var mOne:string = "fc2.z"; // -1.0
+		var mul:string = "fc2.w"; // 1.0  -- one for now
+
+		var fxaaReduceMin :string = "fc3.x";	//1/128
+		var fxaaReduceMul :string = "fc3.y";	//1/8
+		var fxaaSpanMax :string = "fc3.z";		//8
 
 		var delta1:string = "fc4.x";	//1.0/3.0 - 0.5
 		var delta2:string = "fc4.y";	//2.0/3.0 - 0.5
 		var delta3:string = "fc4.z";	//0.0/3.0 - 0.5
 		var delta4:string = "fc4.w";	//3.0/3.0 - 0.5
 
-		var _0:string = "fc3.x";
-		var _025:string = "fc1.x";
-		var _05:string = "fc1.y";
-		var _075:string = "fc1.z";
-		var _1:string = "fc0.w";
-
+		var uv_in:string = "v0";
 
 		var uv:string = "ft0.xy";
 		var uvx:string = "ft0.x";
@@ -128,10 +127,6 @@ class Filter3DFXAATask extends Filter3DTaskBase
 
 		var result1:string = "ft6";
 		var result2:string = "ft7";
-
-		var fxaaReduceMin :string = "fc5.x";	//1/128
-		var fxaaReduceMul :string = "fc5.y";	//1/8
-		var fxaaSpanMax :string = "fc5.w";		//8
 
 		var lumaMin:string = "ft5.x";
 		var lumaMax:string = "ft5.y";
@@ -264,10 +259,12 @@ class Filter3DFXAATask extends Filter3DTaskBase
 	private updateBlurData()
 	{
 		// todo: must be normalized using view size ratio instead of texture
-		var invH:number = 1/this._textureHeight;
-
-		this._data[0] = this._amount*.5*invH;
-		this._data[1] = this._realStepSize*invH;
+		if (this._rttManager) {
+			this._data[8] = 1/this._textureWidth;
+			this._data[9] = 1/this._textureHeight;
+			//this._data[8] = 1/this._rttManager.viewWidth;
+			//this._data[9] = 1/this._rttManager.viewHeight;
+		}
 	}
 
 	private calculateStepSize()
