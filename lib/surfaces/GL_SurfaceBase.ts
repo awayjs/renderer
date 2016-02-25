@@ -6,10 +6,10 @@ import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 
 import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
 
-import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import RenderOwnerEvent				= require("awayjs-display/lib/events/RenderOwnerEvent");
-import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
+import ISurface						= require("awayjs-display/lib/base/ISurface");
+import Camera						= require("awayjs-display/lib/display/Camera");
+import SurfaceEvent					= require("awayjs-display/lib/events/SurfaceEvent");
+import IRenderable					= require("awayjs-display/lib/base/IRenderable");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
 import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
@@ -23,8 +23,8 @@ import PassEvent					= require("awayjs-renderergl/lib/events/PassEvent");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
-import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
+import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
+import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
 import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
 
@@ -32,15 +32,15 @@ import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBas
  *
  * @class away.pool.Passes
  */
-class RenderBase extends AbstractionBase
+class GL_SurfaceBase extends AbstractionBase
 {
-	private _onInvalidateAnimationDelegate:(event:RenderOwnerEvent) => void;
-	private _onInvalidatePassesDelegate:(event:RenderOwnerEvent) => void;
+	private _onInvalidateAnimationDelegate:(event:SurfaceEvent) => void;
+	private _onInvalidatePassesDelegate:(event:SurfaceEvent) => void;
 
 	public usages:number = 0;
 	public _forceSeparateMVP:boolean = false;
 
-	public _renderOwner:IRenderOwner;
+	public _surface:ISurface;
 	public _elementsClass:IElementsClassGL;
 	public _stage:Stage;
 
@@ -59,7 +59,7 @@ class RenderBase extends AbstractionBase
 
 	private _onPassInvalidateDelegate:(event:PassEvent) => void;
 
-	public renderId:number;
+	public surfaceID:number;
 
 	public images:Array<GL_ImageBase> = new Array<GL_ImageBase>();
 	public samplers:Array<GL_SamplerBase> = new Array<GL_SamplerBase>();
@@ -88,9 +88,9 @@ class RenderBase extends AbstractionBase
 		return this._passes;
 	}
 
-	public get renderOwner():IRenderOwner
+	public get surface():ISurface
 	{
-		return this._renderOwner;
+		return this._surface;
 	}
 
 	public get numImages():number
@@ -101,20 +101,20 @@ class RenderBase extends AbstractionBase
 		return this._numImages;
 	}
 
-	constructor(renderOwner:IRenderOwner, elementsClass:IElementsClassGL, renderPool:RenderPool)
+	constructor(surface:ISurface, elementsClass:IElementsClassGL, renderPool:SurfacePool)
 	{
-		super(renderOwner, renderPool);
+		super(surface, renderPool);
 
-		this._onInvalidateAnimationDelegate = (event:RenderOwnerEvent) => this.onInvalidateAnimation(event);
-		this._onInvalidatePassesDelegate = (event:RenderOwnerEvent) => this.onInvalidatePasses(event);
+		this._onInvalidateAnimationDelegate = (event:SurfaceEvent) => this.onInvalidateAnimation(event);
+		this._onInvalidatePassesDelegate = (event:SurfaceEvent) => this.onInvalidatePasses(event);
 
-		this.renderId = renderOwner.id;
-		this._renderOwner = renderOwner;
+		this.surfaceID = surface.id;
+		this._surface = surface;
 		this._elementsClass = elementsClass;
 		this._stage = renderPool.stage;
 
-		this._renderOwner.addEventListener(RenderOwnerEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
-		this._renderOwner.addEventListener(RenderOwnerEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
+		this._surface.addEventListener(SurfaceEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
+		this._surface.addEventListener(SurfaceEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
 
 		this._onPassInvalidateDelegate = (event:PassEvent) => this.onPassInvalidate(event);
 	}
@@ -123,12 +123,12 @@ class RenderBase extends AbstractionBase
 	{
 		this._elementsClass._iIncludeDependencies(shader);
 
-		shader.alphaThreshold = this._renderOwner.alphaThreshold;
-		shader.useImageRect = this._renderOwner.imageRect;
-		shader.usesCurves = this._renderOwner.curves;
+		shader.alphaThreshold = this._surface.alphaThreshold;
+		shader.useImageRect = this._surface.imageRect;
+		shader.usesCurves = this._surface.curves;
 
-		if (this._renderOwner instanceof MaterialBase) {
-			var material:MaterialBase = <MaterialBase> this._renderOwner;
+		if (this._surface instanceof MaterialBase) {
+			var material:MaterialBase = <MaterialBase> this._surface;
 			shader.useAlphaPremultiplied = material.alphaPremultiplied;
 			shader.useBothSides = material.bothSides;
 			shader.usesUVTransform = material.animateUVs;
@@ -151,7 +151,7 @@ class RenderBase extends AbstractionBase
 	{
 		super.onClear(event);
 
-		this._renderOwner = null;
+		this._surface = null;
 		this._elementsClass = null;
 		this._stage = null;
 
@@ -178,7 +178,7 @@ class RenderBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public onInvalidatePasses(event:RenderOwnerEvent)
+	public onInvalidatePasses(event:SurfaceEvent)
 	{
 		var len:number = this._passes.length;
 		for (var i:number = 0; i < len; i++)
@@ -191,14 +191,14 @@ class RenderBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public onInvalidateAnimation(event:RenderOwnerEvent)
+	public onInvalidateAnimation(event:SurfaceEvent)
 	{
 		this._invalidAnimation = true;
 	}
 
 	/**
 	 *
-	 * @param renderOwner
+	 * @param surface
 	 */
 	private _updateAnimation()
 	{
@@ -232,7 +232,7 @@ class RenderBase extends AbstractionBase
 	{
 		this._invalidImages = false;
 
-		var numTextures:number = this._renderOwner.getNumTextures();
+		var numTextures:number = this._surface.getNumTextures();
 		var texture:TextureBase;
 		var numImages:number;
 		var images:Array<number>;
@@ -241,14 +241,14 @@ class RenderBase extends AbstractionBase
 		var index:number = 0;
 
 		for (var i:number = 0; i < numTextures; i++) {
-			texture = this._renderOwner.getTextureAt(i);
+			texture = this._surface.getTextureAt(i);
 			numImages = texture.getNumImages();
 			images = this._imageIndices[texture.id] = new Array<number>();
 			for (var j:number = 0; j < numImages; j++) {
-				image = texture.getImageAt(j) || (this._renderOwner.style? this._renderOwner.style.getImageAt(texture, j) : null) || DefaultMaterialManager.getDefaultImage2D();
+				image = texture.getImageAt(j) || (this._surface.style? this._surface.style.getImageAt(texture, j) : null) || DefaultMaterialManager.getDefaultImage2D();
 				this.images[index] = <GL_ImageBase> this._stage.getAbstraction(image);
 
-				sampler = texture.getSamplerAt(j) || (this._renderOwner.style? this._renderOwner.style.getSamplerAt(texture, j) : null) || DefaultMaterialManager.getDefaultSampler();
+				sampler = texture.getSamplerAt(j) || (this._surface.style? this._surface.style.getSamplerAt(texture, j) : null) || DefaultMaterialManager.getDefaultSampler();
 				this.samplers[index] = <GL_SamplerBase> this._stage.getAbstraction(sampler);
 
 				images[j] = index++;
@@ -271,7 +271,7 @@ class RenderBase extends AbstractionBase
 	}
 
 	/**
-	 * Removes a pass from the renderOwner.
+	 * Removes a pass from the surface.
 	 * @param pass The pass to be removed.
 	 */
 	public _pRemovePass(pass:IPass)
@@ -281,7 +281,7 @@ class RenderBase extends AbstractionBase
 	}
 
 	/**
-	 * Removes all passes from the renderOwner
+	 * Removes all passes from the surface
 	 */
 	public _pClearPasses()
 	{
@@ -293,7 +293,7 @@ class RenderBase extends AbstractionBase
 	}
 
 	/**
-	 * Adds a pass to the renderOwner
+	 * Adds a pass to the surface
 	 * @param pass
 	 */
 	public _pAddPass(pass:IPass)
@@ -319,10 +319,10 @@ class RenderBase extends AbstractionBase
 	 */
 	private _getEnabledGPUAnimation():boolean
 	{
-		if (this._renderOwner.animationSet) {
-			this._renderOwner.animationSet.resetGPUCompatibility();
+		if (this._surface.animationSet) {
+			this._surface.animationSet.resetGPUCompatibility();
 
-			var owners:Array<IRenderableOwner> = this._renderOwner.iOwners;
+			var owners:Array<IRenderable> = this._surface.iOwners;
 			var numOwners:number = owners.length;
 
 			var len:number = this._passes.length;
@@ -331,11 +331,11 @@ class RenderBase extends AbstractionBase
 					if (owners[j].animator)
 						(<AnimatorBase> owners[j].animator).testGPUCompatibility(this._passes[i].shader);
 
-			return !this._renderOwner.animationSet.usesCPU;
+			return !this._surface.animationSet.usesCPU;
 		}
 
 		return false;
 	}
 }
 
-export = RenderBase;
+export = GL_SurfaceBase;

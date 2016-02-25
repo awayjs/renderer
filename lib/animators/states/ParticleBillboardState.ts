@@ -3,7 +3,7 @@ import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 import Orientation3D					= require("awayjs-core/lib/geom/Orientation3D");
 
-import Camera							= require("awayjs-display/lib/entities/Camera");
+import Camera							= require("awayjs-display/lib/display/Camera");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
@@ -12,7 +12,7 @@ import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/
 import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ParticleBillboardNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 
 /**
  * ...
@@ -36,7 +36,7 @@ class ParticleBillboardState extends ParticleStateBase
 		this._billboardAxis = particleNode._iBillboardAxis;
 	}
 
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
 		var comps:Array<Vector3D>;
 		if (this._billboardAxis) {

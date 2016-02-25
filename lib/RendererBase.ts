@@ -11,13 +11,14 @@ import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
 import ByteArray					= require("awayjs-core/lib/utils/ByteArray");
 
-import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
+import IRenderable					= require("awayjs-display/lib/base/IRenderable");
 import RenderableListItem			= require("awayjs-display/lib/pool/RenderableListItem");
 import IRenderer					= require("awayjs-display/lib/IRenderer");
-import DisplayObject				= require("awayjs-display/lib/base/DisplayObject");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import IEntity						= require("awayjs-display/lib/entities/IEntity");
+import DisplayObject				= require("awayjs-display/lib/display/DisplayObject");
+import Camera						= require("awayjs-display/lib/display/Camera");
+import IEntity						= require("awayjs-display/lib/display/IEntity");
 import RendererEvent				= require("awayjs-display/lib/events/RendererEvent");
+import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
 import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
 import CollectorBase				= require("awayjs-display/lib/traverse/CollectorBase");
 import ShadowCasterCollector		= require("awayjs-display/lib/traverse/ShadowCasterCollector");
@@ -32,16 +33,15 @@ import StageManager					= require("awayjs-stagegl/lib/managers/StageManager");
 import ProgramData					= require("awayjs-stagegl/lib/image/ProgramData");
 import GL_IAssetClass				= require("awayjs-stagegl/lib/library/GL_IAssetClass");
 
-import IRenderClass					= require("awayjs-renderergl/lib/render/IRenderClass");
-import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import ISurfaceClassGL				= require("awayjs-renderergl/lib/surfaces/ISurfaceClassGL");
+import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
-import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
-import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
+import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
+import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
 import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
 import IEntitySorter				= require("awayjs-renderergl/lib/sort/IEntitySorter");
 import RenderableMergeSort			= require("awayjs-renderergl/lib/sort/RenderableMergeSort");
-import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
 
 
 /**
@@ -60,7 +60,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	private _maskConfig:number;
 	private _activeMasksDirty:boolean;
 	private _activeMasksConfig:Array<Array<number>> = new Array<Array<number>>();
-	private _registeredMasks : Array<RenderableBase> = new Array<RenderableBase>();
+	private _registeredMasks : Array<GL_RenderableBase> = new Array<GL_RenderableBase>();
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
 
@@ -109,8 +109,8 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 
 	public _pNumElements:number = 0;
 
-	public _pOpaqueRenderableHead:RenderableBase;
-	public _pBlendedRenderableHead:RenderableBase;
+	public _pOpaqueRenderableHead:GL_RenderableBase;
+	public _pBlendedRenderableHead:GL_RenderableBase;
 	public _disableColor:boolean = false;
 	public _renderBlended:boolean = true;
 
@@ -255,7 +255,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(stage:Stage = null, renderClass:IRenderClass = null, forceSoftware:boolean = false, profile:string = "baseline", mode:string = "auto")
+	constructor(stage:Stage = null, surfaceClassGL:ISurfaceClassGL = null, forceSoftware:boolean = false, profile:string = "baseline", mode:string = "auto")
 	{
 		super();
 
@@ -280,31 +280,31 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 			this._pContext = <IContextGL> this._pStage.context;
 
 		for (var i in ElementsPool._abstractionClassPool)
-			this._objectPools[i] = new RenderPool(ElementsPool._abstractionClassPool[i], this._pStage, renderClass);
+			this._objectPools[i] = new SurfacePool(ElementsPool._abstractionClassPool[i], this._pStage, surfaceClassGL);
 	}
 
 
-	public getAbstraction(renderableOwner:IRenderableOwner):RenderableBase
+	public getAbstraction(renderable:IRenderable):GL_RenderableBase
 	{
-		return this._abstractionPool[renderableOwner.id] || (this._abstractionPool[renderableOwner.id] = new (<GL_IAssetClass> RendererBase._abstractionClassPool[renderableOwner.assetType])(renderableOwner, this));
+		return this._abstractionPool[renderable.id] || (this._abstractionPool[renderable.id] = new (<GL_IAssetClass> RendererBase._abstractionClassPool[renderable.assetType])(renderable, this));
 	}
 
 	/**
 	 *
 	 * @param image
 	 */
-	public clearAbstraction(renderableOwner:IRenderableOwner)
+	public clearAbstraction(renderable:IRenderable)
 	{
-		this._abstractionPool[renderableOwner.id] = null;
+		this._abstractionPool[renderable.id] = null;
 	}
 
 	/**
 	 * //TODO
 	 *
 	 * @param elementsClass
-	 * @returns RenderPool
+	 * @returns SurfacePool
 	 */
-	public getRenderPool(elements:ElementsBase):RenderPool
+	public getSurfacePool(elements:ElementsBase):SurfacePool
 	{
 		return this._objectPools[elements.assetType];
 	}
@@ -318,7 +318,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		RendererBase._abstractionClassPool[assetClass.assetType] = renderableClass;
 	}
 
-	public activatePass(renderable:RenderableBase, pass:IPass, camera:Camera)
+	public activatePass(renderableGL:GL_RenderableBase, pass:IPass, camera:Camera)
 	{
 		//clear unused vertex streams
 		for (var i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
@@ -341,14 +341,14 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		//set program data
 		this._pContext.setProgram(programData.program);
 
-		//activate shader object through renderable
-		renderable._iActivate(pass, camera);
+		//activate shader object through renderableGL
+		renderableGL._iActivate(pass, camera);
 	}
 
-	public deactivatePass(renderable:RenderableBase, pass:IPass)
+	public deactivatePass(renderableGL:GL_RenderableBase, pass:IPass)
 	{
 		//deactivate shader object
-		renderable._iDeactivate(pass);
+		renderableGL._iDeactivate(pass);
 
 		this._numUsedStreams = pass.shader.numUsedStreams;
 		this._numUsedTextures = pass.shader.numUsedTextures;
@@ -510,7 +510,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
 
-		var head:RenderableBase = this._pOpaqueRenderableHead;
+		var head:GL_RenderableBase = this._pOpaqueRenderableHead;
 
 		var first:boolean = true;
 
@@ -542,16 +542,16 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		this._iEntryPoint = this._pCamera.scenePosition;
 		this._pCameraForward = this._pCamera.transform.forwardVector;
 
-		//iterate through all entities
+		//iterate through all display
 		while (item) {
-			this._iApplyRenderableOwner(item.renderable);
+			this._iApplyRenderable(item.renderable);
 			item = item.next;
 		}
 
 		//sort the resulting renderables
 		if (this.renderableSorter) {
-			this._pOpaqueRenderableHead = <RenderableBase> this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
-			this._pBlendedRenderableHead = <RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+			this._pOpaqueRenderableHead = <GL_RenderableBase> this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
+			this._pBlendedRenderableHead = <GL_RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
 		}
 	}
 
@@ -624,35 +624,35 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 			this._pContext.setColorMask(true, true, true, true);
 	}
 
-	//private drawCascadeRenderables(renderable:RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
+	//private drawCascadeRenderables(renderableGL:GL_RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
 	//{
-	//	var renderable2:RenderableBase;
-	//	var render:RenderBase;
+	//	var renderableGL2:GL_RenderableBase;
+	//	var render:GL_SurfaceBase;
 	//	var pass:IPass;
 	//
-	//	while (renderable) {
-	//		renderable2 = renderable;
-	//		render = renderable.render;
+	//	while (renderableGL) {
+	//		renderableGL2 = renderableGL;
+	//		render = renderableGL.render;
 	//		pass = render.passes[0] //assuming only one pass per material
 	//
-	//		this.activatePass(renderable, pass, camera);
+	//		this.activatePass(renderableGL, pass, camera);
 	//
 	//		do {
 	//			// if completely in front, it will fall in a different cascade
 	//			// do not use near and far planes
-	//			if (!cullPlanes || renderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
-	//				renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+	//			if (!cullPlanes || renderableGL2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
+	//				renderableGL2._iRender(pass, camera, this._pRttViewProjectionMatrix);
 	//			} else {
-	//				renderable2.cascaded = true;
+	//				renderableGL2.cascaded = true;
 	//			}
 	//
-	//			renderable2 = renderable2.next;
+	//			renderableGL2 = renderableGL2.next;
 	//
-	//		} while (renderable2 && renderable2.render == render && !renderable2.cascaded);
+	//		} while (renderableGL2 && renderableGL2.render == render && !renderableGL2.cascaded);
 	//
-	//		this.deactivatePass(renderable, pass);
+	//		this.deactivatePass(renderableGL, pass);
 	//
-	//		renderable = renderable2;
+	//		renderableGL = renderableGL2;
 	//	}
 	//}
 
@@ -662,12 +662,12 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 * @param renderables The renderables to draw.
 	 * @param entityCollector The EntityCollector containing all potentially visible information.
 	 */
-	public drawRenderables(renderable:RenderableBase, entityCollector:CollectorBase)
+	public drawRenderables(renderableGL:GL_RenderableBase, entityCollector:CollectorBase)
 	{
 		var i:number;
 		var len:number;
-		var renderable2:RenderableBase;
-		var render:RenderBase;
+		var renderableGL2:GL_RenderableBase;
+		var surfaceGL:GL_SurfaceBase;
 		var passes:Array<IPass>;
 		var pass:IPass;
 		var camera:Camera = entityCollector.camera;
@@ -682,21 +682,21 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 
 		this._maskConfig = 0;
 
-		while (renderable) {
-			render = renderable.render;
-			passes = render.passes;
+		while (renderableGL) {
+			surfaceGL = renderableGL.surfaceGL;
+			passes = surfaceGL.passes;
 
 			// otherwise this would result in depth rendered anyway because fragment shader kil is ignored
-			if (this._disableColor && render._renderOwner.alphaThreshold != 0) {
-				renderable2 = renderable;
+			if (this._disableColor && surfaceGL._surface.alphaThreshold != 0) {
+				renderableGL2 = renderableGL;
 				// fast forward
 				do {
-					renderable2 = renderable2.next;
+					renderableGL2 = renderableGL2.next;
 
-				} while (renderable2 && renderable2.render == render);
+				} while (renderableGL2 && renderableGL2.surfaceGL == surfaceGL);
 			} else {
-				if (this._activeMasksDirty || this._checkMasksConfig(renderable.masksConfig)) {
-					this._activeMasksConfig = renderable.masksConfig;
+				if (this._activeMasksDirty || this._checkMasksConfig(renderableGL.masksConfig)) {
+					this._activeMasksConfig = renderableGL.masksConfig;
 					if (!this._activeMasksConfig.length) {
 						// disable stencil
 						if(gl) {
@@ -705,7 +705,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 							gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
 						}
 					} else {
-						this._renderMasks(renderable.sourceEntity._iAssignedMasks());
+						this._renderMasks(renderableGL.sourceEntity._iAssignedMasks());
 					}
 					this._activeMasksDirty = false;
 				}
@@ -714,28 +714,28 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 				//iterate through each shader object
 				len = passes.length;
 				for (i = 0; i < len; i++) {
-					renderable2 = renderable;
+					renderableGL2 = renderableGL;
 					pass = passes[i];
 
-					this.activatePass(renderable, pass, camera);
+					this.activatePass(renderableGL, pass, camera);
 
 					do {
-						if (renderable2.maskId !== -1) {
+						if (renderableGL2.maskId !== -1) {
 							if (i == 0)
-								this._registerMask(renderable2);
+								this._registerMask(renderableGL2);
 						} else {
-							renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+							renderableGL2._iRender(pass, camera, this._pRttViewProjectionMatrix);
 						}
 
-						renderable2 = renderable2.next;
+						renderableGL2 = renderableGL2.next;
 
-					} while (renderable2 && renderable2.render == render && !(this._activeMasksDirty = this._checkMasksConfig(renderable2.masksConfig)));
+					} while (renderableGL2 && renderableGL2.surfaceGL == surfaceGL && !(this._activeMasksDirty = this._checkMasksConfig(renderableGL2.masksConfig)));
 
-					this.deactivatePass(renderable, pass);
+					this.deactivatePass(renderableGL, pass);
 				}
 			}
 
-			renderable = renderable2;
+			renderableGL = renderableGL2;
 		}
 	}
 
@@ -867,41 +867,41 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		this.notifyScissorUpdate();
 	}
 
-	public _iApplyRenderableOwner(renderableOwner:IRenderableOwner)
+	public _iApplyRenderable(renderable:IRenderable)
 	{
-		var renderable:RenderableBase = this.getAbstraction(renderableOwner);
-		var render:RenderBase = renderable.render;
+		var renderableGL:GL_RenderableBase = this.getAbstraction(renderable);
+		var surfaceGL:GL_SurfaceBase = renderableGL.surfaceGL;
 
 		//set local vars for faster referencing
-		renderable.renderId = render.renderId;
-		renderable.renderOrderId = render.renderOrderId;
+		renderableGL.surfaceID = surfaceGL.surfaceID;
+		renderableGL.renderOrderId = surfaceGL.renderOrderId;
 
-		renderable.cascaded = false;
+		renderableGL.cascaded = false;
 
-		var entity:IEntity = renderable.sourceEntity;
+		var entity:IEntity = renderableGL.sourceEntity;
 		var position:Vector3D = entity.scenePosition;
 
 		// project onto camera's z-axis
 		position = this._iEntryPoint.subtract(position);
-		renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
-		renderable.maskId = entity._iAssignedMaskId();
-		renderable.masksConfig = entity._iMasksConfig();
+		renderableGL.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
+		renderableGL.maskId = entity._iAssignedMaskId();
+		renderableGL.masksConfig = entity._iMasksConfig();
 
 		//store reference to scene transform
-		renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
+		renderableGL.renderSceneTransform = renderableGL.sourceEntity.getRenderSceneTransform(this._pCamera);
 
-		if (render.requiresBlending) {
-			renderable.next = this._pBlendedRenderableHead;
-			this._pBlendedRenderableHead = renderable;
+		if (surfaceGL.requiresBlending) {
+			renderableGL.next = this._pBlendedRenderableHead;
+			this._pBlendedRenderableHead = renderableGL;
 		} else {
-			renderable.next = this._pOpaqueRenderableHead;
-			this._pOpaqueRenderableHead = renderable;
+			renderableGL.next = this._pOpaqueRenderableHead;
+			this._pOpaqueRenderableHead = renderableGL;
 		}
 
-		this._pNumElements += renderable.elements.numElements;
+		this._pNumElements += renderableGL.elements.numElements;
 	}
 
-	private _registerMask(obj:RenderableBase)
+	private _registerMask(obj:GL_RenderableBase)
 	{
 		//console.log("registerMask");
 		this._registeredMasks.push(obj);
@@ -924,7 +924,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 
 		var numLayers:number = masks.length;
 		var numRenderables:number = this._registeredMasks.length;
-		var renderable:RenderableBase;
+		var renderableGL:GL_RenderableBase;
 		var children:Array<DisplayObject>;
 		var numChildren:number;
 		var mask:DisplayObject;
@@ -942,11 +942,11 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 			for (var j:number = 0; j < numChildren; ++j) {
 				mask = children[j];
 				for (var k:number = 0; k < numRenderables; ++k) {
-					renderable = this._registeredMasks[k];
+					renderableGL = this._registeredMasks[k];
 					//console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
-					if (renderable.maskId == mask.id) {
+					if (renderableGL.maskId == mask.id) {
 						//console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
-						this._drawMask(renderable);
+						this._drawMask(renderableGL);
 					}
 				}
 			}
@@ -959,17 +959,17 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		//this._stage.setRenderTarget(oldRenderTarget);
 	}
 
-	private _drawMask(renderable:RenderableBase)
+	private _drawMask(renderableGL:GL_RenderableBase)
 	{
-		var render = renderable.render;
-		var passes = render.passes;
+		var surfaceGL = renderableGL.surfaceGL;
+		var passes = surfaceGL.passes;
 		var len = passes.length;
 		var pass = passes[len-1];
 
-		this.activatePass(renderable, pass, this._pCamera);
+		this.activatePass(renderableGL, pass, this._pCamera);
 		// only render last pass for now
-		renderable._iRender(pass, this._pCamera, this._pRttViewProjectionMatrix);
-		this.deactivatePass(renderable, pass);
+		renderableGL._iRender(pass, this._pCamera, this._pRttViewProjectionMatrix);
+		this.deactivatePass(renderableGL, pass);
 	}
 
 	private _checkMasksConfig(masksConfig:Array<Array<number>>):boolean

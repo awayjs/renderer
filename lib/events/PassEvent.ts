@@ -1,6 +1,6 @@
 import EventBase				= require("awayjs-core/lib/events/EventBase");
 
-import IPass					= require("awayjs-renderergl/lib/render/passes/IPass");
+import IPass					= require("awayjs-renderergl/lib/surfaces/passes/IPass");
 
 class PassEvent extends EventBase
 {

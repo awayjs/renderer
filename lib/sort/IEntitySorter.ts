@@ -1,13 +1,13 @@
-import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 
 /**
  * @interface away.sort.IEntitySorter
  */
 interface IEntitySorter
 {
-	sortBlendedRenderables(head:RenderableBase):RenderableBase;
+	sortBlendedRenderables(head:GL_RenderableBase):GL_RenderableBase;
 
-	sortOpaqueRenderables(head:RenderableBase):RenderableBase;
+	sortOpaqueRenderables(head:GL_RenderableBase):GL_RenderableBase;
 }
 
 export = IEntitySorter;

@@ -2,17 +2,17 @@ import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import BlendMode					= require("awayjs-core/lib/image/BlendMode");
 
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import Skybox						= require("awayjs-display/lib/entities/Skybox");
+import Camera						= require("awayjs-display/lib/display/Camera");
+import Skybox						= require("awayjs-display/lib/display/Skybox");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import RenderPassBase				= require("awayjs-renderergl/lib/render/RenderPassBase");
-import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
+import GL_SurfacePassBase			= require("awayjs-renderergl/lib/surfaces/GL_SurfacePassBase");
+import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
@@ -20,15 +20,15 @@ import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderReg
 import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
 
 /**
- * SkyboxRender forms an abstract base class for the default shaded materials provided by Stage,
+ * GL_SkyboxSurface forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
  */
-class SkyboxRender extends RenderPassBase
+class GL_SkyboxSurface extends GL_SurfacePassBase
 {
 	public _skybox:Skybox;
 	public _texture:GL_TextureBase;
 
-	constructor(skybox:Skybox, elementsClass:IElementsClassGL, renderPool:RenderPool)
+	constructor(skybox:Skybox, elementsClass:IElementsClassGL, renderPool:SurfacePool)
 	{
 		super(skybox, elementsClass, renderPool);
 
@@ -58,9 +58,9 @@ class SkyboxRender extends RenderPassBase
 	{
 		super._pUpdateRender();
 
-		this._pRequiresBlending = (this._renderOwner.blendMode != BlendMode.NORMAL);
+		this._pRequiresBlending = (this._surface.blendMode != BlendMode.NORMAL);
 
-		this.shader.setBlendMode((this._renderOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending)? BlendMode.LAYER : this._renderOwner.blendMode);
+		this.shader.setBlendMode((this._surface.blendMode == BlendMode.NORMAL && this._pRequiresBlending)? BlendMode.LAYER : this._surface.blendMode);
 	}
 
 	public _iIncludeDependencies(shader:ShaderBase)
@@ -79,7 +79,7 @@ class SkyboxRender extends RenderPassBase
 	}
 
 
-	public _iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		super._iRender(renderable, camera, viewProjection);
 
@@ -98,4 +98,4 @@ class SkyboxRender extends RenderPassBase
 	}
 }
 
-export = SkyboxRender;
+export = GL_SkyboxSurface;

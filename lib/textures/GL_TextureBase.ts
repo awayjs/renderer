@@ -9,8 +9,8 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
-import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
@@ -52,12 +52,12 @@ class GL_TextureBase extends AbstractionBase
 		throw new AbstractMethodError();
 	}
 
-	public _setRenderState(renderable:RenderableBase)
+	public _setRenderState(renderable:GL_RenderableBase)
 	{
 		//overidden for state logic
 	}
 
-	public activate(render:RenderBase)
+	public activate(render:GL_SurfaceBase)
 	{
 		//overridden for activation logic
 	}

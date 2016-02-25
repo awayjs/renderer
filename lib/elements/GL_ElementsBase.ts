@@ -8,7 +8,7 @@ import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import GL_AttributesBuffer			= require("awayjs-stagegl/lib/attributes/GL_AttributesBuffer");
 
-import Camera						= require("awayjs-display/lib/entities/Camera");
+import Camera						= require("awayjs-display/lib/display/Camera");
 import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
 import ElementsEvent				= require("awayjs-display/lib/events/ElementsEvent");
 import ElementsUtils				= require("awayjs-display/lib/utils/ElementsUtils");
@@ -18,7 +18,7 @@ import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import IAbstractionPool 			= require("awayjs-core/lib/library/IAbstractionPool");
-import IEntity = require("awayjs-display/lib/entities/IEntity");
+import IEntity = require("awayjs-display/lib/display/IEntity");
 import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 
 /**
@@ -309,10 +309,10 @@ class GL_ElementsBase extends AbstractionBase
 	 * //TODO
 	 *
 	 * @param pool
-	 * @param renderableOwner
+	 * @param renderable
 	 * @param level
 	 * @param indexOffset
-	 * @returns {away.pool.GraphicRenderable}
+	 * @returns {away.pool.GL_GraphicRenderable}
 	 * @protected
 	 */
 	public _pGetOverflowElements():GL_ElementsBase

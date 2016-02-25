@@ -1,6 +1,6 @@
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
-import Camera							= require("awayjs-display/lib/entities/Camera");
+import Camera							= require("awayjs-display/lib/display/Camera");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
@@ -10,7 +10,7 @@ import AnimationElements				= require("awayjs-renderergl/lib/animators/data/Anim
 import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import AnimationStateBase				= require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
-import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 
 /**
  * ...
@@ -37,7 +37,7 @@ class ParticleStateBase extends AnimationStateBase
 		return this._pNeedUpdateTime;
 	}
 
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
 
 	}

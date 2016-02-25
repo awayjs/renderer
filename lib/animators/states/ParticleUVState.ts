@@ -1,6 +1,6 @@
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
-import Camera							= require("awayjs-display/lib/entities/Camera");
+import Camera							= require("awayjs-display/lib/display/Camera");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
@@ -9,7 +9,7 @@ import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/
 import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
 import ParticleUVNode					= require("awayjs-renderergl/lib/animators/nodes/ParticleUVNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 
 /**
  * ...
@@ -28,7 +28,7 @@ class ParticleUVState extends ParticleStateBase
 		this._particleUVNode = particleUVNode;
 	}
 
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
 		if (animationRegisterCache.needUVAnimation) {
 			var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleUVState.UV_INDEX);

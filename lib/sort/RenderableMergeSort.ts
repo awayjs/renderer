@@ -1,16 +1,16 @@
 import IEntitySorter				= require("awayjs-renderergl/lib/sort/IEntitySorter");
 
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 /**
  * @class away.sort.RenderableMergeSort
  */
 class RenderableMergeSort implements IEntitySorter
 {
-	public sortBlendedRenderables(head:RenderableBase):RenderableBase
+	public sortBlendedRenderables(head:GL_RenderableBase):GL_RenderableBase
 	{
-		var headB:RenderableBase;
-		var fast:RenderableBase;
-		var slow:RenderableBase;
+		var headB:GL_RenderableBase;
+		var fast:GL_RenderableBase;
+		var slow:GL_RenderableBase;
 
 		if (!head || !head.next) {
 			return head;
@@ -36,9 +36,9 @@ class RenderableMergeSort implements IEntitySorter
 		headB = this.sortBlendedRenderables(headB);
 
 		// merge sublists while respecting order
-		var result:RenderableBase;
-		var curr:RenderableBase;
-		var l:RenderableBase;
+		var result:GL_RenderableBase;
+		var curr:GL_RenderableBase;
+		var l:GL_RenderableBase;
 
 		if (!head)
 			return headB;
@@ -68,10 +68,10 @@ class RenderableMergeSort implements IEntitySorter
 		return result;
 	}
 
-	public sortOpaqueRenderables(head:RenderableBase):RenderableBase
+	public sortOpaqueRenderables(head:GL_RenderableBase):GL_RenderableBase
 	{
-		var headB:RenderableBase;
-		var fast:RenderableBase, slow:RenderableBase;
+		var headB:GL_RenderableBase;
+		var fast:GL_RenderableBase, slow:GL_RenderableBase;
 
 		if (!head || !head.next) {
 			return head;
@@ -97,9 +97,9 @@ class RenderableMergeSort implements IEntitySorter
 		headB = this.sortOpaqueRenderables(headB);
 
 		// merge sublists while respecting order
-		var result:RenderableBase;
-		var curr:RenderableBase;
-		var l:RenderableBase;
+		var result:GL_RenderableBase;
+		var curr:GL_RenderableBase;
+		var l:GL_RenderableBase;
 		var cmp:number = 0;
 
 		if (!head)
@@ -116,8 +116,8 @@ class RenderableMergeSort implements IEntitySorter
 			var bid:number = headB.renderOrderId;
 
 			if (aid == bid) {
-				var ma:number = head.renderId;
-				var mb:number = headB.renderId;
+				var ma:number = head.surfaceID;
+				var mb:number = headB.surfaceID;
 
 				if (ma == mb) {
 					if (head.zIndex < headB.zIndex)

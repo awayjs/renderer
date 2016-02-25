@@ -3,7 +3,7 @@ import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 
 import TriangleElements					= require("awayjs-display/lib/graphics/TriangleElements");
 import Graphic							= require("awayjs-display/lib/graphics/Graphic");
-import Camera							= require("awayjs-display/lib/entities/Camera");
+import Camera							= require("awayjs-display/lib/display/Camera");
 import ElementsEvent					= require("awayjs-display/lib/events/ElementsEvent");
 
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
@@ -19,8 +19,8 @@ import ISkeletonAnimationState			= require("awayjs-renderergl/lib/animators/stat
 import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
 import AnimationStateEvent				= require("awayjs-renderergl/lib/events/AnimationStateEvent");
 import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import GraphicRenderable				= require("awayjs-renderergl/lib/renderables/GraphicRenderable");
+import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import GL_GraphicRenderable				= require("awayjs-renderergl/lib/renderables/GL_GraphicRenderable");
 
 /**
  * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects
@@ -199,13 +199,13 @@ class SkeletonAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 	{
 		// do on request of globalProperties
 		if (this._globalPropertiesDirty)
 			this.updateGlobalProperties();
 
-		var elements:TriangleElements = <TriangleElements> (<GraphicRenderable> renderable).graphic.elements;
+		var elements:TriangleElements = <TriangleElements> (<GL_GraphicRenderable> renderable).graphic.elements;
 
 		elements.useCondensedIndices = this._useCondensedIndices;
 
@@ -216,7 +216,7 @@ class SkeletonAnimator extends AnimatorBase
 		} else {
 			if (this._pAnimationSet.usesCPU) {
 				if (this._morphedElementsDirty[elements.id])
-					this.morphElements(<GraphicRenderable> renderable, elements);
+					this.morphElements(<GL_GraphicRenderable> renderable, elements);
 
 				return
 			}
@@ -362,7 +362,7 @@ class SkeletonAnimator extends AnimatorBase
 	}
 
 
-	public getRenderableElements(renderable:GraphicRenderable, sourceElements:TriangleElements):TriangleElements
+	public getRenderableElements(renderable:GL_GraphicRenderable, sourceElements:TriangleElements):TriangleElements
 	{
 		this._morphedElementsDirty[sourceElements.id] = true;
 
@@ -391,7 +391,7 @@ class SkeletonAnimator extends AnimatorBase
 	 * @param subGeom The subgeometry containing the weights and joint index data per vertex.
 	 * @param pass The material pass for which we need to transform the vertices
 	 */
-	public morphElements(renderable:GraphicRenderable, sourceElements:TriangleElements)
+	public morphElements(renderable:GL_GraphicRenderable, sourceElements:TriangleElements)
 	{
 		this._morphedElementsDirty[sourceElements.id] = false;
 

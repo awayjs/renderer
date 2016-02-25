@@ -2,7 +2,7 @@ import ElementsBase						= require("awayjs-display/lib/graphics/ElementsBase");
 import IAnimationSet					= require("awayjs-display/lib/animators/IAnimationSet");
 import ParticleData						= require("awayjs-display/lib/animators/data/ParticleData");
 import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import Mesh								= require("awayjs-display/lib/entities/Mesh");
+import Mesh								= require("awayjs-display/lib/display/Mesh");
 import Graphic							= require("awayjs-display/lib/graphics/Graphic");
 import Graphics							= require("awayjs-display/lib/graphics/Graphics");
 

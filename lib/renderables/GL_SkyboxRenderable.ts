@@ -3,11 +3,11 @@ import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 
-import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
+import ISurface						= require("awayjs-display/lib/base/ISurface");
 import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
 import TriangleElements				= require("awayjs-display/lib/graphics/TriangleElements");
-import Skybox						= require("awayjs-display/lib/entities/Skybox");
-import Camera						= require("awayjs-display/lib/entities/Camera");
+import Skybox						= require("awayjs-display/lib/display/Skybox");
+import Camera						= require("awayjs-display/lib/display/Camera");
 
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
@@ -18,13 +18,13 @@ import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import PassBase						= require("awayjs-renderergl/lib/surfaces/passes/PassBase");
 
 /**
- * @class away.pool.SkyboxRenderable
+ * @class away.pool.GL_SkyboxRenderable
  */
-class SkyboxRenderable extends RenderableBase
+class GL_SkyboxRenderable extends GL_RenderableBase
 {
 	public static vertexAttributesOffset:number = 1;
 
@@ -63,10 +63,10 @@ class SkyboxRenderable extends RenderableBase
 	 */
 	public _pGetElements():ElementsBase
 	{
-		var geometry:TriangleElements = SkyboxRenderable._geometry;
+		var geometry:TriangleElements = GL_SkyboxRenderable._geometry;
 
 		if (!geometry) {
-			geometry = SkyboxRenderable._geometry = new TriangleElements(new AttributesBuffer(11, 4));
+			geometry = GL_SkyboxRenderable._geometry = new TriangleElements(new AttributesBuffer(11, 4));
 			geometry.autoDeriveNormals = false;
 			geometry.autoDeriveTangents = false;
 			geometry.setIndices(Array<number>(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2));
@@ -76,7 +76,7 @@ class SkyboxRenderable extends RenderableBase
 		return geometry;
 	}
 
-	public _pGetRenderOwner():IRenderOwner
+	public _pGetRenderOwner():ISurface
 	{
 		return this._skybox;
 	}
@@ -119,4 +119,4 @@ class SkyboxRenderable extends RenderableBase
 	}
 }
 
-export = SkyboxRenderable;
+export = GL_SkyboxRenderable;

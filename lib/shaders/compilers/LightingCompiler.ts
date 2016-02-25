@@ -3,7 +3,7 @@ import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile")
 import LightingShader				= require("awayjs-renderergl/lib/shaders/LightingShader");
 import CompilerBase					= require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import ILightingPass				= require("awayjs-renderergl/lib/render/passes/ILightingPass");
+import ILightingPass				= require("awayjs-renderergl/lib/surfaces/passes/ILightingPass");
 import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 
 /**

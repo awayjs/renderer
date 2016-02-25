@@ -1,10 +1,10 @@
-import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
-import Camera						= require("awayjs-display/lib/entities/Camera");
+import ISurface						= require("awayjs-display/lib/base/ISurface");
+import Camera						= require("awayjs-display/lib/display/Camera");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import RenderPassBase				= require("awayjs-renderergl/lib/render/RenderPassBase");
-import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
+import GL_SurfacePassBase			= require("awayjs-renderergl/lib/surfaces/GL_SurfacePassBase");
+import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
@@ -12,10 +12,10 @@ import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderReg
 import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
 
 /**
- * DepthRender forms an abstract base class for the default shaded materials provided by Stage,
+ * GL_DepthSurface forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
  */
-class DepthRender extends RenderPassBase
+class GL_DepthSurface extends GL_SurfacePassBase
 {
 	private _fragmentConstantsIndex:number;
 	private _textureVO:GL_TextureBase;
@@ -23,13 +23,13 @@ class DepthRender extends RenderPassBase
 	/**
 	 *
 	 * @param pool
-	 * @param renderOwner
+	 * @param surface
 	 * @param elementsClass
 	 * @param stage
 	 */
-	constructor(renderOwner:IRenderOwner, elementsClass:IElementsClassGL, renderPool:RenderPool)
+	constructor(surface:ISurface, elementsClass:IElementsClassGL, renderPool:SurfacePool)
 	{
-		super(renderOwner, elementsClass, renderPool);
+		super(surface, elementsClass, renderPool);
 
 		this._shader = new ShaderBase(elementsClass, this, this._stage);
 
@@ -40,7 +40,7 @@ class DepthRender extends RenderPassBase
 	{
 		super.invalidate();
 
-		this._textureVO = this._renderOwner.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._renderOwner.getTextureAt(0)) : null;
+		this._textureVO = this._surface.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._surface.getTextureAt(0)) : null;
 	}
 
 	public _iIncludeDependencies(shader:ShaderBase)
@@ -129,4 +129,4 @@ class DepthRender extends RenderPassBase
 	}
 }
 
-export = DepthRender;
+export = GL_DepthSurface;

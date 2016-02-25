@@ -1,16 +1,16 @@
 import IEventDispatcher				= require("awayjs-core/lib/events/IEventDispatcher");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 
-import Camera						= require("awayjs-display/lib/entities/Camera");
+import Camera						= require("awayjs-display/lib/display/Camera");
 import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
+import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 
@@ -43,7 +43,7 @@ interface IPass extends IEventDispatcher
 
 	_iActivate(camera:Camera);
 
-	_iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	_iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 
 	_iDeactivate();
 

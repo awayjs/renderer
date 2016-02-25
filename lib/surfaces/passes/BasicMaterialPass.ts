@@ -4,8 +4,8 @@ import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
+import Camera						= require("awayjs-display/lib/display/Camera");
+import ISurface						= require("awayjs-display/lib/base/ISurface");
 
 import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
@@ -15,14 +15,14 @@ import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode"
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
+import PassBase						= require("awayjs-renderergl/lib/surfaces/passes/PassBase");
 import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
 
 /**
@@ -39,9 +39,9 @@ class BasicMaterialPass extends PassBase
 
 	private _fragmentConstantsIndex:number;
 
-	constructor(render:RenderBase, renderOwner:IRenderOwner, elementsClass:IElementsClassGL, stage:Stage)
+	constructor(render:GL_SurfaceBase, surface:ISurface, elementsClass:IElementsClassGL, stage:Stage)
 	{
-		super(render, renderOwner, elementsClass, stage);
+		super(render, surface, elementsClass, stage);
 
 		this._shader = new ShaderBase(elementsClass, this, this._stage);
 
@@ -60,13 +60,13 @@ class BasicMaterialPass extends PassBase
 	{
 		super.invalidate();
 
-		this._textureVO = this._renderOwner.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._renderOwner.getTextureAt(0)) : null;
+		this._textureVO = this._surface.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._surface.getTextureAt(0)) : null;
 	}
 
 	public dispose()
 	{
 		if (this._textureVO) {
-			this._textureVO.onClear(new AssetEvent(AssetEvent.CLEAR, this._renderOwner.getTextureAt(0)));
+			this._textureVO.onClear(new AssetEvent(AssetEvent.CLEAR, this._surface.getTextureAt(0)));
 			this._textureVO = null;
 		}
 
@@ -119,7 +119,7 @@ class BasicMaterialPass extends PassBase
 		return code;
 	}
 
-	public _iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		super._iRender(renderable, camera, viewProjection);
 

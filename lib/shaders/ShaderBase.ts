@@ -12,8 +12,8 @@ import IAsset						= require("awayjs-core/lib/library/IAsset");
 import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
 import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
 
-import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
-import Camera						= require("awayjs-display/lib/entities/Camera");
+import IRenderable					= require("awayjs-display/lib/base/IRenderable");
+import Camera						= require("awayjs-display/lib/display/Camera");
 import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
 import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
@@ -25,10 +25,10 @@ import ProgramData					= require("awayjs-stagegl/lib/image/ProgramData");
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import AnimationRegisterCache		= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
+import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
 import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
 import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 import CompilerBase					= require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
@@ -242,17 +242,17 @@ class ShaderBase implements IAbstractionPool
 	/**
 	 * The index for the UV vertex attribute stream.
 	 */
-	public uvBufferIndex:number;
+	public uvIndex:number;
 
 	/**
 	 * The index for the secondary UV vertex attribute stream.
 	 */
-	public secondaryUVBufferIndex:number;
+	public secondaryUVIndex:number;
 
 	/**
 	 * The index for the vertex normal attribute stream.
 	 */
-	public normalBufferIndex:number;
+	public normalIndex:number;
 
 	/**
 	 * The index for the color attribute stream.
@@ -262,7 +262,7 @@ class ShaderBase implements IAbstractionPool
 	/**
 	 * The index for the vertex tangent attribute stream.
 	 */
-	public tangentBufferIndex:number;
+	public tangentIndex:number;
 
 	/**
 	 * The index of the vertex constant containing the view matrix.
@@ -287,7 +287,7 @@ class ShaderBase implements IAbstractionPool
 	/**
 	 * The index for the UV transformation matrix vertex constant.
 	 */
-	public uvTransformIndex:number;
+	public uvMatrixIndex:number;
 
 	/**
 	 * The index for the color transform fragment constant.
@@ -396,13 +396,13 @@ class ShaderBase implements IAbstractionPool
 		this.commonsDataIndex = -1;
 		this.cameraPositionIndex = -1;
 		this.curvesIndex = -1;
-		this.uvBufferIndex = -1;
-		this.uvTransformIndex = -1;
+		this.uvIndex = -1;
+		this.uvMatrixIndex = -1;
 		this.colorTransformIndex = -1;
-		this.secondaryUVBufferIndex = -1;
-		this.normalBufferIndex = -1;
+		this.secondaryUVIndex = -1;
+		this.normalIndex = -1;
 		this.colorBufferIndex = -1;
-		this.tangentBufferIndex = -1;
+		this.tangentIndex = -1;
 		this.sceneMatrixIndex = -1;
 		this.sceneNormalMatrixIndex = -1;
 		this.jointIndexIndex = -1;
@@ -440,15 +440,15 @@ class ShaderBase implements IAbstractionPool
 		}
 
 		//Initializes the default UV transformation matrix.
-		if (this.uvTransformIndex >= 0) {
-			this.vertexConstantData[this.uvTransformIndex] = 1;
-			this.vertexConstantData[this.uvTransformIndex + 1] = 0;
-			this.vertexConstantData[this.uvTransformIndex + 2] = 0;
-			this.vertexConstantData[this.uvTransformIndex + 3] = 0;
-			this.vertexConstantData[this.uvTransformIndex + 4] = 0;
-			this.vertexConstantData[this.uvTransformIndex + 5] = 1;
-			this.vertexConstantData[this.uvTransformIndex + 6] = 0;
-			this.vertexConstantData[this.uvTransformIndex + 7] = 0;
+		if (this.uvMatrixIndex >= 0) {
+			this.vertexConstantData[this.uvMatrixIndex] = 1;
+			this.vertexConstantData[this.uvMatrixIndex + 1] = 0;
+			this.vertexConstantData[this.uvMatrixIndex + 2] = 0;
+			this.vertexConstantData[this.uvMatrixIndex + 3] = 0;
+			this.vertexConstantData[this.uvMatrixIndex + 4] = 0;
+			this.vertexConstantData[this.uvMatrixIndex + 5] = 1;
+			this.vertexConstantData[this.uvMatrixIndex + 6] = 0;
+			this.vertexConstantData[this.uvMatrixIndex + 7] = 0;
 		}
 
 		//Initializes the default colorTransform.
@@ -559,28 +559,28 @@ class ShaderBase implements IAbstractionPool
 	 * @param stage
 	 * @param camera
 	 */
-	public _iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		if (renderable.renderableOwner.animator)
-			(<AnimatorBase> renderable.renderableOwner.animator).setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
+		if (renderable.renderable.animator)
+			(<AnimatorBase> renderable.renderable.animator).setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
 
 		if (this.usesUVTransform) {
-			var uvTransform:Matrix = renderable.renderableOwner.uvTransform;
+			var uvMatrix:Matrix = renderable.uvMatrix;
 
-			if (uvTransform) {
-				this.vertexConstantData[this.uvTransformIndex] = uvTransform.a;
-				this.vertexConstantData[this.uvTransformIndex + 1] = uvTransform.b;
-				this.vertexConstantData[this.uvTransformIndex + 3] = uvTransform.tx;
-				this.vertexConstantData[this.uvTransformIndex + 4] = uvTransform.c;
-				this.vertexConstantData[this.uvTransformIndex + 5] = uvTransform.d;
-				this.vertexConstantData[this.uvTransformIndex + 7] = uvTransform.ty;
+			if (uvMatrix) {
+				this.vertexConstantData[this.uvMatrixIndex] = uvMatrix.a;
+				this.vertexConstantData[this.uvMatrixIndex + 1] = uvMatrix.b;
+				this.vertexConstantData[this.uvMatrixIndex + 3] = uvMatrix.tx;
+				this.vertexConstantData[this.uvMatrixIndex + 4] = uvMatrix.c;
+				this.vertexConstantData[this.uvMatrixIndex + 5] = uvMatrix.d;
+				this.vertexConstantData[this.uvMatrixIndex + 7] = uvMatrix.ty;
 			} else {
-				this.vertexConstantData[this.uvTransformIndex] = 1;
-				this.vertexConstantData[this.uvTransformIndex + 1] = 0;
-				this.vertexConstantData[this.uvTransformIndex + 3] = 0;
-				this.vertexConstantData[this.uvTransformIndex + 4] = 0;
-				this.vertexConstantData[this.uvTransformIndex + 5] = 1;
-				this.vertexConstantData[this.uvTransformIndex + 7] = 0;
+				this.vertexConstantData[this.uvMatrixIndex] = 1;
+				this.vertexConstantData[this.uvMatrixIndex + 1] = 0;
+				this.vertexConstantData[this.uvMatrixIndex + 3] = 0;
+				this.vertexConstantData[this.uvMatrixIndex + 4] = 0;
+				this.vertexConstantData[this.uvMatrixIndex + 5] = 1;
+				this.vertexConstantData[this.uvMatrixIndex + 7] = 0;
 			}
 		}
 		if (this.usesColorTransform) {

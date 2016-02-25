@@ -1,10 +1,10 @@
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import LightProbe					= require("awayjs-display/lib/entities/LightProbe");
-import PointLight					= require("awayjs-display/lib/entities/PointLight");
+import Camera						= require("awayjs-display/lib/display/Camera");
+import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
+import LightProbe					= require("awayjs-display/lib/display/LightProbe");
+import PointLight					= require("awayjs-display/lib/display/PointLight");
 import LightPickerBase				= require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
 import LightSources					= require("awayjs-display/lib/materials/LightSources");
 
@@ -13,13 +13,13 @@ import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import GL_ImageBase					= require("awayjs-stagegl/lib/image/GL_ImageBase");
 
-import ILightingPass				= require("awayjs-renderergl/lib/render/passes/ILightingPass");
+import ILightingPass				= require("awayjs-renderergl/lib/surfaces/passes/ILightingPass");
 
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import CompilerBase					= require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
 import LightingCompiler				= require("awayjs-renderergl/lib/shaders/compilers/LightingCompiler");
 import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -154,7 +154,7 @@ class LightingShader extends ShaderBase
 	 * @param stage
 	 * @param camera
 	 */
-	public _iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		super._iRender(renderable, camera, viewProjection);
 

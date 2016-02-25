@@ -2,13 +2,13 @@ import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 
-import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
-import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
+import ISurface						= require("awayjs-display/lib/base/ISurface");
+import IRenderable					= require("awayjs-display/lib/base/IRenderable");
 import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
 import LineElements					= require("awayjs-display/lib/graphics/LineElements");
 import ElementsEvent				= require("awayjs-display/lib/events/ElementsEvent");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import LineSegment					= require("awayjs-display/lib/entities/LineSegment");
+import Camera						= require("awayjs-display/lib/display/Camera");
+import LineSegment					= require("awayjs-display/lib/display/LineSegment");
 import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
 
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
@@ -20,13 +20,13 @@ import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import PassBase						= require("awayjs-renderergl/lib/render/passes/PassBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import PassBase						= require("awayjs-renderergl/lib/surfaces/passes/PassBase");
 
 /**
  * @class away.pool.LineSubMeshRenderable
  */
-class LineSegmentRenderable extends RenderableBase
+class GL_LineSegmentRenderable extends GL_RenderableBase
 {
 	private static _lineGraphics:Object = new Object();
 
@@ -65,7 +65,7 @@ class LineSegmentRenderable extends RenderableBase
 	 */
 	public _pGetElements():ElementsBase
 	{
-		var geometry:LineElements = LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements());
+		var geometry:LineElements = GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements());
 
 		var start:Vector3D = this._lineSegment.startPostion;
 		var end:Vector3D = this._lineSegment.endPosition;
@@ -95,7 +95,7 @@ class LineSegmentRenderable extends RenderableBase
 		return geometry;
 	}
 
-	public _pGetRenderOwner():IRenderOwner
+	public _pGetRenderOwner():ISurface
 	{
 		return this._lineSegment.material;
 	}
@@ -104,16 +104,16 @@ class LineSegmentRenderable extends RenderableBase
 	 * //TODO
 	 *
 	 * @param pool
-	 * @param renderableOwner
+	 * @param renderable
 	 * @param level
 	 * @param indexOffset
 	 * @returns {away.pool.LineSubMeshRenderable}
 	 * @private
 	 */
-	public _pGetOverflowRenderable(indexOffset:number):RenderableBase
+	public _pGetOverflowRenderable(indexOffset:number):GL_RenderableBase
 	{
-		return new LineSegmentRenderable(<LineSegment> this.renderableOwner, this._renderer);
+		return new GL_LineSegmentRenderable(<LineSegment> this.renderable, this._renderer);
 	}
 }
 
-export = LineSegmentRenderable;
+export = GL_LineSegmentRenderable;

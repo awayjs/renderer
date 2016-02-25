@@ -18,9 +18,9 @@ import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgra
 import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import Camera						= require("awayjs-display/lib/entities/Camera");
+import Camera						= require("awayjs-display/lib/display/Camera");
 import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
-import IEntity						= require("awayjs-display/lib/entities/IEntity");
+import IEntity						= require("awayjs-display/lib/display/IEntity");
 
 /**
  *
@@ -94,26 +94,26 @@ class GL_TriangleElements extends GL_ElementsBase
 	{
 		//set buffers
 		//TODO: find a better way to update a concatenated buffer when autoderiving
-		if (this._shader.normalBufferIndex >= 0 && this._triangleElements.autoDeriveNormals)
+		if (this._shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
 			this._triangleElements.normals;
 
-		if (this._shader.tangentBufferIndex >= 0 && this._triangleElements.autoDeriveTangents)
+		if (this._shader.tangentIndex >= 0 && this._triangleElements.autoDeriveTangents)
 			this._triangleElements.tangents;
 
 		if (this._shader.curvesIndex >= 0)
 			this.activateVertexBufferVO(this._shader.curvesIndex, this._triangleElements.getCustomAtributes("curves"));
 
-		if (this._shader.uvBufferIndex >= 0)
-			this.activateVertexBufferVO(this._shader.uvBufferIndex, this._triangleElements.uvs || this._triangleElements.positions);
+		if (this._shader.uvIndex >= 0)
+			this.activateVertexBufferVO(this._shader.uvIndex, this._triangleElements.uvs || this._triangleElements.positions);
 
-		if (this._shader.secondaryUVBufferIndex >= 0)
-			this.activateVertexBufferVO(this._shader.secondaryUVBufferIndex, this._triangleElements.getCustomAtributes("secondaryUVs") || this._triangleElements.uvs || this._triangleElements.positions);
+		if (this._shader.secondaryUVIndex >= 0)
+			this.activateVertexBufferVO(this._shader.secondaryUVIndex, this._triangleElements.getCustomAtributes("secondaryUVs") || this._triangleElements.uvs || this._triangleElements.positions);
 
-		if (this._shader.normalBufferIndex >= 0)
-			this.activateVertexBufferVO(this._shader.normalBufferIndex, this._triangleElements.normals);
+		if (this._shader.normalIndex >= 0)
+			this.activateVertexBufferVO(this._shader.normalIndex, this._triangleElements.normals);
 
-		if (this._shader.tangentBufferIndex >= 0)
-			this.activateVertexBufferVO(this._shader.tangentBufferIndex, this._triangleElements.tangents);
+		if (this._shader.tangentIndex >= 0)
+			this.activateVertexBufferVO(this._shader.tangentIndex, this._triangleElements.tangents);
 
 		if (this._shader.jointIndexIndex >= 0)
 			this.activateVertexBufferVO(this._shader.jointIndexIndex, this._triangleElements.jointIndices);
@@ -157,10 +157,10 @@ class GL_TriangleElements extends GL_ElementsBase
 	 * //TODO
 	 *
 	 * @param pool
-	 * @param renderableOwner
+	 * @param renderable
 	 * @param level
 	 * @param indexOffset
-	 * @returns {away.pool.GraphicRenderable}
+	 * @returns {away.pool.GL_GraphicRenderable}
 	 * @protected
 	 */
 	public _pGetOverflowElements():GL_ElementsBase

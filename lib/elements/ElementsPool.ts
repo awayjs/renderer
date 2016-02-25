@@ -8,7 +8,7 @@ import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsCl
 import GL_ElementsBase				= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
 
 /**
- * @class away.pool.RenderPool
+ * @class away.pool.SurfacePool
  */
 class ElementsPool implements IAbstractionPool
 {
@@ -21,7 +21,7 @@ class ElementsPool implements IAbstractionPool
 	/**
 	 * //TODO
 	 *
-	 * @param renderClass
+	 * @param surfaceClassGL
 	 */
 	constructor(shader:ShaderBase, elementsClass:IElementsClassGL)
 	{
@@ -32,7 +32,7 @@ class ElementsPool implements IAbstractionPool
 	/**
 	 * //TODO
 	 *
-	 * @param renderableOwner
+	 * @param renderable
 	 * @returns IRenderable
 	 */
 	public getAbstraction(elements:ElementsBase):GL_ElementsBase
@@ -43,7 +43,7 @@ class ElementsPool implements IAbstractionPool
 	/**
 	 * //TODO
 	 *
-	 * @param renderableOwner
+	 * @param renderable
 	 */
 	public clearAbstraction(elements:ElementsBase)
 	{

@@ -1,4 +1,4 @@
-import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
+import IRenderable					= require("awayjs-display/lib/base/IRenderable");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 

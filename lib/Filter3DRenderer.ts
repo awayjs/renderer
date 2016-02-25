@@ -1,6 +1,6 @@
 import Image2D						= require("awayjs-core/lib/image/Image2D");
 
-import Camera						= require("awayjs-display/lib/entities/Camera");
+import Camera						= require("awayjs-display/lib/display/Camera");
 
 import GL_ImageBase					= require("awayjs-stagegl/lib/image/GL_ImageBase");
 

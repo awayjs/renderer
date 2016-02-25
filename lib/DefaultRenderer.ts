@@ -4,14 +4,14 @@ import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 
-import IRenderableOwner				= require("awayjs-display/lib/base/IRenderableOwner");
-import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
-import LightBase					= require("awayjs-display/lib/base/LightBase");
+import IRenderable					= require("awayjs-display/lib/base/IRenderable");
+import ISurface						= require("awayjs-display/lib/base/ISurface");
+import LightBase					= require("awayjs-display/lib/display/LightBase");
 import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
 import CollectorBase				= require("awayjs-display/lib/traverse/CollectorBase");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import PointLight					= require("awayjs-display/lib/entities/PointLight");
+import Camera						= require("awayjs-display/lib/display/Camera");
+import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
+import PointLight					= require("awayjs-display/lib/display/PointLight");
 import ShadowMapperBase				= require("awayjs-display/lib/materials/shadowmappers/ShadowMapperBase");
 
 
@@ -27,13 +27,13 @@ import DistanceRenderer				= require("awayjs-renderergl/lib/DistanceRenderer");
 import Filter3DRenderer				= require("awayjs-renderergl/lib/Filter3DRenderer");
 import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
 import GL_SkyboxElements			= require("awayjs-renderergl/lib/elements/GL_SkyboxElements");
-import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
+import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import SkyboxRenderable				= require("awayjs-renderergl/lib/renderables/SkyboxRenderable");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import GL_SkyboxRenderable			= require("awayjs-renderergl/lib/renderables/GL_SkyboxRenderable");
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
-import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
-import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
+import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
+import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -47,7 +47,7 @@ class DefaultRenderer extends RendererBase
 
 	private _pDistanceRenderer:DepthRenderer;
 	private _pDepthRenderer:DepthRenderer;
-	private _skyBoxRenderPool:RenderPool;
+	private _skyBoxSurfacePool:SurfacePool;
 	private _skyboxProjection:Matrix3D = new Matrix3D();
 	public _pFilter3DRenderer:Filter3DRenderer;
 
@@ -145,7 +145,7 @@ class DefaultRenderer extends RendererBase
 		else
 			this._pRttBufferManager.viewHeight = this._height;
 
-		this._skyBoxRenderPool = new RenderPool(GL_SkyboxElements, this._pStage);
+		this._skyBoxSurfacePool = new SurfacePool(GL_SkyboxElements, this._pStage);
 	}
 
 	public render(entityCollector:CollectorBase)
@@ -252,13 +252,13 @@ class DefaultRenderer extends RendererBase
 	 */
 	private drawSkybox(entityCollector:EntityCollector)
 	{
-		var renderable:RenderableBase = this.getAbstraction(entityCollector.skyBox);
+		var renderable:GL_RenderableBase = this.getAbstraction(entityCollector.skyBox);
 
 		var camera:Camera = entityCollector.camera;
 
 		this.updateSkyboxProjection(camera);
 
-		var render:RenderBase = this._skyBoxRenderPool.getAbstraction(renderable.render.renderOwner);
+		var render:GL_SurfaceBase = this._skyBoxSurfacePool.getAbstraction(renderable.surfaceGL.surface);
 
 		var pass:IPass = render.passes[0];
 

@@ -1,5 +1,5 @@
 import ElementsBase						= require("awayjs-display/lib/graphics/ElementsBase");
-import Camera							= require("awayjs-display/lib/entities/Camera");
+import Camera							= require("awayjs-display/lib/display/Camera");
 import Graphic							= require("awayjs-display/lib/graphics/Graphic");
 
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
@@ -14,8 +14,8 @@ import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
 import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import GraphicRenderable			= require("awayjs-renderergl/lib/renderables/GraphicRenderable");
+import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import GL_GraphicRenderable			= require("awayjs-renderergl/lib/renderables/GL_GraphicRenderable");
 
 /**
  * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
@@ -75,11 +75,11 @@ class ParticleAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 	{
 		var animationRegisterCache:AnimationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
 
-		var graphic:Graphic = (<GraphicRenderable> renderable).graphic;
+		var graphic:Graphic = (<GL_GraphicRenderable> renderable).graphic;
 		var state:ParticleStateBase;
 		var i:number;
 

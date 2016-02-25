@@ -5,9 +5,9 @@ import AssetBase					= require("awayjs-core/lib/library/AssetBase");
 import ArgumentError				= require("awayjs-core/lib/errors/ArgumentError");
 import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
 
-import Camera						= require("awayjs-display/lib/entities/Camera");
+import Camera						= require("awayjs-display/lib/display/Camera");
 import LightPickerBase				= require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
-import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
+import ISurface						= require("awayjs-display/lib/base/ISurface");
 import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage")
@@ -18,10 +18,10 @@ import PassEvent					= require("awayjs-renderergl/lib/events/PassEvent");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
+import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
 import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
 
 /**
  * PassBase provides an abstract base class for material shader passes. A material pass constitutes at least
@@ -29,8 +29,8 @@ import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
  */
 class PassBase extends EventDispatcher implements IPass
 {
-	public _render:RenderBase;
-	public _renderOwner:IRenderOwner;
+	public _render:GL_SurfaceBase;
+	public _surface:ISurface;
 	public _elementsClass:IElementsClassGL;
 	public _stage:Stage;
 	
@@ -46,7 +46,7 @@ class PassBase extends EventDispatcher implements IPass
 
 	public get animationSet():AnimationSetBase
 	{
-		return <AnimationSetBase> this._renderOwner.animationSet;
+		return <AnimationSetBase> this._surface.animationSet;
 	}
 
 	/**
@@ -90,12 +90,12 @@ class PassBase extends EventDispatcher implements IPass
 	/**
 	 * Creates a new PassBase object.
 	 */
-	constructor(render:RenderBase, renderOwner:IRenderOwner, elementsClass:IElementsClassGL, stage:Stage)
+	constructor(render:GL_SurfaceBase, surface:ISurface, elementsClass:IElementsClassGL, stage:Stage)
 	{
 		super();
 
 		this._render = render;
-		this._renderOwner = renderOwner;
+		this._surface = surface;
 		this._elementsClass = elementsClass;
 		this._stage = stage;
 	}
@@ -122,7 +122,7 @@ class PassBase extends EventDispatcher implements IPass
 	public dispose()
 	{
 		this._render = null;
-		this._renderOwner = null;
+		this._surface = null;
 		this._elementsClass = null;
 		this._stage = null;
 
@@ -143,7 +143,7 @@ class PassBase extends EventDispatcher implements IPass
 	 *
 	 * @internal
 	 */
-	public _iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		this._shader._iRender(renderable, camera, viewProjection);
 	}

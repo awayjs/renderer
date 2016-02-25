@@ -2,7 +2,7 @@ import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import ImageBase					= require("awayjs-core/lib/image/ImageBase");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 
-import Camera						= require("awayjs-display/lib/entities/Camera");
+import Camera						= require("awayjs-display/lib/display/Camera");
 import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage")
@@ -12,16 +12,16 @@ import PassEvent					= require("awayjs-renderergl/lib/events/PassEvent");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
-import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
-import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
+import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
+import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
 
 /**
- * RenderPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
+ * GL_SurfacePassBase provides an abstract base class for material shader passes. A material pass constitutes at least
  * a render call per required renderable.
  */
-class RenderPassBase extends RenderBase implements IPass
+class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
 {
 	public _shader:ShaderBase;
 
@@ -32,7 +32,7 @@ class RenderPassBase extends RenderBase implements IPass
 
 	public get animationSet():AnimationSetBase
 	{
-		return <AnimationSetBase> this._renderOwner.animationSet;
+		return <AnimationSetBase> this._surface.animationSet;
 	}
 
 	/**
@@ -64,7 +64,7 @@ class RenderPassBase extends RenderBase implements IPass
 	 *
 	 * @internal
 	 */
-	public _iRender(renderable:RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		this._shader._iRender(renderable, camera, viewProjection);
 	}
@@ -128,4 +128,4 @@ class RenderPassBase extends RenderBase implements IPass
 	}
 }
 
-export = RenderPassBase;
+export = GL_SurfacePassBase;

@@ -1,9 +1,9 @@
-﻿import IRenderOwner					= require("awayjs-display/lib/base/IRenderOwner");
-import Camera						= require("awayjs-display/lib/entities/Camera");
+﻿import ISurface						= require("awayjs-display/lib/base/ISurface");
+import Camera						= require("awayjs-display/lib/display/Camera");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
-import RenderPool					= require("awayjs-renderergl/lib/render/RenderPool");
-import RenderPassBase				= require("awayjs-renderergl/lib/render/RenderPassBase");
+import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
+import GL_SurfacePassBase			= require("awayjs-renderergl/lib/surfaces/GL_SurfacePassBase");
 import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
@@ -15,7 +15,7 @@ import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBas
  * DistanceRender is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
  * This is used to render omnidirectional shadow maps.
  */
-class DistanceRender extends RenderPassBase
+class DistanceRender extends GL_SurfacePassBase
 {
 	private _textureVO:GL_TextureBase;
 	private _fragmentConstantsIndex:number;
@@ -25,9 +25,9 @@ class DistanceRender extends RenderPassBase
 	 *
 	 * @param material The material to which this pass belongs.
 	 */
-	constructor(renderOwner:IRenderOwner, elementsClass:IElementsClassGL, renderPool:RenderPool)
+	constructor(surface:ISurface, elementsClass:IElementsClassGL, renderPool:SurfacePool)
 	{
-		super(renderOwner, elementsClass, renderPool);
+		super(surface, elementsClass, renderPool);
 
 		this._shader = new ShaderBase(elementsClass, this, this._stage);
 
@@ -38,7 +38,7 @@ class DistanceRender extends RenderPassBase
 	{
 		super.invalidate();
 
-		this._textureVO = this._renderOwner.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._renderOwner.getTextureAt(0)) : null;
+		this._textureVO = this._surface.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._surface.getTextureAt(0)) : null;
 	}
 
 	/**

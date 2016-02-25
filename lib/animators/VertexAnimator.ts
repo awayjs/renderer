@@ -2,8 +2,8 @@ import Graphics							= require("awayjs-display/lib/graphics/Graphics");
 import ElementsBase						= require("awayjs-display/lib/graphics/ElementsBase"	);
 import TriangleElements					= require("awayjs-display/lib/graphics/TriangleElements");
 import Graphic							= require("awayjs-display/lib/graphics/Graphic");
-import Camera							= require("awayjs-display/lib/entities/Camera");
-import Mesh								= require("awayjs-display/lib/entities/Mesh");
+import Camera							= require("awayjs-display/lib/display/Camera");
+import Mesh								= require("awayjs-display/lib/display/Mesh");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
@@ -13,8 +13,8 @@ import VertexAnimationSet				= require("awayjs-renderergl/lib/animators/VertexAn
 import VertexAnimationMode				= require("awayjs-renderergl/lib/animators/data/VertexAnimationMode");
 import IVertexAnimationState			= require("awayjs-renderergl/lib/animators/states/IVertexAnimationState");
 import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
-import GraphicRenderable				= require("awayjs-renderergl/lib/renderables/GraphicRenderable");
-import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_GraphicRenderable				= require("awayjs-renderergl/lib/renderables/GL_GraphicRenderable");
+import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import GL_ElementsBase					= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
 
@@ -124,11 +124,11 @@ class VertexAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 	{
 		// todo: add code for when running on cpu
 		// this type of animation can only be SubMesh
-		var graphic:Graphic = <Graphic> (<GraphicRenderable> renderable).graphic;
+		var graphic:Graphic = <Graphic> (<GL_GraphicRenderable> renderable).graphic;
 		var elements:ElementsBase = graphic.elements;
 
 		// if no poses defined, set temp data
@@ -193,7 +193,7 @@ class VertexAnimator extends AnimatorBase
 	{
 	}
 
-	public getRenderableElements(renderable:GraphicRenderable, sourceElements:TriangleElements):TriangleElements
+	public getRenderableElements(renderable:GL_GraphicRenderable, sourceElements:TriangleElements):TriangleElements
 	{
 		if (this._blendMode == VertexAnimationMode.ABSOLUTE && this._poses.length)
 			return <TriangleElements> this._poses[0].getGraphicAt(renderable.graphic._iIndex).elements || sourceElements;

@@ -7,8 +7,8 @@ import GL_Sampler2D					= require("awayjs-stagegl/lib/image/GL_Sampler2D");
 import MappingMode					= require("awayjs-display/lib/textures/MappingMode");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
-import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
@@ -91,7 +91,7 @@ class GL_Single2DTexture extends GL_TextureBase
 		return code;
 	}
 
-	public activate(render:RenderBase)
+	public activate(render:GL_SurfaceBase)
 	{
 		var sampler:GL_Sampler2D = <GL_Sampler2D> render.samplers[this._imageIndex];
 		sampler.activate(this._textureIndex);
@@ -118,7 +118,7 @@ class GL_Single2DTexture extends GL_TextureBase
 	}
 
 
-	public _setRenderState(renderable:RenderableBase)
+	public _setRenderState(renderable:GL_RenderableBase)
 	{
 		var sampler:GL_Sampler2D = <GL_Sampler2D> renderable.samplers[this._imageIndex];
 

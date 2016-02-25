@@ -8,14 +8,14 @@ import Rectangle						= require("awayjs-core/lib/geom/Rectangle");
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 import ByteArray						= require("awayjs-core/lib/utils/ByteArray");
 
-import TriangleElements				= require("awayjs-display/lib/graphics/TriangleElements");
-import Scene							= require("awayjs-display/lib/containers/Scene");
-import View								= require("awayjs-display/lib/containers/View");
+import TriangleElements					= require("awayjs-display/lib/graphics/TriangleElements");
+import Scene							= require("awayjs-display/lib/display/Scene");
+import View								= require("awayjs-display/lib/View");
 import IPicker							= require("awayjs-display/lib/pick/IPicker");
 import PickingCollisionVO				= require("awayjs-display/lib/pick/PickingCollisionVO");
 import EntityCollector					= require("awayjs-display/lib/traverse/EntityCollector");
-import Camera							= require("awayjs-display/lib/entities/Camera");
-import IEntity							= require("awayjs-display/lib/entities/IEntity");
+import Camera							= require("awayjs-display/lib/display/Camera");
+import IEntity							= require("awayjs-display/lib/display/IEntity");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
 import AGALMiniAssembler				= require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
@@ -31,7 +31,7 @@ import IProgram							= require("awayjs-stagegl/lib/base/IProgram");
 import ITextureBase						= require("awayjs-stagegl/lib/base/ITextureBase");
 
 import DefaultRenderer					= require("awayjs-renderergl/lib/DefaultRenderer");
-import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 import GL_ElementsBase					= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
 
 /**
@@ -41,14 +41,14 @@ import GL_ElementsBase					= require("awayjs-renderergl/lib/elements/GL_Elements
  *
  * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
  *
- * @see away.entities.Entity#shaderPickingDetails
+ * @see away.display.Entity#shaderPickingDetails
  *
  * @class away.pick.ShaderPicker
  */
 class ShaderPicker implements IPicker
 {
-	private _opaqueRenderableHead:RenderableBase;
-	private _blendedRenderableHead:RenderableBase;
+	private _opaqueRenderableHead:GL_RenderableBase;
+	private _blendedRenderableHead:GL_RenderableBase;
 
 	private _stage:Stage;
 	private _context:IContextGL;
@@ -61,13 +61,13 @@ class ShaderPicker implements IPicker
 	private _boundOffsetScale:Float32Array;
 	private _id:Float32Array;
 
-	private _interactives:Array<RenderableBase> = new Array<RenderableBase>();
+	private _interactives:Array<GL_RenderableBase> = new Array<GL_RenderableBase>();
 	private _interactiveId:number;
 	private _hitColor:number;
 	private _projX:number;
 	private _projY:number;
 
-	private _hitRenderable:RenderableBase;
+	private _hitRenderable:GL_RenderableBase;
 	private _hitEntity:IEntity;
 	private _localHitPosition:Vector3D = new Vector3D();
 	private _hitUV:Point = new Point();
@@ -223,38 +223,38 @@ class ShaderPicker implements IPicker
 	 * @param renderables The renderables to draw.
 	 * @param camera The camera for which to render.
 	 */
-	private drawRenderables(renderable:RenderableBase, camera:Camera)
+	private drawRenderables(renderableGL:GL_RenderableBase, camera:Camera)
 	{
 		var matrix:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
 		var viewProjection:Matrix3D = camera.viewProjection;
 
-		while (renderable) {
-			// it's possible that the renderable was already removed from the scene
-			if (!renderable.sourceEntity.scene || !renderable.sourceEntity._iIsMouseEnabled()) {
-				renderable = renderable.next;
+		while (renderableGL) {
+			// it's possible that the renderableGL was already removed from the scene
+			if (!renderableGL.sourceEntity.scene || !renderableGL.sourceEntity._iIsMouseEnabled()) {
+				renderableGL = renderableGL.next;
 				continue;
 			}
 
 			this._potentialFound = true;
 
-			this._context.setCulling((<MaterialBase> renderable.render.renderOwner).bothSides? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
+			this._context.setCulling((<MaterialBase> renderableGL.surfaceGL.surface).bothSides? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
 
-			this._interactives[this._interactiveId++] = renderable;
+			this._interactives[this._interactiveId++] = renderableGL;
 			// color code so that reading from bitmapdata will contain the correct value
 			this._id[1] = (this._interactiveId >> 8)/255; // on green channel
 			this._id[2] = (this._interactiveId & 0xff)/255; // on blue channel
 
-			matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
+			matrix.copyFrom(renderableGL.sourceEntity.getRenderSceneTransform(camera));
 			matrix.append(viewProjection);
 			this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
 			this._context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._id, 1);
 
-			//var positionAttributes:GL_AttributesBuffer = <GL_AttributesBuffer> this._stage.getAbstraction((<TriangleElements> renderable.elements).positions);
+			//var positionAttributes:GL_AttributesBuffer = <GL_AttributesBuffer> this._stage.getAbstraction((<TriangleElements> renderableGL.elements).positions);
 			//positionAttributes.activate(0, positionAttributes.size, positionAttributes.dimensions, positionAttributes.offset);
 
 			//elementsGL.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, elementsGL.numIndices);
 
-			renderable = renderable.next;
+			renderableGL = renderableGL.next;
 		}
 
 	}

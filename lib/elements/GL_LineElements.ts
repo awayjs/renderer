@@ -7,7 +7,7 @@ import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgra
 
 import LineElements					= require("awayjs-display/lib/graphics/LineElements");
 import ElementsEvent				= require("awayjs-display/lib/events/ElementsEvent");
-import Camera						= require("awayjs-display/lib/entities/Camera");
+import Camera						= require("awayjs-display/lib/display/Camera");
 
 import GL_ElementsBase				= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
 import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
@@ -16,7 +16,7 @@ import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegi
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import IEntity = require("awayjs-display/lib/entities/IEntity");
+import IEntity = require("awayjs-display/lib/display/IEntity");
 import IAbstractionPool = require("awayjs-core/lib/library/IAbstractionPool");
 
 /**
@@ -171,7 +171,7 @@ class GL_LineElements extends GL_ElementsBase
 	 * //TODO
 	 *
 	 * @param pool
-	 * @param renderableOwner
+	 * @param renderable
 	 * @param level
 	 * @param indexOffset
 	 * @returns {away.pool.LineSubMeshRenderable}

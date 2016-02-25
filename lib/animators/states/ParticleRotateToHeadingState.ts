@@ -1,6 +1,6 @@
 import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 
-import Camera							= require("awayjs-display/lib/entities/Camera");
+import Camera							= require("awayjs-display/lib/display/Camera");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 
@@ -10,7 +10,7 @@ import AnimationElements				= require("awayjs-renderergl/lib/animators/data/Anim
 import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
 import ParticleRotateToHeadingNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode");
 import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import RenderableBase					= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 
 /**
  * ...
@@ -27,7 +27,7 @@ class ParticleRotateToHeadingState extends ParticleStateBase
 		super(animator, particleNode);
 	}
 
-	public setRenderState(stage:Stage, renderable:RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 	{
 		if (animationRegisterCache.hasBillboard) {
 			this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);

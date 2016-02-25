@@ -1,9 +1,9 @@
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import IPass						= require("awayjs-renderergl/lib/render/passes/IPass");
+import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
 import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
 
 /**
@@ -185,7 +185,7 @@ class CompilerBase
 	private compileUVCode()
 	{
 		var uvAttributeReg:ShaderRegisterElement = this._pRegisterCache.getFreeVertexAttribute();
-		this._pShader.uvBufferIndex = uvAttributeReg.index;
+		this._pShader.uvIndex = uvAttributeReg.index;
 
 		var varying:ShaderRegisterElement = this._pSharedRegisters.uvVarying = this._pRegisterCache.getFreeVarying();
 
@@ -194,13 +194,13 @@ class CompilerBase
 			// c, d, 0, ty
 			var uvTransform1:ShaderRegisterElement = this._pRegisterCache.getFreeVertexConstant();
 			var uvTransform2:ShaderRegisterElement = this._pRegisterCache.getFreeVertexConstant();
-			this._pShader.uvTransformIndex = uvTransform1.index*4;
+			this._pShader.uvMatrixIndex = uvTransform1.index*4;
 
 			this._pVertexCode += "dp4 " + varying + ".x, " + uvAttributeReg + ", " + uvTransform1 + "\n" +
 								 "dp4 " + varying + ".y, " + uvAttributeReg + ", " + uvTransform2 + "\n" +
 								 "mov " + varying + ".zw, " + uvAttributeReg + ".zw \n";
 		} else {
-			this._pShader.uvTransformIndex = -1;
+			this._pShader.uvMatrixIndex = -1;
 			this._uvTarget = varying.toString();
 			this._uvSource = uvAttributeReg.toString();
 		}
@@ -212,7 +212,7 @@ class CompilerBase
 	private compileSecondaryUVCode()
 	{
 		var uvAttributeReg:ShaderRegisterElement = this._pRegisterCache.getFreeVertexAttribute();
-		this._pShader.secondaryUVBufferIndex = uvAttributeReg.index;
+		this._pShader.secondaryUVIndex = uvAttributeReg.index;
 		this._pSharedRegisters.secondaryUVVarying = this._pRegisterCache.getFreeVarying();
 		this._pVertexCode += "mov " + this._pSharedRegisters.secondaryUVVarying + ", " + uvAttributeReg + "\n";
 	}
@@ -382,7 +382,7 @@ class CompilerBase
 		//Needs to be created FIRST and in this order (for when using tangent space)
 		if (this._pShader.tangentDependencies > 0 || this._pShader.outputsNormals) {
 			this._pSharedRegisters.tangentInput = this._pRegisterCache.getFreeVertexAttribute();
-			this._pShader.tangentBufferIndex = this._pSharedRegisters.tangentInput.index;
+			this._pShader.tangentIndex = this._pSharedRegisters.tangentInput.index;
 
 			this._pSharedRegisters.animatedTangent = this._pRegisterCache.getFreeVertexVectorTemp();
 			this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedTangent, 1);
@@ -398,7 +398,7 @@ class CompilerBase
 
 		if (this._pShader.normalDependencies > 0) {
 			this._pSharedRegisters.normalInput = this._pRegisterCache.getFreeVertexAttribute();
-			this._pShader.normalBufferIndex = this._pSharedRegisters.normalInput.index;
+			this._pShader.normalIndex = this._pSharedRegisters.normalInput.index;
 
 			this._pSharedRegisters.animatedNormal = this._pRegisterCache.getFreeVertexVectorTemp();
 			this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedNormal, 1);

@@ -8,13 +8,13 @@ import IAnimationSet				= require("awayjs-display/lib/animators/IAnimationSet");
 import IAnimator					= require("awayjs-display/lib/animators/IAnimator");
 import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import Camera						= require("awayjs-display/lib/display/Camera");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import IAnimationState				= require("awayjs-renderergl/lib/animators/states/IAnimationState");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 import AnimatorEvent				= require("awayjs-renderergl/lib/events/AnimatorEvent");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 
@@ -210,7 +210,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 		this._playbackSpeed = value;
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 	{
 		throw new AbstractMethodError();
 	}
@@ -386,7 +386,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	}
 
 
-	public getRenderableElements(renderable:RenderableBase, sourceElements:ElementsBase):ElementsBase
+	public getRenderableElements(renderable:GL_RenderableBase, sourceElements:ElementsBase):ElementsBase
 	{
 		//nothing to do here
 		return sourceElements;

@@ -1,7 +1,7 @@
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
 import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
-import DepthRender					= require("awayjs-renderergl/lib/render/DepthRender");
+import GL_DepthSurface				= require("awayjs-renderergl/lib/surfaces/GL_DepthSurface");
 
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
@@ -17,7 +17,7 @@ class DepthRenderer extends RendererBase
 	 */
 	constructor(stage:Stage = null)
 	{
-		super(stage, DepthRender);
+		super(stage, GL_DepthSurface);
 
 		this._iBackgroundR = 1;
 		this._iBackgroundG = 1;

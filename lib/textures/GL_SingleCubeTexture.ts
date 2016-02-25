@@ -4,8 +4,8 @@ import GL_SamplerCube				= require("awayjs-stagegl/lib/image/GL_SamplerCube");
 
 import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
 
-import RenderBase					= require("awayjs-renderergl/lib/render/RenderBase");
-import RenderableBase				= require("awayjs-renderergl/lib/renderables/RenderableBase");
+import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
@@ -66,7 +66,7 @@ class GL_SingleCubeTexture extends GL_TextureBase
 	}
 
 
-	public activate(render:RenderBase)
+	public activate(render:GL_SurfaceBase)
 	{
 		var sampler:GL_SamplerCube = <GL_SamplerCube> render.samplers[this._imageIndex];
 
@@ -78,7 +78,7 @@ class GL_SingleCubeTexture extends GL_TextureBase
 
 	}
 
-	public _setRenderState(renderable:RenderableBase)
+	public _setRenderState(renderable:GL_RenderableBase)
 	{
 		var sampler:GL_SamplerCube = <GL_SamplerCube> renderable.samplers[this._imageIndex];
 
