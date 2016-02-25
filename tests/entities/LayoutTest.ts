@@ -8,10 +8,10 @@ import CoordinateSystem				= require("awayjs-core/lib/projections/CoordinateSyst
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import View							= require("awayjs-display/lib/containers/View");
+import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import Billboard					= require("awayjs-display/lib/entities/Billboard");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import Billboard					= require("awayjs-display/lib/display/Billboard");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
 import AwayMouseEvent				= require("awayjs-display/lib/events/MouseEvent");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
@@ -78,7 +78,7 @@ class LayoutTest
 				billboard.x = j*300;
 				billboard.y = i*300;
 				billboard.z = 0;
-				billboard.addEventListener(AwayMouseEvent.MOUSE_MOVE, this.onMouseEvent)
+				billboard.addEventListener(AwayMouseEvent.MOUSE_MOVE, this.onMouseEvent);
 				//billboard.orientationMode = away.base.OrientationMode.CAMERA_PLANE;
 				//billboard.alignmentMode = away.base.AlignmentMode.PIVOT_POINT;
 				this._billboards.push(billboard);

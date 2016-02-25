@@ -9,15 +9,15 @@ import PerspectiveProjection		= require("awayjs-core/lib/projections/Perspective
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import Debug						= require("awayjs-core/lib/utils/Debug");
 
-import View							= require("awayjs-display/lib/containers/View");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import View							= require("awayjs-display/lib/View");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
+import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class TorusVortex
 {

@@ -5,11 +5,11 @@ import URLLoader					= require("awayjs-core/lib/net/URLLoader");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import View							= require("awayjs-display/lib/containers/View");
+import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import AlignmentMode				= require("awayjs-display/lib/base/AlignmentMode");
 import OrientationMode				= require("awayjs-display/lib/base/OrientationMode");
-import LineSegment					= require("awayjs-display/lib/entities/LineSegment");
+import LineSegment					= require("awayjs-display/lib/display/LineSegment");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");

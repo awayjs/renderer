@@ -8,12 +8,12 @@ import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import View							= require("awayjs-display/lib/containers/View");
+import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import AlignmentMode				= require("awayjs-display/lib/base/AlignmentMode");
 import OrientationMode				= require("awayjs-display/lib/base/OrientationMode");
-import Billboard					= require("awayjs-display/lib/entities/Billboard");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import Billboard					= require("awayjs-display/lib/display/Billboard");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 import Style						= require("awayjs-display/lib/base/Style");

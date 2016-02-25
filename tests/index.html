@@ -22,13 +22,6 @@
             var harness = new away.AppHarness();
 
             //---------------------------------------------------------------------------
-            // Demos
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator("Objects");
-            harness.addTest("Objects.TorusVortex", "tests.object3d.TorusVortex", "object3d/TorusVortex.js", "tests/object3d/TorusVortex.ts");
-
-            //---------------------------------------------------------------------------
             // Test - Primitives
             //---------------------------------------------------------------------------
 
@@ -58,6 +51,8 @@
 
             harness.addSeperator("Display");
             harness.addTest("Display.BitmapDataTest 2", "tests.display.BitmapImage2DReflectionTest", "display/BitmapImage2DReflectionTest.js", "display/BitmapImage2DReflectionTest.ts");
+            harness.addTest("Display.TorusVortex", "tests.display.TorusVortex", "display/TorusVortex.js", "display/TorusVortex.ts");
+            harness.addTest("Display.View3DTest", "tests.display.View3DTest", "display/View3DTest.js", "display/View3DTest.ts");
 
             //---------------------------------------------------------------------------
             // Test - Controllers
@@ -67,16 +62,8 @@
             harness.addTest("Controllers.HoverControllerTest", "tests.controllers.HoverControllerTest", "controllers/HoverControllerTest.js", "controllers/HoverControllerTest.ts");
 
             //---------------------------------------------------------------------------
-            // Test - Containers
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator("Containers");
-            harness.addTest("Containers.View3DTest", "tests.containers.View3DTest", "containers/View3DTest.js", "containers/View3DTest.ts");
-
-
-            //---------------------------------------------------------------------------
             // Load a default
-            harness.load("tests.object3d.TorusVortex", "object3d/TorusVortex.js", "object3d/TorusVortex.ts");
+            harness.load("Display.TorusVortex", "display/TorusVortex.js", "display/TorusVortex.ts");
             harness.start(); // Start
 
         }

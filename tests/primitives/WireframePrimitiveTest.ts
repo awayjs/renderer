@@ -2,8 +2,8 @@ import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import Debug						= require("awayjs-core/lib/utils/Debug");
 
-import View							= require("awayjs-display/lib/containers/View");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import View							= require("awayjs-display/lib/View");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
 import PrimitivePrefabBase			= require("awayjs-display/lib/prefabs/PrimitivePrefabBase");
 import PrimitivePolygonPrefab		= require("awayjs-display/lib/prefabs/PrimitivePolygonPrefab");
 import PrimitiveConePrefab			= require("awayjs-display/lib/prefabs/PrimitiveConePrefab");
