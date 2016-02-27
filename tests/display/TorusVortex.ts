@@ -10,7 +10,7 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import Debug						= require("awayjs-core/lib/utils/Debug");
 
 import View							= require("awayjs-display/lib/View");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
@@ -22,8 +22,8 @@ import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 class TorusVortex
 {
 	private _view:View;
-	private _mesh:Mesh;
-	private _mesh2:Mesh;
+	private _mesh:Sprite;
+	private _mesh2:Sprite;
 
 	private _raf:RequestAnimationFrame;
 	private _image:HTMLImageElement;
@@ -73,8 +73,8 @@ class TorusVortex
 		var cube:PrimitiveCubePrefab = new PrimitiveCubePrefab(matTx, ElementsType.TRIANGLE, 20.0, 20.0, 20.0);
 		var torus:PrimitiveTorusPrefab = new PrimitiveTorusPrefab(matTx, ElementsType.TRIANGLE, 150, 80, 32, 16, true);
 
-		this._mesh = <Mesh> torus.getNewObject();
-		this._mesh2 = <Mesh> cube.getNewObject();
+		this._mesh = <Sprite> torus.getNewObject();
+		this._mesh2 = <Sprite> cube.getNewObject();
 		this._mesh2.x = 130;
 		this._mesh2.z = 40;
 

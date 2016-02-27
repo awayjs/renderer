@@ -2,13 +2,13 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import Debug						= require("awayjs-core/lib/utils/Debug");
 
 import View							= require("awayjs-display/lib/View");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import PointLight					= require("awayjs-display/lib/display/PointLight");
+import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class View3DTest
 {
@@ -17,7 +17,7 @@ class View3DTest
 
 	private light:PointLight;
 	private raf:RequestAnimationFrame;
-	private meshes:Array<Mesh>;
+	private meshes:Array<Sprite>;
 
 	constructor()
 	{
@@ -28,7 +28,7 @@ class View3DTest
 		var radius:number = 1000;
 		var matB:BasicMaterial = new BasicMaterial();
 
-		this.meshes = new Array<Mesh>();
+		this.meshes = new Array<Sprite>();
 		this.light = new PointLight();
 		this.view = new View(new DefaultRenderer());
 		this.view.camera.z = 0;
@@ -39,7 +39,7 @@ class View3DTest
 
 			var t:number=Math.PI * 2 * c / l;
 
-			var mesh:Mesh = <Mesh> this.torus.getNewObject();
+			var mesh:Sprite = <Sprite> this.torus.getNewObject();
 			mesh.x = Math.cos(t)*radius;
 			mesh.y = 0;
 			mesh.z = Math.sin(t)*radius;

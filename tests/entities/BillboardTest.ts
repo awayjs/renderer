@@ -12,7 +12,7 @@ import HoverController				= require("awayjs-display/lib/controllers/HoverControl
 import AlignmentMode				= require("awayjs-display/lib/base/AlignmentMode");
 import OrientationMode				= require("awayjs-display/lib/base/OrientationMode");
 import Billboard					= require("awayjs-display/lib/display/Billboard");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 

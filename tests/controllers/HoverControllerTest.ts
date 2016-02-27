@@ -3,11 +3,11 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 
 import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
+import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class HoverControllerTest
 {
@@ -21,7 +21,7 @@ class HoverControllerTest
 	private _lastMouseX:number;
 	private _lastMouseY:number;
 	private _cube:PrimitiveCubePrefab;
-	private _mesh:Mesh;
+	private _mesh:Sprite;
 
 	constructor()
 	{
@@ -29,7 +29,7 @@ class HoverControllerTest
 		this._view.backgroundColor = 0x222222;
 
 		this._cube = new PrimitiveCubePrefab(null, ElementsType.LINE, 400, 400, 400);
-		this._mesh = <Mesh> this._cube.getNewObject();
+		this._mesh = <Sprite> this._cube.getNewObject();
 		this._view.scene.addChild(this._mesh);
 
 		this._hoverControl = new HoverController(this._view.camera, this._mesh, 150, 10);

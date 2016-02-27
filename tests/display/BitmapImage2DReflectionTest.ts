@@ -7,20 +7,20 @@ import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/View");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class BitmapImage2DReflectionTest
 {
 	private view:View;
 	private raf:RequestAnimationFrame;
-	private reflectionMesh:Mesh;
-	private fullmesh:Mesh;
+	private reflectionSprite:Sprite;
+	private fullmesh:Sprite;
 
 	constructor()
 	{
@@ -83,11 +83,11 @@ class BitmapImage2DReflectionTest
 					material2.bothSides = true;
 					material2.alphaBlending = true;
 
-					this.reflectionMesh = <Mesh> prefab.getNewObject();
-					this.reflectionMesh.material = material;
-					this.view.scene.addChild(this.reflectionMesh);
+					this.reflectionSprite = <Sprite> prefab.getNewObject();
+					this.reflectionSprite.material = material;
+					this.view.scene.addChild(this.reflectionSprite);
 
-					this.fullmesh = <Mesh> prefab.getNewObject();
+					this.fullmesh = <Sprite> prefab.getNewObject();
 					this.fullmesh.material = material2;
 					this.fullmesh.rotationY = 90;
 					this.view.scene.addChild(this.fullmesh);
@@ -110,7 +110,7 @@ class BitmapImage2DReflectionTest
 	private render()
 	{
 		this.fullmesh.rotationY +=.5;
-		this.reflectionMesh.rotationY +=.5;
+		this.reflectionSprite.rotationY +=.5;
 
 		this.view.render();
 	}

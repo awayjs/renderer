@@ -3,7 +3,8 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import Debug						= require("awayjs-core/lib/utils/Debug");
 
 import View							= require("awayjs-display/lib/View");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
+import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
 import PrimitivePrefabBase			= require("awayjs-display/lib/prefabs/PrimitivePrefabBase");
 import PrimitivePolygonPrefab		= require("awayjs-display/lib/prefabs/PrimitivePolygonPrefab");
 import PrimitiveConePrefab			= require("awayjs-display/lib/prefabs/PrimitiveConePrefab");
@@ -13,13 +14,12 @@ import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePla
 import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class WireframePrimitiveTest
 {
 	private view:View;
 	private raf:RequestAnimationFrame;
-	private meshes:Array<Mesh> = new Array<Mesh>();
+	private meshes:Array<Sprite> = new Array<Sprite>();
 
 	private radius:number = 400;
 
@@ -35,12 +35,12 @@ class WireframePrimitiveTest
 
 		window.onresize = (event:UIEvent) => this.onResize(event);
 
-		this.initMeshes();
+		this.initSpritees();
 		this.raf.start();
 		this.onResize();
 	}
 
-	private initMeshes():void
+	private initSpritees():void
 	{
 
 		var primitives:Array<PrimitivePrefabBase> = new Array<PrimitivePrefabBase>();
@@ -52,12 +52,12 @@ class WireframePrimitiveTest
 		primitives.push(new PrimitiveConePrefab(null, ElementsType.LINE));
 		primitives.push(new PrimitiveCubePrefab(null, ElementsType.LINE));
 
-		var mesh:Mesh;
+		var mesh:Sprite;
 
 		for (var c:number = 0; c < primitives.length; c++) {
 			var t:number = Math.PI*2*c/primitives.length;
 
-			mesh = <Mesh> primitives[c].getNewObject();
+			mesh = <Sprite> primitives[c].getNewObject();
 			mesh.x = Math.cos(t)*this.radius;
 			mesh.y = Math.sin(t)*this.radius;
 			mesh.z = 0;
