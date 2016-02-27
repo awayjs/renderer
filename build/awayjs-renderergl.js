@@ -39,6 +39,10 @@ var DefaultRenderer = (function (_super) {
         _super.call(this, stage, null, forceSoftware, profile, mode);
         this._skyboxProjection = new Matrix3D();
         this._antiAlias = 0;
+        this._directionalLights = new Array();
+        this._pointLights = new Array();
+        this._lightProbes = new Array();
+        this.isDebugEnabled = true;
         if (stage)
             this._shareContext = true;
         this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
@@ -114,8 +118,8 @@ var DefaultRenderer = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    DefaultRenderer.prototype.render = function (entityCollector) {
-        _super.prototype.render.call(this, entityCollector);
+    DefaultRenderer.prototype.render = function (camera, scene) {
+        _super.prototype.render.call(this, camera, scene);
         if (!this._pStage.recoverFromDisposal()) {
             this._pBackBufferInvalid = true;
             return;
@@ -133,70 +137,69 @@ var DefaultRenderer = (function (_super) {
             this.textureRatioY = 1;
         }
         if (this._pRequireDepthRender)
-            this.pRenderSceneDepthToTexture(entityCollector);
+            this.pRenderSceneDepthToTexture(camera, scene);
         if (this._depthPrepass)
-            this.pRenderDepthPrepass(entityCollector);
+            this.pRenderDepthPrepass(camera, scene);
+        //reset lights
+        this._directionalLights.length = 0;
+        this._pointLights.length = 0;
+        this._lightProbes.length = 0;
         if (this._pFilter3DRenderer && this._pContext) {
-            this._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
-            this._pFilter3DRenderer.render(this._pStage, entityCollector.camera, this._pDepthRender);
+            this._iRender(camera, scene, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+            this._pFilter3DRenderer.render(this._pStage, camera, this._pDepthRender);
         }
         else {
             if (this._shareContext)
-                this._iRender(entityCollector, null, this._pScissorRect);
+                this._iRender(camera, scene, null, this._pScissorRect);
             else
-                this._iRender(entityCollector);
+                this._iRender(camera, scene);
         }
         if (!this._shareContext && this._pContext)
             this._pContext.present();
         // register that a view has been rendered
         this._pStage.bufferClear = false;
     };
-    DefaultRenderer.prototype.pExecuteRender = function (entityCollector, target, scissorRect, surfaceSelector) {
+    DefaultRenderer.prototype.pExecuteRender = function (camera, target, scissorRect, surfaceSelector) {
         if (target === void 0) { target = null; }
         if (scissorRect === void 0) { scissorRect = null; }
         if (surfaceSelector === void 0) { surfaceSelector = 0; }
-        this.updateLights(entityCollector);
-        _super.prototype.pExecuteRender.call(this, entityCollector, target, scissorRect, surfaceSelector);
+        this.updateLights(camera);
+        _super.prototype.pExecuteRender.call(this, camera, target, scissorRect, surfaceSelector);
     };
-    DefaultRenderer.prototype.updateLights = function (entityCollector) {
-        var dirLights = entityCollector.directionalLights;
-        var pointLights = entityCollector.pointLights;
+    DefaultRenderer.prototype.updateLights = function (camera) {
         var len, i;
         var light;
         var shadowMapper;
-        len = dirLights.length;
+        len = this._directionalLights.length;
         for (i = 0; i < len; ++i) {
-            light = dirLights[i];
+            light = this._directionalLights[i];
             shadowMapper = light.shadowMapper;
             if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid))
-                shadowMapper.iRenderDepthMap(entityCollector, this._pDepthRenderer);
+                shadowMapper.iRenderDepthMap(camera, light.scene, this._pDepthRenderer);
         }
-        len = pointLights.length;
+        len = this._pointLights.length;
         for (i = 0; i < len; ++i) {
-            light = pointLights[i];
+            light = this._pointLights[i];
             shadowMapper = light.shadowMapper;
             if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid))
-                shadowMapper.iRenderDepthMap(entityCollector, this._pDistanceRenderer);
+                shadowMapper.iRenderDepthMap(camera, light.scene, this._pDistanceRenderer);
         }
     };
     /**
      * @inheritDoc
      */
-    DefaultRenderer.prototype.pDraw = function (entityCollector) {
-        if (entityCollector.skyBox) {
+    DefaultRenderer.prototype.pDraw = function (camera) {
+        if (this._skybox) {
             this._pContext.setDepthTest(false, ContextGLCompareMode.ALWAYS);
-            this.drawSkybox(entityCollector);
+            this.drawSkybox(camera);
         }
-        _super.prototype.pDraw.call(this, entityCollector);
+        _super.prototype.pDraw.call(this, camera);
     };
     /**
      * Draw the skybox if present.
-     *
-     * @param entityCollector The EntityCollector containing all potentially visible information.
-     */
-    DefaultRenderer.prototype.drawSkybox = function (entityCollector) {
-        var renderable = this.getAbstraction(entityCollector.skyBox);
-        var camera = entityCollector.camera;
+     **/
+    DefaultRenderer.prototype.drawSkybox = function (camera) {
+        var renderable = this.getAbstraction(this._skybox);
         this.updateSkyboxProjection(camera);
         var render = this._skyBoxSurfacePool.getAbstraction(renderable.surfaceGL.surface);
         var pass = render.passes[0];
@@ -223,6 +226,34 @@ var DefaultRenderer = (function (_super) {
         var a = (q.x * p.x + q.y * p.y + q.z * p.z + q.w * p.w) / (cx * q.x + cy * q.y + cz * q.z + cw * q.w);
         this._skyboxProjection.copyRowFrom(2, new Vector3D(cx * a, cy * a, cz * a, cw * a));
     };
+    /**
+     *
+     * @param entity
+     */
+    DefaultRenderer.prototype.applyDirectionalLight = function (entity) {
+        this._directionalLights.push(entity);
+    };
+    /**
+     *
+     * @param entity
+     */
+    DefaultRenderer.prototype.applyLightProbe = function (entity) {
+        this._lightProbes.push(entity);
+    };
+    /**
+     *
+     * @param entity
+     */
+    DefaultRenderer.prototype.applyPointLight = function (entity) {
+        this._pointLights.push(entity);
+    };
+    /**
+     *
+     * @param entity
+     */
+    DefaultRenderer.prototype.applySkybox = function (entity) {
+        this._skybox = entity;
+    };
     DefaultRenderer.prototype.dispose = function () {
         if (!this._shareContext)
             this._pStage.dispose();
@@ -238,29 +269,29 @@ var DefaultRenderer = (function (_super) {
     /**
      *
      */
-    DefaultRenderer.prototype.pRenderDepthPrepass = function (entityCollector) {
+    DefaultRenderer.prototype.pRenderDepthPrepass = function (camera, scene) {
         this._pDepthRenderer.disableColor = true;
         if (this._pFilter3DRenderer) {
             this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
             this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-            this._pDepthRenderer._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+            this._pDepthRenderer._iRender(camera, scene, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
         }
         else {
             this._pDepthRenderer.textureRatioX = 1;
             this._pDepthRenderer.textureRatioY = 1;
-            this._pDepthRenderer._iRender(entityCollector);
+            this._pDepthRenderer._iRender(camera, scene);
         }
         this._pDepthRenderer.disableColor = false;
     };
     /**
      *
      */
-    DefaultRenderer.prototype.pRenderSceneDepthToTexture = function (entityCollector) {
+    DefaultRenderer.prototype.pRenderSceneDepthToTexture = function (camera, scene) {
         if (this._pDepthTextureInvalid || !this._pDepthRender)
             this.initDepthTexture(this._pStage.context);
         this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
         this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-        this._pDepthRenderer._iRender(entityCollector, this._pDepthRender);
+        this._pDepthRenderer._iRender(camera, scene, this._pDepthRender);
     };
     /**
      * Updates the backbuffer dimensions.
@@ -317,6 +348,17 @@ var DepthRenderer = (function (_super) {
         this._iBackgroundG = 1;
         this._iBackgroundB = 1;
     }
+    /**
+     *
+     */
+    DepthRenderer.prototype.enterNode = function (node) {
+        var enter = node._iCollectionMark != RendererBase._iCollectionMark && node.isCastingShadow();
+        if (!enter) {
+            node._iCollectionMark = RendererBase._iCollectionMark;
+            return false;
+        }
+        return _super.prototype.enterNode.call(this, node);
+    };
     return DepthRenderer;
 })(RendererBase);
 module.exports = DepthRenderer;
@@ -349,6 +391,17 @@ var DistanceRenderer = (function (_super) {
         this._iBackgroundG = 1;
         this._iBackgroundB = 1;
     }
+    /**
+     *
+     */
+    DistanceRenderer.prototype.enterNode = function (node) {
+        var enter = node._iCollectionMark != RendererBase._iCollectionMark && node.isCastingShadow();
+        if (!enter) {
+            node._iCollectionMark = RendererBase._iCollectionMark;
+            return false;
+        }
+        return _super.prototype.enterNode.call(this, node);
+    };
     return DistanceRenderer;
 })(RendererBase);
 module.exports = DistanceRenderer;
@@ -491,11 +544,12 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Point = require("awayjs-core/lib/geom/Point");
 var Rectangle = require("awayjs-core/lib/geom/Rectangle");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
 var RendererEvent = require("awayjs-display/lib/events/RendererEvent");
-var EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
 var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
 var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
@@ -529,6 +583,7 @@ var RendererBase = (function (_super) {
         this._registeredMasks = new Array();
         this._numUsedStreams = 0;
         this._numUsedTextures = 0;
+        this._cameraForward = new Vector3D();
         this._viewPort = new Rectangle();
         this._pBackBufferInvalid = true;
         this._pDepthTextureInvalid = true;
@@ -546,6 +601,8 @@ var RendererBase = (function (_super) {
         this._pNumElements = 0;
         this._disableColor = false;
         this._renderBlended = true;
+        this._numCullPlanes = 0;
+        this.isDebugEnabled = false;
         this._onViewportUpdatedDelegate = function (event) { return _this.onViewportUpdated(event); };
         this._onContextUpdateDelegate = function (event) { return _this.onContextUpdate(event); };
         //default sorting algorithm
@@ -564,6 +621,19 @@ var RendererBase = (function (_super) {
         for (var i in ElementsPool._abstractionClassPool)
             this._objectPools[i] = new SurfacePool(ElementsPool._abstractionClassPool[i], this._pStage, surfaceClassGL);
     }
+    Object.defineProperty(RendererBase.prototype, "cullPlanes", {
+        /**
+         *
+         */
+        get: function () {
+            return this._customCullPlanes;
+        },
+        set: function (value) {
+            this._customCullPlanes = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(RendererBase.prototype, "renderBlended", {
         get: function () {
             return this._renderBlended;
@@ -738,9 +808,6 @@ var RendererBase = (function (_super) {
         this._numUsedStreams = pass.shader.numUsedStreams;
         this._numUsedTextures = pass.shader.numUsedTextures;
     };
-    RendererBase.prototype._iCreateEntityCollector = function () {
-        return new EntityCollector();
-    };
     Object.defineProperty(RendererBase.prototype, "_iBackgroundR", {
         /**
          * The background color's red component, used when clearing.
@@ -842,34 +909,48 @@ var RendererBase = (function (_super) {
          }
          */
     };
-    RendererBase.prototype.render = function (entityCollector) {
+    RendererBase.prototype.render = function (camera, scene) {
         this._viewportDirty = false;
         this._scissorDirty = false;
     };
     /**
      * Renders the potentially visible geometry to the back buffer or texture.
-     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
      * @param target An option target texture to render to.
      * @param surfaceSelector The index of a CubeTexture's face to render to.
      * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
      */
-    RendererBase.prototype._iRender = function (entityCollector, target, scissorRect, surfaceSelector) {
+    RendererBase.prototype._iRender = function (camera, scene, target, scissorRect, surfaceSelector) {
         if (target === void 0) { target = null; }
         if (scissorRect === void 0) { scissorRect = null; }
         if (surfaceSelector === void 0) { surfaceSelector = 0; }
         //TODO refactor setTarget so that rendertextures are created before this check
         if (!this._pStage || !this._pContext)
             return;
-        this._pRttViewProjectionMatrix.copyFrom(entityCollector.camera.viewProjection);
+        //reset head values
+        this._pBlendedRenderableHead = null;
+        this._pOpaqueRenderableHead = null;
+        this._pNumElements = 0;
+        this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : camera.frustumPlanes;
+        this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
+        this._cameraPosition = camera.scenePosition;
+        this._cameraTransform = camera.sceneTransform;
+        this._cameraForward = Matrix3DUtils.getForward(camera.sceneTransform, this._cameraForward);
+        RendererBase._iCollectionMark++;
+        scene.traversePartitions(this);
+        //sort the resulting renderables
+        if (this.renderableSorter) {
+            this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
+            this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+        }
+        this._pRttViewProjectionMatrix.copyFrom(camera.viewProjection);
         this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
-        this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
+        this.pExecuteRender(camera, target, scissorRect, surfaceSelector);
         for (var i = 0; i < 8; ++i) {
             this._pContext.setVertexBufferAt(i, null);
             this._pContext.setTextureAt(i, null);
         }
     };
-    RendererBase.prototype._iRenderCascades = function (entityCollector, target, numCascades, scissorRects, cameras) {
-        this._applyCollector(entityCollector);
+    RendererBase.prototype._iRenderCascades = function (camera, scene, target, numCascades, scissorRects, cameras) {
         this._pStage.setRenderTarget(target, true, 0);
         this._pContext.clear(1, 1, 1, 1, 1, 0);
         this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
@@ -885,36 +966,14 @@ var RendererBase = (function (_super) {
         this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
         this._pStage.scissorRect = null;
     };
-    RendererBase.prototype._applyCollector = function (entityCollector) {
-        //reset head values
-        this._pBlendedRenderableHead = null;
-        this._pOpaqueRenderableHead = null;
-        this._pNumElements = 0;
-        //grab renderable head
-        var item = entityCollector.renderableHead;
-        //set temp values for entry point and camera forward vector
-        this._pCamera = entityCollector.camera;
-        this._iEntryPoint = this._pCamera.scenePosition;
-        this._pCameraForward = this._pCamera.transform.forwardVector;
-        while (item) {
-            this._iApplyRenderable(item.renderable);
-            item = item.next;
-        }
-        //sort the resulting renderables
-        if (this.renderableSorter) {
-            this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
-            this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
-        }
-    };
     /**
      * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
      *
-     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
      * @param target An option target texture to render to.
      * @param surfaceSelector The index of a CubeTexture's face to render to.
      * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
      */
-    RendererBase.prototype.pExecuteRender = function (entityCollector, target, scissorRect, surfaceSelector) {
+    RendererBase.prototype.pExecuteRender = function (camera, target, scissorRect, surfaceSelector) {
         if (target === void 0) { target = null; }
         if (scissorRect === void 0) { scissorRect = null; }
         if (surfaceSelector === void 0) { surfaceSelector = 0; }
@@ -926,9 +985,8 @@ var RendererBase = (function (_super) {
          if (_backgroundImageRenderer)
          _backgroundImageRenderer.render();
          */
-        this._applyCollector(entityCollector);
         this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-        this.pDraw(entityCollector);
+        this.pDraw(camera);
         //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
         //this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
         if (!this._shareContext) {
@@ -948,15 +1006,14 @@ var RendererBase = (function (_super) {
     };
     /**
      * Performs the actual drawing of geometry to the target.
-     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
      */
-    RendererBase.prototype.pDraw = function (entityCollector) {
+    RendererBase.prototype.pDraw = function (camera) {
         this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
         if (this._disableColor)
             this._pContext.setColorMask(false, false, false, false);
-        this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
+        this.drawRenderables(camera, this._pOpaqueRenderableHead);
         if (this._renderBlended)
-            this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
+            this.drawRenderables(camera, this._pBlendedRenderableHead);
         if (this._disableColor)
             this._pContext.setColorMask(true, true, true, true);
     };
@@ -995,16 +1052,14 @@ var RendererBase = (function (_super) {
      * Draw a list of renderables.
      *
      * @param renderables The renderables to draw.
-     * @param entityCollector The EntityCollector containing all potentially visible information.
      */
-    RendererBase.prototype.drawRenderables = function (renderableGL, entityCollector) {
+    RendererBase.prototype.drawRenderables = function (camera, renderableGL) {
         var i;
         var len;
         var renderableGL2;
         var surfaceGL;
         var passes;
         var pass;
-        var camera = entityCollector.camera;
         this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
         this._registeredMasks.length = 0;
         var gl = this._pContext["_gl"];
@@ -1034,7 +1089,7 @@ var RendererBase = (function (_super) {
                         }
                     }
                     else {
-                        this._renderMasks(renderableGL.sourceEntity._iAssignedMasks());
+                        this._renderMasks(camera, renderableGL.sourceEntity._iAssignedMasks());
                     }
                     this._activeMasksDirty = false;
                 }
@@ -1164,7 +1219,17 @@ var RendererBase = (function (_super) {
         }
         this.notifyScissorUpdate();
     };
-    RendererBase.prototype._iApplyRenderable = function (renderable) {
+    /**
+     *
+     * @param node
+     * @returns {boolean}
+     */
+    RendererBase.prototype.enterNode = function (node) {
+        var enter = node._iCollectionMark != RendererBase._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
+        node._iCollectionMark = RendererBase._iCollectionMark;
+        return enter;
+    };
+    RendererBase.prototype.applyRenderable = function (renderable) {
         var renderableGL = this.getAbstraction(renderable);
         var surfaceGL = renderableGL.surfaceGL;
         //set local vars for faster referencing
@@ -1174,12 +1239,12 @@ var RendererBase = (function (_super) {
         var entity = renderableGL.sourceEntity;
         var position = entity.scenePosition;
         // project onto camera's z-axis
-        position = this._iEntryPoint.subtract(position);
-        renderableGL.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
+        position = this._cameraPosition.subtract(position);
+        renderableGL.zIndex = entity.zOffset + position.dotProduct(this._cameraForward);
         renderableGL.maskId = entity._iAssignedMaskId();
         renderableGL.masksConfig = entity._iMasksConfig();
         //store reference to scene transform
-        renderableGL.renderSceneTransform = renderableGL.sourceEntity.getRenderSceneTransform(this._pCamera);
+        renderableGL.renderSceneTransform = renderableGL.sourceEntity.getRenderSceneTransform(this._cameraTransform);
         if (surfaceGL.requiresBlending) {
             renderableGL.next = this._pBlendedRenderableHead;
             this._pBlendedRenderableHead = renderableGL;
@@ -1190,11 +1255,39 @@ var RendererBase = (function (_super) {
         }
         this._pNumElements += renderableGL.elements.numElements;
     };
+    /**
+     *
+     * @param entity
+     */
+    RendererBase.prototype.applyDirectionalLight = function (entity) {
+        //don't do anything here
+    };
+    /**
+     *
+     * @param entity
+     */
+    RendererBase.prototype.applyLightProbe = function (entity) {
+        //don't do anything here
+    };
+    /**
+     *
+     * @param entity
+     */
+    RendererBase.prototype.applyPointLight = function (entity) {
+        //don't do anything here
+    };
+    /**
+     *
+     * @param entity
+     */
+    RendererBase.prototype.applySkybox = function (entity) {
+        //don't do anything here
+    };
     RendererBase.prototype._registerMask = function (obj) {
         //console.log("registerMask");
         this._registeredMasks.push(obj);
     };
-    RendererBase.prototype._renderMasks = function (masks) {
+    RendererBase.prototype._renderMasks = function (camera, masks) {
         var gl = this._pContext["_gl"];
         //var oldRenderTarget = this._stage.renderTarget;
         //this._stage.setRenderTarget(this._image);
@@ -1227,7 +1320,7 @@ var RendererBase = (function (_super) {
                     //console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
                     if (renderableGL.maskId == mask.id) {
                         //console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
-                        this._drawMask(renderableGL);
+                        this._drawMask(camera, renderableGL);
                     }
                 }
             }
@@ -1237,14 +1330,14 @@ var RendererBase = (function (_super) {
         this._pContext.setColorMask(true, true, true, true);
         //this._stage.setRenderTarget(oldRenderTarget);
     };
-    RendererBase.prototype._drawMask = function (renderableGL) {
+    RendererBase.prototype._drawMask = function (camera, renderableGL) {
         var surfaceGL = renderableGL.surfaceGL;
         var passes = surfaceGL.passes;
         var len = passes.length;
         var pass = passes[len - 1];
-        this.activatePass(renderableGL, pass, this._pCamera);
+        this.activatePass(renderableGL, pass, camera);
         // only render last pass for now
-        renderableGL._iRender(pass, this._pCamera, this._pRttViewProjectionMatrix);
+        renderableGL._iRender(pass, camera, this._pRttViewProjectionMatrix);
         this.deactivatePass(renderableGL, pass);
     };
     RendererBase.prototype._checkMasksConfig = function (masksConfig) {
@@ -1269,12 +1362,13 @@ var RendererBase = (function (_super) {
         }
         return false;
     };
+    RendererBase._iCollectionMark = 0;
     RendererBase._abstractionClassPool = new Object();
     return RendererBase;
 })(EventDispatcher);
 module.exports = RendererBase;
 
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-renderergl/lib/elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","awayjs-renderergl/lib/sort/RenderableMergeSort":"awayjs-renderergl/lib/sort/RenderableMergeSort","awayjs-renderergl/lib/surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/RendererGL":[function(require,module,exports){
+},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-renderergl/lib/elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","awayjs-renderergl/lib/sort/RenderableMergeSort":"awayjs-renderergl/lib/sort/RenderableMergeSort","awayjs-renderergl/lib/surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/RendererGL":[function(require,module,exports){
 var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
 var Skybox = require("awayjs-display/lib/display/Skybox");
 var Billboard = require("awayjs-display/lib/display/Billboard");
@@ -1542,7 +1636,7 @@ var AnimatorBase = (function (_super) {
         this._pAbsoluteTime = 0;
         this._animationStates = new Object();
         /**
-         * Enables translation of the animated mesh from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
+         * Enables translation of the animated sprite from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
          *
          * @see away.animators.IAnimationState#positionDelta
          */
@@ -1726,20 +1820,20 @@ var AnimatorBase = (function (_super) {
         this.getAnimationState(this._pAnimationSet.getAnimation(name)).offset(offset + this._pAbsoluteTime);
     };
     /**
-     * Used by the mesh object to which the animator is applied, registers the owner for internal use.
+     * Used by the sprite object to which the animator is applied, registers the owner for internal use.
      *
      * @private
      */
-    AnimatorBase.prototype.addOwner = function (mesh) {
-        this._pOwners.push(mesh);
+    AnimatorBase.prototype.addOwner = function (sprite) {
+        this._pOwners.push(sprite);
     };
     /**
-     * Used by the mesh object from which the animator is removed, unregisters the owner for internal use.
+     * Used by the sprite object from which the animator is removed, unregisters the owner for internal use.
      *
      * @private
      */
-    AnimatorBase.prototype.removeOwner = function (mesh) {
-        this._pOwners.splice(this._pOwners.indexOf(mesh), 1);
+    AnimatorBase.prototype.removeOwner = function (sprite) {
+        this._pOwners.splice(this._pOwners.indexOf(sprite), 1);
     };
     /**
      * Internal abstract method called when the time delta property of the animator's contents requires updating.
@@ -2009,28 +2103,24 @@ var ParticleAnimationSet = (function (_super) {
         _super.prototype.dispose.call(this);
     };
     ParticleAnimationSet.prototype.getAnimationElements = function (graphic) {
-        var mesh = graphic.parent.sourceEntity;
         var animationElements = (this.shareAnimationGraphics) ? this._animationElements[graphic.elements.id] : this._animationElements[graphic.id];
         if (animationElements)
             return animationElements;
-        this._iGenerateAnimationElements(mesh);
+        this._iGenerateAnimationElements(graphic.parent);
         return (this.shareAnimationGraphics) ? this._animationElements[graphic.elements.id] : this._animationElements[graphic.id];
     };
     /** @private */
-    ParticleAnimationSet.prototype._iGenerateAnimationElements = function (mesh) {
+    ParticleAnimationSet.prototype._iGenerateAnimationElements = function (graphics) {
         if (this.initParticleFunc == null)
             throw (new Error("no initParticleFunc set"));
-        var geometry = mesh.graphics;
-        if (!geometry)
-            throw (new Error("Particle animation can only be performed on a Graphics object"));
         var i /*int*/, j /*int*/, k /*int*/;
         var animationElements;
         var newAnimationElements = false;
         var elements;
         var graphic;
         var localNode;
-        for (i = 0; i < mesh.graphics.count; i++) {
-            graphic = mesh.graphics.getGraphicAt(i);
+        for (i = 0; i < graphics.count; i++) {
+            graphic = graphics.getGraphicAt(i);
             elements = graphic.elements;
             if (this.shareAnimationGraphics) {
                 animationElements = this._animationElements[elements.id];
@@ -2048,9 +2138,9 @@ var ParticleAnimationSet = (function (_super) {
         }
         if (!newAnimationElements)
             return;
-        var particles = geometry.particles;
+        var particles = graphics.particles;
         var particlesLength = particles.length;
-        var numParticles = geometry.numParticles;
+        var numParticles = graphics.numParticles;
         var particleProperties = new ParticleProperties();
         var particle;
         var oneDataLen /*int*/;
@@ -2077,8 +2167,8 @@ var ParticleAnimationSet = (function (_super) {
             for (k = 0; k < this._localStaticNodes.length; k++)
                 this._localStaticNodes[k]._iGeneratePropertyOfOneParticle(particleProperties);
             while (j < particlesLength && (particle = particles[j]).particleIndex == i) {
-                for (k = 0; k < mesh.graphics.count; k++) {
-                    graphic = mesh.graphics.getGraphicAt(k);
+                for (k = 0; k < graphics.count; k++) {
+                    graphic = graphics.getGraphicAt(k);
                     if (graphic.elements == particle.elements) {
                         animationElements = (this.shareAnimationGraphics) ? this._animationElements[graphic.elements.id] : this._animationElements[graphic.id];
                         break;
@@ -2134,11 +2224,11 @@ var AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 var AnimationElements = require("awayjs-renderergl/lib/animators/data/AnimationElements");
 var ParticlePropertiesMode = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
 /**
- * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
+ * Provides an interface for assigning paricle-based animation data sets to sprite-based entity objects
  * and controlling the various available states of animation through an interative playhead that can be
  * automatically updated or manually triggered.
  *
- * Requires that the containing geometry of the parent mesh is particle geometry
+ * Requires that the containing geometry of the parent sprite is particle geometry
  *
  * @see away.base.ParticleGraphics
  */
@@ -2367,7 +2457,7 @@ var JointPose = require("awayjs-renderergl/lib/animators/data/JointPose");
 var SkeletonPose = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
 var AnimationStateEvent = require("awayjs-renderergl/lib/events/AnimationStateEvent");
 /**
- * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects
+ * Provides an interface for assigning skeleton-based animation data sets to sprite-based entity objects
  * and controlling the various available states of animation through an interative playhead that can be
  * automatically updated or manually triggered.
  */
@@ -2377,7 +2467,7 @@ var SkeletonAnimator = (function (_super) {
      * Creates a new <code>SkeletonAnimator</code> object.
      *
      * @param skeletonAnimationSet The animation data set containing the skeleton animations used by the animator.
-     * @param skeleton The skeleton object used for calculating the resulting global matrices for transforming skinned mesh data.
+     * @param skeleton The skeleton object used for calculating the resulting global matrices for transforming skinned sprite data.
      * @param forceCPU Optional value that only allows the animator to perform calculation on the CPU. Defaults to false.
      */
     function SkeletonAnimator(animationSet, skeleton, forceCPU) {
@@ -2464,8 +2554,8 @@ var SkeletonAnimator = (function (_super) {
     Object.defineProperty(SkeletonAnimator.prototype, "useCondensedIndices", {
         /**
          * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
-         * by condensing the number of joint index values required per mesh. Only applicable to
-         * skeleton animations that utilise more than one mesh object. Defaults to false.
+         * by condensing the number of joint index values required per sprite. Only applicable to
+         * skeleton animations that utilise more than one sprite object. Defaults to false.
          */
         get: function () {
             return this._useCondensedIndices;
@@ -3068,7 +3158,7 @@ var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType
 var AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 var VertexAnimationMode = require("awayjs-renderergl/lib/animators/data/VertexAnimationMode");
 /**
- * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
+ * Provides an interface for assigning vertex-based animation data sets to sprite-based entity objects
  * and controlling the various available states of animation through an interative playhead that can be
  * automatically updated or manually triggered.
  */
@@ -3135,12 +3225,12 @@ var VertexAnimator = (function (_super) {
         }
         this._weights[0] = 1 - (this._weights[1] = this._activeVertexState.blendWeight);
         if (geometryFlag) {
-            //invalidate meshes
-            var mesh;
+            //invalidate sprites
+            var sprite;
             var len = this._pOwners.length;
             for (var i = 0; i < len; i++) {
-                mesh = this._pOwners[i];
-                mesh.graphics.invalidateElements();
+                sprite = this._pOwners[i];
+                sprite.graphics.invalidateElements();
             }
         }
     };
@@ -3149,7 +3239,7 @@ var VertexAnimator = (function (_super) {
      */
     VertexAnimator.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
         // todo: add code for when running on cpu
-        // this type of animation can only be SubMesh
+        // this type of animation can only be SubSprite
         var graphic = renderable.graphic;
         var elements = graphic.elements;
         // if no poses defined, set temp data
@@ -6450,7 +6540,7 @@ var VertexClipNode = (function (_super) {
      *
      * @param geometry The geometry object to add to the timeline of the node.
      * @param duration The specified duration of the frame in milliseconds.
-     * @param translation The absolute translation of the frame, used in root delta calculations for mesh movement.
+     * @param translation The absolute translation of the frame, used in root delta calculations for sprite movement.
      */
     VertexClipNode.prototype.addFrame = function (geometry, duration /*uint*/, translation) {
         if (translation === void 0) { translation = null; }
@@ -9603,7 +9693,7 @@ var GL_LineElements = (function (_super) {
      * @param renderable
      * @param level
      * @param indexOffset
-     * @returns {away.pool.LineSubMeshRenderable}
+     * @returns {away.pool.LineSubSpriteRenderable}
      * @protected
      */
     GL_LineElements.prototype._pGetOverflowElements = function () {
@@ -9730,12 +9820,12 @@ var GL_TriangleElements = (function (_super) {
         this.activateVertexBufferVO(0, this._triangleElements.positions);
         //set constants
         if (this._shader.sceneMatrixIndex >= 0) {
-            sourceEntity.getRenderSceneTransform(camera).copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
+            sourceEntity.getRenderSceneTransform(camera.sceneTransform).copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
             viewProjection.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
         }
         else {
             var matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
-            matrix3D.copyFrom(sourceEntity.getRenderSceneTransform(camera));
+            matrix3D.copyFrom(sourceEntity.getRenderSceneTransform(camera.sceneTransform));
             matrix3D.append(viewProjection);
             matrix3D.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
         }
@@ -11094,422 +11184,7 @@ var RTTBufferManagerVO = (function () {
 })();
 module.exports = RTTBufferManager;
 
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/ImageUtils":undefined,"awayjs-renderergl/lib/events/RTTEvent":"awayjs-renderergl/lib/events/RTTEvent"}],"awayjs-renderergl/lib/pick/ShaderPicker":[function(require,module,exports){
-var Debug = require("awayjs-core/lib/utils/Debug");
-var BitmapImage2D = require("awayjs-core/lib/image/BitmapImage2D");
-var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var Point = require("awayjs-core/lib/geom/Point");
-var Rectangle = require("awayjs-core/lib/geom/Rectangle");
-var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
-var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
-var ContextGLClearMask = require("awayjs-stagegl/lib/base/ContextGLClearMask");
-var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var ContextGLTriangleFace = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
-/**
- * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
- * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
- * on an entity that has its shaderPickingDetails property set to true.
- *
- * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
- *
- * @see away.display.Entity#shaderPickingDetails
- *
- * @class away.pick.ShaderPicker
- */
-var ShaderPicker = (function () {
-    /**
-     * Creates a new <code>ShaderPicker</code> object.
-     *
-     * @param shaderPickingDetails Determines whether the picker includes a second pass to calculate extra
-     * properties such as uv and normal coordinates.
-     */
-    function ShaderPicker(shaderPickingDetails) {
-        if (shaderPickingDetails === void 0) { shaderPickingDetails = false; }
-        this._onlyMouseEnabled = true;
-        this._interactives = new Array();
-        this._localHitPosition = new Vector3D();
-        this._hitUV = new Point();
-        this._localHitNormal = new Vector3D();
-        this._rayPos = new Vector3D();
-        this._rayDir = new Vector3D();
-        this._shaderPickingDetails = shaderPickingDetails;
-        this._id = new Float32Array(4);
-        this._viewportData = new Float32Array(4); // first 2 contain scale, last 2 translation
-        this._boundOffsetScale = new Float32Array(8); // first 2 contain scale, last 2 translation
-        this._boundOffsetScale[3] = 0;
-        this._boundOffsetScale[7] = 1;
-    }
-    Object.defineProperty(ShaderPicker.prototype, "onlyMouseEnabled", {
-        /**
-         * @inheritDoc
-         */
-        get: function () {
-            return this._onlyMouseEnabled;
-        },
-        set: function (value) {
-            this._onlyMouseEnabled = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    ShaderPicker.prototype.getViewCollision = function (x, y, view) {
-        var collector = view.iEntityCollector;
-        this._stage = view.renderer.stage;
-        if (!this._stage)
-            return null;
-        this._context = this._stage.context;
-        this._viewportData[0] = view.width;
-        this._viewportData[1] = view.height;
-        this._viewportData[2] = -(this._projX = 2 * x / view.width - 1);
-        this._viewportData[3] = this._projY = 2 * y / view.height - 1;
-        // _potentialFound will be set to true if any object is actually rendered
-        this._potentialFound = false;
-        //reset head values
-        this._blendedRenderableHead = null;
-        this._opaqueRenderableHead = null;
-        this.pDraw(collector, null);
-        // clear buffers
-        this._context.setVertexBufferAt(0, null);
-        if (!this._context || !this._potentialFound)
-            return null;
-        if (!this._bitmapImage2D)
-            this._bitmapImage2D = new BitmapImage2D(1, 1, false, 0);
-        this._context.drawToBitmapImage2D(this._bitmapImage2D);
-        this._hitColor = this._bitmapImage2D.getPixel(0, 0);
-        if (!this._hitColor) {
-            this._context.present();
-            return null;
-        }
-        this._hitRenderable = this._interactives[this._hitColor - 1];
-        this._hitEntity = this._hitRenderable.sourceEntity;
-        if (this._onlyMouseEnabled && !this._hitEntity._iIsMouseEnabled())
-            return null;
-        var _collisionVO = this._hitEntity._iPickingCollisionVO;
-        if (this._shaderPickingDetails) {
-            this.getHitDetails(view.camera);
-            _collisionVO.localPosition = this._localHitPosition;
-            _collisionVO.localNormal = this._localHitNormal;
-            _collisionVO.uv = this._hitUV;
-            _collisionVO.index = this._faceIndex;
-        }
-        else {
-            _collisionVO.localPosition = null;
-            _collisionVO.localNormal = null;
-            _collisionVO.uv = null;
-            _collisionVO.index = 0;
-        }
-        return _collisionVO;
-    };
-    //*/
-    /**
-     * @inheritDoc
-     */
-    ShaderPicker.prototype.getSceneCollision = function (position, direction, scene) {
-        return null;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShaderPicker.prototype.pDraw = function (entityCollector, target) {
-        var camera = entityCollector.camera;
-        this._context.clear(0, 0, 0, 1);
-        this._stage.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
-        this._interactives.length = this._interactiveId = 0;
-        if (!this._objectProgram)
-            this.initObjectProgram();
-        this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-        this._context.setDepthTest(true, ContextGLCompareMode.LESS);
-        this._context.setProgram(this._objectProgram);
-        this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
-        //this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
-        //this.drawRenderables(entityCollector.blendedRenderableHead, camera);
-        //TODO: reimplement ShaderPicker inheriting from RendererBase
-    };
-    /**
-     * Draw a list of renderables.
-     * @param renderables The renderables to draw.
-     * @param camera The camera for which to render.
-     */
-    ShaderPicker.prototype.drawRenderables = function (renderableGL, camera) {
-        var matrix = Matrix3DUtils.CALCULATION_MATRIX;
-        var viewProjection = camera.viewProjection;
-        while (renderableGL) {
-            // it's possible that the renderableGL was already removed from the scene
-            if (!renderableGL.sourceEntity.scene || !renderableGL.sourceEntity._iIsMouseEnabled()) {
-                renderableGL = renderableGL.next;
-                continue;
-            }
-            this._potentialFound = true;
-            this._context.setCulling(renderableGL.surfaceGL.surface.bothSides ? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
-            this._interactives[this._interactiveId++] = renderableGL;
-            // color code so that reading from bitmapdata will contain the correct value
-            this._id[1] = (this._interactiveId >> 8) / 255; // on green channel
-            this._id[2] = (this._interactiveId & 0xff) / 255; // on blue channel
-            matrix.copyFrom(renderableGL.sourceEntity.getRenderSceneTransform(camera));
-            matrix.append(viewProjection);
-            this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
-            this._context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._id, 1);
-            //var positionAttributes:GL_AttributesBuffer = <GL_AttributesBuffer> this._stage.getAbstraction((<TriangleElements> renderableGL.elements).positions);
-            //positionAttributes.activate(0, positionAttributes.size, positionAttributes.dimensions, positionAttributes.offset);
-            //elementsGL.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, elementsGL.numIndices);
-            renderableGL = renderableGL.next;
-        }
-    };
-    ShaderPicker.prototype.updateRay = function (camera) {
-        this._rayPos = camera.scenePosition;
-        this._rayDir = camera.getRay(this._projX, this._projY, 1);
-        this._rayDir.normalize();
-    };
-    /**
-     * Creates the Program that color-codes objects.
-     */
-    ShaderPicker.prototype.initObjectProgram = function () {
-        var vertexCode;
-        var fragmentCode;
-        this._objectProgram = this._context.createProgram();
-        vertexCode = "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
-        fragmentCode = "mov oc, fc0"; // write identifier
-        Debug.throwPIR('ShaderPicker', 'initTriangleProgram', 'Dependency: initObjectProgram');
-        //_objectProgram.upload(new AGALMiniAssembler().assemble(ContextGLProgramType.VERTEX, vertexCode),new AGALMiniAssembler().assemble(ContextGLProgramType.FRAGMENT, fragmentCode));
-    };
-    /**
-     * Creates the Program that renders positions.
-     */
-    ShaderPicker.prototype.initTriangleProgram = function () {
-        var vertexCode;
-        var fragmentCode;
-        this._triangleProgram = this._context.createProgram();
-        // todo: add animation code
-        vertexCode = "add vt0, va0, vc5 			\n" + "mul vt0, vt0, vc6 			\n" + "mov v0, vt0				\n" + "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
-        fragmentCode = "mov oc, v0"; // write identifier
-        var vertexByteCode = (new AGALMiniAssembler().assemble("part vertex 1\n" + vertexCode + "endpart"))['vertex'].data;
-        var fragmentByteCode = (new AGALMiniAssembler().assemble("part fragment 1\n" + fragmentCode + "endpart"))['fragment'].data;
-        this._triangleProgram.upload(vertexByteCode, fragmentByteCode);
-    };
-    /**
-     * Gets more detailed information about the hir position, if required.
-     * @param camera The camera used to view the hit object.
-     */
-    ShaderPicker.prototype.getHitDetails = function (camera) {
-        this.getApproximatePosition(camera);
-        this.getPreciseDetails(camera);
-    };
-    /**
-     * Finds a first-guess approximate position about the hit position.
-     *
-     * @param camera The camera used to view the hit object.
-     */
-    ShaderPicker.prototype.getApproximatePosition = function (camera) {
-        var bounds = this._hitRenderable.sourceEntity.getBox();
-        var col;
-        var scX, scY, scZ;
-        var offsX, offsY, offsZ;
-        var localViewProjection = Matrix3DUtils.CALCULATION_MATRIX;
-        localViewProjection.copyFrom(this._hitRenderable.sourceEntity.getRenderSceneTransform(camera));
-        localViewProjection.append(camera.viewProjection);
-        if (!this._triangleProgram) {
-            this.initTriangleProgram();
-        }
-        this._boundOffsetScale[4] = 1 / (scX = bounds.width);
-        this._boundOffsetScale[5] = 1 / (scY = bounds.height);
-        this._boundOffsetScale[6] = 1 / (scZ = bounds.depth);
-        this._boundOffsetScale[0] = offsX = -bounds.x;
-        this._boundOffsetScale[1] = offsY = -bounds.y;
-        this._boundOffsetScale[2] = offsZ = -bounds.z;
-        this._context.setProgram(this._triangleProgram);
-        this._context.clear(0, 0, 0, 0, 1, 0, ContextGLClearMask.DEPTH);
-        this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
-        this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, localViewProjection, true);
-        this._context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
-        //var elementsGL:GL_ElementsBase = this._hitRenderable.elementsGL;
-        //
-        //elementsGL.activateVertexBufferVO(0, (<TriangleElements> elementsGL.elements).positions);
-        //elementsGL.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, elementsGL.numIndices);
-        this._context.drawToBitmapImage2D(this._bitmapImage2D);
-        col = this._bitmapImage2D.getPixel(0, 0);
-        this._localHitPosition.x = ((col >> 16) & 0xff) * scX / 255 - offsX;
-        this._localHitPosition.y = ((col >> 8) & 0xff) * scY / 255 - offsY;
-        this._localHitPosition.z = (col & 0xff) * scZ / 255 - offsZ;
-    };
-    /**
-     * Use the approximate position info to find the face under the mouse position from which we can derive the precise
-     * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
-     * @param camera The camera used to view the hit object.
-     */
-    ShaderPicker.prototype.getPreciseDetails = function (camera) {
-        var len = indices.length;
-        var x1, y1, z1;
-        var x2, y2, z2;
-        var x3, y3, z3;
-        var i = 0, j = 1, k = 2;
-        var t1, t2, t3;
-        var v0x, v0y, v0z;
-        var v1x, v1y, v1z;
-        var v2x, v2y, v2z;
-        var ni1, ni2, ni3;
-        var n1, n2, n3, nLength;
-        var dot00, dot01, dot02, dot11, dot12;
-        var s, t, invDenom;
-        var x = this._localHitPosition.x, y = this._localHitPosition.y, z = this._localHitPosition.z;
-        var u, v;
-        var ui1, ui2, ui3;
-        var s0x, s0y, s0z;
-        var s1x, s1y, s1z;
-        var nl;
-        var subGeom = this._hitRenderable._pGetElements();
-        var indices = subGeom.indices.get(subGeom.numElements);
-        var positions = subGeom.positions.get(subGeom.numVertices);
-        var posDim = subGeom.positions.dimensions;
-        var uvs = subGeom.uvs.get(subGeom.numVertices);
-        var uvDim = subGeom.uvs.dimensions;
-        var normals = subGeom.normals.get(subGeom.numVertices);
-        var normalDim = subGeom.normals.dimensions;
-        this.updateRay(camera);
-        while (i < len) {
-            t1 = indices[i] * posDim;
-            t2 = indices[j] * posDim;
-            t3 = indices[k] * posDim;
-            x1 = positions[t1];
-            y1 = positions[t1 + 1];
-            z1 = positions[t1 + 2];
-            x2 = positions[t2];
-            y2 = positions[t2 + 1];
-            z2 = positions[t2 + 2];
-            x3 = positions[t3];
-            y3 = positions[t3 + 1];
-            z3 = positions[t3 + 2];
-            // if within bounds
-            if (!((x < x1 && x < x2 && x < x3) || (y < y1 && y < y2 && y < y3) || (z < z1 && z < z2 && z < z3) || (x > x1 && x > x2 && x > x3) || (y > y1 && y > y2 && y > y3) || (z > z1 && z > z2 && z > z3))) {
-                // calculate barycentric coords for approximated position
-                v0x = x3 - x1;
-                v0y = y3 - y1;
-                v0z = z3 - z1;
-                v1x = x2 - x1;
-                v1y = y2 - y1;
-                v1z = z2 - z1;
-                v2x = x - x1;
-                v2y = y - y1;
-                v2z = z - z1;
-                dot00 = v0x * v0x + v0y * v0y + v0z * v0z;
-                dot01 = v0x * v1x + v0y * v1y + v0z * v1z;
-                dot02 = v0x * v2x + v0y * v2y + v0z * v2z;
-                dot11 = v1x * v1x + v1y * v1y + v1z * v1z;
-                dot12 = v1x * v2x + v1y * v2y + v1z * v2z;
-                invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-                s = (dot11 * dot02 - dot01 * dot12) * invDenom;
-                t = (dot00 * dot12 - dot01 * dot02) * invDenom;
-                // if inside the current triangle, fetch details hit information
-                if (s >= 0 && t >= 0 && (s + t) <= 1) {
-                    ni1 = indices[i] * normalDim;
-                    ni2 = indices[j] * normalDim;
-                    ni3 = indices[k] * normalDim;
-                    n1 = indices[ni1] + indices[ni2] + indices[ni3];
-                    n2 = indices[ni1 + 1] + indices[ni2 + 1] + indices[ni3 + 1];
-                    n3 = indices[ni1 + 2] + indices[ni2 + 2] + indices[ni3 + 2];
-                    nLength = Math.sqrt(n1 * n1 + n2 * n2 + n3 * n3);
-                    n1 /= nLength;
-                    n2 /= nLength;
-                    n3 /= nLength;
-                    // this is def the triangle, now calculate precise coords
-                    this.getPrecisePosition(this._hitRenderable.sourceEntity.inverseSceneTransform, n1, n2, n3, x1, y1, z1);
-                    v2x = this._localHitPosition.x - x1;
-                    v2y = this._localHitPosition.y - y1;
-                    v2z = this._localHitPosition.z - z1;
-                    s0x = x2 - x1; // s0 = p1 - p0
-                    s0y = y2 - y1;
-                    s0z = z2 - z1;
-                    s1x = x3 - x1; // s1 = p2 - p0
-                    s1y = y3 - y1;
-                    s1z = z3 - z1;
-                    this._localHitNormal.x = s0y * s1z - s0z * s1y; // n = s0 x s1
-                    this._localHitNormal.y = s0z * s1x - s0x * s1z;
-                    this._localHitNormal.z = s0x * s1y - s0y * s1x;
-                    nl = 1 / Math.sqrt(this._localHitNormal.x * this._localHitNormal.x + this._localHitNormal.y * this._localHitNormal.y + this._localHitNormal.z * this._localHitNormal.z); // normalize n
-                    this._localHitNormal.x *= nl;
-                    this._localHitNormal.y *= nl;
-                    this._localHitNormal.z *= nl;
-                    dot02 = v0x * v2x + v0y * v2y + v0z * v2z;
-                    dot12 = v1x * v2x + v1y * v2y + v1z * v2z;
-                    s = (dot11 * dot02 - dot01 * dot12) * invDenom;
-                    t = (dot00 * dot12 - dot01 * dot02) * invDenom;
-                    ui1 = indices[i] * uvDim;
-                    ui2 = indices[j] * uvDim;
-                    ui3 = indices[k] * uvDim;
-                    u = uvs[ui1];
-                    v = uvs[ui1 + 1];
-                    this._hitUV.x = u + t * (uvs[ui2] - u) + s * (uvs[ui3] - u);
-                    this._hitUV.y = v + t * (uvs[ui2 + 1] - v) + s * (uvs[ui3 + 1] - v);
-                    this._faceIndex = i;
-                    //TODO add back elementsIndex value
-                    //this._elementsIndex = away.utils.GraphicsUtils.getMeshElementsIndex(subGeom);
-                    return;
-                }
-            }
-            i += 3;
-            j += 3;
-            k += 3;
-        }
-    };
-    /**
-     * Finds the precise hit position by unprojecting the screen coordinate back unto the hit face's plane and
-     * calculating the intersection point.
-     * @param camera The camera used to render the object.
-     * @param invSceneTransform The inverse scene transformation of the hit object.
-     * @param nx The x-coordinate of the face's plane normal.
-     * @param ny The y-coordinate of the face plane normal.
-     * @param nz The z-coordinate of the face plane normal.
-     * @param px The x-coordinate of a point on the face's plane (ie a face vertex)
-     * @param py The y-coordinate of a point on the face's plane (ie a face vertex)
-     * @param pz The z-coordinate of a point on the face's plane (ie a face vertex)
-     */
-    ShaderPicker.prototype.getPrecisePosition = function (invSceneTransform, nx, ny, nz, px, py, pz) {
-        // calculate screen ray and find exact intersection position with triangle
-        var rx, ry, rz;
-        var ox, oy, oz;
-        var t;
-        var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
-        var cx = this._rayPos.x, cy = this._rayPos.y, cz = this._rayPos.z;
-        // unprojected projection point, gives ray dir in cam space
-        ox = this._rayDir.x;
-        oy = this._rayDir.y;
-        oz = this._rayDir.z;
-        // transform ray dir and origin (cam pos) to object space
-        //invSceneTransform.copyRawDataTo( raw  );
-        invSceneTransform.copyRawDataTo(raw);
-        rx = raw[0] * ox + raw[4] * oy + raw[8] * oz;
-        ry = raw[1] * ox + raw[5] * oy + raw[9] * oz;
-        rz = raw[2] * ox + raw[6] * oy + raw[10] * oz;
-        ox = raw[0] * cx + raw[4] * cy + raw[8] * cz + raw[12];
-        oy = raw[1] * cx + raw[5] * cy + raw[9] * cz + raw[13];
-        oz = raw[2] * cx + raw[6] * cy + raw[10] * cz + raw[14];
-        t = ((px - ox) * nx + (py - oy) * ny + (pz - oz) * nz) / (rx * nx + ry * ny + rz * nz);
-        this._localHitPosition.x = ox + rx * t;
-        this._localHitPosition.y = oy + ry * t;
-        this._localHitPosition.z = oz + rz * t;
-    };
-    ShaderPicker.prototype.dispose = function () {
-        this._bitmapImage2D.dispose();
-        if (this._triangleProgram)
-            this._triangleProgram.dispose();
-        if (this._objectProgram)
-            this._objectProgram.dispose();
-        this._triangleProgram = null;
-        this._objectProgram = null;
-        this._bitmapImage2D = null;
-        this._hitRenderable = null;
-        this._hitEntity = null;
-    };
-    ShaderPicker.MOUSE_SCISSOR_RECT = new Rectangle(0, 0, 1, 1);
-    return ShaderPicker;
-})();
-module.exports = ShaderPicker;
-
-},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/renderables/GL_BillboardRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/ImageUtils":undefined,"awayjs-renderergl/lib/events/RTTEvent":"awayjs-renderergl/lib/events/RTTEvent"}],"awayjs-renderergl/lib/renderables/GL_BillboardRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11569,7 +11244,7 @@ var GL_Billboard = (function (_super) {
         }
         return elements;
     };
-    GL_Billboard.prototype._pGetRenderOwner = function () {
+    GL_Billboard.prototype._pGetSurface = function () {
         return this._billboard.material;
     };
     GL_Billboard._samplerElements = new Object();
@@ -11614,7 +11289,7 @@ var GL_GraphicRenderable = (function (_super) {
     GL_GraphicRenderable.prototype._pGetElements = function () {
         return this.graphic.elements;
     };
-    GL_GraphicRenderable.prototype._pGetRenderOwner = function () {
+    GL_GraphicRenderable.prototype._pGetSurface = function () {
         return this.graphic.material;
     };
     return GL_GraphicRenderable;
@@ -11631,7 +11306,7 @@ var __extends = this.__extends || function (d, b) {
 var LineElements = require("awayjs-display/lib/graphics/LineElements");
 var GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 /**
- * @class away.pool.LineSubMeshRenderable
+ * @class away.pool.GL_LineSegmentRenderable
  */
 var GL_LineSegmentRenderable = (function (_super) {
     __extends(GL_LineSegmentRenderable, _super);
@@ -11681,7 +11356,7 @@ var GL_LineSegmentRenderable = (function (_super) {
         geometry.setThickness(thickness);
         return geometry;
     };
-    GL_LineSegmentRenderable.prototype._pGetRenderOwner = function () {
+    GL_LineSegmentRenderable.prototype._pGetSurface = function () {
         return this._lineSegment.material;
     };
     /**
@@ -11691,7 +11366,7 @@ var GL_LineSegmentRenderable = (function (_super) {
      * @param renderable
      * @param level
      * @param indexOffset
-     * @returns {away.pool.LineSubMeshRenderable}
+     * @returns {away.pool.LineSubSpriteRenderable}
      * @private
      */
     GL_LineSegmentRenderable.prototype._pGetOverflowRenderable = function (indexOffset) {
@@ -11733,14 +11408,14 @@ var GL_RenderableBase = (function (_super) {
         this._surfaceDirty = true;
         this.images = new Array();
         this.samplers = new Array();
-        this._onRenderOwnerUpdatedDelegate = function (event) { return _this._onRenderOwnerUpdated(event); };
+        this._onSurfaceUpdatedDelegate = function (event) { return _this._onSurfaceUpdated(event); };
         this._onInvalidateElementsDelegate = function (event) { return _this.onInvalidateElements(event); };
         //store a reference to the pool for later disposal
         this._renderer = renderer;
         this._stage = renderer.stage;
         this.sourceEntity = sourceEntity;
         this.renderable = renderable;
-        this.renderable.addEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onRenderOwnerUpdatedDelegate);
+        this.renderable.addEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
         this.renderable.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
     }
     Object.defineProperty(GL_RenderableBase.prototype, "elements", {
@@ -11755,7 +11430,7 @@ var GL_RenderableBase = (function (_super) {
     Object.defineProperty(GL_RenderableBase.prototype, "surfaceGL", {
         get: function () {
             if (this._surfaceDirty)
-                this._updateRenderOwner();
+                this._updateSurface();
             return this._surfaceGL;
         },
         enumerable: true,
@@ -11769,7 +11444,7 @@ var GL_RenderableBase = (function (_super) {
         this._renderer = null;
         this._stage = null;
         this.sourceEntity = null;
-        this.renderable.removeEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onRenderOwnerUpdatedDelegate);
+        this.renderable.removeEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
         this.renderable = null;
         this._surfaceGL.usages--;
         if (!this._surfaceGL.usages)
@@ -11780,13 +11455,13 @@ var GL_RenderableBase = (function (_super) {
     GL_RenderableBase.prototype.onInvalidateElements = function (event) {
         this._elementsDirty = true;
     };
-    GL_RenderableBase.prototype._onRenderOwnerUpdated = function (event) {
+    GL_RenderableBase.prototype._onSurfaceUpdated = function (event) {
         this._surfaceDirty = true;
     };
     GL_RenderableBase.prototype._pGetElements = function () {
         throw new AbstractMethodError();
     };
-    GL_RenderableBase.prototype._pGetRenderOwner = function () {
+    GL_RenderableBase.prototype._pGetSurface = function () {
         throw new AbstractMethodError();
     };
     /**
@@ -11831,8 +11506,8 @@ var GL_RenderableBase = (function (_super) {
         this._elements = this._pGetElements();
         this._elementsDirty = false;
     };
-    GL_RenderableBase.prototype._updateRenderOwner = function () {
-        var surface = this._pGetRenderOwner() || DefaultMaterialManager.getDefaultMaterial(this.renderable);
+    GL_RenderableBase.prototype._updateSurface = function () {
+        var surface = this._pGetSurface() || DefaultMaterialManager.getDefaultMaterial(this.renderable);
         var surfaceGL = this._renderer.getSurfacePool(this.elements).getAbstraction(surface);
         if (this._surfaceGL != surfaceGL) {
             if (this._surfaceGL) {
@@ -11916,7 +11591,7 @@ var GL_SkyboxRenderable = (function (_super) {
         }
         return geometry;
     };
-    GL_SkyboxRenderable.prototype._pGetRenderOwner = function () {
+    GL_SkyboxRenderable.prototype._pGetSurface = function () {
         return this._skybox;
     };
     GL_SkyboxRenderable._iIncludeDependencies = function (shader) {
@@ -15008,17 +14683,17 @@ module.exports = GL_TextureBase;
 var AttributesBuffer = require("awayjs-core/lib/attributes/AttributesBuffer");
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
-var Mesh = require("awayjs-display/lib/display/Mesh");
+var Sprite = require("awayjs-display/lib/display/Sprite");
 /**
- *  Class Merge merges two or more static meshes into one.<code>Merge</code>
+ *  Class Merge merges two or more static sprites into one.<code>Merge</code>
  */
 var Merge = (function () {
     /**
-     * @param    keepMaterial    [optional]    Determines if the merged object uses the recevier mesh material information or keeps its source material(s). Defaults to false.
-     * If false and receiver object has multiple materials, the last material found in receiver submeshes is applied to the merged submesh(es).
-     * @param    disposeSources  [optional]    Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
-     * If true, only receiver geometry and resulting mesh are kept in  memory.
-     * @param    objectSpace     [optional]    Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+     * @param    keepMaterial    [optional]    Determines if the merged object uses the recevier sprite material information or keeps its source material(s). Defaults to false.
+     * If false and receiver object has multiple materials, the last material found in receiver subsprites is applied to the merged subsprite(es).
+     * @param    disposeSources  [optional]    Determines if the sprite and geometry source(s) used for the merging are disposed. Defaults to false.
+     * If true, only receiver geometry and resulting sprite are kept in  memory.
+     * @param    objectSpace     [optional]    Determines if source sprite(es) is/are merged using objectSpace or worldspace. Defaults to false.
      */
     function Merge(keepMaterial, disposeSources, objectSpace) {
         if (keepMaterial === void 0) { keepMaterial = false; }
@@ -15033,7 +14708,7 @@ var Merge = (function () {
             return this._disposeSources;
         },
         /**
-         * Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
+         * Determines if the sprite and geometry source(s) used for the merging are disposed. Defaults to false.
          */
         set: function (b) {
             this._disposeSources = b;
@@ -15059,7 +14734,7 @@ var Merge = (function () {
             return this._objectSpace;
         },
         /**
-         * Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+         * Determines if source sprite(es) is/are merged using objectSpace or worldspace. Defaults to false.
          */
         set: function (b) {
             this._objectSpace = b;
@@ -15068,16 +14743,16 @@ var Merge = (function () {
         configurable: true
     });
     /**
-     * Merges all the children of a container into a single Mesh. If no Mesh object is found, method returns the receiver without modification.
+     * Merges all the children of a container into a single Sprite. If no Sprite object is found, method returns the receiver without modification.
      *
-     * @param    receiver           The Mesh to receive the merged contents of the container.
-     * @param    objectContainer    The DisplayObjectContainer holding the meshes to be mergd.
+     * @param    receiver           The Sprite to receive the merged contents of the container.
+     * @param    objectContainer    The DisplayObjectContainer holding the sprites to be mergd.
      *
-     * @return The merged Mesh instance.
+     * @return The merged Sprite instance.
      */
     Merge.prototype.applyToContainer = function (receiver, objectContainer) {
         this.reset();
-        //collect container meshes
+        //collect container sprites
         this.parseContainer(receiver, objectContainer);
         //collect receiver
         this.collect(receiver, false);
@@ -15085,33 +14760,33 @@ var Merge = (function () {
         this.merge(receiver, this._disposeSources);
     };
     /**
-     * Merges all the meshes found in the Array&lt;Mesh&gt; into a single Mesh.
+     * Merges all the sprites found in the Array&lt;Sprite&gt; into a single Sprite.
      *
-     * @param    receiver    The Mesh to receive the merged contents of the meshes.
-     * @param    meshes      A series of Meshes to be merged with the reciever mesh.
+     * @param    receiver    The Sprite to receive the merged contents of the sprites.
+     * @param    sprites      A series of Spritees to be merged with the reciever sprite.
      */
-    Merge.prototype.applyToMeshes = function (receiver, meshes) {
+    Merge.prototype.applyToSpritees = function (receiver, sprites) {
         this.reset();
-        if (!meshes.length)
+        if (!sprites.length)
             return;
-        for (var i = 0; i < meshes.length; i++)
-            if (meshes[i] != receiver)
-                this.collect(meshes[i], this._disposeSources);
+        for (var i = 0; i < sprites.length; i++)
+            if (sprites[i] != receiver)
+                this.collect(sprites[i], this._disposeSources);
         //collect receiver
         this.collect(receiver, false);
         //merge to receiver
         this.merge(receiver, this._disposeSources);
     };
     /**
-     *  Merges 2 meshes into one. It is recommand to use apply when 2 meshes are to be merged. If more need to be merged, use either applyToMeshes or applyToContainer methods.
+     *  Merges 2 sprites into one. It is recommand to use apply when 2 sprites are to be merged. If more need to be merged, use either applyToSpritees or applyToContainer methods.
      *
-     * @param    receiver    The Mesh to receive the merged contents of both meshes.
-     * @param    mesh        The Mesh to be merged with the receiver mesh
+     * @param    receiver    The Sprite to receive the merged contents of both sprites.
+     * @param    sprite        The Sprite to be merged with the receiver sprite
      */
-    Merge.prototype.apply = function (receiver, mesh) {
+    Merge.prototype.apply = function (receiver, sprite) {
         this.reset();
-        //collect mesh
-        this.collect(mesh, this._disposeSources);
+        //collect sprite
+        this.collect(sprite, this._disposeSources);
         //collect receiver
         this.collect(receiver, false);
         //merge to receiver
@@ -15121,14 +14796,14 @@ var Merge = (function () {
         this._toDispose = new Array();
         this._graphicVOs = new Array();
     };
-    Merge.prototype.merge = function (destMesh, dispose) {
+    Merge.prototype.merge = function (destSprite, dispose) {
         var i /*uint*/;
         //var oldGraphics:Graphics;
         var destGraphics;
         var useSubMaterials;
-        //oldGraphics = destMesh.graphics.clone();
-        destGraphics = destMesh.graphics;
-        // Only apply materials directly to sub-meshes if necessary,
+        //oldGraphics = destSprite.graphics.clone();
+        destGraphics = destSprite.graphics;
+        // Only apply materials directly to sub-sprites if necessary,
         // i.e. if there is more than one material available.
         useSubMaterials = (this._graphicVOs.length > 1);
         for (i = 0; i < this._graphicVOs.length; i++) {
@@ -15143,10 +14818,10 @@ var Merge = (function () {
             elements.setUVs(data.uvs);
             destGraphics.addGraphic(elements);
             if (this._keepMaterial && useSubMaterials)
-                destMesh.graphics[i].material = data.material;
+                destSprite.graphics[i].material = data.material;
         }
         if (this._keepMaterial && !useSubMaterials && this._graphicVOs.length)
-            destMesh.material = this._graphicVOs[0].material;
+            destSprite.material = this._graphicVOs[0].material;
         if (dispose) {
             var len = this._toDispose.length;
             for (var i; i < len; i++)
@@ -15155,10 +14830,10 @@ var Merge = (function () {
         }
         this._toDispose = null;
     };
-    Merge.prototype.collect = function (mesh, dispose) {
+    Merge.prototype.collect = function (sprite, dispose) {
         var subIdx /*uint*/;
         var calc /*uint*/;
-        for (subIdx = 0; subIdx < mesh.graphics.count; subIdx++) {
+        for (subIdx = 0; subIdx < sprite.graphics.count; subIdx++) {
             var i /*uint*/;
             var len /*uint*/;
             var iIdx /*uint*/, vIdx /*uint*/, nIdx /*uint*/, tIdx /*uint*/, uIdx /*uint*/;
@@ -15169,13 +14844,13 @@ var Merge = (function () {
             var normals;
             var tangents;
             var ind, pd, nd, td, ud;
-            elements = mesh.graphics.getGraphicAt(subIdx).elements;
+            elements = sprite.graphics.getGraphicAt(subIdx).elements;
             pd = elements.positions.get(elements.numVertices);
             nd = elements.normals.get(elements.numVertices);
             td = elements.tangents.get(elements.numVertices);
             ud = elements.uvs.get(elements.numVertices);
             // Get (or create) a VO for this material
-            vo = this.getGraphicData(mesh.graphics.getGraphicAt(subIdx).material);
+            vo = this.getGraphicData(sprite.graphics.getGraphicAt(subIdx).material);
             // Vertices and normals are copied to temporary vectors, to be transformed
             // before concatenated onto those of the data. This is unnecessary if no
             // transformation will be performed, i.e. for object space merging.
@@ -15218,9 +14893,9 @@ var Merge = (function () {
                 vo.indices[iIdx++] = ind[calc + 2] + indexOffset;
             }
             if (!this._objectSpace) {
-                mesh.sceneTransform.transformVectors(vertices, vertices);
-                Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, normals, normals);
-                Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, tangents, tangents);
+                sprite.sceneTransform.transformVectors(vertices, vertices);
+                Matrix3DUtils.deltaTransformVectors(sprite.sceneTransform, normals, normals);
+                Matrix3DUtils.deltaTransformVectors(sprite.sceneTransform, tangents, tangents);
                 // Copy vertex data from temporary (transformed) vectors
                 vIdx = vo.vertices.length;
                 nIdx = vo.normals.length;
@@ -15234,7 +14909,7 @@ var Merge = (function () {
             }
         }
         if (dispose)
-            this._toDispose.push(mesh);
+            this._toDispose.push(sprite);
     };
     Merge.prototype.getGraphicData = function (material) {
         var data;
@@ -15270,7 +14945,7 @@ var Merge = (function () {
     Merge.prototype.parseContainer = function (receiver, object) {
         var child;
         var i /*uint*/;
-        if (object instanceof Mesh && object != receiver)
+        if (object instanceof Sprite && object != receiver)
             this.collect(object, this._disposeSources);
         for (i = 0; i < object.numChildren; ++i) {
             child = object.getChildAt(i);
@@ -15286,7 +14961,7 @@ var GraphicVO = (function () {
 })();
 module.exports = Merge;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined}],"awayjs-renderergl/lib/tools/data/ParticleGraphicsTransform":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined}],"awayjs-renderergl/lib/tools/data/ParticleGraphicsTransform":[function(require,module,exports){
 /**
  * ...
  */

@@ -13,12 +13,13 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	import ImageBase = require("awayjs-core/lib/image/ImageBase");
 	import BitmapImage2D = require("awayjs-core/lib/image/BitmapImage2D");
 	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
-	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
-	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
+	import Camera = require("awayjs-display/lib/display/Camera");
+	import IEntity = require("awayjs-display/lib/display/IEntity");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
 	import Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
 	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
+	import Scene = require("awayjs-display/lib/display/Scene");
 	/**
 	 * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
 	 * materials assigned to them.
@@ -34,6 +35,11 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	    _pFilter3DRenderer: Filter3DRenderer;
 	    _pDepthRender: BitmapImage2D;
 	    private _antiAlias;
+	    private _skybox;
+	    private _directionalLights;
+	    private _pointLights;
+	    private _lightProbes;
+	    isDebugEnabled: boolean;
 	    antiAlias: number;
 	    /**
 	     *
@@ -51,29 +57,47 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	     * @param renderMode The render mode to use.
 	     */
 	    constructor(stage?: Stage, forceSoftware?: boolean, profile?: string, mode?: string);
-	    render(entityCollector: CollectorBase): void;
-	    pExecuteRender(entityCollector: EntityCollector, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
-	    private updateLights(entityCollector);
+	    render(camera: Camera, scene: Scene): void;
+	    pExecuteRender(camera: Camera, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    private updateLights(camera);
 	    /**
 	     * @inheritDoc
 	     */
-	    pDraw(entityCollector: EntityCollector): void;
+	    pDraw(camera: Camera): void;
 	    /**
 	     * Draw the skybox if present.
-	     *
-	     * @param entityCollector The EntityCollector containing all potentially visible information.
-	     */
-	    private drawSkybox(entityCollector);
+	     **/
+	    private drawSkybox(camera);
 	    private updateSkyboxProjection(camera);
+	    /**
+	     *
+	     * @param entity
+	     */
+	    applyDirectionalLight(entity: IEntity): void;
+	    /**
+	     *
+	     * @param entity
+	     */
+	    applyLightProbe(entity: IEntity): void;
+	    /**
+	     *
+	     * @param entity
+	     */
+	    applyPointLight(entity: IEntity): void;
+	    /**
+	     *
+	     * @param entity
+	     */
+	    applySkybox(entity: IEntity): void;
 	    dispose(): void;
 	    /**
 	     *
 	     */
-	    pRenderDepthPrepass(entityCollector: EntityCollector): void;
+	    pRenderDepthPrepass(camera: Camera, scene: Scene): void;
 	    /**
 	     *
 	     */
-	    pRenderSceneDepthToTexture(entityCollector: EntityCollector): void;
+	    pRenderSceneDepthToTexture(camera: Camera, scene: Scene): void;
 	    /**
 	     * Updates the backbuffer dimensions.
 	     */
@@ -89,6 +113,7 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 
 declare module "awayjs-renderergl/lib/DepthRenderer" {
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import INode = require("awayjs-display/lib/partition/INode");
 	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
 	/**
 	 * The DepthRenderer class renders 32-bit depth information encoded as RGBA
@@ -102,6 +127,10 @@ declare module "awayjs-renderergl/lib/DepthRenderer" {
 	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	     */
 	    constructor(stage?: Stage);
+	    /**
+	     *
+	     */
+	    enterNode(node: INode): boolean;
 	}
 	export = DepthRenderer;
 	
@@ -109,6 +138,7 @@ declare module "awayjs-renderergl/lib/DepthRenderer" {
 
 declare module "awayjs-renderergl/lib/DistanceRenderer" {
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
+	import INode = require("awayjs-display/lib/partition/INode");
 	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
 	/**
 	 * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
@@ -122,6 +152,10 @@ declare module "awayjs-renderergl/lib/DistanceRenderer" {
 	     * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	     */
 	    constructor(stage?: Stage);
+	    /**
+	     *
+	     */
+	    enterNode(node: INode): boolean;
 	}
 	export = DistanceRenderer;
 	
@@ -163,18 +197,19 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	import ImageBase = require("awayjs-core/lib/image/ImageBase");
 	import BitmapImage2D = require("awayjs-core/lib/image/BitmapImage2D");
 	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import Plane3D = require("awayjs-core/lib/geom/Plane3D");
 	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
-	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
 	import EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
 	import IAssetClass = require("awayjs-core/lib/library/IAssetClass");
 	import IAbstractionPool = require("awayjs-core/lib/library/IAbstractionPool");
 	import IRenderable = require("awayjs-display/lib/base/IRenderable");
 	import IRenderer = require("awayjs-display/lib/IRenderer");
+	import INode = require("awayjs-display/lib/partition/INode");
 	import DisplayObject = require("awayjs-display/lib/display/DisplayObject");
 	import Camera = require("awayjs-display/lib/display/Camera");
+	import IEntity = require("awayjs-display/lib/display/IEntity");
+	import Scene = require("awayjs-display/lib/display/Scene");
 	import ElementsBase = require("awayjs-display/lib/graphics/ElementsBase");
-	import CollectorBase = require("awayjs-display/lib/traverse/CollectorBase");
-	import ShadowCasterCollector = require("awayjs-display/lib/traverse/ShadowCasterCollector");
 	import IContextGL = require("awayjs-stagegl/lib/base/IContextGL");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
@@ -192,6 +227,7 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	 * @class away.render.RendererBase
 	 */
 	class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPool {
+	    static _iCollectionMark: number;
 	    static _abstractionClassPool: Object;
 	    private _objectPools;
 	    private _abstractionPool;
@@ -203,9 +239,9 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	    private _numUsedTextures;
 	    _pContext: IContextGL;
 	    _pStage: Stage;
-	    _pCamera: Camera;
-	    _iEntryPoint: Vector3D;
-	    _pCameraForward: Vector3D;
+	    private _cameraPosition;
+	    private _cameraTransform;
+	    private _cameraForward;
 	    _pRttBufferManager: RTTBufferManager;
 	    private _viewPort;
 	    private _viewportDirty;
@@ -237,6 +273,14 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	    _pBlendedRenderableHead: GL_RenderableBase;
 	    _disableColor: boolean;
 	    _renderBlended: boolean;
+	    private _cullPlanes;
+	    private _customCullPlanes;
+	    private _numCullPlanes;
+	    isDebugEnabled: boolean;
+	    /**
+	     *
+	     */
+	    cullPlanes: Array<Plane3D>;
 	    renderBlended: boolean;
 	    disableColor: boolean;
 	    /**
@@ -295,7 +339,6 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	    static registerAbstraction(renderableClass: GL_IAssetClass, assetClass: IAssetClass): void;
 	    activatePass(renderableGL: GL_RenderableBase, pass: IPass, camera: Camera): void;
 	    deactivatePass(renderableGL: GL_RenderableBase, pass: IPass): void;
-	    _iCreateEntityCollector(): CollectorBase;
 	    /**
 	     * The background color's red component, used when clearing.
 	     *
@@ -328,39 +371,34 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	     * Disposes the resources used by the RendererBase.
 	     */
 	    dispose(): void;
-	    render(entityCollector: CollectorBase): void;
+	    render(camera: Camera, scene: Scene): void;
 	    /**
 	     * Renders the potentially visible geometry to the back buffer or texture.
-	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
 	     * @param target An option target texture to render to.
 	     * @param surfaceSelector The index of a CubeTexture's face to render to.
 	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	     */
-	    _iRender(entityCollector: CollectorBase, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
-	    _iRenderCascades(entityCollector: ShadowCasterCollector, target: ImageBase, numCascades: number, scissorRects: Array<Rectangle>, cameras: Array<Camera>): void;
-	    private _applyCollector(entityCollector);
+	    _iRender(camera: Camera, scene: Scene, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    _iRenderCascades(camera: Camera, scene: Scene, target: ImageBase, numCascades: number, scissorRects: Array<Rectangle>, cameras: Array<Camera>): void;
 	    /**
 	     * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
 	     *
-	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
 	     * @param target An option target texture to render to.
 	     * @param surfaceSelector The index of a CubeTexture's face to render to.
 	     * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	     */
-	    pExecuteRender(entityCollector: CollectorBase, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
+	    pExecuteRender(camera: Camera, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
 	    queueSnapshot(bmd: BitmapImage2D): void;
 	    /**
 	     * Performs the actual drawing of geometry to the target.
-	     * @param entityCollector The EntityCollector object containing the potentially visible geometry.
 	     */
-	    pDraw(entityCollector: CollectorBase): void;
+	    pDraw(camera: Camera): void;
 	    /**
 	     * Draw a list of renderables.
 	     *
 	     * @param renderables The renderables to draw.
-	     * @param entityCollector The EntityCollector containing all potentially visible information.
 	     */
-	    drawRenderables(renderableGL: GL_RenderableBase, entityCollector: CollectorBase): void;
+	    drawRenderables(camera: Camera, renderableGL: GL_RenderableBase): void;
 	    /**
 	     * Assign the context once retrieved
 	     */
@@ -382,10 +420,36 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	     *
 	     */
 	    updateGlobalPos(): void;
-	    _iApplyRenderable(renderable: IRenderable): void;
+	    /**
+	     *
+	     * @param node
+	     * @returns {boolean}
+	     */
+	    enterNode(node: INode): boolean;
+	    applyRenderable(renderable: IRenderable): void;
+	    /**
+	     *
+	     * @param entity
+	     */
+	    applyDirectionalLight(entity: IEntity): void;
+	    /**
+	     *
+	     * @param entity
+	     */
+	    applyLightProbe(entity: IEntity): void;
+	    /**
+	     *
+	     * @param entity
+	     */
+	    applyPointLight(entity: IEntity): void;
+	    /**
+	     *
+	     * @param entity
+	     */
+	    applySkybox(entity: IEntity): void;
 	    private _registerMask(obj);
-	    _renderMasks(masks: DisplayObject[][]): void;
-	    private _drawMask(renderableGL);
+	    _renderMasks(camera: Camera, masks: DisplayObject[][]): void;
+	    private _drawMask(camera, renderableGL);
 	    private _checkMasksConfig(masksConfig);
 	}
 	export = RendererBase;
@@ -503,7 +567,7 @@ declare module "awayjs-renderergl/lib/animators/AnimatorBase" {
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 	import ElementsBase = require("awayjs-display/lib/graphics/ElementsBase");
 	import Camera = require("awayjs-display/lib/display/Camera");
-	import Mesh = require("awayjs-display/lib/display/Mesh");
+	import Sprite = require("awayjs-display/lib/display/Sprite");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import IAnimationState = require("awayjs-renderergl/lib/animators/states/IAnimationState");
 	import GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
@@ -539,14 +603,14 @@ declare module "awayjs-renderergl/lib/animators/AnimatorBase" {
 	    private _time;
 	    private _playbackSpeed;
 	    _pAnimationSet: IAnimationSet;
-	    _pOwners: Array<Mesh>;
+	    _pOwners: Array<Sprite>;
 	    _pActiveNode: AnimationNodeBase;
 	    _pActiveState: IAnimationState;
 	    _pActiveAnimationName: string;
 	    _pAbsoluteTime: number;
 	    private _animationStates;
 	    /**
-	     * Enables translation of the animated mesh from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
+	     * Enables translation of the animated sprite from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
 	     *
 	     * @see away.animators.IAnimationState#positionDelta
 	     */
@@ -628,17 +692,17 @@ declare module "awayjs-renderergl/lib/animators/AnimatorBase" {
 	    update(time: number): void;
 	    reset(name: string, offset?: number): void;
 	    /**
-	     * Used by the mesh object to which the animator is applied, registers the owner for internal use.
+	     * Used by the sprite object to which the animator is applied, registers the owner for internal use.
 	     *
 	     * @private
 	     */
-	    addOwner(mesh: Mesh): void;
+	    addOwner(sprite: Sprite): void;
 	    /**
-	     * Used by the mesh object from which the animator is removed, unregisters the owner for internal use.
+	     * Used by the sprite object from which the animator is removed, unregisters the owner for internal use.
 	     *
 	     * @private
 	     */
-	    removeOwner(mesh: Mesh): void;
+	    removeOwner(sprite: Sprite): void;
 	    /**
 	     * Internal abstract method called when the time delta property of the animator's contents requires updating.
 	     *
@@ -681,8 +745,8 @@ declare module "awayjs-renderergl/lib/animators/AnimatorBase" {
 declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
 	import IAnimationSet = require("awayjs-display/lib/animators/IAnimationSet");
 	import AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-	import Mesh = require("awayjs-display/lib/display/Mesh");
 	import Graphic = require("awayjs-display/lib/graphics/Graphic");
+	import Graphics = require("awayjs-display/lib/graphics/Graphics");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
 	import AnimationRegisterCache = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
@@ -790,7 +854,7 @@ declare module "awayjs-renderergl/lib/animators/ParticleAnimationSet" {
 	    dispose(): void;
 	    getAnimationElements(graphic: Graphic): any;
 	    /** @private */
-	    _iGenerateAnimationElements(mesh: Mesh): void;
+	    _iGenerateAnimationElements(graphics: Graphics): void;
 	}
 	export = ParticleAnimationSet;
 	
@@ -804,11 +868,11 @@ declare module "awayjs-renderergl/lib/animators/ParticleAnimator" {
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
 	import GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 	/**
-	 * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
+	 * Provides an interface for assigning paricle-based animation data sets to sprite-based entity objects
 	 * and controlling the various available states of animation through an interative playhead that can be
 	 * automatically updated or manually triggered.
 	 *
-	 * Requires that the containing geometry of the parent mesh is particle geometry
+	 * Requires that the containing geometry of the parent sprite is particle geometry
 	 *
 	 * @see away.base.ParticleGraphics
 	 */
@@ -921,7 +985,7 @@ declare module "awayjs-renderergl/lib/animators/SkeletonAnimator" {
 	import GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 	import GL_GraphicRenderable = require("awayjs-renderergl/lib/renderables/GL_GraphicRenderable");
 	/**
-	 * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects
+	 * Provides an interface for assigning skeleton-based animation data sets to sprite-based entity objects
 	 * and controlling the various available states of animation through an interative playhead that can be
 	 * automatically updated or manually triggered.
 	 */
@@ -965,15 +1029,15 @@ declare module "awayjs-renderergl/lib/animators/SkeletonAnimator" {
 	    forceCPU: boolean;
 	    /**
 	     * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
-	     * by condensing the number of joint index values required per mesh. Only applicable to
-	     * skeleton animations that utilise more than one mesh object. Defaults to false.
+	     * by condensing the number of joint index values required per sprite. Only applicable to
+	     * skeleton animations that utilise more than one sprite object. Defaults to false.
 	     */
 	    useCondensedIndices: boolean;
 	    /**
 	     * Creates a new <code>SkeletonAnimator</code> object.
 	     *
 	     * @param skeletonAnimationSet The animation data set containing the skeleton animations used by the animator.
-	     * @param skeleton The skeleton object used for calculating the resulting global matrices for transforming skinned mesh data.
+	     * @param skeleton The skeleton object used for calculating the resulting global matrices for transforming skinned sprite data.
 	     * @param forceCPU Optional value that only allows the animator to perform calculation on the CPU. Defaults to false.
 	     */
 	    constructor(animationSet: SkeletonAnimationSet, skeleton: Skeleton, forceCPU?: boolean);
@@ -1105,7 +1169,7 @@ declare module "awayjs-renderergl/lib/animators/VertexAnimator" {
 	import GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
 	/**
-	 * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
+	 * Provides an interface for assigning vertex-based animation data sets to sprite-based entity objects
 	 * and controlling the various available states of animation through an interative playhead that can be
 	 * automatically updated or manually triggered.
 	 */
@@ -2743,7 +2807,7 @@ declare module "awayjs-renderergl/lib/animators/nodes/VertexClipNode" {
 	     *
 	     * @param geometry The geometry object to add to the timeline of the node.
 	     * @param duration The specified duration of the frame in milliseconds.
-	     * @param translation The absolute translation of the frame, used in root delta calculations for mesh movement.
+	     * @param translation The absolute translation of the frame, used in root delta calculations for sprite movement.
 	     */
 	    addFrame(geometry: Graphics, duration: number, translation?: Vector3D): void;
 	    /**
@@ -4230,7 +4294,7 @@ declare module "awayjs-renderergl/lib/elements/GL_LineElements" {
 	     * @param renderable
 	     * @param level
 	     * @param indexOffset
-	     * @returns {away.pool.LineSubMeshRenderable}
+	     * @returns {away.pool.LineSubSpriteRenderable}
 	     * @protected
 	     */
 	    _pGetOverflowElements(): GL_ElementsBase;
@@ -4767,128 +4831,6 @@ declare module "awayjs-renderergl/lib/managers/RTTBufferManager" {
 	
 }
 
-declare module "awayjs-renderergl/lib/pick/ShaderPicker" {
-	import Vector3D = require("awayjs-core/lib/geom/Vector3D");
-	import Scene = require("awayjs-display/lib/display/Scene");
-	import View = require("awayjs-display/lib/View");
-	import IPicker = require("awayjs-display/lib/pick/IPicker");
-	import PickingCollisionVO = require("awayjs-display/lib/pick/PickingCollisionVO");
-	import EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
-	import ITextureBase = require("awayjs-stagegl/lib/base/ITextureBase");
-	/**
-	 * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
-	 * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
-	 * on an entity that has its shaderPickingDetails property set to true.
-	 *
-	 * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
-	 *
-	 * @see away.display.Entity#shaderPickingDetails
-	 *
-	 * @class away.pick.ShaderPicker
-	 */
-	class ShaderPicker implements IPicker {
-	    private _opaqueRenderableHead;
-	    private _blendedRenderableHead;
-	    private _stage;
-	    private _context;
-	    private _onlyMouseEnabled;
-	    private _objectProgram;
-	    private _triangleProgram;
-	    private _bitmapImage2D;
-	    private _viewportData;
-	    private _boundOffsetScale;
-	    private _id;
-	    private _interactives;
-	    private _interactiveId;
-	    private _hitColor;
-	    private _projX;
-	    private _projY;
-	    private _hitRenderable;
-	    private _hitEntity;
-	    private _localHitPosition;
-	    private _hitUV;
-	    private _faceIndex;
-	    private _elementsIndex;
-	    private _localHitNormal;
-	    private _rayPos;
-	    private _rayDir;
-	    private _potentialFound;
-	    private static MOUSE_SCISSOR_RECT;
-	    private _shaderPickingDetails;
-	    /**
-	     * @inheritDoc
-	     */
-	    onlyMouseEnabled: boolean;
-	    /**
-	     * Creates a new <code>ShaderPicker</code> object.
-	     *
-	     * @param shaderPickingDetails Determines whether the picker includes a second pass to calculate extra
-	     * properties such as uv and normal coordinates.
-	     */
-	    constructor(shaderPickingDetails?: boolean);
-	    /**
-	     * @inheritDoc
-	     */
-	    getViewCollision(x: number, y: number, view: View): PickingCollisionVO;
-	    /**
-	     * @inheritDoc
-	     */
-	    getSceneCollision(position: Vector3D, direction: Vector3D, scene: Scene): PickingCollisionVO;
-	    /**
-	     * @inheritDoc
-	     */
-	    pDraw(entityCollector: EntityCollector, target: ITextureBase): void;
-	    /**
-	     * Draw a list of renderables.
-	     * @param renderables The renderables to draw.
-	     * @param camera The camera for which to render.
-	     */
-	    private drawRenderables(renderableGL, camera);
-	    private updateRay(camera);
-	    /**
-	     * Creates the Program that color-codes objects.
-	     */
-	    private initObjectProgram();
-	    /**
-	     * Creates the Program that renders positions.
-	     */
-	    private initTriangleProgram();
-	    /**
-	     * Gets more detailed information about the hir position, if required.
-	     * @param camera The camera used to view the hit object.
-	     */
-	    private getHitDetails(camera);
-	    /**
-	     * Finds a first-guess approximate position about the hit position.
-	     *
-	     * @param camera The camera used to view the hit object.
-	     */
-	    private getApproximatePosition(camera);
-	    /**
-	     * Use the approximate position info to find the face under the mouse position from which we can derive the precise
-	     * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
-	     * @param camera The camera used to view the hit object.
-	     */
-	    private getPreciseDetails(camera);
-	    /**
-	     * Finds the precise hit position by unprojecting the screen coordinate back unto the hit face's plane and
-	     * calculating the intersection point.
-	     * @param camera The camera used to render the object.
-	     * @param invSceneTransform The inverse scene transformation of the hit object.
-	     * @param nx The x-coordinate of the face's plane normal.
-	     * @param ny The y-coordinate of the face plane normal.
-	     * @param nz The z-coordinate of the face plane normal.
-	     * @param px The x-coordinate of a point on the face's plane (ie a face vertex)
-	     * @param py The y-coordinate of a point on the face's plane (ie a face vertex)
-	     * @param pz The z-coordinate of a point on the face's plane (ie a face vertex)
-	     */
-	    private getPrecisePosition(invSceneTransform, nx, ny, nz, px, py, pz);
-	    dispose(): void;
-	}
-	export = ShaderPicker;
-	
-}
-
 declare module "awayjs-renderergl/lib/renderables/GL_BillboardRenderable" {
 	import AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 	import ISurface = require("awayjs-display/lib/base/ISurface");
@@ -4920,7 +4862,7 @@ declare module "awayjs-renderergl/lib/renderables/GL_BillboardRenderable" {
 	     * @returns {away.base.TriangleElements}
 	     */
 	    _pGetElements(): ElementsBase;
-	    _pGetRenderOwner(): ISurface;
+	    _pGetSurface(): ISurface;
 	}
 	export = GL_Billboard;
 	
@@ -4957,7 +4899,7 @@ declare module "awayjs-renderergl/lib/renderables/GL_GraphicRenderable" {
 	     * @protected
 	     */
 	    _pGetElements(): ElementsBase;
-	    _pGetRenderOwner(): ISurface;
+	    _pGetSurface(): ISurface;
 	}
 	export = GL_GraphicRenderable;
 	
@@ -4971,7 +4913,7 @@ declare module "awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable" {
 	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
 	import GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 	/**
-	 * @class away.pool.LineSubMeshRenderable
+	 * @class away.pool.GL_LineSegmentRenderable
 	 */
 	class GL_LineSegmentRenderable extends GL_RenderableBase {
 	    private static _lineGraphics;
@@ -4996,7 +4938,7 @@ declare module "awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable" {
 	     * @protected
 	     */
 	    _pGetElements(): ElementsBase;
-	    _pGetRenderOwner(): ISurface;
+	    _pGetSurface(): ISurface;
 	    /**
 	     * //TODO
 	     *
@@ -5004,7 +4946,7 @@ declare module "awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable" {
 	     * @param renderable
 	     * @param level
 	     * @param indexOffset
-	     * @returns {away.pool.LineSubMeshRenderable}
+	     * @returns {away.pool.LineSubSpriteRenderable}
 	     * @private
 	     */
 	    _pGetOverflowRenderable(indexOffset: number): GL_RenderableBase;
@@ -5034,7 +4976,7 @@ declare module "awayjs-renderergl/lib/renderables/GL_RenderableBase" {
 	 * @class RenderableListItem
 	 */
 	class GL_RenderableBase extends AbstractionBase {
-	    private _onRenderOwnerUpdatedDelegate;
+	    private _onSurfaceUpdatedDelegate;
 	    private _onInvalidateElementsDelegate;
 	    _elements: ElementsBase;
 	    _surfaceGL: GL_SurfaceBase;
@@ -5103,9 +5045,9 @@ declare module "awayjs-renderergl/lib/renderables/GL_RenderableBase" {
 	    constructor(renderable: IRenderable, sourceEntity: IEntity, renderer: RendererBase);
 	    onClear(event: AssetEvent): void;
 	    onInvalidateElements(event: RenderableEvent): void;
-	    private _onRenderOwnerUpdated(event);
+	    private _onSurfaceUpdated(event);
 	    _pGetElements(): ElementsBase;
-	    _pGetRenderOwner(): ISurface;
+	    _pGetSurface(): ISurface;
 	    /**
 	     * Sets the surface state for the pass that is independent of the rendered object. This needs to be called before
 	     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
@@ -5134,7 +5076,7 @@ declare module "awayjs-renderergl/lib/renderables/GL_RenderableBase" {
 	     * @private
 	     */
 	    private _updateElements();
-	    private _updateRenderOwner();
+	    private _updateSurface();
 	}
 	export = GL_RenderableBase;
 	
@@ -5180,7 +5122,7 @@ declare module "awayjs-renderergl/lib/renderables/GL_SkyboxRenderable" {
 	     * @private
 	     */
 	    _pGetElements(): ElementsBase;
-	    _pGetRenderOwner(): ISurface;
+	    _pGetSurface(): ISurface;
 	    static _iIncludeDependencies(shader: ShaderBase): void;
 	    /**
 	     * @inheritDoc
@@ -6776,9 +6718,9 @@ declare module "awayjs-renderergl/lib/textures/GL_TextureBase" {
 
 declare module "awayjs-renderergl/lib/tools/commands/Merge" {
 	import DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
-	import Mesh = require("awayjs-display/lib/display/Mesh");
+	import Sprite = require("awayjs-display/lib/display/Sprite");
 	/**
-	 *  Class Merge merges two or more static meshes into one.<code>Merge</code>
+	 *  Class Merge merges two or more static sprites into one.<code>Merge</code>
 	 */
 	class Merge {
 	    private _objectSpace;
@@ -6787,15 +6729,15 @@ declare module "awayjs-renderergl/lib/tools/commands/Merge" {
 	    private _graphicVOs;
 	    private _toDispose;
 	    /**
-	     * @param    keepMaterial    [optional]    Determines if the merged object uses the recevier mesh material information or keeps its source material(s). Defaults to false.
-	     * If false and receiver object has multiple materials, the last material found in receiver submeshes is applied to the merged submesh(es).
-	     * @param    disposeSources  [optional]    Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
-	     * If true, only receiver geometry and resulting mesh are kept in  memory.
-	     * @param    objectSpace     [optional]    Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+	     * @param    keepMaterial    [optional]    Determines if the merged object uses the recevier sprite material information or keeps its source material(s). Defaults to false.
+	     * If false and receiver object has multiple materials, the last material found in receiver subsprites is applied to the merged subsprite(es).
+	     * @param    disposeSources  [optional]    Determines if the sprite and geometry source(s) used for the merging are disposed. Defaults to false.
+	     * If true, only receiver geometry and resulting sprite are kept in  memory.
+	     * @param    objectSpace     [optional]    Determines if source sprite(es) is/are merged using objectSpace or worldspace. Defaults to false.
 	     */
 	    constructor(keepMaterial?: boolean, disposeSources?: boolean, objectSpace?: boolean);
 	    /**
-	     * Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
+	     * Determines if the sprite and geometry source(s) used for the merging are disposed. Defaults to false.
 	     */
 	    disposeSources: boolean;
 	    /**
@@ -6803,35 +6745,35 @@ declare module "awayjs-renderergl/lib/tools/commands/Merge" {
 	     */
 	    keepMaterial: boolean;
 	    /**
-	     * Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+	     * Determines if source sprite(es) is/are merged using objectSpace or worldspace. Defaults to false.
 	     */
 	    objectSpace: boolean;
 	    /**
-	     * Merges all the children of a container into a single Mesh. If no Mesh object is found, method returns the receiver without modification.
+	     * Merges all the children of a container into a single Sprite. If no Sprite object is found, method returns the receiver without modification.
 	     *
-	     * @param    receiver           The Mesh to receive the merged contents of the container.
-	     * @param    objectContainer    The DisplayObjectContainer holding the meshes to be mergd.
+	     * @param    receiver           The Sprite to receive the merged contents of the container.
+	     * @param    objectContainer    The DisplayObjectContainer holding the sprites to be mergd.
 	     *
-	     * @return The merged Mesh instance.
+	     * @return The merged Sprite instance.
 	     */
-	    applyToContainer(receiver: Mesh, objectContainer: DisplayObjectContainer): void;
+	    applyToContainer(receiver: Sprite, objectContainer: DisplayObjectContainer): void;
 	    /**
-	     * Merges all the meshes found in the Array&lt;Mesh&gt; into a single Mesh.
+	     * Merges all the sprites found in the Array&lt;Sprite&gt; into a single Sprite.
 	     *
-	     * @param    receiver    The Mesh to receive the merged contents of the meshes.
-	     * @param    meshes      A series of Meshes to be merged with the reciever mesh.
+	     * @param    receiver    The Sprite to receive the merged contents of the sprites.
+	     * @param    sprites      A series of Spritees to be merged with the reciever sprite.
 	     */
-	    applyToMeshes(receiver: Mesh, meshes: Array<Mesh>): void;
+	    applyToSpritees(receiver: Sprite, sprites: Array<Sprite>): void;
 	    /**
-	     *  Merges 2 meshes into one. It is recommand to use apply when 2 meshes are to be merged. If more need to be merged, use either applyToMeshes or applyToContainer methods.
+	     *  Merges 2 sprites into one. It is recommand to use apply when 2 sprites are to be merged. If more need to be merged, use either applyToSpritees or applyToContainer methods.
 	     *
-	     * @param    receiver    The Mesh to receive the merged contents of both meshes.
-	     * @param    mesh        The Mesh to be merged with the receiver mesh
+	     * @param    receiver    The Sprite to receive the merged contents of both sprites.
+	     * @param    sprite        The Sprite to be merged with the receiver sprite
 	     */
-	    apply(receiver: Mesh, mesh: Mesh): void;
+	    apply(receiver: Sprite, sprite: Sprite): void;
 	    private reset();
-	    private merge(destMesh, dispose);
-	    private collect(mesh, dispose);
+	    private merge(destSprite, dispose);
+	    private collect(sprite, dispose);
 	    private getGraphicData(material);
 	    private parseContainer(receiver, object);
 	}
