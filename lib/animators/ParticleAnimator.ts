@@ -18,11 +18,11 @@ import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_Rend
 import GL_GraphicRenderable			= require("awayjs-renderergl/lib/renderables/GL_GraphicRenderable");
 
 /**
- * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
+ * Provides an interface for assigning paricle-based animation data sets to sprite-based entity objects
  * and controlling the various available states of animation through an interative playhead that can be
  * automatically updated or manually triggered.
  *
- * Requires that the containing geometry of the parent mesh is particle geometry
+ * Requires that the containing geometry of the parent sprite is particle geometry
  *
  * @see away.base.ParticleGraphics
  */

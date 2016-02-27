@@ -4,11 +4,11 @@ import Matrix3DUtils					= require("awayjs-core/lib/geom/Matrix3DUtils");
 import DisplayObjectContainer			= require("awayjs-display/lib/display/DisplayObjectContainer");
 import Graphics							= require("awayjs-display/lib/graphics/Graphics");
 import TriangleElements				= require("awayjs-display/lib/graphics/TriangleElements");
-import Mesh								= require("awayjs-display/lib/display/Mesh");
+import Sprite							= require("awayjs-display/lib/display/Sprite");
 import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
 
 /**
- *  Class Merge merges two or more static meshes into one.<code>Merge</code>
+ *  Class Merge merges two or more static sprites into one.<code>Merge</code>
  */
 class Merge
 {
@@ -18,14 +18,14 @@ class Merge
 	private _keepMaterial:boolean;
 	private _disposeSources:boolean;
 	private _graphicVOs:Array<GraphicVO>;
-	private _toDispose:Array<Mesh>;
+	private _toDispose:Array<Sprite>;
 
 	/**
-	 * @param    keepMaterial    [optional]    Determines if the merged object uses the recevier mesh material information or keeps its source material(s). Defaults to false.
-	 * If false and receiver object has multiple materials, the last material found in receiver submeshes is applied to the merged submesh(es).
-	 * @param    disposeSources  [optional]    Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
-	 * If true, only receiver geometry and resulting mesh are kept in  memory.
-	 * @param    objectSpace     [optional]    Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+	 * @param    keepMaterial    [optional]    Determines if the merged object uses the recevier sprite material information or keeps its source material(s). Defaults to false.
+	 * If false and receiver object has multiple materials, the last material found in receiver subsprites is applied to the merged subsprite(es).
+	 * @param    disposeSources  [optional]    Determines if the sprite and geometry source(s) used for the merging are disposed. Defaults to false.
+	 * If true, only receiver geometry and resulting sprite are kept in  memory.
+	 * @param    objectSpace     [optional]    Determines if source sprite(es) is/are merged using objectSpace or worldspace. Defaults to false.
 	 */
 	constructor(keepMaterial:boolean = false, disposeSources:boolean = false, objectSpace:boolean = false)
 	{
@@ -35,7 +35,7 @@ class Merge
 	}
 
 	/**
-	 * Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
+	 * Determines if the sprite and geometry source(s) used for the merging are disposed. Defaults to false.
 	 */
 	public set disposeSources(b:boolean)
 	{
@@ -61,7 +61,7 @@ class Merge
 	}
 
 	/**
-	 * Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+	 * Determines if source sprite(es) is/are merged using objectSpace or worldspace. Defaults to false.
 	 */
 	public set objectSpace(b:boolean)
 	{
@@ -74,18 +74,18 @@ class Merge
 	}
 
 	/**
-	 * Merges all the children of a container into a single Mesh. If no Mesh object is found, method returns the receiver without modification.
+	 * Merges all the children of a container into a single Sprite. If no Sprite object is found, method returns the receiver without modification.
 	 *
-	 * @param    receiver           The Mesh to receive the merged contents of the container.
-	 * @param    objectContainer    The DisplayObjectContainer holding the meshes to be mergd.
+	 * @param    receiver           The Sprite to receive the merged contents of the container.
+	 * @param    objectContainer    The DisplayObjectContainer holding the sprites to be mergd.
 	 *
-	 * @return The merged Mesh instance.
+	 * @return The merged Sprite instance.
 	 */
-	public applyToContainer(receiver:Mesh, objectContainer:DisplayObjectContainer)
+	public applyToContainer(receiver:Sprite, objectContainer:DisplayObjectContainer)
 	{
 		this.reset();
 
-		//collect container meshes
+		//collect container sprites
 		this.parseContainer(receiver, objectContainer);
 
 		//collect receiver
@@ -96,22 +96,22 @@ class Merge
 	}
 
 	/**
-	 * Merges all the meshes found in the Array&lt;Mesh&gt; into a single Mesh.
+	 * Merges all the sprites found in the Array&lt;Sprite&gt; into a single Sprite.
 	 *
-	 * @param    receiver    The Mesh to receive the merged contents of the meshes.
-	 * @param    meshes      A series of Meshes to be merged with the reciever mesh.
+	 * @param    receiver    The Sprite to receive the merged contents of the sprites.
+	 * @param    sprites      A series of Spritees to be merged with the reciever sprite.
 	 */
-	public applyToMeshes(receiver:Mesh, meshes:Array<Mesh>)
+	public applyToSpritees(receiver:Sprite, sprites:Array<Sprite>)
 	{
 		this.reset();
 
-		if (!meshes.length)
+		if (!sprites.length)
 			return;
 
-		//collect meshes in vector
-		for (var i:number /*uint*/ = 0; i < meshes.length; i++)
-			if (meshes[i] != receiver)
-				this.collect(meshes[i], this._disposeSources);
+		//collect sprites in vector
+		for (var i:number /*uint*/ = 0; i < sprites.length; i++)
+			if (sprites[i] != receiver)
+				this.collect(sprites[i], this._disposeSources);
 
 		//collect receiver
 		this.collect(receiver, false);
@@ -121,17 +121,17 @@ class Merge
 	}
 
 	/**
-	 *  Merges 2 meshes into one. It is recommand to use apply when 2 meshes are to be merged. If more need to be merged, use either applyToMeshes or applyToContainer methods.
+	 *  Merges 2 sprites into one. It is recommand to use apply when 2 sprites are to be merged. If more need to be merged, use either applyToSpritees or applyToContainer methods.
 	 *
-	 * @param    receiver    The Mesh to receive the merged contents of both meshes.
-	 * @param    mesh        The Mesh to be merged with the receiver mesh
+	 * @param    receiver    The Sprite to receive the merged contents of both sprites.
+	 * @param    sprite        The Sprite to be merged with the receiver sprite
 	 */
-	public apply(receiver:Mesh, mesh:Mesh)
+	public apply(receiver:Sprite, sprite:Sprite)
 	{
 		this.reset();
 
-		//collect mesh
-		this.collect(mesh, this._disposeSources);
+		//collect sprite
+		this.collect(sprite, this._disposeSources);
 
 		//collect receiver
 		this.collect(receiver, false);
@@ -142,21 +142,21 @@ class Merge
 
 	private reset()
 	{
-		this._toDispose  = new Array<Mesh>();
+		this._toDispose  = new Array<Sprite>();
 		this._graphicVOs = new Array<GraphicVO>();
 	}
 
-	private merge(destMesh:Mesh, dispose:boolean)
+	private merge(destSprite:Sprite, dispose:boolean)
 	{
 		var i:number /*uint*/;
 		//var oldGraphics:Graphics;
 		var destGraphics:Graphics;
 		var useSubMaterials:boolean;
 
-		//oldGraphics = destMesh.graphics.clone();
-		destGraphics = destMesh.graphics;
+		//oldGraphics = destSprite.graphics.clone();
+		destGraphics = destSprite.graphics;
 
-		// Only apply materials directly to sub-meshes if necessary,
+		// Only apply materials directly to sub-sprites if necessary,
 		// i.e. if there is more than one material available.
 		useSubMaterials = (this._graphicVOs.length > 1);
 
@@ -175,11 +175,11 @@ class Merge
 			destGraphics.addGraphic(elements);
 
 			if (this._keepMaterial && useSubMaterials)
-				destMesh.graphics[i].material = data.material;
+				destSprite.graphics[i].material = data.material;
 		}
 
 		if (this._keepMaterial && !useSubMaterials && this._graphicVOs.length)
-			destMesh.material = this._graphicVOs[0].material;
+			destSprite.material = this._graphicVOs[0].material;
 
 		if (dispose) {
 			var len:number = this._toDispose.length;
@@ -190,11 +190,11 @@ class Merge
 		this._toDispose = null;
 	}
 
-	private collect(mesh:Mesh, dispose:boolean)
+	private collect(sprite:Sprite, dispose:boolean)
 	{
 		var subIdx:number /*uint*/;
 		var calc:number /*uint*/;
-		for (subIdx = 0; subIdx < mesh.graphics.count; subIdx++) {
+		for (subIdx = 0; subIdx < sprite.graphics.count; subIdx++) {
 			var i:number /*uint*/;
 			var len:number /*uint*/;
 			var iIdx:number /*uint*/, vIdx:number /*uint*/, nIdx:number /*uint*/, tIdx:number /*uint*/, uIdx:number /*uint*/;
@@ -206,14 +206,14 @@ class Merge
 			var tangents:Array<number>;
 			var ind:Uint16Array, pd:ArrayBufferView, nd:Float32Array, td:Float32Array, ud:ArrayBufferView;
 
-			elements = <TriangleElements> mesh.graphics.getGraphicAt(subIdx).elements;
+			elements = <TriangleElements> sprite.graphics.getGraphicAt(subIdx).elements;
 			pd = elements.positions.get(elements.numVertices);
 			nd = elements.normals.get(elements.numVertices);
 			td = elements.tangents.get(elements.numVertices);
 			ud = elements.uvs.get(elements.numVertices);
 
 			// Get (or create) a VO for this material
-			vo = this.getGraphicData(mesh.graphics.getGraphicAt(subIdx).material);
+			vo = this.getGraphicData(sprite.graphics.getGraphicAt(subIdx).material);
 
 			// Vertices and normals are copied to temporary vectors, to be transformed
 			// before concatenated onto those of the data. This is unnecessary if no
@@ -264,9 +264,9 @@ class Merge
 			}
 
 			if (!this._objectSpace) {
-				mesh.sceneTransform.transformVectors(vertices, vertices);
-				Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, normals, normals);
-				Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, tangents, tangents);
+				sprite.sceneTransform.transformVectors(vertices, vertices);
+				Matrix3DUtils.deltaTransformVectors(sprite.sceneTransform, normals, normals);
+				Matrix3DUtils.deltaTransformVectors(sprite.sceneTransform, tangents, tangents);
 
 				// Copy vertex data from temporary (transformed) vectors
 				vIdx = vo.vertices.length;
@@ -282,7 +282,7 @@ class Merge
 		}
 
 		if (dispose)
-			this._toDispose.push(mesh);
+			this._toDispose.push(sprite);
 	}
 
 	private getGraphicData(material:MaterialBase):GraphicVO
@@ -322,13 +322,13 @@ class Merge
 		return data;
 	}
 
-	private parseContainer(receiver:Mesh, object:DisplayObjectContainer)
+	private parseContainer(receiver:Sprite, object:DisplayObjectContainer)
 	{
 		var child:DisplayObjectContainer;
 		var i:number /*uint*/;
 
-		if (object instanceof Mesh && object != (<DisplayObjectContainer> receiver))
-			this.collect(<Mesh> object, this._disposeSources);
+		if (object instanceof Sprite && object != (<DisplayObjectContainer> receiver))
+			this.collect(<Sprite> object, this._disposeSources);
 
 		for (i = 0; i < object.numChildren; ++i) {
 			child = <DisplayObjectContainer> object.getChildAt(i);

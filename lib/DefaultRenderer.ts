@@ -7,11 +7,12 @@ import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import IRenderable					= require("awayjs-display/lib/base/IRenderable");
 import ISurface						= require("awayjs-display/lib/base/ISurface");
 import LightBase					= require("awayjs-display/lib/display/LightBase");
-import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
-import CollectorBase				= require("awayjs-display/lib/traverse/CollectorBase");
 import Camera						= require("awayjs-display/lib/display/Camera");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
 import PointLight					= require("awayjs-display/lib/display/PointLight");
+import IEntity						= require("awayjs-display/lib/display/IEntity");
+import LightProbe					= require("awayjs-display/lib/display/LightProbe");
+import Skybox						= require("awayjs-display/lib/display/Skybox");
 import ShadowMapperBase				= require("awayjs-display/lib/materials/shadowmappers/ShadowMapperBase");
 
 
@@ -34,6 +35,7 @@ import GL_SkyboxRenderable			= require("awayjs-renderergl/lib/renderables/GL_Sky
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
 import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
 import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
+import Scene = require("awayjs-display/lib/display/Scene");
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -54,6 +56,12 @@ class DefaultRenderer extends RendererBase
 	public _pDepthRender:BitmapImage2D;
 
 	private _antiAlias:number = 0;
+	private _skybox:Skybox;
+	private _directionalLights:Array<DirectionalLight> = new Array<DirectionalLight>();
+	private _pointLights:Array<PointLight> = new Array<PointLight>();
+	private _lightProbes:Array<LightProbe> = new Array<LightProbe>();
+
+	public isDebugEnabled:boolean = true;
 
 	public get antiAlias():number
 	{
@@ -148,9 +156,9 @@ class DefaultRenderer extends RendererBase
 		this._skyBoxSurfacePool = new SurfacePool(GL_SkyboxElements, this._pStage);
 	}
 
-	public render(entityCollector:CollectorBase)
+	public render(camera:Camera, scene:Scene)
 	{
-		super.render(entityCollector);
+		super.render(camera, scene);
 
 		if (!this._pStage.recoverFromDisposal()) {//if context has Disposed by the OS,don't render at this frame
 			this._pBackBufferInvalid = true;
@@ -172,20 +180,25 @@ class DefaultRenderer extends RendererBase
 		}
 
 		if (this._pRequireDepthRender)
-			this.pRenderSceneDepthToTexture(<EntityCollector> entityCollector);
+			this.pRenderSceneDepthToTexture(camera, scene);
 
 		if (this._depthPrepass)
-			this.pRenderDepthPrepass(<EntityCollector> entityCollector);
+			this.pRenderDepthPrepass(camera, scene);
+
+		//reset lights
+		this._directionalLights.length = 0;
+		this._pointLights.length = 0;
+		this._lightProbes.length = 0;
 
 		if (this._pFilter3DRenderer && this._pContext) { //TODO
-			this._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
-			this._pFilter3DRenderer.render(this._pStage, entityCollector.camera, this._pDepthRender);
+			this._iRender(camera, scene, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+			this._pFilter3DRenderer.render(this._pStage, camera, this._pDepthRender);
 		} else {
 
 			if (this._shareContext)
-				this._iRender(entityCollector, null, this._pScissorRect);
+				this._iRender(camera, scene, null, this._pScissorRect);
 			else
-				this._iRender(entityCollector);
+				this._iRender(camera, scene);
 		}
 
 		if (!this._shareContext && this._pContext)
@@ -195,66 +208,60 @@ class DefaultRenderer extends RendererBase
 		this._pStage.bufferClear = false;
 	}
 
-	public pExecuteRender(entityCollector:EntityCollector, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public pExecuteRender(camera:Camera, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 	{
-		this.updateLights(entityCollector);
+		this.updateLights(camera);
 
-		super.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
+		super.pExecuteRender(camera, target, scissorRect, surfaceSelector);
 	}
 
-	private updateLights(entityCollector:EntityCollector)
+	private updateLights(camera:Camera)
 	{
-		var dirLights:Array<DirectionalLight> = entityCollector.directionalLights;
-		var pointLights:Array<PointLight> = entityCollector.pointLights;
 		var len:number, i:number;
 		var light:LightBase;
 		var shadowMapper:ShadowMapperBase;
 
-		len = dirLights.length;
+		len = this._directionalLights.length;
 		for (i = 0; i < len; ++i) {
-			light = dirLights[i];
+				light = this._directionalLights[i];
 
 			shadowMapper = light.shadowMapper;
 
 			if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid ))
-				shadowMapper.iRenderDepthMap(entityCollector, this._pDepthRenderer);
+				shadowMapper.iRenderDepthMap(camera, light.scene, this._pDepthRenderer);
 		}
 
-		len = pointLights.length;
+		len = this._pointLights.length;
 		for (i = 0; i < len; ++i) {
-			light = pointLights[i];
+			light = this._pointLights[i];
 
 			shadowMapper = light.shadowMapper;
 
 			if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid))
-				shadowMapper.iRenderDepthMap(entityCollector, this._pDistanceRenderer);
+				shadowMapper.iRenderDepthMap(camera, light.scene, this._pDistanceRenderer);
 		}
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public pDraw(entityCollector:EntityCollector)
+	public pDraw(camera:Camera)
 	{
-		if (entityCollector.skyBox) {
+		if (this._skybox) {
 			this._pContext.setDepthTest(false, ContextGLCompareMode.ALWAYS);
 
-			this.drawSkybox(entityCollector);
+			this.drawSkybox(camera);
 		}
 
-		super.pDraw(entityCollector);
+		super.pDraw(camera);
 	}
 
 	/**
 	 * Draw the skybox if present.
-	 *
-	 * @param entityCollector The EntityCollector containing all potentially visible information.
-	 */
-	private drawSkybox(entityCollector:EntityCollector)
+	 **/
+	private drawSkybox(camera:Camera)
 	{
-		var renderable:GL_RenderableBase = this.getAbstraction(entityCollector.skyBox);
-
-		var camera:Camera = entityCollector.camera;
+		var renderable:GL_RenderableBase = this.getAbstraction(this._skybox);
 
 		this.updateSkyboxProjection(camera);
 
@@ -298,6 +305,42 @@ class DefaultRenderer extends RendererBase
 		this._skyboxProjection.copyRowFrom(2, new Vector3D(cx*a, cy*a, cz*a, cw*a));
 	}
 
+	/**
+	 *
+	 * @param entity
+	 */
+	public applyDirectionalLight(entity:IEntity)
+	{
+		this._directionalLights.push(<DirectionalLight> entity);
+	}
+
+	/**
+	 *
+	 * @param entity
+	 */
+	public applyLightProbe(entity:IEntity)
+	{
+		this._lightProbes.push(<LightProbe> entity);
+	}
+
+	/**
+	 *
+	 * @param entity
+	 */
+	public applyPointLight(entity:IEntity)
+	{
+		this._pointLights.push(<PointLight> entity);
+	}
+
+	/**
+	 *
+	 * @param entity
+	 */
+	public applySkybox(entity:IEntity)
+	{
+		this._skybox = <Skybox> entity;
+	}
+
 	public dispose()
 	{
 		if (!this._shareContext)
@@ -320,18 +363,18 @@ class DefaultRenderer extends RendererBase
 	/**
 	 *
 	 */
-	public pRenderDepthPrepass(entityCollector:EntityCollector)
+	public pRenderDepthPrepass(camera:Camera, scene:Scene)
 	{
 		this._pDepthRenderer.disableColor = true;
 
 		if (this._pFilter3DRenderer) {
 			this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
 			this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-			this._pDepthRenderer._iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+			this._pDepthRenderer._iRender(camera, scene, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
 		} else {
 			this._pDepthRenderer.textureRatioX = 1;
 			this._pDepthRenderer.textureRatioY = 1;
-			this._pDepthRenderer._iRender(entityCollector);
+			this._pDepthRenderer._iRender(camera, scene);
 		}
 
 		this._pDepthRenderer.disableColor = false;
@@ -341,14 +384,14 @@ class DefaultRenderer extends RendererBase
 	/**
 	 *
 	 */
-	public pRenderSceneDepthToTexture(entityCollector:EntityCollector)
+	public pRenderSceneDepthToTexture(camera:Camera, scene:Scene)
 	{
 		if (this._pDepthTextureInvalid || !this._pDepthRender)
 			this.initDepthTexture(<IContextGL> this._pStage.context);
 
 		this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
 		this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-		this._pDepthRenderer._iRender(entityCollector, this._pDepthRender);
+		this._pDepthRenderer._iRender(camera, scene, this._pDepthRender);
 	}
 
 

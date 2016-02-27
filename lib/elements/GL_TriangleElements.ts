@@ -125,12 +125,12 @@ class GL_TriangleElements extends GL_ElementsBase
 
 		//set constants
 		if (this._shader.sceneMatrixIndex >= 0) {
-			sourceEntity.getRenderSceneTransform(camera).copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
+			sourceEntity.getRenderSceneTransform(camera.sceneTransform).copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
 			viewProjection.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
 		} else {
 			var matrix3D:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
 
-			matrix3D.copyFrom(sourceEntity.getRenderSceneTransform(camera));
+			matrix3D.copyFrom(sourceEntity.getRenderSceneTransform(camera.sceneTransform));
 			matrix3D.append(viewProjection);
 
 			matrix3D.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);

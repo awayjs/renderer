@@ -9,7 +9,7 @@ import IAnimator					= require("awayjs-display/lib/animators/IAnimator");
 import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
 import Camera						= require("awayjs-display/lib/display/Camera");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
@@ -58,7 +58,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	private _playbackSpeed:number = 1;
 
 	public _pAnimationSet:IAnimationSet;
-	public _pOwners:Array<Mesh> = new Array<Mesh>();
+	public _pOwners:Array<Sprite> = new Array<Sprite>();
 	public _pActiveNode:AnimationNodeBase;
 	public _pActiveState:IAnimationState;
 	public _pActiveAnimationName:string;
@@ -67,7 +67,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	private _animationStates:Object = new Object();
 
 	/**
-	 * Enables translation of the animated mesh from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
+	 * Enables translation of the animated sprite from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
 	 *
 	 * @see away.animators.IAnimationState#positionDelta
 	 */
@@ -285,23 +285,23 @@ class AnimatorBase extends AssetBase implements IAnimator
 	}
 
 	/**
-	 * Used by the mesh object to which the animator is applied, registers the owner for internal use.
+	 * Used by the sprite object to which the animator is applied, registers the owner for internal use.
 	 *
 	 * @private
 	 */
-	public addOwner(mesh:Mesh)
+	public addOwner(sprite:Sprite)
 	{
-		this._pOwners.push(mesh);
+		this._pOwners.push(sprite);
 	}
 
 	/**
-	 * Used by the mesh object from which the animator is removed, unregisters the owner for internal use.
+	 * Used by the sprite object from which the animator is removed, unregisters the owner for internal use.
 	 *
 	 * @private
 	 */
-	public removeOwner(mesh:Mesh)
+	public removeOwner(sprite:Sprite)
 	{
-		this._pOwners.splice(this._pOwners.indexOf(mesh), 1);
+		this._pOwners.splice(this._pOwners.indexOf(sprite), 1);
 	}
 
 	/**

@@ -38,7 +38,7 @@ class VertexClipNode extends AnimationClipNodeBase
 	 *
 	 * @param geometry The geometry object to add to the timeline of the node.
 	 * @param duration The specified duration of the frame in milliseconds.
-	 * @param translation The absolute translation of the frame, used in root delta calculations for mesh movement.
+	 * @param translation The absolute translation of the frame, used in root delta calculations for sprite movement.
 	 */
 	public addFrame(geometry:Graphics, duration:number /*uint*/, translation:Vector3D = null)
 	{

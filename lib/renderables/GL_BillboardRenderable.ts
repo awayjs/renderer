@@ -97,7 +97,7 @@ class GL_Billboard extends GL_RenderableBase
 		return elements;
 	}
 
-	public _pGetRenderOwner():ISurface
+	public _pGetSurface():ISurface
 	{
 		return this._billboard.material;
 	}

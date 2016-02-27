@@ -1,5 +1,7 @@
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
+import INode						= require("awayjs-display/lib/partition/INode");
+
 import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
 import GL_DepthSurface				= require("awayjs-renderergl/lib/surfaces/GL_DepthSurface");
 
@@ -23,6 +25,22 @@ class DepthRenderer extends RendererBase
 		this._iBackgroundG = 1;
 		this._iBackgroundB = 1;
 
+	}
+
+	/**
+	 *
+	 */
+	public enterNode(node:INode):boolean
+	{
+		var enter:boolean = node._iCollectionMark != RendererBase._iCollectionMark && node.isCastingShadow();
+
+		if (!enter) {
+			node._iCollectionMark = RendererBase._iCollectionMark;
+
+			return false;
+		}
+
+		return super.enterNode(node);
 	}
 }
 

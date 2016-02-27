@@ -24,7 +24,7 @@ import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_Rende
 import PassBase						= require("awayjs-renderergl/lib/surfaces/passes/PassBase");
 
 /**
- * @class away.pool.LineSubMeshRenderable
+ * @class away.pool.GL_LineSegmentRenderable
  */
 class GL_LineSegmentRenderable extends GL_RenderableBase
 {
@@ -95,7 +95,7 @@ class GL_LineSegmentRenderable extends GL_RenderableBase
 		return geometry;
 	}
 
-	public _pGetRenderOwner():ISurface
+	public _pGetSurface():ISurface
 	{
 		return this._lineSegment.material;
 	}
@@ -107,7 +107,7 @@ class GL_LineSegmentRenderable extends GL_RenderableBase
 	 * @param renderable
 	 * @param level
 	 * @param indexOffset
-	 * @returns {away.pool.LineSubMeshRenderable}
+	 * @returns {away.pool.LineSubSpriteRenderable}
 	 * @private
 	 */
 	public _pGetOverflowRenderable(indexOffset:number):GL_RenderableBase

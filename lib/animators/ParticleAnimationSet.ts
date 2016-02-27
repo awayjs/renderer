@@ -2,7 +2,7 @@ import ElementsBase						= require("awayjs-display/lib/graphics/ElementsBase");
 import IAnimationSet					= require("awayjs-display/lib/animators/IAnimationSet");
 import ParticleData						= require("awayjs-display/lib/animators/data/ParticleData");
 import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import Mesh								= require("awayjs-display/lib/display/Mesh");
+import Sprite							= require("awayjs-display/lib/display/Sprite");
 import Graphic							= require("awayjs-display/lib/graphics/Graphic");
 import Graphics							= require("awayjs-display/lib/graphics/Graphics");
 
@@ -278,28 +278,22 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 
 	public getAnimationElements(graphic:Graphic)
 	{
-		var mesh:Mesh = <Mesh> graphic.parent.sourceEntity;
 		var animationElements:AnimationElements = (this.shareAnimationGraphics)? this._animationElements[graphic.elements.id] : this._animationElements[graphic.id];
 
 		if (animationElements)
 			return animationElements;
 
-		this._iGenerateAnimationElements(mesh);
+		this._iGenerateAnimationElements(graphic.parent);
 
 		return (this.shareAnimationGraphics)? this._animationElements[graphic.elements.id] : this._animationElements[graphic.id];
 	}
 
 
 	/** @private */
-	public _iGenerateAnimationElements(mesh:Mesh)
+	public _iGenerateAnimationElements(graphics:Graphics)
 	{
 		if (this.initParticleFunc == null)
 			throw(new Error("no initParticleFunc set"));
-
-		var geometry:Graphics = <Graphics> mesh.graphics;
-
-		if (!geometry)
-			throw(new Error("Particle animation can only be performed on a Graphics object"));
 
 		var i:number /*int*/, j:number /*int*/, k:number /*int*/;
 		var animationElements:AnimationElements;
@@ -308,8 +302,8 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 		var graphic:Graphic;
 		var localNode:ParticleNodeBase;
 
-		for (i = 0; i < mesh.graphics.count; i++) {
-			graphic = mesh.graphics.getGraphicAt(i);
+		for (i = 0; i < graphics.count; i++) {
+			graphic = graphics.getGraphicAt(i);
 			elements = graphic.elements;
 			if (this.shareAnimationGraphics) {
 				animationElements = this._animationElements[elements.id];
@@ -334,9 +328,9 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 		if (!newAnimationElements)
 			return;
 
-		var particles:Array<ParticleData> = geometry.particles;
+		var particles:Array<ParticleData> = graphics.particles;
 		var particlesLength:number /*uint*/ = particles.length;
-		var numParticles:number /*uint*/ = geometry.numParticles;
+		var numParticles:number /*uint*/ = graphics.numParticles;
 		var particleProperties:ParticleProperties = new ParticleProperties();
 		var particle:ParticleData;
 
@@ -372,8 +366,8 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 			//loop through all particle data for the curent particle
 			while (j < particlesLength && (particle = particles[j]).particleIndex == i) {
 				//find the target animationElements
-				for (k = 0; k < mesh.graphics.count; k++) {
-					graphic = mesh.graphics.getGraphicAt(k);
+				for (k = 0; k < graphics.count; k++) {
+					graphic = graphics.getGraphicAt(k);
 					if (graphic.elements == particle.elements) {
 						animationElements = (this.shareAnimationGraphics)? this._animationElements[graphic.elements.id] : this._animationElements[graphic.id];
 						break;

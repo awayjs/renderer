@@ -174,7 +174,7 @@ class GL_LineElements extends GL_ElementsBase
 	 * @param renderable
 	 * @param level
 	 * @param indexOffset
-	 * @returns {away.pool.LineSubMeshRenderable}
+	 * @returns {away.pool.LineSubSpriteRenderable}
 	 * @protected
 	 */
 	public _pGetOverflowElements():GL_ElementsBase

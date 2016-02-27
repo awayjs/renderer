@@ -1,6 +1,7 @@
 import ImageBase					= require("awayjs-core/lib/image/ImageBase");
 import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
 import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
 import Plane3D						= require("awayjs-core/lib/geom/Plane3D");
 import Point						= require("awayjs-core/lib/geom/Point");
 import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
@@ -12,16 +13,14 @@ import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool")
 import ByteArray					= require("awayjs-core/lib/utils/ByteArray");
 
 import IRenderable					= require("awayjs-display/lib/base/IRenderable");
-import RenderableListItem			= require("awayjs-display/lib/pool/RenderableListItem");
 import IRenderer					= require("awayjs-display/lib/IRenderer");
+import INode						= require("awayjs-display/lib/partition/INode");
 import DisplayObject				= require("awayjs-display/lib/display/DisplayObject");
 import Camera						= require("awayjs-display/lib/display/Camera");
 import IEntity						= require("awayjs-display/lib/display/IEntity");
+import Scene						= require("awayjs-display/lib/display/Scene");
 import RendererEvent				= require("awayjs-display/lib/events/RendererEvent");
 import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
-import EntityCollector				= require("awayjs-display/lib/traverse/EntityCollector");
-import CollectorBase				= require("awayjs-display/lib/traverse/CollectorBase");
-import ShadowCasterCollector		= require("awayjs-display/lib/traverse/ShadowCasterCollector");
 
 import AGALMiniAssembler			= require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
 import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
@@ -52,6 +51,7 @@ import RenderableMergeSort			= require("awayjs-renderergl/lib/sort/RenderableMer
  */
 class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPool
 {
+	public static _iCollectionMark = 0;
 	public static _abstractionClassPool:Object = new Object();
 
 	private _objectPools:Object = new Object();
@@ -67,9 +67,9 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	public _pContext:IContextGL;
 	public _pStage:Stage;
 
-	public _pCamera:Camera;
-	public _iEntryPoint:Vector3D;
-	public _pCameraForward:Vector3D;
+	private _cameraPosition:Vector3D;
+	private _cameraTransform:Matrix3D;
+	private _cameraForward:Vector3D = new Vector3D();
 
 	public _pRttBufferManager:RTTBufferManager;
 	private _viewPort:Rectangle = new Rectangle();
@@ -113,6 +113,24 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	public _pBlendedRenderableHead:GL_RenderableBase;
 	public _disableColor:boolean = false;
 	public _renderBlended:boolean = true;
+	private _cullPlanes:Array<Plane3D>;
+	private _customCullPlanes:Array<Plane3D>;
+	private _numCullPlanes:number = 0;
+
+	public isDebugEnabled:boolean = false;
+
+	/**
+	 *
+	 */
+	public get cullPlanes():Array<Plane3D>
+	{
+		return this._customCullPlanes;
+	}
+
+	public set cullPlanes(value:Array<Plane3D>)
+	{
+		this._customCullPlanes = value;
+	}
 
 
 	public get renderBlended():boolean
@@ -354,11 +372,6 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		this._numUsedTextures = pass.shader.numUsedTextures;
 	}
 
-	public _iCreateEntityCollector():CollectorBase
-	{
-		return new EntityCollector();
-	}
-
 	/**
 	 * The background color's red component, used when clearing.
 	 *
@@ -465,7 +478,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		 */
 	}
 
-	public render(entityCollector:CollectorBase)
+	public render(camera:Camera, scene:Scene)
 	{
 		this._viewportDirty = false;
 		this._scissorDirty = false;
@@ -473,21 +486,41 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 
 	/**
 	 * Renders the potentially visible geometry to the back buffer or texture.
-	 * @param entityCollector The EntityCollector object containing the potentially visible geometry.
 	 * @param target An option target texture to render to.
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public _iRender(entityCollector:CollectorBase, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public _iRender(camera:Camera, scene:Scene, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 	{
 		//TODO refactor setTarget so that rendertextures are created before this check
 		if (!this._pStage || !this._pContext)
 			return;
 
-		this._pRttViewProjectionMatrix.copyFrom(entityCollector.camera.viewProjection);
+		//reset head values
+		this._pBlendedRenderableHead = null;
+		this._pOpaqueRenderableHead = null;
+		this._pNumElements = 0;
+
+		this._cullPlanes = this._customCullPlanes? this._customCullPlanes : camera.frustumPlanes;
+		this._numCullPlanes = this._cullPlanes? this._cullPlanes.length : 0;
+		this._cameraPosition = camera.scenePosition;
+		this._cameraTransform = camera.sceneTransform;
+		this._cameraForward = Matrix3DUtils.getForward(camera.sceneTransform, this._cameraForward);
+
+		RendererBase._iCollectionMark++;
+
+		scene.traversePartitions(this);
+
+		//sort the resulting renderables
+		if (this.renderableSorter) {
+			this._pOpaqueRenderableHead = <GL_RenderableBase> this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
+			this._pBlendedRenderableHead = <GL_RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+		}
+
+		this._pRttViewProjectionMatrix.copyFrom(camera.viewProjection);
 		this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
 
-		this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
+		this.pExecuteRender(camera, target, scissorRect, surfaceSelector);
 
 		// generate mip maps on target (if target exists) //TODO
 		//if (target)
@@ -500,10 +533,8 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		}
 	}
 
-	public _iRenderCascades(entityCollector:ShadowCasterCollector, target:ImageBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>)
+	public _iRenderCascades(camera:Camera, scene:Scene, target:ImageBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>)
 	{
-		this._applyCollector(entityCollector);
-
 		this._pStage.setRenderTarget(target, true, 0);
 		this._pContext.clear(1, 1, 1, 1, 1, 0);
 
@@ -527,43 +558,14 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		this._pStage.scissorRect = null;
 	}
 
-	private _applyCollector(entityCollector:CollectorBase)
-	{
-		//reset head values
-		this._pBlendedRenderableHead = null;
-		this._pOpaqueRenderableHead = null;
-		this._pNumElements = 0;
-
-		//grab renderable head
-		var item:RenderableListItem = entityCollector.renderableHead;
-
-		//set temp values for entry point and camera forward vector
-		this._pCamera = entityCollector.camera;
-		this._iEntryPoint = this._pCamera.scenePosition;
-		this._pCameraForward = this._pCamera.transform.forwardVector;
-
-		//iterate through all display
-		while (item) {
-			this._iApplyRenderable(item.renderable);
-			item = item.next;
-		}
-
-		//sort the resulting renderables
-		if (this.renderableSorter) {
-			this._pOpaqueRenderableHead = <GL_RenderableBase> this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
-			this._pBlendedRenderableHead = <GL_RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
-		}
-	}
-
 	/**
 	 * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
 	 *
-	 * @param entityCollector The EntityCollector object containing the potentially visible geometry.
 	 * @param target An option target texture to render to.
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public pExecuteRender(entityCollector:CollectorBase, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public pExecuteRender(camera:Camera, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
 	{
 		this._pStage.setRenderTarget(target, true, surfaceSelector);
 
@@ -576,11 +578,10 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		 if (_backgroundImageRenderer)
 		 _backgroundImageRenderer.render();
 		 */
-		this._applyCollector(entityCollector);
 
 		this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 
-		this.pDraw(entityCollector);
+		this.pDraw(camera);
 
 		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
 		//this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
@@ -606,19 +607,18 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 
 	/**
 	 * Performs the actual drawing of geometry to the target.
-	 * @param entityCollector The EntityCollector object containing the potentially visible geometry.
 	 */
-	public pDraw(entityCollector:CollectorBase)
+	public pDraw(camera:Camera)
 	{
 		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
 
 		if (this._disableColor)
 			this._pContext.setColorMask(false, false, false, false);
 
-		this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
+		this.drawRenderables(camera, this._pOpaqueRenderableHead);
 
 		if (this._renderBlended)
-			this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
+			this.drawRenderables(camera, this._pBlendedRenderableHead);
 
 		if (this._disableColor)
 			this._pContext.setColorMask(true, true, true, true);
@@ -660,9 +660,8 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 * Draw a list of renderables.
 	 *
 	 * @param renderables The renderables to draw.
-	 * @param entityCollector The EntityCollector containing all potentially visible information.
 	 */
-	public drawRenderables(renderableGL:GL_RenderableBase, entityCollector:CollectorBase)
+	public drawRenderables(camera:Camera, renderableGL:GL_RenderableBase)
 	{
 		var i:number;
 		var len:number;
@@ -670,7 +669,6 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		var surfaceGL:GL_SurfaceBase;
 		var passes:Array<IPass>;
 		var pass:IPass;
-		var camera:Camera = entityCollector.camera;
 
 		this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
 
@@ -705,7 +703,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 							gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
 						}
 					} else {
-						this._renderMasks(renderableGL.sourceEntity._iAssignedMasks());
+						this._renderMasks(camera, renderableGL.sourceEntity._iAssignedMasks());
 					}
 					this._activeMasksDirty = false;
 				}
@@ -867,7 +865,21 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		this.notifyScissorUpdate();
 	}
 
-	public _iApplyRenderable(renderable:IRenderable)
+	/**
+	 *
+	 * @param node
+	 * @returns {boolean}
+	 */
+	public enterNode(node:INode):boolean
+	{
+		var enter:boolean = node._iCollectionMark != RendererBase._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
+
+		node._iCollectionMark = RendererBase._iCollectionMark;
+
+		return enter;
+	}
+
+	public applyRenderable(renderable:IRenderable)
 	{
 		var renderableGL:GL_RenderableBase = this.getAbstraction(renderable);
 		var surfaceGL:GL_SurfaceBase = renderableGL.surfaceGL;
@@ -882,13 +894,13 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		var position:Vector3D = entity.scenePosition;
 
 		// project onto camera's z-axis
-		position = this._iEntryPoint.subtract(position);
-		renderableGL.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
+		position = this._cameraPosition.subtract(position);
+		renderableGL.zIndex = entity.zOffset + position.dotProduct(this._cameraForward);
 		renderableGL.maskId = entity._iAssignedMaskId();
 		renderableGL.masksConfig = entity._iMasksConfig();
 
 		//store reference to scene transform
-		renderableGL.renderSceneTransform = renderableGL.sourceEntity.getRenderSceneTransform(this._pCamera);
+		renderableGL.renderSceneTransform = renderableGL.sourceEntity.getRenderSceneTransform(this._cameraTransform);
 
 		if (surfaceGL.requiresBlending) {
 			renderableGL.next = this._pBlendedRenderableHead;
@@ -901,13 +913,49 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		this._pNumElements += renderableGL.elements.numElements;
 	}
 
+	/**
+	 *
+	 * @param entity
+	 */
+	public applyDirectionalLight(entity:IEntity)
+	{
+		//don't do anything here
+	}
+
+	/**
+	 *
+	 * @param entity
+	 */
+	public applyLightProbe(entity:IEntity)
+	{
+		//don't do anything here
+	}
+
+	/**
+	 *
+	 * @param entity
+	 */
+	public applyPointLight(entity:IEntity)
+	{
+		//don't do anything here
+	}
+
+	/**
+	 *
+	 * @param entity
+	 */
+	public applySkybox(entity:IEntity)
+	{
+		//don't do anything here
+	}
+
 	private _registerMask(obj:GL_RenderableBase)
 	{
 		//console.log("registerMask");
 		this._registeredMasks.push(obj);
 	}
 
-	public _renderMasks(masks:DisplayObject[][])
+	public _renderMasks(camera:Camera, masks:DisplayObject[][])
 	{
 		var gl = this._pContext["_gl"];
 		//var oldRenderTarget = this._stage.renderTarget;
@@ -946,7 +994,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 					//console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
 					if (renderableGL.maskId == mask.id) {
 						//console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
-						this._drawMask(renderableGL);
+						this._drawMask(camera, renderableGL);
 					}
 				}
 			}
@@ -959,16 +1007,16 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		//this._stage.setRenderTarget(oldRenderTarget);
 	}
 
-	private _drawMask(renderableGL:GL_RenderableBase)
+	private _drawMask(camera:Camera, renderableGL:GL_RenderableBase)
 	{
 		var surfaceGL = renderableGL.surfaceGL;
 		var passes = surfaceGL.passes;
 		var len = passes.length;
 		var pass = passes[len-1];
 
-		this.activatePass(renderableGL, pass, this._pCamera);
+		this.activatePass(renderableGL, pass, camera);
 		// only render last pass for now
-		renderableGL._iRender(pass, this._pCamera, this._pRttViewProjectionMatrix);
+		renderableGL._iRender(pass, camera, this._pRttViewProjectionMatrix);
 		this.deactivatePass(renderableGL, pass);
 	}
 

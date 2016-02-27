@@ -76,7 +76,7 @@ class GL_SkyboxRenderable extends GL_RenderableBase
 		return geometry;
 	}
 
-	public _pGetRenderOwner():ISurface
+	public _pGetSurface():ISurface
 	{
 		return this._skybox;
 	}

@@ -3,7 +3,7 @@ import ElementsBase						= require("awayjs-display/lib/graphics/ElementsBase"	);
 import TriangleElements					= require("awayjs-display/lib/graphics/TriangleElements");
 import Graphic							= require("awayjs-display/lib/graphics/Graphic");
 import Camera							= require("awayjs-display/lib/display/Camera");
-import Mesh								= require("awayjs-display/lib/display/Mesh");
+import Sprite							= require("awayjs-display/lib/display/Sprite");
 
 import Stage							= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
@@ -19,7 +19,7 @@ import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import GL_ElementsBase					= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
 
 /**
- * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
+ * Provides an interface for assigning vertex-based animation data sets to sprite-based entity objects
  * and controlling the various available states of animation through an interative playhead that can be
  * automatically updated or manually triggered.
  */
@@ -111,12 +111,12 @@ class VertexAnimator extends AnimatorBase
 		this._weights[0] = 1 - (this._weights[1] = this._activeVertexState.blendWeight);
 
 		if (geometryFlag) {
-			//invalidate meshes
-			var mesh:Mesh;
+			//invalidate sprites
+			var sprite:Sprite;
 			var len:number = this._pOwners.length;
 			for (var i:number = 0; i < len; i++) {
-				mesh = this._pOwners[i];
-				mesh.graphics.invalidateElements();
+				sprite = this._pOwners[i];
+				sprite.graphics.invalidateElements();
 			}
 		}
 	}
@@ -127,7 +127,7 @@ class VertexAnimator extends AnimatorBase
 	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 	{
 		// todo: add code for when running on cpu
-		// this type of animation can only be SubMesh
+		// this type of animation can only be SubSprite
 		var graphic:Graphic = <Graphic> (<GL_GraphicRenderable> renderable).graphic;
 		var elements:ElementsBase = graphic.elements;
 

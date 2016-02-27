@@ -35,7 +35,7 @@ import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase"
  */
 class GL_RenderableBase extends AbstractionBase
 {
-	private _onRenderOwnerUpdatedDelegate:(event:RenderableEvent) => void;
+	private _onSurfaceUpdatedDelegate:(event:RenderableEvent) => void;
 	private _onInvalidateElementsDelegate:(event:RenderableEvent) => void;
 
 	public _elements:ElementsBase;
@@ -122,7 +122,7 @@ class GL_RenderableBase extends AbstractionBase
 	public get surfaceGL():GL_SurfaceBase
 	{
 		if (this._surfaceDirty)
-			this._updateRenderOwner();
+			this._updateSurface();
 
 		return this._surfaceGL;
 	}
@@ -139,7 +139,7 @@ class GL_RenderableBase extends AbstractionBase
 	{
 		super(renderable, renderer);
 
-		this._onRenderOwnerUpdatedDelegate = (event:RenderableEvent) => this._onRenderOwnerUpdated(event);
+		this._onSurfaceUpdatedDelegate = (event:RenderableEvent) => this._onSurfaceUpdated(event);
 		this._onInvalidateElementsDelegate = (event:RenderableEvent) => this.onInvalidateElements(event);
 
 		//store a reference to the pool for later disposal
@@ -150,7 +150,7 @@ class GL_RenderableBase extends AbstractionBase
 
 		this.renderable = renderable;
 
-		this.renderable.addEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onRenderOwnerUpdatedDelegate);
+		this.renderable.addEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
 		this.renderable.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 	}
 
@@ -166,7 +166,7 @@ class GL_RenderableBase extends AbstractionBase
 		this._stage = null;
 		this.sourceEntity = null;
 
-		this.renderable.removeEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onRenderOwnerUpdatedDelegate);
+		this.renderable.removeEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
 		this.renderable = null;
 
 		this._surfaceGL.usages--;
@@ -183,7 +183,7 @@ class GL_RenderableBase extends AbstractionBase
 		this._elementsDirty = true;
 	}
 
-	private _onRenderOwnerUpdated(event:RenderableEvent)
+	private _onSurfaceUpdated(event:RenderableEvent)
 	{
 		this._surfaceDirty = true;
 	}
@@ -193,7 +193,7 @@ class GL_RenderableBase extends AbstractionBase
 		throw new AbstractMethodError();
 	}
 
-	public _pGetRenderOwner():ISurface
+	public _pGetSurface():ISurface
 	{
 		throw new AbstractMethodError();
 	}
@@ -253,9 +253,9 @@ class GL_RenderableBase extends AbstractionBase
 		this._elementsDirty = false;
 	}
 
-	private _updateRenderOwner()
+	private _updateSurface()
 	{
-		var surface:ISurface = this._pGetRenderOwner() || DefaultMaterialManager.getDefaultMaterial(this.renderable);
+		var surface:ISurface = this._pGetSurface() || DefaultMaterialManager.getDefaultMaterial(this.renderable);
 
 		var surfaceGL:GL_SurfaceBase = <GL_SurfaceBase> this._renderer.getSurfacePool(this.elements).getAbstraction(surface);
 

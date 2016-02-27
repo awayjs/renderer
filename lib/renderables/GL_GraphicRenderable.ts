@@ -66,7 +66,7 @@ class GL_GraphicRenderable extends GL_RenderableBase
 	}
 
 
-	public _pGetRenderOwner():ISurface
+	public _pGetSurface():ISurface
 	{
 		return this.graphic.material;
 	}

@@ -23,7 +23,7 @@ import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_Rend
 import GL_GraphicRenderable				= require("awayjs-renderergl/lib/renderables/GL_GraphicRenderable");
 
 /**
- * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects
+ * Provides an interface for assigning skeleton-based animation data sets to sprite-based entity objects
  * and controlling the various available states of animation through an interative playhead that can be
  * automatically updated or manually triggered.
  */
@@ -93,8 +93,8 @@ class SkeletonAnimator extends AnimatorBase
 
 	/**
 	 * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
-	 * by condensing the number of joint index values required per mesh. Only applicable to
-	 * skeleton animations that utilise more than one mesh object. Defaults to false.
+	 * by condensing the number of joint index values required per sprite. Only applicable to
+	 * skeleton animations that utilise more than one sprite object. Defaults to false.
 	 */
 	public get useCondensedIndices():boolean
 	{
@@ -110,7 +110,7 @@ class SkeletonAnimator extends AnimatorBase
 	 * Creates a new <code>SkeletonAnimator</code> object.
 	 *
 	 * @param skeletonAnimationSet The animation data set containing the skeleton animations used by the animator.
-	 * @param skeleton The skeleton object used for calculating the resulting global matrices for transforming skinned mesh data.
+	 * @param skeleton The skeleton object used for calculating the resulting global matrices for transforming skinned sprite data.
 	 * @param forceCPU Optional value that only allows the animator to perform calculation on the CPU. Defaults to false.
 	 */
 	constructor(animationSet:SkeletonAnimationSet, skeleton:Skeleton, forceCPU:boolean = false)
