@@ -15,11 +15,12 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	import Rectangle = require("awayjs-core/lib/geom/Rectangle");
 	import Camera = require("awayjs-display/lib/display/Camera");
 	import IEntity = require("awayjs-display/lib/display/IEntity");
+	import Scene = require("awayjs-display/lib/display/Scene");
+	import INode = require("awayjs-display/lib/partition/INode");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import RendererBase = require("awayjs-renderergl/lib/RendererBase");
 	import Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
 	import Filter3DBase = require("awayjs-renderergl/lib/filters/Filter3DBase");
-	import Scene = require("awayjs-display/lib/display/Scene");
 	/**
 	 * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
 	 * materials assigned to them.
@@ -39,7 +40,6 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	    private _directionalLights;
 	    private _pointLights;
 	    private _lightProbes;
-	    isDebugEnabled: boolean;
 	    antiAlias: number;
 	    /**
 	     *
@@ -57,6 +57,10 @@ declare module "awayjs-renderergl/lib/DefaultRenderer" {
 	     * @param renderMode The render mode to use.
 	     */
 	    constructor(stage?: Stage, forceSoftware?: boolean, profile?: string, mode?: string);
+	    /**
+	     *
+	     */
+	    enterNode(node: INode): boolean;
 	    render(camera: Camera, scene: Scene): void;
 	    pExecuteRender(camera: Camera, target?: ImageBase, scissorRect?: Rectangle, surfaceSelector?: number): void;
 	    private updateLights(camera);
@@ -240,7 +244,7 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	    _pContext: IContextGL;
 	    _pStage: Stage;
 	    private _cameraPosition;
-	    private _cameraTransform;
+	    _cameraTransform: Matrix3D;
 	    private _cameraForward;
 	    _pRttBufferManager: RTTBufferManager;
 	    private _viewPort;
@@ -276,7 +280,9 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	    private _cullPlanes;
 	    private _customCullPlanes;
 	    private _numCullPlanes;
-	    isDebugEnabled: boolean;
+	    private _sourceEntity;
+	    private _zIndex;
+	    private _renderSceneTransform;
 	    /**
 	     *
 	     */
@@ -426,6 +432,7 @@ declare module "awayjs-renderergl/lib/RendererBase" {
 	     * @returns {boolean}
 	     */
 	    enterNode(node: INode): boolean;
+	    applyEntity(entity: IEntity): void;
 	    applyRenderable(renderable: IRenderable): void;
 	    /**
 	     *
@@ -4138,16 +4145,16 @@ declare module "awayjs-renderergl/lib/elements/ElementsPool" {
 declare module "awayjs-renderergl/lib/elements/GL_ElementsBase" {
 	import AttributesView = require("awayjs-core/lib/attributes/AttributesView");
 	import AbstractionBase = require("awayjs-core/lib/library/AbstractionBase");
+	import IAbstractionPool = require("awayjs-core/lib/library/IAbstractionPool");
 	import AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import Stage = require("awayjs-stagegl/lib/base/Stage");
 	import GL_AttributesBuffer = require("awayjs-stagegl/lib/attributes/GL_AttributesBuffer");
 	import Camera = require("awayjs-display/lib/display/Camera");
 	import ElementsBase = require("awayjs-display/lib/graphics/ElementsBase");
 	import ElementsEvent = require("awayjs-display/lib/events/ElementsEvent");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-	import IAbstractionPool = require("awayjs-core/lib/library/IAbstractionPool");
-	import IEntity = require("awayjs-display/lib/display/IEntity");
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 	/**
 	 *
 	 * @class away.pool.GL_ElementsBaseBase
@@ -4195,8 +4202,8 @@ declare module "awayjs-renderergl/lib/elements/GL_ElementsBase" {
 	     *
 	     */
 	    onClear(event: AssetEvent): void;
-	    _iRender(sourceEntity: IEntity, camera: Camera, viewProjection: Matrix3D): void;
-	    _render(sourceEntity: IEntity, camera: Camera, viewProjection: Matrix3D): void;
+	    _iRender(renderable: GL_RenderableBase, camera: Camera, viewProjection: Matrix3D): void;
+	    _render(renderable: GL_RenderableBase, camera: Camera, viewProjection: Matrix3D): void;
 	    _drawElements(firstIndex: number, numIndices: number): void;
 	    _drawArrays(firstVertex: number, numVertices: number): void;
 	    /**
@@ -4257,16 +4264,16 @@ declare module "awayjs-renderergl/lib/elements/GL_ElementsBase" {
 }
 
 declare module "awayjs-renderergl/lib/elements/GL_LineElements" {
+	import IAbstractionPool = require("awayjs-core/lib/library/IAbstractionPool");
 	import AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import LineElements = require("awayjs-display/lib/graphics/LineElements");
 	import Camera = require("awayjs-display/lib/display/Camera");
 	import GL_ElementsBase = require("awayjs-renderergl/lib/elements/GL_ElementsBase");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-	import IEntity = require("awayjs-display/lib/display/IEntity");
-	import IAbstractionPool = require("awayjs-core/lib/library/IAbstractionPool");
+	import GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 	/**
 	 *
 	 * @class away.pool.GL_LineElements
@@ -4284,7 +4291,7 @@ declare module "awayjs-renderergl/lib/elements/GL_LineElements" {
 	    private _lineElements;
 	    constructor(lineElements: LineElements, shader: ShaderBase, pool: IAbstractionPool);
 	    onClear(event: AssetEvent): void;
-	    _render(sourceEntity: IEntity, camera: Camera, viewProjection: Matrix3D): void;
+	    _render(renderable: GL_RenderableBase, camera: Camera, viewProjection: Matrix3D): void;
 	    _drawElements(firstIndex: number, numIndices: number): void;
 	    _drawArrays(firstVertex: number, numVertices: number): void;
 	    /**
@@ -4326,16 +4333,16 @@ declare module "awayjs-renderergl/lib/elements/GL_SkyboxElements" {
 }
 
 declare module "awayjs-renderergl/lib/elements/GL_TriangleElements" {
+	import IAbstractionPool = require("awayjs-core/lib/library/IAbstractionPool");
 	import AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+	import Camera = require("awayjs-display/lib/display/Camera");
 	import TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
 	import ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
 	import ShaderRegisterCache = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 	import GL_ElementsBase = require("awayjs-renderergl/lib/elements/GL_ElementsBase");
 	import ShaderRegisterData = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-	import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-	import Camera = require("awayjs-display/lib/display/Camera");
-	import IAbstractionPool = require("awayjs-core/lib/library/IAbstractionPool");
-	import IEntity = require("awayjs-display/lib/display/IEntity");
+	import GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 	/**
 	 *
 	 * @class away.pool.GL_TriangleElements
@@ -4348,7 +4355,7 @@ declare module "awayjs-renderergl/lib/elements/GL_TriangleElements" {
 	    private _triangleElements;
 	    constructor(triangleElements: TriangleElements, shader: ShaderBase, pool: IAbstractionPool);
 	    onClear(event: AssetEvent): void;
-	    _render(sourceEntity: IEntity, camera: Camera, viewProjection: Matrix3D): void;
+	    _render(renderable: GL_RenderableBase, camera: Camera, viewProjection: Matrix3D): void;
 	    _drawElements(firstIndex: number, numIndices: number): void;
 	    _drawArrays(firstVertex: number, numVertices: number): void;
 	    /**
@@ -5042,7 +5049,7 @@ declare module "awayjs-renderergl/lib/renderables/GL_RenderableBase" {
 	     * @param surface
 	     * @param renderer
 	     */
-	    constructor(renderable: IRenderable, sourceEntity: IEntity, renderer: RendererBase);
+	    constructor(renderable: IRenderable, renderer: RendererBase);
 	    onClear(event: AssetEvent): void;
 	    onInvalidateElements(event: RenderableEvent): void;
 	    private _onSurfaceUpdated(event);

@@ -42,7 +42,6 @@ var DefaultRenderer = (function (_super) {
         this._directionalLights = new Array();
         this._pointLights = new Array();
         this._lightProbes = new Array();
-        this.isDebugEnabled = true;
         if (stage)
             this._shareContext = true;
         this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
@@ -118,6 +117,15 @@ var DefaultRenderer = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    /**
+     *
+     */
+    DefaultRenderer.prototype.enterNode = function (node) {
+        var enter = _super.prototype.enterNode.call(this, node);
+        if (enter && node.debugVisible)
+            this.applyEntity(node.bounds.boundsPrimitive);
+        return enter;
+    };
     DefaultRenderer.prototype.render = function (camera, scene) {
         _super.prototype.render.call(this, camera, scene);
         if (!this._pStage.recoverFromDisposal()) {
@@ -200,9 +208,9 @@ var DefaultRenderer = (function (_super) {
      **/
     DefaultRenderer.prototype.drawSkybox = function (camera) {
         var renderable = this.getAbstraction(this._skybox);
+        renderable.renderSceneTransform = this._skybox.getRenderSceneTransform(this._cameraTransform);
         this.updateSkyboxProjection(camera);
-        var render = this._skyBoxSurfacePool.getAbstraction(renderable.surfaceGL.surface);
-        var pass = render.passes[0];
+        var pass = this._skyBoxSurfacePool.getAbstraction(renderable.surfaceGL.surface).passes[0];
         this.activatePass(renderable, pass, camera);
         renderable._iRender(pass, camera, this._skyboxProjection);
         this.deactivatePass(renderable, pass);
@@ -602,7 +610,6 @@ var RendererBase = (function (_super) {
         this._disableColor = false;
         this._renderBlended = true;
         this._numCullPlanes = 0;
-        this.isDebugEnabled = false;
         this._onViewportUpdatedDelegate = function (event) { return _this.onViewportUpdated(event); };
         this._onContextUpdateDelegate = function (event) { return _this.onContextUpdate(event); };
         //default sorting algorithm
@@ -1229,6 +1236,15 @@ var RendererBase = (function (_super) {
         node._iCollectionMark = RendererBase._iCollectionMark;
         return enter;
     };
+    RendererBase.prototype.applyEntity = function (entity) {
+        this._sourceEntity = entity;
+        // project onto camera's z-axis
+        this._zIndex = entity.zOffset + this._cameraPosition.subtract(entity.scenePosition).dotProduct(this._cameraForward);
+        //save sceneTransform
+        this._renderSceneTransform = entity.getRenderSceneTransform(this._cameraTransform);
+        //collect renderables
+        entity._acceptTraverser(this);
+    };
     RendererBase.prototype.applyRenderable = function (renderable) {
         var renderableGL = this.getAbstraction(renderable);
         var surfaceGL = renderableGL.surfaceGL;
@@ -1236,15 +1252,12 @@ var RendererBase = (function (_super) {
         renderableGL.surfaceID = surfaceGL.surfaceID;
         renderableGL.renderOrderId = surfaceGL.renderOrderId;
         renderableGL.cascaded = false;
-        var entity = renderableGL.sourceEntity;
-        var position = entity.scenePosition;
-        // project onto camera's z-axis
-        position = this._cameraPosition.subtract(position);
-        renderableGL.zIndex = entity.zOffset + position.dotProduct(this._cameraForward);
-        renderableGL.maskId = entity._iAssignedMaskId();
-        renderableGL.masksConfig = entity._iMasksConfig();
+        renderableGL.sourceEntity = this._sourceEntity;
+        renderableGL.zIndex = this._zIndex;
+        renderableGL.maskId = this._sourceEntity._iAssignedMaskId();
+        renderableGL.masksConfig = this._sourceEntity._iMasksConfig();
         //store reference to scene transform
-        renderableGL.renderSceneTransform = renderableGL.sourceEntity.getRenderSceneTransform(this._cameraTransform);
+        renderableGL.renderSceneTransform = this._renderSceneTransform;
         if (surfaceGL.requiresBlending) {
             renderableGL.next = this._pBlendedRenderableHead;
             this._pBlendedRenderableHead = renderableGL;
@@ -9485,14 +9498,14 @@ var GL_ElementsBase = (function (_super) {
             this._overflow = null;
         }
     };
-    GL_ElementsBase.prototype._iRender = function (sourceEntity, camera, viewProjection) {
+    GL_ElementsBase.prototype._iRender = function (renderable, camera, viewProjection) {
         if (!this._verticesUpdated)
             this._updateIndices();
-        this._render(sourceEntity, camera, viewProjection);
+        this._render(renderable, camera, viewProjection);
         if (this._overflow)
-            this._overflow._iRender(sourceEntity, camera, viewProjection);
+            this._overflow._iRender(renderable, camera, viewProjection);
     };
-    GL_ElementsBase.prototype._render = function (sourceEntity, camera, viewProjection) {
+    GL_ElementsBase.prototype._render = function (renderable, camera, viewProjection) {
         if (this._indices)
             this._drawElements(0, this._numIndices);
         else
@@ -9625,11 +9638,11 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var ElementsEvent = require("awayjs-display/lib/events/ElementsEvent");
 var GL_ElementsBase = require("awayjs-renderergl/lib/elements/GL_ElementsBase");
-var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 /**
  *
  * @class away.pool.GL_LineElements
@@ -9660,7 +9673,7 @@ var GL_LineElements = (function (_super) {
         this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._lineElements.colors));
         this._lineElements = null;
     };
-    GL_LineElements.prototype._render = function (sourceEntity, camera, viewProjection) {
+    GL_LineElements.prototype._render = function (renderable, camera, viewProjection) {
         if (this._shader.colorBufferIndex >= 0)
             this.activateVertexBufferVO(this._shader.colorBufferIndex, this._lineElements.colors);
         var context = this._stage.context;
@@ -9672,13 +9685,13 @@ var GL_LineElements = (function (_super) {
         context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, GL_LineElements.pONE_VECTOR, 1);
         context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 6, GL_LineElements.pFRONT_VECTOR, 1);
         context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 7, this._constants, 1);
-        this._calcMatrix.copyFrom(sourceEntity.sceneTransform);
+        this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
         this._calcMatrix.append(camera.inverseSceneTransform);
         context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
         this.activateVertexBufferVO(0, this._lineElements.positions, 3);
         this.activateVertexBufferVO(1, this._lineElements.positions, 3, 12);
         this.activateVertexBufferVO(2, this._lineElements.thickness);
-        _super.prototype._render.call(this, sourceEntity, camera, viewProjection);
+        _super.prototype._render.call(this, renderable, camera, viewProjection);
     };
     GL_LineElements.prototype._drawElements = function (firstIndex, numIndices) {
         this.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
@@ -9746,11 +9759,11 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
+var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var ElementsEvent = require("awayjs-display/lib/events/ElementsEvent");
 var GL_ElementsBase = require("awayjs-renderergl/lib/elements/GL_ElementsBase");
-var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 /**
  *
  * @class away.pool.GL_TriangleElements
@@ -9796,7 +9809,7 @@ var GL_TriangleElements = (function (_super) {
         this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.jointWeights));
         this._triangleElements = null;
     };
-    GL_TriangleElements.prototype._render = function (sourceEntity, camera, viewProjection) {
+    GL_TriangleElements.prototype._render = function (renderable, camera, viewProjection) {
         //set buffers
         //TODO: find a better way to update a concatenated buffer when autoderiving
         if (this._shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
@@ -9820,19 +9833,19 @@ var GL_TriangleElements = (function (_super) {
         this.activateVertexBufferVO(0, this._triangleElements.positions);
         //set constants
         if (this._shader.sceneMatrixIndex >= 0) {
-            sourceEntity.getRenderSceneTransform(camera.sceneTransform).copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
+            renderable.renderSceneTransform.copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
             viewProjection.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
         }
         else {
             var matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
-            matrix3D.copyFrom(sourceEntity.getRenderSceneTransform(camera.sceneTransform));
+            matrix3D.copyFrom(renderable.renderSceneTransform);
             matrix3D.append(viewProjection);
             matrix3D.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
         }
         var context = this._stage.context;
         context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, this._shader.vertexConstantData, this._shader.numUsedVertexConstants);
         context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._shader.fragmentConstantData, this._shader.numUsedFragmentConstants);
-        _super.prototype._render.call(this, sourceEntity, camera, viewProjection);
+        _super.prototype._render.call(this, renderable, camera, viewProjection);
     };
     GL_TriangleElements.prototype._drawElements = function (firstIndex, numIndices) {
         this.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, firstIndex, numIndices);
@@ -11207,7 +11220,7 @@ var GL_Billboard = (function (_super) {
      * @param billboard
      */
     function GL_Billboard(billboard, renderer) {
-        _super.call(this, billboard, billboard, renderer);
+        _super.call(this, billboard, renderer);
         this._billboard = billboard;
     }
     GL_Billboard.prototype.onClear = function (event) {
@@ -11274,7 +11287,7 @@ var GL_GraphicRenderable = (function (_super) {
      * @param indexOffset
      */
     function GL_GraphicRenderable(graphic, renderer) {
-        _super.call(this, graphic, graphic.parent.sourceEntity, renderer);
+        _super.call(this, graphic, renderer);
         this.graphic = graphic;
     }
     GL_GraphicRenderable.prototype.onClear = function (event) {
@@ -11319,7 +11332,7 @@ var GL_LineSegmentRenderable = (function (_super) {
      * @param dataOffset
      */
     function GL_LineSegmentRenderable(lineSegment, renderer) {
-        _super.call(this, lineSegment, lineSegment, renderer);
+        _super.call(this, lineSegment, renderer);
         this._lineSegment = lineSegment;
     }
     GL_LineSegmentRenderable.prototype.onClear = function (event) {
@@ -11401,7 +11414,7 @@ var GL_RenderableBase = (function (_super) {
      * @param surface
      * @param renderer
      */
-    function GL_RenderableBase(renderable, sourceEntity, renderer) {
+    function GL_RenderableBase(renderable, renderer) {
         var _this = this;
         _super.call(this, renderable, renderer);
         this._elementsDirty = true;
@@ -11413,7 +11426,6 @@ var GL_RenderableBase = (function (_super) {
         //store a reference to the pool for later disposal
         this._renderer = renderer;
         this._stage = renderer.stage;
-        this.sourceEntity = sourceEntity;
         this.renderable = renderable;
         this.renderable.addEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
         this.renderable.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
@@ -11483,7 +11495,7 @@ var GL_RenderableBase = (function (_super) {
         this._setRenderState(pass, camera, viewProjection);
         if (this._elementsDirty)
             this._updateElements();
-        pass.shader._elementsPool.getAbstraction((this.renderable.animator) ? this.renderable.animator.getRenderableElements(this, this._elements) : this._elements)._iRender(this.sourceEntity, camera, viewProjection);
+        pass.shader._elementsPool.getAbstraction((this.renderable.animator) ? this.renderable.animator.getRenderableElements(this, this._elements) : this._elements)._iRender(this, camera, viewProjection);
     };
     GL_RenderableBase.prototype._setRenderState = function (pass, camera, viewProjection) {
         pass._iRender(this, camera, viewProjection);
@@ -11570,7 +11582,7 @@ var GL_SkyboxRenderable = (function (_super) {
      * @param skybox
      */
     function GL_SkyboxRenderable(skybox, renderer) {
-        _super.call(this, skybox, skybox, renderer);
+        _super.call(this, skybox, renderer);
         this._skybox = skybox;
         this._vertexArray = new Float32Array([0, 0, 0, 0, 1, 1, 1, 1]);
     }
