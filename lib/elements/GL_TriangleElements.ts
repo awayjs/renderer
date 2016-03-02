@@ -1,10 +1,16 @@
+import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
+import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
+import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 
 import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
+import ContextWebGL					= require("awayjs-stagegl/lib/base/ContextWebGL");
+import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
+import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 
+import Camera						= require("awayjs-display/lib/display/Camera");
 import TriangleElements				= require("awayjs-display/lib/graphics/TriangleElements");
-
 import ElementsEvent				= require("awayjs-display/lib/events/ElementsEvent");
 
 import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
@@ -13,14 +19,7 @@ import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegi
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
 import GL_ElementsBase				= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import ContextWebGL					= require("awayjs-stagegl/lib/base/ContextWebGL");
-import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
-import IEntity						= require("awayjs-display/lib/display/IEntity");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 
 /**
  *
@@ -90,7 +89,7 @@ class GL_TriangleElements extends GL_ElementsBase
 		this._triangleElements = null;
 	}
 
-	public _render(sourceEntity:IEntity, camera:Camera, viewProjection:Matrix3D)
+	public _render(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		//set buffers
 		//TODO: find a better way to update a concatenated buffer when autoderiving
@@ -125,12 +124,12 @@ class GL_TriangleElements extends GL_ElementsBase
 
 		//set constants
 		if (this._shader.sceneMatrixIndex >= 0) {
-			sourceEntity.getRenderSceneTransform(camera.sceneTransform).copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
+			renderable.renderSceneTransform.copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
 			viewProjection.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
 		} else {
 			var matrix3D:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
 
-			matrix3D.copyFrom(sourceEntity.getRenderSceneTransform(camera.sceneTransform));
+			matrix3D.copyFrom(renderable.renderSceneTransform);
 			matrix3D.append(viewProjection);
 
 			matrix3D.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
@@ -140,7 +139,7 @@ class GL_TriangleElements extends GL_ElementsBase
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, this._shader.vertexConstantData, this._shader.numUsedVertexConstants);
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._shader.fragmentConstantData, this._shader.numUsedFragmentConstants);
 
-		super._render(sourceEntity, camera, viewProjection);
+		super._render(renderable, camera, viewProjection);
 	}
 
 	public _drawElements(firstIndex:number, numIndices:number)

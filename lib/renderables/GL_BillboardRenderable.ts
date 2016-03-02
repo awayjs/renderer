@@ -47,7 +47,7 @@ class GL_Billboard extends GL_RenderableBase
 	 */
 	constructor(billboard:Billboard, renderer:RendererBase)
 	{
-		super(billboard, billboard, renderer);
+		super(billboard, renderer);
 
 		this._billboard = billboard;
 	}

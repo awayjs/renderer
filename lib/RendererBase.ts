@@ -68,7 +68,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	public _pStage:Stage;
 
 	private _cameraPosition:Vector3D;
-	private _cameraTransform:Matrix3D;
+	public _cameraTransform:Matrix3D;
 	private _cameraForward:Vector3D = new Vector3D();
 
 	public _pRttBufferManager:RTTBufferManager;
@@ -116,8 +116,9 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	private _cullPlanes:Array<Plane3D>;
 	private _customCullPlanes:Array<Plane3D>;
 	private _numCullPlanes:number = 0;
-
-	public isDebugEnabled:boolean = false;
+	private _sourceEntity:IEntity;
+	private _zIndex:number;
+	private _renderSceneTransform:Matrix3D;
 
 	/**
 	 *
@@ -879,6 +880,20 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		return enter;
 	}
 
+	public applyEntity(entity:IEntity)
+	{
+		this._sourceEntity = entity;
+
+		// project onto camera's z-axis
+		this._zIndex = entity.zOffset + this._cameraPosition.subtract(entity.scenePosition).dotProduct(this._cameraForward);
+
+		//save sceneTransform
+		this._renderSceneTransform = entity.getRenderSceneTransform(this._cameraTransform);
+
+		//collect renderables
+		entity._acceptTraverser(this);
+	}
+
 	public applyRenderable(renderable:IRenderable)
 	{
 		var renderableGL:GL_RenderableBase = this.getAbstraction(renderable);
@@ -890,17 +905,13 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 
 		renderableGL.cascaded = false;
 
-		var entity:IEntity = renderableGL.sourceEntity;
-		var position:Vector3D = entity.scenePosition;
-
-		// project onto camera's z-axis
-		position = this._cameraPosition.subtract(position);
-		renderableGL.zIndex = entity.zOffset + position.dotProduct(this._cameraForward);
-		renderableGL.maskId = entity._iAssignedMaskId();
-		renderableGL.masksConfig = entity._iMasksConfig();
+		renderableGL.sourceEntity = this._sourceEntity;
+		renderableGL.zIndex = this._zIndex;
+		renderableGL.maskId = this._sourceEntity._iAssignedMaskId();
+		renderableGL.masksConfig = this._sourceEntity._iMasksConfig();
 
 		//store reference to scene transform
-		renderableGL.renderSceneTransform = renderableGL.sourceEntity.getRenderSceneTransform(this._cameraTransform);
+		renderableGL.renderSceneTransform = this._renderSceneTransform;
 
 		if (surfaceGL.requiresBlending) {
 			renderableGL.next = this._pBlendedRenderableHead;

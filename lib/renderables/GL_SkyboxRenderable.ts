@@ -48,7 +48,7 @@ class GL_SkyboxRenderable extends GL_RenderableBase
 	 */
 	constructor(skybox:Skybox, renderer:RendererBase)
 	{
-		super(skybox, skybox, renderer);
+		super(skybox, renderer);
 
 		this._skybox = skybox;
 

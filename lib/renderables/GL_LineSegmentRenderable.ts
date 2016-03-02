@@ -45,7 +45,7 @@ class GL_LineSegmentRenderable extends GL_RenderableBase
 	 */
 	constructor(lineSegment:LineSegment, renderer:RendererBase)
 	{
-		super(lineSegment, lineSegment, renderer);
+		super(lineSegment, renderer);
 
 		this._lineSegment = lineSegment;
 	}

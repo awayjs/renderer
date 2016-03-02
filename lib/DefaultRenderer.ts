@@ -13,8 +13,9 @@ import PointLight					= require("awayjs-display/lib/display/PointLight");
 import IEntity						= require("awayjs-display/lib/display/IEntity");
 import LightProbe					= require("awayjs-display/lib/display/LightProbe");
 import Skybox						= require("awayjs-display/lib/display/Skybox");
+import Scene						= require("awayjs-display/lib/display/Scene");
 import ShadowMapperBase				= require("awayjs-display/lib/materials/shadowmappers/ShadowMapperBase");
-
+import INode						= require("awayjs-display/lib/partition/INode");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
@@ -35,7 +36,6 @@ import GL_SkyboxRenderable			= require("awayjs-renderergl/lib/renderables/GL_Sky
 import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
 import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
 import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
-import Scene = require("awayjs-display/lib/display/Scene");
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -60,8 +60,6 @@ class DefaultRenderer extends RendererBase
 	private _directionalLights:Array<DirectionalLight> = new Array<DirectionalLight>();
 	private _pointLights:Array<PointLight> = new Array<PointLight>();
 	private _lightProbes:Array<LightProbe> = new Array<LightProbe>();
-
-	public isDebugEnabled:boolean = true;
 
 	public get antiAlias():number
 	{
@@ -154,6 +152,19 @@ class DefaultRenderer extends RendererBase
 			this._pRttBufferManager.viewHeight = this._height;
 
 		this._skyBoxSurfacePool = new SurfacePool(GL_SkyboxElements, this._pStage);
+	}
+
+	/**
+	 *
+	 */
+	public enterNode(node:INode):boolean
+	{
+		var enter:boolean = super.enterNode(node);
+
+		if (enter && node.debugVisible)
+			this.applyEntity(node.bounds.boundsPrimitive);
+
+		return enter;
 	}
 
 	public render(camera:Camera, scene:Scene)
@@ -263,11 +274,10 @@ class DefaultRenderer extends RendererBase
 	{
 		var renderable:GL_RenderableBase = this.getAbstraction(this._skybox);
 
+		renderable.renderSceneTransform = this._skybox.getRenderSceneTransform(this._cameraTransform);
 		this.updateSkyboxProjection(camera);
 
-		var render:GL_SurfaceBase = this._skyBoxSurfacePool.getAbstraction(renderable.surfaceGL.surface);
-
-		var pass:IPass = render.passes[0];
+		var pass:IPass = this._skyBoxSurfacePool.getAbstraction(renderable.surfaceGL.surface).passes[0];
 
 		this.activatePass(renderable, pass, camera);
 		renderable._iRender(pass, camera, this._skyboxProjection);

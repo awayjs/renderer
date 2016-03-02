@@ -1,4 +1,6 @@
+import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
+import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 
 import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
@@ -14,10 +16,8 @@ import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool")
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import IEntity = require("awayjs-display/lib/display/IEntity");
-import IAbstractionPool = require("awayjs-core/lib/library/IAbstractionPool");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 
 /**
  *
@@ -127,7 +127,7 @@ class GL_LineElements extends GL_ElementsBase
 		this._lineElements = null;
 	}
 
-	public _render(sourceEntity:IEntity, camera:Camera, viewProjection:Matrix3D)
+	public _render(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		if (this._shader.colorBufferIndex >= 0)
 			this.activateVertexBufferVO(this._shader.colorBufferIndex, this._lineElements.colors);
@@ -146,7 +146,7 @@ class GL_LineElements extends GL_ElementsBase
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 6, GL_LineElements.pFRONT_VECTOR, 1);
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 7, this._constants, 1);
 
-		this._calcMatrix.copyFrom(sourceEntity.sceneTransform);
+		this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
 		this._calcMatrix.append(camera.inverseSceneTransform);
 		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
 
@@ -154,7 +154,7 @@ class GL_LineElements extends GL_ElementsBase
 		this.activateVertexBufferVO(1, this._lineElements.positions, 3, 12);
 		this.activateVertexBufferVO(2, this._lineElements.thickness);
 
-		super._render(sourceEntity, camera, viewProjection);
+		super._render(renderable, camera, viewProjection);
 	}
 
 	public _drawElements(firstIndex:number, numIndices:number)

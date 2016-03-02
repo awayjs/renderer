@@ -135,7 +135,7 @@ class GL_RenderableBase extends AbstractionBase
 	 * @param surface
 	 * @param renderer
 	 */
-	constructor(renderable:IRenderable, sourceEntity:IEntity, renderer:RendererBase)
+	constructor(renderable:IRenderable, renderer:RendererBase)
 	{
 		super(renderable, renderer);
 
@@ -145,8 +145,6 @@ class GL_RenderableBase extends AbstractionBase
 		//store a reference to the pool for later disposal
 		this._renderer = renderer;
 		this._stage = renderer.stage;
-
-		this.sourceEntity = sourceEntity;
 
 		this.renderable = renderable;
 
@@ -222,7 +220,7 @@ class GL_RenderableBase extends AbstractionBase
 		if (this._elementsDirty)
 			this._updateElements();
 
-		pass.shader._elementsPool.getAbstraction((this.renderable.animator)? (<AnimatorBase> this.renderable.animator).getRenderableElements(this, this._elements) : this._elements)._iRender(this.sourceEntity, camera, viewProjection);
+		pass.shader._elementsPool.getAbstraction((this.renderable.animator)? (<AnimatorBase> this.renderable.animator).getRenderableElements(this, this._elements) : this._elements)._iRender(this, camera, viewProjection);
 	}
 
 	public _setRenderState(pass:IPass, camera:Camera, viewProjection:Matrix3D)

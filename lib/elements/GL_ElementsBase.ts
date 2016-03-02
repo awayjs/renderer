@@ -2,8 +2,10 @@ import Short3Attributes				= require("awayjs-core/lib/attributes/Short3Attribute
 import AttributesView				= require("awayjs-core/lib/attributes/AttributesView");
 import AttributesBuffer				= require("awayjs-core/lib/attributes/AttributesBuffer");
 import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
+import IAbstractionPool 			= require("awayjs-core/lib/library/IAbstractionPool");
 import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
+import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
 
 import Stage						= require("awayjs-stagegl/lib/base/Stage");
 import GL_AttributesBuffer			= require("awayjs-stagegl/lib/attributes/GL_AttributesBuffer");
@@ -17,9 +19,7 @@ import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool")
 import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import IAbstractionPool 			= require("awayjs-core/lib/library/IAbstractionPool");
-import IEntity = require("awayjs-display/lib/display/IEntity");
-import Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 
 /**
  *
@@ -155,18 +155,18 @@ class GL_ElementsBase extends AbstractionBase
 		}
 	}
 
-	public _iRender(sourceEntity:IEntity, camera:Camera, viewProjection:Matrix3D)
+	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		if (!this._verticesUpdated)
 			this._updateIndices();
 
-		this._render(sourceEntity, camera, viewProjection);
+		this._render(renderable, camera, viewProjection);
 
 		if (this._overflow)
-			this._overflow._iRender(sourceEntity, camera, viewProjection);
+			this._overflow._iRender(renderable, camera, viewProjection);
 	}
 
-	public _render(sourceEntity:IEntity, camera:Camera, viewProjection:Matrix3D)
+	public _render(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		if (this._indices)
 			this._drawElements(0, this._numIndices);

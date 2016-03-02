@@ -43,7 +43,7 @@ class GL_GraphicRenderable extends GL_RenderableBase
 	 */
 	constructor(graphic:Graphic, renderer:RendererBase)
 	{
-		super(graphic, graphic.parent.sourceEntity, renderer);
+		super(graphic, renderer);
 
 		this.graphic = graphic;
 	}
