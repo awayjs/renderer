@@ -182,14 +182,14 @@ var DefaultRenderer = (function (_super) {
         for (i = 0; i < len; ++i) {
             light = this._directionalLights[i];
             shadowMapper = light.shadowMapper;
-            if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid))
+            if (light.shadowsEnabled && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid))
                 shadowMapper.iRenderDepthMap(camera, light.scene, this._pDepthRenderer);
         }
         len = this._pointLights.length;
         for (i = 0; i < len; ++i) {
             light = this._pointLights[i];
             shadowMapper = light.shadowMapper;
-            if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid))
+            if (light.shadowsEnabled && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid))
                 shadowMapper.iRenderDepthMap(camera, light.scene, this._pDistanceRenderer);
         }
     };
