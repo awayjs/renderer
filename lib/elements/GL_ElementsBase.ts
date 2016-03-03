@@ -124,7 +124,7 @@ class GL_ElementsBase extends AbstractionBase
 	 */
 	public activateVertexBufferVO(index:number, attributesView:AttributesView, dimensions:number = 0, offset:number = 0)
 	{
-		this.getVertexBufferVO(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset);
+		this.getVertexBufferVO(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset, attributesView.unsigned);
 	}
 
 	/**
