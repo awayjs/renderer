@@ -238,7 +238,7 @@ class DefaultRenderer extends RendererBase
 
 			shadowMapper = light.shadowMapper;
 
-			if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid ))
+			if (light.shadowsEnabled && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid ))
 				shadowMapper.iRenderDepthMap(camera, light.scene, this._pDepthRenderer);
 		}
 
@@ -248,7 +248,7 @@ class DefaultRenderer extends RendererBase
 
 			shadowMapper = light.shadowMapper;
 
-			if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid))
+			if (light.shadowsEnabled && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid))
 				shadowMapper.iRenderDepthMap(camera, light.scene, this._pDistanceRenderer);
 		}
 	}
