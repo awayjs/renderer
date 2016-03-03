@@ -9476,7 +9476,7 @@ var GL_ElementsBase = (function (_super) {
     GL_ElementsBase.prototype.activateVertexBufferVO = function (index, attributesView, dimensions, offset) {
         if (dimensions === void 0) { dimensions = 0; }
         if (offset === void 0) { offset = 0; }
-        this.getVertexBufferVO(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset);
+        this.getVertexBufferVO(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset, attributesView.unsigned);
     };
     /**
      *
