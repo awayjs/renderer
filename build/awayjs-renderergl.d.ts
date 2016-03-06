@@ -4189,11 +4189,11 @@ declare module "awayjs-renderergl/lib/elements/GL_ElementsBase" {
 	    /**
 	     *
 	     */
-	    getIndexBufferVO(): GL_AttributesBuffer;
+	    getIndexBufferGL(): GL_AttributesBuffer;
 	    /**
 	     *
 	     */
-	    getVertexBufferVO(attributesView: AttributesView): GL_AttributesBuffer;
+	    getVertexBufferGL(attributesView: AttributesView): GL_AttributesBuffer;
 	    /**
 	     *
 	     */

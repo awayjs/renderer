@@ -9453,7 +9453,7 @@ var GL_ElementsBase = (function (_super) {
     /**
      *
      */
-    GL_ElementsBase.prototype.getIndexBufferVO = function () {
+    GL_ElementsBase.prototype.getIndexBufferGL = function () {
         if (!this._indicesUpdated)
             this._updateIndices();
         return this._indices;
@@ -9461,7 +9461,7 @@ var GL_ElementsBase = (function (_super) {
     /**
      *
      */
-    GL_ElementsBase.prototype.getVertexBufferVO = function (attributesView) {
+    GL_ElementsBase.prototype.getVertexBufferGL = function (attributesView) {
         //first check if indices need updating which may affect vertices
         if (!this._indicesUpdated)
             this._updateIndices();
@@ -9476,7 +9476,7 @@ var GL_ElementsBase = (function (_super) {
     GL_ElementsBase.prototype.activateVertexBufferVO = function (index, attributesView, dimensions, offset) {
         if (dimensions === void 0) { dimensions = 0; }
         if (offset === void 0) { offset = 0; }
-        this.getVertexBufferVO(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset, attributesView.unsigned);
+        this.getVertexBufferGL(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset, attributesView.unsigned);
     };
     /**
      *
@@ -9487,11 +9487,6 @@ var GL_ElementsBase = (function (_super) {
         this._elements.removeEventListener(ElementsEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
         this._elements.removeEventListener(ElementsEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
         this._elements.removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
-        this._onClearIndices(new ElementsEvent(ElementsEvent.CLEAR_INDICES, this._elements.indices));
-        var names = this._elements.getCustomAtributesNames();
-        var len = names.length;
-        for (var i = 0; i < len; i++)
-            this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._elements.getCustomAtributes(names[i])));
         this._elements = null;
         if (this._overflow) {
             this._overflow.onClear(event);
@@ -9641,7 +9636,6 @@ var __extends = this.__extends || function (d, b) {
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var ElementsEvent = require("awayjs-display/lib/events/ElementsEvent");
 var GL_ElementsBase = require("awayjs-renderergl/lib/elements/GL_ElementsBase");
 /**
  *
@@ -9668,9 +9662,6 @@ var GL_LineElements = (function (_super) {
     };
     GL_LineElements.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
-        this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._lineElements.positions));
-        this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._lineElements.thickness));
-        this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._lineElements.colors));
         this._lineElements = null;
     };
     GL_LineElements.prototype._render = function (renderable, camera, viewProjection) {
@@ -9694,7 +9685,7 @@ var GL_LineElements = (function (_super) {
         _super.prototype._render.call(this, renderable, camera, viewProjection);
     };
     GL_LineElements.prototype._drawElements = function (firstIndex, numIndices) {
-        this.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
+        this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
     };
     GL_LineElements.prototype._drawArrays = function (firstVertex, numVertices) {
         this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
@@ -9719,7 +9710,7 @@ var GL_LineElements = (function (_super) {
 })(GL_ElementsBase);
 module.exports = GL_LineElements;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-display/lib/events/ElementsEvent":undefined,"awayjs-renderergl/lib/elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/GL_SkyboxElements":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-renderergl/lib/elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/GL_SkyboxElements":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9762,7 +9753,6 @@ var __extends = this.__extends || function (d, b) {
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var ElementsEvent = require("awayjs-display/lib/events/ElementsEvent");
 var GL_ElementsBase = require("awayjs-renderergl/lib/elements/GL_ElementsBase");
 /**
  *
@@ -9801,12 +9791,6 @@ var GL_TriangleElements = (function (_super) {
     };
     GL_TriangleElements.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
-        this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.positions));
-        this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.normals));
-        this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.tangents));
-        this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.uvs));
-        this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.jointIndices));
-        this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.jointWeights));
         this._triangleElements = null;
     };
     GL_TriangleElements.prototype._render = function (renderable, camera, viewProjection) {
@@ -9848,7 +9832,7 @@ var GL_TriangleElements = (function (_super) {
         _super.prototype._render.call(this, renderable, camera, viewProjection);
     };
     GL_TriangleElements.prototype._drawElements = function (firstIndex, numIndices) {
-        this.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, firstIndex, numIndices);
+        this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, firstIndex, numIndices);
     };
     GL_TriangleElements.prototype._drawArrays = function (firstVertex, numVertices) {
         this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
@@ -9871,7 +9855,7 @@ var GL_TriangleElements = (function (_super) {
 })(GL_ElementsBase);
 module.exports = GL_TriangleElements;
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/events/ElementsEvent":undefined,"awayjs-renderergl/lib/elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/IElementsClassGL":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-renderergl/lib/elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/IElementsClassGL":[function(require,module,exports){
 
 },{}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
@@ -11457,6 +11441,7 @@ var GL_RenderableBase = (function (_super) {
         this._stage = null;
         this.sourceEntity = null;
         this.renderable.removeEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
+        this.renderable.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
         this.renderable = null;
         this._surfaceGL.usages--;
         if (!this._surfaceGL.usages)
