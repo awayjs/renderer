@@ -93,7 +93,7 @@ class GL_ElementsBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public getIndexBufferVO():GL_AttributesBuffer
+	public getIndexBufferGL():GL_AttributesBuffer
 	{
 		if (!this._indicesUpdated)
 			this._updateIndices();
@@ -105,7 +105,7 @@ class GL_ElementsBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public getVertexBufferVO(attributesView:AttributesView):GL_AttributesBuffer
+	public getVertexBufferGL(attributesView:AttributesView):GL_AttributesBuffer
 	{
 		//first check if indices need updating which may affect vertices
 		if (!this._indicesUpdated)
@@ -124,7 +124,7 @@ class GL_ElementsBase extends AbstractionBase
 	 */
 	public activateVertexBufferVO(index:number, attributesView:AttributesView, dimensions:number = 0, offset:number = 0)
 	{
-		this.getVertexBufferVO(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset, attributesView.unsigned);
+		this.getVertexBufferGL(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset, attributesView.unsigned);
 	}
 
 	/**
@@ -139,13 +139,6 @@ class GL_ElementsBase extends AbstractionBase
 
 		this._elements.removeEventListener(ElementsEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
 		this._elements.removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
-
-		this._onClearIndices(new ElementsEvent(ElementsEvent.CLEAR_INDICES, this._elements.indices));
-
-		var names:Array<string> = this._elements.getCustomAtributesNames();
-		var len:number = names.length;
-		for (var i:number = 0; i <len; i++)
-			this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._elements.getCustomAtributes(names[i])));
 
 		this._elements = null;
 

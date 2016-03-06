@@ -119,11 +119,6 @@ class GL_LineElements extends GL_ElementsBase
 	{
 		super.onClear(event);
 
-
-		this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._lineElements.positions));
-		this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._lineElements.thickness));
-		this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._lineElements.colors));
-
 		this._lineElements = null;
 	}
 
@@ -159,7 +154,7 @@ class GL_LineElements extends GL_ElementsBase
 
 	public _drawElements(firstIndex:number, numIndices:number)
 	{
-		this.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
+		this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
 	}
 
 	public _drawArrays(firstVertex:number, numVertices:number)

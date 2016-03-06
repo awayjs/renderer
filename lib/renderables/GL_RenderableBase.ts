@@ -165,6 +165,7 @@ class GL_RenderableBase extends AbstractionBase
 		this.sourceEntity = null;
 
 		this.renderable.removeEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
+		this.renderable.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 		this.renderable = null;
 
 		this._surfaceGL.usages--;

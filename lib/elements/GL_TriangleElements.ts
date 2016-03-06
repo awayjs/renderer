@@ -78,14 +78,6 @@ class GL_TriangleElements extends GL_ElementsBase
 	{
 		super.onClear(event);
 
-		this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.positions));
-		this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.normals));
-		this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.tangents));
-		this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.uvs));
-		this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.jointIndices));
-		this._onClearVertices(new ElementsEvent(ElementsEvent.CLEAR_VERTICES, this._triangleElements.jointWeights));
-
-
 		this._triangleElements = null;
 	}
 
@@ -144,7 +136,7 @@ class GL_TriangleElements extends GL_ElementsBase
 
 	public _drawElements(firstIndex:number, numIndices:number)
 	{
-		this.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, firstIndex, numIndices);
+		this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, firstIndex, numIndices);
 	}
 
 	public _drawArrays(firstVertex:number, numVertices:number)
