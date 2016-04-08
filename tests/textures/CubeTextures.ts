@@ -1,20 +1,15 @@
-import BitmapImageCube				= require("awayjs-core/lib/image/BitmapImageCube");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import Loader						= require("awayjs-core/lib/library/Loader");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-import Debug						= require("awayjs-core/lib/utils/Debug");
+import BitmapImageCube				from "awayjs-core/lib/image/BitmapImageCube";
+import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
+import URLRequest					from "awayjs-core/lib/net/URLRequest";
+import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
+import Loader						from "awayjs-core/lib/library/Loader";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import Debug						from "awayjs-core/lib/utils/Debug";
 
-import View							= require("awayjs-display/lib/View");
-import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import Skybox						= require("awayjs-display/lib/display/Skybox");
-import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
-import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
+import View							from "awayjs-display/lib/View";
+import Skybox						from "awayjs-display/lib/display/Skybox";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
 class CubeTextures
 {

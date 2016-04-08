@@ -1,14 +1,14 @@
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-import Debug						= require("awayjs-core/lib/utils/Debug");
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import Debug						from "awayjs-core/lib/utils/Debug";
 
-import View							= require("awayjs-display/lib/View");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import PointLight					= require("awayjs-display/lib/display/PointLight");
-import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
-import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
-import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
+import View							from "awayjs-display/lib/View";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import PointLight					from "awayjs-display/lib/display/PointLight";
+import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
+import PrimitiveTorusPrefab			from "awayjs-display/lib/prefabs/PrimitiveTorusPrefab";
+import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
 class View3DTest
 {

@@ -1,13 +1,13 @@
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import View							= require("awayjs-display/lib/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
-import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
+import View							from "awayjs-display/lib/View";
+import HoverController				from "awayjs-display/lib/controllers/HoverController";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
+import PrimitiveCubePrefab			from "awayjs-display/lib/prefabs/PrimitiveCubePrefab";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
 class HoverControllerTest
 {

@@ -1,22 +1,22 @@
-import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import URLLoader					= require("awayjs-core/lib/net/URLLoader");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import CoordinateSystem				= require("awayjs-core/lib/projections/CoordinateSystem");
-import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
+import URLLoader					from "awayjs-core/lib/net/URLLoader";
+import URLRequest					from "awayjs-core/lib/net/URLRequest";
+import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
+import CoordinateSystem				from "awayjs-core/lib/projections/CoordinateSystem";
+import PerspectiveProjection		from "awayjs-core/lib/projections/PerspectiveProjection";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import View							= require("awayjs-display/lib/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import Billboard					= require("awayjs-display/lib/display/Billboard");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import AwayMouseEvent				= require("awayjs-display/lib/events/MouseEvent");
-import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
+import View							from "awayjs-display/lib/View";
+import HoverController				from "awayjs-display/lib/controllers/HoverController";
+import Billboard					from "awayjs-display/lib/display/Billboard";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import AwayMouseEvent				from "awayjs-display/lib/events/MouseEvent";
+import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
+import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
 class LayoutTest
 {

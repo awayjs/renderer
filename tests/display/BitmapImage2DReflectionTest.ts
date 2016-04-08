@@ -1,19 +1,19 @@
-import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import Loader						= require("awayjs-core/lib/library/Loader");
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
+import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
+import Loader						from "awayjs-core/lib/library/Loader";
+import IAsset						from "awayjs-core/lib/library/IAsset";
+import URLRequest					from "awayjs-core/lib/net/URLRequest";
+import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import View							= require("awayjs-display/lib/View");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
-import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
+import View							from "awayjs-display/lib/View";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import PrimitivePlanePrefab			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
+import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
+import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
+import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
 class BitmapImage2DReflectionTest
 {
