@@ -1,8 +1,7 @@
-import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-
-import SkeletonDifferenceState			= require("awayjs-renderergl/lib/animators/states/SkeletonDifferenceState");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import SkeletonDifferenceState			from "awayjs-renderergl/lib/animators/states/SkeletonDifferenceState";
 
 /**
  * A skeleton animation node that uses a difference input pose with a base input pose to blend a linearly interpolated output of a skeleton pose.
@@ -38,4 +37,4 @@ class SkeletonDifferenceNode extends AnimationNodeBase
 	}
 }
 
-export = SkeletonDifferenceNode
+export default SkeletonDifferenceNode

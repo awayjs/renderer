@@ -1,19 +1,19 @@
-import MathConsts						= require("awayjs-core/lib/geom/MathConsts");
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import MathConsts						from "awayjs-core/lib/geom/MathConsts";
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import DisplayObject					= require("awayjs-display/lib/display/DisplayObject");
-import Camera							= require("awayjs-display/lib/display/Camera");
+import DisplayObject					from "awayjs-display/lib/display/DisplayObject";
+import Camera							from "awayjs-display/lib/display/Camera";
 
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
+import Stage							from "awayjs-stagegl/lib/base/Stage";
+import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
-import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
-import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
-import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
-import ParticleFollowNode				= require("awayjs-renderergl/lib/animators/nodes/ParticleFollowNode");
-import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import ParticleAnimator					from "awayjs-renderergl/lib/animators/ParticleAnimator";
+import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
+import AnimationElements				from "awayjs-renderergl/lib/animators/data/AnimationElements";
+import ParticleAnimationData			from "awayjs-renderergl/lib/animators/data/ParticleAnimationData";
+import ParticleFollowNode				from "awayjs-renderergl/lib/animators/nodes/ParticleFollowNode";
+import ParticleStateBase				from "awayjs-renderergl/lib/animators/states/ParticleStateBase";
+import GL_RenderableBase				from "awayjs-renderergl/lib/animators/../renderables/GL_RenderableBase";
 
 /**
  * ...
@@ -261,4 +261,4 @@ class ParticleFollowState extends ParticleStateBase
 
 }
 
-export = ParticleFollowState;
+export default ParticleFollowState;

@@ -1,10 +1,7 @@
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-
-import SkeletonBinaryLERPState			= require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import SkeletonBinaryLERPState			from "awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState";
 
 /**
  * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
@@ -40,4 +37,4 @@ class SkeletonBinaryLERPNode extends AnimationNodeBase
 	}
 }
 
-export = SkeletonBinaryLERPNode;
+export default SkeletonBinaryLERPNode;

@@ -1,6 +1,6 @@
-import EventBase				= require("awayjs-core/lib/events/EventBase");
+import EventBase				from "awayjs-core/lib/events/EventBase";
 
-import RTTBufferManager			= require("awayjs-renderergl/lib/managers/RTTBufferManager");
+import RTTBufferManager			from "awayjs-renderergl/lib/managers/RTTBufferManager";
 
 class RTTEvent extends EventBase
 {
@@ -35,4 +35,4 @@ class RTTEvent extends EventBase
 	}
 }
 
-export = RTTEvent;
+export default RTTEvent;

@@ -1,19 +1,19 @@
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import Image2D						= require("awayjs-core/lib/image/Image2D");
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import Image2D						from "awayjs-core/lib/image/Image2D";
 
-import GL_Image2D					= require("awayjs-stagegl/lib/image/GL_Image2D");
-import GL_Sampler2D					= require("awayjs-stagegl/lib/image/GL_Sampler2D");
+import GL_Image2D					from "awayjs-stagegl/lib/image/GL_Image2D";
+import GL_Sampler2D					from "awayjs-stagegl/lib/image/GL_Sampler2D";
 
-import MappingMode					= require("awayjs-display/lib/textures/MappingMode");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
+import MappingMode					from "awayjs-display/lib/textures/MappingMode";
+import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
 
-import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
+import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
 
 /**
  *
@@ -149,4 +149,4 @@ class GL_Single2DTexture extends GL_TextureBase
 	}
 }
 
-export = GL_Single2DTexture;
+export default GL_Single2DTexture;

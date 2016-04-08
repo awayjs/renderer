@@ -1,9 +1,9 @@
-import IAnimationSet					= require("awayjs-display/lib/animators/IAnimationSet");
+import IAnimationSet					from "awayjs-display/lib/animators/IAnimationSet";
 
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import AnimationSetBase					= require("awayjs-renderergl/lib/animators/AnimationSetBase");
-import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
+import AnimationSetBase					from "awayjs-renderergl/lib/animators/AnimationSetBase";
+import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
 
 /**
  * The animation data set used by skeleton-based animators, containing skeleton animation data.
@@ -121,4 +121,4 @@ class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet
 	}
 }
 
-export = SkeletonAnimationSet;
+export default SkeletonAnimationSet;

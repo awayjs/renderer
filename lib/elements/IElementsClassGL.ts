@@ -1,14 +1,14 @@
-import IRenderable					= require("awayjs-display/lib/base/IRenderable");
+import IRenderable					from "awayjs-display/lib/base/IRenderable";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
-import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
-import GL_ElementsBase				= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
+import RendererBase					from "awayjs-renderergl/lib/RendererBase";
+import ElementsPool					from "awayjs-renderergl/lib/elements/ElementsPool";
+import GL_ElementsBase				from "awayjs-renderergl/lib/elements/GL_ElementsBase";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
 
 /**
  * IElementsClassGL is an interface for the constructable class definition IRenderable that is used to
@@ -32,4 +32,4 @@ interface IElementsClassGL
 	_iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string;
 }
 
-export = IElementsClassGL;
+export default IElementsClassGL;

@@ -1,23 +1,23 @@
-import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import IAbstractionPool				from "awayjs-core/lib/library/IAbstractionPool";
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 
-import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
+import ContextGLDrawMode			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
+import Stage						from "awayjs-stagegl/lib/base/Stage";
+import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
+import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
 
-import LineElements					= require("awayjs-display/lib/graphics/LineElements");
-import ElementsEvent				= require("awayjs-display/lib/events/ElementsEvent");
-import Camera						= require("awayjs-display/lib/display/Camera");
+import LineElements					from "awayjs-display/lib/graphics/LineElements";
+import ElementsEvent				from "awayjs-display/lib/events/ElementsEvent";
+import Camera						from "awayjs-display/lib/display/Camera";
 
-import GL_ElementsBase				= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
-import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import GL_ElementsBase				from "awayjs-renderergl/lib/elements/GL_ElementsBase";
+import ElementsPool					from "awayjs-renderergl/lib/elements/ElementsPool";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
 
 /**
  *
@@ -178,4 +178,4 @@ class GL_LineElements extends GL_ElementsBase
 	}
 }
 
-export = GL_LineElements;
+export default GL_LineElements;

@@ -1,14 +1,13 @@
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterElement			= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-
-import ParticleProperties				= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
-import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-import ParticleTimeState				= require("awayjs-renderergl/lib/animators/states/ParticleTimeState");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
+import ParticleProperties				from "awayjs-renderergl/lib/animators/data/ParticleProperties";
+import ParticlePropertiesMode			from "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode";
+import ParticleNodeBase					from "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase";
+import ParticleTimeState				from "awayjs-renderergl/lib/animators/states/ParticleTimeState";
+import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterElement			from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used as the base node for timekeeping inside a particle. Automatically added to a particle animation set on instatiation.
@@ -31,13 +30,13 @@ class ParticleTimeNode extends ParticleNodeBase
 	 */
 	constructor(usesDuration:boolean = false, usesLooping:boolean = false, usesDelay:boolean = false)
 	{
+		super("ParticleTime", ParticlePropertiesMode.LOCAL_STATIC, 4, 0);
+		
 		this._pStateClass = ParticleTimeState;
 
 		this._iUsesDuration = usesDuration;
 		this._iUsesLooping = usesLooping;
 		this._iUsesDelay = usesDelay;
-
-		super("ParticleTime", ParticlePropertiesMode.LOCAL_STATIC, 4, 0);
 	}
 
 	/**
@@ -101,4 +100,4 @@ class ParticleTimeNode extends ParticleNodeBase
 	}
 }
 
-export = ParticleTimeNode;
+export default ParticleTimeNode;

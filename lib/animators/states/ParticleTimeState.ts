@@ -1,15 +1,14 @@
-import Camera							= require("awayjs-display/lib/display/Camera");
+import Camera							from "awayjs-display/lib/display/Camera";
 
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
+import Stage							from "awayjs-stagegl/lib/base/Stage";
+import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
-import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
-import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
-import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-import ParticleTimeNode					= require("awayjs-renderergl/lib/animators/nodes/ParticleTimeNode");
-import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import ParticleAnimator					from "awayjs-renderergl/lib/animators/ParticleAnimator";
+import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
+import AnimationElements				from "awayjs-renderergl/lib/animators/data/AnimationElements";
+import ParticleTimeNode					from "awayjs-renderergl/lib/animators/nodes/ParticleTimeNode";
+import ParticleStateBase				from "awayjs-renderergl/lib/animators/states/ParticleStateBase";
+import GL_RenderableBase				from "awayjs-renderergl/lib/animators/../renderables/GL_RenderableBase";
 
 /**
  * ...
@@ -41,4 +40,4 @@ class ParticleTimeState extends ParticleStateBase
 
 }
 
-export = ParticleTimeState;
+export default ParticleTimeState;

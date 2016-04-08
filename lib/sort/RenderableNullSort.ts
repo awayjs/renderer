@@ -1,6 +1,6 @@
-import IEntitySorter				= require("awayjs-renderergl/lib/sort/IEntitySorter");
+import IEntitySorter				from "awayjs-renderergl/lib/sort/IEntitySorter";
 
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
 
 /**
  * @class away.sort.NullSort
@@ -18,4 +18,4 @@ class RenderableNullSort implements IEntitySorter
 	}
 }
 
-export = RenderableNullSort;
+export default RenderableNullSort;

@@ -1,13 +1,13 @@
-import Image2D						= require("awayjs-core/lib/image/Image2D");
+import Image2D						from "awayjs-core/lib/image/Image2D";
 
-import Camera						= require("awayjs-display/lib/display/Camera");
+import Camera						from "awayjs-display/lib/display/Camera";
 
-import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import GL_ImageBase					= require("awayjs-stagegl/lib/image/GL_ImageBase");
+import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
+import Stage						from "awayjs-stagegl/lib/base/Stage";
+import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
 
-import Filter3DTaskBase				= require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+import Filter3DTaskBase				from "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase";
 
 
 class Filter3DCompositeTask extends Filter3DTaskBase
@@ -106,4 +106,4 @@ class Filter3DCompositeTask extends Filter3DTaskBase
 	}
 }
 
-export = Filter3DCompositeTask;
+export default Filter3DCompositeTask;

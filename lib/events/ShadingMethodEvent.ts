@@ -1,4 +1,4 @@
-import EventBase					= require("awayjs-core/lib/events/EventBase");
+import EventBase					from "awayjs-core/lib/events/EventBase";
 
 class ShadingMethodEvent extends EventBase
 {
@@ -12,4 +12,4 @@ class ShadingMethodEvent extends EventBase
 	}
 }
 
-export = ShadingMethodEvent;
+export default ShadingMethodEvent;

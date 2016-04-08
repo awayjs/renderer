@@ -58,4 +58,4 @@ class ShaderRegisterElement
 	}
 }
 
-export = ShaderRegisterElement;
+export default ShaderRegisterElement;

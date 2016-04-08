@@ -1,15 +1,12 @@
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import BlendMode					= require("awayjs-core/lib/image/BlendMode");
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import BlendMode					from "awayjs-core/lib/image/BlendMode";
 
-import ISurface						= require("awayjs-display/lib/base/ISurface");
-import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
+import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-
-import BasicMaterialPass			= require("awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass");
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
-import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
+import BasicMaterialPass			from "awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass";
+import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
+import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
+import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
 
 /**
  * RenderMaterialObject forms an abstract base class for the default shaded materials provided by Stage,
@@ -51,4 +48,4 @@ class GL_BasicMaterialSurface extends GL_SurfaceBase
 	}
 }
 
-export = GL_BasicMaterialSurface;
+export default GL_BasicMaterialSurface;

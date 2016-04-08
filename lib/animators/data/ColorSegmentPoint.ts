@@ -1,4 +1,4 @@
-import ColorTransform					= require("awayjs-core/lib/geom/ColorTransform");
+import ColorTransform					from "awayjs-core/lib/geom/ColorTransform";
 
 class ColorSegmentPoint
 {
@@ -26,4 +26,4 @@ class ColorSegmentPoint
 
 }
 
-export = ColorSegmentPoint;
+export default ColorSegmentPoint;

@@ -1,10 +1,10 @@
-import IAnimationSet					= require("awayjs-display/lib/animators/IAnimationSet");
+import IAnimationSet					from "awayjs-display/lib/animators/IAnimationSet";
 
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import AnimationSetBase					= require("awayjs-renderergl/lib/animators/AnimationSetBase");
-import VertexAnimationMode				= require("awayjs-renderergl/lib/animators/data/VertexAnimationMode");
-import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
+import AnimationSetBase					from "awayjs-renderergl/lib/animators/AnimationSetBase";
+import VertexAnimationMode				from "awayjs-renderergl/lib/animators/data/VertexAnimationMode";
+import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
 
 /**
  * The animation data set used by vertex-based animators, containing vertex animation state data.
@@ -194,4 +194,4 @@ class VertexAnimationSet extends AnimationSetBase implements IAnimationSet
 	}
 }
 
-export = VertexAnimationSet;
+export default VertexAnimationSet;

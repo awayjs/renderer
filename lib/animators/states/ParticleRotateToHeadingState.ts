@@ -1,16 +1,15 @@
-import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
+import Matrix3D							from "awayjs-core/lib/geom/Matrix3D";
 
-import Camera							= require("awayjs-display/lib/display/Camera");
+import Camera							from "awayjs-display/lib/display/Camera";
 
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
-import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
-import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-import ParticleRotateToHeadingNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode");
-import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import ParticleAnimator					from "awayjs-renderergl/lib/animators/ParticleAnimator";
+import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
+import AnimationElements				from "awayjs-renderergl/lib/animators/data/AnimationElements";
+import ParticleNodeBase					from "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase";
+import ParticleStateBase				from "awayjs-renderergl/lib/animators/states/ParticleStateBase";
+import GL_RenderableBase				from "awayjs-renderergl/lib/animators/../renderables/GL_RenderableBase";
 
 /**
  * ...
@@ -38,4 +37,4 @@ class ParticleRotateToHeadingState extends ParticleStateBase
 
 }
 
-export = ParticleRotateToHeadingState;
+export default ParticleRotateToHeadingState;

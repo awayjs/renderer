@@ -1,34 +1,34 @@
-import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import Matrix						= require("awayjs-core/lib/geom/Matrix");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import ImageBase					= require("awayjs-core/lib/image/ImageBase");
-import SamplerBase					= require("awayjs-core/lib/image/SamplerBase");
-import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
+import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import Matrix						from "awayjs-core/lib/geom/Matrix";
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import ImageBase					from "awayjs-core/lib/image/ImageBase";
+import SamplerBase					from "awayjs-core/lib/image/SamplerBase";
+import AbstractionBase				from "awayjs-core/lib/library/AbstractionBase";
 
-import IRenderer					= require("awayjs-display/lib/IRenderer");
-import IRenderable					= require("awayjs-display/lib/base/IRenderable");
-import ISurface						= require("awayjs-display/lib/base/ISurface");
-import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
-import TriangleElements				= require("awayjs-display/lib/graphics/TriangleElements");
-import IEntity						= require("awayjs-display/lib/display/IEntity");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import RenderableEvent			= require("awayjs-display/lib/events/RenderableEvent");
-import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
-import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
+import IRenderer					from "awayjs-display/lib/IRenderer";
+import IRenderable					from "awayjs-display/lib/base/IRenderable";
+import ISurface						from "awayjs-display/lib/base/ISurface";
+import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
+import TriangleElements				from "awayjs-display/lib/graphics/TriangleElements";
+import IEntity						from "awayjs-display/lib/display/IEntity";
+import Camera						from "awayjs-display/lib/display/Camera";
+import RenderableEvent			from "awayjs-display/lib/events/RenderableEvent";
+import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
+import TextureBase					from "awayjs-display/lib/textures/TextureBase";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import GL_ImageBase					= require("awayjs-stagegl/lib/image/GL_ImageBase");
-import GL_SamplerBase				= require("awayjs-stagegl/lib/image/GL_SamplerBase");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
+import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
+import GL_SamplerBase				from "awayjs-stagegl/lib/image/GL_SamplerBase";
 
-import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
-import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
-import GL_ElementsBase				= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
-import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
+import RendererBase					from "awayjs-renderergl/lib/RendererBase";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
+import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
+import GL_ElementsBase				from "awayjs-renderergl/lib/elements/GL_ElementsBase";
+import AnimatorBase					from "awayjs-renderergl/lib/animators/AnimatorBase";
 
 /**
  * @class RenderableListItem
@@ -303,4 +303,4 @@ class GL_RenderableBase extends AbstractionBase
 	}
 }
 
-export = GL_RenderableBase;
+export default GL_RenderableBase;

@@ -1,11 +1,11 @@
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
-import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
+import IAssetClass					from "awayjs-core/lib/library/IAssetClass";
+import IAbstractionPool				from "awayjs-core/lib/library/IAbstractionPool";
 
-import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
+import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
 
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import GL_ElementsBase				= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
+import GL_ElementsBase				from "awayjs-renderergl/lib/elements/GL_ElementsBase";
 
 /**
  * @class away.pool.SurfacePool
@@ -59,4 +59,4 @@ class ElementsPool implements IAbstractionPool
 	}
 }
 
-export = ElementsPool;
+export default ElementsPool;

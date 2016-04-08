@@ -1,27 +1,21 @@
-import BlendMode					= require("awayjs-core/lib/image/BlendMode");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
-import AssetBase					= require("awayjs-core/lib/library/AssetBase");
-import ArgumentError				= require("awayjs-core/lib/errors/ArgumentError");
-import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import EventDispatcher				from "awayjs-core/lib/events/EventDispatcher";
 
-import Camera						= require("awayjs-display/lib/display/Camera");
-import LightPickerBase				= require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
-import ISurface						= require("awayjs-display/lib/base/ISurface");
-import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
+import Camera						from "awayjs-display/lib/display/Camera";
+import ISurface						from "awayjs-display/lib/base/ISurface";
+import TextureBase					from "awayjs-display/lib/textures/TextureBase";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage")
+import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
-import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
-import PassEvent					= require("awayjs-renderergl/lib/events/PassEvent");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
+import AnimationSetBase				from "awayjs-renderergl/lib/animators/AnimationSetBase";
+import PassEvent					from "awayjs-renderergl/lib/events/PassEvent";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
+import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
 
 /**
  * PassBase provides an abstract base class for material shader passes. A material pass constitutes at least
@@ -216,4 +210,4 @@ class PassBase extends EventDispatcher implements IPass
 	}
 }
 
-export = PassBase;
+export default PassBase;

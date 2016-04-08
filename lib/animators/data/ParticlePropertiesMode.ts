@@ -19,4 +19,4 @@ class ParticlePropertiesMode
 	public static LOCAL_DYNAMIC:number /*uint*/ = 2;
 }
 
-export = ParticlePropertiesMode;
+export default ParticlePropertiesMode;

@@ -1,13 +1,13 @@
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import SkeletonAnimator					= require("awayjs-renderergl/lib/animators/SkeletonAnimator");
-import JointPose						= require("awayjs-renderergl/lib/animators/data/JointPose");
-import Skeleton							= require("awayjs-renderergl/lib/animators/data/Skeleton");
-import SkeletonPose						= require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-import SkeletonClipNode					= require("awayjs-renderergl/lib/animators/nodes/SkeletonClipNode");
-import AnimationClipState				= require("awayjs-renderergl/lib/animators/states/AnimationClipState");
-import ISkeletonAnimationState			= require("awayjs-renderergl/lib/animators/states/ISkeletonAnimationState");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import SkeletonAnimator					from "awayjs-renderergl/lib/animators/SkeletonAnimator";
+import JointPose						from "awayjs-renderergl/lib/animators/data/JointPose";
+import Skeleton							from "awayjs-renderergl/lib/animators/data/Skeleton";
+import SkeletonPose						from "awayjs-renderergl/lib/animators/data/SkeletonPose";
+import SkeletonClipNode					from "awayjs-renderergl/lib/animators/nodes/SkeletonClipNode";
+import AnimationClipState				from "awayjs-renderergl/lib/animators/states/AnimationClipState";
+import ISkeletonAnimationState			from "awayjs-renderergl/lib/animators/states/ISkeletonAnimationState";
 
 /**
  *
@@ -192,4 +192,4 @@ class SkeletonClipState extends AnimationClipState implements ISkeletonAnimation
 	}
 }
 
-export = SkeletonClipState;
+export default SkeletonClipState;

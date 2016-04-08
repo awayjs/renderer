@@ -1,17 +1,13 @@
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
-import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
+import IAssetClass					from "awayjs-core/lib/library/IAssetClass";
+import IAbstractionPool				from "awayjs-core/lib/library/IAbstractionPool";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import ISurface						= require("awayjs-display/lib/base/ISurface");
-import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
-import Skybox						= require("awayjs-display/lib/display/Skybox");
+import ISurface						from "awayjs-display/lib/base/ISurface";
 
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import GL_BasicMaterialSurface		= require("awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface");
-import ISurfaceClassGL				= require("awayjs-renderergl/lib/surfaces/ISurfaceClassGL");
-import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
-import GL_SkyboxSurface				= require("awayjs-renderergl/lib/surfaces/GL_SkyboxSurface");
+import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
+import ISurfaceClassGL				from "awayjs-renderergl/lib/surfaces/ISurfaceClassGL";
+import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
 
 /**
  * @class away.pool.SurfacePool
@@ -73,4 +69,4 @@ class SurfacePool implements IAbstractionPool
 	}
 }
 
-export = SurfacePool;
+export default SurfacePool;

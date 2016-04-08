@@ -1,9 +1,9 @@
-import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import EventBase						= require("awayjs-core/lib/events/EventBase");
+import EventBase						from "awayjs-core/lib/events/EventBase";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import IAnimationState					= require("awayjs-renderergl/lib/animators/states/IAnimationState");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import IAnimationState					from "awayjs-renderergl/lib/animators/states/IAnimationState";
 
 /**
  * Dispatched to notify changes in an animation state's state.
@@ -72,4 +72,4 @@ class AnimationStateEvent extends EventBase
 	}
 }
 
-export = AnimationStateEvent;
+export default AnimationStateEvent;

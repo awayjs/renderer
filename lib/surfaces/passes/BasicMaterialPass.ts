@@ -1,29 +1,20 @@
-import BlendMode					= require("awayjs-core/lib/image/BlendMode");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import Matrix						= require("awayjs-core/lib/geom/Matrix");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 
-import Camera						= require("awayjs-display/lib/display/Camera");
-import ISurface						= require("awayjs-display/lib/base/ISurface");
+import Camera						from "awayjs-display/lib/display/Camera";
+import ISurface						from "awayjs-display/lib/base/ISurface";
 
-import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import ContextGLMipFilter			= require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-import ContextGLTextureFilter		= require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-import ContextGLWrapMode			= require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import PassBase						= require("awayjs-renderergl/lib/surfaces/passes/PassBase");
-import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
+import PassBase						from "awayjs-renderergl/lib/surfaces/passes/PassBase";
+import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
 
 /**
  * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
@@ -149,4 +140,4 @@ class BasicMaterialPass extends PassBase
 	}
 }
 
-export = BasicMaterialPass;
+export default BasicMaterialPass;

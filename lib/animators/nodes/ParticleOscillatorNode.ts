@@ -1,14 +1,13 @@
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterElement			= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-
-import ParticleProperties				= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
-import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-import ParticleOscillatorState			= require("awayjs-renderergl/lib/animators/states/ParticleOscillatorState");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
+import ParticleProperties				from "awayjs-renderergl/lib/animators/data/ParticleProperties";
+import ParticlePropertiesMode			from "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode";
+import ParticleNodeBase					from "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase";
+import ParticleOscillatorState			from "awayjs-renderergl/lib/animators/states/ParticleOscillatorState";
+import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterElement			from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used to control the position of a particle over time using simple harmonic motion.
@@ -97,4 +96,4 @@ class ParticleOscillatorNode extends ParticleNodeBase
 	}
 }
 
-export = ParticleOscillatorNode;
+export default ParticleOscillatorNode;

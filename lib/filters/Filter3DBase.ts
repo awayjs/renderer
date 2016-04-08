@@ -1,11 +1,11 @@
-import Image2D						= require("awayjs-core/lib/image/Image2D");
+import Image2D						from "awayjs-core/lib/image/Image2D";
 
-import Camera						= require("awayjs-display/lib/display/Camera");
+import Camera						from "awayjs-display/lib/display/Camera";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import Filter3DTaskBase				= require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
-import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
+import Filter3DTaskBase				from "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase";
+import RTTBufferManager from "awayjs-renderergl/lib/managers/RTTBufferManager";
 
 class Filter3DBase
 {
@@ -101,4 +101,4 @@ class Filter3DBase
 	}
 }
 
-export = Filter3DBase;
+export default Filter3DBase;

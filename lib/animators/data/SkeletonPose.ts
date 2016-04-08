@@ -1,7 +1,7 @@
-import IAsset							= require("awayjs-core/lib/library/IAsset");
-import AssetBase						= require("awayjs-core/lib/library/AssetBase");
+import IAsset							from "awayjs-core/lib/library/IAsset";
+import AssetBase						from "awayjs-core/lib/library/AssetBase";
 
-import JointPose						= require("awayjs-renderergl/lib/animators/data/JointPose");
+import JointPose						from "awayjs-renderergl/lib/animators/data/JointPose";
 
 
 /**
@@ -120,4 +120,4 @@ class SkeletonPose extends AssetBase implements IAsset
 	}
 }
 
-export = SkeletonPose;
+export default SkeletonPose;

@@ -1,9 +1,9 @@
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 
-import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+import AnimationNodeBase			from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+import ShaderRegisterCache			from "awayjs-renderergl/lib/animators/../shaders/ShaderRegisterCache";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/animators/../shaders/ShaderRegisterElement";
 
 
 /**
@@ -270,4 +270,4 @@ class AnimationRegisterCache extends ShaderRegisterCache
 	}
 }
 
-export = AnimationRegisterCache;
+export default AnimationRegisterCache;

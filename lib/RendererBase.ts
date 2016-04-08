@@ -1,46 +1,45 @@
-import ImageBase					= require("awayjs-core/lib/image/ImageBase");
-import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
-import Plane3D						= require("awayjs-core/lib/geom/Plane3D");
-import Point						= require("awayjs-core/lib/geom/Point");
-import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
-import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
-import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
-import ByteArray					= require("awayjs-core/lib/utils/ByteArray");
+import ImageBase					from "awayjs-core/lib/image/ImageBase";
+import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import Matrix3DUtils				from "awayjs-core/lib/geom/Matrix3DUtils";
+import Plane3D						from "awayjs-core/lib/geom/Plane3D";
+import Point						from "awayjs-core/lib/geom/Point";
+import Rectangle					from "awayjs-core/lib/geom/Rectangle";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import EventDispatcher				from "awayjs-core/lib/events/EventDispatcher";
+import IAssetClass					from "awayjs-core/lib/library/IAssetClass";
+import IAbstractionPool				from "awayjs-core/lib/library/IAbstractionPool";
+import ByteArray					from "awayjs-core/lib/utils/ByteArray";
 
-import IRenderable					= require("awayjs-display/lib/base/IRenderable");
-import IRenderer					= require("awayjs-display/lib/IRenderer");
-import INode						= require("awayjs-display/lib/partition/INode");
-import DisplayObject				= require("awayjs-display/lib/display/DisplayObject");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import IEntity						= require("awayjs-display/lib/display/IEntity");
-import Scene						= require("awayjs-display/lib/display/Scene");
-import RendererEvent				= require("awayjs-display/lib/events/RendererEvent");
-import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
+import IRenderable					from "awayjs-display/lib/base/IRenderable";
+import IRenderer					from "awayjs-display/lib/IRenderer";
+import INode						from "awayjs-display/lib/partition/INode";
+import DisplayObject				from "awayjs-display/lib/display/DisplayObject";
+import Camera						from "awayjs-display/lib/display/Camera";
+import IEntity						from "awayjs-display/lib/display/IEntity";
+import Scene						from "awayjs-display/lib/display/Scene";
+import RendererEvent				from "awayjs-display/lib/events/RendererEvent";
+import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
 
-import AGALMiniAssembler			= require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
-import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
-import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import StageEvent					= require("awayjs-stagegl/lib/events/StageEvent");
-import StageManager					= require("awayjs-stagegl/lib/managers/StageManager");
-import ProgramData					= require("awayjs-stagegl/lib/image/ProgramData");
-import GL_IAssetClass				= require("awayjs-stagegl/lib/library/GL_IAssetClass");
+import AGALMiniAssembler			from "awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler";
+import ContextGLBlendFactor			from "awayjs-stagegl/lib/base/ContextGLBlendFactor";
+import ContextGLCompareMode			from "awayjs-stagegl/lib/base/ContextGLCompareMode";
+import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
+import Stage						from "awayjs-stagegl/lib/base/Stage";
+import StageEvent					from "awayjs-stagegl/lib/events/StageEvent";
+import StageManager					from "awayjs-stagegl/lib/managers/StageManager";
+import ProgramData					from "awayjs-stagegl/lib/image/ProgramData";
+import GL_IAssetClass				from "awayjs-stagegl/lib/library/GL_IAssetClass";
 
-import ISurfaceClassGL				= require("awayjs-renderergl/lib/surfaces/ISurfaceClassGL");
-import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
-import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
-import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
-import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
-import IEntitySorter				= require("awayjs-renderergl/lib/sort/IEntitySorter");
-import RenderableMergeSort			= require("awayjs-renderergl/lib/sort/RenderableMergeSort");
+import ISurfaceClassGL				from "awayjs-renderergl/lib/surfaces/ISurfaceClassGL";
+import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import RTTBufferManager				from "awayjs-renderergl/lib/managers/RTTBufferManager";
+import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
+import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
+import ElementsPool					from "awayjs-renderergl/lib/elements/ElementsPool";
+import IEntitySorter				from "awayjs-renderergl/lib/sort/IEntitySorter";
+import RenderableMergeSort			from "awayjs-renderergl/lib/sort/RenderableMergeSort";
 
 
 /**
@@ -83,7 +82,6 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	private _backgroundG:number = 0;
 	private _backgroundB:number = 0;
 	private _backgroundAlpha:number = 1;
-	public _shareContext:boolean;
 
 	// only used by renderers that need to render geometry to textures
 	public _width:number;
@@ -120,6 +118,13 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	private _zIndex:number;
 	private _renderSceneTransform:Matrix3D;
 
+	
+	/**
+	 * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
+	 * to share the same ContextGL object.
+	 */
+	public shareContext:boolean;
+	
 	/**
 	 *
 	 */
@@ -447,15 +452,6 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	}
 
 	/**
-	 * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
-	 * to share the same ContextGL object.
-	 */
-	public get shareContext():boolean
-	{
-		return this._shareContext;
-	}
-
-	/**
 	 * Disposes the resources used by the RendererBase.
 	 */
 	public dispose()
@@ -570,7 +566,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	{
 		this._pStage.setRenderTarget(target, true, surfaceSelector);
 
-		if ((target || !this._shareContext) && !this._depthPrepass)
+		if ((target || !this.shareContext) && !this._depthPrepass)
 			this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
 
 		this._pStage.scissorRect = scissorRect;
@@ -587,7 +583,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
 		//this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
 
-		if (!this._shareContext) {
+		if (!this.shareContext) {
 			if (this._snapshotRequired && this._snapshotBitmapImage2D) {
 				this._pContext.drawToBitmapImage2D(this._snapshotBitmapImage2D);
 				this._snapshotRequired = false;
@@ -839,7 +835,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		this._viewPort = this._pStage.viewPort;
 		//TODO stop firing viewport updated for every stagegl viewport change
 
-		if (this._shareContext) {
+		if (this.shareContext) {
 			this._pScissorRect.x = this._globalPos.x - this._pStage.x;
 			this._pScissorRect.y = this._globalPos.y - this._pStage.y;
 			this.notifyScissorUpdate();
@@ -853,7 +849,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 */
 	public updateGlobalPos()
 	{
-		if (this._shareContext) {
+		if (this.shareContext) {
 			this._pScissorRect.x = this._globalPos.x - this._viewPort.x;
 			this._pScissorRect.y = this._globalPos.y - this._viewPort.y;
 		} else {
@@ -1059,4 +1055,4 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	}
 }
 
-export = RendererBase;
+export default RendererBase;

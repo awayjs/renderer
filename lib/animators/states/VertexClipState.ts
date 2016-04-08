@@ -1,10 +1,10 @@
-import Graphics							= require("awayjs-display/lib/graphics/Graphics");
+import Graphics							from "awayjs-display/lib/graphics/Graphics";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import VertexAnimator					= require("awayjs-renderergl/lib/animators/VertexAnimator");
-import VertexClipNode					= require("awayjs-renderergl/lib/animators/nodes/VertexClipNode");
-import AnimationClipState				= require("awayjs-renderergl/lib/animators/states/AnimationClipState");
-import IVertexAnimationState			= require("awayjs-renderergl/lib/animators/states/IVertexAnimationState");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import VertexAnimator					from "awayjs-renderergl/lib/animators/VertexAnimator";
+import VertexClipNode					from "awayjs-renderergl/lib/animators/nodes/VertexClipNode";
+import AnimationClipState				from "awayjs-renderergl/lib/animators/states/AnimationClipState";
+import IVertexAnimationState			from "awayjs-renderergl/lib/animators/states/IVertexAnimationState";
 
 /**
  *
@@ -71,4 +71,4 @@ class VertexClipState extends AnimationClipState implements IVertexAnimationStat
 	}
 }
 
-export = VertexClipState;
+export default VertexClipState;

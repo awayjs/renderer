@@ -1,17 +1,17 @@
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import Camera							= require("awayjs-display/lib/display/Camera");
+import Camera							from "awayjs-display/lib/display/Camera";
 
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
+import Stage							from "awayjs-stagegl/lib/base/Stage";
+import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
-import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
-import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
-import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-import ParticleBezierCurveNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode");
-import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import ParticleAnimator					from "awayjs-renderergl/lib/animators/ParticleAnimator";
+import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
+import AnimationElements				from "awayjs-renderergl/lib/animators/data/AnimationElements";
+import ParticlePropertiesMode			from "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode";
+import ParticleBezierCurveNode			from "awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode";
+import ParticleStateBase				from "awayjs-renderergl/lib/animators/states/ParticleStateBase";
+import GL_RenderableBase				from "awayjs-renderergl/lib/animators/../renderables/GL_RenderableBase";
 /**
  * ...
  */
@@ -77,4 +77,4 @@ class ParticleBezierCurveState extends ParticleStateBase
 	}
 }
 
-export = ParticleBezierCurveState;
+export default ParticleBezierCurveState;

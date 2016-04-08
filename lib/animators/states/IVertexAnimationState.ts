@@ -1,6 +1,6 @@
-import Graphics							= require("awayjs-display/lib/graphics/Graphics");
+import Graphics							from "awayjs-display/lib/graphics/Graphics";
 
-import IAnimationState					= require("awayjs-renderergl/lib/animators/states/IAnimationState");
+import IAnimationState					from "awayjs-renderergl/lib/animators/states/IAnimationState";
 
 /**
  * Provides an interface for animation node classes that hold animation data for use in the Vertex animator class.
@@ -26,4 +26,4 @@ interface IVertexAnimationState extends IAnimationState
 	blendWeight:number; //GET
 }
 
-export = IVertexAnimationState;
+export default IVertexAnimationState;

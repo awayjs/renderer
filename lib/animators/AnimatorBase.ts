@@ -1,22 +1,22 @@
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetBase					= require("awayjs-core/lib/library/AssetBase");
-import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-import getTimer						= require("awayjs-core/lib/utils/getTimer");
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import AssetBase					from "awayjs-core/lib/library/AssetBase";
+import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import getTimer						from "awayjs-core/lib/utils/getTimer";
 
-import IAnimationSet				= require("awayjs-display/lib/animators/IAnimationSet");
-import IAnimator					= require("awayjs-display/lib/animators/IAnimator");
-import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
+import IAnimationSet				from "awayjs-display/lib/animators/IAnimationSet";
+import IAnimator					from "awayjs-display/lib/animators/IAnimator";
+import AnimationNodeBase			from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
+import Camera						from "awayjs-display/lib/display/Camera";
+import Sprite						from "awayjs-display/lib/display/Sprite";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import IAnimationState				= require("awayjs-renderergl/lib/animators/states/IAnimationState");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import AnimatorEvent				= require("awayjs-renderergl/lib/events/AnimatorEvent");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
+import IAnimationState				from "awayjs-renderergl/lib/animators/states/IAnimationState";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import AnimatorEvent				from "awayjs-renderergl/lib/events/AnimatorEvent";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
 
 /**
  * Dispatched when playback of an animation inside the animator object starts.
@@ -393,4 +393,4 @@ class AnimatorBase extends AssetBase implements IAnimator
 	}
 }
 
-export = AnimatorBase;
+export default AnimatorBase;

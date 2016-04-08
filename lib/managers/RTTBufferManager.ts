@@ -1,12 +1,12 @@
-import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
-import EventDispatcher				= require("awayjs-core/lib/events/EventDispatcher");
-import ImageUtils					= require("awayjs-core/lib/utils/ImageUtils");
+import Rectangle					from "awayjs-core/lib/geom/Rectangle";
+import EventDispatcher				from "awayjs-core/lib/events/EventDispatcher";
+import ImageUtils					from "awayjs-core/lib/utils/ImageUtils";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import IIndexBuffer					= require("awayjs-stagegl/lib/base/IIndexBuffer");
-import IVertexBuffer				= require("awayjs-stagegl/lib/base/IVertexBuffer");
-import RTTEvent						= require("awayjs-renderergl/lib/events/RTTEvent");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
+import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
+import IIndexBuffer					from "awayjs-stagegl/lib/base/IIndexBuffer";
+import IVertexBuffer				from "awayjs-stagegl/lib/base/IVertexBuffer";
+import RTTEvent						from "awayjs-renderergl/lib/events/RTTEvent";
 
 class RTTBufferManager extends EventDispatcher
 {
@@ -261,7 +261,7 @@ class RTTBufferManager extends EventDispatcher
 	}
 }
 
-export = RTTBufferManager;
+export default RTTBufferManager;
 
 class RTTBufferManagerVO
 {

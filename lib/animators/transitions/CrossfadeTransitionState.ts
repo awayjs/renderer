@@ -1,8 +1,8 @@
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import SkeletonBinaryLERPNode			= require("awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode");
-import SkeletonBinaryLERPState			= require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
-import CrossfadeTransitionNode			= require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode");
-import AnimationStateEvent				= require("awayjs-renderergl/lib/events/AnimationStateEvent");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import SkeletonBinaryLERPNode			from "awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode";
+import SkeletonBinaryLERPState			from "awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState";
+import CrossfadeTransitionNode			from "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode";
+import AnimationStateEvent				from "awayjs-renderergl/lib/animators/../events/AnimationStateEvent";
 
 /**
  *
@@ -39,4 +39,4 @@ class CrossfadeTransitionState extends SkeletonBinaryLERPState
 	}
 }
 
-export = CrossfadeTransitionState;
+export default CrossfadeTransitionState;

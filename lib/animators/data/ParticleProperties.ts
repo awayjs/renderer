@@ -34,4 +34,4 @@ class ParticleProperties
 	public delay:number;
 }
 
-export = ParticleProperties;
+export default ParticleProperties;

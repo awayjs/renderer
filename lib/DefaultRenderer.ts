@@ -1,41 +1,35 @@
-import ImageBase					= require("awayjs-core/lib/image/ImageBase");
-import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import ImageBase					from "awayjs-core/lib/image/ImageBase";
+import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import Rectangle					from "awayjs-core/lib/geom/Rectangle";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
 
-import IRenderable					= require("awayjs-display/lib/base/IRenderable");
-import ISurface						= require("awayjs-display/lib/base/ISurface");
-import LightBase					= require("awayjs-display/lib/display/LightBase");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import PointLight					= require("awayjs-display/lib/display/PointLight");
-import IEntity						= require("awayjs-display/lib/display/IEntity");
-import LightProbe					= require("awayjs-display/lib/display/LightProbe");
-import Skybox						= require("awayjs-display/lib/display/Skybox");
-import Scene						= require("awayjs-display/lib/display/Scene");
-import ShadowMapperBase				= require("awayjs-display/lib/materials/shadowmappers/ShadowMapperBase");
-import INode						= require("awayjs-display/lib/partition/INode");
+import LightBase					from "awayjs-display/lib/display/LightBase";
+import Camera						from "awayjs-display/lib/display/Camera";
+import DirectionalLight				from "awayjs-display/lib/display/DirectionalLight";
+import PointLight					from "awayjs-display/lib/display/PointLight";
+import IEntity						from "awayjs-display/lib/display/IEntity";
+import LightProbe					from "awayjs-display/lib/display/LightProbe";
+import Skybox						from "awayjs-display/lib/display/Skybox";
+import Scene						from "awayjs-display/lib/display/Scene";
+import ShadowMapperBase				from "awayjs-display/lib/materials/shadowmappers/ShadowMapperBase";
+import INode						from "awayjs-display/lib/partition/INode";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
-import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-import ContextGLClearMask			= require("awayjs-stagegl/lib/base/ContextGLClearMask");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
+import ContextGLCompareMode			from "awayjs-stagegl/lib/base/ContextGLCompareMode";
+import ContextGLClearMask			from "awayjs-stagegl/lib/base/ContextGLClearMask";
+import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
 
-import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
-import DepthRenderer				= require("awayjs-renderergl/lib/DepthRenderer");
-import DistanceRenderer				= require("awayjs-renderergl/lib/DistanceRenderer");
-import Filter3DRenderer				= require("awayjs-renderergl/lib/Filter3DRenderer");
-import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
-import GL_SkyboxElements			= require("awayjs-renderergl/lib/elements/GL_SkyboxElements");
-import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import GL_SkyboxRenderable			= require("awayjs-renderergl/lib/renderables/GL_SkyboxRenderable");
-import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
-import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
-import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
+import RendererBase					from "awayjs-renderergl/lib/RendererBase";
+import DepthRenderer				from "awayjs-renderergl/lib/DepthRenderer";
+import DistanceRenderer				from "awayjs-renderergl/lib/DistanceRenderer";
+import Filter3DRenderer				from "awayjs-renderergl/lib/Filter3DRenderer";
+import Filter3DBase					from "awayjs-renderergl/lib/filters/Filter3DBase";
+import GL_SkyboxElements			from "awayjs-renderergl/lib/elements/GL_SkyboxElements";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import RTTBufferManager				from "awayjs-renderergl/lib/managers/RTTBufferManager";
+import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
+import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -134,7 +128,7 @@ class DefaultRenderer extends RendererBase
 		super(stage, null, forceSoftware, profile, mode);
 
 		if (stage)
-			this._shareContext = true;
+			this.shareContext = true;
 
 		this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
 
@@ -179,7 +173,7 @@ class DefaultRenderer extends RendererBase
 		if (this._pBackBufferInvalid)// reset or update render settings
 			this.pUpdateBackBuffer();
 
-		if (this._shareContext && this._pContext)
+		if (this.shareContext && this._pContext)
 			this._pContext.clear(0, 0, 0, 1, 1, 0, ContextGLClearMask.DEPTH);
 
 		if (this._pFilter3DRenderer) {
@@ -206,13 +200,13 @@ class DefaultRenderer extends RendererBase
 			this._pFilter3DRenderer.render(this._pStage, camera, this._pDepthRender);
 		} else {
 
-			if (this._shareContext)
+			if (this.shareContext)
 				this._iRender(camera, scene, null, this._pScissorRect);
 			else
 				this._iRender(camera, scene);
 		}
 
-		if (!this._shareContext && this._pContext)
+		if (!this.shareContext && this._pContext)
 			this._pContext.present();
 
 		// register that a view has been rendered
@@ -353,7 +347,7 @@ class DefaultRenderer extends RendererBase
 
 	public dispose()
 	{
-		if (!this._shareContext)
+		if (!this.shareContext)
 			this._pStage.dispose();
 
 		this._pRttBufferManager.dispose();
@@ -413,7 +407,7 @@ class DefaultRenderer extends RendererBase
 		// No reason trying to configure back buffer if there is no context available.
 		// Doing this anyway (and relying on _stage to cache width/height for
 		// context does get available) means usesSoftwareRendering won't be reliable.
-		if (this._pStage.context && !this._shareContext) {
+		if (this._pStage.context && !this.shareContext) {
 			if (this._width && this._height) {
 				this._pStage.configureBackBuffer(this._width, this._height, this._antiAlias, true);
 				this._pBackBufferInvalid = false;
@@ -435,4 +429,4 @@ class DefaultRenderer extends RendererBase
 	}
 }
 
-export = DefaultRenderer;
+export default DefaultRenderer;

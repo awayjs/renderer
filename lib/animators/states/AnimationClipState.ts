@@ -1,8 +1,7 @@
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-
-import AnimationClipNodeBase			= require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
-import AnimationStateBase				= require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
-import AnimationStateEvent				= require("awayjs-renderergl/lib/events/AnimationStateEvent");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import AnimationClipNodeBase			from "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase";
+import AnimationStateBase				from "awayjs-renderergl/lib/animators/states/AnimationStateBase";
+import AnimationStateEvent				from "awayjs-renderergl/lib/animators/../events/AnimationStateEvent";
 
 /**
  *
@@ -173,4 +172,4 @@ class AnimationClipState extends AnimationStateBase
 	}
 }
 
-export = AnimationClipState;
+export default AnimationClipState;

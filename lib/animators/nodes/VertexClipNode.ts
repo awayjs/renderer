@@ -1,11 +1,9 @@
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import Graphics							= require("awayjs-display/lib/graphics/Graphics");
+import Graphics							from "awayjs-display/lib/graphics/Graphics";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-
-import AnimationClipNodeBase			= require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
-import VertexClipState					= require("awayjs-renderergl/lib/animators/states/VertexClipState");
+import AnimationClipNodeBase			from "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase";
+import VertexClipState					from "awayjs-renderergl/lib/animators/states/VertexClipState";
 
 /**
  * A vertex animation node containing time-based animation data as individual geometry obejcts.
@@ -82,4 +80,4 @@ class VertexClipNode extends AnimationClipNodeBase
 	}
 }
 
-export = VertexClipNode;
+export default VertexClipNode;

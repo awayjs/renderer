@@ -1,25 +1,25 @@
-import Short3Attributes				= require("awayjs-core/lib/attributes/Short3Attributes");
-import AttributesView				= require("awayjs-core/lib/attributes/AttributesView");
-import AttributesBuffer				= require("awayjs-core/lib/attributes/AttributesBuffer");
-import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
-import IAbstractionPool 			= require("awayjs-core/lib/library/IAbstractionPool");
-import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import Short3Attributes				from "awayjs-core/lib/attributes/Short3Attributes";
+import AttributesView				from "awayjs-core/lib/attributes/AttributesView";
+import AttributesBuffer				from "awayjs-core/lib/attributes/AttributesBuffer";
+import AbstractionBase				from "awayjs-core/lib/library/AbstractionBase";
+import IAbstractionPool 			from "awayjs-core/lib/library/IAbstractionPool";
+import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import GL_AttributesBuffer			= require("awayjs-stagegl/lib/attributes/GL_AttributesBuffer");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
+import GL_AttributesBuffer			from "awayjs-stagegl/lib/attributes/GL_AttributesBuffer";
 
-import Camera						= require("awayjs-display/lib/display/Camera");
-import ElementsBase					= require("awayjs-display/lib/graphics/ElementsBase");
-import ElementsEvent				= require("awayjs-display/lib/events/ElementsEvent");
-import ElementsUtils				= require("awayjs-display/lib/utils/ElementsUtils");
+import Camera						from "awayjs-display/lib/display/Camera";
+import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
+import ElementsEvent				from "awayjs-display/lib/events/ElementsEvent";
+import ElementsUtils				from "awayjs-display/lib/utils/ElementsUtils";
 
-import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import ElementsPool					from "awayjs-renderergl/lib/elements/ElementsPool";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
 
 /**
  *
@@ -314,4 +314,4 @@ class GL_ElementsBase extends AbstractionBase
 	}
 }
 
-export = GL_ElementsBase;
+export default GL_ElementsBase;

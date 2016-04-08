@@ -1,10 +1,9 @@
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
+import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
 
 /**
  * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
@@ -459,4 +458,4 @@ class CompilerBase
 	}
 }
 
-export = CompilerBase;
+export default CompilerBase;

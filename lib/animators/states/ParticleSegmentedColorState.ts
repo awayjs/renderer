@@ -1,19 +1,17 @@
-import ColorTransform					= require("awayjs-core/lib/geom/ColorTransform");
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import ColorTransform					from "awayjs-core/lib/geom/ColorTransform";
 
-import Camera							= require("awayjs-display/lib/display/Camera");
+import Camera							from "awayjs-display/lib/display/Camera";
 
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import ContextGLVertexBufferFormat		= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
+import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
-import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
-import ColorSegmentPoint				= require("awayjs-renderergl/lib/animators/data/ColorSegmentPoint");
-import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-import ParticleSegmentedColorNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode");
-import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import ParticleAnimator					from "awayjs-renderergl/lib/animators/ParticleAnimator";
+import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
+import AnimationElements				from "awayjs-renderergl/lib/animators/data/AnimationElements";
+import ColorSegmentPoint				from "awayjs-renderergl/lib/animators/data/ColorSegmentPoint";
+import ParticlePropertiesMode			from "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode";
+import ParticleSegmentedColorNode		from "awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode";
+import ParticleStateBase				from "awayjs-renderergl/lib/animators/states/ParticleStateBase";
+import GL_RenderableBase				from "awayjs-renderergl/lib/animators/../renderables/GL_RenderableBase";
 
 /**
  *
@@ -175,4 +173,4 @@ class ParticleSegmentedColorState extends ParticleStateBase
 	}
 }
 
-export = ParticleSegmentedColorState;
+export default ParticleSegmentedColorState;

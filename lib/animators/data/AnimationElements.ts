@@ -1,8 +1,8 @@
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import IContextGL						= require("awayjs-stagegl/lib/base/IContextGL");
-import IVertexBuffer					= require("awayjs-stagegl/lib/base/IVertexBuffer");
+import Stage							from "awayjs-stagegl/lib/base/Stage";
+import IContextGL						from "awayjs-stagegl/lib/base/IContextGL";
+import IVertexBuffer					from "awayjs-stagegl/lib/base/IVertexBuffer";
 
-import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
+import ParticleAnimationData			from "awayjs-renderergl/lib/animators/data/ParticleAnimationData";
 
 /**
  * ...
@@ -99,4 +99,4 @@ class AnimationElements
 	}
 }
 
-export = AnimationElements;
+export default AnimationElements;

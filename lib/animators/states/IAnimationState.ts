@@ -1,4 +1,4 @@
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
 
 interface IAnimationState
 {
@@ -16,4 +16,4 @@ interface IAnimationState
 	phase(value:number);
 }
 
-export = IAnimationState;
+export default IAnimationState;

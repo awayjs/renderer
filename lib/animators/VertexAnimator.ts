@@ -1,22 +1,22 @@
-import Graphics							= require("awayjs-display/lib/graphics/Graphics");
-import ElementsBase						= require("awayjs-display/lib/graphics/ElementsBase"	);
-import TriangleElements					= require("awayjs-display/lib/graphics/TriangleElements");
-import Graphic							= require("awayjs-display/lib/graphics/Graphic");
-import Camera							= require("awayjs-display/lib/display/Camera");
-import Sprite							= require("awayjs-display/lib/display/Sprite");
+import Graphics							from "awayjs-display/lib/graphics/Graphics";
+import ElementsBase						from "awayjs-display/lib/graphics/ElementsBase";
+import TriangleElements					from "awayjs-display/lib/graphics/TriangleElements";
+import Graphic							from "awayjs-display/lib/graphics/Graphic";
+import Camera							from "awayjs-display/lib/display/Camera";
+import Sprite							from "awayjs-display/lib/display/Sprite";
 
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
-import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
+import Stage							from "awayjs-stagegl/lib/base/Stage";
+import ContextGLProgramType				from "awayjs-stagegl/lib/base/ContextGLProgramType";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import VertexAnimationSet				= require("awayjs-renderergl/lib/animators/VertexAnimationSet");
-import VertexAnimationMode				= require("awayjs-renderergl/lib/animators/data/VertexAnimationMode");
-import IVertexAnimationState			= require("awayjs-renderergl/lib/animators/states/IVertexAnimationState");
-import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
-import GL_GraphicRenderable				= require("awayjs-renderergl/lib/renderables/GL_GraphicRenderable");
-import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import GL_ElementsBase					= require("awayjs-renderergl/lib/elements/GL_ElementsBase");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import VertexAnimationSet				from "awayjs-renderergl/lib/animators/VertexAnimationSet";
+import VertexAnimationMode				from "awayjs-renderergl/lib/animators/data/VertexAnimationMode";
+import IVertexAnimationState			from "awayjs-renderergl/lib/animators/states/IVertexAnimationState";
+import IAnimationTransition				from "awayjs-renderergl/lib/animators/transitions/IAnimationTransition";
+import GL_GraphicRenderable				from "awayjs-renderergl/lib/renderables/GL_GraphicRenderable";
+import GL_RenderableBase				from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
+import GL_ElementsBase					from "awayjs-renderergl/lib/elements/GL_ElementsBase";
 
 /**
  * Provides an interface for assigning vertex-based animation data sets to sprite-based entity objects
@@ -203,4 +203,4 @@ class VertexAnimator extends AnimatorBase
 	}
 }
 
-export = VertexAnimator;
+export default VertexAnimator;

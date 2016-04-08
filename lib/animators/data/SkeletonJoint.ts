@@ -30,4 +30,4 @@ class SkeletonJoint
 	}
 }
 
-export = SkeletonJoint;
+export default SkeletonJoint;

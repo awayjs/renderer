@@ -1,21 +1,17 @@
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import ImageBase					= require("awayjs-core/lib/image/ImageBase");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import ImageBase					from "awayjs-core/lib/image/ImageBase";
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 
-import Camera						= require("awayjs-display/lib/display/Camera");
-import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
+import Camera						from "awayjs-display/lib/display/Camera";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage")
-
-import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
-import PassEvent					= require("awayjs-renderergl/lib/events/PassEvent");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
-import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
+import AnimationSetBase				from "awayjs-renderergl/lib/animators/AnimationSetBase";
+import PassEvent					from "awayjs-renderergl/lib/events/PassEvent";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
 
 /**
  * GL_SurfacePassBase provides an abstract base class for material shader passes. A material pass constitutes at least
@@ -128,4 +124,4 @@ class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
 	}
 }
 
-export = GL_SurfacePassBase;
+export default GL_SurfacePassBase;

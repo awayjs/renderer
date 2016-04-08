@@ -1,11 +1,11 @@
-import AttributesBuffer					= require("awayjs-core/lib/attributes/AttributesBuffer");
-import Matrix3DUtils					= require("awayjs-core/lib/geom/Matrix3DUtils");
+import AttributesBuffer					from "awayjs-core/lib/attributes/AttributesBuffer";
+import Matrix3DUtils					from "awayjs-core/lib/geom/Matrix3DUtils";
 
-import DisplayObjectContainer			= require("awayjs-display/lib/display/DisplayObjectContainer");
-import Graphics							= require("awayjs-display/lib/graphics/Graphics");
-import TriangleElements				= require("awayjs-display/lib/graphics/TriangleElements");
-import Sprite							= require("awayjs-display/lib/display/Sprite");
-import MaterialBase						= require("awayjs-display/lib/materials/MaterialBase");
+import DisplayObjectContainer			from "awayjs-display/lib/display/DisplayObjectContainer";
+import Graphics							from "awayjs-display/lib/graphics/Graphics";
+import TriangleElements					from "awayjs-display/lib/graphics/TriangleElements";
+import Sprite							from "awayjs-display/lib/display/Sprite";
+import MaterialBase						from "awayjs-display/lib/materials/MaterialBase";
 
 /**
  *  Class Merge merges two or more static sprites into one.<code>Merge</code>
@@ -337,7 +337,7 @@ class Merge
 	}
 }
 
-export = Merge;
+export default Merge;
 
 class GraphicVO
 {

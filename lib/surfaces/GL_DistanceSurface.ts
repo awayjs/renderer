@@ -1,15 +1,14 @@
-﻿import ISurface						= require("awayjs-display/lib/base/ISurface");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
+﻿import ISurface						from "awayjs-display/lib/base/ISurface";
+import Camera						from "awayjs-display/lib/display/Camera";
 
-import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
-import GL_SurfacePassBase			= require("awayjs-renderergl/lib/surfaces/GL_SurfacePassBase");
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
+import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
+import GL_SurfacePassBase			from "awayjs-renderergl/lib/surfaces/GL_SurfacePassBase";
+import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
 
 /**
  * DistanceRender is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
@@ -135,4 +134,4 @@ class DistanceRender extends GL_SurfacePassBase
 	}
 }
 
-export = DistanceRender;
+export default DistanceRender;

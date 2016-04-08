@@ -1,14 +1,13 @@
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import AssetBase					= require("awayjs-core/lib/library/AssetBase");
-import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
+import IAsset						from "awayjs-core/lib/library/IAsset";
+import AssetBase					from "awayjs-core/lib/library/AssetBase";
+import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
 
-import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+import AnimationNodeBase			from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import AnimationSetError			= require("awayjs-renderergl/lib/errors/AnimationSetError");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+import AnimationSetError			from "awayjs-renderergl/lib/errors/AnimationSetError";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
 
 /**
  * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
@@ -47,9 +46,6 @@ class AnimationSetBase extends AssetBase implements IAsset
 				return reg;
 			++i;
 		}
-
-		// can't be reached
-		return null;
 	}
 
 	/**
@@ -197,4 +193,4 @@ class AnimationSetBase extends AssetBase implements IAsset
 	}
 }
 
-export = AnimationSetBase;
+export default AnimationSetBase;

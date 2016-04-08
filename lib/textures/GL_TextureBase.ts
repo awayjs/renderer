@@ -1,20 +1,20 @@
-import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import ImageBase					= require("awayjs-core/lib/image/ImageBase");
-import SamplerBase					= require("awayjs-core/lib/image/SamplerBase");
-import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
+import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import ImageBase					from "awayjs-core/lib/image/ImageBase";
+import SamplerBase					from "awayjs-core/lib/image/SamplerBase";
+import AbstractionBase				from "awayjs-core/lib/library/AbstractionBase";
 
-import ContextGLTextureFormat		= require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import ContextGLTextureFormat		from "awayjs-stagegl/lib/base/ContextGLTextureFormat";
+import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
+import TextureBase					from "awayjs-display/lib/textures/TextureBase";
 
-import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
 
 /**
  *
@@ -82,14 +82,12 @@ class GL_TextureBase extends AbstractionBase
 		switch (image.format) {
 			case ContextGLTextureFormat.COMPRESSED:
 				return "dxt1,";
-				break;
 			case ContextGLTextureFormat.COMPRESSED_ALPHA:
 				return "dxt5,";
-				break;
 			default:
 				return "";
 		}
 	}
 }
 
-export = GL_TextureBase;
+export default GL_TextureBase;

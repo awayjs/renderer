@@ -1,7 +1,7 @@
-import SkeletonJoint					= require("awayjs-renderergl/lib/animators/data/SkeletonJoint");
+import SkeletonJoint					from "awayjs-renderergl/lib/animators/data/SkeletonJoint";
 
-import IAsset							= require("awayjs-core/lib/library/IAsset");
-import AssetBase						= require("awayjs-core/lib/library/AssetBase");
+import IAsset							from "awayjs-core/lib/library/IAsset";
+import AssetBase						from "awayjs-core/lib/library/AssetBase";
 
 /**
  * A Skeleton object is a hierarchical grouping of joint objects that can be used for skeletal animation.
@@ -99,4 +99,4 @@ class Skeleton extends AssetBase implements IAsset
 	}
 }
 
-export = Skeleton;
+export default Skeleton;

@@ -1,7 +1,7 @@
-import IAnimationState					= require("awayjs-renderergl/lib/animators/states/IAnimationState");
+import IAnimationState					from "awayjs-renderergl/lib/animators/states/IAnimationState";
 
-import Skeleton							= require("awayjs-renderergl/lib/animators/data/Skeleton");
-import SkeletonPose						= require("awayjs-renderergl/lib/animators/data/SkeletonPose");
+import Skeleton							from "awayjs-renderergl/lib/animators/data/Skeleton";
+import SkeletonPose						from "awayjs-renderergl/lib/animators/data/SkeletonPose";
 
 interface ISkeletonAnimationState extends IAnimationState
 {
@@ -11,4 +11,4 @@ interface ISkeletonAnimationState extends IAnimationState
 	getSkeletonPose(skeleton:Skeleton):SkeletonPose;
 }
 
-export = ISkeletonAnimationState;
+export default ISkeletonAnimationState;

@@ -1,38 +1,32 @@
-import BlendMode					= require("awayjs-core/lib/image/BlendMode");
-import ImageBase					= require("awayjs-core/lib/image/ImageBase");
-import SamplerBase					= require("awayjs-core/lib/image/SamplerBase");
-import Matrix						= require("awayjs-core/lib/geom/Matrix");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
-import ArgumentError				= require("awayjs-core/lib/errors/ArgumentError");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import IAssetClass					= require("awayjs-core/lib/library/IAssetClass");
-import IAbstractionPool				= require("awayjs-core/lib/library/IAbstractionPool");
+import BlendMode					from "awayjs-core/lib/image/BlendMode";
+import Matrix						from "awayjs-core/lib/geom/Matrix";
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import ColorTransform				from "awayjs-core/lib/geom/ColorTransform";
+import ArgumentError				from "awayjs-core/lib/errors/ArgumentError";
+import IAssetClass					from "awayjs-core/lib/library/IAssetClass";
+import IAbstractionPool				from "awayjs-core/lib/library/IAbstractionPool";
 
-import IRenderable					= require("awayjs-display/lib/base/IRenderable");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
+import Camera						from "awayjs-display/lib/display/Camera";
+import TextureBase					from "awayjs-display/lib/textures/TextureBase";
 
-import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
-import ContextGLCompareMode			= require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-import ContextGLTriangleFace		= require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import ProgramData					= require("awayjs-stagegl/lib/image/ProgramData");
+import ContextGLBlendFactor			from "awayjs-stagegl/lib/base/ContextGLBlendFactor";
+import ContextGLCompareMode			from "awayjs-stagegl/lib/base/ContextGLCompareMode";
+import ContextGLTriangleFace		from "awayjs-stagegl/lib/base/ContextGLTriangleFace";
+import Stage						from "awayjs-stagegl/lib/base/Stage";
+import ProgramData					from "awayjs-stagegl/lib/image/ProgramData";
+import GL_IAssetClass				from "awayjs-stagegl/lib/library/GL_IAssetClass";
 
-import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
-import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import AnimationRegisterCache		= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
-import ElementsPool					= require("awayjs-renderergl/lib/elements/ElementsPool");
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import CompilerBase					= require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
-import GL_IAssetClass				= require("awayjs-stagegl/lib/library/GL_IAssetClass");
+import AnimationSetBase				from "awayjs-renderergl/lib/animators/AnimationSetBase";
+import AnimatorBase					from "awayjs-renderergl/lib/animators/AnimatorBase";
+import AnimationRegisterCache		from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
+import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
+import ElementsPool					from "awayjs-renderergl/lib/elements/ElementsPool";
+import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import CompilerBase					from "awayjs-renderergl/lib/shaders/compilers/CompilerBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -703,4 +697,4 @@ class ShaderBase implements IAbstractionPool
 	}
 }
 
-export = ShaderBase;
+export default ShaderBase;

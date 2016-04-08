@@ -1,8 +1,8 @@
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import GL_TriangleElements			= require("awayjs-renderergl/lib/elements/GL_TriangleElements");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import GL_TriangleElements			from "awayjs-renderergl/lib/elements/GL_TriangleElements";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
 
 /**
  *
@@ -32,4 +32,4 @@ class GL_SkyboxElements extends GL_TriangleElements
 	}
 }
 
-export = GL_SkyboxElements;
+export default GL_SkyboxElements;

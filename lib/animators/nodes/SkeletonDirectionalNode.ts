@@ -1,8 +1,7 @@
-import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-
-import SkeletonDirectionalState			= require("awayjs-renderergl/lib/animators/states/SkeletonDirectionalState");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import SkeletonDirectionalState			from "awayjs-renderergl/lib/animators/states/SkeletonDirectionalState";
 
 /**
  * A skeleton animation node that uses four directional input poses with an input direction to blend a linearly interpolated output of a skeleton pose.
@@ -46,4 +45,4 @@ class SkeletonDirectionalNode extends AnimationNodeBase
 
 }
 
-export = SkeletonDirectionalNode;
+export default SkeletonDirectionalNode;

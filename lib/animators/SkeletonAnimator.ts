@@ -1,26 +1,26 @@
-import Quaternion						= require("awayjs-core/lib/geom/Quaternion");
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import Quaternion						from "awayjs-core/lib/geom/Quaternion";
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import TriangleElements					= require("awayjs-display/lib/graphics/TriangleElements");
-import Graphic							= require("awayjs-display/lib/graphics/Graphic");
-import Camera							= require("awayjs-display/lib/display/Camera");
-import ElementsEvent					= require("awayjs-display/lib/events/ElementsEvent");
+import TriangleElements					from "awayjs-display/lib/graphics/TriangleElements";
+import Graphic							from "awayjs-display/lib/graphics/Graphic";
+import Camera							from "awayjs-display/lib/display/Camera";
+import ElementsEvent					from "awayjs-display/lib/events/ElementsEvent";
 
-import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import ContextGLProgramType				from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import SkeletonAnimationSet				= require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
-import JointPose						= require("awayjs-renderergl/lib/animators/data/JointPose");
-import Skeleton							= require("awayjs-renderergl/lib/animators/data/Skeleton");
-import SkeletonJoint					= require("awayjs-renderergl/lib/animators/data/SkeletonJoint");
-import SkeletonPose						= require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-import ISkeletonAnimationState			= require("awayjs-renderergl/lib/animators/states/ISkeletonAnimationState");
-import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
-import AnimationStateEvent				= require("awayjs-renderergl/lib/events/AnimationStateEvent");
-import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import GL_GraphicRenderable				= require("awayjs-renderergl/lib/renderables/GL_GraphicRenderable");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import SkeletonAnimationSet				from "awayjs-renderergl/lib/animators/SkeletonAnimationSet";
+import JointPose						from "awayjs-renderergl/lib/animators/data/JointPose";
+import Skeleton							from "awayjs-renderergl/lib/animators/data/Skeleton";
+import SkeletonJoint					from "awayjs-renderergl/lib/animators/data/SkeletonJoint";
+import SkeletonPose						from "awayjs-renderergl/lib/animators/data/SkeletonPose";
+import ISkeletonAnimationState			from "awayjs-renderergl/lib/animators/states/ISkeletonAnimationState";
+import IAnimationTransition				from "awayjs-renderergl/lib/animators/transitions/IAnimationTransition";
+import AnimationStateEvent				from "awayjs-renderergl/lib/events/AnimationStateEvent";
+import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
+import GL_RenderableBase				from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import GL_GraphicRenderable				from "awayjs-renderergl/lib/renderables/GL_GraphicRenderable";
 
 /**
  * Provides an interface for assigning skeleton-based animation data sets to sprite-based entity objects
@@ -633,4 +633,4 @@ class SkeletonAnimator extends AnimatorBase
 	}
 }
 
-export = SkeletonAnimator;
+export default SkeletonAnimator;

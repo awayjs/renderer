@@ -1,5 +1,5 @@
-import RegisterPool					= require("awayjs-renderergl/lib/shaders/RegisterPool");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+import RegisterPool					from "awayjs-renderergl/lib/shaders/RegisterPool";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
 
 /**
  * ShaderRegister Cache provides the usage management system for all registers during shading compilers.
@@ -311,4 +311,4 @@ class ShaderRegisterCache
 	}
 }
 
-export = ShaderRegisterCache;
+export default ShaderRegisterCache;

@@ -1,18 +1,18 @@
-import MathConsts						= require("awayjs-core/lib/geom/MathConsts");
-import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
-import Orientation3D					= require("awayjs-core/lib/geom/Orientation3D");
+import MathConsts						from "awayjs-core/lib/geom/MathConsts";
+import Matrix3D							from "awayjs-core/lib/geom/Matrix3D";
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import Orientation3D					from "awayjs-core/lib/geom/Orientation3D";
 
-import Camera							= require("awayjs-display/lib/display/Camera");
+import Camera							from "awayjs-display/lib/display/Camera";
 
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import ParticleAnimator					= require("awayjs-renderergl/lib/animators/ParticleAnimator");
-import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
-import ParticleBillboardNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode");
-import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import ParticleAnimator					from "awayjs-renderergl/lib/animators/ParticleAnimator";
+import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
+import AnimationElements				from "awayjs-renderergl/lib/animators/data/AnimationElements";
+import ParticleBillboardNode			from "awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode";
+import ParticleStateBase				from "awayjs-renderergl/lib/animators/states/ParticleStateBase";
+import GL_RenderableBase				from "awayjs-renderergl/lib/animators/../renderables/GL_RenderableBase";
 
 /**
  * ...
@@ -89,4 +89,4 @@ class ParticleBillboardState extends ParticleStateBase
 
 }
 
-export = ParticleBillboardState;
+export default ParticleBillboardState;

@@ -1,11 +1,9 @@
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import IAnimationState					= require("awayjs-renderergl/lib/animators/states/IAnimationState");
-
-import AnimationStateEvent				= require("awayjs-renderergl/lib/events/AnimationStateEvent");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import IAnimationState					from "awayjs-renderergl/lib/animators/states/IAnimationState";
 
 /**
  *
@@ -101,4 +99,4 @@ class AnimationStateBase implements IAnimationState
 	}
 }
 
-export = AnimationStateBase;
+export default AnimationStateBase;

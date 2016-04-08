@@ -1,21 +1,20 @@
-import ElementsBase						= require("awayjs-display/lib/graphics/ElementsBase");
-import Camera							= require("awayjs-display/lib/display/Camera");
-import Graphic							= require("awayjs-display/lib/graphics/Graphic");
+import ElementsBase						from "awayjs-display/lib/graphics/ElementsBase";
+import Camera							from "awayjs-display/lib/display/Camera";
+import Graphic							from "awayjs-display/lib/graphics/Graphic";
 
-import ContextGLProgramType				= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import Stage							= require("awayjs-stagegl/lib/base/Stage");
+import ContextGLProgramType				from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import ParticleAnimationSet				= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-import AnimationElements				= require("awayjs-renderergl/lib/animators/data/AnimationElements");
-import ParticleAnimationData			= require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
-import ParticlePropertiesMode			= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-import ParticleNodeBase					= require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-import ParticleStateBase				= require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
-import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import GL_RenderableBase				= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import GL_GraphicRenderable			= require("awayjs-renderergl/lib/renderables/GL_GraphicRenderable");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
+import ParticleAnimationSet				from "awayjs-renderergl/lib/animators/ParticleAnimationSet";
+import AnimationElements				from "awayjs-renderergl/lib/animators/data/AnimationElements";
+import ParticlePropertiesMode			from "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode";
+import ParticleNodeBase					from "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase";
+import ParticleStateBase				from "awayjs-renderergl/lib/animators/states/ParticleStateBase";
+import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
+import GL_RenderableBase				from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import GL_GraphicRenderable			from "awayjs-renderergl/lib/renderables/GL_GraphicRenderable";
 
 /**
  * Provides an interface for assigning paricle-based animation data sets to sprite-based entity objects
@@ -166,4 +165,4 @@ class ParticleAnimator extends AnimatorBase
 	}
 }
 
-export = ParticleAnimator;
+export default ParticleAnimator;

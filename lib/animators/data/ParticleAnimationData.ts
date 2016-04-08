@@ -1,4 +1,4 @@
-import ParticleData						= require("awayjs-display/lib/animators/data/ParticleData");
+import ParticleData						from "awayjs-display/lib/animators/data/ParticleData";
 
 /**
  * ...
@@ -25,4 +25,4 @@ class ParticleAnimationData
 	}
 }
 
-export = ParticleAnimationData;
+export default ParticleAnimationData;

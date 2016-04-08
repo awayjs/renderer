@@ -1,4 +1,4 @@
-import ErrorBase					= require("awayjs-core/lib/errors/ErrorBase");
+import ErrorBase					from "awayjs-core/lib/errors/ErrorBase";
 
 class AnimationSetError extends ErrorBase
 {
@@ -8,4 +8,4 @@ class AnimationSetError extends ErrorBase
 	}
 }
 
-export = AnimationSetError;
+export default AnimationSetError;

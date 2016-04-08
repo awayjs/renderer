@@ -12,6 +12,7 @@ var watchify = require('watchify');
 var livereload = require('gulp-livereload');
 
 var typescript = require('gulp-typescript');
+//var ts = require('typescript');
 
 var shell = require('gulp-shell');
 var git = require('gulp-git');
@@ -50,14 +51,12 @@ gulp.task('watch', ['package-watch'], function(){
 gulp.task('tests', function () {
 
     var tsProject = typescript.createProject({
-        declarationFiles: true,
-        noExternalResolve: true,
         target: 'ES5',
         module: 'commonjs',
-        sourceRoot: './'
+        moduleResolution: 'classic'
     });
 
-    var tsResult = gulp.src(['./tests/**/*.ts', './node_modules/awayjs-**/build/*.d.ts', './build/awayjs-renderergl.d.ts'])
+    var tsResult = gulp.src(['./tests/**/*.ts'])
         .pipe(sourcemaps.init())
         .pipe(typescript(tsProject));
 
@@ -70,13 +69,13 @@ function browserifyShare(callback) {
     var b = browserify({
         debug: true,
         paths: ['../'],
-        entries: './lib/RendererGL.ts',
+        entries: './index.ts',
         cache: {},
         packageCache: {},
-        fullPaths: true
+        fullPaths: false
     });
 
-    b.plugin('tsify', {target:'ES5', sourceRoot:'../', noExternalResolve: true, declarationFiles: './node_modules/awayjs-**/build/*.d.ts', declarationOutput: './build/awayjs-renderergl.d.ts'});
+    b.plugin('tsify', {target:'ES5', sourceRoot:'../', noExternalResolve: true});
 
     glob('./node_modules/awayjs-**/lib/**/*.ts', {}, function (error, files) {
         files.forEach(function (file) {

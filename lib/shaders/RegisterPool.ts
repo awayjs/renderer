@@ -1,4 +1,4 @@
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
 
 /**
  * RegisterPool is used by the shader compilers process to keep track of which registers of a certain type are
@@ -204,4 +204,4 @@ class RegisterPool
 	}
 }
 
-export = RegisterPool;
+export default RegisterPool;

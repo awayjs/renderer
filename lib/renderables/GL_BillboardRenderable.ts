@@ -1,29 +1,16 @@
-import AttributesBuffer				= require("awayjs-core/lib/attributes/AttributesBuffer");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import Matrix3DUtils				= require("awayjs-core/lib/geom/Matrix3DUtils");
-import Rectangle					= require("awayjs-core/lib/geom/Rectangle");
+import AttributesBuffer				from "awayjs-core/lib/attributes/AttributesBuffer";
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import Rectangle					from "awayjs-core/lib/geom/Rectangle";
 
-import ISurface						= require("awayjs-display/lib/base/ISurface");
-import ElementsBase				= require("awayjs-display/lib/graphics/ElementsBase");
-import TriangleElements			= require("awayjs-display/lib/graphics/TriangleElements");
-import Billboard					= require("awayjs-display/lib/display/Billboard");
-import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
-import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
+import ISurface						from "awayjs-display/lib/base/ISurface";
+import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
+import TriangleElements				from "awayjs-display/lib/graphics/TriangleElements";
+import Billboard					from "awayjs-display/lib/display/Billboard";
+import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
+import TextureBase					from "awayjs-display/lib/textures/TextureBase";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-
-import RendererBase					= require("awayjs-renderergl/lib/RendererBase");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import PassBase						= require("awayjs-renderergl/lib/surfaces/passes/PassBase");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import RendererBase					from "awayjs-renderergl/lib/RendererBase";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
 
 /**
  * @class away.pool.RenderableListItem
@@ -104,4 +91,4 @@ class GL_Billboard extends GL_RenderableBase
 
 }
 
-export = GL_Billboard;
+export default GL_Billboard;

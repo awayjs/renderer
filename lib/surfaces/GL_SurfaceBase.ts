@@ -1,32 +1,32 @@
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import ImageBase					= require("awayjs-core/lib/image/ImageBase");
-import SamplerBase					= require("awayjs-core/lib/image/SamplerBase");
-import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import ImageBase					from "awayjs-core/lib/image/ImageBase";
+import SamplerBase					from "awayjs-core/lib/image/SamplerBase";
+import Sampler2D					from "awayjs-core/lib/image/Sampler2D";
 
-import AbstractionBase				= require("awayjs-core/lib/library/AbstractionBase");
+import AbstractionBase				from "awayjs-core/lib/library/AbstractionBase";
 
-import ISurface						= require("awayjs-display/lib/base/ISurface");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import SurfaceEvent					= require("awayjs-display/lib/events/SurfaceEvent");
-import IRenderable					= require("awayjs-display/lib/base/IRenderable");
-import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
-import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
-import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
+import ISurface						from "awayjs-display/lib/base/ISurface";
+import Camera						from "awayjs-display/lib/display/Camera";
+import SurfaceEvent					from "awayjs-display/lib/events/SurfaceEvent";
+import IRenderable					from "awayjs-display/lib/base/IRenderable";
+import MaterialBase					from "awayjs-display/lib/materials/MaterialBase";
+import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
+import TextureBase					from "awayjs-display/lib/textures/TextureBase";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import GL_ImageBase					= require("awayjs-stagegl/lib/image/GL_ImageBase");
-import GL_SamplerBase				= require("awayjs-stagegl/lib/image/GL_SamplerBase");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
+import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
+import GL_SamplerBase				from "awayjs-stagegl/lib/image/GL_SamplerBase";
 
-import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import PassEvent					= require("awayjs-renderergl/lib/events/PassEvent");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
-import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
+import AnimatorBase					from "awayjs-renderergl/lib/animators/AnimatorBase";
+import PassEvent					from "awayjs-renderergl/lib/events/PassEvent";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
+import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
+import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
+import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
 
 /**
  *
@@ -338,4 +338,4 @@ class GL_SurfaceBase extends AbstractionBase
 	}
 }
 
-export = GL_SurfaceBase;
+export default GL_SurfaceBase;

@@ -1,9 +1,9 @@
-import Image2D						= require("awayjs-core/lib/image/Image2D");
+import Image2D						from "awayjs-core/lib/image/Image2D";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import Filter3DFXAATask				= require("awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask");
-import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
+import Filter3DFXAATask				from "awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask";
+import Filter3DBase					from "awayjs-renderergl/lib/filters/Filter3DBase";
 
 class FXAAFilter3D extends Filter3DBase
 {
@@ -45,4 +45,4 @@ class FXAAFilter3D extends Filter3DBase
 	}
 }
 
-export = FXAAFilter3D;
+export default FXAAFilter3D;

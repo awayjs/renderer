@@ -1,21 +1,21 @@
-import Image2D						= require("awayjs-core/lib/image/Image2D");
+import Image2D						from "awayjs-core/lib/image/Image2D";
 
-import Camera						= require("awayjs-display/lib/display/Camera");
+import Camera						from "awayjs-display/lib/display/Camera";
 
-import GL_ImageBase					= require("awayjs-stagegl/lib/image/GL_ImageBase");
+import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import ContextGLDrawMode			= require("awayjs-stagegl/lib/base/ContextGLDrawMode");
-import ContextGLBlendFactor			= require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
-import ContextGLVertexBufferFormat	= require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import IIndexBuffer					= require("awayjs-stagegl/lib/base/IIndexBuffer");
-import IVertexBuffer				= require("awayjs-stagegl/lib/base/IVertexBuffer");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
+import ContextGLDrawMode			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
+import ContextGLBlendFactor			from "awayjs-stagegl/lib/base/ContextGLBlendFactor";
+import ContextGLVertexBufferFormat	from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
+import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
+import IIndexBuffer					from "awayjs-stagegl/lib/base/IIndexBuffer";
+import IVertexBuffer				from "awayjs-stagegl/lib/base/IVertexBuffer";
 
-import RTTEvent						= require("awayjs-renderergl/lib/events/RTTEvent");
-import RTTBufferManager				= require("awayjs-renderergl/lib/managers/RTTBufferManager");
-import Filter3DBase					= require("awayjs-renderergl/lib/filters/Filter3DBase");
-import Filter3DTaskBase				= require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+import RTTEvent						from "awayjs-renderergl/lib/events/RTTEvent";
+import RTTBufferManager				from "awayjs-renderergl/lib/managers/RTTBufferManager";
+import Filter3DBase					from "awayjs-renderergl/lib/filters/Filter3DBase";
+import Filter3DTaskBase				from "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase";
 
 /**
  * @class away.render.Filter3DRenderer
@@ -201,4 +201,4 @@ class Filter3DRenderer
 	}
 }
 
-export = Filter3DRenderer;
+export default Filter3DRenderer;

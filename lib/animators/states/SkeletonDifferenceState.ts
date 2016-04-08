@@ -1,13 +1,13 @@
-import Quaternion						= require("awayjs-core/lib/geom/Quaternion");
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import Quaternion						from "awayjs-core/lib/geom/Quaternion";
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import JointPose						= require("awayjs-renderergl/lib/animators/data/JointPose");
-import Skeleton							= require("awayjs-renderergl/lib/animators/data/Skeleton");
-import SkeletonPose						= require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-import SkeletonDifferenceNode			= require("awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode");
-import AnimationStateBase				= require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
-import ISkeletonAnimationState			= require("awayjs-renderergl/lib/animators/states/ISkeletonAnimationState");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import JointPose						from "awayjs-renderergl/lib/animators/data/JointPose";
+import Skeleton							from "awayjs-renderergl/lib/animators/data/Skeleton";
+import SkeletonPose						from "awayjs-renderergl/lib/animators/data/SkeletonPose";
+import SkeletonDifferenceNode			from "awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode";
+import AnimationStateBase				from "awayjs-renderergl/lib/animators/states/AnimationStateBase";
+import ISkeletonAnimationState			from "awayjs-renderergl/lib/animators/states/ISkeletonAnimationState";
 
 /**
  *
@@ -148,4 +148,4 @@ class SkeletonDifferenceState extends AnimationStateBase implements ISkeletonAni
 	}
 }
 
-export = SkeletonDifferenceState;
+export default SkeletonDifferenceState;

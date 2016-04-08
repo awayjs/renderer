@@ -1,11 +1,11 @@
-import Image2D						= require("awayjs-core/lib/image/Image2D");
+import Image2D						from "awayjs-core/lib/image/Image2D";
 
-import Camera						= require("awayjs-display/lib/display/Camera");
+import Camera						from "awayjs-display/lib/display/Camera";
 
-import ContextGLProgramType			= require("awayjs-stagegl/lib/base/ContextGLProgramType");
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
+import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import Filter3DTaskBase				= require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+import Filter3DTaskBase				from "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase";
 
 class Filter3DVBlurTask extends Filter3DTaskBase
 {
@@ -110,4 +110,4 @@ class Filter3DVBlurTask extends Filter3DTaskBase
 	}
 }
 
-export = Filter3DVBlurTask;
+export default Filter3DVBlurTask;

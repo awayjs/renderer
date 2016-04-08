@@ -1,16 +1,16 @@
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
 
-import GL_SamplerCube				= require("awayjs-stagegl/lib/image/GL_SamplerCube");
+import GL_SamplerCube				from "awayjs-stagegl/lib/image/GL_SamplerCube";
 
-import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
+import SingleCubeTexture			from "awayjs-display/lib/textures/SingleCubeTexture";
 
-import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
+import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
 
 /**
  *
@@ -90,4 +90,4 @@ class GL_SingleCubeTexture extends GL_TextureBase
 	}
 }
 
-export = GL_SingleCubeTexture;
+export default GL_SingleCubeTexture;

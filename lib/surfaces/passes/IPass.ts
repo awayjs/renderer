@@ -1,18 +1,14 @@
-import IEventDispatcher				= require("awayjs-core/lib/events/IEventDispatcher");
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
+import IEventDispatcher				from "awayjs-core/lib/events/IEventDispatcher";
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 
-import Camera						= require("awayjs-display/lib/display/Camera");
-import TextureBase					= require("awayjs-display/lib/textures/TextureBase");
+import Camera						from "awayjs-display/lib/display/Camera";
+import TextureBase					from "awayjs-display/lib/textures/TextureBase";
 
-import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import GL_SurfaceBase				= require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import AnimationSetBase				from "awayjs-renderergl/lib/animators/AnimationSetBase";
 
 /**
  *
@@ -54,4 +50,4 @@ interface IPass extends IEventDispatcher
 	getImageIndex(texture:TextureBase, index?:number):number;
 }
 
-export = IPass;
+export default IPass;

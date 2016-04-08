@@ -1,12 +1,12 @@
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import JointPose						= require("awayjs-renderergl/lib/animators/data/JointPose");
-import Skeleton							= require("awayjs-renderergl/lib/animators/data/Skeleton");
-import SkeletonPose						= require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-import SkeletonDirectionalNode			= require("awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode");
-import AnimationStateBase				= require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
-import ISkeletonAnimationState			= require("awayjs-renderergl/lib/animators/states/ISkeletonAnimationState");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import JointPose						from "awayjs-renderergl/lib/animators/data/JointPose";
+import Skeleton							from "awayjs-renderergl/lib/animators/data/Skeleton";
+import SkeletonPose						from "awayjs-renderergl/lib/animators/data/SkeletonPose";
+import SkeletonDirectionalNode			from "awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode";
+import AnimationStateBase				from "awayjs-renderergl/lib/animators/states/AnimationStateBase";
+import ISkeletonAnimationState			from "awayjs-renderergl/lib/animators/states/ISkeletonAnimationState";
 
 /**
  *
@@ -201,4 +201,4 @@ class SkeletonDirectionalState extends AnimationStateBase implements ISkeletonAn
 	}
 }
 
-export = SkeletonDirectionalState;
+export default SkeletonDirectionalState;

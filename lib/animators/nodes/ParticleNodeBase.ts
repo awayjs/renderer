@@ -1,10 +1,9 @@
-import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimationRegisterCache			= require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-import ShaderBase						= require("awayjs-renderergl/lib/shaders/ShaderBase");
-
-import ParticleAnimationSet				= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-import ParticleProperties				= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
+import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
+import ParticleProperties				from "awayjs-renderergl/lib/animators/data/ParticleProperties";
+import ParticleAnimationSet				from "awayjs-renderergl/lib/animators/ParticleAnimationSet";
+import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
 
 /**
  * Provides an abstract base class for particle animation nodes.
@@ -140,4 +139,4 @@ class ParticleNodeBase extends AnimationNodeBase
 	}
 }
 
-export = ParticleNodeBase;
+export default ParticleNodeBase;

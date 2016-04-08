@@ -1,6 +1,6 @@
-import EventBase					= require("awayjs-core/lib/events/EventBase");
+import EventBase					from "awayjs-core/lib/events/EventBase";
 
-import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
+import AnimatorBase					from "awayjs-renderergl/lib/animators/AnimatorBase";
 
 /**
  * Dispatched to notify changes in an animator's state.
@@ -52,4 +52,4 @@ class AnimatorEvent extends EventBase
 	}
 }
 
-export = AnimatorEvent;
+export default AnimatorEvent;

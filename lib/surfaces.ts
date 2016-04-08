@@ -1,0 +1,12 @@
+export {default as BasicMaterialPass}				from "awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass";
+export {default as ILightingPass}					from "awayjs-renderergl/lib/surfaces/passes/ILightingPass";
+export {default as IPass}							from "awayjs-renderergl/lib/surfaces/passes/IPass";
+export {default as PassBase}						from "awayjs-renderergl/lib/surfaces/passes/PassBase";
+export {default as GL_BasicMaterialSurface}			from "awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface";
+export {default as GL_DepthSurface}					from "awayjs-renderergl/lib/surfaces/GL_DepthSurface";
+export {default as GL_DistanceSurface}				from "awayjs-renderergl/lib/surfaces/GL_DistanceSurface";
+export {default as GL_SkyboxSurface}				from "awayjs-renderergl/lib/surfaces/GL_SkyboxSurface";
+export {default as GL_SurfaceBase}					from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
+export {default as GL_SurfacePassBase}				from "awayjs-renderergl/lib/surfaces/GL_SurfacePassBase";
+export {default as ISurfaceClassGL}					from "awayjs-renderergl/lib/surfaces/ISurfaceClassGL";
+export {default as SurfacePool}						from "awayjs-renderergl/lib/surfaces/SurfacePool";

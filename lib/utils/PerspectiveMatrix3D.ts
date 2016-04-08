@@ -1,4 +1,4 @@
-import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
+import Matrix3D							from "awayjs-core/lib/geom/Matrix3D";
 
 /**
  *
@@ -37,4 +37,4 @@ class PerspectiveMatrix3D extends Matrix3D
 	}
 }
 
-export = PerspectiveMatrix3D;
+export default PerspectiveMatrix3D;

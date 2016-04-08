@@ -16,4 +16,4 @@ class VertexAnimationMode
 	public static ABSOLUTE:string = "absolute";
 }
 
-export = VertexAnimationMode;
+export default VertexAnimationMode;

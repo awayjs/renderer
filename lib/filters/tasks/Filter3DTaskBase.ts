@@ -1,16 +1,15 @@
-import Image2D						= require("awayjs-core/lib/image/Image2D");
+import Image2D						from "awayjs-core/lib/image/Image2D";
 
-import AbstractMethodError			= require("awayjs-core/lib/errors/AbstractMethodError");
-import ByteArray					= require("awayjs-core/lib/utils/ByteArray");
+import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
+import ByteArray					from "awayjs-core/lib/utils/ByteArray";
 
-import Camera						= require("awayjs-display/lib/display/Camera");
+import Camera						from "awayjs-display/lib/display/Camera";
 
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import AGALMiniAssembler			= require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
-import ContextGLTextureFormat		= require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import IProgram						= require("awayjs-stagegl/lib/base/IProgram");
-import RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
+import Stage						from "awayjs-stagegl/lib/base/Stage";
+import AGALMiniAssembler			from "awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler";
+import IProgram						from "awayjs-stagegl/lib/base/IProgram";
+
+import RTTBufferManager				from "awayjs-renderergl/lib/managers/RTTBufferManager";
 
 class Filter3DTaskBase
 {
@@ -149,8 +148,6 @@ class Filter3DTaskBase
 	public getFragmentCode():string
 	{
 		throw new AbstractMethodError();
-
-		return null;
 	}
 
 	public updateTextures(stage:Stage)
@@ -186,4 +183,4 @@ class Filter3DTaskBase
 
 }
 
-export = Filter3DTaskBase;
+export default Filter3DTaskBase;

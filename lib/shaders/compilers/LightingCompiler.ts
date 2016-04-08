@@ -1,10 +1,8 @@
-import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile");
-
-import LightingShader				= require("awayjs-renderergl/lib/shaders/LightingShader");
-import CompilerBase					= require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import ILightingPass				= require("awayjs-renderergl/lib/surfaces/passes/ILightingPass");
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
+import LightingShader				from "awayjs-renderergl/lib/shaders/LightingShader";
+import CompilerBase					from "awayjs-renderergl/lib/shaders/compilers/CompilerBase";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import ILightingPass				from "awayjs-renderergl/lib/surfaces/passes/ILightingPass";
+import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
 
 /**
  * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
@@ -296,4 +294,4 @@ class LightingCompiler extends CompilerBase
 	}
 }
 
-export = LightingCompiler;
+export default LightingCompiler;

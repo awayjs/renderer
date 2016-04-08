@@ -1,15 +1,14 @@
-import ISurface						= require("awayjs-display/lib/base/ISurface");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
+import ISurface						from "awayjs-display/lib/base/ISurface";
+import Camera						from "awayjs-display/lib/display/Camera";
 
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import GL_SurfacePassBase			= require("awayjs-renderergl/lib/surfaces/GL_SurfacePassBase");
-import SurfacePool					= require("awayjs-renderergl/lib/surfaces/SurfacePool");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import GL_TextureBase				= require("awayjs-renderergl/lib/textures/GL_TextureBase");
+import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
+import GL_SurfacePassBase			from "awayjs-renderergl/lib/surfaces/GL_SurfacePassBase";
+import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
 
 /**
  * GL_DepthSurface forms an abstract base class for the default shaded materials provided by Stage,
@@ -129,4 +128,4 @@ class GL_DepthSurface extends GL_SurfacePassBase
 	}
 }
 
-export = GL_DepthSurface;
+export default GL_DepthSurface;

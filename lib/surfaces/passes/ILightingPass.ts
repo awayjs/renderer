@@ -1,12 +1,10 @@
-import LightPickerBase				= require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
+import LightPickerBase				from "awayjs-display/lib/materials/lightpickers/LightPickerBase";
 
-import IPass						= require("awayjs-renderergl/lib/surfaces/passes/IPass");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import LightingShader				= require("awayjs-renderergl/lib/shaders/LightingShader");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
+import LightingShader				from "awayjs-renderergl/lib/shaders/LightingShader";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
 
 /**
  *
@@ -62,4 +60,4 @@ interface ILightingPass extends IPass
 	_iUsesDiffuse(shader:LightingShader):boolean;
 }
 
-export = ILightingPass;
+export default ILightingPass;

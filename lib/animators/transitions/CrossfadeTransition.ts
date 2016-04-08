@@ -1,8 +1,8 @@
-import AnimationNodeBase				= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
+import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimatorBase						= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import CrossfadeTransitionNode			= require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode");
-import IAnimationTransition				= require("awayjs-renderergl/lib/animators/transitions/IAnimationTransition");
+import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import CrossfadeTransitionNode			from "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode";
+import IAnimationTransition				from "awayjs-renderergl/lib/animators/transitions/IAnimationTransition";
 
 /**
  *
@@ -28,4 +28,4 @@ class CrossfadeTransition implements IAnimationTransition
 	}
 }
 
-export = CrossfadeTransition;
+export default CrossfadeTransition;

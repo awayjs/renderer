@@ -1,25 +1,25 @@
-import Matrix3D						= require("awayjs-core/lib/geom/Matrix3D");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
 
-import Camera						= require("awayjs-display/lib/display/Camera");
-import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import LightProbe					= require("awayjs-display/lib/display/LightProbe");
-import PointLight					= require("awayjs-display/lib/display/PointLight");
-import LightPickerBase				= require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
-import LightSources					= require("awayjs-display/lib/materials/LightSources");
+import Camera						from "awayjs-display/lib/display/Camera";
+import DirectionalLight				from "awayjs-display/lib/display/DirectionalLight";
+import LightProbe					from "awayjs-display/lib/display/LightProbe";
+import PointLight					from "awayjs-display/lib/display/PointLight";
+import LightPickerBase				from "awayjs-display/lib/materials/lightpickers/LightPickerBase";
+import LightSources					from "awayjs-display/lib/materials/LightSources";
 
-import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile");
-import Stage						= require("awayjs-stagegl/lib/base/Stage");
-import IContextGL					= require("awayjs-stagegl/lib/base/IContextGL");
-import GL_ImageBase					= require("awayjs-stagegl/lib/image/GL_ImageBase");
+import ContextGLProfile				from "awayjs-stagegl/lib/base/ContextGLProfile";
+import Stage						from "awayjs-stagegl/lib/base/Stage";
+import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
+import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
 
-import ILightingPass				= require("awayjs-renderergl/lib/surfaces/passes/ILightingPass");
+import ILightingPass				from "awayjs-renderergl/lib/surfaces/passes/ILightingPass";
 
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import CompilerBase					= require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
-import LightingCompiler				= require("awayjs-renderergl/lib/shaders/compilers/LightingCompiler");
-import IElementsClassGL				= require("awayjs-renderergl/lib/elements/IElementsClassGL");
-import GL_RenderableBase			= require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import CompilerBase					from "awayjs-renderergl/lib/shaders/compilers/CompilerBase";
+import LightingCompiler				from "awayjs-renderergl/lib/shaders/compilers/LightingCompiler";
+import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
+import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -368,4 +368,4 @@ class LightingShader extends ShaderBase
 	}
 }
 
-export = LightingShader;
+export default LightingShader;
