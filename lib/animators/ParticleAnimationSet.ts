@@ -8,15 +8,15 @@ import Graphics							from "awayjs-display/lib/graphics/Graphics";
 
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import AnimationSetBase					from "awayjs-renderergl/lib/animators/AnimationSetBase";
-import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
-import AnimationElements				from "awayjs-renderergl/lib/animators/data/AnimationElements";
-import ParticleAnimationData			from "awayjs-renderergl/lib/animators/data/ParticleAnimationData";
-import ParticleProperties				from "awayjs-renderergl/lib/animators/data/ParticleProperties";
-import ParticlePropertiesMode			from "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase";
-import ParticleTimeNode					from "awayjs-renderergl/lib/animators/nodes/ParticleTimeNode";
-import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
+import AnimationSetBase					from "../animators/AnimationSetBase";
+import AnimationRegisterCache			from "../animators/data/AnimationRegisterCache";
+import AnimationElements				from "../animators/data/AnimationElements";
+import ParticleAnimationData			from "../animators/data/ParticleAnimationData";
+import ParticleProperties				from "../animators/data/ParticleProperties";
+import ParticlePropertiesMode			from "../animators/data/ParticlePropertiesMode";
+import ParticleNodeBase					from "../animators/nodes/ParticleNodeBase";
+import ParticleTimeNode					from "../animators/nodes/ParticleTimeNode";
+import ShaderBase						from "../shaders/ShaderBase";
 
 
 /**

@@ -21,14 +21,14 @@ import Stage						from "awayjs-stagegl/lib/base/Stage";
 import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
 import GL_SamplerBase				from "awayjs-stagegl/lib/image/GL_SamplerBase";
 
-import RendererBase					from "awayjs-renderergl/lib/RendererBase";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
-import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
-import GL_ElementsBase				from "awayjs-renderergl/lib/elements/GL_ElementsBase";
-import AnimatorBase					from "awayjs-renderergl/lib/animators/AnimatorBase";
+import RendererBase					from "../RendererBase";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
+import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
+import IPass						from "../surfaces/passes/IPass";
+import GL_ElementsBase				from "../elements/GL_ElementsBase";
+import AnimatorBase					from "../animators/AnimatorBase";
 
 /**
  * @class RenderableListItem

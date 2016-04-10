@@ -18,15 +18,15 @@ import Stage						from "awayjs-stagegl/lib/base/Stage";
 import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
 import GL_SamplerBase				from "awayjs-stagegl/lib/image/GL_SamplerBase";
 
-import AnimatorBase					from "awayjs-renderergl/lib/animators/AnimatorBase";
-import PassEvent					from "awayjs-renderergl/lib/events/PassEvent";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
-import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
-import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
-import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
+import AnimatorBase					from "../animators/AnimatorBase";
+import PassEvent					from "../events/PassEvent";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
+import SurfacePool					from "../surfaces/SurfacePool";
+import IPass						from "../surfaces/passes/IPass";
+import IElementsClassGL				from "../elements/IElementsClassGL";
+import GL_TextureBase				from "../textures/GL_TextureBase";
 
 /**
  *

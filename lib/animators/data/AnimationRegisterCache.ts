@@ -2,8 +2,8 @@ import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 
 import AnimationNodeBase			from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import ShaderRegisterCache			from "awayjs-renderergl/lib/animators/../shaders/ShaderRegisterCache";
-import ShaderRegisterElement		from "awayjs-renderergl/lib/animators/../shaders/ShaderRegisterElement";
+import ShaderRegisterCache			from "../../animators/../shaders/ShaderRegisterCache";
+import ShaderRegisterElement		from "../../animators/../shaders/ShaderRegisterElement";
 
 
 /**

@@ -5,16 +5,16 @@ import Graphic							from "awayjs-display/lib/graphics/Graphic";
 import ContextGLProgramType				from "awayjs-stagegl/lib/base/ContextGLProgramType";
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
-import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
-import ParticleAnimationSet				from "awayjs-renderergl/lib/animators/ParticleAnimationSet";
-import AnimationElements				from "awayjs-renderergl/lib/animators/data/AnimationElements";
-import ParticlePropertiesMode			from "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase";
-import ParticleStateBase				from "awayjs-renderergl/lib/animators/states/ParticleStateBase";
-import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
-import GL_RenderableBase				from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import GL_GraphicRenderable			from "awayjs-renderergl/lib/renderables/GL_GraphicRenderable";
+import AnimatorBase						from "../animators/AnimatorBase";
+import AnimationRegisterCache			from "../animators/data/AnimationRegisterCache";
+import ParticleAnimationSet				from "../animators/ParticleAnimationSet";
+import AnimationElements				from "../animators/data/AnimationElements";
+import ParticlePropertiesMode			from "../animators/data/ParticlePropertiesMode";
+import ParticleNodeBase					from "../animators/nodes/ParticleNodeBase";
+import ParticleStateBase				from "../animators/states/ParticleStateBase";
+import ShaderBase						from "../shaders/ShaderBase";
+import GL_RenderableBase				from "../renderables/GL_RenderableBase";
+import GL_GraphicRenderable			from "../renderables/GL_GraphicRenderable";
 
 /**
  * Provides an interface for assigning paricle-based animation data sets to sprite-based entity objects

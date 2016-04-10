@@ -12,10 +12,10 @@ import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
 import IIndexBuffer					from "awayjs-stagegl/lib/base/IIndexBuffer";
 import IVertexBuffer				from "awayjs-stagegl/lib/base/IVertexBuffer";
 
-import RTTEvent						from "awayjs-renderergl/lib/events/RTTEvent";
-import RTTBufferManager				from "awayjs-renderergl/lib/managers/RTTBufferManager";
-import Filter3DBase					from "awayjs-renderergl/lib/filters/Filter3DBase";
-import Filter3DTaskBase				from "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase";
+import RTTEvent						from "./events/RTTEvent";
+import RTTBufferManager				from "./managers/RTTBufferManager";
+import Filter3DBase					from "./filters/Filter3DBase";
+import Filter3DTaskBase				from "./filters/tasks/Filter3DTaskBase";
 
 /**
  * @class away.render.Filter3DRenderer

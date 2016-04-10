@@ -7,13 +7,13 @@ import GL_Sampler2D					from "awayjs-stagegl/lib/image/GL_Sampler2D";
 import MappingMode					from "awayjs-display/lib/textures/MappingMode";
 import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
 
-import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
-import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
+import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import GL_TextureBase				from "../textures/GL_TextureBase";
 
 /**
  *

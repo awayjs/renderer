@@ -1,8 +1,8 @@
 import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
-import CrossfadeTransitionNode			from "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode";
-import IAnimationTransition				from "awayjs-renderergl/lib/animators/transitions/IAnimationTransition";
+import AnimatorBase						from "../../animators/AnimatorBase";
+import CrossfadeTransitionNode			from "../../animators/transitions/CrossfadeTransitionNode";
+import IAnimationTransition				from "../../animators/transitions/IAnimationTransition";
 
 /**
  *

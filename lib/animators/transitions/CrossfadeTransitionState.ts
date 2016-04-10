@@ -1,8 +1,8 @@
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
-import SkeletonBinaryLERPNode			from "awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode";
-import SkeletonBinaryLERPState			from "awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState";
-import CrossfadeTransitionNode			from "awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode";
-import AnimationStateEvent				from "awayjs-renderergl/lib/animators/../events/AnimationStateEvent";
+import AnimatorBase						from "../../animators/AnimatorBase";
+import SkeletonBinaryLERPNode			from "../../animators/nodes/SkeletonBinaryLERPNode";
+import SkeletonBinaryLERPState			from "../../animators/states/SkeletonBinaryLERPState";
+import CrossfadeTransitionNode			from "../../animators/transitions/CrossfadeTransitionNode";
+import AnimationStateEvent				from "../../animators/../events/AnimationStateEvent";
 
 /**
  *

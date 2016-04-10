@@ -13,13 +13,13 @@ import Stage						from "awayjs-stagegl/lib/base/Stage";
 import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
 import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
 
-import ILightingPass				from "awayjs-renderergl/lib/surfaces/passes/ILightingPass";
+import ILightingPass				from "../surfaces/passes/ILightingPass";
 
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import CompilerBase					from "awayjs-renderergl/lib/shaders/compilers/CompilerBase";
-import LightingCompiler				from "awayjs-renderergl/lib/shaders/compilers/LightingCompiler";
-import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import ShaderBase					from "../shaders/ShaderBase";
+import CompilerBase					from "../shaders/compilers/CompilerBase";
+import LightingCompiler				from "../shaders/compilers/LightingCompiler";
+import IElementsClassGL				from "../elements/IElementsClassGL";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.

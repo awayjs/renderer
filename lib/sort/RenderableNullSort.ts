@@ -1,6 +1,6 @@
-import IEntitySorter				from "awayjs-renderergl/lib/sort/IEntitySorter";
+import IEntitySorter				from "../sort/IEntitySorter";
 
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
 
 /**
  * @class away.sort.NullSort

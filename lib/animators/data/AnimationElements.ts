@@ -2,7 +2,7 @@ import Stage							from "awayjs-stagegl/lib/base/Stage";
 import IContextGL						from "awayjs-stagegl/lib/base/IContextGL";
 import IVertexBuffer					from "awayjs-stagegl/lib/base/IVertexBuffer";
 
-import ParticleAnimationData			from "awayjs-renderergl/lib/animators/data/ParticleAnimationData";
+import ParticleAnimationData			from "../../animators/data/ParticleAnimationData";
 
 /**
  * ...

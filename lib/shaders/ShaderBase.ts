@@ -17,16 +17,16 @@ import Stage						from "awayjs-stagegl/lib/base/Stage";
 import ProgramData					from "awayjs-stagegl/lib/image/ProgramData";
 import GL_IAssetClass				from "awayjs-stagegl/lib/library/GL_IAssetClass";
 
-import AnimationSetBase				from "awayjs-renderergl/lib/animators/AnimationSetBase";
-import AnimatorBase					from "awayjs-renderergl/lib/animators/AnimatorBase";
-import AnimationRegisterCache		from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
-import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
-import ElementsPool					from "awayjs-renderergl/lib/elements/ElementsPool";
-import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import CompilerBase					from "awayjs-renderergl/lib/shaders/compilers/CompilerBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
+import AnimationSetBase				from "../animators/AnimationSetBase";
+import AnimatorBase					from "../animators/AnimatorBase";
+import AnimationRegisterCache		from "../animators/data/AnimationRegisterCache";
+import IPass						from "../surfaces/passes/IPass";
+import ElementsPool					from "../elements/ElementsPool";
+import IElementsClassGL				from "../elements/IElementsClassGL";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import CompilerBase					from "../shaders/compilers/CompilerBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import GL_TextureBase				from "../textures/GL_TextureBase";
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.

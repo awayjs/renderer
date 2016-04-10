@@ -2,9 +2,9 @@ import IAnimationSet					from "awayjs-display/lib/animators/IAnimationSet";
 
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import AnimationSetBase					from "awayjs-renderergl/lib/animators/AnimationSetBase";
-import VertexAnimationMode				from "awayjs-renderergl/lib/animators/data/VertexAnimationMode";
-import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
+import AnimationSetBase					from "../animators/AnimationSetBase";
+import VertexAnimationMode				from "../animators/data/VertexAnimationMode";
+import ShaderBase						from "../shaders/ShaderBase";
 
 /**
  * The animation data set used by vertex-based animators, containing vertex animation state data.

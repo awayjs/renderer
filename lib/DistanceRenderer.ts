@@ -2,8 +2,8 @@ import Stage						from "awayjs-stagegl/lib/base/Stage";
 
 import INode						from "awayjs-display/lib/partition/INode";
 
-import RendererBase					from "awayjs-renderergl/lib/RendererBase";
-import GL_DistanceSurface			from "awayjs-renderergl/lib/surfaces/GL_DistanceSurface";
+import RendererBase					from "./RendererBase";
+import GL_DistanceSurface			from "./surfaces/GL_DistanceSurface";
 
 /**
  * The DistanceRenderer class renders 32-bit depth information encoded as RGBA

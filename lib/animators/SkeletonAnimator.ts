@@ -9,18 +9,18 @@ import ElementsEvent					from "awayjs-display/lib/events/ElementsEvent";
 import ContextGLProgramType				from "awayjs-stagegl/lib/base/ContextGLProgramType";
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
-import SkeletonAnimationSet				from "awayjs-renderergl/lib/animators/SkeletonAnimationSet";
-import JointPose						from "awayjs-renderergl/lib/animators/data/JointPose";
-import Skeleton							from "awayjs-renderergl/lib/animators/data/Skeleton";
-import SkeletonJoint					from "awayjs-renderergl/lib/animators/data/SkeletonJoint";
-import SkeletonPose						from "awayjs-renderergl/lib/animators/data/SkeletonPose";
-import ISkeletonAnimationState			from "awayjs-renderergl/lib/animators/states/ISkeletonAnimationState";
-import IAnimationTransition				from "awayjs-renderergl/lib/animators/transitions/IAnimationTransition";
-import AnimationStateEvent				from "awayjs-renderergl/lib/events/AnimationStateEvent";
-import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
-import GL_RenderableBase				from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import GL_GraphicRenderable				from "awayjs-renderergl/lib/renderables/GL_GraphicRenderable";
+import AnimatorBase						from "../animators/AnimatorBase";
+import SkeletonAnimationSet				from "../animators/SkeletonAnimationSet";
+import JointPose						from "../animators/data/JointPose";
+import Skeleton							from "../animators/data/Skeleton";
+import SkeletonJoint					from "../animators/data/SkeletonJoint";
+import SkeletonPose						from "../animators/data/SkeletonPose";
+import ISkeletonAnimationState			from "../animators/states/ISkeletonAnimationState";
+import IAnimationTransition				from "../animators/transitions/IAnimationTransition";
+import AnimationStateEvent				from "../events/AnimationStateEvent";
+import ShaderBase						from "../shaders/ShaderBase";
+import GL_RenderableBase				from "../renderables/GL_RenderableBase";
+import GL_GraphicRenderable				from "../renderables/GL_GraphicRenderable";
 
 /**
  * Provides an interface for assigning skeleton-based animation data sets to sprite-based entity objects

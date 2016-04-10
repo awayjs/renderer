@@ -8,15 +8,15 @@ import Sprite							from "awayjs-display/lib/display/Sprite";
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 import ContextGLProgramType				from "awayjs-stagegl/lib/base/ContextGLProgramType";
 
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
-import VertexAnimationSet				from "awayjs-renderergl/lib/animators/VertexAnimationSet";
-import VertexAnimationMode				from "awayjs-renderergl/lib/animators/data/VertexAnimationMode";
-import IVertexAnimationState			from "awayjs-renderergl/lib/animators/states/IVertexAnimationState";
-import IAnimationTransition				from "awayjs-renderergl/lib/animators/transitions/IAnimationTransition";
-import GL_GraphicRenderable				from "awayjs-renderergl/lib/renderables/GL_GraphicRenderable";
-import GL_RenderableBase				from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
-import GL_ElementsBase					from "awayjs-renderergl/lib/elements/GL_ElementsBase";
+import AnimatorBase						from "../animators/AnimatorBase";
+import VertexAnimationSet				from "../animators/VertexAnimationSet";
+import VertexAnimationMode				from "../animators/data/VertexAnimationMode";
+import IVertexAnimationState			from "../animators/states/IVertexAnimationState";
+import IAnimationTransition				from "../animators/transitions/IAnimationTransition";
+import GL_GraphicRenderable				from "../renderables/GL_GraphicRenderable";
+import GL_RenderableBase				from "../renderables/GL_RenderableBase";
+import ShaderBase						from "../shaders/ShaderBase";
+import GL_ElementsBase					from "../elements/GL_ElementsBase";
 
 /**
  * Provides an interface for assigning vertex-based animation data sets to sprite-based entity objects

@@ -2,8 +2,8 @@ import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
 import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
-import IAnimationState					from "awayjs-renderergl/lib/animators/states/IAnimationState";
+import AnimatorBase						from "../../animators/AnimatorBase";
+import IAnimationState					from "../../animators/states/IAnimationState";
 
 /**
  *

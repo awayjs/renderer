@@ -4,14 +4,14 @@ import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 
 import Camera						from "awayjs-display/lib/display/Camera";
 
-import AnimationSetBase				from "awayjs-renderergl/lib/animators/AnimationSetBase";
-import PassEvent					from "awayjs-renderergl/lib/events/PassEvent";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
+import AnimationSetBase				from "../animators/AnimationSetBase";
+import PassEvent					from "../events/PassEvent";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
+import IPass						from "../surfaces/passes/IPass";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
 
 /**
  * GL_SurfacePassBase provides an abstract base class for material shader passes. A material pass constitutes at least

@@ -13,13 +13,13 @@ import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
 import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
 import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import RendererBase					from "awayjs-renderergl/lib/RendererBase";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import PassBase						from "awayjs-renderergl/lib/surfaces/passes/PassBase";
+import RendererBase					from "../RendererBase";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import PassBase						from "../surfaces/passes/PassBase";
 
 /**
  * @class away.pool.GL_SkyboxRenderable

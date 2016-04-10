@@ -4,11 +4,11 @@ import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 import Camera						from "awayjs-display/lib/display/Camera";
 import TextureBase					from "awayjs-display/lib/textures/TextureBase";
 
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import AnimationSetBase				from "awayjs-renderergl/lib/animators/AnimationSetBase";
+import ShaderBase					from "../../shaders/ShaderBase";
+import ShaderRegisterCache			from "../../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../../shaders/ShaderRegisterData";
+import GL_RenderableBase			from "../../renderables/GL_RenderableBase";
+import AnimationSetBase				from "../../animators/AnimationSetBase";
 
 /**
  *

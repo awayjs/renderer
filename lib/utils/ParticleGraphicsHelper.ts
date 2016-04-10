@@ -9,7 +9,7 @@ import Graphics							from "awayjs-display/lib/graphics/Graphics";
 import TriangleElements					from "awayjs-display/lib/graphics/TriangleElements";
 import Sprite							from "awayjs-display/lib/display/Sprite";
 
-import ParticleGraphicsTransform		from "awayjs-renderergl/lib/tools/data/ParticleGraphicsTransform";
+import ParticleGraphicsTransform		from "../tools/data/ParticleGraphicsTransform";
 
 /**
  * ...

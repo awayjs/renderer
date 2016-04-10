@@ -2,8 +2,8 @@ import IAnimationSet					from "awayjs-display/lib/animators/IAnimationSet";
 
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import AnimationSetBase					from "awayjs-renderergl/lib/animators/AnimationSetBase";
-import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
+import AnimationSetBase					from "../animators/AnimationSetBase";
+import ShaderBase						from "../shaders/ShaderBase";
 
 /**
  * The animation data set used by skeleton-based animators, containing skeleton animation data.

@@ -4,13 +4,13 @@ import GL_SamplerCube				from "awayjs-stagegl/lib/image/GL_SamplerCube";
 
 import SingleCubeTexture			from "awayjs-display/lib/textures/SingleCubeTexture";
 
-import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
-import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
+import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import GL_TextureBase				from "../textures/GL_TextureBase";
 
 /**
  *

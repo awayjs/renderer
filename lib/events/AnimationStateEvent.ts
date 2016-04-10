@@ -2,8 +2,8 @@ import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNo
 
 import EventBase						from "awayjs-core/lib/events/EventBase";
 
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
-import IAnimationState					from "awayjs-renderergl/lib/animators/states/IAnimationState";
+import AnimatorBase						from "../animators/AnimatorBase";
+import IAnimationState					from "../animators/states/IAnimationState";
 
 /**
  * Dispatched to notify changes in an animation state's state.

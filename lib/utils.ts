@@ -1,2 +1,2 @@
-export {default as ParticleGraphicsHelper}			from "awayjs-renderergl/lib/utils/ParticleGraphicsHelper";
-export {default as PerspectiveMatrix3D}				from "awayjs-renderergl/lib/utils/PerspectiveMatrix3D";
+export {default as ParticleGraphicsHelper}			from "./utils/ParticleGraphicsHelper";
+export {default as PerspectiveMatrix3D}				from "./utils/PerspectiveMatrix3D";

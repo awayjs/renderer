@@ -1,7 +1,7 @@
 import IAsset							from "awayjs-core/lib/library/IAsset";
 import AssetBase						from "awayjs-core/lib/library/AssetBase";
 
-import JointPose						from "awayjs-renderergl/lib/animators/data/JointPose";
+import JointPose						from "../../animators/data/JointPose";
 
 
 /**

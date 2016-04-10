@@ -1,1 +1,1 @@
-export {default as AnimationSetError}				from "awayjs-renderergl/lib/errors/AnimationSetError";
+export {default as AnimationSetError}				from "./errors/AnimationSetError";

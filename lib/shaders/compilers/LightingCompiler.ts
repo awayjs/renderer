@@ -1,8 +1,8 @@
-import LightingShader				from "awayjs-renderergl/lib/shaders/LightingShader";
-import CompilerBase					from "awayjs-renderergl/lib/shaders/compilers/CompilerBase";
-import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
-import ILightingPass				from "awayjs-renderergl/lib/surfaces/passes/ILightingPass";
-import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
+import LightingShader				from "../../shaders/LightingShader";
+import CompilerBase					from "../../shaders/compilers/CompilerBase";
+import ShaderRegisterElement		from "../../shaders/ShaderRegisterElement";
+import ILightingPass				from "../../surfaces/passes/ILightingPass";
+import IElementsClassGL				from "../../elements/IElementsClassGL";
 
 /**
  * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a

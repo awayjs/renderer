@@ -1,9 +1,9 @@
 import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
-import SkeletonPose						from "awayjs-renderergl/lib/animators/data/SkeletonPose";
-import AnimationClipNodeBase			from "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase";
-import SkeletonClipState				from "awayjs-renderergl/lib/animators/states/SkeletonClipState";
+import AnimatorBase						from "../../animators/AnimatorBase";
+import SkeletonPose						from "../../animators/data/SkeletonPose";
+import AnimationClipNodeBase			from "../../animators/nodes/AnimationClipNodeBase";
+import SkeletonClipState				from "../../animators/states/SkeletonClipState";
 
 /**
  * A skeleton animation node containing time-based animation data as individual skeleton poses.

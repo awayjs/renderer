@@ -1,7 +1,7 @@
-import IAnimationState					from "awayjs-renderergl/lib/animators/states/IAnimationState";
+import IAnimationState					from "../../animators/states/IAnimationState";
 
-import Skeleton							from "awayjs-renderergl/lib/animators/data/Skeleton";
-import SkeletonPose						from "awayjs-renderergl/lib/animators/data/SkeletonPose";
+import Skeleton							from "../../animators/data/Skeleton";
+import SkeletonPose						from "../../animators/data/SkeletonPose";
 
 interface ISkeletonAnimationState extends IAnimationState
 {

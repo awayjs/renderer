@@ -9,7 +9,7 @@ import Stage						from "awayjs-stagegl/lib/base/Stage";
 import AGALMiniAssembler			from "awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler";
 import IProgram						from "awayjs-stagegl/lib/base/IProgram";
 
-import RTTBufferManager				from "awayjs-renderergl/lib/managers/RTTBufferManager";
+import RTTBufferManager				from "../../managers/RTTBufferManager";
 
 class Filter3DTaskBase
 {

@@ -9,8 +9,8 @@ import Billboard					from "awayjs-display/lib/display/Billboard";
 import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
 import TextureBase					from "awayjs-display/lib/textures/TextureBase";
 
-import RendererBase					from "awayjs-renderergl/lib/RendererBase";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import RendererBase					from "../RendererBase";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
 
 /**
  * @class away.pool.RenderableListItem

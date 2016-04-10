@@ -2,8 +2,8 @@ import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
 import Graphics							from "awayjs-display/lib/graphics/Graphics";
 
-import AnimationClipNodeBase			from "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase";
-import VertexClipState					from "awayjs-renderergl/lib/animators/states/VertexClipState";
+import AnimationClipNodeBase			from "../../animators/nodes/AnimationClipNodeBase";
+import VertexClipState					from "../../animators/states/VertexClipState";
 
 /**
  * A vertex animation node containing time-based animation data as individual geometry obejcts.

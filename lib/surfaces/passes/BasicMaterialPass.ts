@@ -6,15 +6,15 @@ import ISurface						from "awayjs-display/lib/base/ISurface";
 
 import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
-import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
-import PassBase						from "awayjs-renderergl/lib/surfaces/passes/PassBase";
-import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
+import GL_RenderableBase			from "../../renderables/GL_RenderableBase";
+import GL_SurfaceBase				from "../../surfaces/GL_SurfaceBase";
+import ShaderBase					from "../../shaders/ShaderBase";
+import ShaderRegisterCache			from "../../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../../shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "../../shaders/ShaderRegisterElement";
+import IElementsClassGL				from "../../elements/IElementsClassGL";
+import PassBase						from "../../surfaces/passes/PassBase";
+import GL_TextureBase				from "../../textures/GL_TextureBase";
 
 /**
  * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,

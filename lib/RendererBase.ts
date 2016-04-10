@@ -31,15 +31,15 @@ import StageManager					from "awayjs-stagegl/lib/managers/StageManager";
 import ProgramData					from "awayjs-stagegl/lib/image/ProgramData";
 import GL_IAssetClass				from "awayjs-stagegl/lib/library/GL_IAssetClass";
 
-import ISurfaceClassGL				from "awayjs-renderergl/lib/surfaces/ISurfaceClassGL";
-import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import RTTBufferManager				from "awayjs-renderergl/lib/managers/RTTBufferManager";
-import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
-import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
-import ElementsPool					from "awayjs-renderergl/lib/elements/ElementsPool";
-import IEntitySorter				from "awayjs-renderergl/lib/sort/IEntitySorter";
-import RenderableMergeSort			from "awayjs-renderergl/lib/sort/RenderableMergeSort";
+import ISurfaceClassGL				from "./surfaces/ISurfaceClassGL";
+import GL_SurfaceBase				from "./surfaces/GL_SurfaceBase";
+import GL_RenderableBase			from "./renderables/GL_RenderableBase";
+import RTTBufferManager				from "./managers/RTTBufferManager";
+import SurfacePool					from "./surfaces/SurfacePool";
+import IPass						from "./surfaces/passes/IPass";
+import ElementsPool					from "./elements/ElementsPool";
+import IEntitySorter				from "./sort/IEntitySorter";
+import RenderableMergeSort			from "./sort/RenderableMergeSort";
 
 
 /**

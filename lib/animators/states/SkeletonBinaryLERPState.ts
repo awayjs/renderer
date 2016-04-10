@@ -1,12 +1,12 @@
 import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
-import JointPose						from "awayjs-renderergl/lib/animators/data/JointPose";
-import Skeleton							from "awayjs-renderergl/lib/animators/data/Skeleton";
-import SkeletonPose						from "awayjs-renderergl/lib/animators/data/SkeletonPose";
-import SkeletonBinaryLERPNode			from "awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode";
-import AnimationStateBase				from "awayjs-renderergl/lib/animators/states/AnimationStateBase";
-import ISkeletonAnimationState			from "awayjs-renderergl/lib/animators/states/ISkeletonAnimationState";
+import AnimatorBase						from "../../animators/AnimatorBase";
+import JointPose						from "../../animators/data/JointPose";
+import Skeleton							from "../../animators/data/Skeleton";
+import SkeletonPose						from "../../animators/data/SkeletonPose";
+import SkeletonBinaryLERPNode			from "../../animators/nodes/SkeletonBinaryLERPNode";
+import AnimationStateBase				from "../../animators/states/AnimationStateBase";
+import ISkeletonAnimationState			from "../../animators/states/ISkeletonAnimationState";
 
 /**
  *

@@ -1,1 +1,1 @@
-export {default as RTTBufferManager}				from "awayjs-renderergl/lib/managers/RTTBufferManager";
+export {default as RTTBufferManager}				from "./managers/RTTBufferManager";

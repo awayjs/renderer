@@ -7,14 +7,14 @@ import Skybox						from "awayjs-display/lib/display/Skybox";
 
 import ContextGLCompareMode			from "awayjs-stagegl/lib/base/ContextGLCompareMode";
 
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
-import GL_SurfacePassBase			from "awayjs-renderergl/lib/surfaces/GL_SurfacePassBase";
-import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import IElementsClassGL				from "../elements/IElementsClassGL";
+import GL_SurfacePassBase			from "../surfaces/GL_SurfacePassBase";
+import SurfacePool					from "../surfaces/SurfacePool";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
+import GL_TextureBase				from "../textures/GL_TextureBase";
 
 /**
  * GL_SkyboxSurface forms an abstract base class for the default shaded materials provided by Stage,

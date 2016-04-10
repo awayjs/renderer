@@ -1,10 +1,10 @@
 import Graphics							from "awayjs-display/lib/graphics/Graphics";
 
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
-import VertexAnimator					from "awayjs-renderergl/lib/animators/VertexAnimator";
-import VertexClipNode					from "awayjs-renderergl/lib/animators/nodes/VertexClipNode";
-import AnimationClipState				from "awayjs-renderergl/lib/animators/states/AnimationClipState";
-import IVertexAnimationState			from "awayjs-renderergl/lib/animators/states/IVertexAnimationState";
+import AnimatorBase						from "../../animators/AnimatorBase";
+import VertexAnimator					from "../../animators/VertexAnimator";
+import VertexClipNode					from "../../animators/nodes/VertexClipNode";
+import AnimationClipState				from "../../animators/states/AnimationClipState";
+import IVertexAnimationState			from "../../animators/states/IVertexAnimationState";
 
 /**
  *

@@ -1,8 +1,8 @@
 import ISurface						from "awayjs-display/lib/base/ISurface";
 
-import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
-import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
-import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
+import IElementsClassGL				from "../elements/IElementsClassGL";
+import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
+import SurfacePool					from "../surfaces/SurfacePool";
 
 /**
  * ISurfaceClassGL is an interface for the constructable class definition GL_SurfaceBase that is used to

@@ -1,14 +1,14 @@
 ﻿import ISurface						from "awayjs-display/lib/base/ISurface";
 import Camera						from "awayjs-display/lib/display/Camera";
 
-import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
-import GL_SurfacePassBase			from "awayjs-renderergl/lib/surfaces/GL_SurfacePassBase";
-import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
-import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
+import SurfacePool					from "../surfaces/SurfacePool";
+import GL_SurfacePassBase			from "../surfaces/GL_SurfacePassBase";
+import IElementsClassGL				from "../elements/IElementsClassGL";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import GL_TextureBase				from "../textures/GL_TextureBase";
 
 /**
  * DistanceRender is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.

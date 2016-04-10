@@ -6,7 +6,7 @@ import Stage						from "awayjs-stagegl/lib/base/Stage";
 import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
 import IIndexBuffer					from "awayjs-stagegl/lib/base/IIndexBuffer";
 import IVertexBuffer				from "awayjs-stagegl/lib/base/IVertexBuffer";
-import RTTEvent						from "awayjs-renderergl/lib/events/RTTEvent";
+import RTTEvent						from "../events/RTTEvent";
 
 class RTTBufferManager extends EventDispatcher
 {

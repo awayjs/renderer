@@ -1,7 +1,7 @@
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
-import AnimationClipNodeBase			from "awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase";
-import AnimationStateBase				from "awayjs-renderergl/lib/animators/states/AnimationStateBase";
-import AnimationStateEvent				from "awayjs-renderergl/lib/animators/../events/AnimationStateEvent";
+import AnimatorBase						from "../../animators/AnimatorBase";
+import AnimationClipNodeBase			from "../../animators/nodes/AnimationClipNodeBase";
+import AnimationStateBase				from "../../animators/states/AnimationStateBase";
+import AnimationStateEvent				from "../../events/AnimationStateEvent";
 
 /**
  *

@@ -1,2 +1,2 @@
-export {default as Merge}							from "awayjs-renderergl/lib/tools/commands/Merge";
-export {default as ParticleGraphicsTransform}		from "awayjs-renderergl/lib/tools/data/ParticleGraphicsTransform";
+export {default as Merge}							from "./tools/commands/Merge";
+export {default as ParticleGraphicsTransform}		from "./tools/data/ParticleGraphicsTransform";

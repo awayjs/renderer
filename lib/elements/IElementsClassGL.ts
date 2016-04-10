@@ -2,12 +2,12 @@ import IRenderable					from "awayjs-display/lib/base/IRenderable";
 
 import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import RendererBase					from "awayjs-renderergl/lib/RendererBase";
-import ElementsPool					from "awayjs-renderergl/lib/elements/ElementsPool";
-import GL_ElementsBase				from "awayjs-renderergl/lib/elements/GL_ElementsBase";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import RendererBase					from "../RendererBase";
+import ElementsPool					from "../elements/ElementsPool";
+import GL_ElementsBase				from "../elements/GL_ElementsBase";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
 import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
 
 /**

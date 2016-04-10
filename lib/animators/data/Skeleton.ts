@@ -1,4 +1,4 @@
-import SkeletonJoint					from "awayjs-renderergl/lib/animators/data/SkeletonJoint";
+import SkeletonJoint					from "../../animators/data/SkeletonJoint";
 
 import IAsset							from "awayjs-core/lib/library/IAsset";
 import AssetBase						from "awayjs-core/lib/library/AssetBase";

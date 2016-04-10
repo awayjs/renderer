@@ -13,13 +13,13 @@ import Camera						from "awayjs-display/lib/display/Camera";
 import TriangleElements				from "awayjs-display/lib/graphics/TriangleElements";
 import ElementsEvent				from "awayjs-display/lib/events/ElementsEvent";
 
-import ElementsPool					from "awayjs-renderergl/lib/elements/ElementsPool";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
-import GL_ElementsBase				from "awayjs-renderergl/lib/elements/GL_ElementsBase";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import ElementsPool					from "../elements/ElementsPool";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import GL_ElementsBase				from "../elements/GL_ElementsBase";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
 
 /**
  *

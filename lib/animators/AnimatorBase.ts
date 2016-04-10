@@ -13,10 +13,10 @@ import Sprite						from "awayjs-display/lib/display/Sprite";
 
 import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import IAnimationState				from "awayjs-renderergl/lib/animators/states/IAnimationState";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import AnimatorEvent				from "awayjs-renderergl/lib/events/AnimatorEvent";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import IAnimationState				from "../animators/states/IAnimationState";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import AnimatorEvent				from "../events/AnimatorEvent";
+import ShaderBase					from "../shaders/ShaderBase";
 
 /**
  * Dispatched when playback of an animation inside the animator object starts.

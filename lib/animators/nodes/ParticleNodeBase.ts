@@ -1,9 +1,9 @@
 import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
-import ParticleProperties				from "awayjs-renderergl/lib/animators/data/ParticleProperties";
-import ParticleAnimationSet				from "awayjs-renderergl/lib/animators/ParticleAnimationSet";
-import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
+import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import ParticleProperties				from "../../animators/data/ParticleProperties";
+import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import ShaderBase						from "../../shaders/ShaderBase";
 
 /**
  * Provides an abstract base class for particle animation nodes.

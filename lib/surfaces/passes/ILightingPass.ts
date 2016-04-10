@@ -1,10 +1,10 @@
 import LightPickerBase				from "awayjs-display/lib/materials/lightpickers/LightPickerBase";
 
-import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
-import LightingShader				from "awayjs-renderergl/lib/shaders/LightingShader";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import IPass						from "../../surfaces/passes/IPass";
+import LightingShader				from "../../shaders/LightingShader";
+import ShaderRegisterCache			from "../../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../../shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "../../shaders/ShaderRegisterElement";
 
 /**
  *

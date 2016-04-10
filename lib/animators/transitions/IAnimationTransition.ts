@@ -1,6 +1,6 @@
 import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
+import AnimatorBase						from "../../animators/AnimatorBase";
 
 /**
  *

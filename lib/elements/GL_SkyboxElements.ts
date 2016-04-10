@@ -1,8 +1,8 @@
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
-import GL_TriangleElements			from "awayjs-renderergl/lib/elements/GL_TriangleElements";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import GL_TriangleElements			from "../elements/GL_TriangleElements";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
 
 /**
  *

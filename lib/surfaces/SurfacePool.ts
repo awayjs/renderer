@@ -5,9 +5,9 @@ import Stage						from "awayjs-stagegl/lib/base/Stage";
 
 import ISurface						from "awayjs-display/lib/base/ISurface";
 
-import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
-import ISurfaceClassGL				from "awayjs-renderergl/lib/surfaces/ISurfaceClassGL";
-import GL_SurfaceBase				from "awayjs-renderergl/lib/surfaces/GL_SurfaceBase";
+import IElementsClassGL				from "../elements/IElementsClassGL";
+import ISurfaceClassGL				from "../surfaces/ISurfaceClassGL";
+import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
 
 /**
  * @class away.pool.SurfacePool

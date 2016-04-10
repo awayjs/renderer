@@ -20,16 +20,16 @@ import ContextGLCompareMode			from "awayjs-stagegl/lib/base/ContextGLCompareMode
 import ContextGLClearMask			from "awayjs-stagegl/lib/base/ContextGLClearMask";
 import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
 
-import RendererBase					from "awayjs-renderergl/lib/RendererBase";
-import DepthRenderer				from "awayjs-renderergl/lib/DepthRenderer";
-import DistanceRenderer				from "awayjs-renderergl/lib/DistanceRenderer";
-import Filter3DRenderer				from "awayjs-renderergl/lib/Filter3DRenderer";
-import Filter3DBase					from "awayjs-renderergl/lib/filters/Filter3DBase";
-import GL_SkyboxElements			from "awayjs-renderergl/lib/elements/GL_SkyboxElements";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
-import RTTBufferManager				from "awayjs-renderergl/lib/managers/RTTBufferManager";
-import IPass						from "awayjs-renderergl/lib/surfaces/passes/IPass";
-import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
+import RendererBase					from "./RendererBase";
+import DepthRenderer				from "./DepthRenderer";
+import DistanceRenderer				from "./DistanceRenderer";
+import Filter3DRenderer				from "./Filter3DRenderer";
+import Filter3DBase					from "./filters/Filter3DBase";
+import GL_SkyboxElements			from "./elements/GL_SkyboxElements";
+import GL_RenderableBase			from "./renderables/GL_RenderableBase";
+import RTTBufferManager				from "./managers/RTTBufferManager";
+import IPass						from "./surfaces/passes/IPass";
+import SurfacePool					from "./surfaces/SurfacePool";
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the

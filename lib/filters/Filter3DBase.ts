@@ -4,8 +4,8 @@ import Camera						from "awayjs-display/lib/display/Camera";
 
 import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import Filter3DTaskBase				from "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase";
-import RTTBufferManager from "awayjs-renderergl/lib/managers/RTTBufferManager";
+import Filter3DTaskBase				from "../filters/tasks/Filter3DTaskBase";
+import RTTBufferManager from "../managers/RTTBufferManager";
 
 class Filter3DBase
 {

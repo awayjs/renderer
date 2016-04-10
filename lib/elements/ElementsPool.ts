@@ -3,9 +3,9 @@ import IAbstractionPool				from "awayjs-core/lib/library/IAbstractionPool";
 
 import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
 
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
-import GL_ElementsBase				from "awayjs-renderergl/lib/elements/GL_ElementsBase";
+import ShaderBase					from "../shaders/ShaderBase";
+import IElementsClassGL				from "../elements/IElementsClassGL";
+import GL_ElementsBase				from "../elements/GL_ElementsBase";
 
 /**
  * @class away.pool.SurfacePool

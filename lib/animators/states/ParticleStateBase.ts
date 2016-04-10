@@ -4,13 +4,13 @@ import Camera							from "awayjs-display/lib/display/Camera";
 
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import ParticleAnimator					from "awayjs-renderergl/lib/animators/ParticleAnimator";
-import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
-import AnimationElements				from "awayjs-renderergl/lib/animators/data/AnimationElements";
-import ParticleAnimationData			from "awayjs-renderergl/lib/animators/data/ParticleAnimationData";
-import ParticleNodeBase					from "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase";
-import AnimationStateBase				from "awayjs-renderergl/lib/animators/states/AnimationStateBase";
-import GL_RenderableBase				from "awayjs-renderergl/lib/animators/../renderables/GL_RenderableBase";
+import ParticleAnimator					from "../../animators/ParticleAnimator";
+import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import AnimationElements				from "../../animators/data/AnimationElements";
+import ParticleAnimationData			from "../../animators/data/ParticleAnimationData";
+import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
+import AnimationStateBase				from "../../animators/states/AnimationStateBase";
+import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
 
 /**
  * ...

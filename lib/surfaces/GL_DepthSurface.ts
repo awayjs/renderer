@@ -1,14 +1,14 @@
 import ISurface						from "awayjs-display/lib/base/ISurface";
 import Camera						from "awayjs-display/lib/display/Camera";
 
-import IElementsClassGL				from "awayjs-renderergl/lib/elements/IElementsClassGL";
-import GL_SurfacePassBase			from "awayjs-renderergl/lib/surfaces/GL_SurfacePassBase";
-import SurfacePool					from "awayjs-renderergl/lib/surfaces/SurfacePool";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
-import GL_TextureBase				from "awayjs-renderergl/lib/textures/GL_TextureBase";
+import IElementsClassGL				from "../elements/IElementsClassGL";
+import GL_SurfacePassBase			from "../surfaces/GL_SurfacePassBase";
+import SurfacePool					from "../surfaces/SurfacePool";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import GL_TextureBase				from "../textures/GL_TextureBase";
 
 /**
  * GL_DepthSurface forms an abstract base class for the default shaded materials provided by Stage,

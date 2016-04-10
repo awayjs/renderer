@@ -15,11 +15,11 @@ import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
 import ElementsEvent				from "awayjs-display/lib/events/ElementsEvent";
 import ElementsUtils				from "awayjs-display/lib/utils/ElementsUtils";
 
-import ElementsPool					from "awayjs-renderergl/lib/elements/ElementsPool";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
-import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
-import GL_RenderableBase			from "awayjs-renderergl/lib/renderables/GL_RenderableBase";
+import ElementsPool					from "../elements/ElementsPool";
+import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
 
 /**
  *

@@ -7,7 +7,7 @@ import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
 import Stage						from "awayjs-stagegl/lib/base/Stage";
 import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
 
-import Filter3DTaskBase				from "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase";
+import Filter3DTaskBase				from "../../filters/tasks/Filter3DTaskBase";
 
 
 class Filter3DCompositeTask extends Filter3DTaskBase

@@ -4,14 +4,14 @@ import Camera							from "awayjs-display/lib/display/Camera";
 
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import ParticleAnimator					from "awayjs-renderergl/lib/animators/ParticleAnimator";
-import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
-import AnimationElements				from "awayjs-renderergl/lib/animators/data/AnimationElements";
-import ColorSegmentPoint				from "awayjs-renderergl/lib/animators/data/ColorSegmentPoint";
-import ParticlePropertiesMode			from "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode";
-import ParticleSegmentedColorNode		from "awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode";
-import ParticleStateBase				from "awayjs-renderergl/lib/animators/states/ParticleStateBase";
-import GL_RenderableBase				from "awayjs-renderergl/lib/animators/../renderables/GL_RenderableBase";
+import ParticleAnimator					from "../../animators/ParticleAnimator";
+import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import AnimationElements				from "../../animators/data/AnimationElements";
+import ColorSegmentPoint				from "../../animators/data/ColorSegmentPoint";
+import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
+import ParticleSegmentedColorNode		from "../../animators/nodes/ParticleSegmentedColorNode";
+import ParticleStateBase				from "../../animators/states/ParticleStateBase";
+import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
 
 /**
  *

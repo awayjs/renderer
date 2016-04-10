@@ -5,7 +5,7 @@ import Camera						from "awayjs-display/lib/display/Camera";
 import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
 import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import Filter3DTaskBase				from "awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase";
+import Filter3DTaskBase				from "../../filters/tasks/Filter3DTaskBase";
 
 class Filter3DHBlurTask extends Filter3DTaskBase
 {

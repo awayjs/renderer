@@ -1,13 +1,13 @@
 import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "awayjs-renderergl/lib/animators/AnimatorBase";
-import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
-import ParticleProperties				from "awayjs-renderergl/lib/animators/data/ParticleProperties";
-import ParticlePropertiesMode			from "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase";
-import ParticleVelocityState			from "awayjs-renderergl/lib/animators/states/ParticleVelocityState";
-import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterElement			from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import AnimatorBase						from "../../animators/AnimatorBase";
+import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import ParticleProperties				from "../../animators/data/ParticleProperties";
+import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
+import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
+import ParticleVelocityState			from "../../animators/states/ParticleVelocityState";
+import ShaderBase						from "../../shaders/ShaderBase";
+import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used to set the starting velocity of a particle.

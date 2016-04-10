@@ -6,8 +6,8 @@ import AnimationNodeBase			from "awayjs-display/lib/animators/nodes/AnimationNod
 
 import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import AnimationSetError			from "awayjs-renderergl/lib/errors/AnimationSetError";
-import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import AnimationSetError			from "../errors/AnimationSetError";
+import ShaderBase					from "../shaders/ShaderBase";
 
 /**
  * Provides an abstract base class for data set classes that hold animation data for use in animator classes.

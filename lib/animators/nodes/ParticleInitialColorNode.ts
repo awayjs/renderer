@@ -1,13 +1,13 @@
 import ColorTransform					from "awayjs-core/lib/geom/ColorTransform";
 
-import AnimationRegisterCache			from "awayjs-renderergl/lib/animators/data/AnimationRegisterCache";
-import ParticleAnimationSet				from "awayjs-renderergl/lib/animators/ParticleAnimationSet";
-import ParticleProperties				from "awayjs-renderergl/lib/animators/data/ParticleProperties";
-import ParticlePropertiesMode			from "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "awayjs-renderergl/lib/animators/nodes/ParticleNodeBase";
-import ParticleInitialColorState		from "awayjs-renderergl/lib/animators/states/ParticleInitialColorState";
-import ShaderBase						from "awayjs-renderergl/lib/shaders/ShaderBase";
-import ShaderRegisterElement			from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import ParticleProperties				from "../../animators/data/ParticleProperties";
+import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
+import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
+import ParticleInitialColorState		from "../../animators/states/ParticleInitialColorState";
+import ShaderBase						from "../../shaders/ShaderBase";
+import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
 
 /**
  *
