@@ -62,6 +62,9 @@ class GL_GraphicRenderable extends GL_RenderableBase
 	 */
 	public _pGetElements():ElementsBase
 	{
+		this._offset = this.graphic.offset;
+		this._count = this.graphic.count;
+
 		return this.graphic.elements;
 	}
 

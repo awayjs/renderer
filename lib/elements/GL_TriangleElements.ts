@@ -81,8 +81,10 @@ class GL_TriangleElements extends GL_ElementsBase
 		this._triangleElements = null;
 	}
 
-	public _render(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
+		super._setRenderState(renderable, camera, viewProjection);
+
 		//set buffers
 		//TODO: find a better way to update a concatenated buffer when autoderiving
 		if (this._shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
@@ -113,7 +115,10 @@ class GL_TriangleElements extends GL_ElementsBase
 			this.activateVertexBufferVO(this._shader.jointIndexIndex, this._triangleElements.jointWeights);
 
 		this.activateVertexBufferVO(0, this._triangleElements.positions);
+	}
 
+	public draw(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
+	{
 		//set constants
 		if (this._shader.sceneMatrixIndex >= 0) {
 			renderable.renderSceneTransform.copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
@@ -131,17 +136,10 @@ class GL_TriangleElements extends GL_ElementsBase
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, this._shader.vertexConstantData, this._shader.numUsedVertexConstants);
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._shader.fragmentConstantData, this._shader.numUsedFragmentConstants);
 
-		super._render(renderable, camera, viewProjection);
-	}
-
-	public _drawElements(firstIndex:number, numIndices:number)
-	{
-		this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, firstIndex, numIndices);
-	}
-
-	public _drawArrays(firstVertex:number, numVertices:number)
-	{
-		this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
+		if (this._indices)
+			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, this.numIndices);
+		else
+			this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
 	}
 
 	/**

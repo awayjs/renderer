@@ -36,7 +36,7 @@ class GL_ElementsBase extends AbstractionBase
 	private _onInvalidateVerticesDelegate:(event:ElementsEvent) => void;
 	private _onClearVerticesDelegate:(event:ElementsEvent) => void;
 	private _overflow:GL_ElementsBase;
-	private _indices:GL_AttributesBuffer;
+	public _indices:GL_AttributesBuffer;
 	private _indicesUpdated:boolean;
 	private _vertices:Object = new Object();
 	private _verticesUpdated:Object = new Object();
@@ -51,6 +51,7 @@ class GL_ElementsBase extends AbstractionBase
 	{
 		return this._elements;
 	}
+	
 	/**
 	 *
 	 */
@@ -58,7 +59,15 @@ class GL_ElementsBase extends AbstractionBase
 	{
 		return this._numIndices;
 	}
-
+	
+	/**
+	 *
+	 */
+	public get numVertices():number
+	{
+		return this._numVertices;
+	}
+	
 	constructor(elements:ElementsBase, shader:ShaderBase, pool:IAbstractionPool)
 	{
 		super(elements, pool);
@@ -148,31 +157,19 @@ class GL_ElementsBase extends AbstractionBase
 		}
 	}
 
-	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		if (!this._verticesUpdated)
 			this._updateIndices();
 
-		this._render(renderable, camera, viewProjection);
-
-		if (this._overflow)
-			this._overflow._iRender(renderable, camera, viewProjection);
+		//TODO replace overflow system with something sensible
+		//this._render(renderable, camera, viewProjection);
+		//
+		// if (this._overflow)
+		// 	this._overflow._iRender(renderable, camera, viewProjection);
 	}
 
-	public _render(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
-	{
-		if (this._indices)
-			this._drawElements(0, this._numIndices);
-		else
-			this._drawArrays(0, this._numVertices);
-	}
-
-	public _drawElements(firstIndex:number, numIndices:number)
-	{
-		throw new AbstractMethodError();
-	}
-
-	public _drawArrays(firstVertex:number, numVertices:number)
+	public draw(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
 	{
 		throw new AbstractMethodError();
 	}
@@ -224,7 +221,7 @@ class GL_ElementsBase extends AbstractionBase
 	 */
 	private _updateVertices(attributesView:AttributesView)
 	{
-		this._numVertices = attributesView.count;
+		this._numVertices = this._elements.numVertices;
 
 		var bufferId:number = attributesView.buffer.id;
 

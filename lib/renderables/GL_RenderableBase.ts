@@ -22,9 +22,6 @@ import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
 import GL_SamplerBase				from "awayjs-stagegl/lib/image/GL_SamplerBase";
 
 import RendererBase					from "../RendererBase";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
 import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
 import IPass						from "../surfaces/passes/IPass";
 import GL_ElementsBase				from "../elements/GL_ElementsBase";
@@ -38,6 +35,8 @@ class GL_RenderableBase extends AbstractionBase
 	private _onSurfaceUpdatedDelegate:(event:RenderableEvent) => void;
 	private _onInvalidateElementsDelegate:(event:RenderableEvent) => void;
 
+	public _count:number = 0;
+	public _offset:number = 0;
 	public _elements:ElementsBase;
 	public _surfaceGL:GL_SurfaceBase;
 	private _elementsDirty:boolean = true;
@@ -221,7 +220,12 @@ class GL_RenderableBase extends AbstractionBase
 		if (this._elementsDirty)
 			this._updateElements();
 
-		pass.shader._elementsPool.getAbstraction((this.renderable.animator)? (<AnimatorBase> this.renderable.animator).getRenderableElements(this, this._elements) : this._elements)._iRender(this, camera, viewProjection);
+		var elements:GL_ElementsBase = pass.shader._elementsPool.getAbstraction((this.renderable.animator)? (<AnimatorBase> this.renderable.animator).getRenderableElements(this, this._elements) : this._elements);
+
+		if (elements != pass.shader.activeElements)
+			elements._setRenderState(this, camera, viewProjection);
+
+		elements.draw(this, camera, viewProjection, this._count, this._offset)
 	}
 
 	public _setRenderState(pass:IPass, camera:Camera, viewProjection:Matrix3D)

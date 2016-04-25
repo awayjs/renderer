@@ -23,6 +23,7 @@ import AnimationRegisterCache		from "../animators/data/AnimationRegisterCache";
 import IPass						from "../surfaces/passes/IPass";
 import ElementsPool					from "../elements/ElementsPool";
 import IElementsClassGL				from "../elements/IElementsClassGL";
+import GL_ElementsBase				from "../elements/GL_ElementsBase";
 import GL_RenderableBase			from "../renderables/GL_RenderableBase";
 import CompilerBase					from "../shaders/compilers/CompilerBase";
 import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
@@ -304,6 +305,11 @@ class ShaderBase implements IAbstractionPool
 	public imageIndices:Array<number> = new Array<number>();
 
 	/**
+	 * 
+	 */
+	public activeElements:GL_ElementsBase;
+
+	/**
 	 * Creates a new MethodCompilerVO object.
 	 */
 	constructor(elementsClass:IElementsClassGL, pass:IPass, stage:Stage)
@@ -531,6 +537,8 @@ class ShaderBase implements IAbstractionPool
 
 		if (this.usesBlending)
 			this._stage.context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
+
+		this.activeElements = null;
 	}
 
 	/**
@@ -543,6 +551,8 @@ class ShaderBase implements IAbstractionPool
 
 		//For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
 		this._stage.context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+
+		this.activeElements = null;
 	}
 
 

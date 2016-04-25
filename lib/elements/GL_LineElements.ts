@@ -122,44 +122,44 @@ class GL_LineElements extends GL_ElementsBase
 		this._lineElements = null;
 	}
 
-	public _render(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
+		super._setRenderState(renderable, camera, viewProjection);
+		
 		if (this._shader.colorBufferIndex >= 0)
 			this.activateVertexBufferVO(this._shader.colorBufferIndex, this._lineElements.colors);
 
-		var context:IContextGL = this._stage.context;
+		this.activateVertexBufferVO(0, this._lineElements.positions, 3);
+		this.activateVertexBufferVO(1, this._lineElements.positions, 3, 12);
+		this.activateVertexBufferVO(2, this._lineElements.thickness);
 
 		this._constants[0] = this._thickness/((this._stage.scissorRect)? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
 
 		// value to convert distance from camera to model length per pixel width
 		this._constants[2] = camera.projection.near;
 
-		// projection matrix
-		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
-
+		var context:IContextGL = this._stage.context;
+		
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, GL_LineElements.pONE_VECTOR, 1);
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 6, GL_LineElements.pFRONT_VECTOR, 1);
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 7, this._constants, 1);
+	}
 
+	public draw(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
+	{
+		var context:IContextGL = this._stage.context;
+		
+		// projection matrix
+		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
+		
 		this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
 		this._calcMatrix.append(camera.inverseSceneTransform);
 		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
 
-		this.activateVertexBufferVO(0, this._lineElements.positions, 3);
-		this.activateVertexBufferVO(1, this._lineElements.positions, 3, 12);
-		this.activateVertexBufferVO(2, this._lineElements.thickness);
-
-		super._render(renderable, camera, viewProjection);
-	}
-
-	public _drawElements(firstIndex:number, numIndices:number)
-	{
-		this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, numIndices);
-	}
-
-	public _drawArrays(firstVertex:number, numVertices:number)
-	{
-		this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, firstVertex, numVertices);
+		if (this._indices)
+			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, this.numIndices);
+		else
+			this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
 	}
 
 	/**
