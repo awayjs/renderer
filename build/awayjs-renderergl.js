@@ -9723,6 +9723,16 @@ var GL_ElementsBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(GL_ElementsBase.prototype, "numVertices", {
+        /**
+         *
+         */
+        get: function () {
+            return this._numVertices;
+        },
+        enumerable: true,
+        configurable: true
+    });
     /**
      *
      */
@@ -9774,23 +9784,16 @@ var GL_ElementsBase = (function (_super) {
             this._overflow = null;
         }
     };
-    GL_ElementsBase.prototype._iRender = function (renderable, camera, viewProjection) {
+    GL_ElementsBase.prototype._setRenderState = function (renderable, camera, viewProjection) {
         if (!this._verticesUpdated)
             this._updateIndices();
-        this._render(renderable, camera, viewProjection);
-        if (this._overflow)
-            this._overflow._iRender(renderable, camera, viewProjection);
+        //TODO replace overflow system with something sensible
+        //this._render(renderable, camera, viewProjection);
+        //
+        // if (this._overflow)
+        // 	this._overflow._iRender(renderable, camera, viewProjection);
     };
-    GL_ElementsBase.prototype._render = function (renderable, camera, viewProjection) {
-        if (this._indices)
-            this._drawElements(0, this._numIndices);
-        else
-            this._drawArrays(0, this._numVertices);
-    };
-    GL_ElementsBase.prototype._drawElements = function (firstIndex, numIndices) {
-        throw new AbstractMethodError_1.default();
-    };
-    GL_ElementsBase.prototype._drawArrays = function (firstVertex, numVertices) {
+    GL_ElementsBase.prototype.draw = function (renderable, camera, viewProjection, count, offset) {
         throw new AbstractMethodError_1.default();
     };
     /**
@@ -9834,7 +9837,7 @@ var GL_ElementsBase = (function (_super) {
      * @private
      */
     GL_ElementsBase.prototype._updateVertices = function (attributesView) {
-        this._numVertices = attributesView.count;
+        this._numVertices = this._elements.numVertices;
         var bufferId = attributesView.buffer.id;
         this._vertices[bufferId] = this._stage.getAbstraction(ElementsUtils_1.default.getSubVertices(attributesView.buffer, this._indexMappings));
         this._verticesUpdated[bufferId] = true;
@@ -9989,31 +9992,32 @@ var GL_LineElements = (function (_super) {
         _super.prototype.onClear.call(this, event);
         this._lineElements = null;
     };
-    GL_LineElements.prototype._render = function (renderable, camera, viewProjection) {
+    GL_LineElements.prototype._setRenderState = function (renderable, camera, viewProjection) {
+        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
         if (this._shader.colorBufferIndex >= 0)
             this.activateVertexBufferVO(this._shader.colorBufferIndex, this._lineElements.colors);
-        var context = this._stage.context;
-        this._constants[0] = this._thickness / ((this._stage.scissorRect) ? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
-        // value to convert distance from camera to model length per pixel width
-        this._constants[2] = camera.projection.near;
-        // projection matrix
-        context.setProgramConstantsFromMatrix(ContextGLProgramType_1.default.VERTEX, 0, camera.projection.matrix, true);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 5, GL_LineElements.pONE_VECTOR, 1);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 6, GL_LineElements.pFRONT_VECTOR, 1);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 7, this._constants, 1);
-        this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
-        this._calcMatrix.append(camera.inverseSceneTransform);
-        context.setProgramConstantsFromMatrix(ContextGLProgramType_1.default.VERTEX, 8, this._calcMatrix, true);
         this.activateVertexBufferVO(0, this._lineElements.positions, 3);
         this.activateVertexBufferVO(1, this._lineElements.positions, 3, 12);
         this.activateVertexBufferVO(2, this._lineElements.thickness);
-        _super.prototype._render.call(this, renderable, camera, viewProjection);
+        this._constants[0] = this._thickness / ((this._stage.scissorRect) ? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
+        // value to convert distance from camera to model length per pixel width
+        this._constants[2] = camera.projection.near;
+        var context = this._stage.context;
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 5, GL_LineElements.pONE_VECTOR, 1);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 6, GL_LineElements.pFRONT_VECTOR, 1);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 7, this._constants, 1);
     };
-    GL_LineElements.prototype._drawElements = function (firstIndex, numIndices) {
-        this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, numIndices);
-    };
-    GL_LineElements.prototype._drawArrays = function (firstVertex, numVertices) {
-        this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, firstVertex, numVertices);
+    GL_LineElements.prototype.draw = function (renderable, camera, viewProjection, count, offset) {
+        var context = this._stage.context;
+        // projection matrix
+        context.setProgramConstantsFromMatrix(ContextGLProgramType_1.default.VERTEX, 0, camera.projection.matrix, true);
+        this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
+        this._calcMatrix.append(camera.inverseSceneTransform);
+        context.setProgramConstantsFromMatrix(ContextGLProgramType_1.default.VERTEX, 8, this._calcMatrix, true);
+        if (this._indices)
+            this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
+        else
+            this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, offset, count || this.numVertices);
     };
     /**
      * //TODO
@@ -10124,7 +10128,8 @@ var GL_TriangleElements = (function (_super) {
         _super.prototype.onClear.call(this, event);
         this._triangleElements = null;
     };
-    GL_TriangleElements.prototype._render = function (renderable, camera, viewProjection) {
+    GL_TriangleElements.prototype._setRenderState = function (renderable, camera, viewProjection) {
+        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
         //set buffers
         //TODO: find a better way to update a concatenated buffer when autoderiving
         if (this._shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
@@ -10146,6 +10151,8 @@ var GL_TriangleElements = (function (_super) {
         if (this._shader.jointWeightIndex >= 0)
             this.activateVertexBufferVO(this._shader.jointIndexIndex, this._triangleElements.jointWeights);
         this.activateVertexBufferVO(0, this._triangleElements.positions);
+    };
+    GL_TriangleElements.prototype.draw = function (renderable, camera, viewProjection, count, offset) {
         //set constants
         if (this._shader.sceneMatrixIndex >= 0) {
             renderable.renderSceneTransform.copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
@@ -10160,13 +10167,10 @@ var GL_TriangleElements = (function (_super) {
         var context = this._stage.context;
         context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 0, this._shader.vertexConstantData, this._shader.numUsedVertexConstants);
         context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, 0, this._shader.fragmentConstantData, this._shader.numUsedFragmentConstants);
-        _super.prototype._render.call(this, renderable, camera, viewProjection);
-    };
-    GL_TriangleElements.prototype._drawElements = function (firstIndex, numIndices) {
-        this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, firstIndex, numIndices);
-    };
-    GL_TriangleElements.prototype._drawArrays = function (firstVertex, numVertices) {
-        this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, firstVertex, numVertices);
+        if (this._indices)
+            this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
+        else
+            this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, offset, count || this.numVertices);
     };
     /**
      * //TODO
@@ -11702,6 +11706,8 @@ var GL_GraphicRenderable = (function (_super) {
      * @protected
      */
     GL_GraphicRenderable.prototype._pGetElements = function () {
+        this._offset = this.graphic.offset;
+        this._count = this.graphic.count;
         return this.graphic.elements;
     };
     GL_GraphicRenderable.prototype._pGetSurface = function () {
@@ -11821,6 +11827,8 @@ var GL_RenderableBase = (function (_super) {
     function GL_RenderableBase(renderable, renderer) {
         var _this = this;
         _super.call(this, renderable, renderer);
+        this._count = 0;
+        this._offset = 0;
         this._elementsDirty = true;
         this._surfaceDirty = true;
         this.images = new Array();
@@ -11900,7 +11908,10 @@ var GL_RenderableBase = (function (_super) {
         this._setRenderState(pass, camera, viewProjection);
         if (this._elementsDirty)
             this._updateElements();
-        pass.shader._elementsPool.getAbstraction((this.renderable.animator) ? this.renderable.animator.getRenderableElements(this, this._elements) : this._elements)._iRender(this, camera, viewProjection);
+        var elements = pass.shader._elementsPool.getAbstraction((this.renderable.animator) ? this.renderable.animator.getRenderableElements(this, this._elements) : this._elements);
+        if (elements != pass.shader.activeElements)
+            elements._setRenderState(this, camera, viewProjection);
+        elements.draw(this, camera, viewProjection, this._count, this._offset);
     };
     GL_RenderableBase.prototype._setRenderState = function (pass, camera, viewProjection) {
         pass._iRender(this, camera, viewProjection);
@@ -12711,6 +12722,7 @@ var ShaderBase = (function () {
         this._stage.context.setDepthTest((this.writeDepth && !this.usesBlending), this.depthCompareMode);
         if (this.usesBlending)
             this._stage.context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
+        this.activeElements = null;
     };
     /**
      * @inheritDoc
@@ -12720,6 +12732,7 @@ var ShaderBase = (function () {
             this._pass.animationSet.deactivate(this, this._stage);
         //For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
         this._stage.context.setDepthTest(true, ContextGLCompareMode_1.default.LESS_EQUAL);
+        this.activeElements = null;
     };
     /**
      *
