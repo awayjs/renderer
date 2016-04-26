@@ -11909,8 +11909,10 @@ var GL_RenderableBase = (function (_super) {
         if (this._elementsDirty)
             this._updateElements();
         var elements = pass.shader._elementsPool.getAbstraction((this.renderable.animator) ? this.renderable.animator.getRenderableElements(this, this._elements) : this._elements);
-        if (elements != pass.shader.activeElements)
+        if (pass.shader.activeElements != elements) {
+            pass.shader.activeElements = elements;
             elements._setRenderState(this, camera, viewProjection);
+        }
         elements.draw(this, camera, viewProjection, this._count, this._offset);
     };
     GL_RenderableBase.prototype._setRenderState = function (pass, camera, viewProjection) {
