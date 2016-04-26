@@ -222,8 +222,10 @@ class GL_RenderableBase extends AbstractionBase
 
 		var elements:GL_ElementsBase = pass.shader._elementsPool.getAbstraction((this.renderable.animator)? (<AnimatorBase> this.renderable.animator).getRenderableElements(this, this._elements) : this._elements);
 
-		if (elements != pass.shader.activeElements)
+		if (pass.shader.activeElements != elements) {
+			pass.shader.activeElements = elements;
 			elements._setRenderState(this, camera, viewProjection);
+		}
 
 		elements.draw(this, camera, viewProjection, this._count, this._offset)
 	}
