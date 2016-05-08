@@ -565,19 +565,19 @@ var Filter3DRenderer = (function () {
         len = this._tasks.length;
         if (len > 1) {
             context.setProgram(this._tasks[0].getProgram(stage));
-            context.setVertexBufferAt(0, vertexBuffer, 0, ContextGLVertexBufferFormat_1.default.FLOAT_2);
-            context.setVertexBufferAt(1, vertexBuffer, 8, ContextGLVertexBufferFormat_1.default.FLOAT_2);
+            context.setVertexBufferAt(this._tasks[0]._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat_1.default.FLOAT_2);
+            context.setVertexBufferAt(this._tasks[0]._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat_1.default.FLOAT_2);
         }
         for (i = 0; i < len; ++i) {
             task = this._tasks[i];
             stage.setRenderTarget(task.target);
             context.setProgram(task.getProgram(stage));
-            stage.getAbstraction(task.getMainInputTexture(stage)).activate(0, false);
+            stage.getAbstraction(task.getMainInputTexture(stage)).activate(task._inputTextureIndex, false);
             if (!task.target) {
                 stage.scissorRect = null;
                 vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
-                context.setVertexBufferAt(0, vertexBuffer, 0, ContextGLVertexBufferFormat_1.default.FLOAT_2);
-                context.setVertexBufferAt(1, vertexBuffer, 8, ContextGLVertexBufferFormat_1.default.FLOAT_2);
+                context.setVertexBufferAt(task._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat_1.default.FLOAT_2);
+                context.setVertexBufferAt(task._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat_1.default.FLOAT_2);
             }
             context.clear(0.0, 0.0, 0.0, 0.0);
             task.activate(stage, camera, depthTexture);
@@ -856,10 +856,11 @@ var RendererBase = (function (_super) {
     };
     RendererBase.prototype.activatePass = function (renderableGL, pass, camera) {
         //clear unused vertex streams
-        for (var i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
+        var i;
+        for (i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
             this._pContext.setVertexBufferAt(i, null);
         //clear unused texture streams
-        for (var i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
+        for (i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
             this._pContext.setTextureAt(i, null);
         //check program data is uploaded
         var programData = pass.shader.programData;
@@ -1292,7 +1293,7 @@ var RendererBase = (function (_super) {
      * @returns {boolean}
      */
     RendererBase.prototype.enterNode = function (node) {
-        var enter = node._iCollectionMark != RendererBase._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
+        var enter = node._iCollectionMark != RendererBase._iCollectionMark && node.isRenderable() && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
         node._iCollectionMark = RendererBase._iCollectionMark;
         return enter;
     };
@@ -1510,31 +1511,19 @@ var AnimationSetBase = (function (_super) {
     /**
      * @inheritDoc
      */
-    AnimationSetBase.prototype.getAGALVertexCode = function (shader) {
+    AnimationSetBase.prototype.getAGALVertexCode = function (shader, registerCache, sharedRegisters) {
         throw new AbstractMethodError_1.default();
     };
     /**
      * @inheritDoc
      */
-    AnimationSetBase.prototype.activate = function (shader, stage) {
+    AnimationSetBase.prototype.getAGALFragmentCode = function (shader, registerCache, shadedTarget) {
         throw new AbstractMethodError_1.default();
     };
     /**
      * @inheritDoc
      */
-    AnimationSetBase.prototype.deactivate = function (shader, stage) {
-        throw new AbstractMethodError_1.default();
-    };
-    /**
-     * @inheritDoc
-     */
-    AnimationSetBase.prototype.getAGALFragmentCode = function (shader, shadedTarget) {
-        throw new AbstractMethodError_1.default();
-    };
-    /**
-     * @inheritDoc
-     */
-    AnimationSetBase.prototype.getAGALUVCode = function (shader) {
+    AnimationSetBase.prototype.getAGALUVCode = function (shader, registerCache, sharedRegisters) {
         throw new AbstractMethodError_1.default();
     };
     /**
@@ -1766,7 +1755,7 @@ var AnimatorBase = (function (_super) {
         get: function () {
             return this._time;
         },
-        set: function (value /*int*/) {
+        set: function (value) {
             if (this._time == value)
                 return;
             this.update(value);
@@ -1795,7 +1784,7 @@ var AnimatorBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    AnimatorBase.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
+    AnimatorBase.prototype.setRenderState = function (shader, renderable, stage, camera) {
         throw new AbstractMethodError_1.default();
     };
     /**
@@ -1838,7 +1827,7 @@ var AnimatorBase = (function (_super) {
      * @see #stop()
      * @see #autoUpdate
      */
-    AnimatorBase.prototype.update = function (time /*int*/) {
+    AnimatorBase.prototype.update = function (time) {
         var dt = (time - this._time) * this.playbackSpeed;
         this._pUpdateDeltaTime(dt);
         this._time = time;
@@ -1948,7 +1937,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AnimationSetBase_1 = require("../animators/AnimationSetBase");
-var AnimationRegisterCache_1 = require("../animators/data/AnimationRegisterCache");
+var AnimationRegisterData_1 = require("../animators/data/AnimationRegisterData");
 var AnimationElements_1 = require("../animators/data/AnimationElements");
 var ParticleAnimationData_1 = require("../animators/data/ParticleAnimationData");
 var ParticleProperties_1 = require("../animators/data/ParticleProperties");
@@ -2019,97 +2008,95 @@ var ParticleAnimationSet = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleAnimationSet.prototype.activate = function (shader, stage) {
-        //			this._iAnimationRegisterCache = pass.animationRegisterCache;
-    };
-    /**
-     * @inheritDoc
-     */
-    ParticleAnimationSet.prototype.deactivate = function (shader, stage) {
-        //			var context:IContextGL = <IContextGL> stage.context;
-        //			var offset:number /*int*/ = this._iAnimationRegisterCache.vertexAttributesOffset;
-        //			var used:number /*int*/ = this._iAnimationRegisterCache.numUsedStreams;
-        //			for (var i:number /*int*/ = offset; i < used; i++)
-        //				context.setVertexBufferAt(i, null);
-    };
-    /**
-     * @inheritDoc
-     */
-    ParticleAnimationSet.prototype.getAGALVertexCode = function (shader) {
-        //grab animationRegisterCache from the materialpassbase or create a new one if the first time
-        this._iAnimationRegisterCache = shader.animationRegisterCache;
-        if (this._iAnimationRegisterCache == null)
-            this._iAnimationRegisterCache = shader.animationRegisterCache = new AnimationRegisterCache_1.default(shader.profile);
-        //reset animationRegisterCache
-        this._iAnimationRegisterCache.vertexConstantOffset = shader.numUsedVertexConstants;
-        this._iAnimationRegisterCache.vertexAttributesOffset = shader.numUsedStreams;
-        this._iAnimationRegisterCache.varyingsOffset = shader.numUsedVaryings;
-        this._iAnimationRegisterCache.fragmentConstantOffset = shader.numUsedFragmentConstants;
-        this._iAnimationRegisterCache.hasUVNode = this.hasUVNode;
-        this._iAnimationRegisterCache.needVelocity = this.needVelocity;
-        this._iAnimationRegisterCache.hasBillboard = this.hasBillboard;
-        this._iAnimationRegisterCache.sourceRegisters = shader.animatableAttributes;
-        this._iAnimationRegisterCache.targetRegisters = shader.animationTargetRegisters;
-        this._iAnimationRegisterCache.needFragmentAnimation = shader.usesFragmentAnimation;
-        this._iAnimationRegisterCache.needUVAnimation = !shader.usesUVTransform;
-        this._iAnimationRegisterCache.hasColorAddNode = this.hasColorAddNode;
-        this._iAnimationRegisterCache.hasColorMulNode = this.hasColorMulNode;
-        this._iAnimationRegisterCache.reset();
+    ParticleAnimationSet.prototype.getAGALVertexCode = function (shader, registerCache, sharedRegisters) {
+        //grab animationRegisterData from the materialpassbase or create a new one if the first time
+        this._iAnimationRegisterData = shader.animationRegisterData;
+        if (this._iAnimationRegisterData == null)
+            this._iAnimationRegisterData = shader.animationRegisterData = new AnimationRegisterData_1.default();
+        //reset animationRegisterData
+        this._iAnimationRegisterData.reset(registerCache, sharedRegisters, this.needVelocity);
         var code = "";
-        code += this._iAnimationRegisterCache.getInitCode();
+        var len = sharedRegisters.animatableAttributes.length;
+        for (var i = 0; i < len; i++)
+            code += "mov " + sharedRegisters.animationTargetRegisters[i] + "," + sharedRegisters.animatableAttributes[i] + "\n";
+        code += "mov " + this._iAnimationRegisterData.positionTarget + ".xyz," + this._iAnimationRegisterData.vertexZeroConst + "\n";
+        if (this.needVelocity)
+            code += "mov " + this._iAnimationRegisterData.velocityTarget + ".xyz," + this._iAnimationRegisterData.vertexZeroConst + "\n";
         var node;
         var i;
         for (i = 0; i < this._particleNodes.length; i++) {
             node = this._particleNodes[i];
             if (node.priority < ParticleAnimationSet.POST_PRIORITY)
-                code += node.getAGALVertexCode(shader, this._iAnimationRegisterCache);
+                code += node.getAGALVertexCode(shader, this, registerCache, this._iAnimationRegisterData);
         }
-        code += this._iAnimationRegisterCache.getCombinationCode();
+        code += "add " + this._iAnimationRegisterData.scaleAndRotateTarget + ".xyz," + this._iAnimationRegisterData.scaleAndRotateTarget + ".xyz," + this._iAnimationRegisterData.positionTarget + ".xyz\n";
         for (i = 0; i < this._particleNodes.length; i++) {
             node = this._particleNodes[i];
             if (node.priority >= ParticleAnimationSet.POST_PRIORITY && node.priority < ParticleAnimationSet.COLOR_PRIORITY)
-                code += node.getAGALVertexCode(shader, this._iAnimationRegisterCache);
+                code += node.getAGALVertexCode(shader, this, registerCache, this._iAnimationRegisterData);
         }
-        code += this._iAnimationRegisterCache.initColorRegisters();
+        if (this.hasColorMulNode) {
+            this._iAnimationRegisterData.colorMulTarget = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(this._iAnimationRegisterData.colorMulTarget, 1);
+            this._iAnimationRegisterData.colorMulVary = registerCache.getFreeVarying();
+            code += "mov " + this._iAnimationRegisterData.colorMulTarget + "," + this._iAnimationRegisterData.vertexOneConst + "\n";
+        }
+        if (this.hasColorAddNode) {
+            this._iAnimationRegisterData.colorAddTarget = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(this._iAnimationRegisterData.colorAddTarget, 1);
+            this._iAnimationRegisterData.colorAddVary = registerCache.getFreeVarying();
+            code += "mov " + this._iAnimationRegisterData.colorAddTarget + "," + this._iAnimationRegisterData.vertexZeroConst + "\n";
+        }
         for (i = 0; i < this._particleNodes.length; i++) {
             node = this._particleNodes[i];
             if (node.priority >= ParticleAnimationSet.COLOR_PRIORITY)
-                code += node.getAGALVertexCode(shader, this._iAnimationRegisterCache);
+                code += node.getAGALVertexCode(shader, this, registerCache, this._iAnimationRegisterData);
         }
-        code += this._iAnimationRegisterCache.getColorPassCode();
+        if (shader.usesFragmentAnimation && (this.hasColorAddNode || this.hasColorMulNode)) {
+            if (this.hasColorMulNode)
+                code += "mov " + this._iAnimationRegisterData.colorMulVary + "," + this._iAnimationRegisterData.colorMulTarget + "\n";
+            if (this.hasColorAddNode)
+                code += "mov " + this._iAnimationRegisterData.colorAddVary + "," + this._iAnimationRegisterData.colorAddTarget + "\n";
+        }
         return code;
     };
     /**
      * @inheritDoc
      */
-    ParticleAnimationSet.prototype.getAGALUVCode = function (shader) {
+    ParticleAnimationSet.prototype.getAGALUVCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
         if (this.hasUVNode) {
-            this._iAnimationRegisterCache.setUVSourceAndTarget(shader.uvSource, shader.uvTarget);
-            code += "mov " + this._iAnimationRegisterCache.uvTarget + ".xy," + this._iAnimationRegisterCache.uvAttribute.toString() + "\n";
+            this._iAnimationRegisterData.setUVSourceAndTarget(sharedRegisters);
+            code += "mov " + this._iAnimationRegisterData.uvTarget + ".xy," + this._iAnimationRegisterData.uvAttribute.toString() + "\n";
             var node;
             for (var i = 0; i < this._particleNodes.length; i++)
                 node = this._particleNodes[i];
-            code += node.getAGALUVCode(shader, this._iAnimationRegisterCache);
-            code += "mov " + this._iAnimationRegisterCache.uvVar.toString() + "," + this._iAnimationRegisterCache.uvTarget + ".xy\n";
+            code += node.getAGALUVCode(shader, this, registerCache, this._iAnimationRegisterData);
+            code += "mov " + this._iAnimationRegisterData.uvVar + "," + this._iAnimationRegisterData.uvTarget + ".xy\n";
         }
         else
-            code += "mov " + shader.uvTarget + "," + shader.uvSource + "\n";
+            code += "mov " + sharedRegisters.uvTarget + "," + sharedRegisters.uvSource + "\n";
         return code;
     };
     /**
      * @inheritDoc
      */
-    ParticleAnimationSet.prototype.getAGALFragmentCode = function (shader, shadedTarget) {
-        return this._iAnimationRegisterCache.getColorCombinationCode(shadedTarget);
+    ParticleAnimationSet.prototype.getAGALFragmentCode = function (shader, registerCache, shadedTarget) {
+        var code = "";
+        if (shader.usesFragmentAnimation && (this.hasColorAddNode || this.hasColorMulNode)) {
+            if (this.hasColorMulNode)
+                code += "mul " + shadedTarget + "," + shadedTarget + "," + this._iAnimationRegisterData.colorMulVary + "\n";
+            if (this.hasColorAddNode)
+                code += "add " + shadedTarget + "," + shadedTarget + "," + this._iAnimationRegisterData.colorAddVary + "\n";
+        }
+        return code;
     };
     /**
      * @inheritDoc
      */
     ParticleAnimationSet.prototype.doneAGALCode = function (shader) {
-        this._iAnimationRegisterCache.setDataLength();
         //set vertexZeroConst,vertexOneConst,vertexTwoConst
-        this._iAnimationRegisterCache.setVertexConst(this._iAnimationRegisterCache.vertexZeroConst.index, 0, 1, 2, 0);
+        shader.setVertexConst(this._iAnimationRegisterData.vertexZeroConst.index, 0, 1, 2, 0);
     };
     Object.defineProperty(ParticleAnimationSet.prototype, "usesCPU", {
         /**
@@ -2142,7 +2129,7 @@ var ParticleAnimationSet = (function (_super) {
     ParticleAnimationSet.prototype._iGenerateAnimationElements = function (graphics) {
         if (this.initParticleFunc == null)
             throw (new Error("no initParticleFunc set"));
-        var i /*int*/, j /*int*/, k;
+        var i, j, k;
         var animationElements;
         var newAnimationElements = false;
         var elements;
@@ -2248,14 +2235,13 @@ var ParticleAnimationSet = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleAnimationSet;
 
-},{"../animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","../animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","../animators/data/AnimationRegisterCache":"awayjs-renderergl/lib/animators/data/AnimationRegisterCache","../animators/data/ParticleAnimationData":"awayjs-renderergl/lib/animators/data/ParticleAnimationData","../animators/data/ParticleProperties":"awayjs-renderergl/lib/animators/data/ParticleProperties","../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../animators/nodes/ParticleTimeNode":"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode"}],"awayjs-renderergl/lib/animators/ParticleAnimator":[function(require,module,exports){
+},{"../animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","../animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","../animators/data/AnimationRegisterData":"awayjs-renderergl/lib/animators/data/AnimationRegisterData","../animators/data/ParticleAnimationData":"awayjs-renderergl/lib/animators/data/ParticleAnimationData","../animators/data/ParticleProperties":"awayjs-renderergl/lib/animators/data/ParticleProperties","../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../animators/nodes/ParticleTimeNode":"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode"}],"awayjs-renderergl/lib/animators/ParticleAnimator":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var AnimatorBase_1 = require("../animators/AnimatorBase");
 var AnimationElements_1 = require("../animators/data/AnimationElements");
 var ParticlePropertiesMode_1 = require("../animators/data/ParticlePropertiesMode");
@@ -2309,24 +2295,20 @@ var ParticleAnimator = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleAnimator.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
-        var animationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
+    ParticleAnimator.prototype.setRenderState = function (shader, renderable, stage, camera) {
+        var animationRegisterData = this._particleAnimationSet._iAnimationRegisterData;
         var graphic = renderable.graphic;
-        var state;
-        var i;
         if (!graphic)
             throw (new Error("Must be graphic"));
         //process animation sub geometries
         var animationElements = this._particleAnimationSet.getAnimationElements(graphic);
+        var i;
         for (i = 0; i < this._animationParticleStates.length; i++)
-            this._animationParticleStates[i].setRenderState(stage, renderable, animationElements, animationRegisterCache, camera);
+            this._animationParticleStates[i].setRenderState(shader, renderable, animationElements, animationRegisterData, camera, stage);
         //process animator subgeometries
         var animatorElements = this.getAnimatorElements(graphic);
         for (i = 0; i < this._animatorParticleStates.length; i++)
-            this._animatorParticleStates[i].setRenderState(stage, renderable, animatorElements, animationRegisterCache, camera);
-        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, animationRegisterCache.vertexConstantOffset, animationRegisterCache.vertexConstantData, animationRegisterCache.numVertexConstant);
-        if (animationRegisterCache.numFragmentConstant > 0)
-            stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, animationRegisterCache.fragmentConstantOffset, animationRegisterCache.fragmentConstantData, animationRegisterCache.numFragmentConstant);
+            this._animatorParticleStates[i].setRenderState(shader, renderable, animatorElements, animationRegisterData, camera, stage);
     };
     /**
      * @inheritDoc
@@ -2377,7 +2359,7 @@ var ParticleAnimator = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleAnimator;
 
-},{"../animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","../animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/SkeletonAnimationSet":[function(require,module,exports){
+},{"../animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","../animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode"}],"awayjs-renderergl/lib/animators/SkeletonAnimationSet":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2413,67 +2395,65 @@ var SkeletonAnimationSet = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(SkeletonAnimationSet.prototype, "matricesIndex", {
+        get: function () {
+            return this._matricesIndex;
+        },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * @inheritDoc
      */
-    SkeletonAnimationSet.prototype.getAGALVertexCode = function (shader) {
-        var len = shader.animatableAttributes.length;
-        var indexOffset0 = shader.numUsedVertexConstants;
-        var indexOffset1 = indexOffset0 + 1;
-        var indexOffset2 = indexOffset0 + 2;
-        var indexStream = "va" + shader.numUsedStreams;
-        var weightStream = "va" + (shader.numUsedStreams + 1);
+    SkeletonAnimationSet.prototype.getAGALVertexCode = function (shader, registerCache, sharedRegisters) {
+        this._matricesIndex = registerCache.numUsedVertexConstants;
+        var indexOffset0 = this._matricesIndex;
+        var indexOffset1 = this._matricesIndex + 1;
+        var indexOffset2 = this._matricesIndex + 2;
+        var indexStream = registerCache.getFreeVertexAttribute();
+        shader.jointIndexIndex = indexStream.index;
+        var weightStream = registerCache.getFreeVertexAttribute();
+        shader.jointWeightIndex = weightStream.index;
         var indices = [indexStream + ".x", indexStream + ".y", indexStream + ".z", indexStream + ".w"];
         var weights = [weightStream + ".x", weightStream + ".y", weightStream + ".z", weightStream + ".w"];
-        var temp1 = this._pFindTempReg(shader.animationTargetRegisters);
-        var temp2 = this._pFindTempReg(shader.animationTargetRegisters, temp1);
+        var temp1 = registerCache.getFreeVertexVectorTemp();
         var dot = "dp4";
         var code = "";
+        var len = sharedRegisters.animatableAttributes.length;
         for (var i = 0; i < len; ++i) {
-            var src = shader.animatableAttributes[i];
+            var source = sharedRegisters.animatableAttributes[i];
+            var target = sharedRegisters.animationTargetRegisters[i];
             for (var j = 0; j < this._jointsPerVertex; ++j) {
-                code += dot + " " + temp1 + ".x, " + src + ", vc[" + indices[j] + "+" + indexOffset0 + "]\n" +
-                    dot + " " + temp1 + ".y, " + src + ", vc[" + indices[j] + "+" + indexOffset1 + "]\n" +
-                    dot + " " + temp1 + ".z, " + src + ", vc[" + indices[j] + "+" + indexOffset2 + "]\n" +
-                    "mov " + temp1 + ".w, " + src + ".w\n" +
+                registerCache.getFreeVertexConstant();
+                registerCache.getFreeVertexConstant();
+                registerCache.getFreeVertexConstant();
+                code += dot + " " + temp1 + ".x, " + source + ", vc[" + indices[j] + "+" + indexOffset0 + "]\n" +
+                    dot + " " + temp1 + ".y, " + source + ", vc[" + indices[j] + "+" + indexOffset1 + "]\n" +
+                    dot + " " + temp1 + ".z, " + source + ", vc[" + indices[j] + "+" + indexOffset2 + "]\n" +
+                    "mov " + temp1 + ".w, " + source + ".w\n" +
                     "mul " + temp1 + ", " + temp1 + ", " + weights[j] + "\n"; // apply weight
                 // add or mov to target. Need to write to a temp reg first, because an output can be a target
                 if (j == 0)
-                    code += "mov " + temp2 + ", " + temp1 + "\n";
+                    code += "mov " + target + ", " + temp1 + "\n";
                 else
-                    code += "add " + temp2 + ", " + temp2 + ", " + temp1 + "\n";
+                    code += "add " + target + ", " + target + ", " + temp1 + "\n";
             }
             // switch to dp3 once positions have been transformed, from now on, it should only be vectors instead of points
             dot = "dp3";
-            code += "mov " + shader.animationTargetRegisters[i] + ", " + temp2 + "\n";
         }
         return code;
     };
     /**
      * @inheritDoc
      */
-    SkeletonAnimationSet.prototype.activate = function (shader, stage) {
-    };
-    /**
-     * @inheritDoc
-     */
-    SkeletonAnimationSet.prototype.deactivate = function (shader, stage) {
-        //			var streamOffset:number /*uint*/ = pass.numUsedStreams;
-        //			var context:IContextGL = <IContextGL> stage.context;
-        //			context.setVertexBufferAt(streamOffset, null);
-        //			context.setVertexBufferAt(streamOffset + 1, null);
-    };
-    /**
-     * @inheritDoc
-     */
-    SkeletonAnimationSet.prototype.getAGALFragmentCode = function (shader, shadedTarget) {
+    SkeletonAnimationSet.prototype.getAGALFragmentCode = function (shader, registerCache, shadedTarget) {
         return "";
     };
     /**
      * @inheritDoc
      */
-    SkeletonAnimationSet.prototype.getAGALUVCode = function (shader) {
-        return "mov " + shader.uvTarget + "," + shader.uvSource + "\n";
+    SkeletonAnimationSet.prototype.getAGALUVCode = function (shader, registerCache, sharedRegisters) {
+        return "mov " + sharedRegisters.uvTarget + "," + sharedRegisters.uvSource + "\n";
     };
     /**
      * @inheritDoc
@@ -2493,7 +2473,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ElementsEvent_1 = require("awayjs-display/lib/events/ElementsEvent");
-var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var AnimatorBase_1 = require("../animators/AnimatorBase");
 var JointPose_1 = require("../animators/data/JointPose");
 var SkeletonPose_1 = require("../animators/data/SkeletonPose");
@@ -2519,6 +2498,7 @@ var SkeletonAnimator = (function (_super) {
         this._globalPose = new SkeletonPose_1.default();
         this._morphedElements = new Object();
         this._morphedElementsDirty = new Object();
+        this._skeletonAnimationSet = animationSet;
         this._skeleton = skeleton;
         this._forceCPU = forceCPU;
         this._jointsPerVertex = animationSet.jointsPerVertex;
@@ -2612,9 +2592,7 @@ var SkeletonAnimator = (function (_super) {
      * @inheritDoc
      */
     SkeletonAnimator.prototype.clone = function () {
-        /* The cast to SkeletonAnimationSet should never fail, as _animationSet can only be set
-         through the constructor, which will only accept a SkeletonAnimationSet. */
-        return new SkeletonAnimator(this._pAnimationSet, this._skeleton, this._forceCPU);
+        return new SkeletonAnimator(this._skeletonAnimationSet, this._skeleton, this._forceCPU);
     };
     /**
      * Plays an animation state registered with the given name in the animation data set.
@@ -2653,7 +2631,7 @@ var SkeletonAnimator = (function (_super) {
     /**
      * @inheritDoc
      */
-    SkeletonAnimator.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
+    SkeletonAnimator.prototype.setRenderState = function (shader, renderable, stage, camera) {
         // do on request of globalProperties
         if (this._globalPropertiesDirty)
             this.updateGlobalProperties();
@@ -2662,7 +2640,7 @@ var SkeletonAnimator = (function (_super) {
         if (this._useCondensedIndices) {
             // using a condensed data set
             this.updateCondensedMatrices(elements.condensedIndexLookUp);
-            stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, vertexConstantOffset, this._condensedMatrices, this._condensedMatrices.length / 4);
+            shader.setVertexConstFromArray(this._skeletonAnimationSet.matricesIndex, this._condensedMatrices);
         }
         else {
             if (this._pAnimationSet.usesCPU) {
@@ -2670,10 +2648,8 @@ var SkeletonAnimator = (function (_super) {
                     this.morphElements(renderable, elements);
                 return;
             }
-            stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints * 3);
+            shader.setVertexConstFromArray(this._skeletonAnimationSet.matricesIndex, this._globalMatrices);
         }
-        shader.jointIndexIndex = vertexStreamOffset++;
-        shader.jointWeightIndex = vertexStreamOffset++;
     };
     /**
      * @inheritDoc
@@ -3026,7 +3002,7 @@ var SkeletonAnimator = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonAnimator;
 
-},{"../animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-display/lib/events/ElementsEvent":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
+},{"../animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-display/lib/events/ElementsEvent":undefined}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3034,6 +3010,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AnimationSetBase_1 = require("../animators/AnimationSetBase");
+var AnimationRegisterData_1 = require("../animators/data/AnimationRegisterData");
 var VertexAnimationMode_1 = require("../animators/data/VertexAnimationMode");
 /**
  * The animation data set used by vertex-based animators, containing vertex animation state data.
@@ -3087,44 +3064,27 @@ var VertexAnimationSet = (function (_super) {
     /**
      * @inheritDoc
      */
-    VertexAnimationSet.prototype.getAGALVertexCode = function (shader) {
+    VertexAnimationSet.prototype.getAGALVertexCode = function (shader, registerCache, sharedRegisters) {
+        //grab animationRegisterData from the materialpassbase or create a new one if the first time
+        this._iAnimationRegisterData = shader.animationRegisterData;
+        if (this._iAnimationRegisterData == null)
+            this._iAnimationRegisterData = shader.animationRegisterData = new AnimationRegisterData_1.default();
         if (this._blendMode == VertexAnimationMode_1.default.ABSOLUTE)
-            return this.getAbsoluteAGALCode(shader);
+            return this.getAbsoluteAGALCode(shader, registerCache, sharedRegisters);
         else
-            return this.getAdditiveAGALCode(shader);
+            return this.getAdditiveAGALCode(shader, registerCache, sharedRegisters);
     };
     /**
      * @inheritDoc
      */
-    VertexAnimationSet.prototype.activate = function (shader, stage) {
-        //			var uID:number = pass._iUniqueId;
-        //			this._uploadNormals = <boolean> this._useNormals[uID];
-        //			this._uploadTangents = <boolean> this._useTangents[uID];
-    };
-    /**
-     * @inheritDoc
-     */
-    VertexAnimationSet.prototype.deactivate = function (shader, stage) {
-        //			var uID:number = pass._iUniqueId;
-        //			var index:number /*uint*/ = this._streamIndices[uID];
-        //			var context:IContextGL = <IContextGL> stage.context;
-        //			context.setVertexBufferAt(index, null);
-        //			if (this._uploadNormals)
-        //				context.setVertexBufferAt(index + 1, null);
-        //			if (this._uploadTangents)
-        //				context.setVertexBufferAt(index + 2, null);
-    };
-    /**
-     * @inheritDoc
-     */
-    VertexAnimationSet.prototype.getAGALFragmentCode = function (shader, shadedTarget) {
+    VertexAnimationSet.prototype.getAGALFragmentCode = function (shader, registerCache, shadedTarget) {
         return "";
     };
     /**
      * @inheritDoc
      */
-    VertexAnimationSet.prototype.getAGALUVCode = function (shader) {
-        return "mov " + shader.uvTarget + "," + shader.uvSource + "\n";
+    VertexAnimationSet.prototype.getAGALUVCode = function (shader, registerCache, sharedRegisters) {
+        return "mov " + sharedRegisters.uvTarget + "," + sharedRegisters.uvSource + "\n";
     };
     /**
      * @inheritDoc
@@ -3134,60 +3094,75 @@ var VertexAnimationSet = (function (_super) {
     /**
      * Generates the vertex AGAL code for absolute blending.
      */
-    VertexAnimationSet.prototype.getAbsoluteAGALCode = function (shader) {
+    VertexAnimationSet.prototype.getAbsoluteAGALCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
-        var temp1 = this._pFindTempReg(shader.animationTargetRegisters);
-        var temp2 = this._pFindTempReg(shader.animationTargetRegisters, temp1);
-        var regs = new Array("x", "y", "z", "w");
-        var len = shader.animatableAttributes.length;
-        var constantReg = "vc" + shader.numUsedVertexConstants;
+        var temp1 = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(temp1, 1);
+        var temp2 = registerCache.getFreeVertexVectorTemp();
+        var regs = new Array(".x", ".y", ".z", ".w");
+        var len = sharedRegisters.animatableAttributes.length;
+        var constantReg = registerCache.getFreeVertexConstant();
+        this._iAnimationRegisterData.weightsIndex = constantReg.index * 4;
+        this._iAnimationRegisterData.poseIndices = new Array(this._numPoses);
+        var poseInput;
+        var k = 0;
         if (len > 2)
             len = 2;
-        var streamIndex = shader.numUsedStreams;
         for (var i = 0; i < len; ++i) {
-            code += "mul " + temp1 + ", " + shader.animatableAttributes[i] + ", " + constantReg + "." + regs[0] + "\n";
+            code += "mul " + temp1 + ", " + sharedRegisters.animatableAttributes[i] + ", " + constantReg + regs[0] + "\n";
             for (var j = 1; j < this._numPoses; ++j) {
-                code += "mul " + temp2 + ", va" + streamIndex + ", " + constantReg + "." + regs[j] + "\n";
+                poseInput = registerCache.getFreeVertexAttribute();
+                this._iAnimationRegisterData.poseIndices[k++] = poseInput.index;
+                code += "mul " + temp2 + ", " + poseInput + ", " + constantReg + regs[j] + "\n";
                 if (j < this._numPoses - 1)
                     code += "add " + temp1 + ", " + temp1 + ", " + temp2 + "\n";
-                ++streamIndex;
             }
-            code += "add " + shader.animationTargetRegisters[i] + ", " + temp1 + ", " + temp2 + "\n";
+            code += "add " + sharedRegisters.animationTargetRegisters[i] + ", " + temp1 + ", " + temp2 + "\n";
         }
         // add code for bitangents if tangents are used
         if (shader.tangentDependencies > 0 || shader.outputsNormals) {
-            code += "dp3 " + temp1 + ".x, " + shader.animatableAttributes[2] + ", " + shader.animationTargetRegisters[1] + "\n" +
-                "mul " + temp1 + ", " + shader.animationTargetRegisters[1] + ", " + temp1 + ".x\n" +
-                "sub " + shader.animationTargetRegisters[2] + ", " + shader.animationTargetRegisters[2] + ", " + temp1 + "\n";
+            code += "dp3 " + temp1 + ".x, " + sharedRegisters.animatableAttributes[2] + ", " + sharedRegisters.animationTargetRegisters[1] + "\n" +
+                "mul " + temp1 + ", " + sharedRegisters.animationTargetRegisters[1] + ", " + temp1 + ".x\n" +
+                "sub " + sharedRegisters.animationTargetRegisters[2] + ", " + sharedRegisters.animationTargetRegisters[2] + ", " + temp1 + "\n";
         }
+        //
+        // // simply write attributes to targets, do not animate them
+        // // projection will pick up on targets[0] to do the projection
+        // var len:number = sharedRegisters.animatableAttributes.length;
+        // for (var i:number = 0; i < len; ++i)
+        // 	code += "mov " + sharedRegisters.animationTargetRegisters[i] + ", " + sharedRegisters.animatableAttributes[i] + "\n";
         return code;
     };
     /**
      * Generates the vertex AGAL code for additive blending.
      */
-    VertexAnimationSet.prototype.getAdditiveAGALCode = function (shader) {
+    VertexAnimationSet.prototype.getAdditiveAGALCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
-        var len = shader.animatableAttributes.length;
-        var regs = ["x", "y", "z", "w"];
-        var temp1 = this._pFindTempReg(shader.animationTargetRegisters);
-        var k;
-        var streamIndex = shader.numUsedStreams;
+        var len = sharedRegisters.animatableAttributes.length;
+        var regs = [".x", ".y", ".z", ".w"];
+        var temp1 = registerCache.getFreeVertexVectorTemp();
+        var constantReg = registerCache.getFreeVertexConstant();
+        this._iAnimationRegisterData.weightsIndex = constantReg.index * 4;
+        this._iAnimationRegisterData.poseIndices = new Array(this._numPoses);
+        var poseInput;
+        var k = 0;
         if (len > 2)
             len = 2;
-        code += "mov  " + shader.animationTargetRegisters[0] + ", " + shader.animatableAttributes[0] + "\n";
+        code += "mov  " + sharedRegisters.animationTargetRegisters[0] + ", " + sharedRegisters.animatableAttributes[0] + "\n";
         if (shader.normalDependencies > 0)
-            code += "mov " + shader.animationTargetRegisters[1] + ", " + shader.animatableAttributes[1] + "\n";
+            code += "mov " + sharedRegisters.animationTargetRegisters[1] + ", " + sharedRegisters.animatableAttributes[1] + "\n";
         for (var i = 0; i < len; ++i) {
             for (var j = 0; j < this._numPoses; ++j) {
-                code += "mul " + temp1 + ", va" + (streamIndex + k) + ", vc" + shader.numUsedVertexConstants + "." + regs[j] + "\n" +
-                    "add " + shader.animationTargetRegisters[i] + ", " + shader.animationTargetRegisters[i] + ", " + temp1 + "\n";
-                k++;
+                poseInput = registerCache.getFreeVertexAttribute();
+                this._iAnimationRegisterData.poseIndices[k++] = poseInput.index;
+                code += "mul " + temp1 + ", " + poseInput + ", " + constantReg + regs[j] + "\n" +
+                    "add " + sharedRegisters.animationTargetRegisters[i] + ", " + sharedRegisters.animationTargetRegisters[i] + ", " + temp1 + "\n";
             }
         }
         if (shader.tangentDependencies > 0 || shader.outputsNormals) {
-            code += "dp3 " + temp1 + ".x, " + shader.animatableAttributes[2] + ", " + shader.animationTargetRegisters[1] + "\n" +
-                "mul " + temp1 + ", " + shader.animationTargetRegisters[1] + ", " + temp1 + ".x\n" +
-                "sub " + shader.animationTargetRegisters[2] + ", " + shader.animatableAttributes[2] + ", " + temp1 + "\n";
+            code += "dp3 " + temp1 + ".x, " + sharedRegisters.animatableAttributes[2] + ", " + sharedRegisters.animationTargetRegisters[1] + "\n" +
+                "mul " + temp1 + ", " + sharedRegisters.animationTargetRegisters[1] + ", " + temp1 + ".x\n" +
+                "sub " + sharedRegisters.animationTargetRegisters[2] + ", " + sharedRegisters.animatableAttributes[2] + ", " + temp1 + "\n";
         }
         return code;
     };
@@ -3196,7 +3171,7 @@ var VertexAnimationSet = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = VertexAnimationSet;
 
-},{"../animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","../animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode"}],"awayjs-renderergl/lib/animators/VertexAnimator":[function(require,module,exports){
+},{"../animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","../animators/data/AnimationRegisterData":"awayjs-renderergl/lib/animators/data/AnimationRegisterData","../animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode"}],"awayjs-renderergl/lib/animators/VertexAnimator":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3204,7 +3179,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var TriangleElements_1 = require("awayjs-display/lib/graphics/TriangleElements");
-var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var AnimatorBase_1 = require("../animators/AnimatorBase");
 var VertexAnimationMode_1 = require("../animators/data/VertexAnimationMode");
 /**
@@ -3224,8 +3198,6 @@ var VertexAnimator = (function (_super) {
         this._poses = new Array();
         this._weights = new Float32Array([1, 0, 0, 0]);
         this._vertexAnimationSet = vertexAnimationSet;
-        this._numPoses = vertexAnimationSet.numPoses;
-        this._blendMode = vertexAnimationSet.blendMode;
     }
     /**
      * @inheritDoc
@@ -3287,45 +3259,49 @@ var VertexAnimator = (function (_super) {
     /**
      * @inheritDoc
      */
-    VertexAnimator.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
+    VertexAnimator.prototype.setRenderState = function (shader, renderable, stage, camera) {
         // todo: add code for when running on cpu
         // this type of animation can only be SubSprite
         var graphic = renderable.graphic;
         var elements = graphic.elements;
         // if no poses defined, set temp data
         if (!this._poses.length) {
-            this.setNullPose(shader, elements, stage, vertexConstantOffset, vertexStreamOffset);
+            this.setNullPose(shader, elements);
             return;
         }
+        var animationRegisterData = shader.animationRegisterData;
         var i;
-        var len = this._numPoses;
-        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, vertexConstantOffset, this._weights, 1);
-        if (this._blendMode == VertexAnimationMode_1.default.ABSOLUTE)
+        var len = this._vertexAnimationSet.numPoses;
+        shader.setVertexConstFromArray(animationRegisterData.weightsIndex, this._weights);
+        if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.default.ABSOLUTE)
             i = 1;
         else
             i = 0;
         var elementsGL;
+        var k = 0;
         for (; i < len; ++i) {
             elements = this._poses[i].getGraphicAt(graphic._iIndex).elements || graphic.elements;
             elementsGL = shader._elementsPool.getAbstraction(elements);
             elementsGL._indexMappings = shader._elementsPool.getAbstraction(graphic.elements).getIndexMappings();
             if (elements.isAsset(TriangleElements_1.default)) {
-                elementsGL.activateVertexBufferVO(vertexStreamOffset++, elements.positions);
+                elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.positions);
                 if (shader.normalDependencies > 0)
-                    elementsGL.activateVertexBufferVO(vertexStreamOffset++, elements.normals);
+                    elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.normals);
             }
         }
     };
-    VertexAnimator.prototype.setNullPose = function (shader, elements, stage, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
-        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, vertexConstantOffset, this._weights, 1);
+    VertexAnimator.prototype.setNullPose = function (shader, elements) {
+        var animationRegisterData = shader.animationRegisterData;
+        shader.setVertexConstFromArray(animationRegisterData.weightsIndex, this._weights);
         var elementsGL = shader._elementsPool.getAbstraction(elements);
-        if (this._blendMode == VertexAnimationMode_1.default.ABSOLUTE) {
-            var len = this._numPoses;
+        var k = 0;
+        if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.default.ABSOLUTE) {
+            var len = this._vertexAnimationSet.numPoses;
             for (var i = 1; i < len; ++i) {
                 if (elements.isAsset(TriangleElements_1.default)) {
-                    elementsGL.activateVertexBufferVO(vertexStreamOffset++, elements.positions);
+                    elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.positions);
                     if (shader.normalDependencies > 0)
-                        elementsGL.activateVertexBufferVO(vertexStreamOffset++, elements.normals);
+                        elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.normals);
                 }
             }
         }
@@ -3338,7 +3314,7 @@ var VertexAnimator = (function (_super) {
     VertexAnimator.prototype.testGPUCompatibility = function (shader) {
     };
     VertexAnimator.prototype.getRenderableElements = function (renderable, sourceElements) {
-        if (this._blendMode == VertexAnimationMode_1.default.ABSOLUTE && this._poses.length)
+        if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.default.ABSOLUTE && this._poses.length)
             return this._poses[0].getGraphicAt(renderable.graphic._iIndex).elements || sourceElements;
         //nothing to do here
         return sourceElements;
@@ -3348,7 +3324,7 @@ var VertexAnimator = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = VertexAnimator;
 
-},{"../animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","../animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/data/AnimationElements":[function(require,module,exports){
+},{"../animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","../animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","awayjs-display/lib/graphics/TriangleElements":undefined}],"awayjs-renderergl/lib/animators/data/AnimationElements":[function(require,module,exports){
 "use strict";
 /**
  * ...
@@ -3365,12 +3341,12 @@ var AnimationElements = (function () {
             this._pBufferDirty[i] = true;
         this._iUniqueId = AnimationElements.SUBGEOM_ID_COUNT++;
     }
-    AnimationElements.prototype.createVertexData = function (numVertices /*uint*/, totalLenOfOneVertex /*uint*/) {
+    AnimationElements.prototype.createVertexData = function (numVertices, totalLenOfOneVertex) {
         this._numVertices = numVertices;
         this._totalLenOfOneVertex = totalLenOfOneVertex;
         this._pVertexData = new Array(numVertices * totalLenOfOneVertex);
     };
-    AnimationElements.prototype.activateVertexBuffer = function (index /*int*/, bufferOffset /*int*/, stage, format) {
+    AnimationElements.prototype.activateVertexBuffer = function (index, bufferOffset, stage, format) {
         var contextIndex = stage.stageIndex;
         var context = stage.context;
         var buffer = this._pVertexBuffer[contextIndex];
@@ -3423,202 +3399,67 @@ var AnimationElements = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AnimationElements;
 
-},{}],"awayjs-renderergl/lib/animators/data/AnimationRegisterCache":[function(require,module,exports){
+},{}],"awayjs-renderergl/lib/animators/data/AnimationRegisterData":[function(require,module,exports){
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var ShaderRegisterCache_1 = require("../../animators/../shaders/ShaderRegisterCache");
-var ShaderRegisterElement_1 = require("../../animators/../shaders/ShaderRegisterElement");
+var ShaderRegisterElement_1 = require("../../shaders/ShaderRegisterElement");
 /**
  * ...
  */
-var AnimationRegisterCache = (function (_super) {
-    __extends(AnimationRegisterCache, _super);
-    function AnimationRegisterCache(profile) {
-        _super.call(this, profile);
+var AnimationRegisterData = (function () {
+    function AnimationRegisterData() {
         this.indexDictionary = new Object();
     }
-    AnimationRegisterCache.prototype.reset = function () {
-        _super.prototype.reset.call(this);
+    AnimationRegisterData.prototype.reset = function (registerCache, sharedRegisters, needVelocity) {
         this.rotationRegisters = new Array();
-        this.positionAttribute = this.getRegisterFromString(this.sourceRegisters[0]);
-        this.scaleAndRotateTarget = this.getRegisterFromString(this.targetRegisters[0]);
-        this.addVertexTempUsages(this.scaleAndRotateTarget, 1);
-        for (var i = 1; i < this.targetRegisters.length; i++) {
-            this.rotationRegisters.push(this.getRegisterFromString(this.targetRegisters[i]));
-            this.addVertexTempUsages(this.rotationRegisters[i - 1], 1);
-        }
-        this.scaleAndRotateTarget = new ShaderRegisterElement_1.default(this.scaleAndRotateTarget.regName, this.scaleAndRotateTarget.index); //only use xyz, w is used as vertexLife
+        this.positionAttribute = sharedRegisters.animatableAttributes[0];
+        this.scaleAndRotateTarget = sharedRegisters.animationTargetRegisters[0];
+        for (var i = 1; i < sharedRegisters.animationTargetRegisters.length; i++)
+            this.rotationRegisters.push(sharedRegisters.animationTargetRegisters[i]);
         //allot const register
-        this.vertexZeroConst = this.getFreeVertexConstant();
+        this.vertexZeroConst = registerCache.getFreeVertexConstant();
         this.vertexZeroConst = new ShaderRegisterElement_1.default(this.vertexZeroConst.regName, this.vertexZeroConst.index, 0);
         this.vertexOneConst = new ShaderRegisterElement_1.default(this.vertexZeroConst.regName, this.vertexZeroConst.index, 1);
         this.vertexTwoConst = new ShaderRegisterElement_1.default(this.vertexZeroConst.regName, this.vertexZeroConst.index, 2);
         //allot temp register
-        this.positionTarget = this.getFreeVertexVectorTemp();
-        this.addVertexTempUsages(this.positionTarget, 1);
+        this.positionTarget = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(this.positionTarget, 1);
         this.positionTarget = new ShaderRegisterElement_1.default(this.positionTarget.regName, this.positionTarget.index);
-        if (this.needVelocity) {
-            this.velocityTarget = this.getFreeVertexVectorTemp();
-            this.addVertexTempUsages(this.velocityTarget, 1);
+        if (needVelocity) {
+            this.velocityTarget = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(this.velocityTarget, 1);
             this.velocityTarget = new ShaderRegisterElement_1.default(this.velocityTarget.regName, this.velocityTarget.index);
             this.vertexTime = new ShaderRegisterElement_1.default(this.velocityTarget.regName, this.velocityTarget.index, 3);
             this.vertexLife = new ShaderRegisterElement_1.default(this.positionTarget.regName, this.positionTarget.index, 3);
         }
         else {
-            var tempTime = this.getFreeVertexVectorTemp();
-            this.addVertexTempUsages(tempTime, 1);
+            var tempTime = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(tempTime, 1);
             this.vertexTime = new ShaderRegisterElement_1.default(tempTime.regName, tempTime.index, 0);
             this.vertexLife = new ShaderRegisterElement_1.default(tempTime.regName, tempTime.index, 1);
         }
     };
-    AnimationRegisterCache.prototype.setUVSourceAndTarget = function (UVAttribute, UVVaring) {
-        this.uvVar = this.getRegisterFromString(UVVaring);
-        this.uvAttribute = this.getRegisterFromString(UVAttribute);
+    AnimationRegisterData.prototype.setUVSourceAndTarget = function (sharedRegisters) {
+        this.uvVar = sharedRegisters.uvTarget;
+        this.uvAttribute = sharedRegisters.uvSource;
         //uv action is processed after normal actions,so use offsetTarget as uvTarget
         this.uvTarget = new ShaderRegisterElement_1.default(this.positionTarget.regName, this.positionTarget.index);
     };
-    AnimationRegisterCache.prototype.setRegisterIndex = function (node, parameterIndex /*int*/, registerIndex /*int*/) {
+    AnimationRegisterData.prototype.setRegisterIndex = function (node, parameterIndex, registerIndex) {
         //8 should be enough for any node.
         var t = this.indexDictionary[node.id];
         if (t == null)
-            t = this.indexDictionary[node.id] = new Array(8) /*int*/;
+            t = this.indexDictionary[node.id] = new Array(8);
         t[parameterIndex] = registerIndex;
     };
-    AnimationRegisterCache.prototype.getRegisterIndex = function (node, parameterIndex /*int*/) {
+    AnimationRegisterData.prototype.getRegisterIndex = function (node, parameterIndex) {
         return this.indexDictionary[node.id][parameterIndex];
     };
-    AnimationRegisterCache.prototype.getInitCode = function () {
-        var len = this.sourceRegisters.length;
-        var code = "";
-        for (var i = 0; i < len; i++)
-            code += "mov " + this.targetRegisters[i] + "," + this.sourceRegisters[i] + "\n";
-        code += "mov " + this.positionTarget + ".xyz," + this.vertexZeroConst.toString() + "\n";
-        if (this.needVelocity)
-            code += "mov " + this.velocityTarget + ".xyz," + this.vertexZeroConst.toString() + "\n";
-        return code;
-    };
-    AnimationRegisterCache.prototype.getCombinationCode = function () {
-        return "add " + this.scaleAndRotateTarget + ".xyz," + this.scaleAndRotateTarget + ".xyz," + this.positionTarget + ".xyz\n";
-    };
-    AnimationRegisterCache.prototype.initColorRegisters = function () {
-        var code = "";
-        if (this.hasColorMulNode) {
-            this.colorMulTarget = this.getFreeVertexVectorTemp();
-            this.addVertexTempUsages(this.colorMulTarget, 1);
-            this.colorMulVary = this.getFreeVarying();
-            code += "mov " + this.colorMulTarget + "," + this.vertexOneConst + "\n";
-        }
-        if (this.hasColorAddNode) {
-            this.colorAddTarget = this.getFreeVertexVectorTemp();
-            this.addVertexTempUsages(this.colorAddTarget, 1);
-            this.colorAddVary = this.getFreeVarying();
-            code += "mov " + this.colorAddTarget + "," + this.vertexZeroConst + "\n";
-        }
-        return code;
-    };
-    AnimationRegisterCache.prototype.getColorPassCode = function () {
-        var code = "";
-        if (this.needFragmentAnimation && (this.hasColorAddNode || this.hasColorMulNode)) {
-            if (this.hasColorMulNode)
-                code += "mov " + this.colorMulVary + "," + this.colorMulTarget + "\n";
-            if (this.hasColorAddNode)
-                code += "mov " + this.colorAddVary + "," + this.colorAddTarget + "\n";
-        }
-        return code;
-    };
-    AnimationRegisterCache.prototype.getColorCombinationCode = function (shadedTarget) {
-        var code = "";
-        if (this.needFragmentAnimation && (this.hasColorAddNode || this.hasColorMulNode)) {
-            var colorTarget = this.getRegisterFromString(shadedTarget);
-            this.addFragmentTempUsages(colorTarget, 1);
-            if (this.hasColorMulNode)
-                code += "mul " + colorTarget + "," + colorTarget + "," + this.colorMulVary + "\n";
-            if (this.hasColorAddNode)
-                code += "add " + colorTarget + "," + colorTarget + "," + this.colorAddVary + "\n";
-        }
-        return code;
-    };
-    AnimationRegisterCache.prototype.getRegisterFromString = function (code) {
-        var temp = code.split(/(\d+)/);
-        return new ShaderRegisterElement_1.default(temp[0], parseInt(temp[1]));
-    };
-    Object.defineProperty(AnimationRegisterCache.prototype, "numVertexConstant", {
-        get: function () {
-            return this._numVertexConstant;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AnimationRegisterCache.prototype, "numFragmentConstant", {
-        get: function () {
-            return this._numFragmentConstant;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AnimationRegisterCache.prototype.setDataLength = function () {
-        this._numVertexConstant = this.numUsedVertexConstants - this.vertexConstantOffset;
-        this._numFragmentConstant = this.numUsedFragmentConstants - this.fragmentConstantOffset;
-        this.vertexConstantData = new Float32Array(this._numVertexConstant * 4);
-        this.fragmentConstantData = new Float32Array(this._numFragmentConstant * 4);
-    };
-    AnimationRegisterCache.prototype.setVertexConst = function (index /*int*/, x, y, z, w) {
-        if (x === void 0) { x = 0; }
-        if (y === void 0) { y = 0; }
-        if (z === void 0) { z = 0; }
-        if (w === void 0) { w = 0; }
-        var _index = (index - this.vertexConstantOffset) * 4;
-        this.vertexConstantData[_index++] = x;
-        this.vertexConstantData[_index++] = y;
-        this.vertexConstantData[_index++] = z;
-        this.vertexConstantData[_index] = w;
-    };
-    AnimationRegisterCache.prototype.setVertexConstFromArray = function (index /*int*/, data) {
-        var _index = (index - this.vertexConstantOffset) * 4;
-        for (var i = 0; i < data.length; i++)
-            this.vertexConstantData[_index++] = data[i];
-    };
-    AnimationRegisterCache.prototype.setVertexConstFromMatrix = function (index /*int*/, matrix) {
-        var rawData = matrix.rawData;
-        var _index = (index - this.vertexConstantOffset) * 4;
-        this.vertexConstantData[_index++] = rawData[0];
-        this.vertexConstantData[_index++] = rawData[4];
-        this.vertexConstantData[_index++] = rawData[8];
-        this.vertexConstantData[_index++] = rawData[12];
-        this.vertexConstantData[_index++] = rawData[1];
-        this.vertexConstantData[_index++] = rawData[5];
-        this.vertexConstantData[_index++] = rawData[9];
-        this.vertexConstantData[_index++] = rawData[13];
-        this.vertexConstantData[_index++] = rawData[2];
-        this.vertexConstantData[_index++] = rawData[6];
-        this.vertexConstantData[_index++] = rawData[10];
-        this.vertexConstantData[_index++] = rawData[14];
-        this.vertexConstantData[_index++] = rawData[3];
-        this.vertexConstantData[_index++] = rawData[7];
-        this.vertexConstantData[_index++] = rawData[11];
-        this.vertexConstantData[_index] = rawData[15];
-    };
-    AnimationRegisterCache.prototype.setFragmentConst = function (index /*int*/, x, y, z, w) {
-        if (x === void 0) { x = 0; }
-        if (y === void 0) { y = 0; }
-        if (z === void 0) { z = 0; }
-        if (w === void 0) { w = 0; }
-        var _index = (index - this.fragmentConstantOffset) * 4;
-        this.fragmentConstantData[_index++] = x;
-        this.fragmentConstantData[_index++] = y;
-        this.fragmentConstantData[_index++] = z;
-        this.fragmentConstantData[_index] = w;
-    };
-    return AnimationRegisterCache;
-}(ShaderRegisterCache_1.default));
+    return AnimationRegisterData;
+}());
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = AnimationRegisterCache;
+exports.default = AnimationRegisterData;
 
-},{"../../animators/../shaders/ShaderRegisterCache":"awayjs-renderergl/lib/shaders/ShaderRegisterCache","../../animators/../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/data/ColorSegmentPoint":[function(require,module,exports){
+},{"../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/data/ColorSegmentPoint":[function(require,module,exports){
 "use strict";
 var ColorSegmentPoint = (function () {
     function ColorSegmentPoint(life, color) {
@@ -3712,7 +3553,7 @@ exports.default = JointPose;
  * ...
  */
 var ParticleAnimationData = (function () {
-    function ParticleAnimationData(index /*uint*/, startTime, duration, delay, particle) {
+    function ParticleAnimationData(index, startTime, duration, delay, particle) {
         this.index = index;
         this.startTime = startTime;
         this.totalTime = duration + delay;
@@ -4160,7 +4001,7 @@ var ParticleAccelerationNode = (function (_super) {
      * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
      * @param    [optional] acceleration    Defines the default acceleration vector of the node, used when in global mode.
      */
-    function ParticleAccelerationNode(mode /*uint*/, acceleration) {
+    function ParticleAccelerationNode(mode, acceleration) {
         if (acceleration === void 0) { acceleration = null; }
         _super.call(this, "ParticleAcceleration", mode, 3);
         this._pStateClass = ParticleAccelerationState_1.default;
@@ -4169,20 +4010,20 @@ var ParticleAccelerationNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleAccelerationNode.prototype.pGetAGALVertexCode = function (shader, animationRegisterCache) {
-        var accelerationValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-        animationRegisterCache.setRegisterIndex(this, ParticleAccelerationState_1.default.ACCELERATION_INDEX, accelerationValue.index);
-        var temp = animationRegisterCache.getFreeVertexVectorTemp();
-        animationRegisterCache.addVertexTempUsages(temp, 1);
-        var code = "mul " + temp + "," + animationRegisterCache.vertexTime + "," + accelerationValue + "\n";
-        if (animationRegisterCache.needVelocity) {
-            var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
-            code += "mul " + temp2 + "," + temp + "," + animationRegisterCache.vertexTwoConst + "\n";
-            code += "add " + animationRegisterCache.velocityTarget + ".xyz," + temp2 + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+    ParticleAccelerationNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+        var accelerationValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleAccelerationState_1.default.ACCELERATION_INDEX, accelerationValue.index);
+        var temp = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(temp, 1);
+        var code = "mul " + temp + "," + animationRegisterData.vertexTime + "," + accelerationValue + "\n";
+        if (animationSet.needVelocity) {
+            var temp2 = registerCache.getFreeVertexVectorTemp();
+            code += "mul " + temp2 + "," + temp + "," + animationRegisterData.vertexTwoConst + "\n";
+            code += "add " + animationRegisterData.velocityTarget + ".xyz," + temp2 + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
         }
-        animationRegisterCache.removeVertexTempUsage(temp);
-        code += "mul " + temp + "," + temp + "," + animationRegisterCache.vertexTime + "\n";
-        code += "add " + animationRegisterCache.positionTarget + ".xyz," + temp + "," + animationRegisterCache.positionTarget + ".xyz\n";
+        registerCache.removeVertexTempUsage(temp);
+        code += "mul " + temp + "," + temp + "," + animationRegisterData.vertexTime + "\n";
+        code += "add " + animationRegisterData.positionTarget + ".xyz," + temp + "," + animationRegisterData.positionTarget + ".xyz\n";
         return code;
     };
     /**
@@ -4236,7 +4077,7 @@ var ParticleBezierCurveNode = (function (_super) {
      * @param    [optional] controlPoint    Defines the default control point of the node, used when in global mode.
      * @param    [optional] endPoint        Defines the default end point of the node, used when in global mode.
      */
-    function ParticleBezierCurveNode(mode /*uint*/, controlPoint, endPoint) {
+    function ParticleBezierCurveNode(mode, controlPoint, endPoint) {
         if (controlPoint === void 0) { controlPoint = null; }
         if (endPoint === void 0) { endPoint = null; }
         _super.call(this, "ParticleBezierCurve", mode, 6);
@@ -4247,36 +4088,36 @@ var ParticleBezierCurveNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleBezierCurveNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-        var controlValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-        animationRegisterCache.setRegisterIndex(this, ParticleBezierCurveState_1.default.BEZIER_CONTROL_INDEX, controlValue.index);
-        var endValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-        animationRegisterCache.setRegisterIndex(this, ParticleBezierCurveState_1.default.BEZIER_END_INDEX, endValue.index);
-        var temp = animationRegisterCache.getFreeVertexVectorTemp();
+    ParticleBezierCurveNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+        var controlValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleBezierCurveState_1.default.BEZIER_CONTROL_INDEX, controlValue.index);
+        var endValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleBezierCurveState_1.default.BEZIER_END_INDEX, endValue.index);
+        var temp = registerCache.getFreeVertexVectorTemp();
         var rev_time = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
         var time_2 = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
         var time_temp = new ShaderRegisterElement_1.default(temp.regName, temp.index, 2);
-        animationRegisterCache.addVertexTempUsages(temp, 1);
-        var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(temp, 1);
+        var temp2 = registerCache.getFreeVertexVectorTemp();
         var distance = new ShaderRegisterElement_1.default(temp2.regName, temp2.index);
-        animationRegisterCache.removeVertexTempUsage(temp);
+        registerCache.removeVertexTempUsage(temp);
         var code = "";
-        code += "sub " + rev_time + "," + animationRegisterCache.vertexOneConst + "," + animationRegisterCache.vertexLife + "\n";
-        code += "mul " + time_2 + "," + animationRegisterCache.vertexLife + "," + animationRegisterCache.vertexLife + "\n";
-        code += "mul " + time_temp + "," + animationRegisterCache.vertexLife + "," + rev_time + "\n";
-        code += "mul " + time_temp + "," + time_temp + "," + animationRegisterCache.vertexTwoConst + "\n";
+        code += "sub " + rev_time + "," + animationRegisterData.vertexOneConst + "," + animationRegisterData.vertexLife + "\n";
+        code += "mul " + time_2 + "," + animationRegisterData.vertexLife + "," + animationRegisterData.vertexLife + "\n";
+        code += "mul " + time_temp + "," + animationRegisterData.vertexLife + "," + rev_time + "\n";
+        code += "mul " + time_temp + "," + time_temp + "," + animationRegisterData.vertexTwoConst + "\n";
         code += "mul " + distance + ".xyz," + time_temp + "," + controlValue + "\n";
-        code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
+        code += "add " + animationRegisterData.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
         code += "mul " + distance + ".xyz," + time_2 + "," + endValue + "\n";
-        code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
-        if (animationRegisterCache.needVelocity) {
-            code += "mul " + time_2 + "," + animationRegisterCache.vertexLife + "," + animationRegisterCache.vertexTwoConst + "\n";
-            code += "sub " + time_temp + "," + animationRegisterCache.vertexOneConst + "," + time_2 + "\n";
-            code += "mul " + time_temp + "," + animationRegisterCache.vertexTwoConst + "," + time_temp + "\n";
+        code += "add " + animationRegisterData.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
+        if (animationSet.needVelocity) {
+            code += "mul " + time_2 + "," + animationRegisterData.vertexLife + "," + animationRegisterData.vertexTwoConst + "\n";
+            code += "sub " + time_temp + "," + animationRegisterData.vertexOneConst + "," + time_2 + "\n";
+            code += "mul " + time_temp + "," + animationRegisterData.vertexTwoConst + "," + time_temp + "\n";
             code += "mul " + distance + ".xyz," + controlValue + "," + time_temp + "\n";
-            code += "add " + animationRegisterCache.velocityTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+            code += "add " + animationRegisterData.velocityTarget + ".xyz," + distance + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
             code += "mul " + distance + ".xyz," + endValue + "," + time_2 + "\n";
-            code += "add " + animationRegisterCache.velocityTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+            code += "add " + animationRegisterData.velocityTarget + ".xyz," + distance + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
         }
         return code;
     };
@@ -4345,18 +4186,18 @@ var ParticleBillboardNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleBillboardNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-        var rotationMatrixRegister = animationRegisterCache.getFreeVertexConstant();
-        animationRegisterCache.setRegisterIndex(this, ParticleBillboardState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
-        animationRegisterCache.getFreeVertexConstant();
-        animationRegisterCache.getFreeVertexConstant();
-        animationRegisterCache.getFreeVertexConstant();
-        var temp = animationRegisterCache.getFreeVertexVectorTemp();
-        var code = "m33 " + temp + ".xyz," + animationRegisterCache.scaleAndRotateTarget + "," + rotationMatrixRegister + "\n" +
-            "mov " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp + "\n";
+    ParticleBillboardNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+        var rotationMatrixRegister = registerCache.getFreeVertexConstant();
+        animationRegisterData.setRegisterIndex(this, ParticleBillboardState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        var temp = registerCache.getFreeVertexVectorTemp();
+        var code = "m33 " + temp + ".xyz," + animationRegisterData.scaleAndRotateTarget + "," + rotationMatrixRegister + "\n" +
+            "mov " + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp + "\n";
         var shaderRegisterElement;
-        for (var i = 0; i < animationRegisterCache.rotationRegisters.length; i++) {
-            shaderRegisterElement = animationRegisterCache.rotationRegisters[i];
+        for (var i = 0; i < animationRegisterData.rotationRegisters.length; i++) {
+            shaderRegisterElement = animationRegisterData.rotationRegisters[i];
             code += "m33 " + temp + ".xyz," + shaderRegisterElement + "," + rotationMatrixRegister + "\n" +
                 "mov " + shaderRegisterElement + ".xyz," + shaderRegisterElement + "\n";
         }
@@ -4409,7 +4250,7 @@ var ParticleColorNode = (function (_super) {
      * @param    [optional] cycleDuration   Defines the duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
      * @param    [optional] cyclePhase      Defines the phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
      */
-    function ParticleColorNode(mode /*uint*/, usesMultiplier, usesOffset, usesCycle, usesPhase, startColor, endColor, cycleDuration, cyclePhase) {
+    function ParticleColorNode(mode, usesMultiplier, usesOffset, usesCycle, usesPhase, startColor, endColor, cycleDuration, cyclePhase) {
         if (usesMultiplier === void 0) { usesMultiplier = true; }
         if (usesOffset === void 0) { usesOffset = true; }
         if (usesCycle === void 0) { usesCycle = false; }
@@ -4432,38 +4273,38 @@ var ParticleColorNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleColorNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+    ParticleColorNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
         var code = "";
-        if (animationRegisterCache.needFragmentAnimation) {
-            var temp = animationRegisterCache.getFreeVertexVectorTemp();
+        if (shader.usesFragmentAnimation) {
+            var temp = registerCache.getFreeVertexVectorTemp();
             if (this._iUsesCycle) {
-                var cycleConst = animationRegisterCache.getFreeVertexConstant();
-                animationRegisterCache.setRegisterIndex(this, ParticleColorState_1.default.CYCLE_INDEX, cycleConst.index);
-                animationRegisterCache.addVertexTempUsages(temp, 1);
-                var sin = animationRegisterCache.getFreeVertexSingleTemp();
-                animationRegisterCache.removeVertexTempUsage(temp);
-                code += "mul " + sin + "," + animationRegisterCache.vertexTime + "," + cycleConst + ".x\n";
+                var cycleConst = registerCache.getFreeVertexConstant();
+                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.CYCLE_INDEX, cycleConst.index);
+                registerCache.addVertexTempUsages(temp, 1);
+                var sin = registerCache.getFreeVertexSingleTemp();
+                registerCache.removeVertexTempUsage(temp);
+                code += "mul " + sin + "," + animationRegisterData.vertexTime + "," + cycleConst + ".x\n";
                 if (this._iUsesPhase)
                     code += "add " + sin + "," + sin + "," + cycleConst + ".y\n";
                 code += "sin " + sin + "," + sin + "\n";
             }
             if (this._iUsesMultiplier) {
-                var startMultiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-                var deltaMultiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-                animationRegisterCache.setRegisterIndex(this, ParticleColorState_1.default.START_MULTIPLIER_INDEX, startMultiplierValue.index);
-                animationRegisterCache.setRegisterIndex(this, ParticleColorState_1.default.DELTA_MULTIPLIER_INDEX, deltaMultiplierValue.index);
-                code += "mul " + temp + "," + deltaMultiplierValue + "," + (this._iUsesCycle ? sin : animationRegisterCache.vertexLife) + "\n";
+                var startMultiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+                var deltaMultiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.START_MULTIPLIER_INDEX, startMultiplierValue.index);
+                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.DELTA_MULTIPLIER_INDEX, deltaMultiplierValue.index);
+                code += "mul " + temp + "," + deltaMultiplierValue + "," + (this._iUsesCycle ? sin : animationRegisterData.vertexLife) + "\n";
                 code += "add " + temp + "," + temp + "," + startMultiplierValue + "\n";
-                code += "mul " + animationRegisterCache.colorMulTarget + "," + temp + "," + animationRegisterCache.colorMulTarget + "\n";
+                code += "mul " + animationRegisterData.colorMulTarget + "," + temp + "," + animationRegisterData.colorMulTarget + "\n";
             }
             if (this._iUsesOffset) {
-                var startOffsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
-                var deltaOffsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
-                animationRegisterCache.setRegisterIndex(this, ParticleColorState_1.default.START_OFFSET_INDEX, startOffsetValue.index);
-                animationRegisterCache.setRegisterIndex(this, ParticleColorState_1.default.DELTA_OFFSET_INDEX, deltaOffsetValue.index);
-                code += "mul " + temp + "," + deltaOffsetValue + "," + (this._iUsesCycle ? sin : animationRegisterCache.vertexLife) + "\n";
+                var startOffsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
+                var deltaOffsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
+                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.START_OFFSET_INDEX, startOffsetValue.index);
+                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.DELTA_OFFSET_INDEX, deltaOffsetValue.index);
+                code += "mul " + temp + "," + deltaOffsetValue + "," + (this._iUsesCycle ? sin : animationRegisterData.vertexLife) + "\n";
                 code += "add " + temp + "," + temp + "," + startOffsetValue + "\n";
-                code += "add " + animationRegisterCache.colorAddTarget + "," + temp + "," + animationRegisterCache.colorAddTarget + "\n";
+                code += "add " + animationRegisterData.colorAddTarget + "," + temp + "," + animationRegisterData.colorAddTarget + "\n";
             }
         }
         return code;
@@ -4594,84 +4435,84 @@ var ParticleFollowNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleFollowNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+    ParticleFollowNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
         //TODO: use Quaternion to implement this function
         var code = "";
         if (this._iUsesRotation) {
-            var rotationAttribute = animationRegisterCache.getFreeVertexAttribute();
-            animationRegisterCache.setRegisterIndex(this, ParticleFollowState_1.default.FOLLOW_ROTATION_INDEX, rotationAttribute.index);
-            var temp1 = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(temp1, 1);
-            var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(temp2, 1);
-            var temp3 = animationRegisterCache.getFreeVertexVectorTemp();
+            var rotationAttribute = registerCache.getFreeVertexAttribute();
+            animationRegisterData.setRegisterIndex(this, ParticleFollowState_1.default.FOLLOW_ROTATION_INDEX, rotationAttribute.index);
+            var temp1 = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(temp1, 1);
+            var temp2 = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(temp2, 1);
+            var temp3 = registerCache.getFreeVertexVectorTemp();
             var temp4;
-            if (animationRegisterCache.hasBillboard) {
-                animationRegisterCache.addVertexTempUsages(temp3, 1);
-                temp4 = animationRegisterCache.getFreeVertexVectorTemp();
+            if (animationSet.hasBillboard) {
+                registerCache.addVertexTempUsages(temp3, 1);
+                temp4 = registerCache.getFreeVertexVectorTemp();
             }
-            animationRegisterCache.removeVertexTempUsage(temp1);
-            animationRegisterCache.removeVertexTempUsage(temp2);
-            if (animationRegisterCache.hasBillboard)
-                animationRegisterCache.removeVertexTempUsage(temp3);
-            var len = animationRegisterCache.rotationRegisters.length;
+            registerCache.removeVertexTempUsage(temp1);
+            registerCache.removeVertexTempUsage(temp2);
+            if (animationSet.hasBillboard)
+                registerCache.removeVertexTempUsage(temp3);
+            var len = animationRegisterData.rotationRegisters.length;
             var i;
             //x axis
-            code += "mov " + temp1 + "," + animationRegisterCache.vertexZeroConst + "\n";
-            code += "mov " + temp1 + ".x," + animationRegisterCache.vertexOneConst + "\n";
-            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + temp1 + "," + animationRegisterData.vertexZeroConst + "\n";
+            code += "mov " + temp1 + ".x," + animationRegisterData.vertexOneConst + "\n";
+            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
             code += "sin " + temp3 + ".y," + rotationAttribute + ".x\n";
             code += "cos " + temp3 + ".z," + rotationAttribute + ".x\n";
-            code += "mov " + temp2 + ".x," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + temp2 + ".x," + animationRegisterData.vertexZeroConst + "\n";
             code += "mov " + temp2 + ".y," + temp3 + ".z\n";
             code += "neg " + temp2 + ".z," + temp3 + ".y\n";
-            if (animationRegisterCache.hasBillboard)
-                code += "m33 " + temp4 + ".xyz," + animationRegisterCache.positionTarget + ".xyz," + temp1 + "\n";
+            if (animationSet.hasBillboard)
+                code += "m33 " + temp4 + ".xyz," + animationRegisterData.positionTarget + ".xyz," + temp1 + "\n";
             else {
-                code += "m33 " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
+                code += "m33 " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
                 for (i = 0; i < len; i++)
-                    code += "m33 " + animationRegisterCache.rotationRegisters[i] + ".xyz," + animationRegisterCache.rotationRegisters[i] + "," + temp1 + "\n";
+                    code += "m33 " + animationRegisterData.rotationRegisters[i] + ".xyz," + animationRegisterData.rotationRegisters[i] + "," + temp1 + "\n";
             }
             //y axis
-            code += "mov " + temp1 + "," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + temp1 + "," + animationRegisterData.vertexZeroConst + "\n";
             code += "cos " + temp1 + ".x," + rotationAttribute + ".y\n";
             code += "sin " + temp1 + ".z," + rotationAttribute + ".y\n";
-            code += "mov " + temp2 + "," + animationRegisterCache.vertexZeroConst + "\n";
-            code += "mov " + temp2 + ".y," + animationRegisterCache.vertexOneConst + "\n";
-            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + temp2 + "," + animationRegisterData.vertexZeroConst + "\n";
+            code += "mov " + temp2 + ".y," + animationRegisterData.vertexOneConst + "\n";
+            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
             code += "neg " + temp3 + ".x," + temp1 + ".z\n";
             code += "mov " + temp3 + ".z," + temp1 + ".x\n";
-            if (animationRegisterCache.hasBillboard)
+            if (animationSet.hasBillboard)
                 code += "m33 " + temp4 + ".xyz," + temp4 + ".xyz," + temp1 + "\n";
             else {
-                code += "m33 " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
+                code += "m33 " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
                 for (i = 0; i < len; i++)
-                    code += "m33 " + animationRegisterCache.rotationRegisters[i] + ".xyz," + animationRegisterCache.rotationRegisters[i] + "," + temp1 + "\n";
+                    code += "m33 " + animationRegisterData.rotationRegisters[i] + ".xyz," + animationRegisterData.rotationRegisters[i] + "," + temp1 + "\n";
             }
             //z axis
-            code += "mov " + temp2 + "," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + temp2 + "," + animationRegisterData.vertexZeroConst + "\n";
             code += "sin " + temp2 + ".x," + rotationAttribute + ".z\n";
             code += "cos " + temp2 + ".y," + rotationAttribute + ".z\n";
-            code += "mov " + temp1 + "," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + temp1 + "," + animationRegisterData.vertexZeroConst + "\n";
             code += "mov " + temp1 + ".x," + temp2 + ".y\n";
             code += "neg " + temp1 + ".y," + temp2 + ".x\n";
-            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
-            code += "mov " + temp3 + ".z," + animationRegisterCache.vertexOneConst + "\n";
-            if (animationRegisterCache.hasBillboard) {
+            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
+            code += "mov " + temp3 + ".z," + animationRegisterData.vertexOneConst + "\n";
+            if (animationSet.hasBillboard) {
                 code += "m33 " + temp4 + ".xyz," + temp4 + ".xyz," + temp1 + "\n";
-                code += "sub " + temp4 + ".xyz," + temp4 + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
-                code += "add " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp4 + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+                code += "sub " + temp4 + ".xyz," + temp4 + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
+                code += "add " + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp4 + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
             }
             else {
-                code += "m33 " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
+                code += "m33 " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
                 for (i = 0; i < len; i++)
-                    code += "m33 " + animationRegisterCache.rotationRegisters[i] + ".xyz," + animationRegisterCache.rotationRegisters[i] + "," + temp1 + "\n";
+                    code += "m33 " + animationRegisterData.rotationRegisters[i] + ".xyz," + animationRegisterData.rotationRegisters[i] + "," + temp1 + "\n";
             }
         }
         if (this._iUsesPosition) {
-            var positionAttribute = animationRegisterCache.getFreeVertexAttribute();
-            animationRegisterCache.setRegisterIndex(this, ParticleFollowState_1.default.FOLLOW_POSITION_INDEX, positionAttribute.index);
-            code += "add " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + positionAttribute + "," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+            var positionAttribute = registerCache.getFreeVertexAttribute();
+            animationRegisterData.setRegisterIndex(this, ParticleFollowState_1.default.FOLLOW_POSITION_INDEX, positionAttribute.index);
+            code += "add " + animationRegisterData.scaleAndRotateTarget + ".xyz," + positionAttribute + "," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
         }
         return code;
     };
@@ -4703,7 +4544,7 @@ var ParticleInitialColorState_1 = require("../../animators/states/ParticleInitia
  */
 var ParticleInitialColorNode = (function (_super) {
     __extends(ParticleInitialColorNode, _super);
-    function ParticleInitialColorNode(mode /*uint*/, usesMultiplier, usesOffset, initialColor) {
+    function ParticleInitialColorNode(mode, usesMultiplier, usesOffset, initialColor) {
         if (usesMultiplier === void 0) { usesMultiplier = true; }
         if (usesOffset === void 0) { usesOffset = false; }
         if (initialColor === void 0) { initialColor = null; }
@@ -4716,18 +4557,18 @@ var ParticleInitialColorNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleInitialColorNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+    ParticleInitialColorNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
         var code = "";
-        if (animationRegisterCache.needFragmentAnimation) {
+        if (shader.usesFragmentAnimation) {
             if (this._iUsesMultiplier) {
-                var multiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-                animationRegisterCache.setRegisterIndex(this, ParticleInitialColorState_1.default.MULTIPLIER_INDEX, multiplierValue.index);
-                code += "mul " + animationRegisterCache.colorMulTarget + "," + multiplierValue + "," + animationRegisterCache.colorMulTarget + "\n";
+                var multiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+                animationRegisterData.setRegisterIndex(this, ParticleInitialColorState_1.default.MULTIPLIER_INDEX, multiplierValue.index);
+                code += "mul " + animationRegisterData.colorMulTarget + "," + multiplierValue + "," + animationRegisterData.colorMulTarget + "\n";
             }
             if (this._iUsesOffset) {
-                var offsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
-                animationRegisterCache.setRegisterIndex(this, ParticleInitialColorState_1.default.OFFSET_INDEX, offsetValue.index);
-                code += "add " + animationRegisterCache.colorAddTarget + "," + offsetValue + "," + animationRegisterCache.colorAddTarget + "\n";
+                var offsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
+                animationRegisterData.setRegisterIndex(this, ParticleInitialColorState_1.default.OFFSET_INDEX, offsetValue.index);
+                code += "add " + animationRegisterData.colorAddTarget + "," + offsetValue + "," + animationRegisterData.colorAddTarget + "\n";
             }
         }
         return code;
@@ -4795,7 +4636,7 @@ var ParticleNodeBase = (function (_super) {
      * @param               dataLength      Defines the length of the data used by the node when in <code>LOCAL_STATIC</code> mode.
      * @param    [optional] priority        the priority of the particle animation node, used to order the agal generated in a particle animation set. Defaults to 1.
      */
-    function ParticleNodeBase(name, mode /*uint*/, dataLength /*uint*/, priority) {
+    function ParticleNodeBase(name, mode, dataLength, priority) {
         if (priority === void 0) { priority = 1; }
         _super.call(this);
         this._pDataLength = 3;
@@ -4860,19 +4701,19 @@ var ParticleNodeBase = (function (_super) {
     /**
      * Returns the AGAL code of the particle animation node for use in the vertex shader.
      */
-    ParticleNodeBase.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+    ParticleNodeBase.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
         return "";
     };
     /**
      * Returns the AGAL code of the particle animation node for use in the fragment shader.
      */
-    ParticleNodeBase.prototype.getAGALFragmentCode = function (shader, animationRegisterCache) {
+    ParticleNodeBase.prototype.getAGALFragmentCode = function (shader, animationSet, registerCache, animationRegisterData) {
         return "";
     };
     /**
      * Returns the AGAL code of the particle animation node for use in the fragment shader when UV coordinates are required.
      */
-    ParticleNodeBase.prototype.getAGALUVCode = function (shader, animationRegisterCache) {
+    ParticleNodeBase.prototype.getAGALUVCode = function (shader, animationSet, registerCache, animationRegisterData) {
         return "";
     };
     /**
@@ -4931,7 +4772,7 @@ var ParticleOrbitNode = (function (_super) {
      * @param    [optional] cyclePhase      Defines the phase of the orbit in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
      * @param    [optional] eulers          Defines the euler rotation in degrees, applied to the orientation of the orbit when in global mode.
      */
-    function ParticleOrbitNode(mode /*uint*/, usesEulers, usesCycle, usesPhase, radius, cycleDuration, cyclePhase, eulers) {
+    function ParticleOrbitNode(mode, usesEulers, usesCycle, usesPhase, radius, cycleDuration, cyclePhase, eulers) {
         if (usesEulers === void 0) { usesEulers = true; }
         if (usesCycle === void 0) { usesCycle = false; }
         if (usesPhase === void 0) { usesPhase = false; }
@@ -4955,49 +4796,49 @@ var ParticleOrbitNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleOrbitNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-        var orbitRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-        animationRegisterCache.setRegisterIndex(this, ParticleOrbitState_1.default.ORBIT_INDEX, orbitRegister.index);
-        var eulersMatrixRegister = animationRegisterCache.getFreeVertexConstant();
-        animationRegisterCache.setRegisterIndex(this, ParticleOrbitState_1.default.EULERS_INDEX, eulersMatrixRegister.index);
-        animationRegisterCache.getFreeVertexConstant();
-        animationRegisterCache.getFreeVertexConstant();
-        animationRegisterCache.getFreeVertexConstant();
-        var temp1 = animationRegisterCache.getFreeVertexVectorTemp();
-        animationRegisterCache.addVertexTempUsages(temp1, 1);
+    ParticleOrbitNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+        var orbitRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleOrbitState_1.default.ORBIT_INDEX, orbitRegister.index);
+        var eulersMatrixRegister = registerCache.getFreeVertexConstant();
+        animationRegisterData.setRegisterIndex(this, ParticleOrbitState_1.default.EULERS_INDEX, eulersMatrixRegister.index);
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        var temp1 = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(temp1, 1);
         var distance = new ShaderRegisterElement_1.default(temp1.regName, temp1.index);
-        var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
+        var temp2 = registerCache.getFreeVertexVectorTemp();
         var cos = new ShaderRegisterElement_1.default(temp2.regName, temp2.index, 0);
         var sin = new ShaderRegisterElement_1.default(temp2.regName, temp2.index, 1);
         var degree = new ShaderRegisterElement_1.default(temp2.regName, temp2.index, 2);
-        animationRegisterCache.removeVertexTempUsage(temp1);
+        registerCache.removeVertexTempUsage(temp1);
         var code = "";
         if (this._iUsesCycle) {
-            code += "mul " + degree + "," + animationRegisterCache.vertexTime + "," + orbitRegister + ".y\n";
+            code += "mul " + degree + "," + animationRegisterData.vertexTime + "," + orbitRegister + ".y\n";
             if (this._iUsesPhase)
                 code += "add " + degree + "," + degree + "," + orbitRegister + ".w\n";
         }
         else
-            code += "mul " + degree + "," + animationRegisterCache.vertexLife + "," + orbitRegister + ".y\n";
+            code += "mul " + degree + "," + animationRegisterData.vertexLife + "," + orbitRegister + ".y\n";
         code += "cos " + cos + "," + degree + "\n";
         code += "sin " + sin + "," + degree + "\n";
         code += "mul " + distance + ".x," + cos + "," + orbitRegister + ".x\n";
         code += "mul " + distance + ".y," + sin + "," + orbitRegister + ".x\n";
-        code += "mov " + distance + ".wz" + animationRegisterCache.vertexZeroConst + "\n";
+        code += "mov " + distance + ".wz" + animationRegisterData.vertexZeroConst + "\n";
         if (this._iUsesEulers)
             code += "m44 " + distance + "," + distance + "," + eulersMatrixRegister + "\n";
-        code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
-        if (animationRegisterCache.needVelocity) {
+        code += "add " + animationRegisterData.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
+        if (animationSet.needVelocity) {
             code += "neg " + distance + ".x," + sin + "\n";
             code += "mov " + distance + ".y," + cos + "\n";
-            code += "mov " + distance + ".zw," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + distance + ".zw," + animationRegisterData.vertexZeroConst + "\n";
             if (this._iUsesEulers)
                 code += "m44 " + distance + "," + distance + "," + eulersMatrixRegister + "\n";
             code += "mul " + distance + "," + distance + "," + orbitRegister + ".z\n";
             code += "div " + distance + "," + distance + "," + orbitRegister + ".y\n";
             if (!this._iUsesCycle)
-                code += "div " + distance + "," + distance + "," + animationRegisterCache.vertexLife + "\n";
-            code += "add " + animationRegisterCache.velocityTarget + ".xyz," + animationRegisterCache.velocityTarget + ".xyz," + distance + ".xyz\n";
+                code += "div " + distance + "," + distance + "," + animationRegisterData.vertexLife + "\n";
+            code += "add " + animationRegisterData.velocityTarget + ".xyz," + animationRegisterData.velocityTarget + ".xyz," + distance + ".xyz\n";
         }
         return code;
     };
@@ -5056,7 +4897,7 @@ var ParticleOscillatorNode = (function (_super) {
      * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
      * @param    [optional] oscillator      Defines the default oscillator axis (x, y, z) and cycleDuration (w) of the node, used when in global mode.
      */
-    function ParticleOscillatorNode(mode /*uint*/, oscillator) {
+    function ParticleOscillatorNode(mode, oscillator) {
         if (oscillator === void 0) { oscillator = null; }
         _super.call(this, "ParticleOscillator", mode, 4);
         this._pStateClass = ParticleOscillatorState_1.default;
@@ -5065,26 +4906,26 @@ var ParticleOscillatorNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleOscillatorNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-        var oscillatorRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-        animationRegisterCache.setRegisterIndex(this, ParticleOscillatorState_1.default.OSCILLATOR_INDEX, oscillatorRegister.index);
-        var temp = animationRegisterCache.getFreeVertexVectorTemp();
+    ParticleOscillatorNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+        var oscillatorRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleOscillatorState_1.default.OSCILLATOR_INDEX, oscillatorRegister.index);
+        var temp = registerCache.getFreeVertexVectorTemp();
         var dgree = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
         var sin = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
         var cos = new ShaderRegisterElement_1.default(temp.regName, temp.index, 2);
-        animationRegisterCache.addVertexTempUsages(temp, 1);
-        var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(temp, 1);
+        var temp2 = registerCache.getFreeVertexVectorTemp();
         var distance = new ShaderRegisterElement_1.default(temp2.regName, temp2.index);
-        animationRegisterCache.removeVertexTempUsage(temp);
+        registerCache.removeVertexTempUsage(temp);
         var code = "";
-        code += "mul " + dgree + "," + animationRegisterCache.vertexTime + "," + oscillatorRegister + ".w\n";
+        code += "mul " + dgree + "," + animationRegisterData.vertexTime + "," + oscillatorRegister + ".w\n";
         code += "sin " + sin + "," + dgree + "\n";
         code += "mul " + distance + ".xyz," + sin + "," + oscillatorRegister + ".xyz\n";
-        code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
-        if (animationRegisterCache.needVelocity) {
+        code += "add " + animationRegisterData.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
+        if (animationSet.needVelocity) {
             code += "cos " + cos + "," + dgree + "\n";
             code += "mul " + distance + ".xyz," + cos + "," + oscillatorRegister + ".xyz\n";
-            code += "add " + animationRegisterCache.velocityTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+            code += "add " + animationRegisterData.velocityTarget + ".xyz," + distance + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
         }
         return code;
     };
@@ -5141,7 +4982,7 @@ var ParticlePositionNode = (function (_super) {
      * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
      * @param    [optional] position        Defines the default position of the particle when in global mode. Defaults to 0,0,0.
      */
-    function ParticlePositionNode(mode /*uint*/, position) {
+    function ParticlePositionNode(mode, position) {
         if (position === void 0) { position = null; }
         _super.call(this, "ParticlePosition", mode, 3);
         this._pStateClass = ParticlePositionState_1.default;
@@ -5150,10 +4991,10 @@ var ParticlePositionNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticlePositionNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-        var positionAttribute = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-        animationRegisterCache.setRegisterIndex(this, ParticlePositionState_1.default.POSITION_INDEX, positionAttribute.index);
-        return "add " + animationRegisterCache.positionTarget + ".xyz," + positionAttribute + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
+    ParticlePositionNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+        var positionAttribute = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticlePositionState_1.default.POSITION_INDEX, positionAttribute.index);
+        return "add " + animationRegisterData.positionTarget + ".xyz," + positionAttribute + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
     };
     /**
      * @inheritDoc
@@ -5208,73 +5049,73 @@ var ParticleRotateToHeadingNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleRotateToHeadingNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+    ParticleRotateToHeadingNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
         var code = "";
-        var len = animationRegisterCache.rotationRegisters.length;
+        var len = animationRegisterData.rotationRegisters.length;
         var i;
-        if (animationRegisterCache.hasBillboard) {
-            var temp1 = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(temp1, 1);
-            var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(temp2, 1);
-            var temp3 = animationRegisterCache.getFreeVertexVectorTemp();
-            var rotationMatrixRegister = animationRegisterCache.getFreeVertexConstant();
-            animationRegisterCache.setRegisterIndex(this, ParticleRotateToHeadingState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
-            animationRegisterCache.getFreeVertexConstant();
-            animationRegisterCache.getFreeVertexConstant();
-            animationRegisterCache.getFreeVertexConstant();
-            animationRegisterCache.removeVertexTempUsage(temp1);
-            animationRegisterCache.removeVertexTempUsage(temp2);
+        if (animationSet.hasBillboard) {
+            var temp1 = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(temp1, 1);
+            var temp2 = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(temp2, 1);
+            var temp3 = registerCache.getFreeVertexVectorTemp();
+            var rotationMatrixRegister = registerCache.getFreeVertexConstant();
+            animationRegisterData.setRegisterIndex(this, ParticleRotateToHeadingState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
+            registerCache.getFreeVertexConstant();
+            registerCache.getFreeVertexConstant();
+            registerCache.getFreeVertexConstant();
+            registerCache.removeVertexTempUsage(temp1);
+            registerCache.removeVertexTempUsage(temp2);
             //process the velocity
-            code += "m33 " + temp1 + ".xyz," + animationRegisterCache.velocityTarget + ".xyz," + rotationMatrixRegister + "\n";
-            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "m33 " + temp1 + ".xyz," + animationRegisterData.velocityTarget + ".xyz," + rotationMatrixRegister + "\n";
+            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
             code += "mov " + temp3 + ".xy," + temp1 + ".xy\n";
             code += "nrm " + temp3 + ".xyz," + temp3 + ".xyz\n";
             //temp3.x=cos,temp3.y=sin
             //only process z axis
-            code += "mov " + temp2 + "," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + temp2 + "," + animationRegisterData.vertexZeroConst + "\n";
             code += "mov " + temp2 + ".x," + temp3 + ".y\n";
             code += "mov " + temp2 + ".y," + temp3 + ".x\n";
-            code += "mov " + temp1 + "," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + temp1 + "," + animationRegisterData.vertexZeroConst + "\n";
             code += "mov " + temp1 + ".x," + temp3 + ".x\n";
             code += "neg " + temp1 + ".y," + temp3 + ".y\n";
-            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
-            code += "mov " + temp3 + ".z," + animationRegisterCache.vertexOneConst + "\n";
-            code += "m33 " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
+            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
+            code += "mov " + temp3 + ".z," + animationRegisterData.vertexOneConst + "\n";
+            code += "m33 " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
             for (i = 0; i < len; i++)
-                code += "m33 " + animationRegisterCache.rotationRegisters[i] + ".xyz," + animationRegisterCache.rotationRegisters[i] + "," + temp1 + "\n";
+                code += "m33 " + animationRegisterData.rotationRegisters[i] + ".xyz," + animationRegisterData.rotationRegisters[i] + "," + temp1 + "\n";
         }
         else {
-            var nrmVel = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(nrmVel, 1);
-            var xAxis = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(xAxis, 1);
-            var R = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(R, 1);
-            var R_rev = animationRegisterCache.getFreeVertexVectorTemp();
+            var nrmVel = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(nrmVel, 1);
+            var xAxis = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(xAxis, 1);
+            var R = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(R, 1);
+            var R_rev = registerCache.getFreeVertexVectorTemp();
             var cos = new ShaderRegisterElement_1.default(R.regName, R.index, 3);
             var sin = new ShaderRegisterElement_1.default(R_rev.regName, R_rev.index, 3);
             var cos2 = new ShaderRegisterElement_1.default(nrmVel.regName, nrmVel.index, 3);
             var tempSingle = sin;
-            animationRegisterCache.removeVertexTempUsage(nrmVel);
-            animationRegisterCache.removeVertexTempUsage(xAxis);
-            animationRegisterCache.removeVertexTempUsage(R);
-            code += "mov " + xAxis + ".x," + animationRegisterCache.vertexOneConst + "\n";
-            code += "mov " + xAxis + ".yz," + animationRegisterCache.vertexZeroConst + "\n";
-            code += "nrm " + nrmVel + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+            registerCache.removeVertexTempUsage(nrmVel);
+            registerCache.removeVertexTempUsage(xAxis);
+            registerCache.removeVertexTempUsage(R);
+            code += "mov " + xAxis + ".x," + animationRegisterData.vertexOneConst + "\n";
+            code += "mov " + xAxis + ".yz," + animationRegisterData.vertexZeroConst + "\n";
+            code += "nrm " + nrmVel + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
             code += "dp3 " + cos2 + "," + nrmVel + ".xyz," + xAxis + ".xyz\n";
             code += "crs " + nrmVel + ".xyz," + xAxis + ".xyz," + nrmVel + ".xyz\n";
             code += "nrm " + nrmVel + ".xyz," + nrmVel + ".xyz\n";
             //use R as temp to judge if nrm is (0,0,0).
             //if nrm is (0,0,0) ,change it to (0,0,1).
             code += "dp3 " + R + ".x," + nrmVel + ".xyz," + nrmVel + ".xyz\n";
-            code += "sge " + R + ".x," + animationRegisterCache.vertexZeroConst + "," + R + ".x\n";
+            code += "sge " + R + ".x," + animationRegisterData.vertexZeroConst + "," + R + ".x\n";
             code += "add " + nrmVel + ".z," + R + ".x," + nrmVel + ".z\n";
-            code += "add " + tempSingle + "," + cos2 + "," + animationRegisterCache.vertexOneConst + "\n";
-            code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterCache.vertexTwoConst + "\n";
+            code += "add " + tempSingle + "," + cos2 + "," + animationRegisterData.vertexOneConst + "\n";
+            code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterData.vertexTwoConst + "\n";
             code += "sqt " + cos + "," + tempSingle + "\n";
-            code += "sub " + tempSingle + "," + animationRegisterCache.vertexOneConst + "," + cos2 + "\n";
-            code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterCache.vertexTwoConst + "\n";
+            code += "sub " + tempSingle + "," + animationRegisterData.vertexOneConst + "," + cos2 + "\n";
+            code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterData.vertexTwoConst + "\n";
             code += "sqt " + sin + "," + tempSingle + "\n";
             code += "mul " + R + ".xyz," + sin + "," + nrmVel + ".xyz\n";
             //use cos as R.w
@@ -5282,49 +5123,49 @@ var ParticleRotateToHeadingNode = (function (_super) {
             code += "neg " + R_rev + ".xyz," + R_rev + ".xyz\n";
             //use cos as R_rev.w
             //nrmVel and xAxis are used as temp register
-            code += "crs " + nrmVel + ".xyz," + R + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+            code += "crs " + nrmVel + ".xyz," + R + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
             //use cos as R.w
-            code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+            code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
             code += "add " + nrmVel + ".xyz," + nrmVel + ".xyz," + xAxis + ".xyz\n";
-            code += "dp3 " + xAxis + ".w," + R + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+            code += "dp3 " + xAxis + ".w," + R + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
             code += "neg " + nrmVel + ".w," + xAxis + ".w\n";
             code += "crs " + R + ".xyz," + nrmVel + ".xyz," + R_rev + ".xyz\n";
             //code += "mul " + xAxis + ".xyzw," + nrmVel + ".xyzw," +R_rev + ".w\n";
             code += "mul " + xAxis + ".xyzw," + nrmVel + ".xyzw," + cos + "\n";
             code += "add " + R + ".xyz," + R + ".xyz," + xAxis + ".xyz\n";
             code += "mul " + xAxis + ".xyz," + nrmVel + ".w," + R_rev + ".xyz\n";
-            code += "add " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + R + ".xyz," + xAxis + ".xyz\n";
+            code += "add " + animationRegisterData.scaleAndRotateTarget + ".xyz," + R + ".xyz," + xAxis + ".xyz\n";
             for (i = 0; i < len; i++) {
                 //just repeat the calculate above
                 //because of the limited registers, no need to optimise
-                code += "mov " + xAxis + ".x," + animationRegisterCache.vertexOneConst + "\n";
-                code += "mov " + xAxis + ".yz," + animationRegisterCache.vertexZeroConst + "\n";
-                code += "nrm " + nrmVel + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+                code += "mov " + xAxis + ".x," + animationRegisterData.vertexOneConst + "\n";
+                code += "mov " + xAxis + ".yz," + animationRegisterData.vertexZeroConst + "\n";
+                code += "nrm " + nrmVel + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
                 code += "dp3 " + cos2 + "," + nrmVel + ".xyz," + xAxis + ".xyz\n";
                 code += "crs " + nrmVel + ".xyz," + xAxis + ".xyz," + nrmVel + ".xyz\n";
                 code += "nrm " + nrmVel + ".xyz," + nrmVel + ".xyz\n";
                 code += "dp3 " + R + ".x," + nrmVel + ".xyz," + nrmVel + ".xyz\n";
-                code += "sge " + R + ".x," + animationRegisterCache.vertexZeroConst + "," + R + ".x\n";
+                code += "sge " + R + ".x," + animationRegisterData.vertexZeroConst + "," + R + ".x\n";
                 code += "add " + nrmVel + ".z," + R + ".x," + nrmVel + ".z\n";
-                code += "add " + tempSingle + "," + cos2 + "," + animationRegisterCache.vertexOneConst + "\n";
-                code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterCache.vertexTwoConst + "\n";
+                code += "add " + tempSingle + "," + cos2 + "," + animationRegisterData.vertexOneConst + "\n";
+                code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterData.vertexTwoConst + "\n";
                 code += "sqt " + cos + "," + tempSingle + "\n";
-                code += "sub " + tempSingle + "," + animationRegisterCache.vertexOneConst + "," + cos2 + "\n";
-                code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterCache.vertexTwoConst + "\n";
+                code += "sub " + tempSingle + "," + animationRegisterData.vertexOneConst + "," + cos2 + "\n";
+                code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterData.vertexTwoConst + "\n";
                 code += "sqt " + sin + "," + tempSingle + "\n";
                 code += "mul " + R + ".xyz," + sin + "," + nrmVel + ".xyz\n";
                 code += "mul " + R_rev + ".xyz," + sin + "," + nrmVel + ".xyz\n";
                 code += "neg " + R_rev + ".xyz," + R_rev + ".xyz\n";
-                code += "crs " + nrmVel + ".xyz," + R + ".xyz," + animationRegisterCache.rotationRegisters[i] + ".xyz\n";
-                code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterCache.rotationRegisters[i] + ".xyz\n";
+                code += "crs " + nrmVel + ".xyz," + R + ".xyz," + animationRegisterData.rotationRegisters[i] + ".xyz\n";
+                code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterData.rotationRegisters[i] + ".xyz\n";
                 code += "add " + nrmVel + ".xyz," + nrmVel + ".xyz," + xAxis + ".xyz\n";
-                code += "dp3 " + xAxis + ".w," + R + ".xyz," + animationRegisterCache.rotationRegisters[i] + ".xyz\n";
+                code += "dp3 " + xAxis + ".w," + R + ".xyz," + animationRegisterData.rotationRegisters[i] + ".xyz\n";
                 code += "neg " + nrmVel + ".w," + xAxis + ".w\n";
                 code += "crs " + R + ".xyz," + nrmVel + ".xyz," + R_rev + ".xyz\n";
                 code += "mul " + xAxis + ".xyzw," + nrmVel + ".xyzw," + cos + "\n";
                 code += "add " + R + ".xyz," + R + ".xyz," + xAxis + ".xyz\n";
                 code += "mul " + xAxis + ".xyz," + nrmVel + ".w," + R_rev + ".xyz\n";
-                code += "add " + animationRegisterCache.rotationRegisters[i] + ".xyz," + R + ".xyz," + xAxis + ".xyz\n";
+                code += "add " + animationRegisterData.rotationRegisters[i] + ".xyz," + R + ".xyz," + xAxis + ".xyz\n";
             }
         }
         return code;
@@ -5366,7 +5207,7 @@ var ParticleRotateToPositionNode = (function (_super) {
     /**
      * Creates a new <code>ParticleRotateToPositionNode</code>
      */
-    function ParticleRotateToPositionNode(mode /*uint*/, position) {
+    function ParticleRotateToPositionNode(mode, position) {
         if (position === void 0) { position = null; }
         _super.call(this, "ParticleRotateToPosition", mode, 3, 3);
         this._pStateClass = ParticleRotateToPositionState_1.default;
@@ -5375,129 +5216,129 @@ var ParticleRotateToPositionNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleRotateToPositionNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-        var positionAttribute = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-        animationRegisterCache.setRegisterIndex(this, ParticleRotateToPositionState_1.default.POSITION_INDEX, positionAttribute.index);
+    ParticleRotateToPositionNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+        var positionAttribute = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleRotateToPositionState_1.default.POSITION_INDEX, positionAttribute.index);
         var code = "";
-        var len = animationRegisterCache.rotationRegisters.length;
+        var len = animationRegisterData.rotationRegisters.length;
         var i;
-        if (animationRegisterCache.hasBillboard) {
-            var temp1 = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(temp1, 1);
-            var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(temp2, 1);
-            var temp3 = animationRegisterCache.getFreeVertexVectorTemp();
-            var rotationMatrixRegister = animationRegisterCache.getFreeVertexConstant();
-            animationRegisterCache.setRegisterIndex(this, ParticleRotateToPositionState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
-            animationRegisterCache.getFreeVertexConstant();
-            animationRegisterCache.getFreeVertexConstant();
-            animationRegisterCache.getFreeVertexConstant();
-            animationRegisterCache.removeVertexTempUsage(temp1);
-            animationRegisterCache.removeVertexTempUsage(temp2);
+        if (animationSet.hasBillboard) {
+            var temp1 = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(temp1, 1);
+            var temp2 = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(temp2, 1);
+            var temp3 = registerCache.getFreeVertexVectorTemp();
+            var rotationMatrixRegister = registerCache.getFreeVertexConstant();
+            animationRegisterData.setRegisterIndex(this, ParticleRotateToPositionState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
+            registerCache.getFreeVertexConstant();
+            registerCache.getFreeVertexConstant();
+            registerCache.getFreeVertexConstant();
+            registerCache.removeVertexTempUsage(temp1);
+            registerCache.removeVertexTempUsage(temp2);
             //process the position
-            code += "sub " + temp1 + ".xyz," + positionAttribute + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
+            code += "sub " + temp1 + ".xyz," + positionAttribute + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
             code += "m33 " + temp1 + ".xyz," + temp1 + ".xyz," + rotationMatrixRegister + "\n";
-            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
             code += "mov " + temp3 + ".xy," + temp1 + ".xy\n";
             code += "nrm " + temp3 + ".xyz," + temp3 + ".xyz\n";
             //temp3.x=cos,temp3.y=sin
             //only process z axis
-            code += "mov " + temp2 + "," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + temp2 + "," + animationRegisterData.vertexZeroConst + "\n";
             code += "mov " + temp2 + ".x," + temp3 + ".y\n";
             code += "mov " + temp2 + ".y," + temp3 + ".x\n";
-            code += "mov " + temp1 + "," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + temp1 + "," + animationRegisterData.vertexZeroConst + "\n";
             code += "mov " + temp1 + ".x," + temp3 + ".x\n";
             code += "neg " + temp1 + ".y," + temp3 + ".y\n";
-            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
-            code += "mov " + temp3 + ".z," + animationRegisterCache.vertexOneConst + "\n";
-            code += "m33 " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
+            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
+            code += "mov " + temp3 + ".z," + animationRegisterData.vertexOneConst + "\n";
+            code += "m33 " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
             for (i = 0; i < len; i++)
-                code += "m33 " + animationRegisterCache.rotationRegisters[i] + ".xyz," + animationRegisterCache.rotationRegisters[i] + "," + temp1 + "\n";
+                code += "m33 " + animationRegisterData.rotationRegisters[i] + ".xyz," + animationRegisterData.rotationRegisters[i] + "," + temp1 + "\n";
         }
         else {
-            var nrmDirection = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(nrmDirection, 1);
-            var temp = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(temp, 1);
+            var nrmDirection = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(nrmDirection, 1);
+            var temp = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(temp, 1);
             var cos = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
             var sin = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
             var o_temp = new ShaderRegisterElement_1.default(temp.regName, temp.index, 2);
             var tempSingle = new ShaderRegisterElement_1.default(temp.regName, temp.index, 3);
-            var R = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(R, 1);
-            animationRegisterCache.removeVertexTempUsage(nrmDirection);
-            animationRegisterCache.removeVertexTempUsage(temp);
-            animationRegisterCache.removeVertexTempUsage(R);
-            code += "sub " + nrmDirection + ".xyz," + positionAttribute + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
+            var R = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(R, 1);
+            registerCache.removeVertexTempUsage(nrmDirection);
+            registerCache.removeVertexTempUsage(temp);
+            registerCache.removeVertexTempUsage(R);
+            code += "sub " + nrmDirection + ".xyz," + positionAttribute + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
             code += "nrm " + nrmDirection + ".xyz," + nrmDirection + ".xyz\n";
             code += "mov " + sin + "," + nrmDirection + ".y\n";
             code += "mul " + cos + "," + sin + "," + sin + "\n";
-            code += "sub " + cos + "," + animationRegisterCache.vertexOneConst + "," + cos + "\n";
+            code += "sub " + cos + "," + animationRegisterData.vertexOneConst + "," + cos + "\n";
             code += "sqt " + cos + "," + cos + "\n";
-            code += "mul " + R + ".x," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".y\n";
-            code += "mul " + R + ".y," + sin + "," + animationRegisterCache.scaleAndRotateTarget + ".z\n";
-            code += "mul " + R + ".z," + sin + "," + animationRegisterCache.scaleAndRotateTarget + ".y\n";
-            code += "mul " + R + ".w," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".z\n";
-            code += "sub " + animationRegisterCache.scaleAndRotateTarget + ".y," + R + ".x," + R + ".y\n";
-            code += "add " + animationRegisterCache.scaleAndRotateTarget + ".z," + R + ".z," + R + ".w\n";
+            code += "mul " + R + ".x," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".y\n";
+            code += "mul " + R + ".y," + sin + "," + animationRegisterData.scaleAndRotateTarget + ".z\n";
+            code += "mul " + R + ".z," + sin + "," + animationRegisterData.scaleAndRotateTarget + ".y\n";
+            code += "mul " + R + ".w," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".z\n";
+            code += "sub " + animationRegisterData.scaleAndRotateTarget + ".y," + R + ".x," + R + ".y\n";
+            code += "add " + animationRegisterData.scaleAndRotateTarget + ".z," + R + ".z," + R + ".w\n";
             code += "abs " + R + ".y," + nrmDirection + ".y\n";
-            code += "sge " + R + ".z," + R + ".y," + animationRegisterCache.vertexOneConst + "\n";
+            code += "sge " + R + ".z," + R + ".y," + animationRegisterData.vertexOneConst + "\n";
             code += "mul " + R + ".x," + R + ".y," + nrmDirection + ".y\n";
             //judgu if nrmDirection=(0,1,0);
-            code += "mov " + nrmDirection + ".y," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "mov " + nrmDirection + ".y," + animationRegisterData.vertexZeroConst + "\n";
             code += "dp3 " + sin + "," + nrmDirection + ".xyz," + nrmDirection + ".xyz\n";
-            code += "sge " + tempSingle + "," + animationRegisterCache.vertexZeroConst + "," + sin + "\n";
-            code += "mov " + nrmDirection + ".y," + animationRegisterCache.vertexZeroConst + "\n";
+            code += "sge " + tempSingle + "," + animationRegisterData.vertexZeroConst + "," + sin + "\n";
+            code += "mov " + nrmDirection + ".y," + animationRegisterData.vertexZeroConst + "\n";
             code += "nrm " + nrmDirection + ".xyz," + nrmDirection + ".xyz\n";
-            code += "sub " + sin + "," + animationRegisterCache.vertexOneConst + "," + tempSingle + "\n";
+            code += "sub " + sin + "," + animationRegisterData.vertexOneConst + "," + tempSingle + "\n";
             code += "mul " + sin + "," + sin + "," + nrmDirection + ".x\n";
             code += "mov " + cos + "," + nrmDirection + ".z\n";
             code += "neg " + cos + "," + cos + "\n";
-            code += "sub " + o_temp + "," + animationRegisterCache.vertexOneConst + "," + cos + "\n";
+            code += "sub " + o_temp + "," + animationRegisterData.vertexOneConst + "," + cos + "\n";
             code += "mul " + o_temp + "," + R + ".x," + tempSingle + "\n";
             code += "add " + cos + "," + cos + "," + o_temp + "\n";
-            code += "mul " + R + ".x," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".x\n";
-            code += "mul " + R + ".y," + sin + "," + animationRegisterCache.scaleAndRotateTarget + ".z\n";
-            code += "mul " + R + ".z," + sin + "," + animationRegisterCache.scaleAndRotateTarget + ".x\n";
-            code += "mul " + R + ".w," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".z\n";
-            code += "sub " + animationRegisterCache.scaleAndRotateTarget + ".x," + R + ".x," + R + ".y\n";
-            code += "add " + animationRegisterCache.scaleAndRotateTarget + ".z," + R + ".z," + R + ".w\n";
+            code += "mul " + R + ".x," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".x\n";
+            code += "mul " + R + ".y," + sin + "," + animationRegisterData.scaleAndRotateTarget + ".z\n";
+            code += "mul " + R + ".z," + sin + "," + animationRegisterData.scaleAndRotateTarget + ".x\n";
+            code += "mul " + R + ".w," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".z\n";
+            code += "sub " + animationRegisterData.scaleAndRotateTarget + ".x," + R + ".x," + R + ".y\n";
+            code += "add " + animationRegisterData.scaleAndRotateTarget + ".z," + R + ".z," + R + ".w\n";
             for (i = 0; i < len; i++) {
                 //just repeat the calculate above
                 //because of the limited registers, no need to optimise
-                code += "sub " + nrmDirection + ".xyz," + positionAttribute + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
+                code += "sub " + nrmDirection + ".xyz," + positionAttribute + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
                 code += "nrm " + nrmDirection + ".xyz," + nrmDirection + ".xyz\n";
                 code += "mov " + sin + "," + nrmDirection + ".y\n";
                 code += "mul " + cos + "," + sin + "," + sin + "\n";
-                code += "sub " + cos + "," + animationRegisterCache.vertexOneConst + "," + cos + "\n";
+                code += "sub " + cos + "," + animationRegisterData.vertexOneConst + "," + cos + "\n";
                 code += "sqt " + cos + "," + cos + "\n";
-                code += "mul " + R + ".x," + cos + "," + animationRegisterCache.rotationRegisters[i] + ".y\n";
-                code += "mul " + R + ".y," + sin + "," + animationRegisterCache.rotationRegisters[i] + ".z\n";
-                code += "mul " + R + ".z," + sin + "," + animationRegisterCache.rotationRegisters[i] + ".y\n";
-                code += "mul " + R + ".w," + cos + "," + animationRegisterCache.rotationRegisters[i] + ".z\n";
-                code += "sub " + animationRegisterCache.rotationRegisters[i] + ".y," + R + ".x," + R + ".y\n";
-                code += "add " + animationRegisterCache.rotationRegisters[i] + ".z," + R + ".z," + R + ".w\n";
+                code += "mul " + R + ".x," + cos + "," + animationRegisterData.rotationRegisters[i] + ".y\n";
+                code += "mul " + R + ".y," + sin + "," + animationRegisterData.rotationRegisters[i] + ".z\n";
+                code += "mul " + R + ".z," + sin + "," + animationRegisterData.rotationRegisters[i] + ".y\n";
+                code += "mul " + R + ".w," + cos + "," + animationRegisterData.rotationRegisters[i] + ".z\n";
+                code += "sub " + animationRegisterData.rotationRegisters[i] + ".y," + R + ".x," + R + ".y\n";
+                code += "add " + animationRegisterData.rotationRegisters[i] + ".z," + R + ".z," + R + ".w\n";
                 code += "abs " + R + ".y," + nrmDirection + ".y\n";
-                code += "sge " + R + ".z," + R + ".y," + animationRegisterCache.vertexOneConst + "\n";
+                code += "sge " + R + ".z," + R + ".y," + animationRegisterData.vertexOneConst + "\n";
                 code += "mul " + R + ".x," + R + ".y," + nrmDirection + ".y\n";
-                code += "mov " + nrmDirection + ".y," + animationRegisterCache.vertexZeroConst + "\n";
+                code += "mov " + nrmDirection + ".y," + animationRegisterData.vertexZeroConst + "\n";
                 code += "dp3 " + sin + "," + nrmDirection + ".xyz," + nrmDirection + ".xyz\n";
-                code += "sge " + tempSingle + "," + animationRegisterCache.vertexZeroConst + "," + sin + "\n";
-                code += "mov " + nrmDirection + ".y," + animationRegisterCache.vertexZeroConst + "\n";
+                code += "sge " + tempSingle + "," + animationRegisterData.vertexZeroConst + "," + sin + "\n";
+                code += "mov " + nrmDirection + ".y," + animationRegisterData.vertexZeroConst + "\n";
                 code += "nrm " + nrmDirection + ".xyz," + nrmDirection + ".xyz\n";
-                code += "sub " + sin + "," + animationRegisterCache.vertexOneConst + "," + tempSingle + "\n";
+                code += "sub " + sin + "," + animationRegisterData.vertexOneConst + "," + tempSingle + "\n";
                 code += "mul " + sin + "," + sin + "," + nrmDirection + ".x\n";
                 code += "mov " + cos + "," + nrmDirection + ".z\n";
                 code += "neg " + cos + "," + cos + "\n";
-                code += "sub " + o_temp + "," + animationRegisterCache.vertexOneConst + "," + cos + "\n";
+                code += "sub " + o_temp + "," + animationRegisterData.vertexOneConst + "," + cos + "\n";
                 code += "mul " + o_temp + "," + R + ".x," + tempSingle + "\n";
                 code += "add " + cos + "," + cos + "," + o_temp + "\n";
-                code += "mul " + R + ".x," + cos + "," + animationRegisterCache.rotationRegisters[i] + ".x\n";
-                code += "mul " + R + ".y," + sin + "," + animationRegisterCache.rotationRegisters[i] + ".z\n";
-                code += "mul " + R + ".z," + sin + "," + animationRegisterCache.rotationRegisters[i] + ".x\n";
-                code += "mul " + R + ".w," + cos + "," + animationRegisterCache.rotationRegisters[i] + ".z\n";
-                code += "sub " + animationRegisterCache.rotationRegisters[i] + ".x," + R + ".x," + R + ".y\n";
-                code += "add " + animationRegisterCache.rotationRegisters[i] + ".z," + R + ".z," + R + ".w\n";
+                code += "mul " + R + ".x," + cos + "," + animationRegisterData.rotationRegisters[i] + ".x\n";
+                code += "mul " + R + ".y," + sin + "," + animationRegisterData.rotationRegisters[i] + ".z\n";
+                code += "mul " + R + ".z," + sin + "," + animationRegisterData.rotationRegisters[i] + ".x\n";
+                code += "mul " + R + ".w," + cos + "," + animationRegisterData.rotationRegisters[i] + ".z\n";
+                code += "sub " + animationRegisterData.rotationRegisters[i] + ".x," + R + ".x," + R + ".y\n";
+                code += "add " + animationRegisterData.rotationRegisters[i] + ".z," + R + ".z," + R + ".w\n";
             }
         }
         return code;
@@ -5551,7 +5392,7 @@ var ParticleRotationalVelocityNode = (function (_super) {
      *
      * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
      */
-    function ParticleRotationalVelocityNode(mode /*uint*/, rotationalVelocity) {
+    function ParticleRotationalVelocityNode(mode, rotationalVelocity) {
         if (rotationalVelocity === void 0) { rotationalVelocity = null; }
         _super.call(this, "ParticleRotationalVelocity", mode, 4);
         this._pStateClass = ParticleRotationalVelocityState_1.default;
@@ -5560,64 +5401,64 @@ var ParticleRotationalVelocityNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleRotationalVelocityNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-        var rotationRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-        animationRegisterCache.setRegisterIndex(this, ParticleRotationalVelocityState_1.default.ROTATIONALVELOCITY_INDEX, rotationRegister.index);
-        var nrmVel = animationRegisterCache.getFreeVertexVectorTemp();
-        animationRegisterCache.addVertexTempUsages(nrmVel, 1);
-        var xAxis = animationRegisterCache.getFreeVertexVectorTemp();
-        animationRegisterCache.addVertexTempUsages(xAxis, 1);
-        var temp = animationRegisterCache.getFreeVertexVectorTemp();
-        animationRegisterCache.addVertexTempUsages(temp, 1);
+    ParticleRotationalVelocityNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+        var rotationRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleRotationalVelocityState_1.default.ROTATIONALVELOCITY_INDEX, rotationRegister.index);
+        var nrmVel = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(nrmVel, 1);
+        var xAxis = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(xAxis, 1);
+        var temp = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(temp, 1);
         var Rtemp = new ShaderRegisterElement_1.default(temp.regName, temp.index);
-        var R_rev = animationRegisterCache.getFreeVertexVectorTemp();
+        var R_rev = registerCache.getFreeVertexVectorTemp();
         R_rev = new ShaderRegisterElement_1.default(R_rev.regName, R_rev.index);
         var cos = new ShaderRegisterElement_1.default(Rtemp.regName, Rtemp.index, 3);
         var sin = new ShaderRegisterElement_1.default(R_rev.regName, R_rev.index, 3);
-        animationRegisterCache.removeVertexTempUsage(nrmVel);
-        animationRegisterCache.removeVertexTempUsage(xAxis);
-        animationRegisterCache.removeVertexTempUsage(temp);
+        registerCache.removeVertexTempUsage(nrmVel);
+        registerCache.removeVertexTempUsage(xAxis);
+        registerCache.removeVertexTempUsage(temp);
         var code = "";
         code += "mov " + nrmVel + ".xyz," + rotationRegister + ".xyz\n";
-        code += "mov " + nrmVel + ".w," + animationRegisterCache.vertexZeroConst + "\n";
-        code += "mul " + cos + "," + animationRegisterCache.vertexTime + "," + rotationRegister + ".w\n";
+        code += "mov " + nrmVel + ".w," + animationRegisterData.vertexZeroConst + "\n";
+        code += "mul " + cos + "," + animationRegisterData.vertexTime + "," + rotationRegister + ".w\n";
         code += "sin " + sin + "," + cos + "\n";
         code += "cos " + cos + "," + cos + "\n";
         code += "mul " + Rtemp + ".xyz," + sin + "," + nrmVel + ".xyz\n";
         code += "mul " + R_rev + ".xyz," + sin + "," + nrmVel + ".xyz\n";
         code += "neg " + R_rev + ".xyz," + R_rev + ".xyz\n";
         //nrmVel and xAxis are used as temp register
-        code += "crs " + nrmVel + ".xyz," + Rtemp + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
-        code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+        code += "crs " + nrmVel + ".xyz," + Rtemp + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
+        code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
         code += "add " + nrmVel + ".xyz," + nrmVel + ".xyz," + xAxis + ".xyz\n";
-        code += "dp3 " + xAxis + ".w," + Rtemp + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+        code += "dp3 " + xAxis + ".w," + Rtemp + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
         code += "neg " + nrmVel + ".w," + xAxis + ".w\n";
         code += "crs " + Rtemp + ".xyz," + nrmVel + ".xyz," + R_rev + ".xyz\n";
         //use cos as R_rev.w
         code += "mul " + xAxis + ".xyzw," + nrmVel + ".xyzw," + cos + "\n";
         code += "add " + Rtemp + ".xyz," + Rtemp + ".xyz," + xAxis + ".xyz\n";
         code += "mul " + xAxis + ".xyz," + nrmVel + ".w," + R_rev + ".xyz\n";
-        code += "add " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + Rtemp + ".xyz," + xAxis + ".xyz\n";
-        var len = animationRegisterCache.rotationRegisters.length;
+        code += "add " + animationRegisterData.scaleAndRotateTarget + ".xyz," + Rtemp + ".xyz," + xAxis + ".xyz\n";
+        var len = animationRegisterData.rotationRegisters.length;
         for (var i = 0; i < len; i++) {
             code += "mov " + nrmVel + ".xyz," + rotationRegister + ".xyz\n";
-            code += "mov " + nrmVel + ".w," + animationRegisterCache.vertexZeroConst + "\n";
-            code += "mul " + cos + "," + animationRegisterCache.vertexTime + "," + rotationRegister + ".w\n";
+            code += "mov " + nrmVel + ".w," + animationRegisterData.vertexZeroConst + "\n";
+            code += "mul " + cos + "," + animationRegisterData.vertexTime + "," + rotationRegister + ".w\n";
             code += "sin " + sin + "," + cos + "\n";
             code += "cos " + cos + "," + cos + "\n";
             code += "mul " + Rtemp + ".xyz," + sin + "," + nrmVel + ".xyz\n";
             code += "mul " + R_rev + ".xyz," + sin + "," + nrmVel + ".xyz\n";
             code += "neg " + R_rev + ".xyz," + R_rev + ".xyz\n";
-            code += "crs " + nrmVel + ".xyz," + Rtemp + ".xyz," + animationRegisterCache.rotationRegisters[i] + ".xyz\n";
-            code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterCache.rotationRegisters[i] + "\n";
+            code += "crs " + nrmVel + ".xyz," + Rtemp + ".xyz," + animationRegisterData.rotationRegisters[i] + ".xyz\n";
+            code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterData.rotationRegisters[i] + "\n";
             code += "add " + nrmVel + ".xyz," + nrmVel + ".xyz," + xAxis + ".xyz\n";
-            code += "dp3 " + xAxis + ".w," + Rtemp + ".xyz," + animationRegisterCache.rotationRegisters[i] + "\n";
+            code += "dp3 " + xAxis + ".w," + Rtemp + ".xyz," + animationRegisterData.rotationRegisters[i] + "\n";
             code += "neg " + nrmVel + ".w," + xAxis + ".w\n";
             code += "crs " + Rtemp + ".xyz," + nrmVel + ".xyz," + R_rev + ".xyz\n";
             code += "mul " + xAxis + ".xyzw," + nrmVel + ".xyzw," + cos + "\n";
             code += "add " + Rtemp + ".xyz," + Rtemp + ".xyz," + xAxis + ".xyz\n";
             code += "mul " + xAxis + ".xyz," + nrmVel + ".w," + R_rev + ".xyz\n";
-            code += "add " + animationRegisterCache.rotationRegisters[i] + "," + Rtemp + ".xyz," + xAxis + ".xyz\n";
+            code += "add " + animationRegisterData.rotationRegisters[i] + "," + Rtemp + ".xyz," + xAxis + ".xyz\n";
         }
         return code;
     };
@@ -5683,7 +5524,7 @@ var ParticleScaleNode = (function (_super) {
      * @param    [optional] cycleDuration   Defines the default duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
      * @param    [optional] cyclePhase      Defines the default phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
      */
-    function ParticleScaleNode(mode /*uint*/, usesCycle, usesPhase, minScale, maxScale, cycleDuration, cyclePhase) {
+    function ParticleScaleNode(mode, usesCycle, usesPhase, minScale, maxScale, cycleDuration, cyclePhase) {
         if (minScale === void 0) { minScale = 1; }
         if (maxScale === void 0) { maxScale = 1; }
         if (cycleDuration === void 0) { cycleDuration = 1; }
@@ -5700,20 +5541,20 @@ var ParticleScaleNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleScaleNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+    ParticleScaleNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
         var code = "";
-        var temp = animationRegisterCache.getFreeVertexSingleTemp();
-        var scaleRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-        animationRegisterCache.setRegisterIndex(this, ParticleScaleState_1.default.SCALE_INDEX, scaleRegister.index);
+        var temp = registerCache.getFreeVertexSingleTemp();
+        var scaleRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleScaleState_1.default.SCALE_INDEX, scaleRegister.index);
         if (this._iUsesCycle) {
-            code += "mul " + temp + "," + animationRegisterCache.vertexTime + "," + scaleRegister + ".z\n";
+            code += "mul " + temp + "," + animationRegisterData.vertexTime + "," + scaleRegister + ".z\n";
             if (this._iUsesPhase)
                 code += "add " + temp + "," + temp + "," + scaleRegister + ".w\n";
             code += "sin " + temp + "," + temp + "\n";
         }
-        code += "mul " + temp + "," + scaleRegister + ".y," + ((this._iUsesCycle) ? temp : animationRegisterCache.vertexLife) + "\n";
+        code += "mul " + temp + "," + scaleRegister + ".y," + ((this._iUsesCycle) ? temp : animationRegisterData.vertexLife) + "\n";
         code += "add " + temp + "," + scaleRegister + ".x," + temp + "\n";
-        code += "mul " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp + "\n";
+        code += "mul " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp + "\n";
         return code;
     };
     /**
@@ -5770,7 +5611,7 @@ var ShaderRegisterElement_1 = require("../../shaders/ShaderRegisterElement");
  */
 var ParticleSegmentedColorNode = (function (_super) {
     __extends(ParticleSegmentedColorNode, _super);
-    function ParticleSegmentedColorNode(usesMultiplier, usesOffset, numSegmentPoint /*int*/, startColor, endColor, segmentPoints) {
+    function ParticleSegmentedColorNode(usesMultiplier, usesOffset, numSegmentPoint, startColor, endColor, segmentPoints) {
         //because of the stage3d register limitation, it only support the global mode
         _super.call(this, "ParticleSegmentedColor", ParticlePropertiesMode_1.default.GLOBAL, 0, ParticleAnimationSet_1.default.COLOR_PRIORITY);
         this._pStateClass = ParticleSegmentedColorState_1.default;
@@ -5795,67 +5636,67 @@ var ParticleSegmentedColorNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleSegmentedColorNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+    ParticleSegmentedColorNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
         var code = "";
-        if (animationRegisterCache.needFragmentAnimation) {
+        if (shader.usesFragmentAnimation) {
             var accMultiplierColor;
             //var accOffsetColor:ShaderRegisterElement;
             if (this._iUsesMultiplier) {
-                accMultiplierColor = animationRegisterCache.getFreeVertexVectorTemp();
-                animationRegisterCache.addVertexTempUsages(accMultiplierColor, 1);
+                accMultiplierColor = registerCache.getFreeVertexVectorTemp();
+                registerCache.addVertexTempUsages(accMultiplierColor, 1);
             }
-            var tempColor = animationRegisterCache.getFreeVertexVectorTemp();
-            animationRegisterCache.addVertexTempUsages(tempColor, 1);
-            var temp = animationRegisterCache.getFreeVertexVectorTemp();
+            var tempColor = registerCache.getFreeVertexVectorTemp();
+            registerCache.addVertexTempUsages(tempColor, 1);
+            var temp = registerCache.getFreeVertexVectorTemp();
             var accTime = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
             var tempTime = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
             if (this._iUsesMultiplier)
-                animationRegisterCache.removeVertexTempUsage(accMultiplierColor);
-            animationRegisterCache.removeVertexTempUsage(tempColor);
+                registerCache.removeVertexTempUsage(accMultiplierColor);
+            registerCache.removeVertexTempUsage(tempColor);
             //for saving all the life values (at most 4)
-            var lifeTimeRegister = animationRegisterCache.getFreeVertexConstant();
-            animationRegisterCache.setRegisterIndex(this, ParticleSegmentedColorState_1.default.TIME_DATA_INDEX, lifeTimeRegister.index);
+            var lifeTimeRegister = registerCache.getFreeVertexConstant();
+            animationRegisterData.setRegisterIndex(this, ParticleSegmentedColorState_1.default.TIME_DATA_INDEX, lifeTimeRegister.index);
             var i;
             var startMulValue;
             var deltaMulValues;
             if (this._iUsesMultiplier) {
-                startMulValue = animationRegisterCache.getFreeVertexConstant();
-                animationRegisterCache.setRegisterIndex(this, ParticleSegmentedColorState_1.default.START_MULTIPLIER_INDEX, startMulValue.index);
+                startMulValue = registerCache.getFreeVertexConstant();
+                animationRegisterData.setRegisterIndex(this, ParticleSegmentedColorState_1.default.START_MULTIPLIER_INDEX, startMulValue.index);
                 deltaMulValues = new Array();
                 for (i = 0; i < this._iNumSegmentPoint + 1; i++)
-                    deltaMulValues.push(animationRegisterCache.getFreeVertexConstant());
+                    deltaMulValues.push(registerCache.getFreeVertexConstant());
             }
             var startOffsetValue;
             var deltaOffsetValues;
             if (this._iUsesOffset) {
-                startOffsetValue = animationRegisterCache.getFreeVertexConstant();
-                animationRegisterCache.setRegisterIndex(this, ParticleSegmentedColorState_1.default.START_OFFSET_INDEX, startOffsetValue.index);
+                startOffsetValue = registerCache.getFreeVertexConstant();
+                animationRegisterData.setRegisterIndex(this, ParticleSegmentedColorState_1.default.START_OFFSET_INDEX, startOffsetValue.index);
                 deltaOffsetValues = new Array();
                 for (i = 0; i < this._iNumSegmentPoint + 1; i++)
-                    deltaOffsetValues.push(animationRegisterCache.getFreeVertexConstant());
+                    deltaOffsetValues.push(registerCache.getFreeVertexConstant());
             }
             if (this._iUsesMultiplier)
                 code += "mov " + accMultiplierColor + "," + startMulValue + "\n";
             if (this._iUsesOffset)
-                code += "add " + animationRegisterCache.colorAddTarget + "," + animationRegisterCache.colorAddTarget + "," + startOffsetValue + "\n";
+                code += "add " + animationRegisterData.colorAddTarget + "," + animationRegisterData.colorAddTarget + "," + startOffsetValue + "\n";
             for (i = 0; i < this._iNumSegmentPoint; i++) {
                 switch (i) {
                     case 0:
-                        code += "min " + tempTime + "," + animationRegisterCache.vertexLife + "," + lifeTimeRegister + ".x\n";
+                        code += "min " + tempTime + "," + animationRegisterData.vertexLife + "," + lifeTimeRegister + ".x\n";
                         break;
                     case 1:
-                        code += "sub " + accTime + "," + animationRegisterCache.vertexLife + "," + lifeTimeRegister + ".x\n";
-                        code += "max " + tempTime + "," + accTime + "," + animationRegisterCache.vertexZeroConst + "\n";
+                        code += "sub " + accTime + "," + animationRegisterData.vertexLife + "," + lifeTimeRegister + ".x\n";
+                        code += "max " + tempTime + "," + accTime + "," + animationRegisterData.vertexZeroConst + "\n";
                         code += "min " + tempTime + "," + tempTime + "," + lifeTimeRegister + ".y\n";
                         break;
                     case 2:
                         code += "sub " + accTime + "," + accTime + "," + lifeTimeRegister + ".y\n";
-                        code += "max " + tempTime + "," + accTime + "," + animationRegisterCache.vertexZeroConst + "\n";
+                        code += "max " + tempTime + "," + accTime + "," + animationRegisterData.vertexZeroConst + "\n";
                         code += "min " + tempTime + "," + tempTime + "," + lifeTimeRegister + ".z\n";
                         break;
                     case 3:
                         code += "sub " + accTime + "," + accTime + "," + lifeTimeRegister + ".z\n";
-                        code += "max " + tempTime + "," + accTime + "," + animationRegisterCache.vertexZeroConst + "\n";
+                        code += "max " + tempTime + "," + accTime + "," + animationRegisterData.vertexZeroConst + "\n";
                         code += "min " + tempTime + "," + tempTime + "," + lifeTimeRegister + ".w\n";
                         break;
                 }
@@ -5865,16 +5706,16 @@ var ParticleSegmentedColorNode = (function (_super) {
                 }
                 if (this._iUsesOffset) {
                     code += "mul " + tempColor + "," + tempTime + "," + deltaOffsetValues[i] + "\n";
-                    code += "add " + animationRegisterCache.colorAddTarget + "," + animationRegisterCache.colorAddTarget + "," + tempColor + "\n";
+                    code += "add " + animationRegisterData.colorAddTarget + "," + animationRegisterData.colorAddTarget + "," + tempColor + "\n";
                 }
             }
             //for the last segment:
             if (this._iNumSegmentPoint == 0)
-                tempTime = animationRegisterCache.vertexLife;
+                tempTime = animationRegisterData.vertexLife;
             else {
                 switch (this._iNumSegmentPoint) {
                     case 1:
-                        code += "sub " + accTime + "," + animationRegisterCache.vertexLife + "," + lifeTimeRegister + ".x\n";
+                        code += "sub " + accTime + "," + animationRegisterData.vertexLife + "," + lifeTimeRegister + ".x\n";
                         break;
                     case 2:
                         code += "sub " + accTime + "," + accTime + "," + lifeTimeRegister + ".y\n";
@@ -5886,16 +5727,16 @@ var ParticleSegmentedColorNode = (function (_super) {
                         code += "sub " + accTime + "," + accTime + "," + lifeTimeRegister + ".w\n";
                         break;
                 }
-                code += "max " + tempTime + "," + accTime + "," + animationRegisterCache.vertexZeroConst + "\n";
+                code += "max " + tempTime + "," + accTime + "," + animationRegisterData.vertexZeroConst + "\n";
             }
             if (this._iUsesMultiplier) {
                 code += "mul " + tempColor + "," + tempTime + "," + deltaMulValues[this._iNumSegmentPoint] + "\n";
                 code += "add " + accMultiplierColor + "," + accMultiplierColor + "," + tempColor + "\n";
-                code += "mul " + animationRegisterCache.colorMulTarget + "," + animationRegisterCache.colorMulTarget + "," + accMultiplierColor + "\n";
+                code += "mul " + animationRegisterData.colorMulTarget + "," + animationRegisterData.colorMulTarget + "," + accMultiplierColor + "\n";
             }
             if (this._iUsesOffset) {
                 code += "mul " + tempColor + "," + tempTime + "," + deltaOffsetValues[this._iNumSegmentPoint] + "\n";
-                code += "add " + animationRegisterCache.colorAddTarget + "," + animationRegisterCache.colorAddTarget + "," + tempColor + "\n";
+                code += "add " + animationRegisterData.colorAddTarget + "," + animationRegisterData.colorAddTarget + "," + tempColor + "\n";
             }
         }
         return code;
@@ -5934,7 +5775,7 @@ var ParticleSpriteSheetNode = (function (_super) {
      * @param    [optional] totalFrames     Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows.
      * @param    [optional] looping         Defines whether the spritesheet animation is set to loop indefinitely. Defaults to true.
      */
-    function ParticleSpriteSheetNode(mode /*uint*/, usesCycle, usesPhase, numColumns, numRows, cycleDuration, cyclePhase, totalFrames) {
+    function ParticleSpriteSheetNode(mode, usesCycle, usesPhase, numColumns, numRows, cycleDuration, cyclePhase, totalFrames) {
         if (numColumns === void 0) { numColumns = 1; }
         if (numRows === void 0) { numRows = 1; }
         if (cycleDuration === void 0) { cycleDuration = 1; }
@@ -5983,25 +5824,25 @@ var ParticleSpriteSheetNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleSpriteSheetNode.prototype.getAGALUVCode = function (shader, animationRegisterCache) {
+    ParticleSpriteSheetNode.prototype.getAGALUVCode = function (shader, animationSet, registerCache, animationRegisterData) {
         //get 2 vc
-        var uvParamConst1 = animationRegisterCache.getFreeVertexConstant();
-        var uvParamConst2 = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-        animationRegisterCache.setRegisterIndex(this, ParticleSpriteSheetState_1.default.UV_INDEX_0, uvParamConst1.index);
-        animationRegisterCache.setRegisterIndex(this, ParticleSpriteSheetState_1.default.UV_INDEX_1, uvParamConst2.index);
+        var uvParamConst1 = registerCache.getFreeVertexConstant();
+        var uvParamConst2 = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleSpriteSheetState_1.default.UV_INDEX_0, uvParamConst1.index);
+        animationRegisterData.setRegisterIndex(this, ParticleSpriteSheetState_1.default.UV_INDEX_1, uvParamConst2.index);
         var uTotal = new ShaderRegisterElement_1.default(uvParamConst1.regName, uvParamConst1.index, 0);
         var uStep = new ShaderRegisterElement_1.default(uvParamConst1.regName, uvParamConst1.index, 1);
         var vStep = new ShaderRegisterElement_1.default(uvParamConst1.regName, uvParamConst1.index, 2);
         var uSpeed = new ShaderRegisterElement_1.default(uvParamConst2.regName, uvParamConst2.index, 0);
         var cycle = new ShaderRegisterElement_1.default(uvParamConst2.regName, uvParamConst2.index, 1);
         var phaseTime = new ShaderRegisterElement_1.default(uvParamConst2.regName, uvParamConst2.index, 2);
-        var temp = animationRegisterCache.getFreeVertexVectorTemp();
+        var temp = registerCache.getFreeVertexVectorTemp();
         var time = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
         var vOffset = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
         temp = new ShaderRegisterElement_1.default(temp.regName, temp.index, 2);
         var temp2 = new ShaderRegisterElement_1.default(temp.regName, temp.index, 3);
-        var u = new ShaderRegisterElement_1.default(animationRegisterCache.uvTarget.regName, animationRegisterCache.uvTarget.index, 0);
-        var v = new ShaderRegisterElement_1.default(animationRegisterCache.uvTarget.regName, animationRegisterCache.uvTarget.index, 1);
+        var u = new ShaderRegisterElement_1.default(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, 0);
+        var v = new ShaderRegisterElement_1.default(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, 1);
         var code = "";
         //scale uv
         code += "mul " + u + "," + u + "," + uStep + "\n";
@@ -6009,16 +5850,16 @@ var ParticleSpriteSheetNode = (function (_super) {
             code += "mul " + v + "," + v + "," + vStep + "\n";
         if (this._iUsesCycle) {
             if (this._iUsesPhase)
-                code += "add " + time + "," + animationRegisterCache.vertexTime + "," + phaseTime + "\n";
+                code += "add " + time + "," + animationRegisterData.vertexTime + "," + phaseTime + "\n";
             else
-                code += "mov " + time + "," + animationRegisterCache.vertexTime + "\n";
+                code += "mov " + time + "," + animationRegisterData.vertexTime + "\n";
             code += "div " + time + "," + time + "," + cycle + "\n";
             code += "frc " + time + "," + time + "\n";
             code += "mul " + time + "," + time + "," + cycle + "\n";
             code += "mul " + temp + "," + time + "," + uSpeed + "\n";
         }
         else
-            code += "mul " + temp.toString() + "," + animationRegisterCache.vertexLife + "," + uTotal + "\n";
+            code += "mul " + temp.toString() + "," + animationRegisterData.vertexLife + "," + uTotal + "\n";
         if (this._iNumRows > 1) {
             code += "frc " + temp2 + "," + temp + "\n";
             code += "sub " + vOffset + "," + temp + "," + temp2 + "\n";
@@ -6108,40 +5949,40 @@ var ParticleTimeNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleTimeNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-        var timeStreamRegister = animationRegisterCache.getFreeVertexAttribute(); //timeStreamRegister.x is start，timeStreamRegister.y is during time
-        animationRegisterCache.setRegisterIndex(this, ParticleTimeState_1.default.TIME_STREAM_INDEX, timeStreamRegister.index);
-        var timeConst = animationRegisterCache.getFreeVertexConstant();
-        animationRegisterCache.setRegisterIndex(this, ParticleTimeState_1.default.TIME_CONSTANT_INDEX, timeConst.index);
+    ParticleTimeNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+        var timeStreamRegister = registerCache.getFreeVertexAttribute(); //timeStreamRegister.x is start，timeStreamRegister.y is during time
+        animationRegisterData.setRegisterIndex(this, ParticleTimeState_1.default.TIME_STREAM_INDEX, timeStreamRegister.index);
+        var timeConst = registerCache.getFreeVertexConstant();
+        animationRegisterData.setRegisterIndex(this, ParticleTimeState_1.default.TIME_CONSTANT_INDEX, timeConst.index);
         var code = "";
-        code += "sub " + animationRegisterCache.vertexTime + "," + timeConst + "," + timeStreamRegister + ".x\n";
+        code += "sub " + animationRegisterData.vertexTime + "," + timeConst + "," + timeStreamRegister + ".x\n";
         //if time=0,set the position to zero.
-        var temp = animationRegisterCache.getFreeVertexSingleTemp();
-        code += "sge " + temp + "," + animationRegisterCache.vertexTime + "," + animationRegisterCache.vertexZeroConst + "\n";
-        code += "mul " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp + "\n";
+        var temp = registerCache.getFreeVertexSingleTemp();
+        code += "sge " + temp + "," + animationRegisterData.vertexTime + "," + animationRegisterData.vertexZeroConst + "\n";
+        code += "mul " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp + "\n";
         if (this._iUsesDuration) {
             if (this._iUsesLooping) {
-                var div = animationRegisterCache.getFreeVertexSingleTemp();
+                var div = registerCache.getFreeVertexSingleTemp();
                 if (this._iUsesDelay) {
-                    code += "div " + div + "," + animationRegisterCache.vertexTime + "," + timeStreamRegister + ".z\n";
+                    code += "div " + div + "," + animationRegisterData.vertexTime + "," + timeStreamRegister + ".z\n";
                     code += "frc " + div + "," + div + "\n";
-                    code += "mul " + animationRegisterCache.vertexTime + "," + div + "," + timeStreamRegister + ".z\n";
-                    code += "slt " + div + "," + animationRegisterCache.vertexTime + "," + timeStreamRegister + ".y\n";
-                    code += "mul " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + div + "\n";
+                    code += "mul " + animationRegisterData.vertexTime + "," + div + "," + timeStreamRegister + ".z\n";
+                    code += "slt " + div + "," + animationRegisterData.vertexTime + "," + timeStreamRegister + ".y\n";
+                    code += "mul " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + div + "\n";
                 }
                 else {
-                    code += "mul " + div + "," + animationRegisterCache.vertexTime + "," + timeStreamRegister + ".w\n";
+                    code += "mul " + div + "," + animationRegisterData.vertexTime + "," + timeStreamRegister + ".w\n";
                     code += "frc " + div + "," + div + "\n";
-                    code += "mul " + animationRegisterCache.vertexTime + "," + div + "," + timeStreamRegister + ".y\n";
+                    code += "mul " + animationRegisterData.vertexTime + "," + div + "," + timeStreamRegister + ".y\n";
                 }
             }
             else {
-                var sge = animationRegisterCache.getFreeVertexSingleTemp();
-                code += "sge " + sge + "," + timeStreamRegister + ".y," + animationRegisterCache.vertexTime + "\n";
-                code += "mul " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + sge + "\n";
+                var sge = registerCache.getFreeVertexSingleTemp();
+                code += "sge " + sge + "," + timeStreamRegister + ".y," + animationRegisterData.vertexTime + "\n";
+                code += "mul " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + sge + "\n";
             }
         }
-        code += "mul " + animationRegisterCache.vertexLife + "," + animationRegisterCache.vertexTime + "," + timeStreamRegister + ".w\n";
+        code += "mul " + animationRegisterData.vertexLife + "," + animationRegisterData.vertexTime + "," + timeStreamRegister + ".w\n";
         return code;
     };
     /**
@@ -6190,7 +6031,7 @@ var ParticleUVNode = (function (_super) {
      * @param    [optional] scale           Defines whether the time track is in loop mode. Defaults to false.
      * @param    [optional] axis            Defines whether the time track is in loop mode. Defaults to false.
      */
-    function ParticleUVNode(mode /*uint*/, cycle, scale, axis) {
+    function ParticleUVNode(mode, cycle, scale, axis) {
         if (cycle === void 0) { cycle = 1; }
         if (scale === void 0) { scale = 1; }
         if (axis === void 0) { axis = "x"; }
@@ -6246,16 +6087,16 @@ var ParticleUVNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleUVNode.prototype.getAGALUVCode = function (shader, animationRegisterCache) {
+    ParticleUVNode.prototype.getAGALUVCode = function (shader, animationSet, registerCache, animationRegisterData) {
         var code = "";
-        var uvConst = animationRegisterCache.getFreeVertexConstant();
-        animationRegisterCache.setRegisterIndex(this, ParticleUVState_1.default.UV_INDEX, uvConst.index);
+        var uvConst = registerCache.getFreeVertexConstant();
+        animationRegisterData.setRegisterIndex(this, ParticleUVState_1.default.UV_INDEX, uvConst.index);
         var axisIndex = this._axis == "x" ? 0 : (this._axis == "y" ? 1 : 2);
-        var target = new ShaderRegisterElement_1.default(animationRegisterCache.uvTarget.regName, animationRegisterCache.uvTarget.index, axisIndex);
-        var sin = animationRegisterCache.getFreeVertexSingleTemp();
+        var target = new ShaderRegisterElement_1.default(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, axisIndex);
+        var sin = registerCache.getFreeVertexSingleTemp();
         if (this._scale != 1)
             code += "mul " + target + "," + target + "," + uvConst + ".y\n";
-        code += "mul " + sin + "," + animationRegisterCache.vertexTime + "," + uvConst + ".x\n";
+        code += "mul " + sin + "," + animationRegisterData.vertexTime + "," + uvConst + ".x\n";
         code += "sin " + sin + "," + sin + "\n";
         code += "add " + target + "," + target + "," + sin + "\n";
         return code;
@@ -6310,7 +6151,7 @@ var ParticleVelocityNode = (function (_super) {
      * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
      * @param    [optional] velocity        Defines the default velocity vector of the node, used when in global mode.
      */
-    function ParticleVelocityNode(mode /*uint*/, velocity) {
+    function ParticleVelocityNode(mode, velocity) {
         if (velocity === void 0) { velocity = null; }
         _super.call(this, "ParticleVelocity", mode, 3);
         this._pStateClass = ParticleVelocityState_1.default;
@@ -6319,15 +6160,15 @@ var ParticleVelocityNode = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleVelocityNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-        var velocityValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-        animationRegisterCache.setRegisterIndex(this, ParticleVelocityState_1.default.VELOCITY_INDEX, velocityValue.index);
-        var distance = animationRegisterCache.getFreeVertexVectorTemp();
+    ParticleVelocityNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+        var velocityValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleVelocityState_1.default.VELOCITY_INDEX, velocityValue.index);
+        var distance = registerCache.getFreeVertexVectorTemp();
         var code = "";
-        code += "mul " + distance + "," + animationRegisterCache.vertexTime + "," + velocityValue + "\n";
-        code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + "," + animationRegisterCache.positionTarget + ".xyz\n";
-        if (animationRegisterCache.needVelocity)
-            code += "add " + animationRegisterCache.velocityTarget + ".xyz," + velocityValue + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+        code += "mul " + distance + "," + animationRegisterData.vertexTime + "," + velocityValue + "\n";
+        code += "add " + animationRegisterData.positionTarget + ".xyz," + distance + "," + animationRegisterData.positionTarget + ".xyz\n";
+        if (animationSet.needVelocity)
+            code += "add " + animationRegisterData.velocityTarget + ".xyz," + velocityValue + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
         return code;
     };
     /**
@@ -6432,7 +6273,7 @@ var SkeletonClipNode = (function (_super) {
      * @param skeletonPose The skeleton pose object to add to the timeline of the node.
      * @param duration The specified duration of the frame in milliseconds.
      */
-    SkeletonClipNode.prototype.addFrame = function (skeletonPose, duration /*number /*uint*/) {
+    SkeletonClipNode.prototype.addFrame = function (skeletonPose, duration) {
         this._frames.push(skeletonPose);
         this._pDurations.push(duration);
         this._pNumFrames = this._pDurations.length;
@@ -6578,7 +6419,7 @@ var SkeletonNaryLERPNode = (function (_super) {
      *
      * @param index The input index for which the skeleton animation node is requested.
      */
-    SkeletonNaryLERPNode.prototype.getInputAt = function (index /*uint*/) {
+    SkeletonNaryLERPNode.prototype.getInputAt = function (index) {
         return this._iInputs[index];
     };
     /**
@@ -6639,7 +6480,7 @@ var VertexClipNode = (function (_super) {
      * @param duration The specified duration of the frame in milliseconds.
      * @param translation The absolute translation of the frame, used in root delta calculations for sprite movement.
      */
-    VertexClipNode.prototype.addFrame = function (geometry, duration /*uint*/, translation) {
+    VertexClipNode.prototype.addFrame = function (geometry, duration, translation) {
         if (translation === void 0) { translation = null; }
         this._frames.push(geometry);
         this._pDurations.push(duration);
@@ -6740,7 +6581,7 @@ var AnimationClipState = (function (_super) {
     /**
      * @inheritDoc
      */
-    AnimationClipState.prototype.update = function (time /*int*/) {
+    AnimationClipState.prototype.update = function (time) {
         if (!this._animationClipNode.looping) {
             if (time > this._pStartTime + this._animationClipNode.totalDuration)
                 time = this._pStartTime + this._animationClipNode.totalDuration;
@@ -6763,7 +6604,7 @@ var AnimationClipState = (function (_super) {
     /**
      * @inheritDoc
      */
-    AnimationClipState.prototype._pUpdateTime = function (time /*int*/) {
+    AnimationClipState.prototype._pUpdateTime = function (time) {
         this._pFramesDirty = true;
         this._pTimeDir = (time - this._pStartTime > this._pTime) ? 1 : -1;
         _super.prototype._pUpdateTime.call(this, time);
@@ -6956,12 +6797,12 @@ var ParticleAccelerationState = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleAccelerationState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleAccelerationState.ACCELERATION_INDEX);
+    ParticleAccelerationState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleAccelerationState.ACCELERATION_INDEX);
         if (this._particleAccelerationNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC)
             animationElements.activateVertexBuffer(index, this._particleAccelerationNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
         else
-            animationRegisterCache.setVertexConst(index, this._halfAcceleration.x, this._halfAcceleration.y, this._halfAcceleration.z);
+            shader.setVertexConst(index, this._halfAcceleration.x, this._halfAcceleration.y, this._halfAcceleration.z);
     };
     ParticleAccelerationState.prototype.updateAccelerationData = function () {
         if (this._particleAccelerationNode.mode == ParticlePropertiesMode_1.default.GLOBAL)
@@ -7021,16 +6862,16 @@ var ParticleBezierCurveState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleBezierCurveState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        var controlIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_CONTROL_INDEX);
-        var endIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_END_INDEX);
+    ParticleBezierCurveState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        var controlIndex = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_CONTROL_INDEX);
+        var endIndex = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_END_INDEX);
         if (this._particleBezierCurveNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
             animationElements.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
             animationElements.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
         }
         else {
-            animationRegisterCache.setVertexConst(controlIndex, this._controlPoint.x, this._controlPoint.y, this._controlPoint.z);
-            animationRegisterCache.setVertexConst(endIndex, this._endPoint.x, this._endPoint.y, this._endPoint.z);
+            shader.setVertexConst(controlIndex, this._controlPoint.x, this._controlPoint.y, this._controlPoint.z);
+            shader.setVertexConst(endIndex, this._endPoint.x, this._endPoint.y, this._endPoint.z);
         }
     };
     /** @private */
@@ -7066,7 +6907,7 @@ var ParticleBillboardState = (function (_super) {
         this._matrix = new Matrix3D_1.default;
         this._billboardAxis = particleNode._iBillboardAxis;
     }
-    ParticleBillboardState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
+    ParticleBillboardState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
         var comps;
         if (this._billboardAxis) {
             var pos = renderable.sourceEntity.sceneTransform.position;
@@ -7095,7 +6936,7 @@ var ParticleBillboardState = (function (_super) {
             this._matrix.appendRotation(-comps[1].w * MathConsts_1.default.RADIANS_TO_DEGREES, comps[1]);
         }
         //set a new matrix transform constant
-        animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBillboardState.MATRIX_INDEX), this._matrix);
+        shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBillboardState.MATRIX_INDEX), this._matrix);
     };
     Object.defineProperty(ParticleBillboardState.prototype, "billboardAxis", {
         /**
@@ -7205,33 +7046,42 @@ var ParticleColorState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleColorState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        if (animationRegisterCache.needFragmentAnimation) {
+    ParticleColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        if (shader.usesFragmentAnimation) {
             var dataOffset = this._particleColorNode._iDataOffset;
+            var index;
             if (this._usesCycle)
-                animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.CYCLE_INDEX), this._cycleData.x, this._cycleData.y, this._cycleData.z, this._cycleData.w);
+                shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.CYCLE_INDEX), this._cycleData.x, this._cycleData.y, this._cycleData.z, this._cycleData.w);
             if (this._usesMultiplier) {
                 if (this._particleColorNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
-                    animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
                     dataOffset += 4;
-                    animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
                     dataOffset += 4;
                 }
                 else {
-                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), this._startMultiplierData.x, this._startMultiplierData.y, this._startMultiplierData.z, this._startMultiplierData.w);
-                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), this._deltaMultiplierData.x, this._deltaMultiplierData.y, this._deltaMultiplierData.z, this._deltaMultiplierData.w);
+                    index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX);
+                    shader.vertexConstantData[index++] = this._startMultiplierData.x;
+                    shader.vertexConstantData[index++] = this._startMultiplierData.y;
+                    shader.vertexConstantData[index++] = this._startMultiplierData.z;
+                    shader.vertexConstantData[index] = this._startMultiplierData.w;
+                    index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX);
+                    shader.vertexConstantData[index++] = this._deltaMultiplierData.x;
+                    shader.vertexConstantData[index++] = this._deltaMultiplierData.y;
+                    shader.vertexConstantData[index++] = this._deltaMultiplierData.z;
+                    shader.vertexConstantData[index] = this._deltaMultiplierData.w;
                 }
             }
             if (this._usesOffset) {
                 if (this._particleColorNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
-                    animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
                     dataOffset += 4;
-                    animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
                     dataOffset += 4;
                 }
                 else {
-                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);
-                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), this._deltaOffsetData.x, this._deltaOffsetData.y, this._deltaOffsetData.z, this._deltaOffsetData.w);
+                    shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);
+                    shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), this._deltaOffsetData.x, this._deltaOffsetData.y, this._deltaOffsetData.z, this._deltaOffsetData.w);
                 }
             }
         }
@@ -7328,7 +7178,7 @@ var ParticleFollowState = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleFollowState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
+    ParticleFollowState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
         if (this._followTarget) {
             if (this._particleFollowNode._iUsesPosition) {
                 this._targetPos.x = this._followTarget.transform.position.x / renderable.sourceEntity.scaleX;
@@ -7354,18 +7204,18 @@ var ParticleFollowState = (function (_super) {
         if (this._particleFollowNode._iUsesPosition && this._particleFollowNode._iUsesRotation) {
             if (needProcess)
                 this.processPositionAndRotation(currentTime, deltaTime, animationElements);
-            animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
-            animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
         }
         else if (this._particleFollowNode._iUsesPosition) {
             if (needProcess)
                 this.processPosition(currentTime, deltaTime, animationElements);
-            animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
         }
         else if (this._particleFollowNode._iUsesRotation) {
             if (needProcess)
                 this.precessRotation(currentTime, deltaTime, animationElements);
-            animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
         }
         this._prePos.copyFrom(this._targetPos);
         this._targetEuler.copyFrom(this._targetEuler);
@@ -7540,25 +7390,23 @@ var ParticleInitialColorState = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleInitialColorState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        // TODO: not used
-        renderable = renderable;
-        camera = camera;
-        if (animationRegisterCache.needFragmentAnimation) {
+    ParticleInitialColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        if (shader.usesFragmentAnimation) {
+            var index;
             if (this._particleInitialColorNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
                 var dataOffset = this._particleInitialColorNode._iDataOffset;
                 if (this._usesMultiplier) {
-                    animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
                     dataOffset += 4;
                 }
                 if (this._usesOffset)
-                    animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
             }
             else {
                 if (this._usesMultiplier)
-                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);
+                    shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);
                 if (this._usesOffset)
-                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), this._offsetData.x, this._offsetData.y, this._offsetData.z, this._offsetData.w);
+                    shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), this._offsetData.x, this._offsetData.y, this._offsetData.z, this._offsetData.w);
             }
         }
     };
@@ -7664,8 +7512,8 @@ var ParticleOrbitState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleOrbitState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.ORBIT_INDEX);
+    ParticleOrbitState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.ORBIT_INDEX);
         if (this._particleOrbitNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
             if (this._usesPhase)
                 animationElements.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
@@ -7673,9 +7521,9 @@ var ParticleOrbitState = (function (_super) {
                 animationElements.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
         }
         else
-            animationRegisterCache.setVertexConst(index, this._orbitData.x, this._orbitData.y, this._orbitData.z, this._orbitData.w);
+            shader.setVertexConst(index, this._orbitData.x, this._orbitData.y, this._orbitData.z, this._orbitData.w);
         if (this._usesEulers)
-            animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.EULERS_INDEX), this._eulersMatrix);
+            shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.EULERS_INDEX), this._eulersMatrix);
     };
     ParticleOrbitState.prototype.updateOrbitData = function () {
         if (this._usesEulers) {
@@ -7743,12 +7591,12 @@ var ParticleOscillatorState = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleOscillatorState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleOscillatorState.OSCILLATOR_INDEX);
+    ParticleOscillatorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOscillatorState.OSCILLATOR_INDEX);
         if (this._particleOscillatorNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC)
             animationElements.activateVertexBuffer(index, this._particleOscillatorNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
         else
-            animationRegisterCache.setVertexConst(index, this._oscillatorData.x, this._oscillatorData.y, this._oscillatorData.z, this._oscillatorData.w);
+            shader.setVertexConst(index, this._oscillatorData.x, this._oscillatorData.y, this._oscillatorData.z, this._oscillatorData.w);
     };
     ParticleOscillatorState.prototype.updateOscillatorData = function () {
         if (this._particleOscillatorNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
@@ -7816,12 +7664,12 @@ var ParticlePositionState = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticlePositionState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
+    ParticlePositionState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
         if (this._particlePositionNode.mode == ParticlePropertiesMode_1.default.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
             this._pUpdateDynamicProperties(animationElements);
-        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticlePositionState.POSITION_INDEX);
+        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticlePositionState.POSITION_INDEX);
         if (this._particlePositionNode.mode == ParticlePropertiesMode_1.default.GLOBAL)
-            animationRegisterCache.setVertexConst(index, this._position.x, this._position.y, this._position.z);
+            shader.setVertexConst(index, this._position.x, this._position.y, this._position.z);
         else
             animationElements.activateVertexBuffer(index, this._particlePositionNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
     };
@@ -7850,11 +7698,11 @@ var ParticleRotateToHeadingState = (function (_super) {
         _super.call(this, animator, particleNode);
         this._matrix = new Matrix3D_1.default();
     }
-    ParticleRotateToHeadingState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        if (animationRegisterCache.hasBillboard) {
+    ParticleRotateToHeadingState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        if (this._pParticleAnimator.animationSet.hasBillboard) {
             this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
             this._matrix.append(camera.inverseSceneTransform);
-            animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToHeadingState.MATRIX_INDEX), this._matrix);
+            shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToHeadingState.MATRIX_INDEX), this._matrix);
         }
     };
     /** @private */
@@ -7899,16 +7747,16 @@ var ParticleRotateToPositionState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleRotateToPositionState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.POSITION_INDEX);
-        if (animationRegisterCache.hasBillboard) {
+    ParticleRotateToPositionState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.POSITION_INDEX);
+        if (this._pParticleAnimator.animationSet.hasBillboard) {
             this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
             this._matrix.append(camera.inverseSceneTransform);
-            animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.MATRIX_INDEX), this._matrix);
+            shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.MATRIX_INDEX), this._matrix);
         }
         if (this._particleRotateToPositionNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
             this._offset = renderable.sourceEntity.inverseSceneTransform.transformVector(this._position);
-            animationRegisterCache.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
+            shader.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
         }
         else
             animationElements.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
@@ -7971,12 +7819,12 @@ var ParticleRotationalVelocityState = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleRotationalVelocityState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
+    ParticleRotationalVelocityState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
         if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode_1.default.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
             this._pUpdateDynamicProperties(animationElements);
-        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotationalVelocityState.ROTATIONALVELOCITY_INDEX);
+        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotationalVelocityState.ROTATIONALVELOCITY_INDEX);
         if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode_1.default.GLOBAL)
-            animationRegisterCache.setVertexConst(index, this._rotationalVelocityData.x, this._rotationalVelocityData.y, this._rotationalVelocityData.z, this._rotationalVelocityData.w);
+            shader.setVertexConst(index, this._rotationalVelocityData.x, this._rotationalVelocityData.y, this._rotationalVelocityData.z, this._rotationalVelocityData.w);
         else
             animationElements.activateVertexBuffer(index, this._particleRotationalVelocityNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
     };
@@ -8083,8 +7931,8 @@ var ParticleScaleState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleScaleState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleScaleState.SCALE_INDEX);
+    ParticleScaleState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleScaleState.SCALE_INDEX);
         if (this._particleScaleNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
             if (this._usesCycle) {
                 if (this._usesPhase)
@@ -8096,7 +7944,7 @@ var ParticleScaleState = (function (_super) {
                 animationElements.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_2);
         }
         else
-            animationRegisterCache.setVertexConst(index, this._scaleData.x, this._scaleData.y, this._scaleData.z, this._scaleData.w);
+            shader.setVertexConst(index, this._scaleData.x, this._scaleData.y, this._scaleData.z, this._scaleData.w);
     };
     ParticleScaleState.prototype.updateScaleData = function () {
         if (this._particleScaleNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
@@ -8205,59 +8053,103 @@ var ParticleSegmentedColorState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleSegmentedColorState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        if (animationRegisterCache.needFragmentAnimation) {
+    ParticleSegmentedColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        if (shader.usesFragmentAnimation) {
             if (this._numSegmentPoint > 0)
-                animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.TIME_DATA_INDEX), this._timeLifeData[0], this._timeLifeData[1], this._timeLifeData[2], this._timeLifeData[3]);
+                shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.TIME_DATA_INDEX), this._timeLifeData[0], this._timeLifeData[1], this._timeLifeData[2], this._timeLifeData[3]);
             if (this._usesMultiplier)
-                animationRegisterCache.setVertexConstFromArray(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.START_MULTIPLIER_INDEX), this._multiplierData);
+                shader.setVertexConstFromArray(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.START_MULTIPLIER_INDEX), this._multiplierData);
             if (this._usesOffset)
-                animationRegisterCache.setVertexConstFromArray(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.START_OFFSET_INDEX), this._offsetData);
+                shader.setVertexConstFromArray(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.START_OFFSET_INDEX), this._offsetData);
         }
     };
     ParticleSegmentedColorState.prototype.updateColorData = function () {
-        this._timeLifeData = new Array();
-        this._multiplierData = new Array();
-        this._offsetData = new Array();
+        this._timeLifeData = new Float32Array(4);
+        this._multiplierData = new Float32Array(4 * (this._numSegmentPoint + 1));
+        this._offsetData = new Float32Array(4 * (this._numSegmentPoint + 1));
+        //cut off the time data
         var i;
-        for (i = 0; i < this._numSegmentPoint; i++) {
+        var j = 0;
+        var count = this._numSegmentPoint > 3 ? 3 : this._numSegmentPoint;
+        for (i = 0; i < count; i++) {
             if (i == 0)
-                this._timeLifeData.push(this._segmentPoints[i].life);
+                this._timeLifeData[j++] = this._segmentPoints[i].life;
             else
-                this._timeLifeData.push(this._segmentPoints[i].life - this._segmentPoints[i - 1].life);
+                this._timeLifeData[j++] = this._segmentPoints[i].life - this._segmentPoints[i - 1].life;
         }
+        i = count;
         if (this._numSegmentPoint == 0)
-            this._timeLifeData.push(1);
+            this._timeLifeData[j++] = 1;
         else
-            this._timeLifeData.push(1 - this._segmentPoints[i - 1].life);
+            this._timeLifeData[j++] = 1 - this._segmentPoints[i - 1].life;
         if (this._usesMultiplier) {
-            this._multiplierData.push(this._startColor.redMultiplier, this._startColor.greenMultiplier, this._startColor.blueMultiplier, this._startColor.alphaMultiplier);
+            j = 0;
+            this._multiplierData[j++] = this._startColor.redMultiplier;
+            this._multiplierData[j++] = this._startColor.greenMultiplier;
+            this._multiplierData[j++] = this._startColor.blueMultiplier;
+            this._multiplierData[j++] = this._startColor.alphaMultiplier;
             for (i = 0; i < this._numSegmentPoint; i++) {
-                if (i == 0)
-                    this._multiplierData.push((this._segmentPoints[i].color.redMultiplier - this._startColor.redMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.greenMultiplier - this._startColor.greenMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.blueMultiplier - this._startColor.blueMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.alphaMultiplier - this._startColor.alphaMultiplier) / this._timeLifeData[i]);
-                else
-                    this._multiplierData.push((this._segmentPoints[i].color.redMultiplier - this._segmentPoints[i - 1].color.redMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.greenMultiplier - this._segmentPoints[i - 1].color.greenMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.blueMultiplier - this._segmentPoints[i - 1].color.blueMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.alphaMultiplier - this._segmentPoints[i - 1].color.alphaMultiplier) / this._timeLifeData[i]);
+                if (i == 0) {
+                    this._multiplierData[j++] = (this._segmentPoints[i].color.redMultiplier - this._startColor.redMultiplier) / this._timeLifeData[i];
+                    this._multiplierData[j++] = (this._segmentPoints[i].color.greenMultiplier - this._startColor.greenMultiplier) / this._timeLifeData[i];
+                    this._multiplierData[j++] = (this._segmentPoints[i].color.blueMultiplier - this._startColor.blueMultiplier) / this._timeLifeData[i];
+                    this._multiplierData[j++] = (this._segmentPoints[i].color.alphaMultiplier - this._startColor.alphaMultiplier) / this._timeLifeData[i];
+                }
+                else {
+                    this._multiplierData[j++] = (this._segmentPoints[i].color.redMultiplier - this._segmentPoints[i - 1].color.redMultiplier) / this._timeLifeData[i];
+                    this._multiplierData[j++] = (this._segmentPoints[i].color.greenMultiplier - this._segmentPoints[i - 1].color.greenMultiplier) / this._timeLifeData[i];
+                    this._multiplierData[j++] = (this._segmentPoints[i].color.blueMultiplier - this._segmentPoints[i - 1].color.blueMultiplier) / this._timeLifeData[i];
+                    this._multiplierData[j++] = (this._segmentPoints[i].color.alphaMultiplier - this._segmentPoints[i - 1].color.alphaMultiplier) / this._timeLifeData[i];
+                }
             }
-            if (this._numSegmentPoint == 0)
-                this._multiplierData.push(this._endColor.redMultiplier - this._startColor.redMultiplier, this._endColor.greenMultiplier - this._startColor.greenMultiplier, this._endColor.blueMultiplier - this._startColor.blueMultiplier, this._endColor.alphaMultiplier - this._startColor.alphaMultiplier);
-            else
-                this._multiplierData.push((this._endColor.redMultiplier - this._segmentPoints[i - 1].color.redMultiplier) / this._timeLifeData[i], (this._endColor.greenMultiplier - this._segmentPoints[i - 1].color.greenMultiplier) / this._timeLifeData[i], (this._endColor.blueMultiplier - this._segmentPoints[i - 1].color.blueMultiplier) / this._timeLifeData[i], (this._endColor.alphaMultiplier - this._segmentPoints[i - 1].color.alphaMultiplier) / this._timeLifeData[i]);
+            i = this._numSegmentPoint;
+            if (this._numSegmentPoint == 0) {
+                this._multiplierData[j++] = this._endColor.redMultiplier - this._startColor.redMultiplier;
+                this._multiplierData[j++] = this._endColor.greenMultiplier - this._startColor.greenMultiplier;
+                this._multiplierData[j++] = this._endColor.blueMultiplier - this._startColor.blueMultiplier;
+                this._multiplierData[j++] = this._endColor.alphaMultiplier - this._startColor.alphaMultiplier;
+            }
+            else {
+                this._multiplierData[j++] = (this._endColor.redMultiplier - this._segmentPoints[i - 1].color.redMultiplier) / this._timeLifeData[i];
+                this._multiplierData[j++] = (this._endColor.greenMultiplier - this._segmentPoints[i - 1].color.greenMultiplier) / this._timeLifeData[i];
+                this._multiplierData[j++] = (this._endColor.blueMultiplier - this._segmentPoints[i - 1].color.blueMultiplier) / this._timeLifeData[i];
+                this._multiplierData[j++] = (this._endColor.alphaMultiplier - this._segmentPoints[i - 1].color.alphaMultiplier) / this._timeLifeData[i];
+            }
         }
         if (this._usesOffset) {
-            this._offsetData.push(this._startColor.redOffset / 255, this._startColor.greenOffset / 255, this._startColor.blueOffset / 255, this._startColor.alphaOffset / 255);
+            j = 0;
+            this._offsetData[j++] = this._startColor.redOffset / 255;
+            this._offsetData[j++] = this._startColor.greenOffset / 255;
+            this._offsetData[j++] = this._startColor.blueOffset / 255;
+            this._offsetData[j++] = this._startColor.alphaOffset / 255;
             for (i = 0; i < this._numSegmentPoint; i++) {
-                if (i == 0)
-                    this._offsetData.push((this._segmentPoints[i].color.redOffset - this._startColor.redOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.greenOffset - this._startColor.greenOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.blueOffset - this._startColor.blueOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.alphaOffset - this._startColor.alphaOffset) / this._timeLifeData[i] / 255);
-                else
-                    this._offsetData.push((this._segmentPoints[i].color.redOffset - this._segmentPoints[i - 1].color.redOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.greenOffset - this._segmentPoints[i - 1].color.greenOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.blueOffset - this._segmentPoints[i - 1].color.blueOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.alphaOffset - this._segmentPoints[i - 1].color.alphaOffset) / this._timeLifeData[i] / 255);
+                if (i == 0) {
+                    this._offsetData[j++] = (this._segmentPoints[i].color.redOffset - this._startColor.redOffset) / this._timeLifeData[i] / 255;
+                    this._offsetData[j++] = (this._segmentPoints[i].color.greenOffset - this._startColor.greenOffset) / this._timeLifeData[i] / 255;
+                    this._offsetData[j++] = (this._segmentPoints[i].color.blueOffset - this._startColor.blueOffset) / this._timeLifeData[i] / 255;
+                    this._offsetData[j++] = (this._segmentPoints[i].color.alphaOffset - this._startColor.alphaOffset) / this._timeLifeData[i] / 255;
+                }
+                else {
+                    this._offsetData[j++] = (this._segmentPoints[i].color.redOffset - this._segmentPoints[i - 1].color.redOffset) / this._timeLifeData[i] / 255;
+                    this._offsetData[j++] = (this._segmentPoints[i].color.greenOffset - this._segmentPoints[i - 1].color.greenOffset) / this._timeLifeData[i] / 255;
+                    this._offsetData[j++] = (this._segmentPoints[i].color.blueOffset - this._segmentPoints[i - 1].color.blueOffset) / this._timeLifeData[i] / 255;
+                    this._offsetData[j++] = (this._segmentPoints[i].color.alphaOffset - this._segmentPoints[i - 1].color.alphaOffset) / this._timeLifeData[i] / 255;
+                }
             }
-            if (this._numSegmentPoint == 0)
-                this._offsetData.push((this._endColor.redOffset - this._startColor.redOffset) / 255, (this._endColor.greenOffset - this._startColor.greenOffset) / 255, (this._endColor.blueOffset - this._startColor.blueOffset) / 255, (this._endColor.alphaOffset - this._startColor.alphaOffset) / 255);
-            else
-                this._offsetData.push((this._endColor.redOffset - this._segmentPoints[i - 1].color.redOffset) / this._timeLifeData[i] / 255, (this._endColor.greenOffset - this._segmentPoints[i - 1].color.greenOffset) / this._timeLifeData[i] / 255, (this._endColor.blueOffset - this._segmentPoints[i - 1].color.blueOffset) / this._timeLifeData[i] / 255, (this._endColor.alphaOffset - this._segmentPoints[i - 1].color.alphaOffset) / this._timeLifeData[i] / 255);
+            i = this._numSegmentPoint;
+            if (this._numSegmentPoint == 0) {
+                this._offsetData[j++] = (this._endColor.redOffset - this._startColor.redOffset) / 255;
+                this._offsetData[j++] = (this._endColor.greenOffset - this._startColor.greenOffset) / 255;
+                this._offsetData[j++] = (this._endColor.blueOffset - this._startColor.blueOffset) / 255;
+                this._offsetData[j++] = (this._endColor.alphaOffset - this._startColor.alphaOffset) / 255;
+            }
+            else {
+                this._offsetData[i] = (this._endColor.redOffset - this._segmentPoints[i - 1].color.redOffset) / this._timeLifeData[i] / 255;
+                this._offsetData[j++] = (this._endColor.greenOffset - this._segmentPoints[i - 1].color.greenOffset) / this._timeLifeData[i] / 255;
+                this._offsetData[j++] = (this._endColor.blueOffset - this._segmentPoints[i - 1].color.blueOffset) / this._timeLifeData[i] / 255;
+                this._offsetData[j++] = (this._endColor.alphaOffset - this._segmentPoints[i - 1].color.alphaOffset) / this._timeLifeData[i] / 255;
+            }
         }
-        //cut off the data
-        this._timeLifeData.length = 4;
     };
     /** @private */
     ParticleSegmentedColorState.START_MULTIPLIER_INDEX = 0;
@@ -8325,11 +8217,11 @@ var ParticleSpriteSheetState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleSpriteSheetState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        if (animationRegisterCache.needUVAnimation) {
-            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
+    ParticleSpriteSheetState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        if (!shader.usesUVTransform) {
+            shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
             if (this._usesCycle) {
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_1);
+                var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_1);
                 if (this._particleSpriteSheetNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
                     if (this._usesPhase)
                         animationElements.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
@@ -8337,7 +8229,7 @@ var ParticleSpriteSheetState = (function (_super) {
                         animationElements.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_2);
                 }
                 else
-                    animationRegisterCache.setVertexConst(index, this._spriteSheetData[4], this._spriteSheetData[5]);
+                    shader.setVertexConst(index, this._spriteSheetData[4], this._spriteSheetData[5]);
             }
         }
     };
@@ -8383,6 +8275,7 @@ var ParticleStateBase = (function (_super) {
         _super.call(this, animator, particleNode);
         this._pDynamicProperties = new Array();
         this._pDynamicPropertiesDirty = new Object();
+        this._pParticleAnimator = animator;
         this._particleNode = particleNode;
         this._pNeedUpdateTime = needUpdateTime;
     }
@@ -8393,7 +8286,7 @@ var ParticleStateBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleStateBase.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
+    ParticleStateBase.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
     };
     ParticleStateBase.prototype._pUpdateDynamicProperties = function (animationElements) {
         this._pDynamicPropertiesDirty[animationElements._iUniqueId] = true;
@@ -8403,12 +8296,12 @@ var ParticleStateBase = (function (_super) {
         var dataLength = this._particleNode.dataLength;
         var dataOffset = this._particleNode._iDataOffset;
         var vertexLength;
-        //			var particleOffset:number /*uint*/;
+        //			var particleOffset:number;
         var startingOffset;
         var vertexOffset;
         var data;
         var animationParticle;
-        //			var numParticles:number /*uint*/ = _positions.length/dataLength;
+        //			var numParticles:number = _positions.length/dataLength;
         var numParticles = this._pDynamicProperties.length;
         var i = 0;
         var j = 0;
@@ -8463,10 +8356,10 @@ var ParticleTimeState = (function (_super) {
         _super.call(this, animator, particleTimeNode, true);
         this._particleTimeNode = particleTimeNode;
     }
-    ParticleTimeState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+    ParticleTimeState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
         var particleTime = this._pTime / 1000;
-        animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_CONSTANT_INDEX), particleTime, particleTime, particleTime, particleTime);
+        shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_CONSTANT_INDEX), particleTime, particleTime, particleTime, particleTime);
     };
     /** @private */
     ParticleTimeState.TIME_STREAM_INDEX = 0;
@@ -8494,11 +8387,11 @@ var ParticleUVState = (function (_super) {
         _super.call(this, animator, particleUVNode);
         this._particleUVNode = particleUVNode;
     }
-    ParticleUVState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-        if (animationRegisterCache.needUVAnimation) {
-            var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleUVState.UV_INDEX);
+    ParticleUVState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+        if (!shader.usesUVTransform) {
+            var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleUVState.UV_INDEX);
             var data = this._particleUVNode._iUvData;
-            animationRegisterCache.setVertexConst(index, data.x, data.y);
+            shader.setVertexConst(index, data.x, data.y);
         }
     };
     /** @private */
@@ -8551,12 +8444,12 @@ var ParticleVelocityState = (function (_super) {
         this._pDynamicProperties = value;
         this._pDynamicPropertiesDirty = new Object();
     };
-    ParticleVelocityState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
+    ParticleVelocityState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
         if (this._particleVelocityNode.mode == ParticlePropertiesMode_1.default.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
             this._pUpdateDynamicProperties(animationElements);
-        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleVelocityState.VELOCITY_INDEX);
+        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleVelocityState.VELOCITY_INDEX);
         if (this._particleVelocityNode.mode == ParticlePropertiesMode_1.default.GLOBAL)
-            animationRegisterCache.setVertexConst(index, this._velocity.x, this._velocity.y, this._velocity.z);
+            shader.setVertexConst(index, this._velocity.x, this._velocity.y, this._velocity.z);
         else
             animationElements.activateVertexBuffer(index, this._particleVelocityNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
     };
@@ -8622,7 +8515,7 @@ var SkeletonBinaryLERPState = (function (_super) {
     /**
      * @inheritDoc
      */
-    SkeletonBinaryLERPState.prototype._pUpdateTime = function (time /*int*/) {
+    SkeletonBinaryLERPState.prototype._pUpdateTime = function (time) {
         this._skeletonPoseDirty = true;
         this._inputA.update(time);
         this._inputB.update(time);
@@ -8744,7 +8637,7 @@ var SkeletonClipState = (function (_super) {
     /**
      * @inheritDoc
      */
-    SkeletonClipState.prototype._pUpdateTime = function (time /*int*/) {
+    SkeletonClipState.prototype._pUpdateTime = function (time) {
         this._skeletonPoseDirty = true;
         _super.prototype._pUpdateTime.call(this, time);
     };
@@ -8904,7 +8797,7 @@ var SkeletonDifferenceState = (function (_super) {
     /**
      * @inheritDoc
      */
-    SkeletonDifferenceState.prototype._pUpdateTime = function (time /*int*/) {
+    SkeletonDifferenceState.prototype._pUpdateTime = function (time) {
         this._skeletonPoseDirty = true;
         this._baseInput.update(time);
         this._differenceInput.update(time);
@@ -9030,7 +8923,7 @@ var SkeletonDirectionalState = (function (_super) {
     /**
      * @inheritDoc
      */
-    SkeletonDirectionalState.prototype._pUdateTime = function (time /*int*/) {
+    SkeletonDirectionalState.prototype._pUdateTime = function (time) {
         if (this._blendDirty)
             this.updateBlend();
         this._skeletonPoseDirty = true;
@@ -9172,7 +9065,7 @@ var SkeletonNaryLERPState = (function (_super) {
     /**
      * @inheritDoc
      */
-    SkeletonNaryLERPState.prototype._pUdateTime = function (time /*int*/) {
+    SkeletonNaryLERPState.prototype._pUdateTime = function (time) {
         for (var j = 0; j < this._skeletonAnimationNode.numInputs; ++j) {
             if (this._blendWeights[j])
                 this._inputs[j].update(time);
@@ -9192,7 +9085,7 @@ var SkeletonNaryLERPState = (function (_super) {
      *
      * @param index The input index for which the skeleton animation node blend weight is requested.
      */
-    SkeletonNaryLERPState.prototype.getBlendWeightAt = function (index /*uint*/) {
+    SkeletonNaryLERPState.prototype.getBlendWeightAt = function (index) {
         return this._blendWeights[index];
     };
     /**
@@ -9201,7 +9094,7 @@ var SkeletonNaryLERPState = (function (_super) {
      * @param index The input index on which the skeleton animation node blend weight is to be set.
      * @param blendWeight The blend weight value to use for the given skeleton animation node index.
      */
-    SkeletonNaryLERPState.prototype.setBlendWeightAt = function (index /*uint*/, blendWeight) {
+    SkeletonNaryLERPState.prototype.setBlendWeightAt = function (index, blendWeight) {
         this._blendWeights[index] = blendWeight;
         this._pPositionDeltaDirty = true;
         this._skeletonPoseDirty = true;
@@ -9427,7 +9320,7 @@ var CrossfadeTransitionState = (function (_super) {
     /**
      * @inheritDoc
      */
-    CrossfadeTransitionState.prototype._pUpdateTime = function (time /*int*/) {
+    CrossfadeTransitionState.prototype._pUpdateTime = function (time) {
         this.blendWeight = Math.abs(time - this._crossfadeTransitionNode.startBlend) / (1000 * this._crossfadeTransitionNode.blendSpeed);
         if (this.blendWeight >= 1) {
             this.blendWeight = 1;
@@ -9453,7 +9346,7 @@ var CrossfadeTransition = (function () {
         this.blendSpeed = 0.5;
         this.blendSpeed = blendSpeed;
     }
-    CrossfadeTransition.prototype.getAnimationNode = function (animator, startNode, endNode, startBlend /*int*/) {
+    CrossfadeTransition.prototype.getAnimationNode = function (animator, startNode, endNode, startBlend) {
         var crossFadeTransitionNode = new CrossfadeTransitionNode_1.default();
         crossFadeTransitionNode.inputA = startNode;
         crossFadeTransitionNode.inputB = endNode;
@@ -9473,8 +9366,8 @@ exports.default = CrossfadeTransition;
 "use strict";
 var AnimationElements_1 = require("./animators/data/AnimationElements");
 exports.AnimationElements = AnimationElements_1.default;
-var AnimationRegisterCache_1 = require("./animators/data/AnimationRegisterCache");
-exports.AnimationRegisterCache = AnimationRegisterCache_1.default;
+var AnimationRegisterData_1 = require("./animators/data/AnimationRegisterData");
+exports.AnimationRegisterData = AnimationRegisterData_1.default;
 var ColorSegmentPoint_1 = require("./animators/data/ColorSegmentPoint");
 exports.ColorSegmentPoint = ColorSegmentPoint_1.default;
 var JointPose_1 = require("./animators/data/JointPose");
@@ -9622,7 +9515,7 @@ exports.VertexAnimationSet = VertexAnimationSet_1.default;
 var VertexAnimator_1 = require("./animators/VertexAnimator");
 exports.VertexAnimator = VertexAnimator_1.default;
 
-},{"./animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","./animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","./animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","./animators/ParticleAnimator":"awayjs-renderergl/lib/animators/ParticleAnimator","./animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","./animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","./animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","./animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","./animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","./animators/data/AnimationRegisterCache":"awayjs-renderergl/lib/animators/data/AnimationRegisterCache","./animators/data/ColorSegmentPoint":"awayjs-renderergl/lib/animators/data/ColorSegmentPoint","./animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","./animators/data/ParticleAnimationData":"awayjs-renderergl/lib/animators/data/ParticleAnimationData","./animators/data/ParticleProperties":"awayjs-renderergl/lib/animators/data/ParticleProperties","./animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","./animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","./animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","./animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","./animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","./animators/nodes/AnimationClipNodeBase":"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase","./animators/nodes/ParticleAccelerationNode":"awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode","./animators/nodes/ParticleBezierCurveNode":"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode","./animators/nodes/ParticleBillboardNode":"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode","./animators/nodes/ParticleColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleColorNode","./animators/nodes/ParticleFollowNode":"awayjs-renderergl/lib/animators/nodes/ParticleFollowNode","./animators/nodes/ParticleInitialColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode","./animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","./animators/nodes/ParticleOrbitNode":"awayjs-renderergl/lib/animators/nodes/ParticleOrbitNode","./animators/nodes/ParticleOscillatorNode":"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode","./animators/nodes/ParticlePositionNode":"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode","./animators/nodes/ParticleRotateToHeadingNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode","./animators/nodes/ParticleRotateToPositionNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode","./animators/nodes/ParticleRotationalVelocityNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode","./animators/nodes/ParticleScaleNode":"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode","./animators/nodes/ParticleSegmentedColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode","./animators/nodes/ParticleSpriteSheetNode":"awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode","./animators/nodes/ParticleTimeNode":"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode","./animators/nodes/ParticleUVNode":"awayjs-renderergl/lib/animators/nodes/ParticleUVNode","./animators/nodes/ParticleVelocityNode":"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode","./animators/nodes/SkeletonBinaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode","./animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","./animators/nodes/SkeletonDifferenceNode":"awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode","./animators/nodes/SkeletonDirectionalNode":"awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode","./animators/nodes/SkeletonNaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode","./animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","./animators/states/AnimationClipState":"awayjs-renderergl/lib/animators/states/AnimationClipState","./animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase","./animators/states/ParticleAccelerationState":"awayjs-renderergl/lib/animators/states/ParticleAccelerationState","./animators/states/ParticleBezierCurveState":"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState","./animators/states/ParticleBillboardState":"awayjs-renderergl/lib/animators/states/ParticleBillboardState","./animators/states/ParticleColorState":"awayjs-renderergl/lib/animators/states/ParticleColorState","./animators/states/ParticleFollowState":"awayjs-renderergl/lib/animators/states/ParticleFollowState","./animators/states/ParticleInitialColorState":"awayjs-renderergl/lib/animators/states/ParticleInitialColorState","./animators/states/ParticleOrbitState":"awayjs-renderergl/lib/animators/states/ParticleOrbitState","./animators/states/ParticleOscillatorState":"awayjs-renderergl/lib/animators/states/ParticleOscillatorState","./animators/states/ParticlePositionState":"awayjs-renderergl/lib/animators/states/ParticlePositionState","./animators/states/ParticleRotateToHeadingState":"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState","./animators/states/ParticleRotateToPositionState":"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState","./animators/states/ParticleRotationalVelocityState":"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState","./animators/states/ParticleScaleState":"awayjs-renderergl/lib/animators/states/ParticleScaleState","./animators/states/ParticleSegmentedColorState":"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState","./animators/states/ParticleSpriteSheetState":"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState","./animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","./animators/states/ParticleTimeState":"awayjs-renderergl/lib/animators/states/ParticleTimeState","./animators/states/ParticleUVState":"awayjs-renderergl/lib/animators/states/ParticleUVState","./animators/states/ParticleVelocityState":"awayjs-renderergl/lib/animators/states/ParticleVelocityState","./animators/states/SkeletonBinaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState","./animators/states/SkeletonClipState":"awayjs-renderergl/lib/animators/states/SkeletonClipState","./animators/states/SkeletonDifferenceState":"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState","./animators/states/SkeletonDirectionalState":"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState","./animators/states/SkeletonNaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState","./animators/states/VertexClipState":"awayjs-renderergl/lib/animators/states/VertexClipState","./animators/transitions/CrossfadeTransition":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition","./animators/transitions/CrossfadeTransitionNode":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode","./animators/transitions/CrossfadeTransitionState":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState"}],"awayjs-renderergl/lib/elements/ElementsPool":[function(require,module,exports){
+},{"./animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","./animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","./animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","./animators/ParticleAnimator":"awayjs-renderergl/lib/animators/ParticleAnimator","./animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","./animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","./animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","./animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","./animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","./animators/data/AnimationRegisterData":"awayjs-renderergl/lib/animators/data/AnimationRegisterData","./animators/data/ColorSegmentPoint":"awayjs-renderergl/lib/animators/data/ColorSegmentPoint","./animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","./animators/data/ParticleAnimationData":"awayjs-renderergl/lib/animators/data/ParticleAnimationData","./animators/data/ParticleProperties":"awayjs-renderergl/lib/animators/data/ParticleProperties","./animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","./animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","./animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","./animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","./animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","./animators/nodes/AnimationClipNodeBase":"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase","./animators/nodes/ParticleAccelerationNode":"awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode","./animators/nodes/ParticleBezierCurveNode":"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode","./animators/nodes/ParticleBillboardNode":"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode","./animators/nodes/ParticleColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleColorNode","./animators/nodes/ParticleFollowNode":"awayjs-renderergl/lib/animators/nodes/ParticleFollowNode","./animators/nodes/ParticleInitialColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode","./animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","./animators/nodes/ParticleOrbitNode":"awayjs-renderergl/lib/animators/nodes/ParticleOrbitNode","./animators/nodes/ParticleOscillatorNode":"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode","./animators/nodes/ParticlePositionNode":"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode","./animators/nodes/ParticleRotateToHeadingNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode","./animators/nodes/ParticleRotateToPositionNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode","./animators/nodes/ParticleRotationalVelocityNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode","./animators/nodes/ParticleScaleNode":"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode","./animators/nodes/ParticleSegmentedColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode","./animators/nodes/ParticleSpriteSheetNode":"awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode","./animators/nodes/ParticleTimeNode":"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode","./animators/nodes/ParticleUVNode":"awayjs-renderergl/lib/animators/nodes/ParticleUVNode","./animators/nodes/ParticleVelocityNode":"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode","./animators/nodes/SkeletonBinaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode","./animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","./animators/nodes/SkeletonDifferenceNode":"awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode","./animators/nodes/SkeletonDirectionalNode":"awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode","./animators/nodes/SkeletonNaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode","./animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","./animators/states/AnimationClipState":"awayjs-renderergl/lib/animators/states/AnimationClipState","./animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase","./animators/states/ParticleAccelerationState":"awayjs-renderergl/lib/animators/states/ParticleAccelerationState","./animators/states/ParticleBezierCurveState":"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState","./animators/states/ParticleBillboardState":"awayjs-renderergl/lib/animators/states/ParticleBillboardState","./animators/states/ParticleColorState":"awayjs-renderergl/lib/animators/states/ParticleColorState","./animators/states/ParticleFollowState":"awayjs-renderergl/lib/animators/states/ParticleFollowState","./animators/states/ParticleInitialColorState":"awayjs-renderergl/lib/animators/states/ParticleInitialColorState","./animators/states/ParticleOrbitState":"awayjs-renderergl/lib/animators/states/ParticleOrbitState","./animators/states/ParticleOscillatorState":"awayjs-renderergl/lib/animators/states/ParticleOscillatorState","./animators/states/ParticlePositionState":"awayjs-renderergl/lib/animators/states/ParticlePositionState","./animators/states/ParticleRotateToHeadingState":"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState","./animators/states/ParticleRotateToPositionState":"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState","./animators/states/ParticleRotationalVelocityState":"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState","./animators/states/ParticleScaleState":"awayjs-renderergl/lib/animators/states/ParticleScaleState","./animators/states/ParticleSegmentedColorState":"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState","./animators/states/ParticleSpriteSheetState":"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState","./animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","./animators/states/ParticleTimeState":"awayjs-renderergl/lib/animators/states/ParticleTimeState","./animators/states/ParticleUVState":"awayjs-renderergl/lib/animators/states/ParticleUVState","./animators/states/ParticleVelocityState":"awayjs-renderergl/lib/animators/states/ParticleVelocityState","./animators/states/SkeletonBinaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState","./animators/states/SkeletonClipState":"awayjs-renderergl/lib/animators/states/SkeletonClipState","./animators/states/SkeletonDifferenceState":"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState","./animators/states/SkeletonDirectionalState":"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState","./animators/states/SkeletonNaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState","./animators/states/VertexClipState":"awayjs-renderergl/lib/animators/states/VertexClipState","./animators/transitions/CrossfadeTransition":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition","./animators/transitions/CrossfadeTransitionNode":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode","./animators/transitions/CrossfadeTransitionState":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState"}],"awayjs-renderergl/lib/elements/ElementsPool":[function(require,module,exports){
 "use strict";
 /**
  * @class away.pool.SurfacePool
@@ -9930,60 +9823,87 @@ var GL_LineElements = (function (_super) {
     __extends(GL_LineElements, _super);
     function GL_LineElements(lineElements, shader, pool) {
         _super.call(this, lineElements, shader, pool);
-        this._constants = new Float32Array([0, 0, 0, 0]);
         this._calcMatrix = new Matrix3D_1.default();
         this._thickness = 1.25;
         this._lineElements = lineElements;
-        this._constants[1] = 1 / 255;
     }
     GL_LineElements._iIncludeDependencies = function (shader) {
         shader.colorDependencies++;
     };
     GL_LineElements._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
-        return "m44 vt0, va0, vc8			\n" +
-            "m44 vt1, va1, vc8			\n" +
-            "sub vt2, vt1, vt0 			\n" +
+        //get the projection coordinates
+        var position0 = (shader.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
+        var position1 = registerCache.getFreeVertexAttribute();
+        var thickness = registerCache.getFreeVertexAttribute();
+        //reserving vertex constants for projection matrix
+        var viewMatrixReg = registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        shader.viewMatrixIndex = viewMatrixReg.index * 4;
+        registerCache.getFreeVertexConstant(); // not used
+        var constOne = registerCache.getFreeVertexConstant();
+        var constNegOne = registerCache.getFreeVertexConstant();
+        var misc = registerCache.getFreeVertexConstant();
+        var sceneMatrixReg = registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        shader.sceneMatrixIndex = sceneMatrixReg.index * 4;
+        var q0 = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(q0, 1);
+        var q1 = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(q1, 1);
+        var l = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(l, 1);
+        var behind = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(behind, 1);
+        var qclipped = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(qclipped, 1);
+        var offset = registerCache.getFreeVertexVectorTemp();
+        registerCache.addVertexTempUsages(offset, 1);
+        return "m44 " + q0 + ", " + position0 + ", " + sceneMatrixReg + "			\n" +
+            "m44 " + q1 + ", " + position1 + ", " + sceneMatrixReg + "			\n" +
+            "sub " + l + ", " + q1 + ", " + q0 + " 			\n" +
             // test if behind camera near plane
             // if 0 - Q0.z < Camera.near then the point needs to be clipped
-            //"neg vt5.x, vt0.z				\n" + // 0 - Q0.z
-            "slt vt5.x, vt0.z, vc7.z			\n" +
-            "sub vt5.y, vc5.x, vt5.x			\n" +
+            "slt " + behind + ".x, " + q0 + ".z, " + misc + ".z			\n" +
+            "sub " + behind + ".y, " + constOne + ".x, " + behind + ".x			\n" +
             // p = point on the plane (0,0,-near)
             // n = plane normal (0,0,-1)
             // D = Q1 - Q0
             // t = ( dot( n, ( p - Q0 ) ) / ( dot( n, d )
             // solve for t where line crosses Camera.near
-            "add vt4.x, vt0.z, vc7.z			\n" +
-            "sub vt4.y, vt0.z, vt1.z			\n" +
+            "add " + offset + ".x, " + q0 + ".z, " + misc + ".z			\n" +
+            "sub " + offset + ".y, " + q0 + ".z, " + q1 + ".z			\n" +
             // fix divide by zero for horizontal lines
-            "seq vt4.z, vt4.y vc6.x			\n" +
-            "add vt4.y, vt4.y, vt4.z			\n" +
-            "div vt4.z, vt4.x, vt4.y			\n" +
-            "mul vt4.xyz, vt4.zzz, vt2.xyz	\n" +
-            "add vt3.xyz, vt0.xyz, vt4.xyz	\n" +
-            "mov vt3.w, vc5.x			\n" +
+            "seq " + offset + ".z, " + offset + ".y " + constNegOne + ".x			\n" +
+            "add " + offset + ".y, " + offset + ".y, " + offset + ".z			\n" +
+            "div " + offset + ".z, " + offset + ".x, " + offset + ".y			\n" +
+            "mul " + offset + ".xyz, " + offset + ".zzz, " + l + ".xyz	\n" +
+            "add " + qclipped + ".xyz, " + q0 + ".xyz, " + offset + ".xyz	\n" +
+            "mov " + qclipped + ".w, " + constOne + ".x			\n" +
             // If necessary, replace Q0 with new Qclipped
-            "mul vt0, vt0, vt5.yyyy			\n" +
-            "mul vt3, vt3, vt5.xxxx			\n" +
-            "add vt0, vt0, vt3				\n" +
+            "mul " + q0 + ", " + q0 + ", " + behind + ".yyyy			\n" +
+            "mul " + qclipped + ", " + qclipped + ", " + behind + ".xxxx			\n" +
+            "add " + q0 + ", " + q0 + ", " + qclipped + "				\n" +
             // calculate side vector for line
-            "sub vt2, vt1, vt0 			\n" +
-            "nrm vt2.xyz, vt2.xyz			\n" +
-            "nrm vt5.xyz, vt0.xyz			\n" +
-            "mov vt5.w, vc5.x				\n" +
-            "crs vt3.xyz, vt2, vt5			\n" +
-            "nrm vt3.xyz, vt3.xyz			\n" +
+            "nrm " + l + ".xyz, " + l + ".xyz			\n" +
+            "nrm " + behind + ".xyz, " + q0 + ".xyz			\n" +
+            "mov " + behind + ".w, " + constOne + ".x				\n" +
+            "crs " + qclipped + ".xyz, " + l + ", " + behind + "			\n" +
+            "nrm " + qclipped + ".xyz, " + qclipped + ".xyz			\n" +
             // face the side vector properly for the given point
-            "mul vt3.xyz, vt3.xyz, va2.xxx	\n" +
-            "mov vt3.w, vc5.x			\n" +
+            "mul " + qclipped + ".xyz, " + qclipped + ".xyz, " + thickness + ".xxx	\n" +
+            "mov " + qclipped + ".w, " + constOne + ".x			\n" +
             // calculate the amount required to move at the point's distance to correspond to the line's pixel width
             // scale the side vector by that amount
-            "dp3 vt4.x, vt0, vc6			\n" +
-            "mul vt4.x, vt4.x, vc7.x			\n" +
-            "mul vt3.xyz, vt3.xyz, vt4.xxx	\n" +
+            "dp3 " + offset + ".x, " + q0 + ", " + constNegOne + "			\n" +
+            "mul " + offset + ".x, " + offset + ".x, " + misc + ".x			\n" +
+            "mul " + qclipped + ".xyz, " + qclipped + ".xyz, " + offset + ".xxx	\n" +
             // add scaled side vector to Q0 and transform to clip space
-            "add vt0.xyz, vt0.xyz, vt3.xyz	\n" +
-            "m44 op, vt0, vc0			\n"; // transform Q0 to clip space
+            "add " + q0 + ".xyz, " + q0 + ".xyz, " + qclipped + ".xyz	\n" +
+            "m44 op, " + q0 + ", " + viewMatrixReg + "			\n"; // transform Q0 to clip space
     };
     GL_LineElements._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
@@ -9997,23 +9917,26 @@ var GL_LineElements = (function (_super) {
         if (this._shader.colorBufferIndex >= 0)
             this.activateVertexBufferVO(this._shader.colorBufferIndex, this._lineElements.colors);
         this.activateVertexBufferVO(0, this._lineElements.positions, 3);
-        this.activateVertexBufferVO(1, this._lineElements.positions, 3, 12);
-        this.activateVertexBufferVO(2, this._lineElements.thickness);
-        this._constants[0] = this._thickness / ((this._stage.scissorRect) ? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
-        // value to convert distance from camera to model length per pixel width
-        this._constants[2] = camera.projection.near;
+        this.activateVertexBufferVO(2, this._lineElements.positions, 3, 12);
+        this.activateVertexBufferVO(3, this._lineElements.thickness);
+        this._shader.vertexConstantData[4 + 16] = 1;
+        this._shader.vertexConstantData[5 + 16] = 1;
+        this._shader.vertexConstantData[6 + 16] = 1;
+        this._shader.vertexConstantData[7 + 16] = 1;
+        this._shader.vertexConstantData[10 + 16] = -1;
+        this._shader.vertexConstantData[12 + 16] = this._thickness / ((this._stage.scissorRect) ? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
+        this._shader.vertexConstantData[13 + 16] = 1 / 255;
+        this._shader.vertexConstantData[14 + 16] = camera.projection.near;
         var context = this._stage.context;
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 5, GL_LineElements.pONE_VECTOR, 1);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 6, GL_LineElements.pFRONT_VECTOR, 1);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 7, this._constants, 1);
     };
     GL_LineElements.prototype.draw = function (renderable, camera, viewProjection, count, offset) {
         var context = this._stage.context;
         // projection matrix
-        context.setProgramConstantsFromMatrix(ContextGLProgramType_1.default.VERTEX, 0, camera.projection.matrix, true);
+        camera.projection.matrix.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
         this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
         this._calcMatrix.append(camera.inverseSceneTransform);
-        context.setProgramConstantsFromMatrix(ContextGLProgramType_1.default.VERTEX, 8, this._calcMatrix, true);
+        this._calcMatrix.copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, this._shader.vertexConstantData);
         if (this._indices)
             this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
         else
@@ -10032,9 +9955,6 @@ var GL_LineElements = (function (_super) {
     GL_LineElements.prototype._pGetOverflowElements = function () {
         return new GL_LineElements(this._lineElements, this._shader, this._pool);
     };
-    GL_LineElements.pONE_VECTOR = new Float32Array([1, 1, 1, 1]);
-    GL_LineElements.pFRONT_VECTOR = new Float32Array([0, 0, -1, 0]);
-    GL_LineElements.vertexAttributesOffset = 3;
     return GL_LineElements;
 }(GL_ElementsBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -10070,7 +9990,6 @@ var GL_SkyboxElements = (function (_super) {
     GL_SkyboxElements._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
     };
-    GL_SkyboxElements.vertexAttributesOffset = 1;
     return GL_SkyboxElements;
 }(GL_TriangleElements_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -10165,8 +10084,8 @@ var GL_TriangleElements = (function (_super) {
             matrix3D.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
         }
         var context = this._stage.context;
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 0, this._shader.vertexConstantData, this._shader.numUsedVertexConstants);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, 0, this._shader.fragmentConstantData, this._shader.numUsedFragmentConstants);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, this._shader.vertexConstantData);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._shader.fragmentConstantData);
         if (this._indices)
             this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
         else
@@ -10185,7 +10104,6 @@ var GL_TriangleElements = (function (_super) {
     GL_TriangleElements.prototype._pGetOverflowElements = function () {
         return new GL_TriangleElements(this._triangleElements, this._shader, this._pool);
     };
-    GL_TriangleElements.vertexAttributesOffset = 1;
     return GL_TriangleElements;
 }(GL_ElementsBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -10755,36 +10673,51 @@ var Filter3DCompositeTask = (function (_super) {
         configurable: true
     });
     Filter3DCompositeTask.prototype.getFragmentCode = function () {
+        var temp1 = this._registerCache.getFreeFragmentVectorTemp();
+        this._registerCache.addFragmentTempUsages(temp1, 1);
+        var temp2 = this._registerCache.getFreeFragmentVectorTemp();
+        this._registerCache.addFragmentTempUsages(temp2, 1);
+        var temp3 = this._registerCache.getFreeFragmentVectorTemp();
+        this._registerCache.addFragmentTempUsages(temp3, 1);
+        var temp4 = this._registerCache.getFreeFragmentVectorTemp();
+        this._registerCache.addFragmentTempUsages(temp4, 1);
+        var inputTexture = this._registerCache.getFreeTextureReg();
+        this._inputTextureIndex = inputTexture.index;
+        var overlayTexture = this._registerCache.getFreeTextureReg();
+        this._overlayTextureIndex = overlayTexture.index;
+        var exposure = this._registerCache.getFreeFragmentConstant();
+        this._exposureIndex = exposure.index * 4;
+        var scaling = this._registerCache.getFreeFragmentConstant();
+        this._scalingIndex = scaling.index * 4;
         var code;
-        var op;
-        code = "tex ft0, v0, fs0 <2d,linear,clamp>\n" +
-            "mul ft1, v0, fc1.zw\n" +
-            "add ft1, ft1, fc1.xy\n" +
-            "tex ft1, ft1, fs1 <2d,linear,clamp>\n" +
-            "mul ft1, ft1, fc0.xxx\n" +
-            "add ft1, ft1, fc0.xxx\n";
+        code = "tex " + temp1 + ", " + this._uvVarying + ", " + inputTexture + " <2d,linear,clamp>\n" +
+            "mul " + temp2 + ", " + this._uvVarying + ", " + scaling + ".zw\n" +
+            "add " + temp2 + ", " + temp2 + ", " + scaling + ".xy\n" +
+            "tex " + temp2 + ", " + temp2 + ", " + overlayTexture + " <2d,linear,clamp>\n" +
+            "mul " + temp2 + ", " + temp2 + ", " + exposure + ".xxx\n" +
+            "add " + temp2 + ", " + temp2 + ", " + exposure + ".xxx\n";
         switch (this._blendMode) {
             case "multiply":
-                code += "mul oc, ft0, ft1\n";
+                code += "mul oc, " + temp1 + ", " + temp2 + "\n";
                 break;
             case "add":
-                code += "add oc, ft0, ft1\n";
+                code += "add oc, " + temp1 + ", " + temp2 + "\n";
                 break;
             case "subtract":
-                code += "sub oc, ft0, ft1\n";
+                code += "sub oc, " + temp1 + ", " + temp2 + "\n";
                 break;
             case "overlay":
-                code += "sge ft2, ft0, fc0.yyy\n"; // t2 = (blend >= 0.5)? 1 : 0
-                code += "sub ft0, ft2, ft0\n"; // base = (1 : 0 - base)
-                code += "sub ft1, ft1, ft2\n"; // blend = (blend - 1 : 0)
-                code += "mul ft1, ft1, ft0\n"; // blend = blend * base
-                code += "sub ft3, ft2, fc0.yyy\n"; // t3 = (blend >= 0.5)? 0.5 : -0.5
-                code += "div ft1, ft1, ft3\n"; // blend = blend / ( 0.5 : -0.5)
-                code += "add oc, ft1, ft2\n";
+                code += "sge " + temp3 + ", " + temp1 + ", " + exposure + ".yyy\n"; // t2 = (blend >= 0.5)? 1 : 0
+                code += "sub " + temp1 + ", " + temp3 + ", " + temp1 + "\n"; // base = (1 : 0 - base)
+                code += "sub " + temp2 + ", " + temp2 + ", " + temp3 + "\n"; // blend = (blend - 1 : 0)
+                code += "mul " + temp2 + ", " + temp2 + ", " + temp1 + "\n"; // blend = blend * base
+                code += "sub " + temp4 + ", " + temp3 + ", " + exposure + ".yyy\n"; // t3 = (blend >= 0.5)? 0.5 : -0.5
+                code += "div " + temp2 + ", " + temp2 + ", " + temp4 + "\n"; // blend = blend / ( 0.5 : -0.5)
+                code += "add oc, " + temp2 + ", " + temp3 + "\n";
                 break;
             case "normal":
                 // for debugging purposes
-                code += "mov oc, ft0\n";
+                code += "mov oc, " + temp1 + "\n";
                 break;
             default:
                 throw new Error("Unknown blend mode");
@@ -10797,8 +10730,8 @@ var Filter3DCompositeTask = (function (_super) {
         this._data[6] = this._scaledTextureWidth / this._overlayWidth;
         this._data[7] = this._scaledTextureHeight / this._overlayHeight;
         var context = stage.context;
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, 0, this._data, 2);
-        stage.getAbstraction(this._overlayTexture).activate(1, false);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._data);
+        stage.getAbstraction(this._overlayTexture).activate(this._overlayTextureIndex, false);
     };
     Filter3DCompositeTask.prototype.deactivate = function (stage) {
         stage.context.setTextureAt(1, null);
@@ -11006,7 +10939,7 @@ var Filter3DFXAATask = (function (_super) {
         return code.join(" ");
     };
     Filter3DFXAATask.prototype.activate = function (stage, camera3D, depthTexture) {
-        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, 0, this._data, 6);
+        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._data);
     };
     Filter3DFXAATask.prototype.updateTextures = function (stage) {
         _super.prototype.updateTextures.call(this, stage);
@@ -11100,7 +11033,7 @@ var Filter3DHBlurTask = (function (_super) {
         return code;
     };
     Filter3DHBlurTask.prototype.activate = function (stage, camera3D, depthTexture) {
-        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, 0, this._data, 1);
+        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._data);
     };
     Filter3DHBlurTask.prototype.updateTextures = function (stage) {
         _super.prototype.updateTextures.call(this, stage);
@@ -11126,6 +11059,7 @@ exports.default = Filter3DHBlurTask;
 var Image2D_1 = require("awayjs-core/lib/image/Image2D");
 var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
 var AGALMiniAssembler_1 = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
+var ShaderRegisterCache_1 = require("../../shaders/ShaderRegisterCache");
 var Filter3DTaskBase = (function () {
     function Filter3DTaskBase(requireDepthRender) {
         if (requireDepthRender === void 0) { requireDepthRender = false; }
@@ -11137,7 +11071,9 @@ var Filter3DTaskBase = (function () {
         this._program3DInvalid = true;
         this._textureScale = 0;
         this._requireDepthRender = requireDepthRender;
+        this._registerCache = new ShaderRegisterCache_1.default("baseline");
     }
+    ;
     Object.defineProperty(Filter3DTaskBase.prototype, "textureScale", {
         /**
          * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
@@ -11225,13 +11161,22 @@ var Filter3DTaskBase = (function () {
         if (this._program3D)
             this._program3D.dispose();
         this._program3D = stage.context.createProgram();
+        this._registerCache.reset();
         var vertexByteCode = (new AGALMiniAssembler_1.default().assemble("part vertex 1\n" + this.getVertexCode() + "endpart"))['vertex'].data;
         var fragmentByteCode = (new AGALMiniAssembler_1.default().assemble("part fragment 1\n" + this.getFragmentCode() + "endpart"))['fragment'].data;
         this._program3D.upload(vertexByteCode, fragmentByteCode);
         this._program3DInvalid = false;
     };
     Filter3DTaskBase.prototype.getVertexCode = function () {
-        return "mov op, va0\n" + "mov v0, va1\n";
+        var position = this._registerCache.getFreeVertexAttribute();
+        this._positionIndex = position.index;
+        var uv = this._registerCache.getFreeVertexAttribute();
+        this._uvIndex = uv.index;
+        this._uvVarying = this._registerCache.getFreeVarying();
+        var code;
+        code = "mov op, " + position + "\n" +
+            "mov " + this._uvVarying + ", " + uv + "\n";
+        return code;
     };
     Filter3DTaskBase.prototype.getFragmentCode = function () {
         throw new AbstractMethodError_1.default();
@@ -11263,7 +11208,7 @@ var Filter3DTaskBase = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Filter3DTaskBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask":[function(require,module,exports){
+},{"../../shaders/ShaderRegisterCache":"awayjs-renderergl/lib/shaders/ShaderRegisterCache","awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11333,7 +11278,7 @@ var Filter3DVBlurTask = (function (_super) {
         return code;
     };
     Filter3DVBlurTask.prototype.activate = function (stage, camera3D, depthTexture) {
-        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, 0, this._data, 1);
+        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._data);
     };
     Filter3DVBlurTask.prototype.updateTextures = function (stage) {
         _super.prototype.updateTextures.call(this, stage);
@@ -12003,7 +11948,9 @@ var GL_SkyboxRenderable = (function (_super) {
     function GL_SkyboxRenderable(skybox, renderer) {
         _super.call(this, skybox, renderer);
         this._skybox = skybox;
-        this._vertexArray = new Float32Array([0, 0, 0, 0, 1, 1, 1, 1]);
+        this._vertexArray = new Float32Array(24);
+        this._vertexArray[19] = 1;
+        this._vertexArray[23] = 1;
     }
     /**
      * //TODO
@@ -12031,6 +11978,7 @@ var GL_SkyboxRenderable = (function (_super) {
      * @inheritDoc
      */
     GL_SkyboxRenderable._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+        var temp = registerCache.getFreeFragmentVectorTemp();
         return "mul vt0, va0, vc5\n" +
             "add vt0, vt0, vc4\n" +
             "m44 op, vt0, vc0\n";
@@ -12045,14 +11993,13 @@ var GL_SkyboxRenderable = (function (_super) {
         _super.prototype._setRenderState.call(this, pass, camera, viewProjection);
         var context = this._stage.context;
         var pos = camera.scenePosition;
-        this._vertexArray[0] = pos.x;
-        this._vertexArray[1] = pos.y;
-        this._vertexArray[2] = pos.z;
-        this._vertexArray[4] = this._vertexArray[5] = this._vertexArray[6] = camera.projection.far / Math.sqrt(3);
-        context.setProgramConstantsFromMatrix(ContextGLProgramType_1.default.VERTEX, 0, viewProjection, true);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 4, this._vertexArray, 2);
+        this._vertexArray[16] = pos.x;
+        this._vertexArray[17] = pos.y;
+        this._vertexArray[18] = pos.z;
+        this._vertexArray[20] = this._vertexArray[21] = this._vertexArray[22] = camera.projection.far / Math.sqrt(3);
+        viewProjection.copyRawDataTo(this._vertexArray, 0, true);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, this._vertexArray);
     };
-    GL_SkyboxRenderable.vertexAttributesOffset = 1;
     return GL_SkyboxRenderable;
 }(GL_RenderableBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -12496,7 +12443,6 @@ var ShaderBase = (function () {
         this._abstractionPool = new Object();
         this._blendFactorSource = ContextGLBlendFactor_1.default.ONE;
         this._blendFactorDest = ContextGLBlendFactor_1.default.ZERO;
-        this._invalidShader = true;
         this._invalidProgram = true;
         this._animationVertexCode = "";
         this._animationFragmentCode = "";
@@ -12542,6 +12488,61 @@ var ShaderBase = (function () {
             if (this._invalidProgram)
                 this._updateProgram();
             return this._programData;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderBase.prototype, "usesAnimation", {
+        get: function () {
+            return this._usesAnimation;
+        },
+        set: function (value) {
+            if (this._usesAnimation == value)
+                return;
+            this._usesAnimation = value;
+            this.invalidateProgram();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderBase.prototype, "numUsedVertexConstants", {
+        get: function () {
+            if (this._invalidProgram)
+                this._updateProgram();
+            return this._numUsedVertexConstants;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderBase.prototype, "numUsedFragmentConstants", {
+        get: function () {
+            if (this._invalidProgram)
+                this._updateProgram();
+            return this._numUsedFragmentConstants;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderBase.prototype, "numUsedStreams", {
+        /**
+         * The amount of used vertex streams in the vertex code. Used by the animation code generation to know from which index on streams are available.
+         */
+        get: function () {
+            if (this._invalidProgram)
+                this._updateProgram();
+            return this._numUsedStreams;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShaderBase.prototype, "numUsedTextures", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._invalidProgram)
+                this._updateProgram();
+            return this._numUsedTextures;
         },
         enumerable: true,
         configurable: true
@@ -12621,20 +12622,14 @@ var ShaderBase = (function () {
     /**
      * Initializes the unchanging constant data for this shader object.
      */
-    ShaderBase.prototype.initConstantData = function (registerCache, animatableAttributes, animationTargetRegisters, uvSource, uvTarget) {
+    ShaderBase.prototype.initConstantData = function (registerCache) {
         //Updates the amount of used register indices.
-        this.numUsedVertexConstants = registerCache.numUsedVertexConstants;
-        this.numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
-        this.numUsedStreams = registerCache.numUsedStreams;
-        this.numUsedTextures = registerCache.numUsedTextures;
-        this.numUsedVaryings = registerCache.numUsedVaryings;
-        this.numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
-        this.animatableAttributes = animatableAttributes;
-        this.animationTargetRegisters = animationTargetRegisters;
-        this.uvSource = uvSource;
-        this.uvTarget = uvTarget;
-        this.vertexConstantData = new Float32Array(this.numUsedVertexConstants * 4);
-        this.fragmentConstantData = new Float32Array(this.numUsedFragmentConstants * 4);
+        this._numUsedVertexConstants = registerCache.numUsedVertexConstants;
+        this._numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
+        this._numUsedStreams = registerCache.numUsedStreams;
+        this._numUsedTextures = registerCache.numUsedTextures;
+        this.vertexConstantData = new Float32Array(registerCache.numUsedVertexConstants * 4);
+        this.fragmentConstantData = new Float32Array(registerCache.numUsedFragmentConstants * 4);
         //Initializes commonly required constant values.
         if (this.commonsDataIndex >= 0) {
             this.fragmentConstantData[this.commonsDataIndex] = .5;
@@ -12666,6 +12661,11 @@ var ShaderBase = (function () {
         }
         if (this.cameraPositionIndex >= 0)
             this.vertexConstantData[this.cameraPositionIndex + 3] = 1;
+        // init constant data in pass
+        this._pass._iInitConstantData(this);
+        //init constant data in animation
+        if (this.usesAnimation)
+            this._pass.animationSet.doneAGALCode(this);
     };
     /**
      * The blend mode to use when drawing this renderable. The following blend modes are supported:
@@ -12712,8 +12712,6 @@ var ShaderBase = (function () {
      * @inheritDoc
      */
     ShaderBase.prototype._iActivate = function (camera) {
-        if (this.usesAnimation)
-            this._pass.animationSet.activate(this, this._stage);
         this._stage.context.setCulling(this.useBothSides ? ContextGLTriangleFace_1.default.NONE : this._defaultCulling, camera.projection.coordinateSystem);
         if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
             var pos = camera.scenePosition;
@@ -12730,8 +12728,6 @@ var ShaderBase = (function () {
      * @inheritDoc
      */
     ShaderBase.prototype._iDeactivate = function () {
-        if (this.usesAnimation)
-            this._pass.animationSet.deactivate(this, this._stage);
         //For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
         this._stage.context.setDepthTest(true, ContextGLCompareMode_1.default.LESS_EQUAL);
         this.activeElements = null;
@@ -12745,7 +12741,7 @@ var ShaderBase = (function () {
      */
     ShaderBase.prototype._iRender = function (renderable, camera, viewProjection) {
         if (renderable.renderable.animator)
-            renderable.renderable.animator.setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
+            renderable.renderable.animator.setRenderState(this, renderable, this._stage, camera);
         if (this.usesUVTransform) {
             var uvMatrix = renderable.uvMatrix;
             if (uvMatrix) {
@@ -12804,23 +12800,17 @@ var ShaderBase = (function () {
     ShaderBase.prototype.invalidateProgram = function () {
         this._invalidProgram = true;
     };
-    ShaderBase.prototype.invalidateShader = function () {
-        this._invalidShader = true;
-        this._invalidProgram = true;
-    };
     ShaderBase.prototype.dispose = function () {
         this._programData.dispose();
         this._programData = null;
     };
     ShaderBase.prototype._updateProgram = function () {
         this._invalidProgram = false;
-        var compiler;
-        if (this._invalidShader) {
-            this._invalidShader = false;
-            compiler = this.createCompiler(this._elementsClass, this._pass);
-            compiler.compile();
-        }
-        this._calcAnimationCode(compiler.shadedTarget);
+        var compiler = this.createCompiler(this._elementsClass, this._pass);
+        compiler.compile();
+        this._calcAnimationCode(compiler._pRegisterCache, compiler.shadedTarget, compiler._pSharedRegisters);
+        //initialise the required shader constants
+        this.initConstantData(compiler._pRegisterCache);
         var programData = this._stage.getProgramData(this._animationVertexCode + compiler.vertexCode, compiler.fragmentCode + this._animationFragmentCode + compiler.postAnimationFragmentCode);
         //check program data hasn't changed, keep count of program usages
         if (this._programData != programData) {
@@ -12830,29 +12820,75 @@ var ShaderBase = (function () {
             programData.usages++;
         }
     };
-    ShaderBase.prototype._calcAnimationCode = function (shadedTarget) {
+    ShaderBase.prototype._calcAnimationCode = function (registerCache, shadedTarget, sharedRegisters) {
         //reset code
         this._animationVertexCode = "";
         this._animationFragmentCode = "";
         //check to see if GPU animation is used
         if (this.usesAnimation) {
             var animationSet = this._pass.animationSet;
-            this._animationVertexCode += animationSet.getAGALVertexCode(this);
+            this._animationVertexCode += animationSet.getAGALVertexCode(this, registerCache, sharedRegisters);
             if (this.uvDependencies > 0 && !this.usesUVTransform)
-                this._animationVertexCode += animationSet.getAGALUVCode(this);
+                this._animationVertexCode += animationSet.getAGALUVCode(this, registerCache, sharedRegisters);
             if (this.usesFragmentAnimation)
-                this._animationFragmentCode += animationSet.getAGALFragmentCode(this, shadedTarget);
-            animationSet.doneAGALCode(this);
+                this._animationFragmentCode += animationSet.getAGALFragmentCode(this, registerCache, shadedTarget);
         }
         else {
             // simply write attributes to targets, do not animate them
             // projection will pick up on targets[0] to do the projection
-            var len = this.animatableAttributes.length;
+            var len = sharedRegisters.animatableAttributes.length;
             for (var i = 0; i < len; ++i)
-                this._animationVertexCode += "mov " + this.animationTargetRegisters[i] + ", " + this.animatableAttributes[i] + "\n";
+                this._animationVertexCode += "mov " + sharedRegisters.animationTargetRegisters[i] + ", " + sharedRegisters.animatableAttributes[i] + "\n";
             if (this.uvDependencies > 0 && !this.usesUVTransform)
-                this._animationVertexCode += "mov " + this.uvTarget + "," + this.uvSource + "\n";
+                this._animationVertexCode += "mov " + sharedRegisters.uvTarget + "," + sharedRegisters.uvSource + "\n";
         }
+    };
+    ShaderBase.prototype.setVertexConst = function (index, x, y, z, w) {
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
+        if (z === void 0) { z = 0; }
+        if (w === void 0) { w = 0; }
+        index *= 4;
+        this.vertexConstantData[index++] = x;
+        this.vertexConstantData[index++] = y;
+        this.vertexConstantData[index++] = z;
+        this.vertexConstantData[index] = w;
+    };
+    ShaderBase.prototype.setVertexConstFromArray = function (index, data) {
+        index *= 4;
+        for (var i = 0; i < data.length; i++)
+            this.vertexConstantData[index++] = data[i];
+    };
+    ShaderBase.prototype.setVertexConstFromMatrix = function (index, matrix) {
+        index *= 4;
+        var rawData = matrix.rawData;
+        this.vertexConstantData[index++] = rawData[0];
+        this.vertexConstantData[index++] = rawData[4];
+        this.vertexConstantData[index++] = rawData[8];
+        this.vertexConstantData[index++] = rawData[12];
+        this.vertexConstantData[index++] = rawData[1];
+        this.vertexConstantData[index++] = rawData[5];
+        this.vertexConstantData[index++] = rawData[9];
+        this.vertexConstantData[index++] = rawData[13];
+        this.vertexConstantData[index++] = rawData[2];
+        this.vertexConstantData[index++] = rawData[6];
+        this.vertexConstantData[index++] = rawData[10];
+        this.vertexConstantData[index++] = rawData[14];
+        this.vertexConstantData[index++] = rawData[3];
+        this.vertexConstantData[index++] = rawData[7];
+        this.vertexConstantData[index++] = rawData[11];
+        this.vertexConstantData[index] = rawData[15];
+    };
+    ShaderBase.prototype.setFragmentConst = function (index, x, y, z, w) {
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
+        if (z === void 0) { z = 0; }
+        if (w === void 0) { w = 0; }
+        index *= 4;
+        this.fragmentConstantData[index++] = x;
+        this.fragmentConstantData[index++] = y;
+        this.fragmentConstantData[index++] = z;
+        this.fragmentConstantData[index] = w;
     };
     ShaderBase._abstractionClassPool = new Object();
     return ShaderBase;
@@ -12880,6 +12916,7 @@ var ShaderRegisterCache = (function () {
         this._numUsedTextures = 0;
         this._numUsedVaryings = 0;
         this._profile = profile;
+        this.reset();
     }
     /**
      * Resets all registers.
@@ -12899,15 +12936,6 @@ var ShaderRegisterCache = (function () {
         this._numUsedTextures = 0;
         this._numUsedVaryings = 0;
         this._numUsedFragmentConstants = 0;
-        var i;
-        for (i = 0; i < this._vertexAttributesOffset; ++i)
-            this.getFreeVertexAttribute();
-        for (i = 0; i < this._vertexConstantOffset; ++i)
-            this.getFreeVertexConstant();
-        for (i = 0; i < this._varyingsOffset; ++i)
-            this.getFreeVarying();
-        for (i = 0; i < this._fragmentConstantOffset; ++i)
-            this.getFreeFragmentConstant();
     };
     /**
      * Disposes all resources used.
@@ -13018,58 +13046,6 @@ var ShaderRegisterCache = (function () {
         ++this._numUsedTextures;
         return this._textureCache.requestFreeVectorReg();
     };
-    Object.defineProperty(ShaderRegisterCache.prototype, "vertexConstantOffset", {
-        /**
-         * Indicates the start index from which to retrieve vertex constants.
-         */
-        get: function () {
-            return this._vertexConstantOffset;
-        },
-        set: function (vertexConstantOffset) {
-            this._vertexConstantOffset = vertexConstantOffset;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterCache.prototype, "vertexAttributesOffset", {
-        /**
-         * Indicates the start index from which to retrieve vertex attributes.
-         */
-        get: function () {
-            return this._vertexAttributesOffset;
-        },
-        set: function (value) {
-            this._vertexAttributesOffset = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterCache.prototype, "varyingsOffset", {
-        /**
-         * Indicates the start index from which to retrieve varying registers.
-         */
-        get: function () {
-            return this._varyingsOffset;
-        },
-        set: function (value) {
-            this._varyingsOffset = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShaderRegisterCache.prototype, "fragmentConstantOffset", {
-        /**
-         * Indicates the start index from which to retrieve fragment constants.
-         */
-        get: function () {
-            return this._fragmentConstantOffset;
-        },
-        set: function (value) {
-            this._fragmentConstantOffset = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(ShaderRegisterCache.prototype, "fragmentOutputRegister", {
         /**
          * The fragment output register.
@@ -13142,7 +13118,9 @@ exports.default = ShaderRegisterCache;
  */
 var ShaderRegisterData = (function () {
     function ShaderRegisterData() {
-        this.textures = Array();
+        this.textures = new Array();
+        this.animatableAttributes = new Array();
+        this.animationTargetRegisters = new Array();
     }
     return ShaderRegisterData;
 }());
@@ -13224,17 +13202,11 @@ var CompilerBase = (function () {
         this._pVertexCode = ''; // Changed to emtpy string- AwayTS
         this._pFragmentCode = ''; // Changed to emtpy string - AwayTS
         this._pPostAnimationFragmentCode = ''; // Changed to emtpy string - AwayTS
-        //The attributes that need to be animated by animators.
-        this._pAnimatableAttributes = new Array();
-        //The target registers for animated properties, written to by the animators.
-        this._pAnimationTargetRegisters = new Array();
         this._pElementsClass = elementsClass;
         this._pRenderPass = pass;
         this._pShader = shader;
         this._pSharedRegisters = new ShaderRegisterData_1.default();
         this._pRegisterCache = new ShaderRegisterCache_1.default(shader.profile);
-        this._pRegisterCache.vertexAttributesOffset = elementsClass.vertexAttributesOffset;
-        this._pRegisterCache.reset();
     }
     /**
      * Compiles the code after all setup on the compiler has finished.
@@ -13254,9 +13226,6 @@ var CompilerBase = (function () {
         //assign the final output color to the output register
         this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
         this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
-        //initialise the required shader constants
-        this._pShader.initConstantData(this._pRegisterCache, this._pAnimatableAttributes, this._pAnimationTargetRegisters, this._uvSource, this._uvTarget);
-        this._pRenderPass._iInitConstantData(this._pShader);
     };
     /**
      * Calculate the transformed colours
@@ -13347,8 +13316,8 @@ var CompilerBase = (function () {
         }
         else {
             this._pShader.uvMatrixIndex = -1;
-            this._uvTarget = varying.toString();
-            this._uvSource = uvAttributeReg.toString();
+            this._pSharedRegisters.uvTarget = varying;
+            this._pSharedRegisters.uvSource = uvAttributeReg;
         }
     };
     /**
@@ -13481,8 +13450,8 @@ var CompilerBase = (function () {
         this._pShader.pInitRegisterIndices();
         this._pSharedRegisters.animatedPosition = this._pRegisterCache.getFreeVertexVectorTemp();
         this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedPosition, 1);
-        this._pAnimatableAttributes.push("va0");
-        this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedPosition.toString());
+        this._pSharedRegisters.animatableAttributes.push(this._pRegisterCache.getFreeVertexAttribute());
+        this._pSharedRegisters.animationTargetRegisters.push(this._pSharedRegisters.animatedPosition);
         this._pVertexCode = "";
         this._pFragmentCode = "";
         this._pPostAnimationFragmentCode = "";
@@ -13502,16 +13471,16 @@ var CompilerBase = (function () {
                 this._pSharedRegisters.bitangent = this._pRegisterCache.getFreeVertexVectorTemp();
                 this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.bitangent, 1);
             }
-            this._pAnimatableAttributes.push(this._pSharedRegisters.tangentInput.toString());
-            this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedTangent.toString());
+            this._pSharedRegisters.animatableAttributes.push(this._pSharedRegisters.tangentInput);
+            this._pSharedRegisters.animationTargetRegisters.push(this._pSharedRegisters.animatedTangent);
         }
         if (this._pShader.normalDependencies > 0) {
             this._pSharedRegisters.normalInput = this._pRegisterCache.getFreeVertexAttribute();
             this._pShader.normalIndex = this._pSharedRegisters.normalInput.index;
             this._pSharedRegisters.animatedNormal = this._pRegisterCache.getFreeVertexVectorTemp();
             this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedNormal, 1);
-            this._pAnimatableAttributes.push(this._pSharedRegisters.normalInput.toString());
-            this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedNormal.toString());
+            this._pSharedRegisters.animatableAttributes.push(this._pSharedRegisters.normalInput);
+            this._pSharedRegisters.animationTargetRegisters.push(this._pSharedRegisters.animatedNormal);
         }
         if (this._pShader.colorDependencies > 0) {
             this._pSharedRegisters.colorInput = this._pRegisterCache.getFreeVertexAttribute();
@@ -13560,10 +13529,10 @@ var CompilerBase = (function () {
     });
     Object.defineProperty(CompilerBase.prototype, "shadedTarget", {
         /**
-         * The register name containing the final shaded colour.
+         * The register containing the final shaded colour.
          */
         get: function () {
-            return this._pSharedRegisters.shadedTarget.toString();
+            return this._pSharedRegisters.shadedTarget;
         },
         enumerable: true,
         configurable: true
@@ -14468,10 +14437,7 @@ var GL_SurfaceBase = (function (_super) {
         var len = this._passes.length;
         for (var i = 0; i < len; i++) {
             shader = this._passes[i].shader;
-            if (shader.usesAnimation != enabledGPUAnimation) {
-                shader.usesAnimation = enabledGPUAnimation;
-                shader.invalidateProgram();
-            }
+            shader.usesAnimation = enabledGPUAnimation;
             renderOrderId += shader.programData.id * mult;
             mult *= 1000;
         }
@@ -14549,13 +14515,17 @@ var GL_SurfaceBase = (function (_super) {
     GL_SurfaceBase.prototype._getEnabledGPUAnimation = function () {
         if (this._surface.animationSet) {
             this._surface.animationSet.resetGPUCompatibility();
-            var owners = this._surface.iOwners;
-            var numOwners = owners.length;
+            var renderables = this._surface.iOwners;
+            var numOwners = renderables.length;
             var len = this._passes.length;
-            for (var i = 0; i < len; i++)
+            var shader;
+            for (var i = 0; i < len; i++) {
+                shader = this._passes[i].shader;
+                shader.usesAnimation = false;
                 for (var j = 0; j < numOwners; j++)
-                    if (owners[j].animator)
-                        owners[j].animator.testGPUCompatibility(this._passes[i].shader);
+                    if (renderables[j].animator)
+                        renderables[j].animator.testGPUCompatibility(shader);
+            }
             return !this._surface.animationSet.usesCPU;
         }
         return false;
@@ -14601,7 +14571,7 @@ var GL_SurfacePassBase = (function (_super) {
      * Marks the shader program as invalid, so it will be recompiled before the next render.
      */
     GL_SurfacePassBase.prototype.invalidate = function () {
-        this._shader.invalidateShader();
+        this._shader.invalidateProgram();
         this.dispatchEvent(new PassEvent_1.default(PassEvent_1.default.INVALIDATE, this));
     };
     GL_SurfacePassBase.prototype.dispose = function () {
@@ -14919,7 +14889,7 @@ var PassBase = (function (_super) {
      * Marks the shader program as invalid, so it will be recompiled before the next render.
      */
     PassBase.prototype.invalidate = function () {
-        this._shader.invalidateShader();
+        this._shader.invalidateProgram();
         this.dispatchEvent(new PassEvent_1.default(PassEvent_1.default.INVALIDATE, this));
     };
     /**
