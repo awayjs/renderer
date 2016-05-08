@@ -16,7 +16,7 @@ class CrossfadeTransition implements IAnimationTransition
 		this.blendSpeed = blendSpeed;
 	}
 
-	public getAnimationNode(animator:AnimatorBase, startNode:AnimationNodeBase, endNode:AnimationNodeBase, startBlend:number /*int*/):AnimationNodeBase
+	public getAnimationNode(animator:AnimatorBase, startNode:AnimationNodeBase, endNode:AnimationNodeBase, startBlend:number):AnimationNodeBase
 	{
 		var crossFadeTransitionNode:CrossfadeTransitionNode = new CrossfadeTransitionNode();
 		crossFadeTransitionNode.inputA = startNode;

@@ -1,12 +1,13 @@
 import ColorTransform					from "awayjs-core/lib/geom/ColorTransform";
 
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
 import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import ParticleProperties				from "../../animators/data/ParticleProperties";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
 import ParticleInitialColorState		from "../../animators/states/ParticleInitialColorState";
 import ShaderBase						from "../../shaders/ShaderBase";
+import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
 import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
 
 /**
@@ -28,7 +29,7 @@ class ParticleInitialColorNode extends ParticleNodeBase
 	 */
 	public static COLOR_INITIAL_COLORTRANSFORM:string = "ColorInitialColorTransform";
 
-	constructor(mode:number /*uint*/, usesMultiplier:boolean = true, usesOffset:boolean = false, initialColor:ColorTransform = null)
+	constructor(mode:number, usesMultiplier:boolean = true, usesOffset:boolean = false, initialColor:ColorTransform = null)
 	{
 		super("ParticleInitialColor", mode, (usesMultiplier && usesOffset)? 8 : 4, ParticleAnimationSet.COLOR_PRIORITY);
 
@@ -42,23 +43,23 @@ class ParticleInitialColorNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALVertexCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALVertexCode(shader:ShaderBase, animationSet:ParticleAnimationSet, registerCache:ShaderRegisterCache, animationRegisterData:AnimationRegisterData):string
 	{
 		var code:string = "";
-		if (animationRegisterCache.needFragmentAnimation) {
+		if (shader.usesFragmentAnimation) {
 
 			if (this._iUsesMultiplier) {
-				var multiplierValue:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-				animationRegisterCache.setRegisterIndex(this, ParticleInitialColorState.MULTIPLIER_INDEX, multiplierValue.index);
+				var multiplierValue:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+				animationRegisterData.setRegisterIndex(this, ParticleInitialColorState.MULTIPLIER_INDEX, multiplierValue.index);
 
-				code += "mul " + animationRegisterCache.colorMulTarget + "," + multiplierValue + "," + animationRegisterCache.colorMulTarget + "\n";
+				code += "mul " + animationRegisterData.colorMulTarget + "," + multiplierValue + "," + animationRegisterData.colorMulTarget + "\n";
 			}
 
 			if (this._iUsesOffset) {
-				var offsetValue:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.LOCAL_STATIC)? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
-				animationRegisterCache.setRegisterIndex(this, ParticleInitialColorState.OFFSET_INDEX, offsetValue.index);
+				var offsetValue:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.LOCAL_STATIC)? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
+				animationRegisterData.setRegisterIndex(this, ParticleInitialColorState.OFFSET_INDEX, offsetValue.index);
 
-				code += "add " + animationRegisterCache.colorAddTarget + "," + offsetValue + "," + animationRegisterCache.colorAddTarget + "\n";
+				code += "add " + animationRegisterData.colorAddTarget + "," + offsetValue + "," + animationRegisterData.colorAddTarget + "\n";
 			}
 		}
 
@@ -85,7 +86,7 @@ class ParticleInitialColorNode extends ParticleNodeBase
 		if (!initialColor)
 			throw(new Error("there is no " + ParticleInitialColorNode.COLOR_INITIAL_COLORTRANSFORM + " in param!"));
 
-		var i:number /*uint*/ = 0;
+		var i:number = 0;
 
 		//multiplier
 		if (this._iUsesMultiplier) {

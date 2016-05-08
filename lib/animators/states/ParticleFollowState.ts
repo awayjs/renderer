@@ -8,12 +8,13 @@ import Stage							from "awayjs-stagegl/lib/base/Stage";
 import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
 import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import AnimationElements				from "../../animators/data/AnimationElements";
 import ParticleAnimationData			from "../../animators/data/ParticleAnimationData";
 import ParticleFollowNode				from "../../animators/nodes/ParticleFollowNode";
 import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
+import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
+import ShaderBase						from "../../shaders/ShaderBase";
 
 /**
  * ...
@@ -21,10 +22,10 @@ import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBa
 class ParticleFollowState extends ParticleStateBase
 {
 	/** @private */
-	public static FOLLOW_POSITION_INDEX:number /*uint*/ = 0;
+	public static FOLLOW_POSITION_INDEX:number = 0;
 
 	/** @private */
-	public static FOLLOW_ROTATION_INDEX:number /*uint*/ = 1;
+	public static FOLLOW_ROTATION_INDEX:number = 1;
 
 	private _particleFollowNode:ParticleFollowNode;
 	private _followTarget:DisplayObject;
@@ -69,7 +70,7 @@ class ParticleFollowState extends ParticleStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
 	{
 		if (this._followTarget) {
 			if (this._particleFollowNode._iUsesPosition) {
@@ -100,18 +101,18 @@ class ParticleFollowState extends ParticleStateBase
 			if (needProcess)
 				this.processPositionAndRotation(currentTime, deltaTime, animationElements);
 
-			animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
-			animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat.FLOAT_3);
+			animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
+			animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat.FLOAT_3);
 		} else if (this._particleFollowNode._iUsesPosition) {
 			if (needProcess)
 				this.processPosition(currentTime, deltaTime, animationElements);
 
-			animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
+			animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 		} else if (this._particleFollowNode._iUsesRotation) {
 			if (needProcess)
 				this.precessRotation(currentTime, deltaTime, animationElements);
 
-			animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
+			animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 		}
 
 		this._prePos.copyFrom(this._targetPos);
@@ -125,7 +126,7 @@ class ParticleFollowState extends ParticleStateBase
 		var vertexData:Array<number> = animationElements.vertexData;
 
 		var changed:boolean = false;
-		var len:number /*uint*/ = data.length;
+		var len:number = data.length;
 		var interpolatedPos:Vector3D;
 		var posVelocity:Vector3D;
 		if (this._smooth) {
@@ -133,11 +134,11 @@ class ParticleFollowState extends ParticleStateBase
 			posVelocity.scaleBy(1/deltaTime);
 		} else
 			interpolatedPos = this._targetPos;
-		for (var i:number /*uint*/ = 0; i < len; i++) {
+		for (var i:number = 0; i < len; i++) {
 			var k:number = (currentTime - data[i].startTime)/data[i].totalTime;
 			var t:number = (k - Math.floor(k))*data[i].totalTime;
 			if (t - deltaTime <= 0) {
-				var inc:number /*int*/ = data[i].startVertexIndex*animationElements.totalLenOfOneVertex + this._particleFollowNode._iDataOffset;
+				var inc:number = data[i].startVertexIndex*animationElements.totalLenOfOneVertex + this._particleFollowNode._iDataOffset;
 
 				if (this._smooth) {
 					this._temp.copyFrom(posVelocity);
@@ -147,7 +148,7 @@ class ParticleFollowState extends ParticleStateBase
 
 				if (vertexData[inc] != interpolatedPos.x || vertexData[inc + 1] != interpolatedPos.y || vertexData[inc + 2] != interpolatedPos.z) {
 					changed = true;
-					for (var j:number /*uint*/ = 0; j < data[i].numVertices; j++) {
+					for (var j:number = 0; j < data[i].numVertices; j++) {
 						vertexData[inc++] = interpolatedPos.x;
 						vertexData[inc++] = interpolatedPos.y;
 						vertexData[inc++] = interpolatedPos.z;
@@ -166,7 +167,7 @@ class ParticleFollowState extends ParticleStateBase
 		var vertexData:Array<number> = animationElements.vertexData;
 
 		var changed:boolean = false;
-		var len:number /*uint*/ = data.length;
+		var len:number = data.length;
 
 		var interpolatedRotation:Vector3D;
 		var rotationVelocity:Vector3D;
@@ -177,11 +178,11 @@ class ParticleFollowState extends ParticleStateBase
 		} else
 			interpolatedRotation = this._targetEuler;
 
-		for (var i:number /*uint*/ = 0; i < len; i++) {
+		for (var i:number = 0; i < len; i++) {
 			var k:number = (currentTime - data[i].startTime)/data[i].totalTime;
 			var t:number = (k - Math.floor(k))*data[i].totalTime;
 			if (t - deltaTime <= 0) {
-				var inc:number /*int*/ = data[i].startVertexIndex*animationElements.totalLenOfOneVertex + this._particleFollowNode._iDataOffset;
+				var inc:number = data[i].startVertexIndex*animationElements.totalLenOfOneVertex + this._particleFollowNode._iDataOffset;
 
 				if (this._smooth) {
 					this._temp.copyFrom(rotationVelocity);
@@ -191,7 +192,7 @@ class ParticleFollowState extends ParticleStateBase
 
 				if (vertexData[inc] != interpolatedRotation.x || vertexData[inc + 1] != interpolatedRotation.y || vertexData[inc + 2] != interpolatedRotation.z) {
 					changed = true;
-					for (var j:number /*uint*/ = 0; j < data[i].numVertices; j++) {
+					for (var j:number = 0; j < data[i].numVertices; j++) {
 						vertexData[inc++] = interpolatedRotation.x;
 						vertexData[inc++] = interpolatedRotation.y;
 						vertexData[inc++] = interpolatedRotation.z;
@@ -210,7 +211,7 @@ class ParticleFollowState extends ParticleStateBase
 		var vertexData:Array<number> = animationElements.vertexData;
 
 		var changed:boolean = false;
-		var len:number /*uint*/ = data.length;
+		var len:number = data.length;
 
 		var interpolatedPos:Vector3D;
 		var interpolatedRotation:Vector3D;
@@ -227,11 +228,11 @@ class ParticleFollowState extends ParticleStateBase
 			interpolatedRotation = this._targetEuler;
 		}
 
-		for (var i:number /*uint*/ = 0; i < len; i++) {
+		for (var i:number = 0; i < len; i++) {
 			var k:number = (currentTime - data[i].startTime)/data[i].totalTime;
 			var t:number = (k - Math.floor(k))*data[i].totalTime;
 			if (t - deltaTime <= 0) {
-				var inc:number /*int*/ = data[i].startVertexIndex*animationElements.totalLenOfOneVertex + this._particleFollowNode._iDataOffset;
+				var inc:number = data[i].startVertexIndex*animationElements.totalLenOfOneVertex + this._particleFollowNode._iDataOffset;
 				if (this._smooth) {
 					this._temp.copyFrom(posVelocity);
 					this._temp.scaleBy(t);
@@ -244,7 +245,7 @@ class ParticleFollowState extends ParticleStateBase
 
 				if (vertexData[inc] != interpolatedPos.x || vertexData[inc + 1] != interpolatedPos.y || vertexData[inc + 2] != interpolatedPos.z || vertexData[inc + 3] != interpolatedRotation.x || vertexData[inc + 4] != interpolatedRotation.y || vertexData[inc + 5] != interpolatedRotation.z) {
 					changed = true;
-					for (var j:number /*uint*/ = 0; j < data[i].numVertices; j++) {
+					for (var j:number = 0; j < data[i].numVertices; j++) {
 						vertexData[inc++] = interpolatedPos.x;
 						vertexData[inc++] = interpolatedPos.y;
 						vertexData[inc++] = interpolatedPos.z;

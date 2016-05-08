@@ -27,7 +27,7 @@ class SkeletonPose extends AssetBase implements IAsset
 	/**
 	 * The total number of joint poses in the skeleton pose.
 	 */
-	public get numJointPoses():number /*uint*/
+	public get numJointPoses():number
 	{
 		return this.jointPoses.length;
 	}
@@ -58,7 +58,7 @@ class SkeletonPose extends AssetBase implements IAsset
 	 */
 	public jointPoseFromName(jointName:string):JointPose
 	{
-		var jointPoseIndex:number /*int*/ = this.jointPoseIndexFromName(jointName);
+		var jointPoseIndex:number = this.jointPoseIndexFromName(jointName);
 		if (jointPoseIndex != -1)
 			return this.jointPoses[jointPoseIndex]; else
 			return null;
@@ -72,7 +72,7 @@ class SkeletonPose extends AssetBase implements IAsset
 	 *
 	 * @see #jointPoses
 	 */
-	public jointPoseIndexFromName(jointName:string):number /*int*/
+	public jointPoseIndexFromName(jointName:string):number
 	{
 		// this is implemented as a linear search, rather than a possibly
 		// more optimal method (Dictionary lookup, for example) because:
@@ -80,9 +80,9 @@ class SkeletonPose extends AssetBase implements IAsset
 		// b) it is assumed that it will be called only during load, and not during main loop
 		// c) maintaining a dictionary (for safety) would dictate an interface to access JointPoses,
 		//    rather than direct array access.  this would be sub-optimal.
-		var jointPoseIndex:number /*int*/;
+		var jointPoseIndex:number;
 		var jointPose:JointPose;
-		for (var i:number /*uint*/; i < this.jointPoses.length; i++) {
+		for (var i:number; i < this.jointPoses.length; i++) {
 			jointPose = this.jointPoses[i];
 			if (jointPose.name == jointName)
 				return jointPoseIndex;
@@ -100,8 +100,8 @@ class SkeletonPose extends AssetBase implements IAsset
 	public clone():SkeletonPose
 	{
 		var clone:SkeletonPose = new SkeletonPose();
-		var numJointPoses:number /*uint*/ = this.jointPoses.length;
-		for (var i:number /*uint*/ = 0; i < numJointPoses; i++) {
+		var numJointPoses:number = this.jointPoses.length;
+		for (var i:number = 0; i < numJointPoses; i++) {
 			var cloneJointPose:JointPose = new JointPose();
 			var thisJointPose:JointPose = this.jointPoses[i];
 			cloneJointPose.name = thisJointPose.name;

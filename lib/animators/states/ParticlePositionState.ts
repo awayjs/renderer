@@ -6,12 +6,13 @@ import Stage							from "awayjs-stagegl/lib/base/Stage";
 import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
 import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import AnimationElements				from "../../animators/data/AnimationElements";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticlePositionNode				from "../../animators/nodes/ParticlePositionNode";
 import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
+import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
+import ShaderBase						from "../../shaders/ShaderBase";
 
 /**
  * ...
@@ -20,7 +21,7 @@ import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBa
 class ParticlePositionState extends ParticleStateBase
 {
 	/** @private */
-	public static POSITION_INDEX:number /*uint*/ = 0;
+	public static POSITION_INDEX:number = 0;
 
 	private _particlePositionNode:ParticlePositionNode;
 	private _position:Vector3D;
@@ -64,15 +65,15 @@ class ParticlePositionState extends ParticleStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
 	{
 		if (this._particlePositionNode.mode == ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
 			this._pUpdateDynamicProperties(animationElements);
 
-		var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticlePositionState.POSITION_INDEX);
+		var index:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticlePositionState.POSITION_INDEX);
 
 		if (this._particlePositionNode.mode == ParticlePropertiesMode.GLOBAL)
-			animationRegisterCache.setVertexConst(index, this._position.x, this._position.y, this._position.z);
+			shader.setVertexConst(index, this._position.x, this._position.y, this._position.z);
 		else
 			animationElements.activateVertexBuffer(index, this._particlePositionNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 	}

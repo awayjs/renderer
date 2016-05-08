@@ -7,12 +7,13 @@ import Stage							from "awayjs-stagegl/lib/base/Stage";
 import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
 import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import AnimationElements				from "../../animators/data/AnimationElements";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleOrbitNode				from "../../animators/nodes/ParticleOrbitNode";
 import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
+import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
+import ShaderBase						from "../../shaders/ShaderBase";
 
 /**
  * ...
@@ -20,10 +21,10 @@ import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBa
 class ParticleOrbitState extends ParticleStateBase
 {
 	/** @private */
-	public static ORBIT_INDEX:number /*uint*/ = 0;
+	public static ORBIT_INDEX:number = 0;
 
 	/** @private */
-	public static EULERS_INDEX:number /*uint*/ = 1;
+	public static EULERS_INDEX:number = 1;
 
 	private _particleOrbitNode:ParticleOrbitNode;
 	private _usesEulers:boolean;
@@ -112,9 +113,9 @@ class ParticleOrbitState extends ParticleStateBase
 		this.updateOrbitData();
 	}
 
-	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
 	{
-		var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.ORBIT_INDEX);
+		var index:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.ORBIT_INDEX);
 
 		if (this._particleOrbitNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
 			if (this._usesPhase)
@@ -122,10 +123,10 @@ class ParticleOrbitState extends ParticleStateBase
 			else
 				animationElements.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 		} else
-			animationRegisterCache.setVertexConst(index, this._orbitData.x, this._orbitData.y, this._orbitData.z, this._orbitData.w);
+			shader.setVertexConst(index, this._orbitData.x, this._orbitData.y, this._orbitData.z, this._orbitData.w);
 
 		if (this._usesEulers)
-			animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.EULERS_INDEX), this._eulersMatrix);
+			shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.EULERS_INDEX), this._eulersMatrix);
 	}
 
 	private updateOrbitData()

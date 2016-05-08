@@ -1,12 +1,12 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
-
 import AnimatorBase						from "../../animators/AnimatorBase";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import ParticleProperties				from "../../animators/data/ParticleProperties";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
 import ParticleTimeState				from "../../animators/states/ParticleTimeState";
 import ShaderBase						from "../../shaders/ShaderBase";
+import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
 import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
 
 /**
@@ -42,40 +42,40 @@ class ParticleTimeNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALVertexCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALVertexCode(shader:ShaderBase, animationSet:ParticleAnimationSet, registerCache:ShaderRegisterCache, animationRegisterData:AnimationRegisterData):string
 	{
-		var timeStreamRegister:ShaderRegisterElement = animationRegisterCache.getFreeVertexAttribute(); //timeStreamRegister.x is start，timeStreamRegister.y is during time
-		animationRegisterCache.setRegisterIndex(this, ParticleTimeState.TIME_STREAM_INDEX, timeStreamRegister.index);
-		var timeConst:ShaderRegisterElement = animationRegisterCache.getFreeVertexConstant();
-		animationRegisterCache.setRegisterIndex(this, ParticleTimeState.TIME_CONSTANT_INDEX, timeConst.index);
+		var timeStreamRegister:ShaderRegisterElement = registerCache.getFreeVertexAttribute(); //timeStreamRegister.x is start，timeStreamRegister.y is during time
+		animationRegisterData.setRegisterIndex(this, ParticleTimeState.TIME_STREAM_INDEX, timeStreamRegister.index);
+		var timeConst:ShaderRegisterElement = registerCache.getFreeVertexConstant();
+		animationRegisterData.setRegisterIndex(this, ParticleTimeState.TIME_CONSTANT_INDEX, timeConst.index);
 
 		var code:string = "";
-		code += "sub " + animationRegisterCache.vertexTime + "," + timeConst + "," + timeStreamRegister + ".x\n";
+		code += "sub " + animationRegisterData.vertexTime + "," + timeConst + "," + timeStreamRegister + ".x\n";
 		//if time=0,set the position to zero.
-		var temp:ShaderRegisterElement = animationRegisterCache.getFreeVertexSingleTemp();
-		code += "sge " + temp + "," + animationRegisterCache.vertexTime + "," + animationRegisterCache.vertexZeroConst + "\n";
-		code += "mul " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp + "\n";
+		var temp:ShaderRegisterElement = registerCache.getFreeVertexSingleTemp();
+		code += "sge " + temp + "," + animationRegisterData.vertexTime + "," + animationRegisterData.vertexZeroConst + "\n";
+		code += "mul " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp + "\n";
 		if (this._iUsesDuration) {
 			if (this._iUsesLooping) {
-				var div:ShaderRegisterElement = animationRegisterCache.getFreeVertexSingleTemp();
+				var div:ShaderRegisterElement = registerCache.getFreeVertexSingleTemp();
 				if (this._iUsesDelay) {
-					code += "div " + div + "," + animationRegisterCache.vertexTime + "," + timeStreamRegister + ".z\n";
+					code += "div " + div + "," + animationRegisterData.vertexTime + "," + timeStreamRegister + ".z\n";
 					code += "frc " + div + "," + div + "\n";
-					code += "mul " + animationRegisterCache.vertexTime + "," + div + "," + timeStreamRegister + ".z\n";
-					code += "slt " + div + "," + animationRegisterCache.vertexTime + "," + timeStreamRegister + ".y\n";
-					code += "mul " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + div + "\n";
+					code += "mul " + animationRegisterData.vertexTime + "," + div + "," + timeStreamRegister + ".z\n";
+					code += "slt " + div + "," + animationRegisterData.vertexTime + "," + timeStreamRegister + ".y\n";
+					code += "mul " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + div + "\n";
 				} else {
-					code += "mul " + div + "," + animationRegisterCache.vertexTime + "," + timeStreamRegister + ".w\n";
+					code += "mul " + div + "," + animationRegisterData.vertexTime + "," + timeStreamRegister + ".w\n";
 					code += "frc " + div + "," + div + "\n";
-					code += "mul " + animationRegisterCache.vertexTime + "," + div + "," + timeStreamRegister + ".y\n";
+					code += "mul " + animationRegisterData.vertexTime + "," + div + "," + timeStreamRegister + ".y\n";
 				}
 			} else {
-				var sge:ShaderRegisterElement = animationRegisterCache.getFreeVertexSingleTemp();
-				code += "sge " + sge + "," + timeStreamRegister + ".y," + animationRegisterCache.vertexTime + "\n";
-				code += "mul " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + sge + "\n";
+				var sge:ShaderRegisterElement = registerCache.getFreeVertexSingleTemp();
+				code += "sge " + sge + "," + timeStreamRegister + ".y," + animationRegisterData.vertexTime + "\n";
+				code += "mul " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + sge + "\n";
 			}
 		}
-		code += "mul " + animationRegisterCache.vertexLife + "," + animationRegisterCache.vertexTime + "," + timeStreamRegister + ".w\n";
+		code += "mul " + animationRegisterData.vertexLife + "," + animationRegisterData.vertexTime + "," + timeStreamRegister + ".w\n";
 		return code;
 	}
 

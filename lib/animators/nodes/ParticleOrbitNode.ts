@@ -1,12 +1,14 @@
 import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
 import AnimatorBase						from "../../animators/AnimatorBase";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import ParticleProperties				from "../../animators/data/ParticleProperties";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
 import ParticleOrbitState				from "../../animators/states/ParticleOrbitState";
 import ShaderBase						from "../../shaders/ShaderBase";
+import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
 import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
 
 /**
@@ -50,9 +52,9 @@ class ParticleOrbitNode extends ParticleNodeBase
 	 * @param    [optional] cyclePhase      Defines the phase of the orbit in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
 	 * @param    [optional] eulers          Defines the euler rotation in degrees, applied to the orientation of the orbit when in global mode.
 	 */
-	constructor(mode:number /*uint*/, usesEulers:boolean = true, usesCycle:boolean = false, usesPhase:boolean = false, radius:number = 100, cycleDuration:number = 1, cyclePhase:number = 0, eulers:Vector3D = null)
+	constructor(mode:number, usesEulers:boolean = true, usesCycle:boolean = false, usesPhase:boolean = false, radius:number = 100, cycleDuration:number = 1, cyclePhase:number = 0, eulers:Vector3D = null)
 	{
-		var len:number /*int*/ = 3;
+		var len:number = 3;
 		if (usesPhase)
 			len++;
 		super("ParticleOrbit", mode, len);
@@ -72,57 +74,57 @@ class ParticleOrbitNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALVertexCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALVertexCode(shader:ShaderBase, animationSet:ParticleAnimationSet, registerCache:ShaderRegisterCache, animationRegisterData:AnimationRegisterData):string
 	{
-		var orbitRegister:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-		animationRegisterCache.setRegisterIndex(this, ParticleOrbitState.ORBIT_INDEX, orbitRegister.index);
+		var orbitRegister:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+		animationRegisterData.setRegisterIndex(this, ParticleOrbitState.ORBIT_INDEX, orbitRegister.index);
 
-		var eulersMatrixRegister:ShaderRegisterElement = animationRegisterCache.getFreeVertexConstant();
-		animationRegisterCache.setRegisterIndex(this, ParticleOrbitState.EULERS_INDEX, eulersMatrixRegister.index);
-		animationRegisterCache.getFreeVertexConstant();
-		animationRegisterCache.getFreeVertexConstant();
-		animationRegisterCache.getFreeVertexConstant();
+		var eulersMatrixRegister:ShaderRegisterElement = registerCache.getFreeVertexConstant();
+		animationRegisterData.setRegisterIndex(this, ParticleOrbitState.EULERS_INDEX, eulersMatrixRegister.index);
+		registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
 
-		var temp1:ShaderRegisterElement = animationRegisterCache.getFreeVertexVectorTemp();
-		animationRegisterCache.addVertexTempUsages(temp1, 1);
+		var temp1:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+		registerCache.addVertexTempUsages(temp1, 1);
 		var distance:ShaderRegisterElement = new ShaderRegisterElement(temp1.regName, temp1.index);
 
-		var temp2:ShaderRegisterElement = animationRegisterCache.getFreeVertexVectorTemp();
+		var temp2:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
 		var cos:ShaderRegisterElement = new ShaderRegisterElement(temp2.regName, temp2.index, 0);
 		var sin:ShaderRegisterElement = new ShaderRegisterElement(temp2.regName, temp2.index, 1);
 		var degree:ShaderRegisterElement = new ShaderRegisterElement(temp2.regName, temp2.index, 2);
-		animationRegisterCache.removeVertexTempUsage(temp1);
+		registerCache.removeVertexTempUsage(temp1);
 
 		var code:string = "";
 
 		if (this._iUsesCycle) {
-			code += "mul " + degree + "," + animationRegisterCache.vertexTime + "," + orbitRegister + ".y\n";
+			code += "mul " + degree + "," + animationRegisterData.vertexTime + "," + orbitRegister + ".y\n";
 
 			if (this._iUsesPhase)
 				code += "add " + degree + "," + degree + "," + orbitRegister + ".w\n";
 		} else
-			code += "mul " + degree + "," + animationRegisterCache.vertexLife + "," + orbitRegister + ".y\n";
+			code += "mul " + degree + "," + animationRegisterData.vertexLife + "," + orbitRegister + ".y\n";
 
 		code += "cos " + cos + "," + degree + "\n";
 		code += "sin " + sin + "," + degree + "\n";
 		code += "mul " + distance + ".x," + cos + "," + orbitRegister + ".x\n";
 		code += "mul " + distance + ".y," + sin + "," + orbitRegister + ".x\n";
-		code += "mov " + distance + ".wz" + animationRegisterCache.vertexZeroConst + "\n";
+		code += "mov " + distance + ".wz" + animationRegisterData.vertexZeroConst + "\n";
 		if (this._iUsesEulers)
 			code += "m44 " + distance + "," + distance + "," + eulersMatrixRegister + "\n";
-		code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
+		code += "add " + animationRegisterData.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
 
-		if (animationRegisterCache.needVelocity) {
+		if (animationSet.needVelocity) {
 			code += "neg " + distance + ".x," + sin + "\n";
 			code += "mov " + distance + ".y," + cos + "\n";
-			code += "mov " + distance + ".zw," + animationRegisterCache.vertexZeroConst + "\n";
+			code += "mov " + distance + ".zw," + animationRegisterData.vertexZeroConst + "\n";
 			if (this._iUsesEulers)
 				code += "m44 " + distance + "," + distance + "," + eulersMatrixRegister + "\n";
 			code += "mul " + distance + "," + distance + "," + orbitRegister + ".z\n";
 			code += "div " + distance + "," + distance + "," + orbitRegister + ".y\n";
 			if (!this._iUsesCycle)
-				code += "div " + distance + "," + distance + "," + animationRegisterCache.vertexLife + "\n";
-			code += "add " + animationRegisterCache.velocityTarget + ".xyz," + animationRegisterCache.velocityTarget + ".xyz," + distance + ".xyz\n";
+				code += "div " + distance + "," + distance + "," + animationRegisterData.vertexLife + "\n";
+			code += "add " + animationRegisterData.velocityTarget + ".xyz," + animationRegisterData.velocityTarget + ".xyz," + distance + ".xyz\n";
 		}
 		return code;
 	}

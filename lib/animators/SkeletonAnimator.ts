@@ -19,6 +19,7 @@ import ISkeletonAnimationState			from "../animators/states/ISkeletonAnimationSta
 import IAnimationTransition				from "../animators/transitions/IAnimationTransition";
 import AnimationStateEvent				from "../events/AnimationStateEvent";
 import ShaderBase						from "../shaders/ShaderBase";
+import ShaderRegisterCache				from "../shaders/ShaderRegisterCache";
 import GL_RenderableBase				from "../renderables/GL_RenderableBase";
 import GL_GraphicRenderable				from "../renderables/GL_GraphicRenderable";
 
@@ -32,15 +33,16 @@ class SkeletonAnimator extends AnimatorBase
 	private _globalMatrices:Float32Array;
 	private _globalPose:SkeletonPose = new SkeletonPose();
 	private _globalPropertiesDirty:boolean;
-	private _numJoints:number /*uint*/;
+	private _numJoints:number;
 	private _morphedElements:Object = new Object();
 	private _morphedElementsDirty:Object = new Object();
 	private _condensedMatrices:Float32Array;
 
+	private _skeletonAnimationSet:SkeletonAnimationSet;
 	private _skeleton:Skeleton;
 	private _forceCPU:boolean;
 	private _useCondensedIndices:boolean;
-	private _jointsPerVertex:number /*uint*/;
+	private _jointsPerVertex:number;
 	private _activeSkeletonState:ISkeletonAnimationState;
 	private _onTransitionCompleteDelegate:(event:AnimationStateEvent) => void;
 
@@ -117,6 +119,7 @@ class SkeletonAnimator extends AnimatorBase
 	{
 		super(animationSet);
 
+		this._skeletonAnimationSet = animationSet;
 		this._skeleton = skeleton;
 		this._forceCPU = forceCPU;
 		this._jointsPerVertex = animationSet.jointsPerVertex;
@@ -124,8 +127,8 @@ class SkeletonAnimator extends AnimatorBase
 		this._numJoints = this._skeleton.numJoints;
 		this._globalMatrices = new Float32Array(this._numJoints*12);
 
-		var j:number /*int*/ = 0;
-		for (var i:number /*uint*/ = 0; i < this._numJoints; ++i) {
+		var j:number = 0;
+		for (var i:number = 0; i < this._numJoints; ++i) {
 			this._globalMatrices[j++] = 1;
 			this._globalMatrices[j++] = 0;
 			this._globalMatrices[j++] = 0;
@@ -150,9 +153,7 @@ class SkeletonAnimator extends AnimatorBase
 	 */
 	public clone():AnimatorBase
 	{
-		/* The cast to SkeletonAnimationSet should never fail, as _animationSet can only be set
-		 through the constructor, which will only accept a SkeletonAnimationSet. */
-		return new SkeletonAnimator(<SkeletonAnimationSet> this._pAnimationSet, this._skeleton, this._forceCPU);
+		return new SkeletonAnimator(this._skeletonAnimationSet, this._skeleton, this._forceCPU);
 	}
 
 	/**
@@ -199,7 +200,7 @@ class SkeletonAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera)
 	{
 		// do on request of globalProperties
 		if (this._globalPropertiesDirty)
@@ -212,7 +213,7 @@ class SkeletonAnimator extends AnimatorBase
 		if (this._useCondensedIndices) {
 			// using a condensed data set
 			this.updateCondensedMatrices(elements.condensedIndexLookUp);
-			stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, this._condensedMatrices.length/4);
+			shader.setVertexConstFromArray(this._skeletonAnimationSet.matricesIndex, this._condensedMatrices);
 		} else {
 			if (this._pAnimationSet.usesCPU) {
 				if (this._morphedElementsDirty[elements.id])
@@ -220,11 +221,8 @@ class SkeletonAnimator extends AnimatorBase
 
 				return
 			}
-			stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints*3);
+			shader.setVertexConstFromArray(this._skeletonAnimationSet.matricesIndex, this._globalMatrices);
 		}
-
-		shader.jointIndexIndex = vertexStreamOffset++;
-		shader.jointWeightIndex = vertexStreamOffset++;
 	}
 
 	/**
@@ -256,7 +254,7 @@ class SkeletonAnimator extends AnimatorBase
 	{
 		var j:number = 0, k:number = 0;
 		var len:number = condensedIndexLookUp.length;
-		var srcIndex:number /*uint*/;
+		var srcIndex:number;
 
 		this._condensedMatrices = new Float32Array(len*12);
 
@@ -277,7 +275,7 @@ class SkeletonAnimator extends AnimatorBase
 		this.localToGlobalPose(this._activeSkeletonState.getSkeletonPose(this._skeleton), this._globalPose, this._skeleton);
 
 		// convert pose to matrix
-		var mtxOffset:number /*uint*/ = 0;
+		var mtxOffset:number = 0;
 		var globalPoses:Array<JointPose> = this._globalPose.jointPoses;
 		var raw:Float32Array;
 		var ox:number, oy:number, oz:number, ow:number;
@@ -295,7 +293,7 @@ class SkeletonAnimator extends AnimatorBase
 		var vec:Vector3D;
 		var t:number;
 
-		for (var i:number /*uint*/ = 0; i < this._numJoints; ++i) {
+		for (var i:number = 0; i < this._numJoints; ++i) {
 			pose = globalPoses[i];
 			quat = pose.orientation;
 			vec = pose.translation;
@@ -411,11 +409,11 @@ class SkeletonAnimator extends AnimatorBase
 		var targetNormals:Float32Array = targetElements.normals.get(numVertices);
 		var targetTangents:Float32Array = targetElements.tangents.get(numVertices);
 
-		var index:number /*uint*/ = 0;
-		var i0:number /*uint*/ = 0;
-		var i1:number /*uint*/ = 0;
-		var j:number /*uint*/ = 0;
-		var k:number /*uint*/;
+		var index:number = 0;
+		var i0:number = 0;
+		var i1:number = 0;
+		var j:number = 0;
+		var k:number;
 		var vx:number, vy:number, vz:number;
 		var nx:number, ny:number, nz:number;
 		var tx:number, ty:number, tz:number;
@@ -453,7 +451,7 @@ class SkeletonAnimator extends AnimatorBase
 				weight = jointWeights[j];
 				if (weight > 0) {
 					// implicit /3*12 (/3 because indices are multiplied by 3 for gpu matrix access, *12 because it's the matrix size)
-					var mtxOffset:number /*uint*/ = jointIndices[j++] << 2;
+					var mtxOffset:number = jointIndices[j++] << 2;
 					m11 = this._globalMatrices[mtxOffset];
 					m12 = this._globalMatrices[mtxOffset + 1];
 					m13 = this._globalMatrices[mtxOffset + 2];
@@ -510,9 +508,9 @@ class SkeletonAnimator extends AnimatorBase
 		var globalPoses:Array<JointPose> = targetPose.jointPoses;
 		var globalJointPose:JointPose;
 		var joints:Array<SkeletonJoint> = skeleton.joints;
-		var len:number /*uint*/ = sourcePose.numJointPoses;
+		var len:number = sourcePose.numJointPoses;
 		var jointPoses:Array<JointPose> = sourcePose.jointPoses;
-		var parentIndex:number /*int*/;
+		var parentIndex:number;
 		var joint:SkeletonJoint;
 		var parentPose:JointPose;
 		var pose:JointPose;
@@ -529,7 +527,7 @@ class SkeletonAnimator extends AnimatorBase
 		if (globalPoses.length != len)
 			globalPoses.length = len;
 
-		for (var i:number /*uint*/ = 0; i < len; ++i) {
+		for (var i:number = 0; i < len; ++i) {
 			globalJointPose = globalPoses[i];
 
 			if (globalJointPose == null)

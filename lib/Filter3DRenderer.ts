@@ -145,8 +145,8 @@ class Filter3DRenderer
 
 		if (len > 1) {
 			context.setProgram(this._tasks[0].getProgram(stage));
-			context.setVertexBufferAt(0, vertexBuffer, 0, ContextGLVertexBufferFormat.FLOAT_2);
-			context.setVertexBufferAt(1, vertexBuffer, 8, ContextGLVertexBufferFormat.FLOAT_2);
+			context.setVertexBufferAt(this._tasks[0]._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat.FLOAT_2);
+			context.setVertexBufferAt(this._tasks[0]._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat.FLOAT_2);
 		}
 
 		for (i = 0; i < len; ++i) {
@@ -156,15 +156,15 @@ class Filter3DRenderer
 			stage.setRenderTarget(task.target);
 
 			context.setProgram(task.getProgram(stage));
-			(<GL_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(0, false);
+			(<GL_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(task._inputTextureIndex, false);
 
 
 			if (!task.target) {
 
 				stage.scissorRect = null;
 				vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
-				context.setVertexBufferAt(0, vertexBuffer, 0, ContextGLVertexBufferFormat.FLOAT_2);
-				context.setVertexBufferAt(1, vertexBuffer, 8, ContextGLVertexBufferFormat.FLOAT_2);
+				context.setVertexBufferAt(task._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat.FLOAT_2);
+				context.setVertexBufferAt(task._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat.FLOAT_2);
 
 			}
 			context.clear(0.0, 0.0, 0.0, 0.0);

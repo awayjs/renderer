@@ -215,11 +215,7 @@ class GL_SurfaceBase extends AbstractionBase
 		var len:number = this._passes.length;
 		for (var i:number = 0; i < len; i++) {
 			shader = this._passes[i].shader;
-
-			if (shader.usesAnimation != enabledGPUAnimation) {
-				shader.usesAnimation = enabledGPUAnimation;
-				shader.invalidateProgram();
-			}
+			shader.usesAnimation = enabledGPUAnimation;
 
 			renderOrderId += shader.programData.id*mult;
 			mult *= 1000;
@@ -322,14 +318,19 @@ class GL_SurfaceBase extends AbstractionBase
 		if (this._surface.animationSet) {
 			this._surface.animationSet.resetGPUCompatibility();
 
-			var owners:Array<IRenderable> = this._surface.iOwners;
-			var numOwners:number = owners.length;
+			var renderables:Array<IRenderable> = this._surface.iOwners;
+			var numOwners:number = renderables.length;
 
 			var len:number = this._passes.length;
-			for (var i:number = 0; i < len; i++)
+			var shader:ShaderBase;
+			for (var i:number = 0; i < len; i++) {
+				shader = this._passes[i].shader;
+				shader.usesAnimation = false;
 				for (var j:number = 0; j < numOwners; j++)
-					if (owners[j].animator)
-						(<AnimatorBase> owners[j].animator).testGPUCompatibility(this._passes[i].shader);
+					if (renderables[j].animator)
+						(<AnimatorBase> renderables[j].animator).testGPUCompatibility(shader);
+			}
+
 
 			return !this._surface.animationSet.usesCPU;
 		}

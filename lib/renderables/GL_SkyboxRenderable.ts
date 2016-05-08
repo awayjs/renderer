@@ -26,8 +26,6 @@ import PassBase						from "../surfaces/passes/PassBase";
  */
 class GL_SkyboxRenderable extends GL_RenderableBase
 {
-	public static vertexAttributesOffset:number = 1;
-
 	/**
 	 *
 	 */
@@ -52,7 +50,9 @@ class GL_SkyboxRenderable extends GL_RenderableBase
 
 		this._skybox = skybox;
 
-		this._vertexArray = new Float32Array([0, 0, 0, 0, 1, 1, 1, 1]);
+		this._vertexArray = new Float32Array(24);
+		this._vertexArray[19] = 1;
+		this._vertexArray[23] = 1;
 	}
 
 	/**
@@ -91,6 +91,8 @@ class GL_SkyboxRenderable extends GL_RenderableBase
 	 */
 	public static _iGetVertexCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
+		var temp:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+
 		return "mul vt0, va0, vc5\n" +
 			"add vt0, vt0, vc4\n" +
 			"m44 op, vt0, vc0\n";
@@ -110,12 +112,12 @@ class GL_SkyboxRenderable extends GL_RenderableBase
 
 		var context:IContextGL = this._stage.context;
 		var pos:Vector3D = camera.scenePosition;
-		this._vertexArray[0] = pos.x;
-		this._vertexArray[1] = pos.y;
-		this._vertexArray[2] = pos.z;
-		this._vertexArray[4] = this._vertexArray[5] = this._vertexArray[6] = camera.projection.far/Math.sqrt(3);
-		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, viewProjection, true);
-		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._vertexArray, 2);
+		this._vertexArray[16] = pos.x;
+		this._vertexArray[17] = pos.y;
+		this._vertexArray[18] = pos.z;
+		this._vertexArray[20] = this._vertexArray[21] = this._vertexArray[22] = camera.projection.far/Math.sqrt(3);
+		viewProjection.copyRawDataTo(this._vertexArray, 0, true);
+		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, this._vertexArray);
 	}
 }
 

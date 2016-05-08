@@ -6,12 +6,13 @@ import Stage							from "awayjs-stagegl/lib/base/Stage";
 import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
 import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import AnimationElements				from "../../animators/data/AnimationElements";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleVelocityNode				from "../../animators/nodes/ParticleVelocityNode";
 import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
+import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
+import ShaderBase						from "../../shaders/ShaderBase";
 
 /**
  * ...
@@ -19,7 +20,7 @@ import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBa
 class ParticleVelocityState extends ParticleStateBase
 {
 	/** @private */
-	public static VELOCITY_INDEX:number /*int*/ = 0;
+	public static VELOCITY_INDEX:number = 0;
 
 	private _particleVelocityNode:ParticleVelocityNode;
 	private _velocity:Vector3D;
@@ -60,15 +61,15 @@ class ParticleVelocityState extends ParticleStateBase
 		this._velocity = this._particleVelocityNode._iVelocity;
 	}
 
-	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
 	{
 		if (this._particleVelocityNode.mode == ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
 			this._pUpdateDynamicProperties(animationElements);
 
-		var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleVelocityState.VELOCITY_INDEX);
+		var index:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleVelocityState.VELOCITY_INDEX);
 
 		if (this._particleVelocityNode.mode == ParticlePropertiesMode.GLOBAL)
-			animationRegisterCache.setVertexConst(index, this._velocity.x, this._velocity.y, this._velocity.z);
+			shader.setVertexConst(index, this._velocity.x, this._velocity.y, this._velocity.z);
 		else
 			animationElements.activateVertexBuffer(index, this._particleVelocityNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 	}

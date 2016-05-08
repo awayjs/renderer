@@ -66,7 +66,7 @@ class SkeletonBinaryLERPState extends AnimationStateBase implements ISkeletonAni
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateTime(time:number /*int*/)
+	public _pUpdateTime(time:number)
 	{
 		this._skeletonPoseDirty = true;
 
@@ -118,13 +118,13 @@ class SkeletonBinaryLERPState extends AnimationStateBase implements ISkeletonAni
 		var pose1:JointPose, pose2:JointPose;
 		var p1:Vector3D, p2:Vector3D;
 		var tr:Vector3D;
-		var numJoints:number /*uint*/ = skeleton.numJoints;
+		var numJoints:number = skeleton.numJoints;
 
 		// :s
 		if (endPoses.length != numJoints)
 			endPoses.length = numJoints;
 
-		for (var i:number /*uint*/ = 0; i < numJoints; ++i) {
+		for (var i:number = 0; i < numJoints; ++i) {
 			endPose = endPoses[i];
 
 			if (endPose == null)

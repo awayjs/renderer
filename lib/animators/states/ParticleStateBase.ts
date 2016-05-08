@@ -5,12 +5,13 @@ import Camera							from "awayjs-display/lib/display/Camera";
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 
 import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import AnimationElements				from "../../animators/data/AnimationElements";
 import ParticleAnimationData			from "../../animators/data/ParticleAnimationData";
 import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
 import AnimationStateBase				from "../../animators/states/AnimationStateBase";
-import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
+import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
+import ShaderBase						from "../../shaders/ShaderBase";
 
 /**
  * ...
@@ -18,7 +19,8 @@ import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBa
 class ParticleStateBase extends AnimationStateBase
 {
 	private _particleNode:ParticleNodeBase;
-
+	public _pParticleAnimator:ParticleAnimator;
+	
 	public _pDynamicProperties:Array<Vector3D> = new Array<Vector3D>();
 	public _pDynamicPropertiesDirty:Object = new Object();
 
@@ -28,6 +30,7 @@ class ParticleStateBase extends AnimationStateBase
 	{
 		super(animator, particleNode);
 
+		this._pParticleAnimator = animator;
 		this._particleNode = particleNode;
 		this._pNeedUpdateTime = needUpdateTime;
 	}
@@ -37,7 +40,7 @@ class ParticleStateBase extends AnimationStateBase
 		return this._pNeedUpdateTime;
 	}
 
-	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
 	{
 
 	}
@@ -48,21 +51,21 @@ class ParticleStateBase extends AnimationStateBase
 
 		var animationParticles:Array<ParticleAnimationData> = animationElements.animationParticles;
 		var vertexData:Array<number> = animationElements.vertexData;
-		var totalLenOfOneVertex:number /*uint*/ = animationElements.totalLenOfOneVertex;
-		var dataLength:number /*uint*/ = this._particleNode.dataLength;
-		var dataOffset:number /*uint*/ = this._particleNode._iDataOffset;
-		var vertexLength:number /*uint*/;
-		//			var particleOffset:number /*uint*/;
-		var startingOffset:number /*uint*/;
-		var vertexOffset:number /*uint*/;
+		var totalLenOfOneVertex:number = animationElements.totalLenOfOneVertex;
+		var dataLength:number = this._particleNode.dataLength;
+		var dataOffset:number = this._particleNode._iDataOffset;
+		var vertexLength:number;
+		//			var particleOffset:number;
+		var startingOffset:number;
+		var vertexOffset:number;
 		var data:Vector3D;
 		var animationParticle:ParticleAnimationData;
 
-		//			var numParticles:number /*uint*/ = _positions.length/dataLength;
-		var numParticles:number /*uint*/ = this._pDynamicProperties.length;
-		var i:number /*uint*/ = 0;
-		var j:number /*uint*/ = 0;
-		var k:number /*uint*/ = 0;
+		//			var numParticles:number = _positions.length/dataLength;
+		var numParticles:number = this._pDynamicProperties.length;
+		var i:number = 0;
+		var j:number = 0;
+		var k:number = 0;
 
 		//loop through all particles
 		while (i < numParticles) {

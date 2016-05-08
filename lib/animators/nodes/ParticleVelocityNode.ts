@@ -1,12 +1,14 @@
 import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
 import AnimatorBase						from "../../animators/AnimatorBase";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import ParticleProperties				from "../../animators/data/ParticleProperties";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
 import ParticleVelocityState			from "../../animators/states/ParticleVelocityState";
 import ShaderBase						from "../../shaders/ShaderBase";
+import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
 import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
 
 /**
@@ -29,7 +31,7 @@ class ParticleVelocityNode extends ParticleNodeBase
 	 * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
 	 * @param    [optional] velocity        Defines the default velocity vector of the node, used when in global mode.
 	 */
-	constructor(mode:number /*uint*/, velocity:Vector3D = null)
+	constructor(mode:number, velocity:Vector3D = null)
 	{
 		super("ParticleVelocity", mode, 3);
 
@@ -41,18 +43,18 @@ class ParticleVelocityNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALVertexCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALVertexCode(shader:ShaderBase, animationSet:ParticleAnimationSet, registerCache:ShaderRegisterCache, animationRegisterData:AnimationRegisterData):string
 	{
-		var velocityValue:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-		animationRegisterCache.setRegisterIndex(this, ParticleVelocityState.VELOCITY_INDEX, velocityValue.index);
+		var velocityValue:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+		animationRegisterData.setRegisterIndex(this, ParticleVelocityState.VELOCITY_INDEX, velocityValue.index);
 
-		var distance:ShaderRegisterElement = animationRegisterCache.getFreeVertexVectorTemp();
+		var distance:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
 		var code:string = "";
-		code += "mul " + distance + "," + animationRegisterCache.vertexTime + "," + velocityValue + "\n";
-		code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + "," + animationRegisterCache.positionTarget + ".xyz\n";
+		code += "mul " + distance + "," + animationRegisterData.vertexTime + "," + velocityValue + "\n";
+		code += "add " + animationRegisterData.positionTarget + ".xyz," + distance + "," + animationRegisterData.positionTarget + ".xyz\n";
 
-		if (animationRegisterCache.needVelocity)
-			code += "add " + animationRegisterCache.velocityTarget + ".xyz," + velocityValue + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+		if (animationSet.needVelocity)
+			code += "add " + animationRegisterData.velocityTarget + ".xyz," + velocityValue + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
 
 		return code;
 	}

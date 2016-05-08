@@ -6,7 +6,7 @@ import ContextGLProgramType				from "awayjs-stagegl/lib/base/ContextGLProgramTyp
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 
 import AnimatorBase						from "../animators/AnimatorBase";
-import AnimationRegisterCache			from "../animators/data/AnimationRegisterCache";
+import AnimationRegisterData			from "../animators/data/AnimationRegisterData";
 import ParticleAnimationSet				from "../animators/ParticleAnimationSet";
 import AnimationElements				from "../animators/data/AnimationElements";
 import ParticlePropertiesMode			from "../animators/data/ParticlePropertiesMode";
@@ -32,7 +32,7 @@ class ParticleAnimator extends AnimatorBase
 	private _animationParticleStates:Array<ParticleStateBase> = new Array<ParticleStateBase>();
 	private _animatorParticleStates:Array<ParticleStateBase> = new Array<ParticleStateBase>();
 	private _timeParticleStates:Array<ParticleStateBase> = new Array<ParticleStateBase>();
-	private _totalLenOfOneVertex:number /*uint*/ = 0;
+	private _totalLenOfOneVertex:number = 0;
 	private _animatorSubGeometries:Object = new Object();
 
 	/**
@@ -74,33 +74,27 @@ class ParticleAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera)
 	{
-		var animationRegisterCache:AnimationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
+		var animationRegisterData:AnimationRegisterData = this._particleAnimationSet._iAnimationRegisterData;
 
 		var graphic:Graphic = (<GL_GraphicRenderable> renderable).graphic;
-		var state:ParticleStateBase;
-		var i:number;
 
 		if (!graphic)
 			throw(new Error("Must be graphic"));
 
 		//process animation sub geometries
 		var animationElements:AnimationElements = this._particleAnimationSet.getAnimationElements(graphic);
-
+		var i:number;
+		
 		for (i = 0; i < this._animationParticleStates.length; i++)
-			this._animationParticleStates[i].setRenderState(stage, renderable, animationElements, animationRegisterCache, camera);
+			this._animationParticleStates[i].setRenderState(shader, renderable, animationElements, animationRegisterData, camera, stage);
 
 		//process animator subgeometries
 		var animatorElements:AnimationElements = this.getAnimatorElements(graphic);
 
 		for (i = 0; i < this._animatorParticleStates.length; i++)
-			this._animatorParticleStates[i].setRenderState(stage, renderable, animatorElements, animationRegisterCache, camera);
-
-		stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, animationRegisterCache.vertexConstantOffset, animationRegisterCache.vertexConstantData, animationRegisterCache.numVertexConstant);
-
-		if (animationRegisterCache.numFragmentConstant > 0)
-			stage.context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, animationRegisterCache.fragmentConstantOffset, animationRegisterCache.fragmentConstantData, animationRegisterCache.numFragmentConstant);
+			this._animatorParticleStates[i].setRenderState(shader, renderable, animatorElements, animationRegisterData, camera, stage);
 	}
 
 	/**
@@ -136,7 +130,7 @@ class ParticleAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public resetTime(offset:number /*int*/ = 0)
+	public resetTime(offset:number = 0)
 	{
 		for (var i:number = 0; i < this._timeParticleStates.length; i++)
 			this._timeParticleStates[i].offset(this._pAbsoluteTime + offset);

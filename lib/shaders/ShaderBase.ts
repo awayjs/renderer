@@ -19,7 +19,7 @@ import GL_IAssetClass				from "awayjs-stagegl/lib/library/GL_IAssetClass";
 
 import AnimationSetBase				from "../animators/AnimationSetBase";
 import AnimatorBase					from "../animators/AnimatorBase";
-import AnimationRegisterCache		from "../animators/data/AnimationRegisterCache";
+import AnimationRegisterData		from "../animators/data/AnimationRegisterData";
 import IPass						from "../surfaces/passes/IPass";
 import ElementsPool					from "../elements/ElementsPool";
 import IElementsClassGL				from "../elements/IElementsClassGL";
@@ -27,6 +27,8 @@ import GL_ElementsBase				from "../elements/GL_ElementsBase";
 import GL_RenderableBase			from "../renderables/GL_RenderableBase";
 import CompilerBase					from "../shaders/compilers/CompilerBase";
 import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "../shaders/ShaderRegisterData";
+import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
 import GL_TextureBase				from "../textures/GL_TextureBase";
 
 /**
@@ -52,11 +54,15 @@ class ShaderBase implements IAbstractionPool
 
 	private _blendFactorSource:string = ContextGLBlendFactor.ONE;
 	private _blendFactorDest:string = ContextGLBlendFactor.ZERO;
-
-	private _invalidShader:boolean = true;
+	
 	private _invalidProgram:boolean = true;
 	private _animationVertexCode:string = "";
 	private _animationFragmentCode:string = "";
+	private _numUsedVertexConstants:number;
+	private _numUsedFragmentConstants:number;
+	private _numUsedStreams:number;
+	private _numUsedTextures:number;
+	private _usesAnimation:boolean;
 
 	public get programData():ProgramData
 	{
@@ -87,45 +93,67 @@ class ShaderBase implements IAbstractionPool
 
 	public profile:string;
 
-	public usesAnimation:boolean;
+	public get usesAnimation():boolean
+	{
+		return this._usesAnimation;
+	}
+
+	public set usesAnimation(value:boolean)
+	{
+		if (this._usesAnimation == value)
+			return;
+
+		this._usesAnimation = value;
+
+		this.invalidateProgram();
+	}
 
 	private _defaultCulling:string = ContextGLTriangleFace.BACK;
 
 	public _pInverseSceneMatrix:Float32Array = new Float32Array(16);
 
-	public animationRegisterCache:AnimationRegisterCache;
+	public animationRegisterData:AnimationRegisterData;
 
-	/**
-	 * The amount of used vertex constants in the vertex code. Used by the animation code generation to know from which index on registers are available.
-	 */
-	public numUsedVertexConstants:number;
+	
+	public get numUsedVertexConstants():number
+	{
+		if (this._invalidProgram)
+			this._updateProgram();
+		
+		return this._numUsedVertexConstants;
+	}
 
-	/**
-	 * The amount of used fragment constants in the fragment code. Used by the animation code generation to know from which index on registers are available.
-	 */
-	public numUsedFragmentConstants:number;
-
+	public get numUsedFragmentConstants():number
+	{
+		if (this._invalidProgram)
+			this._updateProgram();
+		
+		return this._numUsedFragmentConstants;
+	}
+	
 	/**
 	 * The amount of used vertex streams in the vertex code. Used by the animation code generation to know from which index on streams are available.
 	 */
-	public numUsedStreams:number;
+	public get numUsedStreams():number
+	{
+		if (this._invalidProgram)
+			this._updateProgram();
+
+		return this._numUsedStreams;
+	}
 
 	/**
 	 *
 	 */
-	public numUsedTextures:number;
+	public get numUsedTextures():number
+	{
+		if (this._invalidProgram)
+			this._updateProgram();
 
-	/**
-	 *
-	 */
-	public numUsedVaryings:number;
+		return this._numUsedTextures;
+	}
 
 	public numLights:number;
-
-	public animatableAttributes:Array<string>;
-	public animationTargetRegisters:Array<string>;
-	public uvSource:string;
-	public uvTarget:string;
 
 	public useAlphaPremultiplied:boolean;
 	public useBothSides:boolean;
@@ -413,23 +441,16 @@ class ShaderBase implements IAbstractionPool
 	/**
 	 * Initializes the unchanging constant data for this shader object.
 	 */
-	public initConstantData(registerCache:ShaderRegisterCache, animatableAttributes:Array<string>, animationTargetRegisters:Array<string>, uvSource:string, uvTarget:string)
+	public initConstantData(registerCache:ShaderRegisterCache)
 	{
 		//Updates the amount of used register indices.
-		this.numUsedVertexConstants = registerCache.numUsedVertexConstants;
-		this.numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
-		this.numUsedStreams = registerCache.numUsedStreams;
-		this.numUsedTextures = registerCache.numUsedTextures;
-		this.numUsedVaryings = registerCache.numUsedVaryings;
-		this.numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
+		this._numUsedVertexConstants = registerCache.numUsedVertexConstants;
+		this._numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
+		this._numUsedStreams = registerCache.numUsedStreams;
+		this._numUsedTextures = registerCache.numUsedTextures;
 
-		this.animatableAttributes = animatableAttributes;
-		this.animationTargetRegisters = animationTargetRegisters;
-		this.uvSource = uvSource;
-		this.uvTarget = uvTarget;
-
-		this.vertexConstantData = new Float32Array(this.numUsedVertexConstants*4);
-		this.fragmentConstantData = new Float32Array(this.numUsedFragmentConstants*4);
+		this.vertexConstantData = new Float32Array(registerCache.numUsedVertexConstants*4);
+		this.fragmentConstantData = new Float32Array(registerCache.numUsedFragmentConstants*4);
 
 		//Initializes commonly required constant values.
 		if (this.commonsDataIndex >= 0) {
@@ -464,6 +485,13 @@ class ShaderBase implements IAbstractionPool
 		}
 		if (this.cameraPositionIndex >= 0)
 			this.vertexConstantData[this.cameraPositionIndex + 3] = 1;
+		
+		// init constant data in pass
+		this._pass._iInitConstantData(this);
+		
+		//init constant data in animation
+		if (this.usesAnimation)
+			this._pass.animationSet.doneAGALCode(this);
 	}
 
 	/**
@@ -520,9 +548,6 @@ class ShaderBase implements IAbstractionPool
 	 */
 	public _iActivate(camera:Camera)
 	{
-		if (this.usesAnimation)
-			(<AnimationSetBase> this._pass.animationSet).activate(this, this._stage);
-
 		this._stage.context.setCulling(this.useBothSides? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
 
 		if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
@@ -546,9 +571,6 @@ class ShaderBase implements IAbstractionPool
 	 */
 	public _iDeactivate()
 	{
-		if (this.usesAnimation)
-			(<AnimationSetBase> this._pass.animationSet).deactivate(this, this._stage);
-
 		//For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
 		this._stage.context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
 
@@ -566,7 +588,7 @@ class ShaderBase implements IAbstractionPool
 	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		if (renderable.renderable.animator)
-			(<AnimatorBase> renderable.renderable.animator).setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
+			(<AnimatorBase> renderable.renderable.animator).setRenderState(this, renderable, this._stage, camera);
 
 		if (this.usesUVTransform) {
 			var uvMatrix:Matrix = renderable.uvMatrix;
@@ -633,12 +655,6 @@ class ShaderBase implements IAbstractionPool
 		this._invalidProgram = true;
 	}
 
-	public invalidateShader()
-	{
-		this._invalidShader = true;
-		this._invalidProgram = true;
-	}
-
 	public dispose()
 	{
 		this._programData.dispose();
@@ -649,17 +665,14 @@ class ShaderBase implements IAbstractionPool
 	{
 		this._invalidProgram = false;
 
-		var compiler:CompilerBase;
+		var compiler:CompilerBase = this.createCompiler(this._elementsClass, this._pass);
+		compiler.compile();
 
-		if (this._invalidShader) {
-			this._invalidShader = false;
+		this._calcAnimationCode(compiler._pRegisterCache, compiler.shadedTarget, compiler._pSharedRegisters);
 
-			compiler = this.createCompiler(this._elementsClass, this._pass);
-			compiler.compile();
-		}
-
-		this._calcAnimationCode(compiler.shadedTarget);
-
+		//initialise the required shader constants
+		this.initConstantData(compiler._pRegisterCache);
+		
 		var programData:ProgramData = this._stage.getProgramData(this._animationVertexCode + compiler.vertexCode, compiler.fragmentCode + this._animationFragmentCode + compiler.postAnimationFragmentCode);
 
 		//check program data hasn't changed, keep count of program usages
@@ -673,7 +686,7 @@ class ShaderBase implements IAbstractionPool
 		}
 	}
 
-	private _calcAnimationCode(shadedTarget:string)
+	private _calcAnimationCode(registerCache:ShaderRegisterCache, shadedTarget:ShaderRegisterElement, sharedRegisters:ShaderRegisterData)
 	{
 		//reset code
 		this._animationVertexCode = "";
@@ -684,26 +697,72 @@ class ShaderBase implements IAbstractionPool
 
 			var animationSet:AnimationSetBase = <AnimationSetBase> this._pass.animationSet;
 
-			this._animationVertexCode += animationSet.getAGALVertexCode(this);
+			this._animationVertexCode += animationSet.getAGALVertexCode(this, registerCache, sharedRegisters);
 
 			if (this.uvDependencies > 0 && !this.usesUVTransform)
-				this._animationVertexCode += animationSet.getAGALUVCode(this);
+				this._animationVertexCode += animationSet.getAGALUVCode(this, registerCache, sharedRegisters);
 
 			if (this.usesFragmentAnimation)
-				this._animationFragmentCode += animationSet.getAGALFragmentCode(this, shadedTarget);
-
-			animationSet.doneAGALCode(this);
-
+				this._animationFragmentCode += animationSet.getAGALFragmentCode(this, registerCache, shadedTarget);
 		} else {
 			// simply write attributes to targets, do not animate them
 			// projection will pick up on targets[0] to do the projection
-			var len:number = this.animatableAttributes.length;
+			var len:number = sharedRegisters.animatableAttributes.length;
 			for (var i:number = 0; i < len; ++i)
-				this._animationVertexCode += "mov " + this.animationTargetRegisters[i] + ", " + this.animatableAttributes[i] + "\n";
+				this._animationVertexCode += "mov " + sharedRegisters.animationTargetRegisters[i] + ", " + sharedRegisters.animatableAttributes[i] + "\n";
 
 			if (this.uvDependencies > 0 && !this.usesUVTransform)
-				this._animationVertexCode += "mov " + this.uvTarget + "," + this.uvSource + "\n";
+				this._animationVertexCode += "mov " + sharedRegisters.uvTarget + "," + sharedRegisters.uvSource + "\n";
 		}
+	}
+
+
+	public setVertexConst(index:number, x:number = 0, y:number = 0, z:number = 0, w:number = 0)
+	{
+		index *= 4;
+		this.vertexConstantData[index++] = x;
+		this.vertexConstantData[index++] = y;
+		this.vertexConstantData[index++] = z;
+		this.vertexConstantData[index] = w;
+	}
+
+	public setVertexConstFromArray(index:number, data:Float32Array)
+	{
+		index *= 4;
+		for (var i:number /*int*/ = 0; i < data.length; i++)
+			this.vertexConstantData[index++] = data[i];
+	}
+
+	public setVertexConstFromMatrix(index:number, matrix:Matrix3D)
+	{
+		index *= 4;
+		var rawData:Float32Array = matrix.rawData;
+		this.vertexConstantData[index++] = rawData[0];
+		this.vertexConstantData[index++] = rawData[4];
+		this.vertexConstantData[index++] = rawData[8];
+		this.vertexConstantData[index++] = rawData[12];
+		this.vertexConstantData[index++] = rawData[1];
+		this.vertexConstantData[index++] = rawData[5];
+		this.vertexConstantData[index++] = rawData[9];
+		this.vertexConstantData[index++] = rawData[13];
+		this.vertexConstantData[index++] = rawData[2];
+		this.vertexConstantData[index++] = rawData[6];
+		this.vertexConstantData[index++] = rawData[10];
+		this.vertexConstantData[index++] = rawData[14];
+		this.vertexConstantData[index++] = rawData[3];
+		this.vertexConstantData[index++] = rawData[7];
+		this.vertexConstantData[index++] = rawData[11];
+		this.vertexConstantData[index] = rawData[15];
+
+	}
+
+	public setFragmentConst(index:number, x:number = 0, y:number = 0, z:number = 0, w:number = 0)
+	{
+		index *= 4;
+		this.fragmentConstantData[index++] = x;
+		this.fragmentConstantData[index++] = y;
+		this.fragmentConstantData[index++] = z;
+		this.fragmentConstantData[index] = w;
 	}
 }
 

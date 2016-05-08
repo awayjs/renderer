@@ -1,12 +1,14 @@
 import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
 import AnimatorBase						from "../../animators/AnimatorBase";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import ParticleProperties				from "../../animators/data/ParticleProperties";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
 import ParticleAccelerationState		from "../../animators/states/ParticleAccelerationState";
 import ShaderBase						from "../../shaders/ShaderBase";
+import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
 import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
 
 /**
@@ -29,7 +31,7 @@ class ParticleAccelerationNode extends ParticleNodeBase
 	 * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
 	 * @param    [optional] acceleration    Defines the default acceleration vector of the node, used when in global mode.
 	 */
-	constructor(mode:number /*uint*/, acceleration:Vector3D = null)
+	constructor(mode:number, acceleration:Vector3D = null)
 	{
 		super("ParticleAcceleration", mode, 3);
 
@@ -41,25 +43,25 @@ class ParticleAccelerationNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public pGetAGALVertexCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALVertexCode(shader:ShaderBase, animationSet:ParticleAnimationSet, registerCache:ShaderRegisterCache, animationRegisterData:AnimationRegisterData):string
 	{
-		var accelerationValue:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-		animationRegisterCache.setRegisterIndex(this, ParticleAccelerationState.ACCELERATION_INDEX, accelerationValue.index);
+		var accelerationValue:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+		animationRegisterData.setRegisterIndex(this, ParticleAccelerationState.ACCELERATION_INDEX, accelerationValue.index);
 
-		var temp:ShaderRegisterElement = animationRegisterCache.getFreeVertexVectorTemp();
-		animationRegisterCache.addVertexTempUsages(temp, 1);
+		var temp:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+		registerCache.addVertexTempUsages(temp, 1);
 
-		var code:string = "mul " + temp + "," + animationRegisterCache.vertexTime + "," + accelerationValue + "\n";
+		var code:string = "mul " + temp + "," + animationRegisterData.vertexTime + "," + accelerationValue + "\n";
 
-		if (animationRegisterCache.needVelocity) {
-			var temp2:ShaderRegisterElement = animationRegisterCache.getFreeVertexVectorTemp();
-			code += "mul " + temp2 + "," + temp + "," + animationRegisterCache.vertexTwoConst + "\n";
-			code += "add " + animationRegisterCache.velocityTarget + ".xyz," + temp2 + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+		if (animationSet.needVelocity) {
+			var temp2:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+			code += "mul " + temp2 + "," + temp + "," + animationRegisterData.vertexTwoConst + "\n";
+			code += "add " + animationRegisterData.velocityTarget + ".xyz," + temp2 + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
 		}
-		animationRegisterCache.removeVertexTempUsage(temp);
+		registerCache.removeVertexTempUsage(temp);
 
-		code += "mul " + temp + "," + temp + "," + animationRegisterCache.vertexTime + "\n";
-		code += "add " + animationRegisterCache.positionTarget + ".xyz," + temp + "," + animationRegisterCache.positionTarget + ".xyz\n";
+		code += "mul " + temp + "," + temp + "," + animationRegisterData.vertexTime + "\n";
+		code += "add " + animationRegisterData.positionTarget + ".xyz," + temp + "," + animationRegisterData.positionTarget + ".xyz\n";
 		return code;
 	}
 

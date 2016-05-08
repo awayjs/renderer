@@ -8,7 +8,7 @@ import Stage						from "awayjs-stagegl/lib/base/Stage";
 import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
 
 import Filter3DTaskBase				from "../../filters/tasks/Filter3DTaskBase";
-
+import ShaderRegisterElement		from "../../shaders/ShaderRegisterElement";
 
 class Filter3DCompositeTask extends Filter3DTaskBase
 {
@@ -17,6 +17,10 @@ class Filter3DCompositeTask extends Filter3DTaskBase
 	private _overlayWidth:number;
 	private _overlayHeight:number;
 	private _blendMode:string;
+	
+	private _overlayTextureIndex:number;
+	private _exposureIndex:number;
+	private _scalingIndex:number;
 	
 	constructor(blendMode:string, exposure:number = 1)
 	{
@@ -49,37 +53,58 @@ class Filter3DCompositeTask extends Filter3DTaskBase
 	
 	public getFragmentCode():string
 	{
+		var temp1:ShaderRegisterElement = this._registerCache.getFreeFragmentVectorTemp();
+		this._registerCache.addFragmentTempUsages(temp1, 1);
+		var temp2:ShaderRegisterElement = this._registerCache.getFreeFragmentVectorTemp();
+		this._registerCache.addFragmentTempUsages(temp2, 1);
+		var temp3:ShaderRegisterElement = this._registerCache.getFreeFragmentVectorTemp();
+		this._registerCache.addFragmentTempUsages(temp3, 1);
+		var temp4:ShaderRegisterElement = this._registerCache.getFreeFragmentVectorTemp();
+		this._registerCache.addFragmentTempUsages(temp4, 1);
+		
+		
+		var inputTexture:ShaderRegisterElement = this._registerCache.getFreeTextureReg();
+		this._inputTextureIndex = inputTexture.index;
+		
+		var overlayTexture:ShaderRegisterElement = this._registerCache.getFreeTextureReg();
+		this._overlayTextureIndex = overlayTexture.index;
+		
+		var exposure:ShaderRegisterElement = this._registerCache.getFreeFragmentConstant();
+		this._exposureIndex = exposure.index*4;
 
+		var scaling:ShaderRegisterElement = this._registerCache.getFreeFragmentConstant();
+		this._scalingIndex = scaling.index*4;
+		
 		var code:string;
-		var op:string;
-		code = "tex ft0, v0, fs0 <2d,linear,clamp>\n" +
-			"mul ft1, v0, fc1.zw\n" +
-			"add ft1, ft1, fc1.xy\n" +
-			"tex ft1, ft1, fs1 <2d,linear,clamp>\n" +
-			"mul ft1, ft1, fc0.xxx\n" +
-			"add ft1, ft1, fc0.xxx\n";
+		
+		code = "tex " + temp1 + ", " + this._uvVarying + ", " + inputTexture + " <2d,linear,clamp>\n" +
+			"mul " + temp2 + ", " + this._uvVarying + ", " + scaling + ".zw\n" +
+			"add " + temp2 + ", " + temp2 + ", " + scaling + ".xy\n" +
+			"tex " + temp2 + ", " + temp2 + ", " + overlayTexture + " <2d,linear,clamp>\n" +
+			"mul " + temp2 + ", " + temp2 + ", " + exposure + ".xxx\n" +
+			"add " + temp2 + ", " + temp2 + ", " + exposure + ".xxx\n";
 		switch (this._blendMode) {
 			case "multiply":
-				code += "mul oc, ft0, ft1\n";
+				code += "mul oc, " + temp1 + ", " + temp2 + "\n";
 				break;
 			case "add":
-				code += "add oc, ft0, ft1\n";
+				code += "add oc, " + temp1 + ", " + temp2 + "\n";
 				break;
 			case "subtract":
-				code += "sub oc, ft0, ft1\n";
+				code += "sub oc, " + temp1 + ", " + temp2 + "\n";
 				break;
 			case "overlay":
-				code += "sge ft2, ft0, fc0.yyy\n"; // t2 = (blend >= 0.5)? 1 : 0
-				code += "sub ft0, ft2, ft0\n"; // base = (1 : 0 - base)
-				code += "sub ft1, ft1, ft2\n"; // blend = (blend - 1 : 0)
-				code += "mul ft1, ft1, ft0\n"; // blend = blend * base
-				code += "sub ft3, ft2, fc0.yyy\n"; // t3 = (blend >= 0.5)? 0.5 : -0.5
-				code += "div ft1, ft1, ft3\n"; // blend = blend / ( 0.5 : -0.5)
-				code += "add oc, ft1, ft2\n";
+				code += "sge " + temp3 + ", " + temp1 + ", " + exposure + ".yyy\n"; // t2 = (blend >= 0.5)? 1 : 0
+				code += "sub " + temp1 + ", " + temp3 + ", " + temp1 + "\n"; // base = (1 : 0 - base)
+				code += "sub " + temp2 + ", " + temp2 + ", " + temp3 + "\n"; // blend = (blend - 1 : 0)
+				code += "mul " + temp2 + ", " + temp2 + ", " + temp1 + "\n"; // blend = blend * base
+				code += "sub " + temp4 + ", " + temp3 + ", " + exposure + ".yyy\n"; // t3 = (blend >= 0.5)? 0.5 : -0.5
+				code += "div " + temp2 + ", " + temp2 + ", " + temp4 + "\n"; // blend = blend / ( 0.5 : -0.5)
+				code += "add oc, " + temp2 + ", " + temp3 + "\n";
 				break;
 			case "normal":
 				// for debugging purposes
-				code += "mov oc, ft0\n";
+				code += "mov oc, " + temp1 + "\n";
 				break;
 			default:
 				throw new Error("Unknown blend mode");
@@ -96,8 +121,9 @@ class Filter3DCompositeTask extends Filter3DTaskBase
 		this._data[7] = this._scaledTextureHeight/this._overlayHeight;
 
 		var context:IContextGL = stage.context;
-		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 2);
-		(<GL_ImageBase> stage.getAbstraction(this._overlayTexture)).activate(1, false);
+		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, this._data);
+		
+		(<GL_ImageBase> stage.getAbstraction(this._overlayTexture)).activate(this._overlayTextureIndex, false);
 	}
 	
 	public deactivate(stage:Stage)

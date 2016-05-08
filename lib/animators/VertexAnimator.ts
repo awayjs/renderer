@@ -10,6 +10,7 @@ import ContextGLProgramType				from "awayjs-stagegl/lib/base/ContextGLProgramTyp
 
 import AnimatorBase						from "../animators/AnimatorBase";
 import VertexAnimationSet				from "../animators/VertexAnimationSet";
+import AnimationRegisterData			from "../animators/data/AnimationRegisterData";
 import VertexAnimationMode				from "../animators/data/VertexAnimationMode";
 import IVertexAnimationState			from "../animators/states/IVertexAnimationState";
 import IAnimationTransition				from "../animators/transitions/IAnimationTransition";
@@ -28,8 +29,6 @@ class VertexAnimator extends AnimatorBase
 	private _vertexAnimationSet:VertexAnimationSet;
 	private _poses:Array<Graphics> = new Array<Graphics>();
 	private _weights:Float32Array = new Float32Array([1, 0, 0, 0]);
-	private _numPoses:number /*uint*/;
-	private _blendMode:string;
 	private _activeVertexState:IVertexAnimationState;
 
 	/**
@@ -42,8 +41,6 @@ class VertexAnimator extends AnimatorBase
 		super(vertexAnimationSet);
 
 		this._vertexAnimationSet = vertexAnimationSet;
-		this._numPoses = vertexAnimationSet.numPoses;
-		this._blendMode = vertexAnimationSet.blendMode;
 	}
 
 	/**
@@ -124,7 +121,7 @@ class VertexAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera)
 	{
 		// todo: add code for when running on cpu
 		// this type of animation can only be SubSprite
@@ -133,22 +130,23 @@ class VertexAnimator extends AnimatorBase
 
 		// if no poses defined, set temp data
 		if (!this._poses.length) {
-			this.setNullPose(shader, elements, stage, vertexConstantOffset, vertexStreamOffset);
+			this.setNullPose(shader, elements);
 			return;
 		}
 
+		var animationRegisterData:AnimationRegisterData = shader.animationRegisterData;
+		var i:number;
+		var len:number = this._vertexAnimationSet.numPoses;
 
-		var i:number /*uint*/;
-		var len:number /*uint*/ = this._numPoses;
+		shader.setVertexConstFromArray(animationRegisterData.weightsIndex, this._weights);
 
-		stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
-
-		if (this._blendMode == VertexAnimationMode.ABSOLUTE)
+		if (this._vertexAnimationSet.blendMode == VertexAnimationMode.ABSOLUTE)
 			i = 1;
 		else
 			i = 0;
 
 		var elementsGL:GL_ElementsBase;
+		var k:number = 0;
 
 		for (; i < len; ++i) {
 			elements = this._poses[i].getGraphicAt(graphic._iIndex).elements || graphic.elements;
@@ -157,28 +155,31 @@ class VertexAnimator extends AnimatorBase
 			elementsGL._indexMappings = shader._elementsPool.getAbstraction(graphic.elements).getIndexMappings();
 
 			if (elements.isAsset(TriangleElements)) {
-				elementsGL.activateVertexBufferVO(vertexStreamOffset++, (<TriangleElements> elements).positions);
+				elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], (<TriangleElements> elements).positions);
 
 				if (shader.normalDependencies > 0)
-					elementsGL.activateVertexBufferVO(vertexStreamOffset++, (<TriangleElements> elements).normals);
+					elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], (<TriangleElements> elements).normals);
 			}
 		}
 	}
 
-	private setNullPose(shader:ShaderBase, elements:ElementsBase, stage:Stage, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	private setNullPose(shader:ShaderBase, elements:ElementsBase)
 	{
-		stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+		var animationRegisterData:AnimationRegisterData = shader.animationRegisterData;
+		
+		shader.setVertexConstFromArray(animationRegisterData.weightsIndex, this._weights);
 
 		var elementsGL:GL_ElementsBase = shader._elementsPool.getAbstraction(elements);
-
-		if (this._blendMode == VertexAnimationMode.ABSOLUTE) {
-			var len:number /*uint*/ = this._numPoses;
-			for (var i:number /*uint*/ = 1; i < len; ++i) {
+		var k:number = 0;
+		
+		if (this._vertexAnimationSet.blendMode == VertexAnimationMode.ABSOLUTE) {
+			var len:number = this._vertexAnimationSet.numPoses;
+			for (var i:number = 1; i < len; ++i) {
 				if (elements.isAsset(TriangleElements)) {
-					elementsGL.activateVertexBufferVO(vertexStreamOffset++, (<TriangleElements> elements).positions);
+					elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], (<TriangleElements> elements).positions);
 
 					if (shader.normalDependencies > 0)
-						elementsGL.activateVertexBufferVO(vertexStreamOffset++, (<TriangleElements> elements).normals);
+						elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], (<TriangleElements> elements).normals);
 				}
 			}
 		}
@@ -195,7 +196,7 @@ class VertexAnimator extends AnimatorBase
 
 	public getRenderableElements(renderable:GL_GraphicRenderable, sourceElements:TriangleElements):TriangleElements
 	{
-		if (this._blendMode == VertexAnimationMode.ABSOLUTE && this._poses.length)
+		if (this._vertexAnimationSet.blendMode == VertexAnimationMode.ABSOLUTE && this._poses.length)
 			return <TriangleElements> this._poses[0].getGraphicAt(renderable.graphic._iIndex).elements || sourceElements;
 
 		//nothing to do here

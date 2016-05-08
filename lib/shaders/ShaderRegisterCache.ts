@@ -13,10 +13,6 @@ class ShaderRegisterCache
 	private _vertexConstantsCache:RegisterPool;
 	private _textureCache:RegisterPool;
 	private _vertexAttributesCache:RegisterPool;
-	private _vertexConstantOffset:number; //TODO: check if this should be initialised to 0
-	private _vertexAttributesOffset:number;//TODO: check if this should be initialised to 0
-	private _varyingsOffset:number;//TODO: check if this should be initialised to 0
-	private _fragmentConstantOffset:number;//TODO: check if this should be initialised to 0
 
 	private _fragmentOutputRegister:ShaderRegisterElement;
 	private _vertexOutputRegister:ShaderRegisterElement;
@@ -35,6 +31,8 @@ class ShaderRegisterCache
 	constructor(profile:string)
 	{
 		this._profile = profile;
+		
+		this.reset();
 	}
 
 	/**
@@ -56,20 +54,6 @@ class ShaderRegisterCache
 		this._numUsedTextures = 0;
 		this._numUsedVaryings = 0;
 		this._numUsedFragmentConstants = 0;
-
-		var i:number;
-
-		for (i = 0; i < this._vertexAttributesOffset; ++i)
-			this.getFreeVertexAttribute();
-
-		for (i = 0; i < this._vertexConstantOffset; ++i)
-			this.getFreeVertexConstant();
-
-		for (i = 0; i < this._varyingsOffset; ++i)
-			this.getFreeVarying();
-
-		for (i = 0; i < this._fragmentConstantOffset; ++i)
-			this.getFreeFragmentConstant();
 	}
 
 	/**
@@ -208,58 +192,6 @@ class ShaderRegisterCache
 	{
 		++this._numUsedTextures;
 		return this._textureCache.requestFreeVectorReg();
-	}
-
-	/**
-	 * Indicates the start index from which to retrieve vertex constants.
-	 */
-	public get vertexConstantOffset():number
-	{
-		return this._vertexConstantOffset;
-	}
-
-	public set vertexConstantOffset(vertexConstantOffset:number)
-	{
-		this._vertexConstantOffset = vertexConstantOffset;
-	}
-
-	/**
-	 * Indicates the start index from which to retrieve vertex attributes.
-	 */
-	public get vertexAttributesOffset():number
-	{
-		return this._vertexAttributesOffset;
-	}
-
-	public set vertexAttributesOffset(value:number)
-	{
-		this._vertexAttributesOffset = value;
-	}
-
-	/**
-	 * Indicates the start index from which to retrieve varying registers.
-	 */
-	public get varyingsOffset():number
-	{
-		return this._varyingsOffset;
-	}
-
-	public set varyingsOffset(value:number)
-	{
-		this._varyingsOffset = value;
-	}
-
-	/**
-	 * Indicates the start index from which to retrieve fragment constants.
-	 */
-	public get fragmentConstantOffset():number
-	{
-		return this._fragmentConstantOffset;
-	}
-
-	public set fragmentConstantOffset(value:number)
-	{
-		this._fragmentConstantOffset = value;
 	}
 
 	/**

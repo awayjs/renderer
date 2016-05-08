@@ -7,12 +7,14 @@ import Stage							from "awayjs-stagegl/lib/base/Stage";
 import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
 import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import AnimationElements				from "../../animators/data/AnimationElements";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleRotateToPositionNode		from "../../animators/nodes/ParticleRotateToPositionNode";
 import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
+import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
+import ShaderBase						from "../../shaders/ShaderBase";
 
 /**
  * ...
@@ -20,9 +22,9 @@ import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBa
 class ParticleRotateToPositionState extends ParticleStateBase
 {
 	/** @private */
-	public static MATRIX_INDEX:number /*int*/ = 0;
+	public static MATRIX_INDEX:number = 0;
 	/** @private */
-	public static POSITION_INDEX:number /*int*/ = 1;
+	public static POSITION_INDEX:number = 1;
 
 	private _particleRotateToPositionNode:ParticleRotateToPositionNode;
 	private _position:Vector3D;
@@ -50,19 +52,19 @@ class ParticleRotateToPositionState extends ParticleStateBase
 		this._position = this._particleRotateToPositionNode._iPosition;
 	}
 
-	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
 	{
-		var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.POSITION_INDEX);
+		var index:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.POSITION_INDEX);
 
-		if (animationRegisterCache.hasBillboard) {
+		if ((<ParticleAnimationSet> this._pParticleAnimator.animationSet).hasBillboard) {
 			this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
 			this._matrix.append(camera.inverseSceneTransform);
-			animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.MATRIX_INDEX), this._matrix);
+			shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.MATRIX_INDEX), this._matrix);
 		}
 
 		if (this._particleRotateToPositionNode.mode == ParticlePropertiesMode.GLOBAL) {
 			this._offset = renderable.sourceEntity.inverseSceneTransform.transformVector(this._position);
-			animationRegisterCache.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
+			shader.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
 		} else
 			animationElements.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 

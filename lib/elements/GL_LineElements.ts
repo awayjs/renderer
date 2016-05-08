@@ -3,16 +3,13 @@ import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
 import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 
 import ContextGLDrawMode			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
-import Stage						from "awayjs-stagegl/lib/base/Stage";
 import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
 import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
 
 import LineElements					from "awayjs-display/lib/graphics/LineElements";
-import ElementsEvent				from "awayjs-display/lib/events/ElementsEvent";
 import Camera						from "awayjs-display/lib/display/Camera";
 
 import GL_ElementsBase				from "../elements/GL_ElementsBase";
-import ElementsPool					from "../elements/ElementsPool";
 import ShaderBase					from "../shaders/ShaderBase";
 import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
 import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
@@ -25,10 +22,6 @@ import GL_RenderableBase			from "../renderables/GL_RenderableBase";
  */
 class GL_LineElements extends GL_ElementsBase
 {
-	public static pONE_VECTOR:Float32Array = new Float32Array([1, 1, 1, 1]);
-	public static pFRONT_VECTOR:Float32Array = new Float32Array([0, 0, -1, 0]);
-
-	public static vertexAttributesOffset:number = 3;
 
 	public static _iIncludeDependencies(shader:ShaderBase)
 	{
@@ -37,15 +30,51 @@ class GL_LineElements extends GL_ElementsBase
 
 	public static _iGetVertexCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
-		return "m44 vt0, va0, vc8			\n" + // transform Q0 to eye space
-			"m44 vt1, va1, vc8			\n" + // transform Q1 to eye space
-			"sub vt2, vt1, vt0 			\n" + // L = Q1 - Q0
+		//get the projection coordinates
+		var position0:ShaderRegisterElement = (shader.globalPosDependencies > 0)? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
+		var position1:ShaderRegisterElement = registerCache.getFreeVertexAttribute();
+		var thickness:ShaderRegisterElement = registerCache.getFreeVertexAttribute();
+
+		//reserving vertex constants for projection matrix
+		var viewMatrixReg:ShaderRegisterElement = registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		shader.viewMatrixIndex = viewMatrixReg.index*4;
+
+		registerCache.getFreeVertexConstant(); // not used
+		var constOne:ShaderRegisterElement = registerCache.getFreeVertexConstant();
+		var constNegOne:ShaderRegisterElement = registerCache.getFreeVertexConstant();
+		var misc:ShaderRegisterElement = registerCache.getFreeVertexConstant();
+
+		var sceneMatrixReg:ShaderRegisterElement = registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		shader.sceneMatrixIndex = sceneMatrixReg.index*4;
+		
+		var q0:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+		registerCache.addVertexTempUsages(q0, 1);
+		var q1:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+		registerCache.addVertexTempUsages(q1, 1);
+		
+		var l:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+		registerCache.addVertexTempUsages(l, 1);
+		var behind:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+		registerCache.addVertexTempUsages(behind, 1);
+		var qclipped:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+		registerCache.addVertexTempUsages(qclipped, 1);
+		var offset:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+		registerCache.addVertexTempUsages(offset, 1);
+
+		return "m44 " + q0 + ", " + position0 + ", " + sceneMatrixReg + "			\n" + // transform Q0 to eye space
+			"m44 " + q1 + ", " + position1 + ", " + sceneMatrixReg + "			\n" + // transform Q1 to eye space
+			"sub " + l + ", " + q1 + ", " + q0 + " 			\n" + // L = Q1 - Q0
 
 				// test if behind camera near plane
 				// if 0 - Q0.z < Camera.near then the point needs to be clipped
-				//"neg vt5.x, vt0.z				\n" + // 0 - Q0.z
-			"slt vt5.x, vt0.z, vc7.z			\n" + // behind = ( 0 - Q0.z < -Camera.near ) ? 1 : 0
-			"sub vt5.y, vc5.x, vt5.x			\n" + // !behind = 1 - behind
+			"slt " + behind + ".x, " + q0 + ".z, " + misc + ".z			\n" + // behind = ( 0 - Q0.z < -Camera.near ) ? 1 : 0
+			"sub " + behind + ".y, " + constOne + ".x, " + behind + ".x			\n" + // !behind = 1 - behind
 
 				// p = point on the plane (0,0,-near)
 				// n = plane normal (0,0,-1)
@@ -53,54 +82,52 @@ class GL_LineElements extends GL_ElementsBase
 				// t = ( dot( n, ( p - Q0 ) ) / ( dot( n, d )
 
 				// solve for t where line crosses Camera.near
-			"add vt4.x, vt0.z, vc7.z			\n" + // Q0.z + ( -Camera.near )
-			"sub vt4.y, vt0.z, vt1.z			\n" + // Q0.z - Q1.z
+			"add " + offset + ".x, " + q0 + ".z, " + misc + ".z			\n" + // Q0.z + ( -Camera.near )
+			"sub " + offset + ".y, " + q0 + ".z, " + q1 + ".z			\n" + // Q0.z - Q1.z
 
 				// fix divide by zero for horizontal lines
-			"seq vt4.z, vt4.y vc6.x			\n" + // offset = (Q0.z - Q1.z)==0 ? 1 : 0
-			"add vt4.y, vt4.y, vt4.z			\n" + // ( Q0.z - Q1.z ) + offset
+			"seq " + offset + ".z, " + offset + ".y " + constNegOne + ".x			\n" + // offset = (Q0.z - Q1.z)==0 ? 1 : 0
+			"add " + offset + ".y, " + offset + ".y, " + offset + ".z			\n" + // ( Q0.z - Q1.z ) + offset
 
-			"div vt4.z, vt4.x, vt4.y			\n" + // t = ( Q0.z - near ) / ( Q0.z - Q1.z )
+			"div " + offset + ".z, " + offset + ".x, " + offset + ".y			\n" + // t = ( Q0.z - near ) / ( Q0.z - Q1.z )
 
-			"mul vt4.xyz, vt4.zzz, vt2.xyz	\n" + // t(L)
-			"add vt3.xyz, vt0.xyz, vt4.xyz	\n" + // Qclipped = Q0 + t(L)
-			"mov vt3.w, vc5.x			\n" + // Qclipped.w = 1
+			"mul " + offset + ".xyz, " + offset + ".zzz, " + l + ".xyz	\n" + // t(L)
+			"add " + qclipped + ".xyz, " + q0 + ".xyz, " + offset + ".xyz	\n" + // Qclipped = Q0 + t(L)
+			"mov " + qclipped + ".w, " + constOne + ".x			\n" + // Qclipped.w = 1
 
 				// If necessary, replace Q0 with new Qclipped
-			"mul vt0, vt0, vt5.yyyy			\n" + // !behind * Q0
-			"mul vt3, vt3, vt5.xxxx			\n" + // behind * Qclipped
-			"add vt0, vt0, vt3				\n" + // newQ0 = Q0 + Qclipped
+			"mul " + q0 + ", " + q0 + ", " + behind + ".yyyy			\n" + // !behind * Q0
+			"mul " + qclipped + ", " + qclipped + ", " + behind + ".xxxx			\n" + // behind * Qclipped
+			"add " + q0 + ", " + q0 + ", " + qclipped + "				\n" + // newQ0 = Q0 + Qclipped
 
 				// calculate side vector for line
-			"sub vt2, vt1, vt0 			\n" + // L = Q1 - Q0
-			"nrm vt2.xyz, vt2.xyz			\n" + // normalize( L )
-			"nrm vt5.xyz, vt0.xyz			\n" + // D = normalize( Q1 )
-			"mov vt5.w, vc5.x				\n" + // D.w = 1
-			"crs vt3.xyz, vt2, vt5			\n" + // S = L x D
-			"nrm vt3.xyz, vt3.xyz			\n" + // normalize( S )
+			"nrm " + l + ".xyz, " + l + ".xyz			\n" + // normalize( L )
+			"nrm " + behind + ".xyz, " + q0 + ".xyz			\n" + // D = normalize( Q1 )
+			"mov " + behind + ".w, " + constOne + ".x				\n" + // D.w = 1
+			"crs " + qclipped + ".xyz, " + l + ", " + behind + "			\n" + // S = L x D
+			"nrm " + qclipped + ".xyz, " + qclipped + ".xyz			\n" + // normalize( S )
 
 				// face the side vector properly for the given point
-			"mul vt3.xyz, vt3.xyz, va2.xxx	\n" + // S *= weight
-			"mov vt3.w, vc5.x			\n" + // S.w = 1
+			"mul " + qclipped + ".xyz, " + qclipped + ".xyz, " + thickness + ".xxx	\n" + // S *= weight
+			"mov " + qclipped + ".w, " + constOne + ".x			\n" + // S.w = 1
 
 				// calculate the amount required to move at the point's distance to correspond to the line's pixel width
 				// scale the side vector by that amount
-			"dp3 vt4.x, vt0, vc6			\n" + // distance = dot( view )
-			"mul vt4.x, vt4.x, vc7.x			\n" + // distance *= vpsod
-			"mul vt3.xyz, vt3.xyz, vt4.xxx	\n" + // S.xyz *= pixelScaleFactor
+			"dp3 " + offset + ".x, " + q0 + ", " + constNegOne + "			\n" + // distance = dot( view )
+			"mul " + offset + ".x, " + offset + ".x, " + misc + ".x			\n" + // distance *= vpsod
+			"mul " + qclipped + ".xyz, " + qclipped + ".xyz, " + offset + ".xxx	\n" + // S.xyz *= pixelScaleFactor
 
 				// add scaled side vector to Q0 and transform to clip space
-			"add vt0.xyz, vt0.xyz, vt3.xyz	\n" + // Q0 + S
+			"add " + q0 + ".xyz, " + q0 + ".xyz, " + qclipped + ".xyz	\n" + // Q0 + S
 
-			"m44 op, vt0, vc0			\n"  // transform Q0 to clip space
+			"m44 op, " + q0 + ", " + viewMatrixReg + "			\n"  // transform Q0 to clip space
 	}
 
 	public static _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		return "";
 	}
-
-	private _constants:Float32Array = new Float32Array([0, 0, 0, 0]);
+	
 	private _calcMatrix:Matrix3D = new Matrix3D();
 	private _thickness:number = 1.25;
 
@@ -111,8 +138,6 @@ class GL_LineElements extends GL_ElementsBase
 		super(lineElements, shader, pool);
 
 		this._lineElements = lineElements;
-
-		this._constants[1] = 1/255;
 	}
 
 	public onClear(event:AssetEvent)
@@ -130,19 +155,21 @@ class GL_LineElements extends GL_ElementsBase
 			this.activateVertexBufferVO(this._shader.colorBufferIndex, this._lineElements.colors);
 
 		this.activateVertexBufferVO(0, this._lineElements.positions, 3);
-		this.activateVertexBufferVO(1, this._lineElements.positions, 3, 12);
-		this.activateVertexBufferVO(2, this._lineElements.thickness);
+		this.activateVertexBufferVO(2, this._lineElements.positions, 3, 12);
+		this.activateVertexBufferVO(3, this._lineElements.thickness);
 
-		this._constants[0] = this._thickness/((this._stage.scissorRect)? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
+		this._shader.vertexConstantData[4+16] = 1;
+		this._shader.vertexConstantData[5+16] = 1;
+		this._shader.vertexConstantData[6+16] = 1;
+		this._shader.vertexConstantData[7+16] = 1;
 
-		// value to convert distance from camera to model length per pixel width
-		this._constants[2] = camera.projection.near;
+		this._shader.vertexConstantData[10+16] = -1;
+
+		this._shader.vertexConstantData[12+16] = this._thickness/((this._stage.scissorRect)? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
+		this._shader.vertexConstantData[13+16] = 1/255;
+		this._shader.vertexConstantData[14+16] = camera.projection.near;
 
 		var context:IContextGL = this._stage.context;
-		
-		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 5, GL_LineElements.pONE_VECTOR, 1);
-		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 6, GL_LineElements.pFRONT_VECTOR, 1);
-		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 7, this._constants, 1);
 	}
 
 	public draw(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
@@ -150,12 +177,14 @@ class GL_LineElements extends GL_ElementsBase
 		var context:IContextGL = this._stage.context;
 		
 		// projection matrix
-		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
+		camera.projection.matrix.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
 		
 		this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
 		this._calcMatrix.append(camera.inverseSceneTransform);
-		context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
+		this._calcMatrix.copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
 
+		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, this._shader.vertexConstantData);
+		
 		if (this._indices)
 			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, this.numIndices);
 		else

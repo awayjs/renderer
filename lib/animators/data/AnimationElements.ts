@@ -17,11 +17,11 @@ class AnimationElements
 	public _pBufferContext:Array<IContextGL> = new Array<IContextGL>(8);
 	public _pBufferDirty:Array<boolean> = new Array<boolean>(8);
 
-	private _numVertices:number /*uint*/;
+	private _numVertices:number;
 
-	private _totalLenOfOneVertex:number /*uint*/;
+	private _totalLenOfOneVertex:number;
 
-	public numProcessedVertices:number /*int*/ = 0;
+	public numProcessedVertices:number = 0;
 
 	public previousTime:number = Number.NEGATIVE_INFINITY;
 
@@ -36,22 +36,22 @@ class AnimationElements
 
 	constructor()
 	{
-		for (var i:number /*int*/ = 0; i < 8; i++)
+		for (var i:number = 0; i < 8; i++)
 			this._pBufferDirty[i] = true;
 
 		this._iUniqueId = AnimationElements.SUBGEOM_ID_COUNT++;
 	}
 
-	public createVertexData(numVertices:number /*uint*/, totalLenOfOneVertex:number /*uint*/)
+	public createVertexData(numVertices:number, totalLenOfOneVertex:number)
 	{
 		this._numVertices = numVertices;
 		this._totalLenOfOneVertex = totalLenOfOneVertex;
 		this._pVertexData = new Array<number>(numVertices*totalLenOfOneVertex);
 	}
 
-	public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stage:Stage, format:number)
+	public activateVertexBuffer(index:number, bufferOffset:number, stage:Stage, format:number)
 	{
-		var contextIndex:number /*int*/ = stage.stageIndex;
+		var contextIndex:number = stage.stageIndex;
 		var context:IContextGL = <IContextGL> stage.context;
 
 		var buffer:IVertexBuffer = this._pVertexBuffer[contextIndex];
@@ -79,7 +79,7 @@ class AnimationElements
 
 	public invalidateBuffer()
 	{
-		for (var i:number /*int*/ = 0; i < 8; i++)
+		for (var i:number = 0; i < 8; i++)
 			this._pBufferDirty[i] = true;
 	}
 
@@ -88,12 +88,12 @@ class AnimationElements
 		return this._pVertexData;
 	}
 
-	public get numVertices():number /*uint*/
+	public get numVertices():number
 	{
 		return this._numVertices;
 	}
 
-	public get totalLenOfOneVertex():number /*uint*/
+	public get totalLenOfOneVertex():number
 	{
 		return this._totalLenOfOneVertex;
 	}

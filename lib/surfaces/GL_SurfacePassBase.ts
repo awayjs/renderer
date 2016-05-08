@@ -36,7 +36,7 @@ class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
 	 */
 	public invalidate()
 	{
-		this._shader.invalidateShader();
+		this._shader.invalidateProgram();
 
 		this.dispatchEvent(new PassEvent(PassEvent.INVALIDATE, this));
 	}

@@ -11,11 +11,11 @@ class AnimationClipState extends AnimationStateBase
 	private _animationClipNode:AnimationClipNodeBase;
 	private _animationStatePlaybackComplete:AnimationStateEvent;
 	public _pBlendWeight:number;
-	public _pCurrentFrame:number /*uint*/;
-	public _pNextFrame:number /*uint*/;
+	public _pCurrentFrame:number;
+	public _pNextFrame:number;
 
-	public _pOldFrame:number /*uint*/;
-	public _pTimeDir:number /*int*/;
+	public _pOldFrame:number;
+	public _pTimeDir:number;
 	public _pFramesDirty:boolean = true;
 
 	/**
@@ -36,7 +36,7 @@ class AnimationClipState extends AnimationStateBase
 	/**
 	 * Returns the current frame of animation in the clip based on the internal playhead position.
 	 */
-	public get currentFrame():number /*uint*/
+	public get currentFrame():number
 	{
 		if (this._pFramesDirty)
 			this._pUpdateFrames();
@@ -47,7 +47,7 @@ class AnimationClipState extends AnimationStateBase
 	/**
 	 * Returns the next frame of animation in the clip based on the internal playhead position.
 	 */
-	public get nextFrame():number /*uint*/
+	public get nextFrame():number
 	{
 		if (this._pFramesDirty)
 			this._pUpdateFrames();
@@ -65,7 +65,7 @@ class AnimationClipState extends AnimationStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public update(time:number /*int*/)
+	public update(time:number)
 	{
 		if (!this._animationClipNode.looping) {
 			if (time > this._pStartTime + this._animationClipNode.totalDuration)
@@ -84,7 +84,7 @@ class AnimationClipState extends AnimationStateBase
 	 */
 	public phase(value:number)
 	{
-		var time:number /*int*/ = value*this._animationClipNode.totalDuration + this._pStartTime;
+		var time:number = value*this._animationClipNode.totalDuration + this._pStartTime;
 
 		if (this._pTime == time - this._pStartTime)
 			return;
@@ -95,7 +95,7 @@ class AnimationClipState extends AnimationStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateTime(time:number /*int*/)
+	public _pUpdateTime(time:number)
 	{
 		this._pFramesDirty = true;
 
@@ -116,9 +116,9 @@ class AnimationClipState extends AnimationStateBase
 		this._pFramesDirty = false;
 
 		var looping:boolean = this._animationClipNode.looping;
-		var totalDuration:number /*uint*/ = this._animationClipNode.totalDuration;
-		var lastFrame:number /*uint*/ = this._animationClipNode.lastFrame;
-		var time:number /*int*/ = this._pTime;
+		var totalDuration:number = this._animationClipNode.totalDuration;
+		var lastFrame:number = this._animationClipNode.lastFrame;
+		var time:number = this._pTime;
 
 		//trace("time", time, totalDuration)
 		if (looping && (time >= totalDuration || time < 0)) {
@@ -145,8 +145,8 @@ class AnimationClipState extends AnimationStateBase
 			this._pCurrentFrame = 0;
 			this._pNextFrame = 0;
 
-			var dur:number /*uint*/ = 0, frameTime:number /*uint*/;
-			var durations:Array<number> /*uint*/ = this._animationClipNode.durations;
+			var dur:number = 0, frameTime:number;
+			var durations:Array<number> = this._animationClipNode.durations;
 
 			do {
 				frameTime = dur;

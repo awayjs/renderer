@@ -10,7 +10,7 @@ class SkeletonJoint
 	 *
 	 * @see away.animators.Skeleton#joints
 	 */
-	public parentIndex:number /*int*/ = -1;
+	public parentIndex:number = -1;
 
 	/**
 	 * The name of the joint

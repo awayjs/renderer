@@ -1,22 +1,23 @@
 import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
-import ParticleProperties				from "../../animators/data/ParticleProperties";
 import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
+import ParticleProperties				from "../../animators/data/ParticleProperties";
 import ShaderBase						from "../../shaders/ShaderBase";
+import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
 
 /**
  * Provides an abstract base class for particle animation nodes.
  */
 class ParticleNodeBase extends AnimationNodeBase
 {
-	private _priority:number /*int*/;
+	private _priority:number;
 
-	public _pMode:number /*uint*/;
-	public _pDataLength:number /*uint*/ = 3;
+	public _pMode:number;
+	public _pDataLength:number = 3;
 	public _pOneData:Array<number>;
 
-	public _iDataOffset:number /*uint*/;
+	public _iDataOffset:number;
 
 	//modes alias
 	private static GLOBAL:string = 'Global';
@@ -36,7 +37,7 @@ class ParticleNodeBase extends AnimationNodeBase
 	 *
 	 * @see away.animators.ParticlePropertiesMode
 	 */
-	public get mode():number /*uint*/
+	public get mode():number
 	{
 		return this._pMode;
 	}
@@ -47,7 +48,7 @@ class ParticleNodeBase extends AnimationNodeBase
 	 * @see away.animators.ParticleAnimationSet
 	 * @see #getAGALVertexCode
 	 */
-	public get priority():number /*int*/
+	public get priority():number
 	{
 		return this._priority;
 	}
@@ -58,7 +59,7 @@ class ParticleNodeBase extends AnimationNodeBase
 	 * @see away.animators.ParticleAnimationSet
 	 * @see #getAGALVertexCode
 	 */
-	public get dataLength():number /*int*/
+	public get dataLength():number
 	{
 		return this._pDataLength;
 	}
@@ -82,7 +83,7 @@ class ParticleNodeBase extends AnimationNodeBase
 	 * @param               dataLength      Defines the length of the data used by the node when in <code>LOCAL_STATIC</code> mode.
 	 * @param    [optional] priority        the priority of the particle animation node, used to order the agal generated in a particle animation set. Defaults to 1.
 	 */
-	constructor(name:string, mode:number /*uint*/, dataLength:number /*uint*/, priority:number /*int*/ = 1)
+	constructor(name:string, mode:number, dataLength:number, priority:number = 1)
 	{
 		super();
 
@@ -99,7 +100,7 @@ class ParticleNodeBase extends AnimationNodeBase
 	/**
 	 * Returns the AGAL code of the particle animation node for use in the vertex shader.
 	 */
-	public getAGALVertexCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALVertexCode(shader:ShaderBase, animationSet:ParticleAnimationSet, registerCache:ShaderRegisterCache, animationRegisterData:AnimationRegisterData):string
 	{
 		return "";
 	}
@@ -107,7 +108,7 @@ class ParticleNodeBase extends AnimationNodeBase
 	/**
 	 * Returns the AGAL code of the particle animation node for use in the fragment shader.
 	 */
-	public getAGALFragmentCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALFragmentCode(shader:ShaderBase, animationSet:ParticleAnimationSet, registerCache:ShaderRegisterCache, animationRegisterData:AnimationRegisterData):string
 	{
 		return "";
 	}
@@ -115,7 +116,7 @@ class ParticleNodeBase extends AnimationNodeBase
 	/**
 	 * Returns the AGAL code of the particle animation node for use in the fragment shader when UV coordinates are required.
 	 */
-	public getAGALUVCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALUVCode(shader:ShaderBase, animationSet:ParticleAnimationSet, registerCache:ShaderRegisterCache, animationRegisterData:AnimationRegisterData):string
 	{
 		return "";
 	}

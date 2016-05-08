@@ -38,7 +38,12 @@ class ShaderRegisterData
 	public viewDirFragment:ShaderRegisterElement;
 	public bitangent:ShaderRegisterElement;
 
-	public textures:Array<ShaderRegisterElement> = Array<ShaderRegisterElement>();
+	public textures:Array<ShaderRegisterElement> = new Array<ShaderRegisterElement>();
+
+	public animatableAttributes:Array<ShaderRegisterElement> = new Array<ShaderRegisterElement>();
+	public animationTargetRegisters:Array<ShaderRegisterElement> = new Array<ShaderRegisterElement>();
+	public uvSource:ShaderRegisterElement;
+	public uvTarget:ShaderRegisterElement;
 
 	constructor()
 	{

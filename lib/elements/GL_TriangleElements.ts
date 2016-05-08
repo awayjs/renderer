@@ -4,22 +4,18 @@ import Matrix3DUtils				from "awayjs-core/lib/geom/Matrix3DUtils";
 import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 
 import ContextGLDrawMode			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
-import ContextWebGL					from "awayjs-stagegl/lib/base/ContextWebGL";
 import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
 import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
-import Stage						from "awayjs-stagegl/lib/base/Stage";
 
 import Camera						from "awayjs-display/lib/display/Camera";
 import TriangleElements				from "awayjs-display/lib/graphics/TriangleElements";
-import ElementsEvent				from "awayjs-display/lib/events/ElementsEvent";
 
-import ElementsPool					from "../elements/ElementsPool";
+import GL_ElementsBase				from "../elements/GL_ElementsBase";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
 import ShaderBase					from "../shaders/ShaderBase";
 import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
-import GL_ElementsBase				from "../elements/GL_ElementsBase";
 import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
 
 /**
  *
@@ -27,8 +23,6 @@ import GL_RenderableBase			from "../renderables/GL_RenderableBase";
  */
 class GL_TriangleElements extends GL_ElementsBase
 {
-	public static vertexAttributesOffset:number = 1;
-
 	public static _iIncludeDependencies(shader:ShaderBase)
 	{
 	}
@@ -36,7 +30,7 @@ class GL_TriangleElements extends GL_ElementsBase
 	public static _iGetVertexCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		var code:string = "";
-
+		
 		//get the projection coordinates
 		var position:ShaderRegisterElement = (shader.globalPosDependencies > 0)? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
 
@@ -133,8 +127,8 @@ class GL_TriangleElements extends GL_ElementsBase
 		}
 
 		var context:IContextGL = this._stage.context;
-		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, this._shader.vertexConstantData, this._shader.numUsedVertexConstants);
-		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._shader.fragmentConstantData, this._shader.numUsedFragmentConstants);
+		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, this._shader.vertexConstantData);
+		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, this._shader.fragmentConstantData);
 
 		if (this._indices)
 			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, this.numIndices);

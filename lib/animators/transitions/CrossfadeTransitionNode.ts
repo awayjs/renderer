@@ -8,7 +8,7 @@ class CrossfadeTransitionNode extends SkeletonBinaryLERPNode
 {
 	public blendSpeed:number;
 
-	public startBlend:number /*int*/;
+	public startBlend:number;
 
 	/**
 	 * Creates a new <code>CrossfadeTransitionNode</code> object.

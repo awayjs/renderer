@@ -5,11 +5,13 @@ import Camera							from "awayjs-display/lib/display/Camera";
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 
 import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import AnimationElements				from "../../animators/data/AnimationElements";
 import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
 import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
+import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
+import ShaderBase						from "../../shaders/ShaderBase";
 
 /**
  * ...
@@ -17,7 +19,7 @@ import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBa
 class ParticleRotateToHeadingState extends ParticleStateBase
 {
 	/** @private */
-	public static MATRIX_INDEX:number /*int*/ = 0;
+	public static MATRIX_INDEX:number = 0;
 
 	private _matrix:Matrix3D = new Matrix3D();
 
@@ -26,12 +28,12 @@ class ParticleRotateToHeadingState extends ParticleStateBase
 		super(animator, particleNode);
 	}
 
-	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
 	{
-		if (animationRegisterCache.hasBillboard) {
+		if ((<ParticleAnimationSet> this._pParticleAnimator.animationSet).hasBillboard) {
 			this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
 			this._matrix.append(camera.inverseSceneTransform);
-			animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToHeadingState.MATRIX_INDEX), this._matrix);
+			shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToHeadingState.MATRIX_INDEX), this._matrix);
 		}
 	}
 

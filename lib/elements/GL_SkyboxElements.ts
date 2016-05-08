@@ -10,8 +10,6 @@ import ShaderRegisterData			from "../shaders/ShaderRegisterData";
  */
 class GL_SkyboxElements extends GL_TriangleElements
 {
-	public static vertexAttributesOffset:number = 1;
-
 	public static _iIncludeDependencies(shader:ShaderBase)
 	{
 	}

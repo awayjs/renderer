@@ -1,12 +1,14 @@
 import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
 import AnimatorBase						from "../../animators/AnimatorBase";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import ParticleProperties				from "../../animators/data/ParticleProperties";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
 import ParticleRotationalVelocityState	from "../../animators/states/ParticleRotationalVelocityState";
 import ShaderBase						from "../../shaders/ShaderBase";
+import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
 import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
 
 /**
@@ -28,7 +30,7 @@ class ParticleRotationalVelocityNode extends ParticleNodeBase
 	 *
 	 * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
 	 */
-	constructor(mode:number /*uint*/, rotationalVelocity:Vector3D = null)
+	constructor(mode:number, rotationalVelocity:Vector3D = null)
 	{
 		super("ParticleRotationalVelocity", mode, 4);
 
@@ -40,35 +42,35 @@ class ParticleRotationalVelocityNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALVertexCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALVertexCode(shader:ShaderBase, animationSet:ParticleAnimationSet, registerCache:ShaderRegisterCache, animationRegisterData:AnimationRegisterData):string
 	{
-		var rotationRegister:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-		animationRegisterCache.setRegisterIndex(this, ParticleRotationalVelocityState.ROTATIONALVELOCITY_INDEX, rotationRegister.index);
+		var rotationRegister:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+		animationRegisterData.setRegisterIndex(this, ParticleRotationalVelocityState.ROTATIONALVELOCITY_INDEX, rotationRegister.index);
 
-		var nrmVel:ShaderRegisterElement = animationRegisterCache.getFreeVertexVectorTemp();
-		animationRegisterCache.addVertexTempUsages(nrmVel, 1);
+		var nrmVel:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+		registerCache.addVertexTempUsages(nrmVel, 1);
 
-		var xAxis:ShaderRegisterElement = animationRegisterCache.getFreeVertexVectorTemp();
-		animationRegisterCache.addVertexTempUsages(xAxis, 1);
+		var xAxis:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+		registerCache.addVertexTempUsages(xAxis, 1);
 
-		var temp:ShaderRegisterElement = animationRegisterCache.getFreeVertexVectorTemp();
-		animationRegisterCache.addVertexTempUsages(temp, 1);
+		var temp:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+		registerCache.addVertexTempUsages(temp, 1);
 		var Rtemp:ShaderRegisterElement = new ShaderRegisterElement(temp.regName, temp.index);
-		var R_rev:ShaderRegisterElement = animationRegisterCache.getFreeVertexVectorTemp();
+		var R_rev:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
 		R_rev = new ShaderRegisterElement(R_rev.regName, R_rev.index);
 
 		var cos:ShaderRegisterElement = new ShaderRegisterElement(Rtemp.regName, Rtemp.index, 3);
 		var sin:ShaderRegisterElement = new ShaderRegisterElement(R_rev.regName, R_rev.index, 3);
 
-		animationRegisterCache.removeVertexTempUsage(nrmVel);
-		animationRegisterCache.removeVertexTempUsage(xAxis);
-		animationRegisterCache.removeVertexTempUsage(temp);
+		registerCache.removeVertexTempUsage(nrmVel);
+		registerCache.removeVertexTempUsage(xAxis);
+		registerCache.removeVertexTempUsage(temp);
 
 		var code:string = "";
 		code += "mov " + nrmVel + ".xyz," + rotationRegister + ".xyz\n";
-		code += "mov " + nrmVel + ".w," + animationRegisterCache.vertexZeroConst + "\n";
+		code += "mov " + nrmVel + ".w," + animationRegisterData.vertexZeroConst + "\n";
 
-		code += "mul " + cos + "," + animationRegisterCache.vertexTime + "," + rotationRegister + ".w\n";
+		code += "mul " + cos + "," + animationRegisterData.vertexTime + "," + rotationRegister + ".w\n";
 
 		code += "sin " + sin + "," + cos + "\n";
 		code += "cos " + cos + "," + cos + "\n";
@@ -79,11 +81,11 @@ class ParticleRotationalVelocityNode extends ParticleNodeBase
 		code += "neg " + R_rev + ".xyz," + R_rev + ".xyz\n";
 
 		//nrmVel and xAxis are used as temp register
-		code += "crs " + nrmVel + ".xyz," + Rtemp + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+		code += "crs " + nrmVel + ".xyz," + Rtemp + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
 
-		code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+		code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
 		code += "add " + nrmVel + ".xyz," + nrmVel + ".xyz," + xAxis + ".xyz\n";
-		code += "dp3 " + xAxis + ".w," + Rtemp + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+		code += "dp3 " + xAxis + ".w," + Rtemp + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
 		code += "neg " + nrmVel + ".w," + xAxis + ".w\n";
 
 		code += "crs " + Rtemp + ".xyz," + nrmVel + ".xyz," + R_rev + ".xyz\n";
@@ -93,28 +95,28 @@ class ParticleRotationalVelocityNode extends ParticleNodeBase
 		code += "add " + Rtemp + ".xyz," + Rtemp + ".xyz," + xAxis + ".xyz\n";
 		code += "mul " + xAxis + ".xyz," + nrmVel + ".w," + R_rev + ".xyz\n";
 
-		code += "add " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + Rtemp + ".xyz," + xAxis + ".xyz\n";
+		code += "add " + animationRegisterData.scaleAndRotateTarget + ".xyz," + Rtemp + ".xyz," + xAxis + ".xyz\n";
 
-		var len:number /*int*/ = animationRegisterCache.rotationRegisters.length;
-		for (var i:number /*int*/ = 0; i < len; i++) {
+		var len:number = animationRegisterData.rotationRegisters.length;
+		for (var i:number = 0; i < len; i++) {
 			code += "mov " + nrmVel + ".xyz," + rotationRegister + ".xyz\n";
-			code += "mov " + nrmVel + ".w," + animationRegisterCache.vertexZeroConst + "\n";
-			code += "mul " + cos + "," + animationRegisterCache.vertexTime + "," + rotationRegister + ".w\n";
+			code += "mov " + nrmVel + ".w," + animationRegisterData.vertexZeroConst + "\n";
+			code += "mul " + cos + "," + animationRegisterData.vertexTime + "," + rotationRegister + ".w\n";
 			code += "sin " + sin + "," + cos + "\n";
 			code += "cos " + cos + "," + cos + "\n";
 			code += "mul " + Rtemp + ".xyz," + sin + "," + nrmVel + ".xyz\n";
 			code += "mul " + R_rev + ".xyz," + sin + "," + nrmVel + ".xyz\n";
 			code += "neg " + R_rev + ".xyz," + R_rev + ".xyz\n";
-			code += "crs " + nrmVel + ".xyz," + Rtemp + ".xyz," + animationRegisterCache.rotationRegisters[i] + ".xyz\n";
-			code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterCache.rotationRegisters[i] + "\n";
+			code += "crs " + nrmVel + ".xyz," + Rtemp + ".xyz," + animationRegisterData.rotationRegisters[i] + ".xyz\n";
+			code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterData.rotationRegisters[i] + "\n";
 			code += "add " + nrmVel + ".xyz," + nrmVel + ".xyz," + xAxis + ".xyz\n";
-			code += "dp3 " + xAxis + ".w," + Rtemp + ".xyz," + animationRegisterCache.rotationRegisters[i] + "\n";
+			code += "dp3 " + xAxis + ".w," + Rtemp + ".xyz," + animationRegisterData.rotationRegisters[i] + "\n";
 			code += "neg " + nrmVel + ".w," + xAxis + ".w\n";
 			code += "crs " + Rtemp + ".xyz," + nrmVel + ".xyz," + R_rev + ".xyz\n";
 			code += "mul " + xAxis + ".xyzw," + nrmVel + ".xyzw," + cos + "\n";
 			code += "add " + Rtemp + ".xyz," + Rtemp + ".xyz," + xAxis + ".xyz\n";
 			code += "mul " + xAxis + ".xyz," + nrmVel + ".w," + R_rev + ".xyz\n";
-			code += "add " + animationRegisterCache.rotationRegisters[i] + "," + Rtemp + ".xyz," + xAxis + ".xyz\n";
+			code += "add " + animationRegisterData.rotationRegisters[i] + "," + Rtemp + ".xyz," + xAxis + ".xyz\n";
 		}
 		return code;
 	}

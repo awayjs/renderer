@@ -1,22 +1,23 @@
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
-import AssetBase					from "awayjs-core/lib/library/AssetBase";
-import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
-import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
-import getTimer						from "awayjs-core/lib/utils/getTimer";
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import AssetBase						from "awayjs-core/lib/library/AssetBase";
+import AbstractMethodError				from "awayjs-core/lib/errors/AbstractMethodError";
+import RequestAnimationFrame			from "awayjs-core/lib/utils/RequestAnimationFrame";
+import getTimer							from "awayjs-core/lib/utils/getTimer";
 
-import IAnimationSet				from "awayjs-display/lib/animators/IAnimationSet";
-import IAnimator					from "awayjs-display/lib/animators/IAnimator";
-import AnimationNodeBase			from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
-import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
-import Camera						from "awayjs-display/lib/display/Camera";
-import Sprite						from "awayjs-display/lib/display/Sprite";
+import IAnimationSet					from "awayjs-display/lib/animators/IAnimationSet";
+import IAnimator						from "awayjs-display/lib/animators/IAnimator";
+import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import ElementsBase						from "awayjs-display/lib/graphics/ElementsBase";
+import Camera							from "awayjs-display/lib/display/Camera";
+import Sprite							from "awayjs-display/lib/display/Sprite";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import Stage							from "awayjs-stagegl/lib/base/Stage";
 
-import IAnimationState				from "../animators/states/IAnimationState";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import AnimatorEvent				from "../events/AnimatorEvent";
-import ShaderBase					from "../shaders/ShaderBase";
+import IAnimationState					from "../animators/states/IAnimationState";
+import GL_RenderableBase				from "../renderables/GL_RenderableBase";
+import AnimatorEvent					from "../events/AnimatorEvent";
+import ShaderBase						from "../shaders/ShaderBase";
+import ShaderRegisterCache				from "../shaders/ShaderRegisterCache";
 
 /**
  * Dispatched when playback of an animation inside the animator object starts.
@@ -54,7 +55,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	private _startEvent:AnimatorEvent;
 	private _stopEvent:AnimatorEvent;
 	private _cycleEvent:AnimatorEvent;
-	private _time:number /*int*/ = 0;
+	private _time:number = 0;
 	private _playbackSpeed:number = 1;
 
 	public _pAnimationSet:IAnimationSet;
@@ -160,12 +161,12 @@ class AnimatorBase extends AssetBase implements IAnimator
 	/**
 	 * Gets and sets the internal time clock of the animator.
 	 */
-	public get time():number /*int*/
+	public get time():number
 	{
 		return this._time;
 	}
 
-	public set time(value:number /*int*/)
+	public set time(value:number)
 	{
 		if (this._time == value)
 			return;
@@ -210,7 +211,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 		this._playbackSpeed = value;
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera)
 	{
 		throw new AbstractMethodError();
 	}
@@ -270,7 +271,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	 * @see #stop()
 	 * @see #autoUpdate
 	 */
-	public update(time:number /*int*/)
+	public update(time:number)
 	{
 		var dt:number = (time - this._time)*this.playbackSpeed;
 
@@ -331,10 +332,10 @@ class AnimatorBase extends AssetBase implements IAnimator
 	{
 		var delta:Vector3D = this._pActiveState.positionDelta;
 		var dist:number = delta.length;
-		var len:number /*uint*/;
+		var len:number;
 		if (dist > 0) {
 			len = this._pOwners.length;
-			for (var i:number /*uint*/ = 0; i < len; ++i)
+			for (var i:number = 0; i < len; ++i)
 				this._pOwners[i].transform.translateLocal(delta, dist);
 		}
 	}

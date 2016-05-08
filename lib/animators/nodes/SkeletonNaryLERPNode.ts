@@ -10,9 +10,9 @@ class SkeletonNaryLERPNode extends AnimationNodeBase
 {
 	public _iInputs:Array<AnimationNodeBase> = new Array<AnimationNodeBase>();
 
-	private _numInputs:number /*uint*/;
+	private _numInputs:number;
 
-	public get numInputs():number /*uint*/
+	public get numInputs():number
 	{
 		return this._numInputs;
 	}
@@ -32,7 +32,7 @@ class SkeletonNaryLERPNode extends AnimationNodeBase
 	 *
 	 * @param input The skeleton animation node for with the input index is requested.
 	 */
-	public getInputIndex(input:AnimationNodeBase):number /*int*/
+	public getInputIndex(input:AnimationNodeBase):number
 	{
 		return this._iInputs.indexOf(input);
 	}
@@ -42,7 +42,7 @@ class SkeletonNaryLERPNode extends AnimationNodeBase
 	 *
 	 * @param index The input index for which the skeleton animation node is requested.
 	 */
-	public getInputAt(index:number /*uint*/):AnimationNodeBase
+	public getInputAt(index:number):AnimationNodeBase
 	{
 		return this._iInputs[index];
 	}

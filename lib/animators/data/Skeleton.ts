@@ -22,7 +22,7 @@ class Skeleton extends AssetBase implements IAsset
 	/**
 	 * The total number of joints in the skeleton.
 	 */
-	public get numJoints():number /*uint*/
+	public get numJoints():number
 	{
 		return this.joints.length;
 	}
@@ -48,7 +48,7 @@ class Skeleton extends AssetBase implements IAsset
 	 */
 	public jointFromName(jointName:string):SkeletonJoint
 	{
-		var jointIndex:number /*int*/ = this.jointIndexFromName(jointName);
+		var jointIndex:number = this.jointIndexFromName(jointName);
 		if (jointIndex != -1)
 			return this.joints[jointIndex]; else
 			return null;
@@ -62,7 +62,7 @@ class Skeleton extends AssetBase implements IAsset
 	 *
 	 * @see #joints
 	 */
-	public jointIndexFromName(jointName:string):number /*int*/
+	public jointIndexFromName(jointName:string):number
 	{
 		// this is implemented as a linear search, rather than a possibly
 		// more optimal method (Dictionary lookup, for example) because:
@@ -70,9 +70,9 @@ class Skeleton extends AssetBase implements IAsset
 		// b) it is assumed that it will be called only during load, and not during main loop
 		// c) maintaining a dictionary (for safety) would dictate an interface to access SkeletonJoints,
 		//    rather than direct array access.  this would be sub-optimal.
-		var jointIndex:number /*int*/;
+		var jointIndex:number;
 		var joint:SkeletonJoint;
-		for (var i:number /*int*/; i < this.joints.length; i++) {
+		for (var i:number; i < this.joints.length; i++) {
 			joint = this.joints[i];
 			if (joint.name == jointName)
 				return jointIndex;

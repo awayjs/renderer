@@ -7,12 +7,13 @@ import Stage							from "awayjs-stagegl/lib/base/Stage";
 import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
 import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import AnimationElements				from "../../animators/data/AnimationElements";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleInitialColorNode			from "../../animators/nodes/ParticleInitialColorNode";
 import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
+import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
+import ShaderBase						from "../../shaders/ShaderBase";
 
 /**
 *
@@ -20,9 +21,9 @@ import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBa
 class ParticleInitialColorState extends ParticleStateBase
 {
 	/** @private */
-	public static MULTIPLIER_INDEX:number /*uint*/ = 0;
+	public static MULTIPLIER_INDEX:number = 0;
 	/** @private */
-	public static OFFSET_INDEX:number /*uint*/ = 1;
+	public static OFFSET_INDEX:number = 1;
 
 	private _particleInitialColorNode:ParticleInitialColorNode;
 	private _usesMultiplier:boolean;
@@ -59,26 +60,23 @@ class ParticleInitialColorState extends ParticleStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
 	{
-		// TODO: not used
-		renderable = renderable;
-		camera = camera;
-
-		if (animationRegisterCache.needFragmentAnimation) {
+		if (shader.usesFragmentAnimation) {
+			var index:number;
 			if (this._particleInitialColorNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
-				var dataOffset:number /*uint*/ = this._particleInitialColorNode._iDataOffset;
+				var dataOffset:number = this._particleInitialColorNode._iDataOffset;
 				if (this._usesMultiplier) {
-					animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
+					animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 					dataOffset += 4;
 				}
 				if (this._usesOffset)
-					animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
+					animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 			} else {
 				if (this._usesMultiplier)
-					animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);
+					shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);
 				if (this._usesOffset)
-					animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), this._offsetData.x, this._offsetData.y, this._offsetData.z, this._offsetData.w);
+					shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), this._offsetData.x, this._offsetData.y, this._offsetData.z, this._offsetData.w);
 			}
 		}
 	}

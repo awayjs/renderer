@@ -6,22 +6,24 @@ import Stage							from "awayjs-stagegl/lib/base/Stage";
 import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
 import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import AnimationElements				from "../../animators/data/AnimationElements";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleBezierCurveNode			from "../../animators/nodes/ParticleBezierCurveNode";
 import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
+import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
+import ShaderBase						from "../../shaders/ShaderBase";
+
 /**
  * ...
  */
 class ParticleBezierCurveState extends ParticleStateBase
 {
 	/** @private */
-	public static BEZIER_CONTROL_INDEX:number /*int*/ = 0;
+	public static BEZIER_CONTROL_INDEX:number = 0;
 
 	/** @private */
-	public static BEZIER_END_INDEX:number /*int*/ = 1;
+	public static BEZIER_END_INDEX:number = 1;
 
 	private _particleBezierCurveNode:ParticleBezierCurveNode;
 	private _controlPoint:Vector3D;
@@ -62,17 +64,17 @@ class ParticleBezierCurveState extends ParticleStateBase
 		this._endPoint = this._particleBezierCurveNode._iEndPoint;
 	}
 
-	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
 	{
-		var controlIndex:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_CONTROL_INDEX);
-		var endIndex:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_END_INDEX);
+		var controlIndex:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_CONTROL_INDEX);
+		var endIndex:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_END_INDEX);
 
 		if (this._particleBezierCurveNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
 			animationElements.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 			animationElements.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat.FLOAT_3);
 		} else {
-			animationRegisterCache.setVertexConst(controlIndex, this._controlPoint.x, this._controlPoint.y, this._controlPoint.z);
-			animationRegisterCache.setVertexConst(endIndex, this._endPoint.x, this._endPoint.y, this._endPoint.z);
+			shader.setVertexConst(controlIndex, this._controlPoint.x, this._controlPoint.y, this._controlPoint.z);
+			shader.setVertexConst(endIndex, this._endPoint.x, this._endPoint.y, this._endPoint.z);
 		}
 	}
 }

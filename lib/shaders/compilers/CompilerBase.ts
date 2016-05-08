@@ -23,18 +23,6 @@ class CompilerBase
 	public _pFragmentCode:string = '';// Changed to emtpy string - AwayTS
 	public _pPostAnimationFragmentCode:string = '';// Changed to emtpy string - AwayTS
 
-	//The attributes that need to be animated by animators.
-	public _pAnimatableAttributes:Array<string> = new Array<string>();
-
-	//The target registers for animated properties, written to by the animators.
-	public _pAnimationTargetRegisters:Array<string> = new Array<string>();
-
-	//The target register to place the animated UV coordinate.
-	private _uvTarget:string;
-
-	//The souce register providing the UV coordinate to animate.
-	private _uvSource:string;
-
 	/**
 	 * Creates a new CompilerBase object.
 	 * @param profile The compatibility profile of the renderer.
@@ -48,8 +36,6 @@ class CompilerBase
 		this._pSharedRegisters = new ShaderRegisterData();
 
 		this._pRegisterCache = new ShaderRegisterCache(shader.profile);
-		this._pRegisterCache.vertexAttributesOffset = elementsClass.vertexAttributesOffset;
-		this._pRegisterCache.reset();
 	}
 
 	/**
@@ -77,10 +63,6 @@ class CompilerBase
 		//assign the final output color to the output register
 		this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
 		this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
-
-		//initialise the required shader constants
-		this._pShader.initConstantData(this._pRegisterCache, this._pAnimatableAttributes, this._pAnimationTargetRegisters, this._uvSource, this._uvTarget);
-		this._pRenderPass._iInitConstantData(this._pShader);
 	}
 	/**
 	 * Calculate the transformed colours
@@ -200,8 +182,8 @@ class CompilerBase
 								 "mov " + varying + ".zw, " + uvAttributeReg + ".zw \n";
 		} else {
 			this._pShader.uvMatrixIndex = -1;
-			this._uvTarget = varying.toString();
-			this._uvSource = uvAttributeReg.toString();
+			this._pSharedRegisters.uvTarget = varying;
+			this._pSharedRegisters.uvSource = uvAttributeReg;
 		}
 	}
 
@@ -361,11 +343,11 @@ class CompilerBase
 	{
 		this._pShader.pInitRegisterIndices();
 
-		this._pSharedRegisters.animatedPosition = this._pRegisterCache.getFreeVertexVectorTemp()
+		this._pSharedRegisters.animatedPosition = this._pRegisterCache.getFreeVertexVectorTemp();
 		this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedPosition, 1);
 
-		this._pAnimatableAttributes.push("va0");
-		this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedPosition.toString());
+		this._pSharedRegisters.animatableAttributes.push(this._pRegisterCache.getFreeVertexAttribute());
+		this._pSharedRegisters.animationTargetRegisters.push(this._pSharedRegisters.animatedPosition);
 		this._pVertexCode = "";
 		this._pFragmentCode = "";
 		this._pPostAnimationFragmentCode = "";
@@ -391,8 +373,8 @@ class CompilerBase
 				this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.bitangent, 1);
 			}
 
-			this._pAnimatableAttributes.push(this._pSharedRegisters.tangentInput.toString());
-			this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedTangent.toString());
+			this._pSharedRegisters.animatableAttributes.push(this._pSharedRegisters.tangentInput);
+			this._pSharedRegisters.animationTargetRegisters.push(this._pSharedRegisters.animatedTangent);
 		}
 
 		if (this._pShader.normalDependencies > 0) {
@@ -402,8 +384,8 @@ class CompilerBase
 			this._pSharedRegisters.animatedNormal = this._pRegisterCache.getFreeVertexVectorTemp();
 			this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedNormal, 1);
 
-			this._pAnimatableAttributes.push(this._pSharedRegisters.normalInput.toString());
-			this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedNormal.toString());
+			this._pSharedRegisters.animatableAttributes.push(this._pSharedRegisters.normalInput);
+			this._pSharedRegisters.animationTargetRegisters.push(this._pSharedRegisters.animatedNormal);
 		}
 
 		if (this._pShader.colorDependencies > 0) {
@@ -450,11 +432,11 @@ class CompilerBase
 	}
 
 	/**
-	 * The register name containing the final shaded colour.
+	 * The register containing the final shaded colour.
 	 */
-	public get shadedTarget():string
+	public get shadedTarget():ShaderRegisterElement
 	{
-		return this._pSharedRegisters.shadedTarget.toString();
+		return this._pSharedRegisters.shadedTarget;
 	}
 }
 

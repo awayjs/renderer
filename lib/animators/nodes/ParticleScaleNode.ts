@@ -1,12 +1,14 @@
 import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
 import AnimatorBase						from "../../animators/AnimatorBase";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import ParticleProperties				from "../../animators/data/ParticleProperties";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
 import ParticleScaleState				from "../../animators/states/ParticleScaleState";
 import ShaderBase						from "../../shaders/ShaderBase";
+import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
 import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
 
 /**
@@ -46,7 +48,7 @@ class ParticleScaleNode extends ParticleNodeBase
 	 * @param    [optional] cycleDuration   Defines the default duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
 	 * @param    [optional] cyclePhase      Defines the default phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
 	 */
-	constructor(mode:number /*uint*/, usesCycle:boolean, usesPhase:boolean, minScale:number = 1, maxScale:number = 1, cycleDuration:number = 1, cyclePhase:number = 0)
+	constructor(mode:number, usesCycle:boolean, usesPhase:boolean, minScale:number = 1, maxScale:number = 1, cycleDuration:number = 1, cyclePhase:number = 0)
 	{
 		super("ParticleScale", mode, (usesCycle && usesPhase)? 4 : ((usesCycle || usesPhase)? 3 : 2), 3);
 
@@ -64,16 +66,16 @@ class ParticleScaleNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALVertexCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALVertexCode(shader:ShaderBase, animationSet:ParticleAnimationSet, registerCache:ShaderRegisterCache, animationRegisterData:AnimationRegisterData):string
 	{
 		var code:string = "";
-		var temp:ShaderRegisterElement = animationRegisterCache.getFreeVertexSingleTemp();
+		var temp:ShaderRegisterElement = registerCache.getFreeVertexSingleTemp();
 
-		var scaleRegister:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-		animationRegisterCache.setRegisterIndex(this, ParticleScaleState.SCALE_INDEX, scaleRegister.index);
+		var scaleRegister:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+		animationRegisterData.setRegisterIndex(this, ParticleScaleState.SCALE_INDEX, scaleRegister.index);
 
 		if (this._iUsesCycle) {
-			code += "mul " + temp + "," + animationRegisterCache.vertexTime + "," + scaleRegister + ".z\n";
+			code += "mul " + temp + "," + animationRegisterData.vertexTime + "," + scaleRegister + ".z\n";
 
 			if (this._iUsesPhase)
 				code += "add " + temp + "," + temp + "," + scaleRegister + ".w\n";
@@ -81,9 +83,9 @@ class ParticleScaleNode extends ParticleNodeBase
 			code += "sin " + temp + "," + temp + "\n";
 		}
 
-		code += "mul " + temp + "," + scaleRegister + ".y," + ((this._iUsesCycle)? temp : animationRegisterCache.vertexLife) + "\n";
+		code += "mul " + temp + "," + scaleRegister + ".y," + ((this._iUsesCycle)? temp : animationRegisterData.vertexLife) + "\n";
 		code += "add " + temp + "," + scaleRegister + ".x," + temp + "\n";
-		code += "mul " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp + "\n";
+		code += "mul " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp + "\n";
 
 		return code;
 	}

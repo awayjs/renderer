@@ -8,11 +8,12 @@ import Camera							from "awayjs-display/lib/display/Camera";
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 
 import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import AnimationElements				from "../../animators/data/AnimationElements";
 import ParticleBillboardNode			from "../../animators/nodes/ParticleBillboardNode";
 import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
+import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
+import ShaderBase						from "../../shaders/ShaderBase";
 
 /**
  * ...
@@ -20,7 +21,7 @@ import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBa
 class ParticleBillboardState extends ParticleStateBase
 {
 	/** @private */
-	public static MATRIX_INDEX:number /*int*/ = 0;
+	public static MATRIX_INDEX:number = 0;
 
 	private _matrix:Matrix3D = new Matrix3D;
 
@@ -36,7 +37,7 @@ class ParticleBillboardState extends ParticleStateBase
 		this._billboardAxis = particleNode._iBillboardAxis;
 	}
 
-	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
 	{
 		var comps:Array<Vector3D>;
 		if (this._billboardAxis) {
@@ -69,7 +70,7 @@ class ParticleBillboardState extends ParticleStateBase
 		}
 
 		//set a new matrix transform constant
-		animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBillboardState.MATRIX_INDEX), this._matrix);
+		shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBillboardState.MATRIX_INDEX), this._matrix);
 	}
 
 	/**

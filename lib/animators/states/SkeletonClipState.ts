@@ -66,7 +66,7 @@ class SkeletonClipState extends AnimationClipState implements ISkeletonAnimation
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateTime(time:number /*int*/)
+	public _pUpdateTime(time:number)
 	{
 		this._skeletonPoseDirty = true;
 
@@ -106,7 +106,7 @@ class SkeletonClipState extends AnimationClipState implements ISkeletonAnimation
 
 		var currentPose:Array<JointPose> = this._currentPose.jointPoses;
 		var nextPose:Array<JointPose> = this._nextPose.jointPoses;
-		var numJoints:number /*uint*/ = skeleton.numJoints;
+		var numJoints:number = skeleton.numJoints;
 		var p1:Vector3D, p2:Vector3D;
 		var pose1:JointPose, pose2:JointPose;
 		var endPoses:Array<JointPose> = this._skeletonPose.jointPoses;
@@ -120,7 +120,7 @@ class SkeletonClipState extends AnimationClipState implements ISkeletonAnimation
 		if ((numJoints != currentPose.length) || (numJoints != nextPose.length))
 			throw new Error("joint counts don't match!");
 
-		for (var i:number /*uint*/ = 0; i < numJoints; ++i) {
+		for (var i:number = 0; i < numJoints; ++i) {
 			endPose = endPoses[i];
 
 			if (endPose == null)

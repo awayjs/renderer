@@ -345,11 +345,12 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	public activatePass(renderableGL:GL_RenderableBase, pass:IPass, camera:Camera)
 	{
 		//clear unused vertex streams
-		for (var i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
+		var i:number
+		for (i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
 			this._pContext.setVertexBufferAt(i, null);
 
 		//clear unused texture streams
-		for (var i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
+		for (i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
 			this._pContext.setTextureAt(i, null);
 
 		//check program data is uploaded
@@ -869,7 +870,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 */
 	public enterNode(node:INode):boolean
 	{
-		var enter:boolean = node._iCollectionMark != RendererBase._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
+		var enter:boolean = node._iCollectionMark != RendererBase._iCollectionMark && node.isRenderable() && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
 
 		node._iCollectionMark = RendererBase._iCollectionMark;
 

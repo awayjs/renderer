@@ -85,7 +85,7 @@ class Filter3DVBlurTask extends Filter3DTaskBase
 
 	public activate(stage:Stage, camera3D:Camera, depthTexture:Image2D)
 	{
-		stage.context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._data, 1);
+		stage.context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, this._data);
 	}
 
 	public updateTextures(stage:Stage)

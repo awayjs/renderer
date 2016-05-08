@@ -6,12 +6,13 @@ import Stage							from "awayjs-stagegl/lib/base/Stage";
 import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
 import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import AnimationElements				from "../../animators/data/AnimationElements";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleSpriteSheetNode			from "../../animators/nodes/ParticleSpriteSheetNode";
 import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBase";
+import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
+import ShaderBase						from "../../shaders/ShaderBase";
 
 /**
  * ...
@@ -19,17 +20,17 @@ import GL_RenderableBase				from "../../animators/../renderables/GL_RenderableBa
 class ParticleSpriteSheetState extends ParticleStateBase
 {
 	/** @private */
-	public static UV_INDEX_0:number /*uint*/ = 0;
+	public static UV_INDEX_0:number = 0;
 
 	/** @private */
-	public static UV_INDEX_1:number /*uint*/ = 1;
+	public static UV_INDEX_1:number = 1;
 
 	private _particleSpriteSheetNode:ParticleSpriteSheetNode;
 	private _usesCycle:boolean;
 	private _usesPhase:boolean;
-	private _totalFrames:number /*int*/;
-	private _numColumns:number /*int*/;
-	private _numRows:number /*int*/;
+	private _totalFrames:number;
+	private _numColumns:number;
+	private _numRows:number;
 	private _cycleDuration:number;
 	private _cyclePhase:number;
 	private _spriteSheetData:Array<number>;
@@ -81,19 +82,19 @@ class ParticleSpriteSheetState extends ParticleStateBase
 		this.updateSpriteSheetData();
 	}
 
-	public setRenderState(stage:Stage, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterCache:AnimationRegisterCache, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
 	{
-		if (animationRegisterCache.needUVAnimation) {
-			animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
+		if (!shader.usesUVTransform) {
+			shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
 			if (this._usesCycle) {
-				var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_1);
+				var index:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_1);
 				if (this._particleSpriteSheetNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
 					if (this._usesPhase)
 						animationElements.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);
 					else
 						animationElements.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_2);
 				} else
-					animationRegisterCache.setVertexConst(index, this._spriteSheetData[4], this._spriteSheetData[5]);
+					shader.setVertexConst(index, this._spriteSheetData[4], this._spriteSheetData[5]);
 			}
 		}
 	}

@@ -7,7 +7,7 @@ import AnimatorBase						from "../../animators/AnimatorBase";
  */
 interface IAnimationTransition
 {
-	getAnimationNode(animator:AnimatorBase, startNode:AnimationNodeBase, endNode:AnimationNodeBase, startTime:number /*int*/):AnimationNodeBase
+	getAnimationNode(animator:AnimatorBase, startNode:AnimationNodeBase, endNode:AnimationNodeBase, startTime:number):AnimationNodeBase
 }
 
 export default IAnimationTransition;

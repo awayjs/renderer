@@ -26,7 +26,7 @@ class SkeletonNaryLERPState extends AnimationStateBase implements ISkeletonAnima
 
 		this._skeletonAnimationNode = skeletonAnimationNode;
 
-		var i:number /*uint*/ = this._skeletonAnimationNode.numInputs;
+		var i:number = this._skeletonAnimationNode.numInputs;
 
 		while (i--)
 			this._inputs[i] = <ISkeletonAnimationState> animator.getAnimationState(this._skeletonAnimationNode._iInputs[i]);
@@ -41,7 +41,7 @@ class SkeletonNaryLERPState extends AnimationStateBase implements ISkeletonAnima
 
 		this._pPositionDeltaDirty = true;
 
-		for (var j:number /*uint*/ = 0; j < this._skeletonAnimationNode.numInputs; ++j) {
+		for (var j:number = 0; j < this._skeletonAnimationNode.numInputs; ++j) {
 			if (this._blendWeights[j])
 				this._inputs[j].update(value);
 		}
@@ -50,9 +50,9 @@ class SkeletonNaryLERPState extends AnimationStateBase implements ISkeletonAnima
 	/**
 	 * @inheritDoc
 	 */
-	public _pUdateTime(time:number /*int*/)
+	public _pUdateTime(time:number)
 	{
-		for (var j:number /*uint*/ = 0; j < this._skeletonAnimationNode.numInputs; ++j) {
+		for (var j:number = 0; j < this._skeletonAnimationNode.numInputs; ++j) {
 			if (this._blendWeights[j])
 				this._inputs[j].update(time);
 		}
@@ -76,7 +76,7 @@ class SkeletonNaryLERPState extends AnimationStateBase implements ISkeletonAnima
 	 *
 	 * @param index The input index for which the skeleton animation node blend weight is requested.
 	 */
-	public getBlendWeightAt(index:number /*uint*/):number
+	public getBlendWeightAt(index:number):number
 	{
 		return this._blendWeights[index];
 	}
@@ -87,7 +87,7 @@ class SkeletonNaryLERPState extends AnimationStateBase implements ISkeletonAnima
 	 * @param index The input index on which the skeleton animation node blend weight is to be set.
 	 * @param blendWeight The blend weight value to use for the given skeleton animation node index.
 	 */
-	public setBlendWeightAt(index:number /*uint*/, blendWeight:number)
+	public setBlendWeightAt(index:number, blendWeight:number)
 	{
 		this._blendWeights[index] = blendWeight;
 
@@ -109,7 +109,7 @@ class SkeletonNaryLERPState extends AnimationStateBase implements ISkeletonAnima
 		this.positionDelta.y = 0;
 		this.positionDelta.z = 0;
 
-		for (var j:number /*uint*/ = 0; j < this._skeletonAnimationNode.numInputs; ++j) {
+		for (var j:number = 0; j < this._skeletonAnimationNode.numInputs; ++j) {
 			weight = this._blendWeights[j];
 
 			if (weight) {
@@ -137,16 +137,16 @@ class SkeletonNaryLERPState extends AnimationStateBase implements ISkeletonAnima
 		var endTr:Vector3D, tr:Vector3D;
 		var endQuat:Quaternion, q:Quaternion;
 		var firstPose:Array<JointPose>;
-		var i:number /*uint*/;
+		var i:number;
 		var w0:number, x0:number, y0:number, z0:number;
 		var w1:number, x1:number, y1:number, z1:number;
-		var numJoints:number /*uint*/ = skeleton.numJoints;
+		var numJoints:number = skeleton.numJoints;
 
 		// :s
 		if (endPoses.length != numJoints)
 			endPoses.length = numJoints;
 
-		for (var j:number /*uint*/ = 0; j < this._skeletonAnimationNode.numInputs; ++j) {
+		for (var j:number = 0; j < this._skeletonAnimationNode.numInputs; ++j) {
 			weight = this._blendWeights[j];
 
 			if (!weight)

@@ -8,12 +8,12 @@ import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNo
 class AnimationClipNodeBase extends AnimationNodeBase
 {
 	public _pLooping:boolean = true;
-	public _pTotalDuration:number /*uint*/ = 0;
-	public _pLastFrame:number /*uint*/;
+	public _pTotalDuration:number = 0;
+	public _pLastFrame:number;
 
 	public _pStitchDirty:boolean = true;
 	public _pStitchFinalFrame:boolean = false;
-	public _pNumFrames:number /*uint*/ = 0;
+	public _pNumFrames:number = 0;
 
 	public _pDurations:Array<number> = new Array<number>();
 	/*uint*/
@@ -58,7 +58,7 @@ class AnimationClipNodeBase extends AnimationNodeBase
 		this._pStitchDirty = true;
 	}
 
-	public get totalDuration():number /*uint*/
+	public get totalDuration():number
 	{
 		if (this._pStitchDirty)
 			this._pUpdateStitch();
@@ -74,7 +74,7 @@ class AnimationClipNodeBase extends AnimationNodeBase
 		return this._pTotalDelta;
 	}
 
-	public get lastFrame():number /*uint*/
+	public get lastFrame():number
 	{
 		if (this._pStitchDirty)
 			this._pUpdateStitch();
@@ -85,7 +85,7 @@ class AnimationClipNodeBase extends AnimationNodeBase
 	/**
 	 * Returns a vector of time values representing the duration (in milliseconds) of each animation frame in the clip.
 	 */
-	public get durations():Array<number> /*uint*/
+	public get durations():Array<number>
 	{
 		return this._pDurations;
 	}

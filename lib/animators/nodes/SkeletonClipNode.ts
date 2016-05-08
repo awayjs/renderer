@@ -42,7 +42,7 @@ class SkeletonClipNode extends AnimationClipNodeBase
 	 * @param skeletonPose The skeleton pose object to add to the timeline of the node.
 	 * @param duration The specified duration of the frame in milliseconds.
 	 */
-	public addFrame(skeletonPose:SkeletonPose, duration:number /*number /*uint*/)
+	public addFrame(skeletonPose:SkeletonPose, duration:number)
 	{
 		this._frames.push(skeletonPose);
 		this._pDurations.push(duration);
@@ -67,7 +67,7 @@ class SkeletonClipNode extends AnimationClipNodeBase
 	{
 		super._pUpdateStitch();
 
-		var i:number /*uint*/ = this._pNumFrames - 1;
+		var i:number = this._pNumFrames - 1;
 		var p1:Vector3D, p2:Vector3D, delta:Vector3D;
 		while (i--) {
 			this._pTotalDuration += this._pDurations[i];

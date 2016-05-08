@@ -10,9 +10,18 @@ import AGALMiniAssembler			from "awayjs-stagegl/lib/aglsl/assembler/AGALMiniAsse
 import IProgram						from "awayjs-stagegl/lib/base/IProgram";
 
 import RTTBufferManager				from "../../managers/RTTBufferManager";
+import ShaderRegisterCache			from "../../shaders/ShaderRegisterCache";
+import ShaderRegisterElement		from "../../shaders/ShaderRegisterElement";
 
 class Filter3DTaskBase
 {
+	public _registerCache:ShaderRegisterCache;
+	
+	public _positionIndex:number;
+	public _uvIndex:number;;
+	public _inputTextureIndex:number;
+	public _uvVarying:ShaderRegisterElement;
+	
 	private _mainInputTexture:Image2D;
 
 	public _scaledTextureWidth:number = -1;
@@ -30,6 +39,8 @@ class Filter3DTaskBase
 	constructor(requireDepthRender:boolean = false)
 	{
 		this._requireDepthRender = requireDepthRender;
+
+		this._registerCache = new ShaderRegisterCache("baseline");
 	}
 
 	/**
@@ -134,15 +145,31 @@ class Filter3DTaskBase
 
 		this._program3D = stage.context.createProgram();
 
+		this._registerCache.reset();
+		
 		var vertexByteCode:ByteArray = (new AGALMiniAssembler().assemble("part vertex 1\n" + this.getVertexCode() + "endpart"))['vertex'].data;
 		var fragmentByteCode:ByteArray = (new AGALMiniAssembler().assemble("part fragment 1\n" + this.getFragmentCode() + "endpart"))['fragment'].data;
+
 		this._program3D.upload(vertexByteCode, fragmentByteCode);
 		this._program3DInvalid = false;
 	}
 
 	public getVertexCode():string
 	{
-		return "mov op, va0\n" + "mov v0, va1\n";
+		var position:ShaderRegisterElement = this._registerCache.getFreeVertexAttribute();
+		this._positionIndex = position.index;
+		
+		var uv:ShaderRegisterElement = this._registerCache.getFreeVertexAttribute();
+		this._uvIndex = uv.index;
+		
+		this._uvVarying = this._registerCache.getFreeVarying();
+		
+		var code:string;
+		
+		code = "mov op, " + position + "\n" + 
+			"mov " + this._uvVarying + ", " + uv + "\n";
+		
+		return code;
 	}
 
 	public getFragmentCode():string

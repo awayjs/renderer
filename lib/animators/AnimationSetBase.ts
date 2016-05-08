@@ -4,10 +4,11 @@ import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
 
 import AnimationNodeBase			from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-
 import AnimationSetError			from "../errors/AnimationSetError";
 import ShaderBase					from "../shaders/ShaderBase";
+import ShaderRegisterElement			from "../shaders/ShaderRegisterElement";
+import ShaderRegisterCache				from "../shaders/ShaderRegisterCache";
+import ShaderRegisterData				from "../shaders/ShaderRegisterData";
 
 /**
  * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
@@ -37,7 +38,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	 */
 	public _pFindTempReg(exclude:Array<string>, excludeAnother:string = null):string
 	{
-		var i:number /*uint*/ = 0;
+		var i:number = 0;
 		var reg:string;
 
 		while (true) {
@@ -78,7 +79,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALVertexCode(shader:ShaderBase):string
+	public getAGALVertexCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		throw new AbstractMethodError();
 	}
@@ -86,7 +87,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	/**
 	 * @inheritDoc
 	 */
-	public activate(shader:ShaderBase, stage:Stage)
+	public getAGALFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, shadedTarget:ShaderRegisterElement):string
 	{
 		throw new AbstractMethodError();
 	}
@@ -94,23 +95,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	/**
 	 * @inheritDoc
 	 */
-	public deactivate(shader:ShaderBase, stage:Stage)
-	{
-		throw new AbstractMethodError();
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public getAGALFragmentCode(shader:ShaderBase, shadedTarget:string):string
-	{
-		throw new AbstractMethodError();
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public getAGALUVCode(shader:ShaderBase):string
+	public getAGALUVCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		throw new AbstractMethodError();
 	}

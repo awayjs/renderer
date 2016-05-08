@@ -5,15 +5,15 @@ import ParticleData						from "awayjs-display/lib/animators/data/ParticleData";
  */
 class ParticleAnimationData
 {
-	public index:number /*uint*/;
+	public index:number;
 	public startTime:number;
 	public totalTime:number;
 	public duration:number;
 	public delay:number;
-	public startVertexIndex:number /*uint*/;
-	public numVertices:number /*uint*/;
+	public startVertexIndex:number;
+	public numVertices:number;
 
-	constructor(index:number /*uint*/, startTime:number, duration:number, delay:number, particle:ParticleData)
+	constructor(index:number, startTime:number, duration:number, delay:number, particle:ParticleData)
 	{
 		this.index = index;
 		this.startTime = startTime;

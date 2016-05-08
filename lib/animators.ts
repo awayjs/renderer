@@ -1,5 +1,5 @@
 export {default as AnimationElements}				from "./animators/data/AnimationElements";
-export {default as AnimationRegisterCache}			from "./animators/data/AnimationRegisterCache";
+export {default as AnimationRegisterData}			from "./animators/data/AnimationRegisterData";
 export {default as ColorSegmentPoint}				from "./animators/data/ColorSegmentPoint";
 export {default as JointPose}						from "./animators/data/JointPose";
 export {default as ParticleAnimationData}			from "./animators/data/ParticleAnimationData";

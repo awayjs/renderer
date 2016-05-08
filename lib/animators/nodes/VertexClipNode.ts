@@ -38,7 +38,7 @@ class VertexClipNode extends AnimationClipNodeBase
 	 * @param duration The specified duration of the frame in milliseconds.
 	 * @param translation The absolute translation of the frame, used in root delta calculations for sprite movement.
 	 */
-	public addFrame(geometry:Graphics, duration:number /*uint*/, translation:Vector3D = null)
+	public addFrame(geometry:Graphics, duration:number, translation:Vector3D = null)
 	{
 		this._frames.push(geometry);
 		this._pDurations.push(duration);
@@ -56,7 +56,7 @@ class VertexClipNode extends AnimationClipNodeBase
 	{
 		super._pUpdateStitch();
 
-		var i:number /*uint*/ = this._pNumFrames - 1;
+		var i:number = this._pNumFrames - 1;
 		var p1:Vector3D, p2:Vector3D, delta:Vector3D;
 		while (i--) {
 			this._pTotalDuration += this._pDurations[i];

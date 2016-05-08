@@ -7,12 +7,12 @@ class ParticleProperties
 	/**
 	 * The index of the current particle being set.
 	 */
-	public index:number /*uint*/;
+	public index:number;
 
 	/**
 	 * The total number of particles being processed by the particle animation set.
 	 */
-	public total:number /*uint*/;
+	public total:number;
 
 	/**
 	 * The start time of the particle.

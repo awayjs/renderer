@@ -18,8 +18,6 @@ import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
  */
 interface IElementsClassGL
 {
-	vertexAttributesOffset:number;
-
 	/**
 	 *
 	 */

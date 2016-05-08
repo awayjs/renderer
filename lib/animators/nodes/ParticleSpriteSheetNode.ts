@@ -1,13 +1,14 @@
 import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
 import AnimatorBase						from "../../animators/AnimatorBase";
-import AnimationRegisterCache			from "../../animators/data/AnimationRegisterCache";
 import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
+import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
 import ParticleProperties				from "../../animators/data/ParticleProperties";
 import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
 import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
 import ParticleSpriteSheetState			from "../../animators/states/ParticleSpriteSheetState";
 import ShaderBase						from "../../shaders/ShaderBase";
+import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
 import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
 
 /**
@@ -23,11 +24,11 @@ class ParticleSpriteSheetNode extends ParticleNodeBase
 	public _iUsesPhase:boolean;
 
 	/** @private */
-	public _iTotalFrames:number /*int*/;
+	public _iTotalFrames:number;
 	/** @private */
-	public _iNumColumns:number /*int*/;
+	public _iNumColumns:number;
 	/** @private */
-	public _iNumRows:number /*int*/;
+	public _iNumRows:number;
 	/** @private */
 	public _iCycleDuration:number;
 	/** @private */
@@ -74,7 +75,7 @@ class ParticleSpriteSheetNode extends ParticleNodeBase
 	 * @param    [optional] totalFrames     Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows.
 	 * @param    [optional] looping         Defines whether the spritesheet animation is set to loop indefinitely. Defaults to true.
 	 */
-	constructor(mode:number /*uint*/, usesCycle:boolean, usesPhase:boolean, numColumns:number /*int*/ = 1, numRows:number /*uint*/ = 1, cycleDuration:number = 1, cyclePhase:number = 0, totalFrames:number /*uint*/ = Number.MAX_VALUE)
+	constructor(mode:number, usesCycle:boolean, usesPhase:boolean, numColumns:number = 1, numRows:number = 1, cycleDuration:number = 1, cyclePhase:number = 0, totalFrames:number = Number.MAX_VALUE)
 	{
 		super("ParticleSpriteSheet", mode, usesCycle? (usesPhase? 3 : 2) : 1, ParticleAnimationSet.POST_PRIORITY + 1);
 
@@ -93,13 +94,13 @@ class ParticleSpriteSheetNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public getAGALUVCode(shader:ShaderBase, animationRegisterCache:AnimationRegisterCache):string
+	public getAGALUVCode(shader:ShaderBase, animationSet:ParticleAnimationSet, registerCache:ShaderRegisterCache, animationRegisterData:AnimationRegisterData):string
 	{
 		//get 2 vc
-		var uvParamConst1:ShaderRegisterElement = animationRegisterCache.getFreeVertexConstant();
-		var uvParamConst2:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-		animationRegisterCache.setRegisterIndex(this, ParticleSpriteSheetState.UV_INDEX_0, uvParamConst1.index);
-		animationRegisterCache.setRegisterIndex(this, ParticleSpriteSheetState.UV_INDEX_1, uvParamConst2.index);
+		var uvParamConst1:ShaderRegisterElement = registerCache.getFreeVertexConstant();
+		var uvParamConst2:ShaderRegisterElement = (this._pMode == ParticlePropertiesMode.GLOBAL)? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+		animationRegisterData.setRegisterIndex(this, ParticleSpriteSheetState.UV_INDEX_0, uvParamConst1.index);
+		animationRegisterData.setRegisterIndex(this, ParticleSpriteSheetState.UV_INDEX_1, uvParamConst2.index);
 
 		var uTotal:ShaderRegisterElement = new ShaderRegisterElement(uvParamConst1.regName, uvParamConst1.index, 0);
 		var uStep:ShaderRegisterElement = new ShaderRegisterElement(uvParamConst1.regName, uvParamConst1.index, 1);
@@ -109,14 +110,14 @@ class ParticleSpriteSheetNode extends ParticleNodeBase
 		var cycle:ShaderRegisterElement = new ShaderRegisterElement(uvParamConst2.regName, uvParamConst2.index, 1);
 		var phaseTime:ShaderRegisterElement = new ShaderRegisterElement(uvParamConst2.regName, uvParamConst2.index, 2);
 
-		var temp:ShaderRegisterElement = animationRegisterCache.getFreeVertexVectorTemp();
+		var temp:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
 		var time:ShaderRegisterElement = new ShaderRegisterElement(temp.regName, temp.index, 0);
 		var vOffset:ShaderRegisterElement = new ShaderRegisterElement(temp.regName, temp.index, 1);
 		temp = new ShaderRegisterElement(temp.regName, temp.index, 2);
 		var temp2:ShaderRegisterElement = new ShaderRegisterElement(temp.regName, temp.index, 3);
 
-		var u:ShaderRegisterElement = new ShaderRegisterElement(animationRegisterCache.uvTarget.regName, animationRegisterCache.uvTarget.index, 0);
-		var v:ShaderRegisterElement = new ShaderRegisterElement(animationRegisterCache.uvTarget.regName, animationRegisterCache.uvTarget.index, 1);
+		var u:ShaderRegisterElement = new ShaderRegisterElement(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, 0);
+		var v:ShaderRegisterElement = new ShaderRegisterElement(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, 1);
 
 		var code:string = "";
 		//scale uv
@@ -126,15 +127,15 @@ class ParticleSpriteSheetNode extends ParticleNodeBase
 
 		if (this._iUsesCycle) {
 			if (this._iUsesPhase)
-				code += "add " + time + "," + animationRegisterCache.vertexTime + "," + phaseTime + "\n";
+				code += "add " + time + "," + animationRegisterData.vertexTime + "," + phaseTime + "\n";
 			else
-				code += "mov " + time + "," + animationRegisterCache.vertexTime + "\n";
+				code += "mov " + time + "," + animationRegisterData.vertexTime + "\n";
 			code += "div " + time + "," + time + "," + cycle + "\n";
 			code += "frc " + time + "," + time + "\n";
 			code += "mul " + time + "," + time + "," + cycle + "\n";
 			code += "mul " + temp + "," + time + "," + uSpeed + "\n";
 		} else
-			code += "mul " + temp.toString() + "," + animationRegisterCache.vertexLife + "," + uTotal + "\n";
+			code += "mul " + temp.toString() + "," + animationRegisterData.vertexLife + "," + uTotal + "\n";
 
 		if (this._iNumRows > 1) {
 			code += "frc " + temp2 + "," + temp + "\n";
