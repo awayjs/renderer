@@ -1,27 +1,14 @@
 import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 import Vector3D						from "awayjs-core/lib/geom/Vector3D";
 
-import ISurface						from "awayjs-display/lib/base/ISurface";
-import IRenderable					from "awayjs-display/lib/base/IRenderable";
-import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
 import LineElements					from "awayjs-display/lib/graphics/LineElements";
-import ElementsEvent				from "awayjs-display/lib/events/ElementsEvent";
-import Camera						from "awayjs-display/lib/display/Camera";
 import LineSegment					from "awayjs-display/lib/display/LineSegment";
 import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
 
-import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
-import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-
 import RendererBase					from "../RendererBase";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import GL_ElementsBase				from "../elements/GL_ElementsBase";
 import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import PassBase						from "../surfaces/passes/PassBase";
+import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
 
 /**
  * @class away.pool.GL_LineSegmentRenderable
@@ -63,23 +50,15 @@ class GL_LineSegmentRenderable extends GL_RenderableBase
 	 * @returns {base.LineElements}
 	 * @protected
 	 */
-	public _pGetElements():ElementsBase
+	public _pGetElements():GL_ElementsBase
 	{
-		var geometry:LineElements = GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements());
+		var elements:LineElements = GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements());
 
 		var start:Vector3D = this._lineSegment.startPostion;
 		var end:Vector3D = this._lineSegment.endPosition;
 
-		var positions:Float32Array;
-		var thickness:Float32Array;
-
-		//if (geometry.indices != null) {
-		//	positions = <Float32Array> geometry.positions.get(geometry.numVertices);
-		//	thickness = geometry.thickness.get(geometry.numVertices);
-		//} else {
-			positions = new Float32Array(6);
-			thickness = new Float32Array(1);
-		//}
+		var positions:Float32Array = new Float32Array(6);
+		var thickness:Float32Array = new Float32Array(1);
 
 		positions[0] = start.x;
 		positions[1] = start.y;
@@ -89,15 +68,15 @@ class GL_LineSegmentRenderable extends GL_RenderableBase
 		positions[5] = end.z;
 		thickness[0] = this._lineSegment.thickness;
 
-		geometry.setPositions(positions);
-		geometry.setThickness(thickness);
+		elements.setPositions(positions);
+		elements.setThickness(thickness);
 
-		return geometry;
+		return <GL_ElementsBase> this._stage.getAbstraction(elements);
 	}
 
-	public _pGetSurface():ISurface
+	public _pGetSurface():GL_SurfaceBase
 	{
-		return this._lineSegment.material;
+		return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._lineSegment.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
 	}
 
 	/**

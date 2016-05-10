@@ -6,14 +6,12 @@ import ImageBase					from "awayjs-core/lib/image/ImageBase";
 import SamplerBase					from "awayjs-core/lib/image/SamplerBase";
 import AbstractionBase				from "awayjs-core/lib/library/AbstractionBase";
 
-import IRenderer					from "awayjs-display/lib/IRenderer";
 import IRenderable					from "awayjs-display/lib/base/IRenderable";
 import ISurface						from "awayjs-display/lib/base/ISurface";
 import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
-import TriangleElements				from "awayjs-display/lib/graphics/TriangleElements";
 import IEntity						from "awayjs-display/lib/display/IEntity";
 import Camera						from "awayjs-display/lib/display/Camera";
-import RenderableEvent			from "awayjs-display/lib/events/RenderableEvent";
+import RenderableEvent				from "awayjs-display/lib/events/RenderableEvent";
 import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
 import TextureBase					from "awayjs-display/lib/textures/TextureBase";
 
@@ -25,20 +23,19 @@ import RendererBase					from "../RendererBase";
 import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
 import IPass						from "../surfaces/passes/IPass";
 import GL_ElementsBase				from "../elements/GL_ElementsBase";
-import AnimatorBase					from "../animators/AnimatorBase";
 
 /**
  * @class RenderableListItem
  */
 class GL_RenderableBase extends AbstractionBase
 {
-	private _onSurfaceUpdatedDelegate:(event:RenderableEvent) => void;
+	private _onInvalidateSurfaceDelegate:(event:RenderableEvent) => void;
 	private _onInvalidateElementsDelegate:(event:RenderableEvent) => void;
 
 	public _count:number = 0;
 	public _offset:number = 0;
-	public _elements:ElementsBase;
-	public _surfaceGL:GL_SurfaceBase;
+	private _elementsGL:GL_ElementsBase;
+	private _surfaceGL:GL_SurfaceBase;
 	private _elementsDirty:boolean = true;
 	private _surfaceDirty:boolean = true;
 
@@ -110,12 +107,12 @@ class GL_RenderableBase extends AbstractionBase
 
 	public samplers:Array<GL_SamplerBase> = new Array<GL_SamplerBase>();
 
-	public get elements():ElementsBase
+	public get elementsGL():GL_ElementsBase
 	{
 		if (this._elementsDirty)
 			this._updateElements();
 
-		return this._elements;
+		return this._elementsGL;
 	}
 
 	public get surfaceGL():GL_SurfaceBase
@@ -138,7 +135,7 @@ class GL_RenderableBase extends AbstractionBase
 	{
 		super(renderable, renderer);
 
-		this._onSurfaceUpdatedDelegate = (event:RenderableEvent) => this._onSurfaceUpdated(event);
+		this._onInvalidateSurfaceDelegate = (event:RenderableEvent) => this._onInvalidateSurface(event);
 		this._onInvalidateElementsDelegate = (event:RenderableEvent) => this.onInvalidateElements(event);
 
 		//store a reference to the pool for later disposal
@@ -147,7 +144,7 @@ class GL_RenderableBase extends AbstractionBase
 
 		this.renderable = renderable;
 
-		this.renderable.addEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
+		this.renderable.addEventListener(RenderableEvent.INVALIDATE_SURFACE, this._onInvalidateSurfaceDelegate);
 		this.renderable.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 	}
 
@@ -163,7 +160,7 @@ class GL_RenderableBase extends AbstractionBase
 		this._stage = null;
 		this.sourceEntity = null;
 
-		this.renderable.removeEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
+		this.renderable.removeEventListener(RenderableEvent.INVALIDATE_SURFACE, this._onInvalidateSurfaceDelegate);
 		this.renderable.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 		this.renderable = null;
 
@@ -173,7 +170,7 @@ class GL_RenderableBase extends AbstractionBase
 			this._surfaceGL.onClear(new AssetEvent(AssetEvent.CLEAR, this._surfaceGL.surface));
 
 		this._surfaceGL = null;
-		this._elements = null;
+		this._elementsGL = null;
 	}
 
 	public onInvalidateElements(event:RenderableEvent)
@@ -181,31 +178,19 @@ class GL_RenderableBase extends AbstractionBase
 		this._elementsDirty = true;
 	}
 
-	private _onSurfaceUpdated(event:RenderableEvent)
+	private _onInvalidateSurface(event:RenderableEvent)
 	{
 		this._surfaceDirty = true;
 	}
 
-	public _pGetElements():ElementsBase
+	public _pGetElements():GL_ElementsBase
 	{
 		throw new AbstractMethodError();
 	}
 
-	public _pGetSurface():ISurface
+	public _pGetSurface():GL_SurfaceBase
 	{
 		throw new AbstractMethodError();
-	}
-
-	/**
-	 * Sets the surface state for the pass that is independent of the rendered object. This needs to be called before
-	 * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
-	 * @param stage The Stage object which is currently used for rendering.
-	 * @param camera The camera from which the scene is viewed.
-	 * @private
-	 */
-	public _iActivate(pass:IPass, camera:Camera)
-	{
-		pass._iActivate(camera);
 	}
 
 	/**
@@ -217,33 +202,20 @@ class GL_RenderableBase extends AbstractionBase
 	{
 		this._setRenderState(pass, camera, viewProjection);
 
-		if (this._elementsDirty)
-			this._updateElements();
-
-		var elements:GL_ElementsBase = pass.shader._elementsPool.getAbstraction((this.renderable.animator)? (<AnimatorBase> this.renderable.animator).getRenderableElements(this, this._elements) : this._elements);
-
-		if (pass.shader.activeElements != elements) {
-			pass.shader.activeElements = elements;
-			elements._setRenderState(this, camera, viewProjection);
-		}
-
-		elements.draw(this, camera, viewProjection, this._count, this._offset)
+		this._elementsGL.draw(this, pass.shader, camera, viewProjection, this._count, this._offset)
 	}
 
 	public _setRenderState(pass:IPass, camera:Camera, viewProjection:Matrix3D)
 	{
-		pass._iRender(this, camera, viewProjection);
-	}
+		if (this._elementsDirty)
+			this._updateElements();
 
-	/**
-	 * Clears the surface state for the pass. This needs to be called before activating another pass.
-	 * @param stage The Stage used for rendering
-	 *
-	 * @private
-	 */
-	public _iDeactivate(pass:IPass)
-	{
-		pass._iDeactivate();
+		pass._setRenderState(this, camera, viewProjection);
+		
+		if (pass.shader.activeElements != this._elementsGL) {
+			pass.shader.activeElements = this._elementsGL;
+			this._elementsGL._setRenderState(this, pass.shader, camera, viewProjection);
+		}
 	}
 
 	/**
@@ -253,16 +225,14 @@ class GL_RenderableBase extends AbstractionBase
 	 */
 	private _updateElements()
 	{
-		this._elements = this._pGetElements();
+		this._elementsGL = this._pGetElements();
 
 		this._elementsDirty = false;
 	}
 
 	private _updateSurface()
 	{
-		var surface:ISurface = this._pGetSurface() || DefaultMaterialManager.getDefaultMaterial(this.renderable);
-
-		var surfaceGL:GL_SurfaceBase = <GL_SurfaceBase> this._renderer.getSurfacePool(this.elements).getAbstraction(surface);
+		var surfaceGL:GL_SurfaceBase = this._pGetSurface();
 
 		if (this._surfaceGL != surfaceGL) {
 
@@ -284,9 +254,9 @@ class GL_RenderableBase extends AbstractionBase
 
 		this.images.length = numImages;
 		this.samplers.length = numImages;
-		this.uvMatrix = this.renderable.style? this.renderable.style.uvMatrix : surface.style? surface.style.uvMatrix : null;
+		this.uvMatrix = this.renderable.style? this.renderable.style.uvMatrix : this._surfaceGL.surface.style? this._surfaceGL.surface.style.uvMatrix : null;
 
-		var numTextures:number = surface.getNumTextures();
+		var numTextures:number = this._surfaceGL.surface.getNumTextures();
 		var texture:TextureBase;
 		var numImages:number;
 		var image:ImageBase;
@@ -294,7 +264,7 @@ class GL_RenderableBase extends AbstractionBase
 		var index:number;
 
 		for (var i:number = 0; i < numTextures; i++) {
-			texture = surface.getTextureAt(i);
+			texture = this._surfaceGL.surface.getTextureAt(i);
 			numImages = texture.getNumImages();
 			for (var j:number = 0; j < numImages; j++) {
 				index = surfaceGL.getImageIndex(texture, j);

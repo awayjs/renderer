@@ -27,12 +27,13 @@ import Graphic						from "awayjs-display/lib/graphics/Graphic";
 import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
 import SingleCubeTexture			from "awayjs-display/lib/textures/SingleCubeTexture";
 
+import Stage						from "awayjs-stagegl/lib/base/Stage";
 
 surfaces.SurfacePool.registerAbstraction(surfaces.GL_BasicMaterialSurface, BasicMaterial);
 surfaces.SurfacePool.registerAbstraction(surfaces.GL_SkyboxSurface, Skybox);
 
-elements.ElementsPool.registerAbstraction(elements.GL_LineElements, LineElements);
-elements.ElementsPool.registerAbstraction(elements.GL_TriangleElements, TriangleElements);
+Stage.registerAbstraction(elements.GL_LineElements, LineElements);
+Stage.registerAbstraction(elements.GL_TriangleElements, TriangleElements);
 
 shaders.ShaderBase.registerAbstraction(textures.GL_Single2DTexture, Single2DTexture);
 shaders.ShaderBase.registerAbstraction(textures.GL_SingleCubeTexture, SingleCubeTexture);

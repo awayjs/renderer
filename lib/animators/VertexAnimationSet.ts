@@ -112,7 +112,7 @@ class VertexAnimationSet extends AnimationSetBase implements IAnimationSet
 		var regs:Array<string> = new Array<string>(".x", ".y", ".z", ".w");
 		var len:number = sharedRegisters.animatableAttributes.length;
 		var constantReg:ShaderRegisterElement = registerCache.getFreeVertexConstant();
-		this._iAnimationRegisterData.weightsIndex = constantReg.index*4;
+		this._iAnimationRegisterData.weightsIndex = constantReg.index;
 		this._iAnimationRegisterData.poseIndices = new Array<number>(this._numPoses);
 		var poseInput:ShaderRegisterElement;
 		var k:number = 0;
@@ -161,7 +161,7 @@ class VertexAnimationSet extends AnimationSetBase implements IAnimationSet
 		var regs:Array<string> = [".x", ".y", ".z", ".w"];
 		var temp1:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
 		var constantReg:ShaderRegisterElement = registerCache.getFreeVertexConstant();
-		this._iAnimationRegisterData.weightsIndex = constantReg.index*4;
+		this._iAnimationRegisterData.weightsIndex = constantReg.index;
 		this._iAnimationRegisterData.poseIndices = new Array<number>(this._numPoses);
 		var poseInput:ShaderRegisterElement;
 		var k:number = 0;

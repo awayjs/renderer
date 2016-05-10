@@ -1,26 +1,13 @@
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
-import Matrix3DUtils				from "awayjs-core/lib/geom/Matrix3DUtils";
 import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
 
-import ISurface						from "awayjs-display/lib/base/ISurface";
-import IRenderable					from "awayjs-display/lib/base/IRenderable";
 import Graphic						from "awayjs-display/lib/graphics/Graphic";
-import TriangleElements				from "awayjs-display/lib/graphics/TriangleElements";
-import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
-import Camera						from "awayjs-display/lib/display/Camera";
-
-import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
 
 import RendererBase					from "../RendererBase";
 import AnimatorBase					from "../animators/AnimatorBase";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import GL_ElementsBase				from "../elements/GL_ElementsBase";
 import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import PassBase						from "../surfaces/passes/PassBase";
+import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
 
 /**
  * @class away.pool.GL_GraphicRenderable
@@ -60,18 +47,19 @@ class GL_GraphicRenderable extends GL_RenderableBase
 	 * @returns {ElementsBase}
 	 * @protected
 	 */
-	public _pGetElements():ElementsBase
+	public _pGetElements():GL_ElementsBase
 	{
 		this._offset = this.graphic.offset;
 		this._count = this.graphic.count;
 
-		return this.graphic.elements;
+		
+		return <GL_ElementsBase> this._stage.getAbstraction((this.renderable.animator)? (<AnimatorBase> this.renderable.animator).getRenderableElements(this, this.graphic.elements) : this.graphic.elements);
 	}
 
 
-	public _pGetSurface():ISurface
+	public _pGetSurface():GL_SurfaceBase
 	{
-		return this.graphic.material;
+		return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this.graphic.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
 	}
 }
 

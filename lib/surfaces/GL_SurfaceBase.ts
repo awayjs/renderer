@@ -45,6 +45,7 @@ class GL_SurfaceBase extends AbstractionBase
 	public _stage:Stage;
 
 	private _renderOrderId:number;
+	private _usesAnimation:boolean = true;
 	private _invalidAnimation:boolean = true;
 	private _invalidRender:boolean = true;
 	private _invalidImages:boolean = true;
@@ -207,7 +208,7 @@ class GL_SurfaceBase extends AbstractionBase
 
 		this._invalidAnimation = false;
 
-		var enabledGPUAnimation:boolean = this._getEnabledGPUAnimation();
+		var usesAnimation:boolean = this._getEnabledGPUAnimation();
 
 		var renderOrderId = 0;
 		var mult:number = 1;
@@ -215,10 +216,19 @@ class GL_SurfaceBase extends AbstractionBase
 		var len:number = this._passes.length;
 		for (var i:number = 0; i < len; i++) {
 			shader = this._passes[i].shader;
-			shader.usesAnimation = enabledGPUAnimation;
+			shader.usesAnimation = usesAnimation;
 
 			renderOrderId += shader.programData.id*mult;
 			mult *= 1000;
+		}
+		
+		if (this._usesAnimation != usesAnimation) {
+			this._usesAnimation = usesAnimation;
+
+			var renderables:Array<IRenderable> = this._surface.iOwners;
+			var numOwners:number = renderables.length;
+			for (var j:number = 0; j < numOwners; j++)
+				renderables[j].invalidateElements();
 		}
 
 		this._renderOrderId = renderOrderId;

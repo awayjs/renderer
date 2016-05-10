@@ -15,10 +15,8 @@ import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
 import ElementsEvent				from "awayjs-display/lib/events/ElementsEvent";
 import ElementsUtils				from "awayjs-display/lib/utils/ElementsUtils";
 
-import ElementsPool					from "../elements/ElementsPool";
+import IElementsClassGL				from "../elements/IElementsClassGL";
 import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
 import GL_RenderableBase			from "../renderables/GL_RenderableBase";
 
 /**
@@ -29,7 +27,6 @@ class GL_ElementsBase extends AbstractionBase
 {
 	public usages:number = 0;
 	private _elements:ElementsBase;
-	public _shader:ShaderBase;
 	public _stage:Stage;
 	private _onInvalidateIndicesDelegate:(event:ElementsEvent) => void;
 	private _onClearIndicesDelegate:(event:ElementsEvent) => void;
@@ -46,6 +43,16 @@ class GL_ElementsBase extends AbstractionBase
 	private _numIndices:number = 0;
 
 	private _numVertices:number;
+	
+	public get elementsType():string
+	{
+		throw new AbstractMethodError();
+	}
+	
+	public get elementsClass():IElementsClassGL
+	{
+		throw new AbstractMethodError();
+	}
 
 	public get elements()
 	{
@@ -68,13 +75,12 @@ class GL_ElementsBase extends AbstractionBase
 		return this._numVertices;
 	}
 	
-	constructor(elements:ElementsBase, shader:ShaderBase, pool:IAbstractionPool)
+	constructor(elements:ElementsBase, stage:Stage)
 	{
-		super(elements, pool);
+		super(elements, stage);
 		
 		this._elements = elements;
-		this._shader = shader;
-		this._stage = shader._stage;
+		this._stage = stage;
 
 		this._onInvalidateIndicesDelegate = (event:ElementsEvent) => this._onInvalidateIndices(event);
 		this._onClearIndicesDelegate = (event:ElementsEvent) => this._onClearIndices(event);
@@ -157,7 +163,7 @@ class GL_ElementsBase extends AbstractionBase
 		}
 	}
 
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		if (!this._verticesUpdated)
 			this._updateIndices();
@@ -169,7 +175,7 @@ class GL_ElementsBase extends AbstractionBase
 		// 	this._overflow._iRender(renderable, camera, viewProjection);
 	}
 
-	public draw(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
 	{
 		throw new AbstractMethodError();
 	}

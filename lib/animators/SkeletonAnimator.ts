@@ -2,11 +2,9 @@ import Quaternion						from "awayjs-core/lib/geom/Quaternion";
 import Vector3D							from "awayjs-core/lib/geom/Vector3D";
 
 import TriangleElements					from "awayjs-display/lib/graphics/TriangleElements";
-import Graphic							from "awayjs-display/lib/graphics/Graphic";
 import Camera							from "awayjs-display/lib/display/Camera";
 import ElementsEvent					from "awayjs-display/lib/events/ElementsEvent";
 
-import ContextGLProgramType				from "awayjs-stagegl/lib/base/ContextGLProgramType";
 import Stage							from "awayjs-stagegl/lib/base/Stage";
 
 import AnimatorBase						from "../animators/AnimatorBase";
@@ -19,7 +17,6 @@ import ISkeletonAnimationState			from "../animators/states/ISkeletonAnimationSta
 import IAnimationTransition				from "../animators/transitions/IAnimationTransition";
 import AnimationStateEvent				from "../events/AnimationStateEvent";
 import ShaderBase						from "../shaders/ShaderBase";
-import ShaderRegisterCache				from "../shaders/ShaderRegisterCache";
 import GL_RenderableBase				from "../renderables/GL_RenderableBase";
 import GL_GraphicRenderable				from "../renderables/GL_GraphicRenderable";
 
@@ -246,8 +243,7 @@ class SkeletonAnimator extends AnimatorBase
 
 		//trigger geometry invalidation if using CPU animation
 		if (this._pAnimationSet.usesCPU)
-			for (var key in this._morphedElementsDirty)
-				this._morphedElementsDirty[key] = true;
+			this.invalidateElements();
 	}
 
 	private updateCondensedMatrices(condensedIndexLookUp:Array<number>)
@@ -359,7 +355,6 @@ class SkeletonAnimator extends AnimatorBase
 		}
 	}
 
-
 	public getRenderableElements(renderable:GL_GraphicRenderable, sourceElements:TriangleElements):TriangleElements
 	{
 		this._morphedElementsDirty[sourceElements.id] = true;
@@ -372,6 +367,8 @@ class SkeletonAnimator extends AnimatorBase
 
 		if (!(targetElements = this._morphedElements[sourceElements.id])) {
 			//not yet stored
+			sourceElements.normals;
+			sourceElements.tangents;
 			targetElements = this._morphedElements[sourceElements.id] = sourceElements.clone();
 			//turn off auto calculations on the morphed geometry
 			targetElements.autoDeriveNormals = false;

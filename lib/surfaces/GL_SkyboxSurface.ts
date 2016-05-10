@@ -76,9 +76,9 @@ class GL_SkyboxSurface extends GL_SurfacePassBase
 	}
 
 
-	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		super._iRender(renderable, camera, viewProjection);
+		super._setRenderState(renderable, camera, viewProjection);
 
 		this._texture._setRenderState(renderable);
 	}

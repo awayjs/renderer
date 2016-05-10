@@ -154,9 +154,9 @@ class LightingShader extends ShaderBase
 	 * @param stage
 	 * @param camera
 	 */
-	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		super._iRender(renderable, camera, viewProjection);
+		super._setRenderState(renderable, camera, viewProjection);
 
 		if (this._lightingPass.lightPicker)
 			this._lightingPass.lightPicker.collectLights(renderable.sourceEntity);

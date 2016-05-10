@@ -1,9 +1,5 @@
-import IRenderable					from "awayjs-display/lib/base/IRenderable";
-
 import Stage						from "awayjs-stagegl/lib/base/Stage";
 
-import RendererBase					from "../RendererBase";
-import ElementsPool					from "../elements/ElementsPool";
 import GL_ElementsBase				from "../elements/GL_ElementsBase";
 import ShaderBase					from "../shaders/ShaderBase";
 import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
@@ -21,7 +17,7 @@ interface IElementsClassGL
 	/**
 	 *
 	 */
-	new(elements:ElementsBase, shader:ShaderBase, pool:ElementsPool):GL_ElementsBase;
+	new(elements:ElementsBase, stage:Stage):GL_ElementsBase;
 
 	_iIncludeDependencies(shader:ShaderBase);
 

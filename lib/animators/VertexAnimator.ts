@@ -3,10 +3,8 @@ import ElementsBase						from "awayjs-display/lib/graphics/ElementsBase";
 import TriangleElements					from "awayjs-display/lib/graphics/TriangleElements";
 import Graphic							from "awayjs-display/lib/graphics/Graphic";
 import Camera							from "awayjs-display/lib/display/Camera";
-import Sprite							from "awayjs-display/lib/display/Sprite";
 
 import Stage							from "awayjs-stagegl/lib/base/Stage";
-import ContextGLProgramType				from "awayjs-stagegl/lib/base/ContextGLProgramType";
 
 import AnimatorBase						from "../animators/AnimatorBase";
 import VertexAnimationSet				from "../animators/VertexAnimationSet";
@@ -100,22 +98,13 @@ class VertexAnimator extends AnimatorBase
 			geometryFlag = true;
 		}
 
-		if (this._poses[1] != this._activeVertexState.nextGraphics) {
+		if (this._poses[1] != this._activeVertexState.nextGraphics)
 			this._poses[1] = this._activeVertexState.nextGraphics;
-			geometryFlag = true;
-		}
 
 		this._weights[0] = 1 - (this._weights[1] = this._activeVertexState.blendWeight);
 
-		if (geometryFlag) {
-			//invalidate sprites
-			var sprite:Sprite;
-			var len:number = this._pOwners.length;
-			for (var i:number = 0; i < len; i++) {
-				sprite = this._pOwners[i];
-				sprite.graphics.invalidateElements();
-			}
-		}
+		if (geometryFlag)
+			this.invalidateElements();
 	}
 
 	/**
@@ -130,7 +119,7 @@ class VertexAnimator extends AnimatorBase
 
 		// if no poses defined, set temp data
 		if (!this._poses.length) {
-			this.setNullPose(shader, elements);
+			this.setNullPose(shader, elements, stage);
 			return;
 		}
 
@@ -151,8 +140,8 @@ class VertexAnimator extends AnimatorBase
 		for (; i < len; ++i) {
 			elements = this._poses[i].getGraphicAt(graphic._iIndex).elements || graphic.elements;
 
-			elementsGL = shader._elementsPool.getAbstraction(elements);
-			elementsGL._indexMappings = shader._elementsPool.getAbstraction(graphic.elements).getIndexMappings();
+			elementsGL = <GL_ElementsBase> stage.getAbstraction(elements);
+			elementsGL._indexMappings = (<GL_ElementsBase> stage.getAbstraction(graphic.elements)).getIndexMappings();
 
 			if (elements.isAsset(TriangleElements)) {
 				elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], (<TriangleElements> elements).positions);
@@ -163,13 +152,13 @@ class VertexAnimator extends AnimatorBase
 		}
 	}
 
-	private setNullPose(shader:ShaderBase, elements:ElementsBase)
+	private setNullPose(shader:ShaderBase, elements:ElementsBase, stage:Stage)
 	{
 		var animationRegisterData:AnimationRegisterData = shader.animationRegisterData;
 		
 		shader.setVertexConstFromArray(animationRegisterData.weightsIndex, this._weights);
 
-		var elementsGL:GL_ElementsBase = shader._elementsPool.getAbstraction(elements);
+		var elementsGL:GL_ElementsBase = (<GL_ElementsBase> stage.getAbstraction(elements));
 		var k:number = 0;
 		
 		if (this._vertexAnimationSet.blendMode == VertexAnimationMode.ABSOLUTE) {

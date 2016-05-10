@@ -60,9 +60,9 @@ class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
 	 *
 	 * @internal
 	 */
-	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		this._shader._iRender(renderable, camera, viewProjection);
+		this._shader._setRenderState(renderable, camera, viewProjection);
 	}
 
 	/**

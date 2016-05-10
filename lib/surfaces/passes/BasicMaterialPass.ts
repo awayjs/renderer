@@ -110,9 +110,9 @@ class BasicMaterialPass extends PassBase
 		return code;
 	}
 
-	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		super._iRender(renderable, camera, viewProjection);
+		super._setRenderState(renderable, camera, viewProjection);
 
 		if (this._textureVO != null)
 			this._textureVO._setRenderState(renderable);

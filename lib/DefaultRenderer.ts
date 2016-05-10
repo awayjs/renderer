@@ -273,9 +273,9 @@ class DefaultRenderer extends RendererBase
 
 		var pass:IPass = this._skyBoxSurfacePool.getAbstraction(renderable.surfaceGL.surface).passes[0];
 
-		this.activatePass(renderable, pass, camera);
+		this.activatePass(pass, camera);
 		renderable._iRender(pass, camera, this._skyboxProjection);
-		this.deactivatePass(renderable, pass);
+		this.deactivatePass(pass);
 	}
 
 	private updateSkyboxProjection(camera:Camera)

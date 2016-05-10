@@ -6,9 +6,7 @@ class ShadingMethodEvent extends EventBase
 
 	constructor(type:string)
 	{
-
 		super(type);
-
 	}
 }
 

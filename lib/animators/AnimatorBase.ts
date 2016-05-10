@@ -17,7 +17,6 @@ import IAnimationState					from "../animators/states/IAnimationState";
 import GL_RenderableBase				from "../renderables/GL_RenderableBase";
 import AnimatorEvent					from "../events/AnimatorEvent";
 import ShaderBase						from "../shaders/ShaderBase";
-import ShaderRegisterCache				from "../shaders/ShaderRegisterCache";
 
 /**
  * Dispatched when playback of an animation inside the animator object starts.
@@ -370,6 +369,17 @@ class AnimatorBase extends AssetBase implements IAnimator
 	{
 	}
 
+
+	public invalidateElements()
+	{
+		var sprite:Sprite;
+		var len:number = this._pOwners.length;
+		for (var i:number = 0; i < len; i++) {
+			sprite = this._pOwners[i];
+			sprite.graphics.invalidateElements();
+		}
+	}
+	
 	/**
 	 * @inheritDoc
 	 */

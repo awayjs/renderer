@@ -2,15 +2,15 @@ import AttributesBuffer				from "awayjs-core/lib/attributes/AttributesBuffer";
 import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
 import Rectangle					from "awayjs-core/lib/geom/Rectangle";
 
-import ISurface						from "awayjs-display/lib/base/ISurface";
-import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
 import TriangleElements				from "awayjs-display/lib/graphics/TriangleElements";
 import Billboard					from "awayjs-display/lib/display/Billboard";
 import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
 import TextureBase					from "awayjs-display/lib/textures/TextureBase";
 
 import RendererBase					from "../RendererBase";
+import GL_ElementsBase				from "../elements/GL_ElementsBase";
 import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
 
 /**
  * @class away.pool.RenderableListItem
@@ -51,7 +51,7 @@ class GL_Billboard extends GL_RenderableBase
 	 *
 	 * @returns {away.base.TriangleElements}
 	 */
-	public _pGetElements():ElementsBase
+	public _pGetElements():GL_ElementsBase
 	{
 		var texture:TextureBase = this._billboard.material.getTextureAt(0);
 
@@ -81,12 +81,12 @@ class GL_Billboard extends GL_RenderableBase
 			elements.setPositions(Array<number>(-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
 		}
 
-		return elements;
+		return <GL_ElementsBase> this._stage.getAbstraction(elements);
 	}
 
-	public _pGetSurface():ISurface
+	public _pGetSurface():GL_SurfaceBase
 	{
-		return this._billboard.material;
+		return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._billboard.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
 	}
 
 }

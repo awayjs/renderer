@@ -143,17 +143,8 @@ class ParticleColorState extends ParticleStateBase
 					animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 					dataOffset += 4;
 				} else {
-					index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX);
-					shader.vertexConstantData[index++] = this._startMultiplierData.x;
-					shader.vertexConstantData[index++] = this._startMultiplierData.y;
-					shader.vertexConstantData[index++] = this._startMultiplierData.z;
-					shader.vertexConstantData[index] = this._startMultiplierData.w;
-
-					index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX);
-					shader.vertexConstantData[index++] = this._deltaMultiplierData.x;
-					shader.vertexConstantData[index++] = this._deltaMultiplierData.y;
-					shader.vertexConstantData[index++] = this._deltaMultiplierData.z;
-					shader.vertexConstantData[index] = this._deltaMultiplierData.w;
+					shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), this._startMultiplierData.x, this._startMultiplierData.y, this._startMultiplierData.z, this._startMultiplierData.w);
+					shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), this._deltaMultiplierData.x, this._deltaMultiplierData.y, this._deltaMultiplierData.z, this._deltaMultiplierData.w);
 				}
 			}
 			if (this._usesOffset) {
@@ -161,7 +152,6 @@ class ParticleColorState extends ParticleStateBase
 					animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 					dataOffset += 4;
 					animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
-					dataOffset += 4;
 				} else {
 					shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);
 					shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), this._deltaOffsetData.x, this._deltaOffsetData.y, this._deltaOffsetData.z, this._deltaOffsetData.w);

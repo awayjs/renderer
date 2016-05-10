@@ -1,7 +1,19 @@
+import Matrix3DUtils				from "awayjs-core/lib/geom/Matrix3DUtils";
+import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+
+import Camera						from "awayjs-display/lib/display/Camera";
+
+import ContextGLDrawMode			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
+import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
+
 import ShaderBase					from "../shaders/ShaderBase";
 import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
 import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
 import GL_TriangleElements			from "../elements/GL_TriangleElements";
+import IElementsClassGL				from "../elements/IElementsClassGL";
+import GL_RenderableBase			from "../renderables/GL_RenderableBase";
 import ShaderRegisterData			from "../shaders/ShaderRegisterData";
 
 /**
@@ -10,6 +22,18 @@ import ShaderRegisterData			from "../shaders/ShaderRegisterData";
  */
 class GL_SkyboxElements extends GL_TriangleElements
 {
+	public static elementsType:string = "[elements Skybox]";
+
+	public get elementsType():string
+	{
+		return GL_SkyboxElements.elementsType;
+	}
+	
+	public get elementsClass():IElementsClassGL
+	{
+		return GL_SkyboxElements;
+	}
+	
 	public static _iIncludeDependencies(shader:ShaderBase)
 	{
 	}
@@ -19,14 +43,72 @@ class GL_SkyboxElements extends GL_TriangleElements
 	 */
 	public static _iGetVertexCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
-		return "mul vt0, va0, vc5\n" +
-			"add vt0, vt0, vc4\n" +
-			"m44 op, vt0, vc0\n";
+		var code:string = "";
+
+		//get the projection coordinates
+		var position:ShaderRegisterElement = (shader.globalPosDependencies > 0)? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
+
+		//reserving vertex constants for projection matrix
+		var viewMatrixReg:ShaderRegisterElement = registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		registerCache.getFreeVertexConstant();
+		shader.viewMatrixIndex = viewMatrixReg.index*4;
+
+		var scenePosition:ShaderRegisterElement = registerCache.getFreeVertexConstant();
+		shader.scenePositionIndex = scenePosition.index*4;
+
+		var skyboxScale:ShaderRegisterElement = registerCache.getFreeVertexConstant();
+		
+		var temp:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+
+		code += "mul " + temp + ", " + position + ", " + skyboxScale + "\n" +
+			"add " + temp + ", " + temp + ", " + scenePosition + "\n";
+
+		if (shader.projectionDependencies > 0) {
+			sharedRegisters.projectionFragment = registerCache.getFreeVarying();
+			code += "m44 " + temp + ", " + temp + ", " + viewMatrixReg + "\n" +
+				"mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" +
+				"mov op, " + temp + "\n";
+		} else {
+			code += "m44 op, " + temp + ", " + viewMatrixReg + "\n";
+		}
+
+		return code;
 	}
 
 	public static _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		return "";
+	}
+
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
+	{
+		var index:number = shader.scenePositionIndex;
+		var pos:Vector3D = camera.scenePosition;
+		shader.vertexConstantData[index++] = 2*pos.x;
+		shader.vertexConstantData[index++] = 2*pos.y;
+		shader.vertexConstantData[index++] = 2*pos.z;
+		shader.vertexConstantData[index++] = 1;
+		shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = camera.projection.far/Math.sqrt(3);
+		shader.vertexConstantData[index] = 1;
+
+		//set constants
+		if (shader.sceneMatrixIndex >= 0) {
+			renderable.renderSceneTransform.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
+			viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+		} else {
+			viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+		}
+
+		var context:IContextGL = this._stage.context;
+		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, shader.vertexConstantData);
+		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, shader.fragmentConstantData);
+
+		if (this._indices)
+			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, this.numIndices);
+		else
+			this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
 	}
 }
 

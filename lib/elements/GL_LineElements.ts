@@ -1,15 +1,16 @@
-import IAbstractionPool				from "awayjs-core/lib/library/IAbstractionPool";
 import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
 import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
 
 import ContextGLDrawMode			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
 import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
 import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import Stage						from "awayjs-stagegl/lib/base/Stage";
 
 import LineElements					from "awayjs-display/lib/graphics/LineElements";
 import Camera						from "awayjs-display/lib/display/Camera";
 
 import GL_ElementsBase				from "../elements/GL_ElementsBase";
+import IElementsClassGL				from "../elements/IElementsClassGL";
 import ShaderBase					from "../shaders/ShaderBase";
 import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
 import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
@@ -22,7 +23,18 @@ import GL_RenderableBase			from "../renderables/GL_RenderableBase";
  */
 class GL_LineElements extends GL_ElementsBase
 {
-
+	public static elementsType:string = "[elements Line]";
+	
+	public get elementsType():string
+	{
+		return GL_LineElements.elementsType;
+	}
+	
+	public get elementsClass():IElementsClassGL
+	{
+		return GL_LineElements;
+	}
+	
 	public static _iIncludeDependencies(shader:ShaderBase)
 	{
 		shader.colorDependencies++;
@@ -133,9 +145,9 @@ class GL_LineElements extends GL_ElementsBase
 
 	private _lineElements:LineElements;
 
-	constructor(lineElements:LineElements, shader:ShaderBase, pool:IAbstractionPool)
+	constructor(lineElements:LineElements, stage:Stage)
 	{
-		super(lineElements, shader, pool);
+		super(lineElements, stage);
 
 		this._lineElements = lineElements;
 	}
@@ -147,43 +159,43 @@ class GL_LineElements extends GL_ElementsBase
 		this._lineElements = null;
 	}
 
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D)
 	{
-		super._setRenderState(renderable, camera, viewProjection);
+		super._setRenderState(renderable, shader, camera, viewProjection);
 		
-		if (this._shader.colorBufferIndex >= 0)
-			this.activateVertexBufferVO(this._shader.colorBufferIndex, this._lineElements.colors);
+		if (shader.colorBufferIndex >= 0)
+			this.activateVertexBufferVO(shader.colorBufferIndex, this._lineElements.colors);
 
 		this.activateVertexBufferVO(0, this._lineElements.positions, 3);
 		this.activateVertexBufferVO(2, this._lineElements.positions, 3, 12);
 		this.activateVertexBufferVO(3, this._lineElements.thickness);
 
-		this._shader.vertexConstantData[4+16] = 1;
-		this._shader.vertexConstantData[5+16] = 1;
-		this._shader.vertexConstantData[6+16] = 1;
-		this._shader.vertexConstantData[7+16] = 1;
+		shader.vertexConstantData[4+16] = 1;
+		shader.vertexConstantData[5+16] = 1;
+		shader.vertexConstantData[6+16] = 1;
+		shader.vertexConstantData[7+16] = 1;
 
-		this._shader.vertexConstantData[10+16] = -1;
+		shader.vertexConstantData[10+16] = -1;
 
-		this._shader.vertexConstantData[12+16] = this._thickness/((this._stage.scissorRect)? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
-		this._shader.vertexConstantData[13+16] = 1/255;
-		this._shader.vertexConstantData[14+16] = camera.projection.near;
+		shader.vertexConstantData[12+16] = this._thickness/((this._stage.scissorRect)? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
+		shader.vertexConstantData[13+16] = 1/255;
+		shader.vertexConstantData[14+16] = camera.projection.near;
 
 		var context:IContextGL = this._stage.context;
 	}
 
-	public draw(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
 	{
 		var context:IContextGL = this._stage.context;
 		
 		// projection matrix
-		camera.projection.matrix.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
+		camera.projection.matrix.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
 		
 		this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
 		this._calcMatrix.append(camera.inverseSceneTransform);
-		this._calcMatrix.copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
+		this._calcMatrix.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
 
-		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, this._shader.vertexConstantData);
+		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, shader.vertexConstantData);
 		
 		if (this._indices)
 			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, this.numIndices);
@@ -203,7 +215,7 @@ class GL_LineElements extends GL_ElementsBase
 	 */
 	public _pGetOverflowElements():GL_ElementsBase
 	{
-		return new GL_LineElements(this._lineElements, this._shader, this._pool);
+		return new GL_LineElements(this._lineElements, this._stage);
 	}
 }
 

@@ -37,10 +37,23 @@ interface IPass extends IEventDispatcher
 	_iGetNormalFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string;
 
 
+	/**
+	 * Sets the surface state for the pass that is independent of the rendered object. This needs to be called before
+	 * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
+	 * @param stage The Stage object which is currently used for rendering.
+	 * @param camera The camera from which the scene is viewed.
+	 * @private
+	 */
 	_iActivate(camera:Camera);
 
-	_iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	_setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 
+	/**
+	 * Clears the surface state for the pass. This needs to be called before activating another pass.
+	 * @param stage The Stage used for rendering
+	 *
+	 * @private
+	 */
 	_iDeactivate();
 
 	invalidate();

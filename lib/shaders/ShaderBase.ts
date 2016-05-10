@@ -21,7 +21,6 @@ import AnimationSetBase				from "../animators/AnimationSetBase";
 import AnimatorBase					from "../animators/AnimatorBase";
 import AnimationRegisterData		from "../animators/data/AnimationRegisterData";
 import IPass						from "../surfaces/passes/IPass";
-import ElementsPool					from "../elements/ElementsPool";
 import IElementsClassGL				from "../elements/IElementsClassGL";
 import GL_ElementsBase				from "../elements/GL_ElementsBase";
 import GL_RenderableBase			from "../renderables/GL_RenderableBase";
@@ -44,8 +43,6 @@ class ShaderBase implements IAbstractionPool
 	public static _abstractionClassPool:Object = new Object();
 
 	private _abstractionPool:Object = new Object();
-
-	public _elementsPool:ElementsPool;
 
 	private _elementsClass:IElementsClassGL;
 	private _pass:IPass;
@@ -288,6 +285,16 @@ class ShaderBase implements IAbstractionPool
 	public tangentIndex:number;
 
 	/**
+	 * 
+	 */
+	public skyboxScaleIndex:number;
+	
+	/**
+	 * 
+	 */
+	public scenePositionIndex:number;
+	
+	/**
 	 * The index of the vertex constant containing the view matrix.
 	 */
 	public viewMatrixIndex:number;
@@ -347,8 +354,6 @@ class ShaderBase implements IAbstractionPool
 		this._stage = stage;
 
 		this.profile = this._stage.profile;
-
-		this._elementsPool = new ElementsPool(this, elementsClass);
 	}
 
 	public getAbstraction(texture:TextureBase):GL_TextureBase
@@ -585,7 +590,7 @@ class ShaderBase implements IAbstractionPool
 	 * @param stage
 	 * @param camera
 	 */
-	public _iRender(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
 	{
 		if (renderable.renderable.animator)
 			(<AnimatorBase> renderable.renderable.animator).setRenderState(this, renderable, this._stage, camera);
