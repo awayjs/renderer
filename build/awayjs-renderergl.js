@@ -45,10 +45,11 @@ var TriangleElements_1 = require("awayjs-display/lib/graphics/TriangleElements")
 var Graphic_1 = require("awayjs-display/lib/graphics/Graphic");
 var Single2DTexture_1 = require("awayjs-display/lib/textures/Single2DTexture");
 var SingleCubeTexture_1 = require("awayjs-display/lib/textures/SingleCubeTexture");
+var Stage_1 = require("awayjs-stagegl/lib/base/Stage");
 surfaces.SurfacePool.registerAbstraction(surfaces.GL_BasicMaterialSurface, BasicMaterial_1.default);
 surfaces.SurfacePool.registerAbstraction(surfaces.GL_SkyboxSurface, Skybox_1.default);
-elements.ElementsPool.registerAbstraction(elements.GL_LineElements, LineElements_1.default);
-elements.ElementsPool.registerAbstraction(elements.GL_TriangleElements, TriangleElements_1.default);
+Stage_1.default.registerAbstraction(elements.GL_LineElements, LineElements_1.default);
+Stage_1.default.registerAbstraction(elements.GL_TriangleElements, TriangleElements_1.default);
 shaders.ShaderBase.registerAbstraction(textures.GL_Single2DTexture, Single2DTexture_1.default);
 shaders.ShaderBase.registerAbstraction(textures.GL_SingleCubeTexture, SingleCubeTexture_1.default);
 RendererBase_1.default.registerAbstraction(renderables.GL_BillboardRenderable, Billboard_1.default);
@@ -56,7 +57,7 @@ RendererBase_1.default.registerAbstraction(renderables.GL_LineSegmentRenderable,
 RendererBase_1.default.registerAbstraction(renderables.GL_GraphicRenderable, Graphic_1.default);
 RendererBase_1.default.registerAbstraction(renderables.GL_SkyboxRenderable, Skybox_1.default);
 
-},{"./lib/DefaultRenderer":"awayjs-renderergl/lib/DefaultRenderer","./lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","./lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","./lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","./lib/RendererBase":"awayjs-renderergl/lib/RendererBase","./lib/animators":"awayjs-renderergl/lib/animators","./lib/elements":"awayjs-renderergl/lib/elements","./lib/errors":"awayjs-renderergl/lib/errors","./lib/events":"awayjs-renderergl/lib/events","./lib/filters":"awayjs-renderergl/lib/filters","./lib/managers":"awayjs-renderergl/lib/managers","./lib/renderables":"awayjs-renderergl/lib/renderables","./lib/shaders":"awayjs-renderergl/lib/shaders","./lib/sort":"awayjs-renderergl/lib/sort","./lib/surfaces":"awayjs-renderergl/lib/surfaces","./lib/textures":"awayjs-renderergl/lib/textures","./lib/tools":"awayjs-renderergl/lib/tools","./lib/utils":"awayjs-renderergl/lib/utils","awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/LineSegment":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/graphics/Graphic":undefined,"awayjs-display/lib/graphics/LineElements":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined}],"awayjs-renderergl/lib/DefaultRenderer":[function(require,module,exports){
+},{"./lib/DefaultRenderer":"awayjs-renderergl/lib/DefaultRenderer","./lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","./lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","./lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","./lib/RendererBase":"awayjs-renderergl/lib/RendererBase","./lib/animators":"awayjs-renderergl/lib/animators","./lib/elements":"awayjs-renderergl/lib/elements","./lib/errors":"awayjs-renderergl/lib/errors","./lib/events":"awayjs-renderergl/lib/events","./lib/filters":"awayjs-renderergl/lib/filters","./lib/managers":"awayjs-renderergl/lib/managers","./lib/renderables":"awayjs-renderergl/lib/renderables","./lib/shaders":"awayjs-renderergl/lib/shaders","./lib/sort":"awayjs-renderergl/lib/sort","./lib/surfaces":"awayjs-renderergl/lib/surfaces","./lib/textures":"awayjs-renderergl/lib/textures","./lib/tools":"awayjs-renderergl/lib/tools","./lib/utils":"awayjs-renderergl/lib/utils","awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/LineSegment":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/graphics/Graphic":undefined,"awayjs-display/lib/graphics/LineElements":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-stagegl/lib/base/Stage":undefined}],"awayjs-renderergl/lib/DefaultRenderer":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -269,9 +270,9 @@ var DefaultRenderer = (function (_super) {
         renderable.renderSceneTransform = this._skybox.getRenderSceneTransform(this._cameraTransform);
         this.updateSkyboxProjection(camera);
         var pass = this._skyBoxSurfacePool.getAbstraction(renderable.surfaceGL.surface).passes[0];
-        this.activatePass(renderable, pass, camera);
+        this.activatePass(pass, camera);
         renderable._iRender(pass, camera, this._skyboxProjection);
-        this.deactivatePass(renderable, pass);
+        this.deactivatePass(pass);
     };
     DefaultRenderer.prototype.updateSkyboxProjection = function (camera) {
         var near = new Vector3D_1.default();
@@ -627,7 +628,6 @@ var ContextGLCompareMode_1 = require("awayjs-stagegl/lib/base/ContextGLCompareMo
 var StageEvent_1 = require("awayjs-stagegl/lib/events/StageEvent");
 var StageManager_1 = require("awayjs-stagegl/lib/managers/StageManager");
 var SurfacePool_1 = require("./surfaces/SurfacePool");
-var ElementsPool_1 = require("./elements/ElementsPool");
 var RenderableMergeSort_1 = require("./sort/RenderableMergeSort");
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -682,14 +682,13 @@ var RendererBase = (function (_super) {
         this._pStage.addEventListener(StageEvent_1.default.CONTEXT_CREATED, this._onContextUpdateDelegate);
         this._pStage.addEventListener(StageEvent_1.default.CONTEXT_RECREATED, this._onContextUpdateDelegate);
         this._pStage.addEventListener(StageEvent_1.default.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+        this._surfaceClassGL = surfaceClassGL;
         /*
          if (_backgroundImageRenderer)
          _backgroundImageRenderer.stage = value;
          */
         if (this._pStage.context)
             this._pContext = this._pStage.context;
-        for (var i in ElementsPool_1.default._abstractionClassPool)
-            this._objectPools[i] = new SurfacePool_1.default(ElementsPool_1.default._abstractionClassPool[i], this._pStage, surfaceClassGL);
     }
     Object.defineProperty(RendererBase.prototype, "cullPlanes", {
         /**
@@ -845,7 +844,7 @@ var RendererBase = (function (_super) {
      * @returns SurfacePool
      */
     RendererBase.prototype.getSurfacePool = function (elements) {
-        return this._objectPools[elements.assetType];
+        return this._objectPools[elements.elementsType] || (this._objectPools[elements.elementsType] = new SurfacePool_1.default(elements.elementsClass, this._pStage, this._surfaceClassGL));
     };
     /**
      *
@@ -854,7 +853,7 @@ var RendererBase = (function (_super) {
     RendererBase.registerAbstraction = function (renderableClass, assetClass) {
         RendererBase._abstractionClassPool[assetClass.assetType] = renderableClass;
     };
-    RendererBase.prototype.activatePass = function (renderableGL, pass, camera) {
+    RendererBase.prototype.activatePass = function (pass, camera) {
         //clear unused vertex streams
         var i;
         for (i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
@@ -872,12 +871,12 @@ var RendererBase = (function (_super) {
         }
         //set program data
         this._pContext.setProgram(programData.program);
-        //activate shader object through renderableGL
-        renderableGL._iActivate(pass, camera);
+        //activate shader object through pass
+        pass._iActivate(camera);
     };
-    RendererBase.prototype.deactivatePass = function (renderableGL, pass) {
-        //deactivate shader object
-        renderableGL._iDeactivate(pass);
+    RendererBase.prototype.deactivatePass = function (pass) {
+        //deactivate shader object through pass
+        pass._iDeactivate();
         this._numUsedStreams = pass.shader.numUsedStreams;
         this._numUsedTextures = pass.shader.numUsedTextures;
     };
@@ -1166,7 +1165,7 @@ var RendererBase = (function (_super) {
                 for (i = 0; i < len; i++) {
                     renderableGL2 = renderableGL;
                     pass = passes[i];
-                    this.activatePass(renderableGL, pass, camera);
+                    this.activatePass(pass, camera);
                     do {
                         if (renderableGL2.maskId !== -1) {
                             if (i == 0)
@@ -1177,7 +1176,7 @@ var RendererBase = (function (_super) {
                         }
                         renderableGL2 = renderableGL2.next;
                     } while (renderableGL2 && renderableGL2.surfaceGL == surfaceGL && !(this._activeMasksDirty = this._checkMasksConfig(renderableGL2.masksConfig)));
-                    this.deactivatePass(renderableGL, pass);
+                    this.deactivatePass(pass);
                 }
             }
             renderableGL = renderableGL2;
@@ -1327,7 +1326,7 @@ var RendererBase = (function (_super) {
             renderableGL.next = this._pOpaqueRenderableHead;
             this._pOpaqueRenderableHead = renderableGL;
         }
-        this._pNumElements += renderableGL.elements.numElements;
+        this._pNumElements += renderableGL.elementsGL.elements.numElements;
     };
     /**
      *
@@ -1409,10 +1408,10 @@ var RendererBase = (function (_super) {
         var passes = surfaceGL.passes;
         var len = passes.length;
         var pass = passes[len - 1];
-        this.activatePass(renderableGL, pass, camera);
+        this.activatePass(pass, camera);
         // only render last pass for now
         renderableGL._iRender(pass, camera, this._pRttViewProjectionMatrix);
-        this.deactivatePass(renderableGL, pass);
+        this.deactivatePass(pass);
     };
     RendererBase.prototype._checkMasksConfig = function (masksConfig) {
         if (this._activeMasksConfig.length != masksConfig.length)
@@ -1443,7 +1442,7 @@ var RendererBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = RendererBase;
 
-},{"./elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","./sort/RenderableMergeSort":"awayjs-renderergl/lib/sort/RenderableMergeSort","./surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
+},{"./sort/RenderableMergeSort":"awayjs-renderergl/lib/sort/RenderableMergeSort","./surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1902,6 +1901,14 @@ var AnimatorBase = (function (_super) {
      * @inheritDoc
      */
     AnimatorBase.prototype.dispose = function () {
+    };
+    AnimatorBase.prototype.invalidateElements = function () {
+        var sprite;
+        var len = this._pOwners.length;
+        for (var i = 0; i < len; i++) {
+            sprite = this._pOwners[i];
+            sprite.graphics.invalidateElements();
+        }
     };
     /**
      * @inheritDoc
@@ -2667,8 +2674,7 @@ var SkeletonAnimator = (function (_super) {
         this._globalPropertiesDirty = true;
         //trigger geometry invalidation if using CPU animation
         if (this._pAnimationSet.usesCPU)
-            for (var key in this._morphedElementsDirty)
-                this._morphedElementsDirty[key] = true;
+            this.invalidateElements();
     };
     SkeletonAnimator.prototype.updateCondensedMatrices = function (condensedIndexLookUp) {
         var j = 0, k = 0;
@@ -2772,6 +2778,8 @@ var SkeletonAnimator = (function (_super) {
         var targetElements;
         if (!(targetElements = this._morphedElements[sourceElements.id])) {
             //not yet stored
+            sourceElements.normals;
+            sourceElements.tangents;
             targetElements = this._morphedElements[sourceElements.id] = sourceElements.clone();
             //turn off auto calculations on the morphed geometry
             targetElements.autoDeriveNormals = false;
@@ -3102,7 +3110,7 @@ var VertexAnimationSet = (function (_super) {
         var regs = new Array(".x", ".y", ".z", ".w");
         var len = sharedRegisters.animatableAttributes.length;
         var constantReg = registerCache.getFreeVertexConstant();
-        this._iAnimationRegisterData.weightsIndex = constantReg.index * 4;
+        this._iAnimationRegisterData.weightsIndex = constantReg.index;
         this._iAnimationRegisterData.poseIndices = new Array(this._numPoses);
         var poseInput;
         var k = 0;
@@ -3142,7 +3150,7 @@ var VertexAnimationSet = (function (_super) {
         var regs = [".x", ".y", ".z", ".w"];
         var temp1 = registerCache.getFreeVertexVectorTemp();
         var constantReg = registerCache.getFreeVertexConstant();
-        this._iAnimationRegisterData.weightsIndex = constantReg.index * 4;
+        this._iAnimationRegisterData.weightsIndex = constantReg.index;
         this._iAnimationRegisterData.poseIndices = new Array(this._numPoses);
         var poseInput;
         var k = 0;
@@ -3241,20 +3249,11 @@ var VertexAnimator = (function (_super) {
             this._poses[0] = this._activeVertexState.currentGraphics;
             geometryFlag = true;
         }
-        if (this._poses[1] != this._activeVertexState.nextGraphics) {
+        if (this._poses[1] != this._activeVertexState.nextGraphics)
             this._poses[1] = this._activeVertexState.nextGraphics;
-            geometryFlag = true;
-        }
         this._weights[0] = 1 - (this._weights[1] = this._activeVertexState.blendWeight);
-        if (geometryFlag) {
-            //invalidate sprites
-            var sprite;
-            var len = this._pOwners.length;
-            for (var i = 0; i < len; i++) {
-                sprite = this._pOwners[i];
-                sprite.graphics.invalidateElements();
-            }
-        }
+        if (geometryFlag)
+            this.invalidateElements();
     };
     /**
      * @inheritDoc
@@ -3266,7 +3265,7 @@ var VertexAnimator = (function (_super) {
         var elements = graphic.elements;
         // if no poses defined, set temp data
         if (!this._poses.length) {
-            this.setNullPose(shader, elements);
+            this.setNullPose(shader, elements, stage);
             return;
         }
         var animationRegisterData = shader.animationRegisterData;
@@ -3281,8 +3280,8 @@ var VertexAnimator = (function (_super) {
         var k = 0;
         for (; i < len; ++i) {
             elements = this._poses[i].getGraphicAt(graphic._iIndex).elements || graphic.elements;
-            elementsGL = shader._elementsPool.getAbstraction(elements);
-            elementsGL._indexMappings = shader._elementsPool.getAbstraction(graphic.elements).getIndexMappings();
+            elementsGL = stage.getAbstraction(elements);
+            elementsGL._indexMappings = stage.getAbstraction(graphic.elements).getIndexMappings();
             if (elements.isAsset(TriangleElements_1.default)) {
                 elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.positions);
                 if (shader.normalDependencies > 0)
@@ -3290,10 +3289,10 @@ var VertexAnimator = (function (_super) {
             }
         }
     };
-    VertexAnimator.prototype.setNullPose = function (shader, elements) {
+    VertexAnimator.prototype.setNullPose = function (shader, elements, stage) {
         var animationRegisterData = shader.animationRegisterData;
         shader.setVertexConstFromArray(animationRegisterData.weightsIndex, this._weights);
-        var elementsGL = shader._elementsPool.getAbstraction(elements);
+        var elementsGL = stage.getAbstraction(elements);
         var k = 0;
         if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.default.ABSOLUTE) {
             var len = this._vertexAnimationSet.numPoses;
@@ -7060,16 +7059,8 @@ var ParticleColorState = (function (_super) {
                     dataOffset += 4;
                 }
                 else {
-                    index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX);
-                    shader.vertexConstantData[index++] = this._startMultiplierData.x;
-                    shader.vertexConstantData[index++] = this._startMultiplierData.y;
-                    shader.vertexConstantData[index++] = this._startMultiplierData.z;
-                    shader.vertexConstantData[index] = this._startMultiplierData.w;
-                    index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX);
-                    shader.vertexConstantData[index++] = this._deltaMultiplierData.x;
-                    shader.vertexConstantData[index++] = this._deltaMultiplierData.y;
-                    shader.vertexConstantData[index++] = this._deltaMultiplierData.z;
-                    shader.vertexConstantData[index] = this._deltaMultiplierData.w;
+                    shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), this._startMultiplierData.x, this._startMultiplierData.y, this._startMultiplierData.z, this._startMultiplierData.w);
+                    shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), this._deltaMultiplierData.x, this._deltaMultiplierData.y, this._deltaMultiplierData.z, this._deltaMultiplierData.w);
                 }
             }
             if (this._usesOffset) {
@@ -7077,7 +7068,6 @@ var ParticleColorState = (function (_super) {
                     animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
                     dataOffset += 4;
                     animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
-                    dataOffset += 4;
                 }
                 else {
                     shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);
@@ -9515,53 +9505,7 @@ exports.VertexAnimationSet = VertexAnimationSet_1.default;
 var VertexAnimator_1 = require("./animators/VertexAnimator");
 exports.VertexAnimator = VertexAnimator_1.default;
 
-},{"./animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","./animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","./animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","./animators/ParticleAnimator":"awayjs-renderergl/lib/animators/ParticleAnimator","./animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","./animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","./animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","./animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","./animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","./animators/data/AnimationRegisterData":"awayjs-renderergl/lib/animators/data/AnimationRegisterData","./animators/data/ColorSegmentPoint":"awayjs-renderergl/lib/animators/data/ColorSegmentPoint","./animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","./animators/data/ParticleAnimationData":"awayjs-renderergl/lib/animators/data/ParticleAnimationData","./animators/data/ParticleProperties":"awayjs-renderergl/lib/animators/data/ParticleProperties","./animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","./animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","./animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","./animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","./animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","./animators/nodes/AnimationClipNodeBase":"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase","./animators/nodes/ParticleAccelerationNode":"awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode","./animators/nodes/ParticleBezierCurveNode":"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode","./animators/nodes/ParticleBillboardNode":"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode","./animators/nodes/ParticleColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleColorNode","./animators/nodes/ParticleFollowNode":"awayjs-renderergl/lib/animators/nodes/ParticleFollowNode","./animators/nodes/ParticleInitialColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode","./animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","./animators/nodes/ParticleOrbitNode":"awayjs-renderergl/lib/animators/nodes/ParticleOrbitNode","./animators/nodes/ParticleOscillatorNode":"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode","./animators/nodes/ParticlePositionNode":"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode","./animators/nodes/ParticleRotateToHeadingNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode","./animators/nodes/ParticleRotateToPositionNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode","./animators/nodes/ParticleRotationalVelocityNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode","./animators/nodes/ParticleScaleNode":"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode","./animators/nodes/ParticleSegmentedColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode","./animators/nodes/ParticleSpriteSheetNode":"awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode","./animators/nodes/ParticleTimeNode":"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode","./animators/nodes/ParticleUVNode":"awayjs-renderergl/lib/animators/nodes/ParticleUVNode","./animators/nodes/ParticleVelocityNode":"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode","./animators/nodes/SkeletonBinaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode","./animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","./animators/nodes/SkeletonDifferenceNode":"awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode","./animators/nodes/SkeletonDirectionalNode":"awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode","./animators/nodes/SkeletonNaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode","./animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","./animators/states/AnimationClipState":"awayjs-renderergl/lib/animators/states/AnimationClipState","./animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase","./animators/states/ParticleAccelerationState":"awayjs-renderergl/lib/animators/states/ParticleAccelerationState","./animators/states/ParticleBezierCurveState":"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState","./animators/states/ParticleBillboardState":"awayjs-renderergl/lib/animators/states/ParticleBillboardState","./animators/states/ParticleColorState":"awayjs-renderergl/lib/animators/states/ParticleColorState","./animators/states/ParticleFollowState":"awayjs-renderergl/lib/animators/states/ParticleFollowState","./animators/states/ParticleInitialColorState":"awayjs-renderergl/lib/animators/states/ParticleInitialColorState","./animators/states/ParticleOrbitState":"awayjs-renderergl/lib/animators/states/ParticleOrbitState","./animators/states/ParticleOscillatorState":"awayjs-renderergl/lib/animators/states/ParticleOscillatorState","./animators/states/ParticlePositionState":"awayjs-renderergl/lib/animators/states/ParticlePositionState","./animators/states/ParticleRotateToHeadingState":"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState","./animators/states/ParticleRotateToPositionState":"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState","./animators/states/ParticleRotationalVelocityState":"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState","./animators/states/ParticleScaleState":"awayjs-renderergl/lib/animators/states/ParticleScaleState","./animators/states/ParticleSegmentedColorState":"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState","./animators/states/ParticleSpriteSheetState":"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState","./animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","./animators/states/ParticleTimeState":"awayjs-renderergl/lib/animators/states/ParticleTimeState","./animators/states/ParticleUVState":"awayjs-renderergl/lib/animators/states/ParticleUVState","./animators/states/ParticleVelocityState":"awayjs-renderergl/lib/animators/states/ParticleVelocityState","./animators/states/SkeletonBinaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState","./animators/states/SkeletonClipState":"awayjs-renderergl/lib/animators/states/SkeletonClipState","./animators/states/SkeletonDifferenceState":"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState","./animators/states/SkeletonDirectionalState":"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState","./animators/states/SkeletonNaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState","./animators/states/VertexClipState":"awayjs-renderergl/lib/animators/states/VertexClipState","./animators/transitions/CrossfadeTransition":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition","./animators/transitions/CrossfadeTransitionNode":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode","./animators/transitions/CrossfadeTransitionState":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState"}],"awayjs-renderergl/lib/elements/ElementsPool":[function(require,module,exports){
-"use strict";
-/**
- * @class away.pool.SurfacePool
- */
-var ElementsPool = (function () {
-    /**
-     * //TODO
-     *
-     * @param surfaceClassGL
-     */
-    function ElementsPool(shader, elementsClass) {
-        this._abstractionPool = new Object();
-        this._shader = shader;
-        this._elementsClass = elementsClass;
-    }
-    /**
-     * //TODO
-     *
-     * @param renderable
-     * @returns IRenderable
-     */
-    ElementsPool.prototype.getAbstraction = function (elements) {
-        return (this._abstractionPool[elements.id] || (this._abstractionPool[elements.id] = new (this._elementsClass)(elements, this._shader, this)));
-    };
-    /**
-     * //TODO
-     *
-     * @param renderable
-     */
-    ElementsPool.prototype.clearAbstraction = function (elements) {
-        delete this._abstractionPool[elements.id];
-    };
-    /**
-     *
-     * @param imageObjectClass
-     */
-    ElementsPool.registerAbstraction = function (elementsClass, assetClass) {
-        ElementsPool._abstractionClassPool[assetClass.assetType] = elementsClass;
-    };
-    ElementsPool._abstractionClassPool = new Object();
-    return ElementsPool;
-}());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ElementsPool;
-
-},{}],"awayjs-renderergl/lib/elements/GL_ElementsBase":[function(require,module,exports){
+},{"./animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","./animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","./animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","./animators/ParticleAnimator":"awayjs-renderergl/lib/animators/ParticleAnimator","./animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","./animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","./animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","./animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","./animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","./animators/data/AnimationRegisterData":"awayjs-renderergl/lib/animators/data/AnimationRegisterData","./animators/data/ColorSegmentPoint":"awayjs-renderergl/lib/animators/data/ColorSegmentPoint","./animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","./animators/data/ParticleAnimationData":"awayjs-renderergl/lib/animators/data/ParticleAnimationData","./animators/data/ParticleProperties":"awayjs-renderergl/lib/animators/data/ParticleProperties","./animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","./animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","./animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","./animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","./animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","./animators/nodes/AnimationClipNodeBase":"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase","./animators/nodes/ParticleAccelerationNode":"awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode","./animators/nodes/ParticleBezierCurveNode":"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode","./animators/nodes/ParticleBillboardNode":"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode","./animators/nodes/ParticleColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleColorNode","./animators/nodes/ParticleFollowNode":"awayjs-renderergl/lib/animators/nodes/ParticleFollowNode","./animators/nodes/ParticleInitialColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode","./animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","./animators/nodes/ParticleOrbitNode":"awayjs-renderergl/lib/animators/nodes/ParticleOrbitNode","./animators/nodes/ParticleOscillatorNode":"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode","./animators/nodes/ParticlePositionNode":"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode","./animators/nodes/ParticleRotateToHeadingNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode","./animators/nodes/ParticleRotateToPositionNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode","./animators/nodes/ParticleRotationalVelocityNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode","./animators/nodes/ParticleScaleNode":"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode","./animators/nodes/ParticleSegmentedColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode","./animators/nodes/ParticleSpriteSheetNode":"awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode","./animators/nodes/ParticleTimeNode":"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode","./animators/nodes/ParticleUVNode":"awayjs-renderergl/lib/animators/nodes/ParticleUVNode","./animators/nodes/ParticleVelocityNode":"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode","./animators/nodes/SkeletonBinaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode","./animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","./animators/nodes/SkeletonDifferenceNode":"awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode","./animators/nodes/SkeletonDirectionalNode":"awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode","./animators/nodes/SkeletonNaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode","./animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","./animators/states/AnimationClipState":"awayjs-renderergl/lib/animators/states/AnimationClipState","./animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase","./animators/states/ParticleAccelerationState":"awayjs-renderergl/lib/animators/states/ParticleAccelerationState","./animators/states/ParticleBezierCurveState":"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState","./animators/states/ParticleBillboardState":"awayjs-renderergl/lib/animators/states/ParticleBillboardState","./animators/states/ParticleColorState":"awayjs-renderergl/lib/animators/states/ParticleColorState","./animators/states/ParticleFollowState":"awayjs-renderergl/lib/animators/states/ParticleFollowState","./animators/states/ParticleInitialColorState":"awayjs-renderergl/lib/animators/states/ParticleInitialColorState","./animators/states/ParticleOrbitState":"awayjs-renderergl/lib/animators/states/ParticleOrbitState","./animators/states/ParticleOscillatorState":"awayjs-renderergl/lib/animators/states/ParticleOscillatorState","./animators/states/ParticlePositionState":"awayjs-renderergl/lib/animators/states/ParticlePositionState","./animators/states/ParticleRotateToHeadingState":"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState","./animators/states/ParticleRotateToPositionState":"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState","./animators/states/ParticleRotationalVelocityState":"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState","./animators/states/ParticleScaleState":"awayjs-renderergl/lib/animators/states/ParticleScaleState","./animators/states/ParticleSegmentedColorState":"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState","./animators/states/ParticleSpriteSheetState":"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState","./animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","./animators/states/ParticleTimeState":"awayjs-renderergl/lib/animators/states/ParticleTimeState","./animators/states/ParticleUVState":"awayjs-renderergl/lib/animators/states/ParticleUVState","./animators/states/ParticleVelocityState":"awayjs-renderergl/lib/animators/states/ParticleVelocityState","./animators/states/SkeletonBinaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState","./animators/states/SkeletonClipState":"awayjs-renderergl/lib/animators/states/SkeletonClipState","./animators/states/SkeletonDifferenceState":"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState","./animators/states/SkeletonDirectionalState":"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState","./animators/states/SkeletonNaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState","./animators/states/VertexClipState":"awayjs-renderergl/lib/animators/states/VertexClipState","./animators/transitions/CrossfadeTransition":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition","./animators/transitions/CrossfadeTransitionNode":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode","./animators/transitions/CrossfadeTransitionState":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState"}],"awayjs-renderergl/lib/elements/GL_ElementsBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -9579,17 +9523,16 @@ var ElementsUtils_1 = require("awayjs-display/lib/utils/ElementsUtils");
  */
 var GL_ElementsBase = (function (_super) {
     __extends(GL_ElementsBase, _super);
-    function GL_ElementsBase(elements, shader, pool) {
+    function GL_ElementsBase(elements, stage) {
         var _this = this;
-        _super.call(this, elements, pool);
+        _super.call(this, elements, stage);
         this.usages = 0;
         this._vertices = new Object();
         this._verticesUpdated = new Object();
         this._indexMappings = Array();
         this._numIndices = 0;
         this._elements = elements;
-        this._shader = shader;
-        this._stage = shader._stage;
+        this._stage = stage;
         this._onInvalidateIndicesDelegate = function (event) { return _this._onInvalidateIndices(event); };
         this._onClearIndicesDelegate = function (event) { return _this._onClearIndices(event); };
         this._onInvalidateVerticesDelegate = function (event) { return _this._onInvalidateVertices(event); };
@@ -9599,6 +9542,20 @@ var GL_ElementsBase = (function (_super) {
         this._elements.addEventListener(ElementsEvent_1.default.CLEAR_VERTICES, this._onClearVerticesDelegate);
         this._elements.addEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
     }
+    Object.defineProperty(GL_ElementsBase.prototype, "elementsType", {
+        get: function () {
+            throw new AbstractMethodError_1.default();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_ElementsBase.prototype, "elementsClass", {
+        get: function () {
+            throw new AbstractMethodError_1.default();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(GL_ElementsBase.prototype, "elements", {
         get: function () {
             return this._elements;
@@ -9677,7 +9634,7 @@ var GL_ElementsBase = (function (_super) {
             this._overflow = null;
         }
     };
-    GL_ElementsBase.prototype._setRenderState = function (renderable, camera, viewProjection) {
+    GL_ElementsBase.prototype._setRenderState = function (renderable, shader, camera, viewProjection) {
         if (!this._verticesUpdated)
             this._updateIndices();
         //TODO replace overflow system with something sensible
@@ -9686,7 +9643,7 @@ var GL_ElementsBase = (function (_super) {
         // if (this._overflow)
         // 	this._overflow._iRender(renderable, camera, viewProjection);
     };
-    GL_ElementsBase.prototype.draw = function (renderable, camera, viewProjection, count, offset) {
+    GL_ElementsBase.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
         throw new AbstractMethodError_1.default();
     };
     /**
@@ -9821,12 +9778,26 @@ var GL_ElementsBase_1 = require("../elements/GL_ElementsBase");
  */
 var GL_LineElements = (function (_super) {
     __extends(GL_LineElements, _super);
-    function GL_LineElements(lineElements, shader, pool) {
-        _super.call(this, lineElements, shader, pool);
+    function GL_LineElements(lineElements, stage) {
+        _super.call(this, lineElements, stage);
         this._calcMatrix = new Matrix3D_1.default();
         this._thickness = 1.25;
         this._lineElements = lineElements;
     }
+    Object.defineProperty(GL_LineElements.prototype, "elementsType", {
+        get: function () {
+            return GL_LineElements.elementsType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_LineElements.prototype, "elementsClass", {
+        get: function () {
+            return GL_LineElements;
+        },
+        enumerable: true,
+        configurable: true
+    });
     GL_LineElements._iIncludeDependencies = function (shader) {
         shader.colorDependencies++;
     };
@@ -9912,31 +9883,31 @@ var GL_LineElements = (function (_super) {
         _super.prototype.onClear.call(this, event);
         this._lineElements = null;
     };
-    GL_LineElements.prototype._setRenderState = function (renderable, camera, viewProjection) {
-        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
-        if (this._shader.colorBufferIndex >= 0)
-            this.activateVertexBufferVO(this._shader.colorBufferIndex, this._lineElements.colors);
+    GL_LineElements.prototype._setRenderState = function (renderable, shader, camera, viewProjection) {
+        _super.prototype._setRenderState.call(this, renderable, shader, camera, viewProjection);
+        if (shader.colorBufferIndex >= 0)
+            this.activateVertexBufferVO(shader.colorBufferIndex, this._lineElements.colors);
         this.activateVertexBufferVO(0, this._lineElements.positions, 3);
         this.activateVertexBufferVO(2, this._lineElements.positions, 3, 12);
         this.activateVertexBufferVO(3, this._lineElements.thickness);
-        this._shader.vertexConstantData[4 + 16] = 1;
-        this._shader.vertexConstantData[5 + 16] = 1;
-        this._shader.vertexConstantData[6 + 16] = 1;
-        this._shader.vertexConstantData[7 + 16] = 1;
-        this._shader.vertexConstantData[10 + 16] = -1;
-        this._shader.vertexConstantData[12 + 16] = this._thickness / ((this._stage.scissorRect) ? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
-        this._shader.vertexConstantData[13 + 16] = 1 / 255;
-        this._shader.vertexConstantData[14 + 16] = camera.projection.near;
+        shader.vertexConstantData[4 + 16] = 1;
+        shader.vertexConstantData[5 + 16] = 1;
+        shader.vertexConstantData[6 + 16] = 1;
+        shader.vertexConstantData[7 + 16] = 1;
+        shader.vertexConstantData[10 + 16] = -1;
+        shader.vertexConstantData[12 + 16] = this._thickness / ((this._stage.scissorRect) ? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
+        shader.vertexConstantData[13 + 16] = 1 / 255;
+        shader.vertexConstantData[14 + 16] = camera.projection.near;
         var context = this._stage.context;
     };
-    GL_LineElements.prototype.draw = function (renderable, camera, viewProjection, count, offset) {
+    GL_LineElements.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
         var context = this._stage.context;
         // projection matrix
-        camera.projection.matrix.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
+        camera.projection.matrix.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
         this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
         this._calcMatrix.append(camera.inverseSceneTransform);
-        this._calcMatrix.copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, this._shader.vertexConstantData);
+        this._calcMatrix.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, shader.vertexConstantData);
         if (this._indices)
             this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
         else
@@ -9953,8 +9924,9 @@ var GL_LineElements = (function (_super) {
      * @protected
      */
     GL_LineElements.prototype._pGetOverflowElements = function () {
-        return new GL_LineElements(this._lineElements, this._shader, this._pool);
+        return new GL_LineElements(this._lineElements, this._stage);
     };
+    GL_LineElements.elementsType = "[elements Line]";
     return GL_LineElements;
 }(GL_ElementsBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -9967,6 +9939,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var ContextGLDrawMode_1 = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
+var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var GL_TriangleElements_1 = require("../elements/GL_TriangleElements");
 /**
  *
@@ -9977,25 +9951,87 @@ var GL_SkyboxElements = (function (_super) {
     function GL_SkyboxElements() {
         _super.apply(this, arguments);
     }
+    Object.defineProperty(GL_SkyboxElements.prototype, "elementsType", {
+        get: function () {
+            return GL_SkyboxElements.elementsType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_SkyboxElements.prototype, "elementsClass", {
+        get: function () {
+            return GL_SkyboxElements;
+        },
+        enumerable: true,
+        configurable: true
+    });
     GL_SkyboxElements._iIncludeDependencies = function (shader) {
     };
     /**
      * @inheritDoc
      */
     GL_SkyboxElements._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
-        return "mul vt0, va0, vc5\n" +
-            "add vt0, vt0, vc4\n" +
-            "m44 op, vt0, vc0\n";
+        var code = "";
+        //get the projection coordinates
+        var position = (shader.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
+        //reserving vertex constants for projection matrix
+        var viewMatrixReg = registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        shader.viewMatrixIndex = viewMatrixReg.index * 4;
+        var scenePosition = registerCache.getFreeVertexConstant();
+        shader.scenePositionIndex = scenePosition.index * 4;
+        var skyboxScale = registerCache.getFreeVertexConstant();
+        var temp = registerCache.getFreeVertexVectorTemp();
+        code += "mul " + temp + ", " + position + ", " + skyboxScale + "\n" +
+            "add " + temp + ", " + temp + ", " + scenePosition + "\n";
+        if (shader.projectionDependencies > 0) {
+            sharedRegisters.projectionFragment = registerCache.getFreeVarying();
+            code += "m44 " + temp + ", " + temp + ", " + viewMatrixReg + "\n" +
+                "mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" +
+                "mov op, " + temp + "\n";
+        }
+        else {
+            code += "m44 op, " + temp + ", " + viewMatrixReg + "\n";
+        }
+        return code;
     };
     GL_SkyboxElements._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
     };
+    GL_SkyboxElements.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
+        var index = shader.scenePositionIndex;
+        var pos = camera.scenePosition;
+        shader.vertexConstantData[index++] = 2 * pos.x;
+        shader.vertexConstantData[index++] = 2 * pos.y;
+        shader.vertexConstantData[index++] = 2 * pos.z;
+        shader.vertexConstantData[index++] = 1;
+        shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = camera.projection.far / Math.sqrt(3);
+        shader.vertexConstantData[index] = 1;
+        //set constants
+        if (shader.sceneMatrixIndex >= 0) {
+            renderable.renderSceneTransform.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
+            viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+        }
+        else {
+            viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+        }
+        var context = this._stage.context;
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, shader.vertexConstantData);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, shader.fragmentConstantData);
+        if (this._indices)
+            this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
+        else
+            this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, offset, count || this.numVertices);
+    };
+    GL_SkyboxElements.elementsType = "[elements Skybox]";
     return GL_SkyboxElements;
 }(GL_TriangleElements_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_SkyboxElements;
 
-},{"../elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements"}],"awayjs-renderergl/lib/elements/GL_TriangleElements":[function(require,module,exports){
+},{"../elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/GL_TriangleElements":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -10012,10 +10048,24 @@ var GL_ElementsBase_1 = require("../elements/GL_ElementsBase");
  */
 var GL_TriangleElements = (function (_super) {
     __extends(GL_TriangleElements, _super);
-    function GL_TriangleElements(triangleElements, shader, pool) {
-        _super.call(this, triangleElements, shader, pool);
+    function GL_TriangleElements(triangleElements, stage) {
+        _super.call(this, triangleElements, stage);
         this._triangleElements = triangleElements;
     }
+    Object.defineProperty(GL_TriangleElements.prototype, "elementsType", {
+        get: function () {
+            return GL_TriangleElements.elementsType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_TriangleElements.prototype, "elementsClass", {
+        get: function () {
+            return GL_TriangleElements;
+        },
+        enumerable: true,
+        configurable: true
+    });
     GL_TriangleElements._iIncludeDependencies = function (shader) {
     };
     GL_TriangleElements._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
@@ -10047,45 +10097,45 @@ var GL_TriangleElements = (function (_super) {
         _super.prototype.onClear.call(this, event);
         this._triangleElements = null;
     };
-    GL_TriangleElements.prototype._setRenderState = function (renderable, camera, viewProjection) {
-        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
+    GL_TriangleElements.prototype._setRenderState = function (renderable, shader, camera, viewProjection) {
+        _super.prototype._setRenderState.call(this, renderable, shader, camera, viewProjection);
         //set buffers
         //TODO: find a better way to update a concatenated buffer when autoderiving
-        if (this._shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
+        if (shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
             this._triangleElements.normals;
-        if (this._shader.tangentIndex >= 0 && this._triangleElements.autoDeriveTangents)
+        if (shader.tangentIndex >= 0 && this._triangleElements.autoDeriveTangents)
             this._triangleElements.tangents;
-        if (this._shader.curvesIndex >= 0)
-            this.activateVertexBufferVO(this._shader.curvesIndex, this._triangleElements.getCustomAtributes("curves"));
-        if (this._shader.uvIndex >= 0)
-            this.activateVertexBufferVO(this._shader.uvIndex, this._triangleElements.uvs || this._triangleElements.positions);
-        if (this._shader.secondaryUVIndex >= 0)
-            this.activateVertexBufferVO(this._shader.secondaryUVIndex, this._triangleElements.getCustomAtributes("secondaryUVs") || this._triangleElements.uvs || this._triangleElements.positions);
-        if (this._shader.normalIndex >= 0)
-            this.activateVertexBufferVO(this._shader.normalIndex, this._triangleElements.normals);
-        if (this._shader.tangentIndex >= 0)
-            this.activateVertexBufferVO(this._shader.tangentIndex, this._triangleElements.tangents);
-        if (this._shader.jointIndexIndex >= 0)
-            this.activateVertexBufferVO(this._shader.jointIndexIndex, this._triangleElements.jointIndices);
-        if (this._shader.jointWeightIndex >= 0)
-            this.activateVertexBufferVO(this._shader.jointIndexIndex, this._triangleElements.jointWeights);
+        if (shader.curvesIndex >= 0)
+            this.activateVertexBufferVO(shader.curvesIndex, this._triangleElements.getCustomAtributes("curves"));
+        if (shader.uvIndex >= 0)
+            this.activateVertexBufferVO(shader.uvIndex, this._triangleElements.uvs || this._triangleElements.positions);
+        if (shader.secondaryUVIndex >= 0)
+            this.activateVertexBufferVO(shader.secondaryUVIndex, this._triangleElements.getCustomAtributes("secondaryUVs") || this._triangleElements.uvs || this._triangleElements.positions);
+        if (shader.normalIndex >= 0)
+            this.activateVertexBufferVO(shader.normalIndex, this._triangleElements.normals);
+        if (shader.tangentIndex >= 0)
+            this.activateVertexBufferVO(shader.tangentIndex, this._triangleElements.tangents);
+        if (shader.jointIndexIndex >= 0)
+            this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleElements.jointIndices);
+        if (shader.jointWeightIndex >= 0)
+            this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleElements.jointWeights);
         this.activateVertexBufferVO(0, this._triangleElements.positions);
     };
-    GL_TriangleElements.prototype.draw = function (renderable, camera, viewProjection, count, offset) {
+    GL_TriangleElements.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
         //set constants
-        if (this._shader.sceneMatrixIndex >= 0) {
-            renderable.renderSceneTransform.copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
-            viewProjection.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
+        if (shader.sceneMatrixIndex >= 0) {
+            renderable.renderSceneTransform.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
+            viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
         }
         else {
             var matrix3D = Matrix3DUtils_1.default.CALCULATION_MATRIX;
             matrix3D.copyFrom(renderable.renderSceneTransform);
             matrix3D.append(viewProjection);
-            matrix3D.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
+            matrix3D.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
         }
         var context = this._stage.context;
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, this._shader.vertexConstantData);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._shader.fragmentConstantData);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, shader.vertexConstantData);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, shader.fragmentConstantData);
         if (this._indices)
             this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
         else
@@ -10102,8 +10152,9 @@ var GL_TriangleElements = (function (_super) {
      * @protected
      */
     GL_TriangleElements.prototype._pGetOverflowElements = function () {
-        return new GL_TriangleElements(this._triangleElements, this._shader, this._pool);
+        return new GL_TriangleElements(this._triangleElements, this._stage);
     };
+    GL_TriangleElements.elementsType = "[elements Triangle]";
     return GL_TriangleElements;
 }(GL_ElementsBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -10114,8 +10165,6 @@ exports.default = GL_TriangleElements;
 
 },{}],"awayjs-renderergl/lib/elements":[function(require,module,exports){
 "use strict";
-var ElementsPool_1 = require("./elements/ElementsPool");
-exports.ElementsPool = ElementsPool_1.default;
 var GL_ElementsBase_1 = require("./elements/GL_ElementsBase");
 exports.GL_ElementsBase = GL_ElementsBase_1.default;
 var GL_LineElements_1 = require("./elements/GL_LineElements");
@@ -10125,7 +10174,7 @@ exports.GL_SkyboxElements = GL_SkyboxElements_1.default;
 var GL_TriangleElements_1 = require("./elements/GL_TriangleElements");
 exports.GL_TriangleElements = GL_TriangleElements_1.default;
 
-},{"./elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","./elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","./elements/GL_LineElements":"awayjs-renderergl/lib/elements/GL_LineElements","./elements/GL_SkyboxElements":"awayjs-renderergl/lib/elements/GL_SkyboxElements","./elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements"}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
+},{"./elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","./elements/GL_LineElements":"awayjs-renderergl/lib/elements/GL_LineElements","./elements/GL_SkyboxElements":"awayjs-renderergl/lib/elements/GL_SkyboxElements","./elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements"}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11605,10 +11654,10 @@ var GL_Billboard = (function (_super) {
         else {
             elements.setPositions(Array(-billboardRect.x, height - billboardRect.y, 0, width - billboardRect.x, height - billboardRect.y, 0, width - billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
         }
-        return elements;
+        return this._stage.getAbstraction(elements);
     };
     GL_Billboard.prototype._pGetSurface = function () {
-        return this._billboard.material;
+        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._billboard.material || DefaultMaterialManager_1.default.getDefaultMaterial(this.renderable));
     };
     GL_Billboard._samplerElements = new Object();
     return GL_Billboard;
@@ -11623,6 +11672,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var DefaultMaterialManager_1 = require("awayjs-display/lib/managers/DefaultMaterialManager");
 var GL_RenderableBase_1 = require("../renderables/GL_RenderableBase");
 /**
  * @class away.pool.GL_GraphicRenderable
@@ -11653,17 +11703,17 @@ var GL_GraphicRenderable = (function (_super) {
     GL_GraphicRenderable.prototype._pGetElements = function () {
         this._offset = this.graphic.offset;
         this._count = this.graphic.count;
-        return this.graphic.elements;
+        return this._stage.getAbstraction((this.renderable.animator) ? this.renderable.animator.getRenderableElements(this, this.graphic.elements) : this.graphic.elements);
     };
     GL_GraphicRenderable.prototype._pGetSurface = function () {
-        return this.graphic.material;
+        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this.graphic.material || DefaultMaterialManager_1.default.getDefaultMaterial(this.renderable));
     };
     return GL_GraphicRenderable;
 }(GL_RenderableBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_GraphicRenderable;
 
-},{"../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase"}],"awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable":[function(require,module,exports){
+},{"../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-display/lib/managers/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11671,6 +11721,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var LineElements_1 = require("awayjs-display/lib/graphics/LineElements");
+var DefaultMaterialManager_1 = require("awayjs-display/lib/managers/DefaultMaterialManager");
 var GL_RenderableBase_1 = require("../renderables/GL_RenderableBase");
 /**
  * @class away.pool.GL_LineSegmentRenderable
@@ -11700,18 +11751,11 @@ var GL_LineSegmentRenderable = (function (_super) {
      * @protected
      */
     GL_LineSegmentRenderable.prototype._pGetElements = function () {
-        var geometry = GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements_1.default());
+        var elements = GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements_1.default());
         var start = this._lineSegment.startPostion;
         var end = this._lineSegment.endPosition;
-        var positions;
-        var thickness;
-        //if (geometry.indices != null) {
-        //	positions = <Float32Array> geometry.positions.get(geometry.numVertices);
-        //	thickness = geometry.thickness.get(geometry.numVertices);
-        //} else {
-        positions = new Float32Array(6);
-        thickness = new Float32Array(1);
-        //}
+        var positions = new Float32Array(6);
+        var thickness = new Float32Array(1);
         positions[0] = start.x;
         positions[1] = start.y;
         positions[2] = start.z;
@@ -11719,12 +11763,12 @@ var GL_LineSegmentRenderable = (function (_super) {
         positions[4] = end.y;
         positions[5] = end.z;
         thickness[0] = this._lineSegment.thickness;
-        geometry.setPositions(positions);
-        geometry.setThickness(thickness);
-        return geometry;
+        elements.setPositions(positions);
+        elements.setThickness(thickness);
+        return this._stage.getAbstraction(elements);
     };
     GL_LineSegmentRenderable.prototype._pGetSurface = function () {
-        return this._lineSegment.material;
+        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._lineSegment.material || DefaultMaterialManager_1.default.getDefaultMaterial(this.renderable));
     };
     /**
      * //TODO
@@ -11745,7 +11789,7 @@ var GL_LineSegmentRenderable = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_LineSegmentRenderable;
 
-},{"../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-display/lib/graphics/LineElements":undefined}],"awayjs-renderergl/lib/renderables/GL_RenderableBase":[function(require,module,exports){
+},{"../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-display/lib/graphics/LineElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/renderables/GL_RenderableBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11756,7 +11800,6 @@ var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError"
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
 var AbstractionBase_1 = require("awayjs-core/lib/library/AbstractionBase");
 var RenderableEvent_1 = require("awayjs-display/lib/events/RenderableEvent");
-var DefaultMaterialManager_1 = require("awayjs-display/lib/managers/DefaultMaterialManager");
 /**
  * @class RenderableListItem
  */
@@ -11778,20 +11821,20 @@ var GL_RenderableBase = (function (_super) {
         this._surfaceDirty = true;
         this.images = new Array();
         this.samplers = new Array();
-        this._onSurfaceUpdatedDelegate = function (event) { return _this._onSurfaceUpdated(event); };
+        this._onInvalidateSurfaceDelegate = function (event) { return _this._onInvalidateSurface(event); };
         this._onInvalidateElementsDelegate = function (event) { return _this.onInvalidateElements(event); };
         //store a reference to the pool for later disposal
         this._renderer = renderer;
         this._stage = renderer.stage;
         this.renderable = renderable;
-        this.renderable.addEventListener(RenderableEvent_1.default.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
+        this.renderable.addEventListener(RenderableEvent_1.default.INVALIDATE_SURFACE, this._onInvalidateSurfaceDelegate);
         this.renderable.addEventListener(RenderableEvent_1.default.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
     }
-    Object.defineProperty(GL_RenderableBase.prototype, "elements", {
+    Object.defineProperty(GL_RenderableBase.prototype, "elementsGL", {
         get: function () {
             if (this._elementsDirty)
                 this._updateElements();
-            return this._elements;
+            return this._elementsGL;
         },
         enumerable: true,
         configurable: true
@@ -11813,19 +11856,19 @@ var GL_RenderableBase = (function (_super) {
         this._renderer = null;
         this._stage = null;
         this.sourceEntity = null;
-        this.renderable.removeEventListener(RenderableEvent_1.default.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
+        this.renderable.removeEventListener(RenderableEvent_1.default.INVALIDATE_SURFACE, this._onInvalidateSurfaceDelegate);
         this.renderable.removeEventListener(RenderableEvent_1.default.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
         this.renderable = null;
         this._surfaceGL.usages--;
         if (!this._surfaceGL.usages)
             this._surfaceGL.onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, this._surfaceGL.surface));
         this._surfaceGL = null;
-        this._elements = null;
+        this._elementsGL = null;
     };
     GL_RenderableBase.prototype.onInvalidateElements = function (event) {
         this._elementsDirty = true;
     };
-    GL_RenderableBase.prototype._onSurfaceUpdated = function (event) {
+    GL_RenderableBase.prototype._onInvalidateSurface = function (event) {
         this._surfaceDirty = true;
     };
     GL_RenderableBase.prototype._pGetElements = function () {
@@ -11835,42 +11878,22 @@ var GL_RenderableBase = (function (_super) {
         throw new AbstractMethodError_1.default();
     };
     /**
-     * Sets the surface state for the pass that is independent of the rendered object. This needs to be called before
-     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
-     * @param stage The Stage object which is currently used for rendering.
-     * @param camera The camera from which the scene is viewed.
-     * @private
-     */
-    GL_RenderableBase.prototype._iActivate = function (pass, camera) {
-        pass._iActivate(camera);
-    };
-    /**
      * Renders an object to the current render target.
      *
      * @private
      */
     GL_RenderableBase.prototype._iRender = function (pass, camera, viewProjection) {
         this._setRenderState(pass, camera, viewProjection);
-        if (this._elementsDirty)
-            this._updateElements();
-        var elements = pass.shader._elementsPool.getAbstraction((this.renderable.animator) ? this.renderable.animator.getRenderableElements(this, this._elements) : this._elements);
-        if (pass.shader.activeElements != elements) {
-            pass.shader.activeElements = elements;
-            elements._setRenderState(this, camera, viewProjection);
-        }
-        elements.draw(this, camera, viewProjection, this._count, this._offset);
+        this._elementsGL.draw(this, pass.shader, camera, viewProjection, this._count, this._offset);
     };
     GL_RenderableBase.prototype._setRenderState = function (pass, camera, viewProjection) {
-        pass._iRender(this, camera, viewProjection);
-    };
-    /**
-     * Clears the surface state for the pass. This needs to be called before activating another pass.
-     * @param stage The Stage used for rendering
-     *
-     * @private
-     */
-    GL_RenderableBase.prototype._iDeactivate = function (pass) {
-        pass._iDeactivate();
+        if (this._elementsDirty)
+            this._updateElements();
+        pass._setRenderState(this, camera, viewProjection);
+        if (pass.shader.activeElements != this._elementsGL) {
+            pass.shader.activeElements = this._elementsGL;
+            this._elementsGL._setRenderState(this, pass.shader, camera, viewProjection);
+        }
     };
     /**
      * //TODO
@@ -11878,12 +11901,11 @@ var GL_RenderableBase = (function (_super) {
      * @private
      */
     GL_RenderableBase.prototype._updateElements = function () {
-        this._elements = this._pGetElements();
+        this._elementsGL = this._pGetElements();
         this._elementsDirty = false;
     };
     GL_RenderableBase.prototype._updateSurface = function () {
-        var surface = this._pGetSurface() || DefaultMaterialManager_1.default.getDefaultMaterial(this.renderable);
-        var surfaceGL = this._renderer.getSurfacePool(this.elements).getAbstraction(surface);
+        var surfaceGL = this._pGetSurface();
         if (this._surfaceGL != surfaceGL) {
             if (this._surfaceGL) {
                 this._surfaceGL.usages--;
@@ -11898,15 +11920,15 @@ var GL_RenderableBase = (function (_super) {
         var numImages = surfaceGL.numImages;
         this.images.length = numImages;
         this.samplers.length = numImages;
-        this.uvMatrix = this.renderable.style ? this.renderable.style.uvMatrix : surface.style ? surface.style.uvMatrix : null;
-        var numTextures = surface.getNumTextures();
+        this.uvMatrix = this.renderable.style ? this.renderable.style.uvMatrix : this._surfaceGL.surface.style ? this._surfaceGL.surface.style.uvMatrix : null;
+        var numTextures = this._surfaceGL.surface.getNumTextures();
         var texture;
         var numImages;
         var image;
         var sampler;
         var index;
         for (var i = 0; i < numTextures; i++) {
-            texture = surface.getTextureAt(i);
+            texture = this._surfaceGL.surface.getTextureAt(i);
             numImages = texture.getNumImages();
             for (var j = 0; j < numImages; j++) {
                 index = surfaceGL.getImageIndex(texture, j);
@@ -11923,7 +11945,7 @@ var GL_RenderableBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_RenderableBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-display/lib/events/RenderableEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/renderables/GL_SkyboxRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-display/lib/events/RenderableEvent":undefined}],"awayjs-renderergl/lib/renderables/GL_SkyboxRenderable":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11932,8 +11954,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var AttributesBuffer_1 = require("awayjs-core/lib/attributes/AttributesBuffer");
 var TriangleElements_1 = require("awayjs-display/lib/graphics/TriangleElements");
-var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var GL_RenderableBase_1 = require("../renderables/GL_RenderableBase");
+var GL_SkyboxElements_1 = require("../elements/GL_SkyboxElements");
 /**
  * @class away.pool.GL_SkyboxRenderable
  */
@@ -11948,9 +11970,6 @@ var GL_SkyboxRenderable = (function (_super) {
     function GL_SkyboxRenderable(skybox, renderer) {
         _super.call(this, skybox, renderer);
         this._skybox = skybox;
-        this._vertexArray = new Float32Array(24);
-        this._vertexArray[19] = 1;
-        this._vertexArray[23] = 1;
     }
     /**
      * //TODO
@@ -11959,53 +11978,28 @@ var GL_SkyboxRenderable = (function (_super) {
      * @private
      */
     GL_SkyboxRenderable.prototype._pGetElements = function () {
-        var geometry = GL_SkyboxRenderable._geometry;
-        if (!geometry) {
-            geometry = GL_SkyboxRenderable._geometry = new TriangleElements_1.default(new AttributesBuffer_1.default(11, 4));
-            geometry.autoDeriveNormals = false;
-            geometry.autoDeriveTangents = false;
-            geometry.setIndices(Array(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2));
-            geometry.setPositions(Array(-1, 1, -1, 1, 1, -1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1));
+        var elementsGL = GL_SkyboxRenderable._elementsGL;
+        if (!elementsGL) {
+            var elements = new TriangleElements_1.default(new AttributesBuffer_1.default(11, 4));
+            elements.autoDeriveNormals = false;
+            elements.autoDeriveTangents = false;
+            elements.setIndices(Array(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2));
+            elements.setPositions(Array(-1, 1, -1, 1, 1, -1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1));
+            elementsGL = GL_SkyboxRenderable._elementsGL = new GL_SkyboxElements_1.default(elements, this._stage);
         }
-        return geometry;
+        return elementsGL;
     };
     GL_SkyboxRenderable.prototype._pGetSurface = function () {
-        return this._skybox;
+        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._skybox);
     };
     GL_SkyboxRenderable._iIncludeDependencies = function (shader) {
-    };
-    /**
-     * @inheritDoc
-     */
-    GL_SkyboxRenderable._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        return "mul vt0, va0, vc5\n" +
-            "add vt0, vt0, vc4\n" +
-            "m44 op, vt0, vc0\n";
-    };
-    GL_SkyboxRenderable._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    /**
-     * @inheritDoc
-     */
-    GL_SkyboxRenderable.prototype._setRenderState = function (pass, camera, viewProjection) {
-        _super.prototype._setRenderState.call(this, pass, camera, viewProjection);
-        var context = this._stage.context;
-        var pos = camera.scenePosition;
-        this._vertexArray[16] = pos.x;
-        this._vertexArray[17] = pos.y;
-        this._vertexArray[18] = pos.z;
-        this._vertexArray[20] = this._vertexArray[21] = this._vertexArray[22] = camera.projection.far / Math.sqrt(3);
-        viewProjection.copyRawDataTo(this._vertexArray, 0, true);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, this._vertexArray);
     };
     return GL_SkyboxRenderable;
 }(GL_RenderableBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_SkyboxRenderable;
 
-},{"../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables":[function(require,module,exports){
+},{"../elements/GL_SkyboxElements":"awayjs-renderergl/lib/elements/GL_SkyboxElements","../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined}],"awayjs-renderergl/lib/renderables":[function(require,module,exports){
 "use strict";
 var GL_BillboardRenderable_1 = require("./renderables/GL_BillboardRenderable");
 exports.GL_BillboardRenderable = GL_BillboardRenderable_1.default;
@@ -12085,8 +12079,8 @@ var LightingShader = (function (_super) {
      * @param stage
      * @param camera
      */
-    LightingShader.prototype._iRender = function (renderable, camera, viewProjection) {
-        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
+    LightingShader.prototype._setRenderState = function (renderable, camera, viewProjection) {
+        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
         if (this._lightingPass.lightPicker)
             this._lightingPass.lightPicker.collectLights(renderable.sourceEntity);
         if (this.usesLights)
@@ -12425,7 +12419,6 @@ var ArgumentError_1 = require("awayjs-core/lib/errors/ArgumentError");
 var ContextGLBlendFactor_1 = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLCompareMode_1 = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var ContextGLTriangleFace_1 = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
-var ElementsPool_1 = require("../elements/ElementsPool");
 var CompilerBase_1 = require("../shaders/compilers/CompilerBase");
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -12481,7 +12474,6 @@ var ShaderBase = (function () {
         this._pass = pass;
         this._stage = stage;
         this.profile = this._stage.profile;
-        this._elementsPool = new ElementsPool_1.default(this, elementsClass);
     }
     Object.defineProperty(ShaderBase.prototype, "programData", {
         get: function () {
@@ -12739,7 +12731,7 @@ var ShaderBase = (function () {
      * @param stage
      * @param camera
      */
-    ShaderBase.prototype._iRender = function (renderable, camera, viewProjection) {
+    ShaderBase.prototype._setRenderState = function (renderable, camera, viewProjection) {
         if (renderable.renderable.animator)
             renderable.renderable.animator.setRenderState(this, renderable, this._stage, camera);
         if (this.usesUVTransform) {
@@ -12896,7 +12888,7 @@ var ShaderBase = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShaderBase;
 
-},{"../elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","../shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase","awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/shaders/ShaderRegisterCache":[function(require,module,exports){
+},{"../shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase","awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/shaders/ShaderRegisterCache":[function(require,module,exports){
 "use strict";
 var RegisterPool_1 = require("../shaders/RegisterPool");
 var ShaderRegisterElement_1 = require("../shaders/ShaderRegisterElement");
@@ -14262,8 +14254,8 @@ var GL_SkyboxSurface = (function (_super) {
     GL_SkyboxSurface.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         return this._texture._iGetFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.positionVarying);
     };
-    GL_SkyboxSurface.prototype._iRender = function (renderable, camera, viewProjection) {
-        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
+    GL_SkyboxSurface.prototype._setRenderState = function (renderable, camera, viewProjection) {
+        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
         this._texture._setRenderState(renderable);
     };
     /**
@@ -14302,6 +14294,7 @@ var GL_SurfaceBase = (function (_super) {
         _super.call(this, surface, renderPool);
         this.usages = 0;
         this._forceSeparateMVP = false;
+        this._usesAnimation = true;
         this._invalidAnimation = true;
         this._invalidRender = true;
         this._invalidImages = true;
@@ -14430,16 +14423,23 @@ var GL_SurfaceBase = (function (_super) {
         if (this._invalidRender)
             this._pUpdateRender();
         this._invalidAnimation = false;
-        var enabledGPUAnimation = this._getEnabledGPUAnimation();
+        var usesAnimation = this._getEnabledGPUAnimation();
         var renderOrderId = 0;
         var mult = 1;
         var shader;
         var len = this._passes.length;
         for (var i = 0; i < len; i++) {
             shader = this._passes[i].shader;
-            shader.usesAnimation = enabledGPUAnimation;
+            shader.usesAnimation = usesAnimation;
             renderOrderId += shader.programData.id * mult;
             mult *= 1000;
+        }
+        if (this._usesAnimation != usesAnimation) {
+            this._usesAnimation = usesAnimation;
+            var renderables = this._surface.iOwners;
+            var numOwners = renderables.length;
+            for (var j = 0; j < numOwners; j++)
+                renderables[j].invalidateElements();
         }
         this._renderOrderId = renderOrderId;
     };
@@ -14591,8 +14591,8 @@ var GL_SurfacePassBase = (function (_super) {
      *
      * @internal
      */
-    GL_SurfacePassBase.prototype._iRender = function (renderable, camera, viewProjection) {
-        this._shader._iRender(renderable, camera, viewProjection);
+    GL_SurfacePassBase.prototype._setRenderState = function (renderable, camera, viewProjection) {
+        this._shader._setRenderState(renderable, camera, viewProjection);
     };
     /**
      * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
@@ -14771,8 +14771,8 @@ var BasicMaterialPass = (function (_super) {
         }
         return code;
     };
-    BasicMaterialPass.prototype._iRender = function (renderable, camera, viewProjection) {
-        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
+    BasicMaterialPass.prototype._setRenderState = function (renderable, camera, viewProjection) {
+        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
         if (this._textureVO != null)
             this._textureVO._setRenderState(renderable);
     };
@@ -14917,8 +14917,8 @@ var PassBase = (function (_super) {
      *
      * @internal
      */
-    PassBase.prototype._iRender = function (renderable, camera, viewProjection) {
-        this._shader._iRender(renderable, camera, viewProjection);
+    PassBase.prototype._setRenderState = function (renderable, camera, viewProjection) {
+        this._shader._setRenderState(renderable, camera, viewProjection);
     };
     /**
      * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
