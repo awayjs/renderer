@@ -65,17 +65,12 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var BitmapImage2D_1 = require("awayjs-core/lib/image/BitmapImage2D");
-var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
-var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ContextGLCompareMode_1 = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var ContextGLClearMask_1 = require("awayjs-stagegl/lib/base/ContextGLClearMask");
 var RendererBase_1 = require("./RendererBase");
 var DepthRenderer_1 = require("./DepthRenderer");
 var DistanceRenderer_1 = require("./DistanceRenderer");
 var Filter3DRenderer_1 = require("./Filter3DRenderer");
-var GL_SkyboxElements_1 = require("./elements/GL_SkyboxElements");
 var RTTBufferManager_1 = require("./managers/RTTBufferManager");
-var SurfacePool_1 = require("./surfaces/SurfacePool");
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
  * materials assigned to them.
@@ -96,7 +91,6 @@ var DefaultRenderer = (function (_super) {
         if (profile === void 0) { profile = "baseline"; }
         if (mode === void 0) { mode = "auto"; }
         _super.call(this, stage, null, forceSoftware, profile, mode);
-        this._skyboxProjection = new Matrix3D_1.default();
         this._antiAlias = 0;
         this._directionalLights = new Array();
         this._pointLights = new Array();
@@ -114,7 +108,6 @@ var DefaultRenderer = (function (_super) {
             this.height = window.innerHeight;
         else
             this._pRttBufferManager.viewHeight = this._height;
-        this._skyBoxSurfacePool = new SurfacePool_1.default(GL_SkyboxElements_1.default, this._pStage);
     }
     Object.defineProperty(DefaultRenderer.prototype, "antiAlias", {
         get: function () {
@@ -253,47 +246,6 @@ var DefaultRenderer = (function (_super) {
         }
     };
     /**
-     * @inheritDoc
-     */
-    DefaultRenderer.prototype.pDraw = function (camera) {
-        if (this._skybox) {
-            this._pContext.setDepthTest(false, ContextGLCompareMode_1.default.ALWAYS);
-            this.drawSkybox(camera);
-        }
-        _super.prototype.pDraw.call(this, camera);
-    };
-    /**
-     * Draw the skybox if present.
-     **/
-    DefaultRenderer.prototype.drawSkybox = function (camera) {
-        var renderable = this.getAbstraction(this._skybox);
-        renderable.renderSceneTransform = this._skybox.getRenderSceneTransform(this._cameraTransform);
-        this.updateSkyboxProjection(camera);
-        var pass = this._skyBoxSurfacePool.getAbstraction(renderable.surfaceGL.surface).passes[0];
-        this.activatePass(pass, camera);
-        renderable._iRender(pass, camera, this._skyboxProjection);
-        this.deactivatePass(pass);
-    };
-    DefaultRenderer.prototype.updateSkyboxProjection = function (camera) {
-        var near = new Vector3D_1.default();
-        this._skyboxProjection.copyFrom(this._pRttViewProjectionMatrix);
-        this._skyboxProjection.copyRowTo(2, near);
-        var camPos = camera.scenePosition;
-        var cx = near.x;
-        var cy = near.y;
-        var cz = near.z;
-        var cw = -(near.x * camPos.x + near.y * camPos.y + near.z * camPos.z + Math.sqrt(cx * cx + cy * cy + cz * cz));
-        var signX = cx >= 0 ? 1 : -1;
-        var signY = cy >= 0 ? 1 : -1;
-        var p = new Vector3D_1.default(signX, signY, 1, 1);
-        var inverse = this._skyboxProjection.clone();
-        inverse.invert();
-        var q = inverse.transformVector(p);
-        this._skyboxProjection.copyRowTo(3, p);
-        var a = (q.x * p.x + q.y * p.y + q.z * p.z + q.w * p.w) / (cx * q.x + cy * q.y + cz * q.z + cw * q.w);
-        this._skyboxProjection.copyRowFrom(2, new Vector3D_1.default(cx * a, cy * a, cz * a, cw * a));
-    };
-    /**
      *
      * @param entity
      */
@@ -313,13 +265,6 @@ var DefaultRenderer = (function (_super) {
      */
     DefaultRenderer.prototype.applyPointLight = function (entity) {
         this._pointLights.push(entity);
-    };
-    /**
-     *
-     * @param entity
-     */
-    DefaultRenderer.prototype.applySkybox = function (entity) {
-        this._skybox = entity;
     };
     DefaultRenderer.prototype.dispose = function () {
         if (!this.shareContext)
@@ -388,7 +333,7 @@ var DefaultRenderer = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DefaultRenderer;
 
-},{"./DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","./DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","./Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","./RendererBase":"awayjs-renderergl/lib/RendererBase","./elements/GL_SkyboxElements":"awayjs-renderergl/lib/elements/GL_SkyboxElements","./managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","./surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
+},{"./DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","./DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","./Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","./RendererBase":"awayjs-renderergl/lib/RendererBase","./managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -9939,6 +9884,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
+var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 var ContextGLDrawMode_1 = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var GL_TriangleElements_1 = require("../elements/GL_TriangleElements");
@@ -9950,6 +9897,7 @@ var GL_SkyboxElements = (function (_super) {
     __extends(GL_SkyboxElements, _super);
     function GL_SkyboxElements() {
         _super.apply(this, arguments);
+        this._skyboxProjection = new Matrix3D_1.default();
     }
     Object.defineProperty(GL_SkyboxElements.prototype, "elementsType", {
         get: function () {
@@ -10009,13 +9957,30 @@ var GL_SkyboxElements = (function (_super) {
         shader.vertexConstantData[index++] = 1;
         shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = camera.projection.far / Math.sqrt(3);
         shader.vertexConstantData[index] = 1;
+        var near = new Vector3D_1.default();
+        this._skyboxProjection.copyFrom(viewProjection);
+        this._skyboxProjection.copyRowTo(2, near);
+        var camPos = camera.scenePosition;
+        var cx = near.x;
+        var cy = near.y;
+        var cz = near.z;
+        var cw = -(near.x * camPos.x + near.y * camPos.y + near.z * camPos.z + Math.sqrt(cx * cx + cy * cy + cz * cz));
+        var signX = cx >= 0 ? 1 : -1;
+        var signY = cy >= 0 ? 1 : -1;
+        var p = new Vector3D_1.default(signX, signY, 1, 1);
+        var inverse = this._skyboxProjection.clone();
+        inverse.invert();
+        var q = inverse.transformVector(p);
+        this._skyboxProjection.copyRowTo(3, p);
+        var a = (q.x * p.x + q.y * p.y + q.z * p.z + q.w * p.w) / (cx * q.x + cy * q.y + cz * q.z + cw * q.w);
+        this._skyboxProjection.copyRowFrom(2, new Vector3D_1.default(cx * a, cy * a, cz * a, cw * a));
         //set constants
         if (shader.sceneMatrixIndex >= 0) {
             renderable.renderSceneTransform.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
-            viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+            this._skyboxProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
         }
         else {
-            viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+            this._skyboxProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
         }
         var context = this._stage.context;
         context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, shader.vertexConstantData);
@@ -10031,7 +9996,7 @@ var GL_SkyboxElements = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_SkyboxElements;
 
-},{"../elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/GL_TriangleElements":[function(require,module,exports){
+},{"../elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/GL_TriangleElements":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
