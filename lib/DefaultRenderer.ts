@@ -43,14 +43,11 @@ class DefaultRenderer extends RendererBase
 
 	private _pDistanceRenderer:DepthRenderer;
 	private _pDepthRenderer:DepthRenderer;
-	private _skyBoxSurfacePool:SurfacePool;
-	private _skyboxProjection:Matrix3D = new Matrix3D();
 	public _pFilter3DRenderer:Filter3DRenderer;
 
 	public _pDepthRender:BitmapImage2D;
 
 	private _antiAlias:number = 0;
-	private _skybox:Skybox;
 	private _directionalLights:Array<DirectionalLight> = new Array<DirectionalLight>();
 	private _pointLights:Array<PointLight> = new Array<PointLight>();
 	private _lightProbes:Array<LightProbe> = new Array<LightProbe>();
@@ -144,8 +141,6 @@ class DefaultRenderer extends RendererBase
 			this.height = window.innerHeight;
 		else
 			this._pRttBufferManager.viewHeight = this._height;
-
-		this._skyBoxSurfacePool = new SurfacePool(GL_SkyboxElements, this._pStage);
 	}
 
 	/**
@@ -248,68 +243,6 @@ class DefaultRenderer extends RendererBase
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	public pDraw(camera:Camera)
-	{
-		if (this._skybox) {
-			this._pContext.setDepthTest(false, ContextGLCompareMode.ALWAYS);
-
-			this.drawSkybox(camera);
-		}
-
-		super.pDraw(camera);
-	}
-
-	/**
-	 * Draw the skybox if present.
-	 **/
-	private drawSkybox(camera:Camera)
-	{
-		var renderable:GL_RenderableBase = this.getAbstraction(this._skybox);
-
-		renderable.renderSceneTransform = this._skybox.getRenderSceneTransform(this._cameraTransform);
-		this.updateSkyboxProjection(camera);
-
-		var pass:IPass = this._skyBoxSurfacePool.getAbstraction(renderable.surfaceGL.surface).passes[0];
-
-		this.activatePass(pass, camera);
-		renderable._iRender(pass, camera, this._skyboxProjection);
-		this.deactivatePass(pass);
-	}
-
-	private updateSkyboxProjection(camera:Camera)
-	{
-		var near:Vector3D = new Vector3D();
-
-		this._skyboxProjection.copyFrom(this._pRttViewProjectionMatrix);
-		this._skyboxProjection.copyRowTo(2, near);
-
-		var camPos:Vector3D = camera.scenePosition;
-
-		var cx:number = near.x;
-		var cy:number = near.y;
-		var cz:number = near.z;
-		var cw:number = -(near.x*camPos.x + near.y*camPos.y + near.z*camPos.z + Math.sqrt(cx*cx + cy*cy + cz*cz));
-
-		var signX:number = cx >= 0? 1 : -1;
-		var signY:number = cy >= 0? 1 : -1;
-
-		var p:Vector3D = new Vector3D(signX, signY, 1, 1);
-
-		var inverse:Matrix3D = this._skyboxProjection.clone();
-		inverse.invert();
-
-		var q:Vector3D = inverse.transformVector(p);
-
-		this._skyboxProjection.copyRowTo(3, p);
-
-		var a:number = (q.x*p.x + q.y*p.y + q.z*p.z + q.w*p.w)/(cx*q.x + cy*q.y + cz*q.z + cw*q.w);
-
-		this._skyboxProjection.copyRowFrom(2, new Vector3D(cx*a, cy*a, cz*a, cw*a));
-	}
-
-	/**
 	 *
 	 * @param entity
 	 */
@@ -334,15 +267,6 @@ class DefaultRenderer extends RendererBase
 	public applyPointLight(entity:IEntity)
 	{
 		this._pointLights.push(<PointLight> entity);
-	}
-
-	/**
-	 *
-	 * @param entity
-	 */
-	public applySkybox(entity:IEntity)
-	{
-		this._skybox = <Skybox> entity;
 	}
 
 	public dispose()

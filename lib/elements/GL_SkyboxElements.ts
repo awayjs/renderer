@@ -22,6 +22,8 @@ import ShaderRegisterData			from "../shaders/ShaderRegisterData";
  */
 class GL_SkyboxElements extends GL_TriangleElements
 {
+	private _skyboxProjection:Matrix3D = new Matrix3D();
+	
 	public static elementsType:string = "[elements Skybox]";
 
 	public get elementsType():string
@@ -93,12 +95,40 @@ class GL_SkyboxElements extends GL_TriangleElements
 		shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = camera.projection.far/Math.sqrt(3);
 		shader.vertexConstantData[index] = 1;
 
+		var near:Vector3D = new Vector3D();
+
+		this._skyboxProjection.copyFrom(viewProjection);
+		this._skyboxProjection.copyRowTo(2, near);
+
+		var camPos:Vector3D = camera.scenePosition;
+
+		var cx:number = near.x;
+		var cy:number = near.y;
+		var cz:number = near.z;
+		var cw:number = -(near.x*camPos.x + near.y*camPos.y + near.z*camPos.z + Math.sqrt(cx*cx + cy*cy + cz*cz));
+
+		var signX:number = cx >= 0? 1 : -1;
+		var signY:number = cy >= 0? 1 : -1;
+
+		var p:Vector3D = new Vector3D(signX, signY, 1, 1);
+
+		var inverse:Matrix3D = this._skyboxProjection.clone();
+		inverse.invert();
+
+		var q:Vector3D = inverse.transformVector(p);
+
+		this._skyboxProjection.copyRowTo(3, p);
+
+		var a:number = (q.x*p.x + q.y*p.y + q.z*p.z + q.w*p.w)/(cx*q.x + cy*q.y + cz*q.z + cw*q.w);
+
+		this._skyboxProjection.copyRowFrom(2, new Vector3D(cx*a, cy*a, cz*a, cw*a));
+		
 		//set constants
 		if (shader.sceneMatrixIndex >= 0) {
 			renderable.renderSceneTransform.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
-			viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+			this._skyboxProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
 		} else {
-			viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+			this._skyboxProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
 		}
 
 		var context:IContextGL = this._stage.context;
