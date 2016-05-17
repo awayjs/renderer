@@ -607,7 +607,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 */
 	public pDraw(camera:Camera)
 	{
-		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
 
 		if (this._disableColor)
 			this._pContext.setColorMask(false, false, false, false);
@@ -1011,6 +1011,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
 
 		this._pContext.setColorMask(true, true, true, true);
+		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
 		//this._stage.setRenderTarget(oldRenderTarget);
 	}
 
@@ -1022,6 +1023,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		var pass = passes[len-1];
 
 		this.activatePass(pass, camera);
+		this._pContext.setDepthTest(false, ContextGLCompareMode.LESS); //TODO: setup so as not to override activate
 		// only render last pass for now
 		renderableGL._iRender(pass, camera, this._pRttViewProjectionMatrix);
 		this.deactivatePass(pass);
