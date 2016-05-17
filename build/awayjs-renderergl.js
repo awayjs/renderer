@@ -1019,7 +1019,7 @@ var RendererBase = (function (_super) {
      * Performs the actual drawing of geometry to the target.
      */
     RendererBase.prototype.pDraw = function (camera) {
-        this._pContext.setDepthTest(true, ContextGLCompareMode_1.default.LESS_EQUAL);
+        this._pContext.setDepthTest(true, ContextGLCompareMode_1.default.LESS);
         if (this._disableColor)
             this._pContext.setColorMask(false, false, false, false);
         this.drawRenderables(camera, this._pOpaqueRenderableHead);
@@ -1346,6 +1346,7 @@ var RendererBase = (function (_super) {
         gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
         this._pContext.setColorMask(true, true, true, true);
+        this._pContext.setDepthTest(true, ContextGLCompareMode_1.default.LESS);
         //this._stage.setRenderTarget(oldRenderTarget);
     };
     RendererBase.prototype._drawMask = function (camera, renderableGL) {
@@ -1354,6 +1355,7 @@ var RendererBase = (function (_super) {
         var len = passes.length;
         var pass = passes[len - 1];
         this.activatePass(pass, camera);
+        this._pContext.setDepthTest(false, ContextGLCompareMode_1.default.LESS); //TODO: setup so as not to override activate
         // only render last pass for now
         renderableGL._iRender(pass, camera, this._pRttViewProjectionMatrix);
         this.deactivatePass(pass);
@@ -12412,7 +12414,7 @@ var ShaderBase = (function () {
          *
          * @see away.stagegl.ContextGLCompareMode
          */
-        this.depthCompareMode = ContextGLCompareMode_1.default.LESS_EQUAL;
+        this.depthCompareMode = ContextGLCompareMode_1.default.LESS;
         /**
          * Indicate whether the shader should write to the depth buffer or not. Ignored when blending is enabled.
          */
@@ -12686,7 +12688,7 @@ var ShaderBase = (function () {
      */
     ShaderBase.prototype._iDeactivate = function () {
         //For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
-        this._stage.context.setDepthTest(true, ContextGLCompareMode_1.default.LESS_EQUAL);
+        this._stage.context.setDepthTest(true, ContextGLCompareMode_1.default.LESS);
         this.activeElements = null;
     };
     /**
