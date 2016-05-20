@@ -27,15 +27,15 @@ exports.tools = tools;
 var utils = require("./lib/utils");
 exports.utils = utils;
 var DefaultRenderer_1 = require("./lib/DefaultRenderer");
-exports.DefaultRenderer = DefaultRenderer_1.default;
+exports.DefaultRenderer = DefaultRenderer_1.DefaultRenderer;
 var DepthRenderer_1 = require("./lib/DepthRenderer");
-exports.DepthRenderer = DepthRenderer_1.default;
+exports.DepthRenderer = DepthRenderer_1.DepthRenderer;
 var DistanceRenderer_1 = require("./lib/DistanceRenderer");
-exports.DistanceRenderer = DistanceRenderer_1.default;
+exports.DistanceRenderer = DistanceRenderer_1.DistanceRenderer;
 var Filter3DRenderer_1 = require("./lib/Filter3DRenderer");
-exports.Filter3DRenderer = Filter3DRenderer_1.default;
+exports.Filter3DRenderer = Filter3DRenderer_1.Filter3DRenderer;
 var RendererBase_1 = require("./lib/RendererBase");
-exports.RendererBase = RendererBase_1.default;
+exports.RendererBase = RendererBase_1.RendererBase;
 var BasicMaterial_1 = require("awayjs-display/lib/materials/BasicMaterial");
 var Skybox_1 = require("awayjs-display/lib/display/Skybox");
 var Billboard_1 = require("awayjs-display/lib/display/Billboard");
@@ -46,16 +46,16 @@ var Graphic_1 = require("awayjs-display/lib/graphics/Graphic");
 var Single2DTexture_1 = require("awayjs-display/lib/textures/Single2DTexture");
 var SingleCubeTexture_1 = require("awayjs-display/lib/textures/SingleCubeTexture");
 var Stage_1 = require("awayjs-stagegl/lib/base/Stage");
-surfaces.SurfacePool.registerAbstraction(surfaces.GL_BasicMaterialSurface, BasicMaterial_1.default);
-surfaces.SurfacePool.registerAbstraction(surfaces.GL_SkyboxSurface, Skybox_1.default);
-Stage_1.default.registerAbstraction(elements.GL_LineElements, LineElements_1.default);
-Stage_1.default.registerAbstraction(elements.GL_TriangleElements, TriangleElements_1.default);
-shaders.ShaderBase.registerAbstraction(textures.GL_Single2DTexture, Single2DTexture_1.default);
-shaders.ShaderBase.registerAbstraction(textures.GL_SingleCubeTexture, SingleCubeTexture_1.default);
-RendererBase_1.default.registerAbstraction(renderables.GL_BillboardRenderable, Billboard_1.default);
-RendererBase_1.default.registerAbstraction(renderables.GL_LineSegmentRenderable, LineSegment_1.default);
-RendererBase_1.default.registerAbstraction(renderables.GL_GraphicRenderable, Graphic_1.default);
-RendererBase_1.default.registerAbstraction(renderables.GL_SkyboxRenderable, Skybox_1.default);
+surfaces.SurfacePool.registerAbstraction(surfaces.GL_BasicMaterialSurface, BasicMaterial_1.BasicMaterial);
+surfaces.SurfacePool.registerAbstraction(surfaces.GL_SkyboxSurface, Skybox_1.Skybox);
+Stage_1.Stage.registerAbstraction(elements.GL_LineElements, LineElements_1.LineElements);
+Stage_1.Stage.registerAbstraction(elements.GL_TriangleElements, TriangleElements_1.TriangleElements);
+shaders.ShaderBase.registerAbstraction(textures.GL_Single2DTexture, Single2DTexture_1.Single2DTexture);
+shaders.ShaderBase.registerAbstraction(textures.GL_SingleCubeTexture, SingleCubeTexture_1.SingleCubeTexture);
+RendererBase_1.RendererBase.registerAbstraction(renderables.GL_BillboardRenderable, Billboard_1.Billboard);
+RendererBase_1.RendererBase.registerAbstraction(renderables.GL_LineSegmentRenderable, LineSegment_1.LineSegment);
+RendererBase_1.RendererBase.registerAbstraction(renderables.GL_GraphicRenderable, Graphic_1.Graphic);
+RendererBase_1.RendererBase.registerAbstraction(renderables.GL_SkyboxRenderable, Skybox_1.Skybox);
 
 },{"./lib/DefaultRenderer":"awayjs-renderergl/lib/DefaultRenderer","./lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","./lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","./lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","./lib/RendererBase":"awayjs-renderergl/lib/RendererBase","./lib/animators":"awayjs-renderergl/lib/animators","./lib/elements":"awayjs-renderergl/lib/elements","./lib/errors":"awayjs-renderergl/lib/errors","./lib/events":"awayjs-renderergl/lib/events","./lib/filters":"awayjs-renderergl/lib/filters","./lib/managers":"awayjs-renderergl/lib/managers","./lib/renderables":"awayjs-renderergl/lib/renderables","./lib/shaders":"awayjs-renderergl/lib/shaders","./lib/sort":"awayjs-renderergl/lib/sort","./lib/surfaces":"awayjs-renderergl/lib/surfaces","./lib/textures":"awayjs-renderergl/lib/textures","./lib/tools":"awayjs-renderergl/lib/tools","./lib/utils":"awayjs-renderergl/lib/utils","awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/LineSegment":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/graphics/Graphic":undefined,"awayjs-display/lib/graphics/LineElements":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-stagegl/lib/base/Stage":undefined}],"awayjs-renderergl/lib/DefaultRenderer":[function(require,module,exports){
 "use strict";
@@ -97,9 +97,9 @@ var DefaultRenderer = (function (_super) {
         this._lightProbes = new Array();
         if (stage)
             this.shareContext = true;
-        this._pRttBufferManager = RTTBufferManager_1.default.getInstance(this._pStage);
-        this._pDepthRenderer = new DepthRenderer_1.default(this._pStage);
-        this._pDistanceRenderer = new DistanceRenderer_1.default(this._pStage);
+        this._pRttBufferManager = RTTBufferManager_1.RTTBufferManager.getInstance(this._pStage);
+        this._pDepthRenderer = new DepthRenderer_1.DepthRenderer(this._pStage);
+        this._pDistanceRenderer = new DistanceRenderer_1.DistanceRenderer(this._pStage);
         if (this._width == 0)
             this.width = window.innerWidth;
         else
@@ -151,7 +151,7 @@ var DefaultRenderer = (function (_super) {
                 this._pFilter3DRenderer = null;
             }
             else if (!this._pFilter3DRenderer && value) {
-                this._pFilter3DRenderer = new Filter3DRenderer_1.default(this._pStage);
+                this._pFilter3DRenderer = new Filter3DRenderer_1.Filter3DRenderer(this._pStage);
                 this._pFilter3DRenderer.filters = value;
             }
             if (this._pFilter3DRenderer) {
@@ -187,7 +187,7 @@ var DefaultRenderer = (function (_super) {
         if (this._pBackBufferInvalid)
             this.pUpdateBackBuffer();
         if (this.shareContext && this._pContext)
-            this._pContext.clear(0, 0, 0, 1, 1, 0, ContextGLClearMask_1.default.DEPTH);
+            this._pContext.clear(0, 0, 0, 1, 1, 0, ContextGLClearMask_1.ContextGLClearMask.DEPTH);
         if (this._pFilter3DRenderer) {
             this.textureRatioX = this._pRttBufferManager.textureRatioX;
             this.textureRatioY = this._pRttBufferManager.textureRatioY;
@@ -326,12 +326,11 @@ var DefaultRenderer = (function (_super) {
         this._pDepthTextureInvalid = false;
         if (this._pDepthRender)
             this._pDepthRender.dispose();
-        this._pDepthRender = new BitmapImage2D_1.default(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
+        this._pDepthRender = new BitmapImage2D_1.BitmapImage2D(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
     };
     return DefaultRenderer;
-}(RendererBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = DefaultRenderer;
+}(RendererBase_1.RendererBase));
+exports.DefaultRenderer = DefaultRenderer;
 
 },{"./DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","./DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","./Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","./RendererBase":"awayjs-renderergl/lib/RendererBase","./managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
 "use strict";
@@ -356,7 +355,7 @@ var DepthRenderer = (function (_super) {
      */
     function DepthRenderer(stage) {
         if (stage === void 0) { stage = null; }
-        _super.call(this, stage, GL_DepthSurface_1.default);
+        _super.call(this, stage, GL_DepthSurface_1.GL_DepthSurface);
         this._iBackgroundR = 1;
         this._iBackgroundG = 1;
         this._iBackgroundB = 1;
@@ -365,17 +364,16 @@ var DepthRenderer = (function (_super) {
      *
      */
     DepthRenderer.prototype.enterNode = function (node) {
-        var enter = node._iCollectionMark != RendererBase_1.default._iCollectionMark && node.isCastingShadow();
+        var enter = node._iCollectionMark != RendererBase_1.RendererBase._iCollectionMark && node.isCastingShadow();
         if (!enter) {
-            node._iCollectionMark = RendererBase_1.default._iCollectionMark;
+            node._iCollectionMark = RendererBase_1.RendererBase._iCollectionMark;
             return false;
         }
         return _super.prototype.enterNode.call(this, node);
     };
     return DepthRenderer;
-}(RendererBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = DepthRenderer;
+}(RendererBase_1.RendererBase));
+exports.DepthRenderer = DepthRenderer;
 
 },{"./RendererBase":"awayjs-renderergl/lib/RendererBase","./surfaces/GL_DepthSurface":"awayjs-renderergl/lib/surfaces/GL_DepthSurface"}],"awayjs-renderergl/lib/DistanceRenderer":[function(require,module,exports){
 "use strict";
@@ -400,7 +398,7 @@ var DistanceRenderer = (function (_super) {
      */
     function DistanceRenderer(stage) {
         if (stage === void 0) { stage = null; }
-        _super.call(this, stage, GL_DistanceSurface_1.default);
+        _super.call(this, stage, GL_DistanceSurface_1.GL_DistanceSurface);
         this._iBackgroundR = 1;
         this._iBackgroundG = 1;
         this._iBackgroundB = 1;
@@ -409,17 +407,16 @@ var DistanceRenderer = (function (_super) {
      *
      */
     DistanceRenderer.prototype.enterNode = function (node) {
-        var enter = node._iCollectionMark != RendererBase_1.default._iCollectionMark && node.isCastingShadow();
+        var enter = node._iCollectionMark != RendererBase_1.RendererBase._iCollectionMark && node.isCastingShadow();
         if (!enter) {
-            node._iCollectionMark = RendererBase_1.default._iCollectionMark;
+            node._iCollectionMark = RendererBase_1.RendererBase._iCollectionMark;
             return false;
         }
         return _super.prototype.enterNode.call(this, node);
     };
     return DistanceRenderer;
-}(RendererBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = DistanceRenderer;
+}(RendererBase_1.RendererBase));
+exports.DistanceRenderer = DistanceRenderer;
 
 },{"./RendererBase":"awayjs-renderergl/lib/RendererBase","./surfaces/GL_DistanceSurface":"awayjs-renderergl/lib/surfaces/GL_DistanceSurface"}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
 "use strict";
@@ -437,8 +434,8 @@ var Filter3DRenderer = (function () {
         this._filterSizesInvalid = true;
         this._onRTTResizeDelegate = function (event) { return _this.onRTTResize(event); };
         this._stage = stage;
-        this._rttManager = RTTBufferManager_1.default.getInstance(stage);
-        this._rttManager.addEventListener(RTTEvent_1.default.RESIZE, this._onRTTResizeDelegate);
+        this._rttManager = RTTBufferManager_1.RTTBufferManager.getInstance(stage);
+        this._rttManager.addEventListener(RTTEvent_1.RTTEvent.RESIZE, this._onRTTResizeDelegate);
     }
     Filter3DRenderer.prototype.onRTTResize = function (event) {
         this._filterSizesInvalid = true;
@@ -511,8 +508,8 @@ var Filter3DRenderer = (function () {
         len = this._tasks.length;
         if (len > 1) {
             context.setProgram(this._tasks[0].getProgram(stage));
-            context.setVertexBufferAt(this._tasks[0]._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat_1.default.FLOAT_2);
-            context.setVertexBufferAt(this._tasks[0]._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat_1.default.FLOAT_2);
+            context.setVertexBufferAt(this._tasks[0]._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_2);
+            context.setVertexBufferAt(this._tasks[0]._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_2);
         }
         for (i = 0; i < len; ++i) {
             task = this._tasks[i];
@@ -522,13 +519,13 @@ var Filter3DRenderer = (function () {
             if (!task.target) {
                 stage.scissorRect = null;
                 vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
-                context.setVertexBufferAt(task._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat_1.default.FLOAT_2);
-                context.setVertexBufferAt(task._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat_1.default.FLOAT_2);
+                context.setVertexBufferAt(task._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_2);
+                context.setVertexBufferAt(task._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_2);
             }
             context.clear(0.0, 0.0, 0.0, 0.0);
             task.activate(stage, camera, depthTexture);
-            context.setBlendFactors(ContextGLBlendFactor_1.default.ONE, ContextGLBlendFactor_1.default.ZERO);
-            context.drawIndices(ContextGLDrawMode_1.default.TRIANGLES, indexBuffer, 0, 6);
+            context.setBlendFactors(ContextGLBlendFactor_1.ContextGLBlendFactor.ONE, ContextGLBlendFactor_1.ContextGLBlendFactor.ZERO);
+            context.drawIndices(ContextGLDrawMode_1.ContextGLDrawMode.TRIANGLES, indexBuffer, 0, 6);
             task.deactivate(stage);
         }
         context.setTextureAt(0, null);
@@ -544,14 +541,13 @@ var Filter3DRenderer = (function () {
         this._filterSizesInvalid = true;
     };
     Filter3DRenderer.prototype.dispose = function () {
-        this._rttManager.removeEventListener(RTTEvent_1.default.RESIZE, this._onRTTResizeDelegate);
+        this._rttManager.removeEventListener(RTTEvent_1.RTTEvent.RESIZE, this._onRTTResizeDelegate);
         this._rttManager = null;
         this._stage = null;
     };
     return Filter3DRenderer;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Filter3DRenderer;
+exports.Filter3DRenderer = Filter3DRenderer;
 
 },{"./events/RTTEvent":"awayjs-renderergl/lib/events/RTTEvent","./managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/RendererBase":[function(require,module,exports){
 "use strict";
@@ -599,8 +595,8 @@ var RendererBase = (function (_super) {
         this._registeredMasks = new Array();
         this._numUsedStreams = 0;
         this._numUsedTextures = 0;
-        this._cameraForward = new Vector3D_1.default();
-        this._viewPort = new Rectangle_1.default();
+        this._cameraForward = new Vector3D_1.Vector3D();
+        this._viewPort = new Rectangle_1.Rectangle();
         this._pBackBufferInvalid = true;
         this._pDepthTextureInvalid = true;
         this._depthPrepass = false;
@@ -610,10 +606,10 @@ var RendererBase = (function (_super) {
         this._backgroundAlpha = 1;
         this.textureRatioX = 1;
         this.textureRatioY = 1;
-        this._pRttViewProjectionMatrix = new Matrix3D_1.default();
-        this._localPos = new Point_1.default();
-        this._globalPos = new Point_1.default();
-        this._pScissorRect = new Rectangle_1.default();
+        this._pRttViewProjectionMatrix = new Matrix3D_1.Matrix3D();
+        this._localPos = new Point_1.Point();
+        this._globalPos = new Point_1.Point();
+        this._pScissorRect = new Rectangle_1.Rectangle();
         this._pNumElements = 0;
         this._disableColor = false;
         this._renderBlended = true;
@@ -621,12 +617,12 @@ var RendererBase = (function (_super) {
         this._onViewportUpdatedDelegate = function (event) { return _this.onViewportUpdated(event); };
         this._onContextUpdateDelegate = function (event) { return _this.onContextUpdate(event); };
         //default sorting algorithm
-        this.renderableSorter = new RenderableMergeSort_1.default();
+        this.renderableSorter = new RenderableMergeSort_1.RenderableMergeSort();
         //set stage
-        this._pStage = stage || StageManager_1.default.getInstance().getFreeStage(forceSoftware, profile, mode);
-        this._pStage.addEventListener(StageEvent_1.default.CONTEXT_CREATED, this._onContextUpdateDelegate);
-        this._pStage.addEventListener(StageEvent_1.default.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-        this._pStage.addEventListener(StageEvent_1.default.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+        this._pStage = stage || StageManager_1.StageManager.getInstance().getFreeStage(forceSoftware, profile, mode);
+        this._pStage.addEventListener(StageEvent_1.StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+        this._pStage.addEventListener(StageEvent_1.StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+        this._pStage.addEventListener(StageEvent_1.StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
         this._surfaceClassGL = surfaceClassGL;
         /*
          if (_backgroundImageRenderer)
@@ -789,7 +785,7 @@ var RendererBase = (function (_super) {
      * @returns SurfacePool
      */
     RendererBase.prototype.getSurfacePool = function (elements) {
-        return this._objectPools[elements.elementsType] || (this._objectPools[elements.elementsType] = new SurfacePool_1.default(elements.elementsClass, this._pStage, this._surfaceClassGL));
+        return this._objectPools[elements.elementsType] || (this._objectPools[elements.elementsType] = new SurfacePool_1.SurfacePool(elements.elementsClass, this._pStage, this._surfaceClassGL));
     };
     /**
      *
@@ -810,8 +806,8 @@ var RendererBase = (function (_super) {
         var programData = pass.shader.programData;
         if (!programData.program) {
             programData.program = this._pContext.createProgram();
-            var vertexByteCode = (new AGALMiniAssembler_1.default().assemble("part vertex 1\n" + programData.vertexString + "endpart"))['vertex'].data;
-            var fragmentByteCode = (new AGALMiniAssembler_1.default().assemble("part fragment 1\n" + programData.fragmentString + "endpart"))['fragment'].data;
+            var vertexByteCode = (new AGALMiniAssembler_1.AGALMiniAssembler().assemble("part vertex 1\n" + programData.vertexString + "endpart"))['vertex'].data;
+            var fragmentByteCode = (new AGALMiniAssembler_1.AGALMiniAssembler().assemble("part fragment 1\n" + programData.fragmentString + "endpart"))['fragment'].data;
             programData.program.upload(vertexByteCode, fragmentByteCode);
         }
         //set program data
@@ -903,9 +899,9 @@ var RendererBase = (function (_super) {
         for (var id in this._abstractionPool)
             this._abstractionPool[id].clear();
         this._abstractionPool = null;
-        this._pStage.removeEventListener(StageEvent_1.default.CONTEXT_CREATED, this._onContextUpdateDelegate);
-        this._pStage.removeEventListener(StageEvent_1.default.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-        this._pStage.removeEventListener(StageEvent_1.default.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+        this._pStage.removeEventListener(StageEvent_1.StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+        this._pStage.removeEventListener(StageEvent_1.StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+        this._pStage.removeEventListener(StageEvent_1.StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
         this._pStage = null;
         this._pContext = null;
         /*
@@ -940,7 +936,7 @@ var RendererBase = (function (_super) {
         this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
         this._cameraPosition = camera.scenePosition;
         this._cameraTransform = camera.sceneTransform;
-        this._cameraForward = Matrix3DUtils_1.default.getForward(camera.sceneTransform, this._cameraForward);
+        this._cameraForward = Matrix3DUtils_1.Matrix3DUtils.getForward(camera.sceneTransform, this._cameraForward);
         RendererBase._iCollectionMark++;
         scene.traversePartitions(this);
         //sort the resulting renderables
@@ -963,8 +959,8 @@ var RendererBase = (function (_super) {
     RendererBase.prototype._iRenderCascades = function (camera, scene, target, numCascades, scissorRects, cameras) {
         this._pStage.setRenderTarget(target, true, 0);
         this._pContext.clear(1, 1, 1, 1, 1, 0);
-        this._pContext.setBlendFactors(ContextGLBlendFactor_1.default.ONE, ContextGLBlendFactor_1.default.ZERO);
-        this._pContext.setDepthTest(true, ContextGLCompareMode_1.default.LESS);
+        this._pContext.setBlendFactors(ContextGLBlendFactor_1.ContextGLBlendFactor.ONE, ContextGLBlendFactor_1.ContextGLBlendFactor.ZERO);
+        this._pContext.setDepthTest(true, ContextGLCompareMode_1.ContextGLCompareMode.LESS);
         var head = this._pOpaqueRenderableHead;
         var first = true;
         //TODO cascades must have separate collectors, rather than separate draw commands
@@ -974,7 +970,7 @@ var RendererBase = (function (_super) {
             first = false;
         }
         //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-        this._pContext.setDepthTest(false, ContextGLCompareMode_1.default.LESS_EQUAL);
+        this._pContext.setDepthTest(false, ContextGLCompareMode_1.ContextGLCompareMode.LESS_EQUAL);
         this._pStage.scissorRect = null;
     };
     /**
@@ -996,7 +992,7 @@ var RendererBase = (function (_super) {
          if (_backgroundImageRenderer)
          _backgroundImageRenderer.render();
          */
-        this._pContext.setBlendFactors(ContextGLBlendFactor_1.default.ONE, ContextGLBlendFactor_1.default.ZERO);
+        this._pContext.setBlendFactors(ContextGLBlendFactor_1.ContextGLBlendFactor.ONE, ContextGLBlendFactor_1.ContextGLBlendFactor.ZERO);
         this.pDraw(camera);
         //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
         //this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
@@ -1019,7 +1015,7 @@ var RendererBase = (function (_super) {
      * Performs the actual drawing of geometry to the target.
      */
     RendererBase.prototype.pDraw = function (camera) {
-        this._pContext.setDepthTest(true, ContextGLCompareMode_1.default.LESS);
+        this._pContext.setDepthTest(true, ContextGLCompareMode_1.ContextGLCompareMode.LESS);
         if (this._disableColor)
             this._pContext.setColorMask(false, false, false, false);
         this.drawRenderables(camera, this._pOpaqueRenderableHead);
@@ -1188,7 +1184,7 @@ var RendererBase = (function (_super) {
             return;
         this._scissorDirty = true;
         if (!this._scissorUpdated)
-            this._scissorUpdated = new RendererEvent_1.default(RendererEvent_1.default.SCISSOR_UPDATED);
+            this._scissorUpdated = new RendererEvent_1.RendererEvent(RendererEvent_1.RendererEvent.SCISSOR_UPDATED);
         this.dispatchEvent(this._scissorUpdated);
     };
     /**
@@ -1199,7 +1195,7 @@ var RendererBase = (function (_super) {
             return;
         this._viewportDirty = true;
         if (!this._viewPortUpdated)
-            this._viewPortUpdated = new RendererEvent_1.default(RendererEvent_1.default.VIEWPORT_UPDATED);
+            this._viewPortUpdated = new RendererEvent_1.RendererEvent(RendererEvent_1.RendererEvent.VIEWPORT_UPDATED);
         this.dispatchEvent(this._viewPortUpdated);
     };
     /**
@@ -1346,7 +1342,7 @@ var RendererBase = (function (_super) {
         gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
         this._pContext.setColorMask(true, true, true, true);
-        this._pContext.setDepthTest(true, ContextGLCompareMode_1.default.LESS);
+        this._pContext.setDepthTest(true, ContextGLCompareMode_1.ContextGLCompareMode.LESS);
         //this._stage.setRenderTarget(oldRenderTarget);
     };
     RendererBase.prototype._drawMask = function (camera, renderableGL) {
@@ -1355,7 +1351,7 @@ var RendererBase = (function (_super) {
         var len = passes.length;
         var pass = passes[len - 1];
         this.activatePass(pass, camera);
-        this._pContext.setDepthTest(false, ContextGLCompareMode_1.default.LESS); //TODO: setup so as not to override activate
+        this._pContext.setDepthTest(false, ContextGLCompareMode_1.ContextGLCompareMode.LESS); //TODO: setup so as not to override activate
         // only render last pass for now
         renderableGL._iRender(pass, camera, this._pRttViewProjectionMatrix);
         this.deactivatePass(pass);
@@ -1385,9 +1381,8 @@ var RendererBase = (function (_super) {
     RendererBase._iCollectionMark = 0;
     RendererBase._abstractionClassPool = new Object();
     return RendererBase;
-}(EventDispatcher_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = RendererBase;
+}(EventDispatcher_1.EventDispatcher));
+exports.RendererBase = RendererBase;
 
 },{"./sort/RenderableMergeSort":"awayjs-renderergl/lib/sort/RenderableMergeSort","./surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
 "use strict";
@@ -1458,25 +1453,25 @@ var AnimationSetBase = (function (_super) {
      * @inheritDoc
      */
     AnimationSetBase.prototype.getAGALVertexCode = function (shader, registerCache, sharedRegisters) {
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     /**
      * @inheritDoc
      */
     AnimationSetBase.prototype.getAGALFragmentCode = function (shader, registerCache, shadedTarget) {
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     /**
      * @inheritDoc
      */
     AnimationSetBase.prototype.getAGALUVCode = function (shader, registerCache, sharedRegisters) {
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     /**
      * @inheritDoc
      */
     AnimationSetBase.prototype.doneAGALCode = function (shader) {
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     Object.defineProperty(AnimationSetBase.prototype, "assetType", {
         /**
@@ -1532,7 +1527,7 @@ var AnimationSetBase = (function (_super) {
      */
     AnimationSetBase.prototype.addAnimation = function (node) {
         if (this._animationDictionary[node.name])
-            throw new AnimationSetError_1.default("root node name '" + node.name + "' already exists in the set");
+            throw new AnimationSetError_1.AnimationSetError("root node name '" + node.name + "' already exists in the set");
         this._animationDictionary[node.name] = node;
         this._animations.push(node);
         this._animationNames.push(node.name);
@@ -1544,9 +1539,8 @@ var AnimationSetBase = (function (_super) {
     };
     AnimationSetBase.assetType = "[asset AnimationSet]";
     return AnimationSetBase;
-}(AssetBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = AnimationSetBase;
+}(AssetBase_1.AssetBase));
+exports.AnimationSetBase = AnimationSetBase;
 
 },{"../errors/AnimationSetError":"awayjs-renderergl/lib/errors/AnimationSetError","awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-renderergl/lib/animators/AnimatorBase":[function(require,module,exports){
 "use strict";
@@ -1605,7 +1599,7 @@ var AnimatorBase = (function (_super) {
          */
         this.updatePosition = true;
         this._pAnimationSet = animationSet;
-        this._broadcaster = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+        this._broadcaster = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
     }
     AnimatorBase.prototype.getAnimationState = function (node) {
         var className = node.stateClass;
@@ -1731,7 +1725,7 @@ var AnimatorBase = (function (_super) {
         configurable: true
     });
     AnimatorBase.prototype.setRenderState = function (shader, renderable, stage, camera) {
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     /**
      * Resumes the automatic playback clock controling the active state of the animator.
@@ -1739,13 +1733,13 @@ var AnimatorBase = (function (_super) {
     AnimatorBase.prototype.start = function () {
         if (this._isPlaying || !this._autoUpdate)
             return;
-        this._time = this._pAbsoluteTime = getTimer_1.default();
+        this._time = this._pAbsoluteTime = getTimer_1.getTimer();
         this._isPlaying = true;
         this._broadcaster.start();
-        if (!this.hasEventListener(AnimatorEvent_1.default.START))
+        if (!this.hasEventListener(AnimatorEvent_1.AnimatorEvent.START))
             return;
         if (this._startEvent == null)
-            this._startEvent = new AnimatorEvent_1.default(AnimatorEvent_1.default.START, this);
+            this._startEvent = new AnimatorEvent_1.AnimatorEvent(AnimatorEvent_1.AnimatorEvent.START, this);
         this.dispatchEvent(this._startEvent);
     };
     /**
@@ -1760,10 +1754,10 @@ var AnimatorBase = (function (_super) {
             return;
         this._isPlaying = false;
         this._broadcaster.stop();
-        if (!this.hasEventListener(AnimatorEvent_1.default.STOP))
+        if (!this.hasEventListener(AnimatorEvent_1.AnimatorEvent.STOP))
             return;
         if (this._stopEvent == null)
-            this._stopEvent = new AnimatorEvent_1.default(AnimatorEvent_1.default.STOP, this);
+            this._stopEvent = new AnimatorEvent_1.AnimatorEvent(AnimatorEvent_1.AnimatorEvent.STOP, this);
         this.dispatchEvent(this._stopEvent);
     };
     /**
@@ -1814,7 +1808,7 @@ var AnimatorBase = (function (_super) {
      */
     AnimatorBase.prototype.onEnterFrame = function (event) {
         if (event === void 0) { event = null; }
-        this.update(getTimer_1.default());
+        this.update(getTimer_1.getTimer());
     };
     AnimatorBase.prototype.applyPositionDelta = function () {
         var delta = this._pActiveState.positionDelta;
@@ -1832,9 +1826,9 @@ var AnimatorBase = (function (_super) {
      * @private
      */
     AnimatorBase.prototype.dispatchCycleEvent = function () {
-        if (this.hasEventListener(AnimatorEvent_1.default.CYCLE_COMPLETE)) {
+        if (this.hasEventListener(AnimatorEvent_1.AnimatorEvent.CYCLE_COMPLETE)) {
             if (this._cycleEvent == null)
-                this._cycleEvent = new AnimatorEvent_1.default(AnimatorEvent_1.default.CYCLE_COMPLETE, this);
+                this._cycleEvent = new AnimatorEvent_1.AnimatorEvent(AnimatorEvent_1.AnimatorEvent.CYCLE_COMPLETE, this);
             this.dispatchEvent(this._cycleEvent);
         }
     };
@@ -1842,7 +1836,7 @@ var AnimatorBase = (function (_super) {
      * @inheritDoc
      */
     AnimatorBase.prototype.clone = function () {
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     /**
      * @inheritDoc
@@ -1861,7 +1855,7 @@ var AnimatorBase = (function (_super) {
      * @inheritDoc
      */
     AnimatorBase.prototype.testGPUCompatibility = function (shader) {
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     Object.defineProperty(AnimatorBase.prototype, "assetType", {
         /**
@@ -1879,9 +1873,8 @@ var AnimatorBase = (function (_super) {
     };
     AnimatorBase.assetType = "[asset Animator]";
     return AnimatorBase;
-}(AssetBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = AnimatorBase;
+}(AssetBase_1.AssetBase));
+exports.AnimatorBase = AnimatorBase;
 
 },{"../events/AnimatorEvent":"awayjs-renderergl/lib/events/AnimatorEvent","awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/getTimer":undefined}],"awayjs-renderergl/lib/animators/ParticleAnimationSet":[function(require,module,exports){
 "use strict";
@@ -1926,7 +1919,7 @@ var ParticleAnimationSet = (function (_super) {
          */
         this.shareAnimationGraphics = true;
         //automatically add a particle time node to the set
-        this.addAnimation(this._timeNode = new ParticleTimeNode_1.default(usesDuration, usesLooping, usesDelay));
+        this.addAnimation(this._timeNode = new ParticleTimeNode_1.ParticleTimeNode(usesDuration, usesLooping, usesDelay));
     }
     Object.defineProperty(ParticleAnimationSet.prototype, "particleNodes", {
         /**
@@ -1945,12 +1938,12 @@ var ParticleAnimationSet = (function (_super) {
         var i;
         var n = node;
         n._iProcessAnimationSetting(this);
-        if (n.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
+        if (n.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC) {
             n._iDataOffset = this._totalLenOfOneVertex;
             this._totalLenOfOneVertex += n.dataLength;
             this._localStaticNodes.push(n);
         }
-        else if (n.mode == ParticlePropertiesMode_1.default.LOCAL_DYNAMIC)
+        else if (n.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_DYNAMIC)
             this._localDynamicNodes.push(n);
         for (i = this._particleNodes.length - 1; i >= 0; i--) {
             if (this._particleNodes[i].priority <= n.priority)
@@ -1966,7 +1959,7 @@ var ParticleAnimationSet = (function (_super) {
         //grab animationRegisterData from the materialpassbase or create a new one if the first time
         this._iAnimationRegisterData = shader.animationRegisterData;
         if (this._iAnimationRegisterData == null)
-            this._iAnimationRegisterData = shader.animationRegisterData = new AnimationRegisterData_1.default();
+            this._iAnimationRegisterData = shader.animationRegisterData = new AnimationRegisterData_1.AnimationRegisterData();
         //reset animationRegisterData
         this._iAnimationRegisterData.reset(registerCache, sharedRegisters, this.needVelocity);
         var code = "";
@@ -2097,7 +2090,7 @@ var ParticleAnimationSet = (function (_super) {
                 if (animationElements)
                     continue;
             }
-            animationElements = new AnimationElements_1.default();
+            animationElements = new AnimationElements_1.AnimationElements();
             if (this.shareAnimationGraphics)
                 this._animationElements[elements.id] = animationElements;
             else
@@ -2111,7 +2104,7 @@ var ParticleAnimationSet = (function (_super) {
         var particles = graphics.particles;
         var particlesLength = particles.length;
         var numParticles = graphics.numParticles;
-        var particleProperties = new ParticleProperties_1.default();
+        var particleProperties = new ParticleProperties_1.ParticleProperties();
         var particle;
         var oneDataLen;
         var oneDataOffset;
@@ -2167,7 +2160,7 @@ var ParticleAnimationSet = (function (_super) {
                 }
                 //store particle properties if they need to be retreived for dynamic local nodes
                 if (this._localDynamicNodes.length)
-                    animationElements.animationParticles.push(new ParticleAnimationData_1.default(i, particleProperties.startTime, particleProperties.duration, particleProperties.delay, particle));
+                    animationElements.animationParticles.push(new ParticleAnimationData_1.ParticleAnimationData(i, particleProperties.startTime, particleProperties.duration, particleProperties.delay, particle));
                 animationElements.numProcessedVertices += numVertices;
                 //next index
                 j++;
@@ -2185,9 +2178,8 @@ var ParticleAnimationSet = (function (_super) {
      */
     ParticleAnimationSet.COLOR_PRIORITY = 18;
     return ParticleAnimationSet;
-}(AnimationSetBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleAnimationSet;
+}(AnimationSetBase_1.AnimationSetBase));
+exports.ParticleAnimationSet = ParticleAnimationSet;
 
 },{"../animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","../animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","../animators/data/AnimationRegisterData":"awayjs-renderergl/lib/animators/data/AnimationRegisterData","../animators/data/ParticleAnimationData":"awayjs-renderergl/lib/animators/data/ParticleAnimationData","../animators/data/ParticleProperties":"awayjs-renderergl/lib/animators/data/ParticleProperties","../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../animators/nodes/ParticleTimeNode":"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode"}],"awayjs-renderergl/lib/animators/ParticleAnimator":[function(require,module,exports){
 "use strict";
@@ -2228,7 +2220,7 @@ var ParticleAnimator = (function (_super) {
         for (var i = 0; i < this._particleAnimationSet.particleNodes.length; i++) {
             node = this._particleAnimationSet.particleNodes[i];
             state = this.getAnimationState(node);
-            if (node.mode == ParticlePropertiesMode_1.default.LOCAL_DYNAMIC) {
+            if (node.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_DYNAMIC) {
                 this._animatorParticleStates.push(state);
                 node._iDataOffset = this._totalLenOfOneVertex;
                 this._totalLenOfOneVertex += node.dataLength;
@@ -2302,16 +2294,15 @@ var ParticleAnimator = (function (_super) {
         if (!this._animatorParticleStates.length)
             return;
         var elements = graphic.elements;
-        var animatorElements = this._animatorSubGeometries[elements.id] = new AnimationElements_1.default();
+        var animatorElements = this._animatorSubGeometries[elements.id] = new AnimationElements_1.AnimationElements();
         //create the vertexData vector that will be used for local state data
         animatorElements.createVertexData(elements.numVertices, this._totalLenOfOneVertex);
         //pass the particles data to the animator elements
         animatorElements.animationParticles = this._particleAnimationSet.getAnimationElements(graphic).animationParticles;
     };
     return ParticleAnimator;
-}(AnimatorBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleAnimator;
+}(AnimatorBase_1.AnimatorBase));
+exports.ParticleAnimator = ParticleAnimator;
 
 },{"../animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","../animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode"}],"awayjs-renderergl/lib/animators/SkeletonAnimationSet":[function(require,module,exports){
 "use strict";
@@ -2415,9 +2406,8 @@ var SkeletonAnimationSet = (function (_super) {
     SkeletonAnimationSet.prototype.doneAGALCode = function (shader) {
     };
     return SkeletonAnimationSet;
-}(AnimationSetBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SkeletonAnimationSet;
+}(AnimationSetBase_1.AnimationSetBase));
+exports.SkeletonAnimationSet = SkeletonAnimationSet;
 
 },{"../animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase"}],"awayjs-renderergl/lib/animators/SkeletonAnimator":[function(require,module,exports){
 "use strict";
@@ -2449,7 +2439,7 @@ var SkeletonAnimator = (function (_super) {
         var _this = this;
         if (forceCPU === void 0) { forceCPU = false; }
         _super.call(this, animationSet);
-        this._globalPose = new SkeletonPose_1.default();
+        this._globalPose = new SkeletonPose_1.SkeletonPose();
         this._morphedElements = new Object();
         this._morphedElementsDirty = new Object();
         this._skeletonAnimationSet = animationSet;
@@ -2566,7 +2556,7 @@ var SkeletonAnimator = (function (_super) {
         if (transition && this._pActiveNode) {
             //setup the transition
             this._pActiveNode = transition.getAnimationNode(this, this._pActiveNode, this._pAnimationSet.getAnimation(name), this._pAbsoluteTime);
-            this._pActiveNode.addEventListener(AnimationStateEvent_1.default.TRANSITION_COMPLETE, this._onTransitionCompleteDelegate);
+            this._pActiveNode.addEventListener(AnimationStateEvent_1.AnimationStateEvent.TRANSITION_COMPLETE, this._onTransitionCompleteDelegate);
         }
         else
             this._pActiveNode = this._pAnimationSet.getAnimation(name);
@@ -2732,8 +2722,8 @@ var SkeletonAnimator = (function (_super) {
             targetElements.autoDeriveNormals = false;
             targetElements.autoDeriveTangents = false;
             //add event listeners for any changes in UV values on the source geometry
-            sourceElements.addEventListener(ElementsEvent_1.default.INVALIDATE_INDICES, this._onIndicesUpdateDelegate);
-            sourceElements.addEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onVerticesUpdateDelegate);
+            sourceElements.addEventListener(ElementsEvent_1.ElementsEvent.INVALIDATE_INDICES, this._onIndicesUpdateDelegate);
+            sourceElements.addEventListener(ElementsEvent_1.ElementsEvent.INVALIDATE_VERTICES, this._onVerticesUpdateDelegate);
         }
         return targetElements;
     };
@@ -2869,7 +2859,7 @@ var SkeletonAnimator = (function (_super) {
         for (var i = 0; i < len; ++i) {
             globalJointPose = globalPoses[i];
             if (globalJointPose == null)
-                globalJointPose = globalPoses[i] = new JointPose_1.default();
+                globalJointPose = globalPoses[i] = new JointPose_1.JointPose();
             joint = joints[i];
             parentIndex = joint.parentIndex;
             pose = jointPoses[i];
@@ -2926,8 +2916,8 @@ var SkeletonAnimator = (function (_super) {
         }
     };
     SkeletonAnimator.prototype.onTransitionComplete = function (event) {
-        if (event.type == AnimationStateEvent_1.default.TRANSITION_COMPLETE) {
-            event.animationNode.removeEventListener(AnimationStateEvent_1.default.TRANSITION_COMPLETE, this._onTransitionCompleteDelegate);
+        if (event.type == AnimationStateEvent_1.AnimationStateEvent.TRANSITION_COMPLETE) {
+            event.animationNode.removeEventListener(AnimationStateEvent_1.AnimationStateEvent.TRANSITION_COMPLETE, this._onTransitionCompleteDelegate);
             //if this is the current active state transition, revert control to the active node
             if (this._pActiveState == event.animationState) {
                 this._pActiveNode = this._pAnimationSet.getAnimation(this._pActiveAnimationName);
@@ -2953,9 +2943,8 @@ var SkeletonAnimator = (function (_super) {
         }
     };
     return SkeletonAnimator;
-}(AnimatorBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SkeletonAnimator;
+}(AnimatorBase_1.AnimatorBase));
+exports.SkeletonAnimator = SkeletonAnimator;
 
 },{"../animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-display/lib/events/ElementsEvent":undefined}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
 "use strict";
@@ -3023,8 +3012,8 @@ var VertexAnimationSet = (function (_super) {
         //grab animationRegisterData from the materialpassbase or create a new one if the first time
         this._iAnimationRegisterData = shader.animationRegisterData;
         if (this._iAnimationRegisterData == null)
-            this._iAnimationRegisterData = shader.animationRegisterData = new AnimationRegisterData_1.default();
-        if (this._blendMode == VertexAnimationMode_1.default.ABSOLUTE)
+            this._iAnimationRegisterData = shader.animationRegisterData = new AnimationRegisterData_1.AnimationRegisterData();
+        if (this._blendMode == VertexAnimationMode_1.VertexAnimationMode.ABSOLUTE)
             return this.getAbsoluteAGALCode(shader, registerCache, sharedRegisters);
         else
             return this.getAdditiveAGALCode(shader, registerCache, sharedRegisters);
@@ -3122,9 +3111,8 @@ var VertexAnimationSet = (function (_super) {
         return code;
     };
     return VertexAnimationSet;
-}(AnimationSetBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = VertexAnimationSet;
+}(AnimationSetBase_1.AnimationSetBase));
+exports.VertexAnimationSet = VertexAnimationSet;
 
 },{"../animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","../animators/data/AnimationRegisterData":"awayjs-renderergl/lib/animators/data/AnimationRegisterData","../animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode"}],"awayjs-renderergl/lib/animators/VertexAnimator":[function(require,module,exports){
 "use strict";
@@ -3219,7 +3207,7 @@ var VertexAnimator = (function (_super) {
         var i;
         var len = this._vertexAnimationSet.numPoses;
         shader.setVertexConstFromArray(animationRegisterData.weightsIndex, this._weights);
-        if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.default.ABSOLUTE)
+        if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.VertexAnimationMode.ABSOLUTE)
             i = 1;
         else
             i = 0;
@@ -3229,7 +3217,7 @@ var VertexAnimator = (function (_super) {
             elements = this._poses[i].getGraphicAt(graphic._iIndex).elements || graphic.elements;
             elementsGL = stage.getAbstraction(elements);
             elementsGL._indexMappings = stage.getAbstraction(graphic.elements).getIndexMappings();
-            if (elements.isAsset(TriangleElements_1.default)) {
+            if (elements.isAsset(TriangleElements_1.TriangleElements)) {
                 elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.positions);
                 if (shader.normalDependencies > 0)
                     elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.normals);
@@ -3241,10 +3229,10 @@ var VertexAnimator = (function (_super) {
         shader.setVertexConstFromArray(animationRegisterData.weightsIndex, this._weights);
         var elementsGL = stage.getAbstraction(elements);
         var k = 0;
-        if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.default.ABSOLUTE) {
+        if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.VertexAnimationMode.ABSOLUTE) {
             var len = this._vertexAnimationSet.numPoses;
             for (var i = 1; i < len; ++i) {
-                if (elements.isAsset(TriangleElements_1.default)) {
+                if (elements.isAsset(TriangleElements_1.TriangleElements)) {
                     elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.positions);
                     if (shader.normalDependencies > 0)
                         elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.normals);
@@ -3260,15 +3248,14 @@ var VertexAnimator = (function (_super) {
     VertexAnimator.prototype.testGPUCompatibility = function (shader) {
     };
     VertexAnimator.prototype.getRenderableElements = function (renderable, sourceElements) {
-        if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.default.ABSOLUTE && this._poses.length)
+        if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.VertexAnimationMode.ABSOLUTE && this._poses.length)
             return this._poses[0].getGraphicAt(renderable.graphic._iIndex).elements || sourceElements;
         //nothing to do here
         return sourceElements;
     };
     return VertexAnimator;
-}(AnimatorBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = VertexAnimator;
+}(AnimatorBase_1.AnimatorBase));
+exports.VertexAnimator = VertexAnimator;
 
 },{"../animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","../animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","awayjs-display/lib/graphics/TriangleElements":undefined}],"awayjs-renderergl/lib/animators/data/AnimationElements":[function(require,module,exports){
 "use strict";
@@ -3342,8 +3329,7 @@ var AnimationElements = (function () {
     AnimationElements.SUBGEOM_ID_COUNT = 0;
     return AnimationElements;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = AnimationElements;
+exports.AnimationElements = AnimationElements;
 
 },{}],"awayjs-renderergl/lib/animators/data/AnimationRegisterData":[function(require,module,exports){
 "use strict";
@@ -3363,32 +3349,32 @@ var AnimationRegisterData = (function () {
             this.rotationRegisters.push(sharedRegisters.animationTargetRegisters[i]);
         //allot const register
         this.vertexZeroConst = registerCache.getFreeVertexConstant();
-        this.vertexZeroConst = new ShaderRegisterElement_1.default(this.vertexZeroConst.regName, this.vertexZeroConst.index, 0);
-        this.vertexOneConst = new ShaderRegisterElement_1.default(this.vertexZeroConst.regName, this.vertexZeroConst.index, 1);
-        this.vertexTwoConst = new ShaderRegisterElement_1.default(this.vertexZeroConst.regName, this.vertexZeroConst.index, 2);
+        this.vertexZeroConst = new ShaderRegisterElement_1.ShaderRegisterElement(this.vertexZeroConst.regName, this.vertexZeroConst.index, 0);
+        this.vertexOneConst = new ShaderRegisterElement_1.ShaderRegisterElement(this.vertexZeroConst.regName, this.vertexZeroConst.index, 1);
+        this.vertexTwoConst = new ShaderRegisterElement_1.ShaderRegisterElement(this.vertexZeroConst.regName, this.vertexZeroConst.index, 2);
         //allot temp register
         this.positionTarget = registerCache.getFreeVertexVectorTemp();
         registerCache.addVertexTempUsages(this.positionTarget, 1);
-        this.positionTarget = new ShaderRegisterElement_1.default(this.positionTarget.regName, this.positionTarget.index);
+        this.positionTarget = new ShaderRegisterElement_1.ShaderRegisterElement(this.positionTarget.regName, this.positionTarget.index);
         if (needVelocity) {
             this.velocityTarget = registerCache.getFreeVertexVectorTemp();
             registerCache.addVertexTempUsages(this.velocityTarget, 1);
-            this.velocityTarget = new ShaderRegisterElement_1.default(this.velocityTarget.regName, this.velocityTarget.index);
-            this.vertexTime = new ShaderRegisterElement_1.default(this.velocityTarget.regName, this.velocityTarget.index, 3);
-            this.vertexLife = new ShaderRegisterElement_1.default(this.positionTarget.regName, this.positionTarget.index, 3);
+            this.velocityTarget = new ShaderRegisterElement_1.ShaderRegisterElement(this.velocityTarget.regName, this.velocityTarget.index);
+            this.vertexTime = new ShaderRegisterElement_1.ShaderRegisterElement(this.velocityTarget.regName, this.velocityTarget.index, 3);
+            this.vertexLife = new ShaderRegisterElement_1.ShaderRegisterElement(this.positionTarget.regName, this.positionTarget.index, 3);
         }
         else {
             var tempTime = registerCache.getFreeVertexVectorTemp();
             registerCache.addVertexTempUsages(tempTime, 1);
-            this.vertexTime = new ShaderRegisterElement_1.default(tempTime.regName, tempTime.index, 0);
-            this.vertexLife = new ShaderRegisterElement_1.default(tempTime.regName, tempTime.index, 1);
+            this.vertexTime = new ShaderRegisterElement_1.ShaderRegisterElement(tempTime.regName, tempTime.index, 0);
+            this.vertexLife = new ShaderRegisterElement_1.ShaderRegisterElement(tempTime.regName, tempTime.index, 1);
         }
     };
     AnimationRegisterData.prototype.setUVSourceAndTarget = function (sharedRegisters) {
         this.uvVar = sharedRegisters.uvTarget;
         this.uvAttribute = sharedRegisters.uvSource;
         //uv action is processed after normal actions,so use offsetTarget as uvTarget
-        this.uvTarget = new ShaderRegisterElement_1.default(this.positionTarget.regName, this.positionTarget.index);
+        this.uvTarget = new ShaderRegisterElement_1.ShaderRegisterElement(this.positionTarget.regName, this.positionTarget.index);
     };
     AnimationRegisterData.prototype.setRegisterIndex = function (node, parameterIndex, registerIndex) {
         //8 should be enough for any node.
@@ -3402,8 +3388,7 @@ var AnimationRegisterData = (function () {
     };
     return AnimationRegisterData;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = AnimationRegisterData;
+exports.AnimationRegisterData = AnimationRegisterData;
 
 },{"../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/data/ColorSegmentPoint":[function(require,module,exports){
 "use strict";
@@ -3431,8 +3416,7 @@ var ColorSegmentPoint = (function () {
     });
     return ColorSegmentPoint;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ColorSegmentPoint;
+exports.ColorSegmentPoint = ColorSegmentPoint;
 
 },{}],"awayjs-renderergl/lib/animators/data/JointPose":[function(require,module,exports){
 "use strict";
@@ -3452,11 +3436,11 @@ var JointPose = (function () {
         /**
          * The rotation of the pose stored as a quaternion
          */
-        this.orientation = new Quaternion_1.default();
+        this.orientation = new Quaternion_1.Quaternion();
         /**
          * The translation of the pose
          */
-        this.translation = new Vector3D_1.default();
+        this.translation = new Vector3D_1.Vector3D();
     }
     /**
      * Converts the transformation to a Matrix3D representation.
@@ -3467,7 +3451,7 @@ var JointPose = (function () {
     JointPose.prototype.toMatrix3D = function (target) {
         if (target === void 0) { target = null; }
         if (target == null)
-            target = new Matrix3D_1.default();
+            target = new Matrix3D_1.Matrix3D();
         this.orientation.toMatrix3D(target);
         target.appendTranslation(this.translation.x, this.translation.y, this.translation.z);
         return target;
@@ -3490,8 +3474,7 @@ var JointPose = (function () {
     };
     return JointPose;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = JointPose;
+exports.JointPose = JointPose;
 
 },{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Quaternion":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/data/ParticleAnimationData":[function(require,module,exports){
 "use strict";
@@ -3510,8 +3493,7 @@ var ParticleAnimationData = (function () {
     }
     return ParticleAnimationData;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleAnimationData;
+exports.ParticleAnimationData = ParticleAnimationData;
 
 },{}],"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":[function(require,module,exports){
 "use strict";
@@ -3535,8 +3517,7 @@ var ParticlePropertiesMode = (function () {
     ParticlePropertiesMode.LOCAL_DYNAMIC = 2;
     return ParticlePropertiesMode;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticlePropertiesMode;
+exports.ParticlePropertiesMode = ParticlePropertiesMode;
 
 },{}],"awayjs-renderergl/lib/animators/data/ParticleProperties":[function(require,module,exports){
 "use strict";
@@ -3549,8 +3530,7 @@ var ParticleProperties = (function () {
     }
     return ParticleProperties;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleProperties;
+exports.ParticleProperties = ParticleProperties;
 
 },{}],"awayjs-renderergl/lib/animators/data/SkeletonJoint":[function(require,module,exports){
 "use strict";
@@ -3573,8 +3553,7 @@ var SkeletonJoint = (function () {
     }
     return SkeletonJoint;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SkeletonJoint;
+exports.SkeletonJoint = SkeletonJoint;
 
 },{}],"awayjs-renderergl/lib/animators/data/SkeletonPose":[function(require,module,exports){
 "use strict";
@@ -3670,7 +3649,7 @@ var SkeletonPose = (function (_super) {
         var clone = new SkeletonPose();
         var numJointPoses = this.jointPoses.length;
         for (var i = 0; i < numJointPoses; i++) {
-            var cloneJointPose = new JointPose_1.default();
+            var cloneJointPose = new JointPose_1.JointPose();
             var thisJointPose = this.jointPoses[i];
             cloneJointPose.name = thisJointPose.name;
             cloneJointPose.copyFrom(thisJointPose);
@@ -3686,9 +3665,8 @@ var SkeletonPose = (function (_super) {
     };
     SkeletonPose.assetType = "[asset SkeletonPose]";
     return SkeletonPose;
-}(AssetBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SkeletonPose;
+}(AssetBase_1.AssetBase));
+exports.SkeletonPose = SkeletonPose;
 
 },{"../../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-core/lib/library/AssetBase":undefined}],"awayjs-renderergl/lib/animators/data/Skeleton":[function(require,module,exports){
 "use strict";
@@ -3781,9 +3759,8 @@ var Skeleton = (function (_super) {
     });
     Skeleton.assetType = "[asset Skeleton]";
     return Skeleton;
-}(AssetBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Skeleton;
+}(AssetBase_1.AssetBase));
+exports.Skeleton = Skeleton;
 
 },{"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-renderergl/lib/animators/data/VertexAnimationMode":[function(require,module,exports){
 "use strict";
@@ -3805,8 +3782,7 @@ var VertexAnimationMode = (function () {
     VertexAnimationMode.ABSOLUTE = "absolute";
     return VertexAnimationMode;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = VertexAnimationMode;
+exports.VertexAnimationMode = VertexAnimationMode;
 
 },{}],"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase":[function(require,module,exports){
 "use strict";
@@ -3834,7 +3810,7 @@ var AnimationClipNodeBase = (function (_super) {
         this._pNumFrames = 0;
         this._pDurations = new Array();
         /*uint*/
-        this._pTotalDelta = new Vector3D_1.default();
+        this._pTotalDelta = new Vector3D_1.Vector3D();
         this.fixedFrameRate = true;
     }
     Object.defineProperty(AnimationClipNodeBase.prototype, "looping", {
@@ -3921,9 +3897,8 @@ var AnimationClipNodeBase = (function (_super) {
         this._pTotalDelta.z = 0;
     };
     return AnimationClipNodeBase;
-}(AnimationNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = AnimationClipNodeBase;
+}(AnimationNodeBase_1.AnimationNodeBase));
+exports.AnimationClipNodeBase = AnimationClipNodeBase;
 
 },{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode":[function(require,module,exports){
 "use strict";
@@ -3950,15 +3925,15 @@ var ParticleAccelerationNode = (function (_super) {
     function ParticleAccelerationNode(mode, acceleration) {
         if (acceleration === void 0) { acceleration = null; }
         _super.call(this, "ParticleAcceleration", mode, 3);
-        this._pStateClass = ParticleAccelerationState_1.default;
-        this._acceleration = acceleration || new Vector3D_1.default();
+        this._pStateClass = ParticleAccelerationState_1.ParticleAccelerationState;
+        this._acceleration = acceleration || new Vector3D_1.Vector3D();
     }
     /**
      * @inheritDoc
      */
     ParticleAccelerationNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
-        var accelerationValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-        animationRegisterData.setRegisterIndex(this, ParticleAccelerationState_1.default.ACCELERATION_INDEX, accelerationValue.index);
+        var accelerationValue = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleAccelerationState_1.ParticleAccelerationState.ACCELERATION_INDEX, accelerationValue.index);
         var temp = registerCache.getFreeVertexVectorTemp();
         registerCache.addVertexTempUsages(temp, 1);
         var code = "mul " + temp + "," + animationRegisterData.vertexTime + "," + accelerationValue + "\n";
@@ -3995,9 +3970,8 @@ var ParticleAccelerationNode = (function (_super) {
      */
     ParticleAccelerationNode.ACCELERATION_VECTOR3D = "AccelerationVector3D";
     return ParticleAccelerationNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleAccelerationNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleAccelerationNode = ParticleAccelerationNode;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleAccelerationState":"awayjs-renderergl/lib/animators/states/ParticleAccelerationState","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode":[function(require,module,exports){
 "use strict";
@@ -4027,25 +4001,25 @@ var ParticleBezierCurveNode = (function (_super) {
         if (controlPoint === void 0) { controlPoint = null; }
         if (endPoint === void 0) { endPoint = null; }
         _super.call(this, "ParticleBezierCurve", mode, 6);
-        this._pStateClass = ParticleBezierCurveState_1.default;
-        this._iControlPoint = controlPoint || new Vector3D_1.default();
-        this._iEndPoint = endPoint || new Vector3D_1.default();
+        this._pStateClass = ParticleBezierCurveState_1.ParticleBezierCurveState;
+        this._iControlPoint = controlPoint || new Vector3D_1.Vector3D();
+        this._iEndPoint = endPoint || new Vector3D_1.Vector3D();
     }
     /**
      * @inheritDoc
      */
     ParticleBezierCurveNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
-        var controlValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-        animationRegisterData.setRegisterIndex(this, ParticleBezierCurveState_1.default.BEZIER_CONTROL_INDEX, controlValue.index);
-        var endValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-        animationRegisterData.setRegisterIndex(this, ParticleBezierCurveState_1.default.BEZIER_END_INDEX, endValue.index);
+        var controlValue = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleBezierCurveState_1.ParticleBezierCurveState.BEZIER_CONTROL_INDEX, controlValue.index);
+        var endValue = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleBezierCurveState_1.ParticleBezierCurveState.BEZIER_END_INDEX, endValue.index);
         var temp = registerCache.getFreeVertexVectorTemp();
-        var rev_time = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
-        var time_2 = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
-        var time_temp = new ShaderRegisterElement_1.default(temp.regName, temp.index, 2);
+        var rev_time = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 0);
+        var time_2 = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 1);
+        var time_temp = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 2);
         registerCache.addVertexTempUsages(temp, 1);
         var temp2 = registerCache.getFreeVertexVectorTemp();
-        var distance = new ShaderRegisterElement_1.default(temp2.regName, temp2.index);
+        var distance = new ShaderRegisterElement_1.ShaderRegisterElement(temp2.regName, temp2.index);
         registerCache.removeVertexTempUsage(temp);
         var code = "";
         code += "sub " + rev_time + "," + animationRegisterData.vertexOneConst + "," + animationRegisterData.vertexLife + "\n";
@@ -4101,9 +4075,8 @@ var ParticleBezierCurveNode = (function (_super) {
      */
     ParticleBezierCurveNode.BEZIER_END_VECTOR3D = "BezierEndVector3D";
     return ParticleBezierCurveNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleBezierCurveNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleBezierCurveNode = ParticleBezierCurveNode;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleBezierCurveState":"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":[function(require,module,exports){
 "use strict";
@@ -4125,8 +4098,8 @@ var ParticleBillboardNode = (function (_super) {
      */
     function ParticleBillboardNode(billboardAxis) {
         if (billboardAxis === void 0) { billboardAxis = null; }
-        _super.call(this, "ParticleBillboard", ParticlePropertiesMode_1.default.GLOBAL, 0, 4);
-        this._pStateClass = ParticleBillboardState_1.default;
+        _super.call(this, "ParticleBillboard", ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL, 0, 4);
+        this._pStateClass = ParticleBillboardState_1.ParticleBillboardState;
         this._iBillboardAxis = billboardAxis;
     }
     /**
@@ -4134,7 +4107,7 @@ var ParticleBillboardNode = (function (_super) {
      */
     ParticleBillboardNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
         var rotationMatrixRegister = registerCache.getFreeVertexConstant();
-        animationRegisterData.setRegisterIndex(this, ParticleBillboardState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
+        animationRegisterData.setRegisterIndex(this, ParticleBillboardState_1.ParticleBillboardState.MATRIX_INDEX, rotationMatrixRegister.index);
         registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
@@ -4162,9 +4135,8 @@ var ParticleBillboardNode = (function (_super) {
         particleAnimationSet.hasBillboard = true;
     };
     return ParticleBillboardNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleBillboardNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleBillboardNode = ParticleBillboardNode;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleBillboardState":"awayjs-renderergl/lib/animators/states/ParticleBillboardState"}],"awayjs-renderergl/lib/animators/nodes/ParticleColorNode":[function(require,module,exports){
 "use strict";
@@ -4205,14 +4177,14 @@ var ParticleColorNode = (function (_super) {
         if (endColor === void 0) { endColor = null; }
         if (cycleDuration === void 0) { cycleDuration = 1; }
         if (cyclePhase === void 0) { cyclePhase = 0; }
-        _super.call(this, "ParticleColor", mode, (usesMultiplier && usesOffset) ? 16 : 8, ParticleAnimationSet_1.default.COLOR_PRIORITY);
-        this._pStateClass = ParticleColorState_1.default;
+        _super.call(this, "ParticleColor", mode, (usesMultiplier && usesOffset) ? 16 : 8, ParticleAnimationSet_1.ParticleAnimationSet.COLOR_PRIORITY);
+        this._pStateClass = ParticleColorState_1.ParticleColorState;
         this._iUsesMultiplier = usesMultiplier;
         this._iUsesOffset = usesOffset;
         this._iUsesCycle = usesCycle;
         this._iUsesPhase = usesPhase;
-        this._iStartColor = startColor || new ColorTransform_1.default();
-        this._iEndColor = endColor || new ColorTransform_1.default();
+        this._iStartColor = startColor || new ColorTransform_1.ColorTransform();
+        this._iEndColor = endColor || new ColorTransform_1.ColorTransform();
         this._iCycleDuration = cycleDuration;
         this._iCyclePhase = cyclePhase;
     }
@@ -4225,7 +4197,7 @@ var ParticleColorNode = (function (_super) {
             var temp = registerCache.getFreeVertexVectorTemp();
             if (this._iUsesCycle) {
                 var cycleConst = registerCache.getFreeVertexConstant();
-                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.CYCLE_INDEX, cycleConst.index);
+                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.ParticleColorState.CYCLE_INDEX, cycleConst.index);
                 registerCache.addVertexTempUsages(temp, 1);
                 var sin = registerCache.getFreeVertexSingleTemp();
                 registerCache.removeVertexTempUsage(temp);
@@ -4235,19 +4207,19 @@ var ParticleColorNode = (function (_super) {
                 code += "sin " + sin + "," + sin + "\n";
             }
             if (this._iUsesMultiplier) {
-                var startMultiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-                var deltaMultiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.START_MULTIPLIER_INDEX, startMultiplierValue.index);
-                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.DELTA_MULTIPLIER_INDEX, deltaMultiplierValue.index);
+                var startMultiplierValue = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+                var deltaMultiplierValue = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.ParticleColorState.START_MULTIPLIER_INDEX, startMultiplierValue.index);
+                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.ParticleColorState.DELTA_MULTIPLIER_INDEX, deltaMultiplierValue.index);
                 code += "mul " + temp + "," + deltaMultiplierValue + "," + (this._iUsesCycle ? sin : animationRegisterData.vertexLife) + "\n";
                 code += "add " + temp + "," + temp + "," + startMultiplierValue + "\n";
                 code += "mul " + animationRegisterData.colorMulTarget + "," + temp + "," + animationRegisterData.colorMulTarget + "\n";
             }
             if (this._iUsesOffset) {
-                var startOffsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
-                var deltaOffsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
-                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.START_OFFSET_INDEX, startOffsetValue.index);
-                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.DELTA_OFFSET_INDEX, deltaOffsetValue.index);
+                var startOffsetValue = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC) ? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
+                var deltaOffsetValue = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC) ? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
+                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.ParticleColorState.START_OFFSET_INDEX, startOffsetValue.index);
+                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.ParticleColorState.DELTA_OFFSET_INDEX, deltaOffsetValue.index);
                 code += "mul " + temp + "," + deltaOffsetValue + "," + (this._iUsesCycle ? sin : animationRegisterData.vertexLife) + "\n";
                 code += "add " + temp + "," + temp + "," + startOffsetValue + "\n";
                 code += "add " + animationRegisterData.colorAddTarget + "," + temp + "," + animationRegisterData.colorAddTarget + "\n";
@@ -4341,9 +4313,8 @@ var ParticleColorNode = (function (_super) {
      */
     ParticleColorNode.COLOR_END_COLORTRANSFORM = "ColorEndColorTransform";
     return ParticleColorNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleColorNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleColorNode = ParticleColorNode;
 
 },{"../../animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleColorState":"awayjs-renderergl/lib/animators/states/ParticleColorState","awayjs-core/lib/geom/ColorTransform":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleFollowNode":[function(require,module,exports){
 "use strict";
@@ -4372,8 +4343,8 @@ var ParticleFollowNode = (function (_super) {
         if (usesPosition === void 0) { usesPosition = true; }
         if (usesRotation === void 0) { usesRotation = true; }
         if (smooth === void 0) { smooth = false; }
-        _super.call(this, "ParticleFollow", ParticlePropertiesMode_1.default.LOCAL_DYNAMIC, (usesPosition && usesRotation) ? 6 : 3, ParticleAnimationSet_1.default.POST_PRIORITY);
-        this._pStateClass = ParticleFollowState_1.default;
+        _super.call(this, "ParticleFollow", ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_DYNAMIC, (usesPosition && usesRotation) ? 6 : 3, ParticleAnimationSet_1.ParticleAnimationSet.POST_PRIORITY);
+        this._pStateClass = ParticleFollowState_1.ParticleFollowState;
         this._iUsesPosition = usesPosition;
         this._iUsesRotation = usesRotation;
         this._iSmooth = smooth;
@@ -4386,7 +4357,7 @@ var ParticleFollowNode = (function (_super) {
         var code = "";
         if (this._iUsesRotation) {
             var rotationAttribute = registerCache.getFreeVertexAttribute();
-            animationRegisterData.setRegisterIndex(this, ParticleFollowState_1.default.FOLLOW_ROTATION_INDEX, rotationAttribute.index);
+            animationRegisterData.setRegisterIndex(this, ParticleFollowState_1.ParticleFollowState.FOLLOW_ROTATION_INDEX, rotationAttribute.index);
             var temp1 = registerCache.getFreeVertexVectorTemp();
             registerCache.addVertexTempUsages(temp1, 1);
             var temp2 = registerCache.getFreeVertexVectorTemp();
@@ -4457,7 +4428,7 @@ var ParticleFollowNode = (function (_super) {
         }
         if (this._iUsesPosition) {
             var positionAttribute = registerCache.getFreeVertexAttribute();
-            animationRegisterData.setRegisterIndex(this, ParticleFollowState_1.default.FOLLOW_POSITION_INDEX, positionAttribute.index);
+            animationRegisterData.setRegisterIndex(this, ParticleFollowState_1.ParticleFollowState.FOLLOW_POSITION_INDEX, positionAttribute.index);
             code += "add " + animationRegisterData.scaleAndRotateTarget + ".xyz," + positionAttribute + "," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
         }
         return code;
@@ -4469,9 +4440,8 @@ var ParticleFollowNode = (function (_super) {
         return animator.getAnimationState(this);
     };
     return ParticleFollowNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleFollowNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleFollowNode = ParticleFollowNode;
 
 },{"../../animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleFollowState":"awayjs-renderergl/lib/animators/states/ParticleFollowState"}],"awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode":[function(require,module,exports){
 "use strict";
@@ -4494,11 +4464,11 @@ var ParticleInitialColorNode = (function (_super) {
         if (usesMultiplier === void 0) { usesMultiplier = true; }
         if (usesOffset === void 0) { usesOffset = false; }
         if (initialColor === void 0) { initialColor = null; }
-        _super.call(this, "ParticleInitialColor", mode, (usesMultiplier && usesOffset) ? 8 : 4, ParticleAnimationSet_1.default.COLOR_PRIORITY);
-        this._pStateClass = ParticleInitialColorState_1.default;
+        _super.call(this, "ParticleInitialColor", mode, (usesMultiplier && usesOffset) ? 8 : 4, ParticleAnimationSet_1.ParticleAnimationSet.COLOR_PRIORITY);
+        this._pStateClass = ParticleInitialColorState_1.ParticleInitialColorState;
         this._iUsesMultiplier = usesMultiplier;
         this._iUsesOffset = usesOffset;
-        this._iInitialColor = initialColor || new ColorTransform_1.default();
+        this._iInitialColor = initialColor || new ColorTransform_1.ColorTransform();
     }
     /**
      * @inheritDoc
@@ -4507,13 +4477,13 @@ var ParticleInitialColorNode = (function (_super) {
         var code = "";
         if (shader.usesFragmentAnimation) {
             if (this._iUsesMultiplier) {
-                var multiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-                animationRegisterData.setRegisterIndex(this, ParticleInitialColorState_1.default.MULTIPLIER_INDEX, multiplierValue.index);
+                var multiplierValue = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+                animationRegisterData.setRegisterIndex(this, ParticleInitialColorState_1.ParticleInitialColorState.MULTIPLIER_INDEX, multiplierValue.index);
                 code += "mul " + animationRegisterData.colorMulTarget + "," + multiplierValue + "," + animationRegisterData.colorMulTarget + "\n";
             }
             if (this._iUsesOffset) {
-                var offsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
-                animationRegisterData.setRegisterIndex(this, ParticleInitialColorState_1.default.OFFSET_INDEX, offsetValue.index);
+                var offsetValue = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC) ? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
+                animationRegisterData.setRegisterIndex(this, ParticleInitialColorState_1.ParticleInitialColorState.OFFSET_INDEX, offsetValue.index);
                 code += "add " + animationRegisterData.colorAddTarget + "," + offsetValue + "," + animationRegisterData.colorAddTarget + "\n";
             }
         }
@@ -4557,9 +4527,8 @@ var ParticleInitialColorNode = (function (_super) {
      */
     ParticleInitialColorNode.COLOR_INITIAL_COLORTRANSFORM = "ColorInitialColorTransform";
     return ParticleInitialColorNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleInitialColorNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleInitialColorNode = ParticleInitialColorNode;
 
 },{"../../animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleInitialColorState":"awayjs-renderergl/lib/animators/states/ParticleInitialColorState","awayjs-core/lib/geom/ColorTransform":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":[function(require,module,exports){
 "use strict";
@@ -4685,9 +4654,8 @@ var ParticleNodeBase = (function (_super) {
         2: ParticleNodeBase.LOCAL_DYNAMIC
     };
     return ParticleNodeBase;
-}(AnimationNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleNodeBase;
+}(AnimationNodeBase_1.AnimationNodeBase));
+exports.ParticleNodeBase = ParticleNodeBase;
 
 },{"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleOrbitNode":[function(require,module,exports){
 "use strict";
@@ -4730,33 +4698,33 @@ var ParticleOrbitNode = (function (_super) {
         if (usesPhase)
             len++;
         _super.call(this, "ParticleOrbit", mode, len);
-        this._pStateClass = ParticleOrbitState_1.default;
+        this._pStateClass = ParticleOrbitState_1.ParticleOrbitState;
         this._iUsesEulers = usesEulers;
         this._iUsesCycle = usesCycle;
         this._iUsesPhase = usesPhase;
         this._iRadius = radius;
         this._iCycleDuration = cycleDuration;
         this._iCyclePhase = cyclePhase;
-        this._iEulers = eulers || new Vector3D_1.default();
+        this._iEulers = eulers || new Vector3D_1.Vector3D();
     }
     /**
      * @inheritDoc
      */
     ParticleOrbitNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
-        var orbitRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-        animationRegisterData.setRegisterIndex(this, ParticleOrbitState_1.default.ORBIT_INDEX, orbitRegister.index);
+        var orbitRegister = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleOrbitState_1.ParticleOrbitState.ORBIT_INDEX, orbitRegister.index);
         var eulersMatrixRegister = registerCache.getFreeVertexConstant();
-        animationRegisterData.setRegisterIndex(this, ParticleOrbitState_1.default.EULERS_INDEX, eulersMatrixRegister.index);
+        animationRegisterData.setRegisterIndex(this, ParticleOrbitState_1.ParticleOrbitState.EULERS_INDEX, eulersMatrixRegister.index);
         registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
         registerCache.getFreeVertexConstant();
         var temp1 = registerCache.getFreeVertexVectorTemp();
         registerCache.addVertexTempUsages(temp1, 1);
-        var distance = new ShaderRegisterElement_1.default(temp1.regName, temp1.index);
+        var distance = new ShaderRegisterElement_1.ShaderRegisterElement(temp1.regName, temp1.index);
         var temp2 = registerCache.getFreeVertexVectorTemp();
-        var cos = new ShaderRegisterElement_1.default(temp2.regName, temp2.index, 0);
-        var sin = new ShaderRegisterElement_1.default(temp2.regName, temp2.index, 1);
-        var degree = new ShaderRegisterElement_1.default(temp2.regName, temp2.index, 2);
+        var cos = new ShaderRegisterElement_1.ShaderRegisterElement(temp2.regName, temp2.index, 0);
+        var sin = new ShaderRegisterElement_1.ShaderRegisterElement(temp2.regName, temp2.index, 1);
+        var degree = new ShaderRegisterElement_1.ShaderRegisterElement(temp2.regName, temp2.index, 2);
         registerCache.removeVertexTempUsage(temp1);
         var code = "";
         if (this._iUsesCycle) {
@@ -4816,9 +4784,8 @@ var ParticleOrbitNode = (function (_super) {
      */
     ParticleOrbitNode.ORBIT_VECTOR3D = "OrbitVector3D";
     return ParticleOrbitNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleOrbitNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleOrbitNode = ParticleOrbitNode;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleOrbitState":"awayjs-renderergl/lib/animators/states/ParticleOrbitState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode":[function(require,module,exports){
 "use strict";
@@ -4846,22 +4813,22 @@ var ParticleOscillatorNode = (function (_super) {
     function ParticleOscillatorNode(mode, oscillator) {
         if (oscillator === void 0) { oscillator = null; }
         _super.call(this, "ParticleOscillator", mode, 4);
-        this._pStateClass = ParticleOscillatorState_1.default;
-        this._iOscillator = oscillator || new Vector3D_1.default();
+        this._pStateClass = ParticleOscillatorState_1.ParticleOscillatorState;
+        this._iOscillator = oscillator || new Vector3D_1.Vector3D();
     }
     /**
      * @inheritDoc
      */
     ParticleOscillatorNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
-        var oscillatorRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-        animationRegisterData.setRegisterIndex(this, ParticleOscillatorState_1.default.OSCILLATOR_INDEX, oscillatorRegister.index);
+        var oscillatorRegister = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleOscillatorState_1.ParticleOscillatorState.OSCILLATOR_INDEX, oscillatorRegister.index);
         var temp = registerCache.getFreeVertexVectorTemp();
-        var dgree = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
-        var sin = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
-        var cos = new ShaderRegisterElement_1.default(temp.regName, temp.index, 2);
+        var dgree = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 0);
+        var sin = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 1);
+        var cos = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 2);
         registerCache.addVertexTempUsages(temp, 1);
         var temp2 = registerCache.getFreeVertexVectorTemp();
-        var distance = new ShaderRegisterElement_1.default(temp2.regName, temp2.index);
+        var distance = new ShaderRegisterElement_1.ShaderRegisterElement(temp2.regName, temp2.index);
         registerCache.removeVertexTempUsage(temp);
         var code = "";
         code += "mul " + dgree + "," + animationRegisterData.vertexTime + "," + oscillatorRegister + ".w\n";
@@ -4902,9 +4869,8 @@ var ParticleOscillatorNode = (function (_super) {
      */
     ParticleOscillatorNode.OSCILLATOR_VECTOR3D = "OscillatorVector3D";
     return ParticleOscillatorNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleOscillatorNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleOscillatorNode = ParticleOscillatorNode;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleOscillatorState":"awayjs-renderergl/lib/animators/states/ParticleOscillatorState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode":[function(require,module,exports){
 "use strict";
@@ -4931,15 +4897,15 @@ var ParticlePositionNode = (function (_super) {
     function ParticlePositionNode(mode, position) {
         if (position === void 0) { position = null; }
         _super.call(this, "ParticlePosition", mode, 3);
-        this._pStateClass = ParticlePositionState_1.default;
-        this._iPosition = position || new Vector3D_1.default();
+        this._pStateClass = ParticlePositionState_1.ParticlePositionState;
+        this._iPosition = position || new Vector3D_1.Vector3D();
     }
     /**
      * @inheritDoc
      */
     ParticlePositionNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
-        var positionAttribute = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-        animationRegisterData.setRegisterIndex(this, ParticlePositionState_1.default.POSITION_INDEX, positionAttribute.index);
+        var positionAttribute = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticlePositionState_1.ParticlePositionState.POSITION_INDEX, positionAttribute.index);
         return "add " + animationRegisterData.positionTarget + ".xyz," + positionAttribute + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
     };
     /**
@@ -4965,9 +4931,8 @@ var ParticlePositionNode = (function (_super) {
      */
     ParticlePositionNode.POSITION_VECTOR3D = "PositionVector3D";
     return ParticlePositionNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticlePositionNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticlePositionNode = ParticlePositionNode;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticlePositionState":"awayjs-renderergl/lib/animators/states/ParticlePositionState","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode":[function(require,module,exports){
 "use strict";
@@ -4989,8 +4954,8 @@ var ParticleRotateToHeadingNode = (function (_super) {
      * Creates a new <code>ParticleBillboardNode</code>
      */
     function ParticleRotateToHeadingNode() {
-        _super.call(this, "ParticleRotateToHeading", ParticlePropertiesMode_1.default.GLOBAL, 0, 3);
-        this._pStateClass = ParticleRotateToHeadingState_1.default;
+        _super.call(this, "ParticleRotateToHeading", ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL, 0, 3);
+        this._pStateClass = ParticleRotateToHeadingState_1.ParticleRotateToHeadingState;
     }
     /**
      * @inheritDoc
@@ -5006,7 +4971,7 @@ var ParticleRotateToHeadingNode = (function (_super) {
             registerCache.addVertexTempUsages(temp2, 1);
             var temp3 = registerCache.getFreeVertexVectorTemp();
             var rotationMatrixRegister = registerCache.getFreeVertexConstant();
-            animationRegisterData.setRegisterIndex(this, ParticleRotateToHeadingState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
+            animationRegisterData.setRegisterIndex(this, ParticleRotateToHeadingState_1.ParticleRotateToHeadingState.MATRIX_INDEX, rotationMatrixRegister.index);
             registerCache.getFreeVertexConstant();
             registerCache.getFreeVertexConstant();
             registerCache.getFreeVertexConstant();
@@ -5039,9 +5004,9 @@ var ParticleRotateToHeadingNode = (function (_super) {
             var R = registerCache.getFreeVertexVectorTemp();
             registerCache.addVertexTempUsages(R, 1);
             var R_rev = registerCache.getFreeVertexVectorTemp();
-            var cos = new ShaderRegisterElement_1.default(R.regName, R.index, 3);
-            var sin = new ShaderRegisterElement_1.default(R_rev.regName, R_rev.index, 3);
-            var cos2 = new ShaderRegisterElement_1.default(nrmVel.regName, nrmVel.index, 3);
+            var cos = new ShaderRegisterElement_1.ShaderRegisterElement(R.regName, R.index, 3);
+            var sin = new ShaderRegisterElement_1.ShaderRegisterElement(R_rev.regName, R_rev.index, 3);
+            var cos2 = new ShaderRegisterElement_1.ShaderRegisterElement(nrmVel.regName, nrmVel.index, 3);
             var tempSingle = sin;
             registerCache.removeVertexTempUsage(nrmVel);
             registerCache.removeVertexTempUsage(xAxis);
@@ -5129,9 +5094,8 @@ var ParticleRotateToHeadingNode = (function (_super) {
         particleAnimationSet.needVelocity = true;
     };
     return ParticleRotateToHeadingNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleRotateToHeadingNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleRotateToHeadingNode = ParticleRotateToHeadingNode;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleRotateToHeadingState":"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode":[function(require,module,exports){
 "use strict";
@@ -5156,15 +5120,15 @@ var ParticleRotateToPositionNode = (function (_super) {
     function ParticleRotateToPositionNode(mode, position) {
         if (position === void 0) { position = null; }
         _super.call(this, "ParticleRotateToPosition", mode, 3, 3);
-        this._pStateClass = ParticleRotateToPositionState_1.default;
-        this._iPosition = position || new Vector3D_1.default();
+        this._pStateClass = ParticleRotateToPositionState_1.ParticleRotateToPositionState;
+        this._iPosition = position || new Vector3D_1.Vector3D();
     }
     /**
      * @inheritDoc
      */
     ParticleRotateToPositionNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
-        var positionAttribute = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-        animationRegisterData.setRegisterIndex(this, ParticleRotateToPositionState_1.default.POSITION_INDEX, positionAttribute.index);
+        var positionAttribute = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleRotateToPositionState_1.ParticleRotateToPositionState.POSITION_INDEX, positionAttribute.index);
         var code = "";
         var len = animationRegisterData.rotationRegisters.length;
         var i;
@@ -5175,7 +5139,7 @@ var ParticleRotateToPositionNode = (function (_super) {
             registerCache.addVertexTempUsages(temp2, 1);
             var temp3 = registerCache.getFreeVertexVectorTemp();
             var rotationMatrixRegister = registerCache.getFreeVertexConstant();
-            animationRegisterData.setRegisterIndex(this, ParticleRotateToPositionState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
+            animationRegisterData.setRegisterIndex(this, ParticleRotateToPositionState_1.ParticleRotateToPositionState.MATRIX_INDEX, rotationMatrixRegister.index);
             registerCache.getFreeVertexConstant();
             registerCache.getFreeVertexConstant();
             registerCache.getFreeVertexConstant();
@@ -5206,10 +5170,10 @@ var ParticleRotateToPositionNode = (function (_super) {
             registerCache.addVertexTempUsages(nrmDirection, 1);
             var temp = registerCache.getFreeVertexVectorTemp();
             registerCache.addVertexTempUsages(temp, 1);
-            var cos = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
-            var sin = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
-            var o_temp = new ShaderRegisterElement_1.default(temp.regName, temp.index, 2);
-            var tempSingle = new ShaderRegisterElement_1.default(temp.regName, temp.index, 3);
+            var cos = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 0);
+            var sin = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 1);
+            var o_temp = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 2);
+            var tempSingle = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 3);
             var R = registerCache.getFreeVertexVectorTemp();
             registerCache.addVertexTempUsages(R, 1);
             registerCache.removeVertexTempUsage(nrmDirection);
@@ -5312,9 +5276,8 @@ var ParticleRotateToPositionNode = (function (_super) {
      */
     ParticleRotateToPositionNode.POSITION_VECTOR3D = "RotateToPositionVector3D";
     return ParticleRotateToPositionNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleRotateToPositionNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleRotateToPositionNode = ParticleRotateToPositionNode;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleRotateToPositionState":"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode":[function(require,module,exports){
 "use strict";
@@ -5341,26 +5304,26 @@ var ParticleRotationalVelocityNode = (function (_super) {
     function ParticleRotationalVelocityNode(mode, rotationalVelocity) {
         if (rotationalVelocity === void 0) { rotationalVelocity = null; }
         _super.call(this, "ParticleRotationalVelocity", mode, 4);
-        this._pStateClass = ParticleRotationalVelocityState_1.default;
-        this._iRotationalVelocity = rotationalVelocity || new Vector3D_1.default();
+        this._pStateClass = ParticleRotationalVelocityState_1.ParticleRotationalVelocityState;
+        this._iRotationalVelocity = rotationalVelocity || new Vector3D_1.Vector3D();
     }
     /**
      * @inheritDoc
      */
     ParticleRotationalVelocityNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
-        var rotationRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-        animationRegisterData.setRegisterIndex(this, ParticleRotationalVelocityState_1.default.ROTATIONALVELOCITY_INDEX, rotationRegister.index);
+        var rotationRegister = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleRotationalVelocityState_1.ParticleRotationalVelocityState.ROTATIONALVELOCITY_INDEX, rotationRegister.index);
         var nrmVel = registerCache.getFreeVertexVectorTemp();
         registerCache.addVertexTempUsages(nrmVel, 1);
         var xAxis = registerCache.getFreeVertexVectorTemp();
         registerCache.addVertexTempUsages(xAxis, 1);
         var temp = registerCache.getFreeVertexVectorTemp();
         registerCache.addVertexTempUsages(temp, 1);
-        var Rtemp = new ShaderRegisterElement_1.default(temp.regName, temp.index);
+        var Rtemp = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index);
         var R_rev = registerCache.getFreeVertexVectorTemp();
-        R_rev = new ShaderRegisterElement_1.default(R_rev.regName, R_rev.index);
-        var cos = new ShaderRegisterElement_1.default(Rtemp.regName, Rtemp.index, 3);
-        var sin = new ShaderRegisterElement_1.default(R_rev.regName, R_rev.index, 3);
+        R_rev = new ShaderRegisterElement_1.ShaderRegisterElement(R_rev.regName, R_rev.index);
+        var cos = new ShaderRegisterElement_1.ShaderRegisterElement(Rtemp.regName, Rtemp.index, 3);
+        var sin = new ShaderRegisterElement_1.ShaderRegisterElement(R_rev.regName, R_rev.index, 3);
         registerCache.removeVertexTempUsage(nrmVel);
         registerCache.removeVertexTempUsage(xAxis);
         registerCache.removeVertexTempUsage(temp);
@@ -5440,9 +5403,8 @@ var ParticleRotationalVelocityNode = (function (_super) {
      */
     ParticleRotationalVelocityNode.ROTATIONALVELOCITY_VECTOR3D = "RotationalVelocityVector3D";
     return ParticleRotationalVelocityNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleRotationalVelocityNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleRotationalVelocityNode = ParticleRotationalVelocityNode;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleRotationalVelocityState":"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":[function(require,module,exports){
 "use strict";
@@ -5476,7 +5438,7 @@ var ParticleScaleNode = (function (_super) {
         if (cycleDuration === void 0) { cycleDuration = 1; }
         if (cyclePhase === void 0) { cyclePhase = 0; }
         _super.call(this, "ParticleScale", mode, (usesCycle && usesPhase) ? 4 : ((usesCycle || usesPhase) ? 3 : 2), 3);
-        this._pStateClass = ParticleScaleState_1.default;
+        this._pStateClass = ParticleScaleState_1.ParticleScaleState;
         this._iUsesCycle = usesCycle;
         this._iUsesPhase = usesPhase;
         this._iMinScale = minScale;
@@ -5490,8 +5452,8 @@ var ParticleScaleNode = (function (_super) {
     ParticleScaleNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
         var code = "";
         var temp = registerCache.getFreeVertexSingleTemp();
-        var scaleRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-        animationRegisterData.setRegisterIndex(this, ParticleScaleState_1.default.SCALE_INDEX, scaleRegister.index);
+        var scaleRegister = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleScaleState_1.ParticleScaleState.SCALE_INDEX, scaleRegister.index);
         if (this._iUsesCycle) {
             code += "mul " + temp + "," + animationRegisterData.vertexTime + "," + scaleRegister + ".z\n";
             if (this._iUsesPhase)
@@ -5536,9 +5498,8 @@ var ParticleScaleNode = (function (_super) {
      */
     ParticleScaleNode.SCALE_VECTOR3D = "ScaleVector3D";
     return ParticleScaleNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleScaleNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleScaleNode = ParticleScaleNode;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleScaleState":"awayjs-renderergl/lib/animators/states/ParticleScaleState"}],"awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode":[function(require,module,exports){
 "use strict";
@@ -5559,8 +5520,8 @@ var ParticleSegmentedColorNode = (function (_super) {
     __extends(ParticleSegmentedColorNode, _super);
     function ParticleSegmentedColorNode(usesMultiplier, usesOffset, numSegmentPoint, startColor, endColor, segmentPoints) {
         //because of the stage3d register limitation, it only support the global mode
-        _super.call(this, "ParticleSegmentedColor", ParticlePropertiesMode_1.default.GLOBAL, 0, ParticleAnimationSet_1.default.COLOR_PRIORITY);
-        this._pStateClass = ParticleSegmentedColorState_1.default;
+        _super.call(this, "ParticleSegmentedColor", ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL, 0, ParticleAnimationSet_1.ParticleAnimationSet.COLOR_PRIORITY);
+        this._pStateClass = ParticleSegmentedColorState_1.ParticleSegmentedColorState;
         if (numSegmentPoint > 4)
             throw (new Error("the numSegmentPoint must be less or equal 4"));
         this._iUsesMultiplier = usesMultiplier;
@@ -5594,20 +5555,20 @@ var ParticleSegmentedColorNode = (function (_super) {
             var tempColor = registerCache.getFreeVertexVectorTemp();
             registerCache.addVertexTempUsages(tempColor, 1);
             var temp = registerCache.getFreeVertexVectorTemp();
-            var accTime = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
-            var tempTime = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
+            var accTime = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 0);
+            var tempTime = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 1);
             if (this._iUsesMultiplier)
                 registerCache.removeVertexTempUsage(accMultiplierColor);
             registerCache.removeVertexTempUsage(tempColor);
             //for saving all the life values (at most 4)
             var lifeTimeRegister = registerCache.getFreeVertexConstant();
-            animationRegisterData.setRegisterIndex(this, ParticleSegmentedColorState_1.default.TIME_DATA_INDEX, lifeTimeRegister.index);
+            animationRegisterData.setRegisterIndex(this, ParticleSegmentedColorState_1.ParticleSegmentedColorState.TIME_DATA_INDEX, lifeTimeRegister.index);
             var i;
             var startMulValue;
             var deltaMulValues;
             if (this._iUsesMultiplier) {
                 startMulValue = registerCache.getFreeVertexConstant();
-                animationRegisterData.setRegisterIndex(this, ParticleSegmentedColorState_1.default.START_MULTIPLIER_INDEX, startMulValue.index);
+                animationRegisterData.setRegisterIndex(this, ParticleSegmentedColorState_1.ParticleSegmentedColorState.START_MULTIPLIER_INDEX, startMulValue.index);
                 deltaMulValues = new Array();
                 for (i = 0; i < this._iNumSegmentPoint + 1; i++)
                     deltaMulValues.push(registerCache.getFreeVertexConstant());
@@ -5616,7 +5577,7 @@ var ParticleSegmentedColorNode = (function (_super) {
             var deltaOffsetValues;
             if (this._iUsesOffset) {
                 startOffsetValue = registerCache.getFreeVertexConstant();
-                animationRegisterData.setRegisterIndex(this, ParticleSegmentedColorState_1.default.START_OFFSET_INDEX, startOffsetValue.index);
+                animationRegisterData.setRegisterIndex(this, ParticleSegmentedColorState_1.ParticleSegmentedColorState.START_OFFSET_INDEX, startOffsetValue.index);
                 deltaOffsetValues = new Array();
                 for (i = 0; i < this._iNumSegmentPoint + 1; i++)
                     deltaOffsetValues.push(registerCache.getFreeVertexConstant());
@@ -5688,9 +5649,8 @@ var ParticleSegmentedColorNode = (function (_super) {
         return code;
     };
     return ParticleSegmentedColorNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleSegmentedColorNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleSegmentedColorNode = ParticleSegmentedColorNode;
 
 },{"../../animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleSegmentedColorState":"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode":[function(require,module,exports){
 "use strict";
@@ -5727,8 +5687,8 @@ var ParticleSpriteSheetNode = (function (_super) {
         if (cycleDuration === void 0) { cycleDuration = 1; }
         if (cyclePhase === void 0) { cyclePhase = 0; }
         if (totalFrames === void 0) { totalFrames = Number.MAX_VALUE; }
-        _super.call(this, "ParticleSpriteSheet", mode, usesCycle ? (usesPhase ? 3 : 2) : 1, ParticleAnimationSet_1.default.POST_PRIORITY + 1);
-        this._pStateClass = ParticleSpriteSheetState_1.default;
+        _super.call(this, "ParticleSpriteSheet", mode, usesCycle ? (usesPhase ? 3 : 2) : 1, ParticleAnimationSet_1.ParticleAnimationSet.POST_PRIORITY + 1);
+        this._pStateClass = ParticleSpriteSheetState_1.ParticleSpriteSheetState;
         this._iUsesCycle = usesCycle;
         this._iUsesPhase = usesPhase;
         this._iNumColumns = numColumns;
@@ -5773,22 +5733,22 @@ var ParticleSpriteSheetNode = (function (_super) {
     ParticleSpriteSheetNode.prototype.getAGALUVCode = function (shader, animationSet, registerCache, animationRegisterData) {
         //get 2 vc
         var uvParamConst1 = registerCache.getFreeVertexConstant();
-        var uvParamConst2 = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-        animationRegisterData.setRegisterIndex(this, ParticleSpriteSheetState_1.default.UV_INDEX_0, uvParamConst1.index);
-        animationRegisterData.setRegisterIndex(this, ParticleSpriteSheetState_1.default.UV_INDEX_1, uvParamConst2.index);
-        var uTotal = new ShaderRegisterElement_1.default(uvParamConst1.regName, uvParamConst1.index, 0);
-        var uStep = new ShaderRegisterElement_1.default(uvParamConst1.regName, uvParamConst1.index, 1);
-        var vStep = new ShaderRegisterElement_1.default(uvParamConst1.regName, uvParamConst1.index, 2);
-        var uSpeed = new ShaderRegisterElement_1.default(uvParamConst2.regName, uvParamConst2.index, 0);
-        var cycle = new ShaderRegisterElement_1.default(uvParamConst2.regName, uvParamConst2.index, 1);
-        var phaseTime = new ShaderRegisterElement_1.default(uvParamConst2.regName, uvParamConst2.index, 2);
+        var uvParamConst2 = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleSpriteSheetState_1.ParticleSpriteSheetState.UV_INDEX_0, uvParamConst1.index);
+        animationRegisterData.setRegisterIndex(this, ParticleSpriteSheetState_1.ParticleSpriteSheetState.UV_INDEX_1, uvParamConst2.index);
+        var uTotal = new ShaderRegisterElement_1.ShaderRegisterElement(uvParamConst1.regName, uvParamConst1.index, 0);
+        var uStep = new ShaderRegisterElement_1.ShaderRegisterElement(uvParamConst1.regName, uvParamConst1.index, 1);
+        var vStep = new ShaderRegisterElement_1.ShaderRegisterElement(uvParamConst1.regName, uvParamConst1.index, 2);
+        var uSpeed = new ShaderRegisterElement_1.ShaderRegisterElement(uvParamConst2.regName, uvParamConst2.index, 0);
+        var cycle = new ShaderRegisterElement_1.ShaderRegisterElement(uvParamConst2.regName, uvParamConst2.index, 1);
+        var phaseTime = new ShaderRegisterElement_1.ShaderRegisterElement(uvParamConst2.regName, uvParamConst2.index, 2);
         var temp = registerCache.getFreeVertexVectorTemp();
-        var time = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
-        var vOffset = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
-        temp = new ShaderRegisterElement_1.default(temp.regName, temp.index, 2);
-        var temp2 = new ShaderRegisterElement_1.default(temp.regName, temp.index, 3);
-        var u = new ShaderRegisterElement_1.default(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, 0);
-        var v = new ShaderRegisterElement_1.default(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, 1);
+        var time = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 0);
+        var vOffset = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 1);
+        temp = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 2);
+        var temp2 = new ShaderRegisterElement_1.ShaderRegisterElement(temp.regName, temp.index, 3);
+        var u = new ShaderRegisterElement_1.ShaderRegisterElement(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, 0);
+        var v = new ShaderRegisterElement_1.ShaderRegisterElement(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, 1);
         var code = "";
         //scale uv
         code += "mul " + u + "," + u + "," + uStep + "\n";
@@ -5856,9 +5816,8 @@ var ParticleSpriteSheetNode = (function (_super) {
      */
     ParticleSpriteSheetNode.UV_VECTOR3D = "UVVector3D";
     return ParticleSpriteSheetNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleSpriteSheetNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleSpriteSheetNode = ParticleSpriteSheetNode;
 
 },{"../../animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleSpriteSheetState":"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode":[function(require,module,exports){
 "use strict";
@@ -5886,8 +5845,8 @@ var ParticleTimeNode = (function (_super) {
         if (usesDuration === void 0) { usesDuration = false; }
         if (usesLooping === void 0) { usesLooping = false; }
         if (usesDelay === void 0) { usesDelay = false; }
-        _super.call(this, "ParticleTime", ParticlePropertiesMode_1.default.LOCAL_STATIC, 4, 0);
-        this._pStateClass = ParticleTimeState_1.default;
+        _super.call(this, "ParticleTime", ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC, 4, 0);
+        this._pStateClass = ParticleTimeState_1.ParticleTimeState;
         this._iUsesDuration = usesDuration;
         this._iUsesLooping = usesLooping;
         this._iUsesDelay = usesDelay;
@@ -5897,9 +5856,9 @@ var ParticleTimeNode = (function (_super) {
      */
     ParticleTimeNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
         var timeStreamRegister = registerCache.getFreeVertexAttribute(); //timeStreamRegister.x is start，timeStreamRegister.y is during time
-        animationRegisterData.setRegisterIndex(this, ParticleTimeState_1.default.TIME_STREAM_INDEX, timeStreamRegister.index);
+        animationRegisterData.setRegisterIndex(this, ParticleTimeState_1.ParticleTimeState.TIME_STREAM_INDEX, timeStreamRegister.index);
         var timeConst = registerCache.getFreeVertexConstant();
-        animationRegisterData.setRegisterIndex(this, ParticleTimeState_1.default.TIME_CONSTANT_INDEX, timeConst.index);
+        animationRegisterData.setRegisterIndex(this, ParticleTimeState_1.ParticleTimeState.TIME_CONSTANT_INDEX, timeConst.index);
         var code = "";
         code += "sub " + animationRegisterData.vertexTime + "," + timeConst + "," + timeStreamRegister + ".x\n";
         //if time=0,set the position to zero.
@@ -5947,9 +5906,8 @@ var ParticleTimeNode = (function (_super) {
         this._pOneData[3] = 1 / param.duration;
     };
     return ParticleTimeNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleTimeNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleTimeNode = ParticleTimeNode;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleTimeState":"awayjs-renderergl/lib/animators/states/ParticleTimeState"}],"awayjs-renderergl/lib/animators/nodes/ParticleUVNode":[function(require,module,exports){
 "use strict";
@@ -5982,8 +5940,8 @@ var ParticleUVNode = (function (_super) {
         if (scale === void 0) { scale = 1; }
         if (axis === void 0) { axis = "x"; }
         //because of the stage3d register limitation, it only support the global mode
-        _super.call(this, "ParticleUV", ParticlePropertiesMode_1.default.GLOBAL, 4, ParticleAnimationSet_1.default.POST_PRIORITY + 1);
-        this._pStateClass = ParticleUVState_1.default;
+        _super.call(this, "ParticleUV", ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL, 4, ParticleAnimationSet_1.ParticleAnimationSet.POST_PRIORITY + 1);
+        this._pStateClass = ParticleUVState_1.ParticleUVState;
         this._cycle = cycle;
         this._scale = scale;
         this._axis = axis;
@@ -6036,9 +5994,9 @@ var ParticleUVNode = (function (_super) {
     ParticleUVNode.prototype.getAGALUVCode = function (shader, animationSet, registerCache, animationRegisterData) {
         var code = "";
         var uvConst = registerCache.getFreeVertexConstant();
-        animationRegisterData.setRegisterIndex(this, ParticleUVState_1.default.UV_INDEX, uvConst.index);
+        animationRegisterData.setRegisterIndex(this, ParticleUVState_1.ParticleUVState.UV_INDEX, uvConst.index);
         var axisIndex = this._axis == "x" ? 0 : (this._axis == "y" ? 1 : 2);
-        var target = new ShaderRegisterElement_1.default(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, axisIndex);
+        var target = new ShaderRegisterElement_1.ShaderRegisterElement(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, axisIndex);
         var sin = registerCache.getFreeVertexSingleTemp();
         if (this._scale != 1)
             code += "mul " + target + "," + target + "," + uvConst + ".y\n";
@@ -6054,7 +6012,7 @@ var ParticleUVNode = (function (_super) {
         return animator.getAnimationState(this);
     };
     ParticleUVNode.prototype.updateUVData = function () {
-        this._iUvData = new Vector3D_1.default(Math.PI * 2 / this._cycle, this._scale, 0, 0);
+        this._iUvData = new Vector3D_1.Vector3D(Math.PI * 2 / this._cycle, this._scale, 0, 0);
     };
     /**
      * @inheritDoc
@@ -6071,9 +6029,8 @@ var ParticleUVNode = (function (_super) {
      */
     ParticleUVNode.V_AXIS = "y";
     return ParticleUVNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleUVNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleUVNode = ParticleUVNode;
 
 },{"../../animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleUVState":"awayjs-renderergl/lib/animators/states/ParticleUVState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":[function(require,module,exports){
 "use strict";
@@ -6100,15 +6057,15 @@ var ParticleVelocityNode = (function (_super) {
     function ParticleVelocityNode(mode, velocity) {
         if (velocity === void 0) { velocity = null; }
         _super.call(this, "ParticleVelocity", mode, 3);
-        this._pStateClass = ParticleVelocityState_1.default;
-        this._iVelocity = velocity || new Vector3D_1.default();
+        this._pStateClass = ParticleVelocityState_1.ParticleVelocityState;
+        this._iVelocity = velocity || new Vector3D_1.Vector3D();
     }
     /**
      * @inheritDoc
      */
     ParticleVelocityNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
-        var velocityValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
-        animationRegisterData.setRegisterIndex(this, ParticleVelocityState_1.default.VELOCITY_INDEX, velocityValue.index);
+        var velocityValue = (this._pMode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+        animationRegisterData.setRegisterIndex(this, ParticleVelocityState_1.ParticleVelocityState.VELOCITY_INDEX, velocityValue.index);
         var distance = registerCache.getFreeVertexVectorTemp();
         var code = "";
         code += "mul " + distance + "," + animationRegisterData.vertexTime + "," + velocityValue + "\n";
@@ -6140,9 +6097,8 @@ var ParticleVelocityNode = (function (_super) {
      */
     ParticleVelocityNode.VELOCITY_VECTOR3D = "VelocityVector3D";
     return ParticleVelocityNode;
-}(ParticleNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleVelocityNode;
+}(ParticleNodeBase_1.ParticleNodeBase));
+exports.ParticleVelocityNode = ParticleVelocityNode;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleVelocityState":"awayjs-renderergl/lib/animators/states/ParticleVelocityState","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode":[function(require,module,exports){
 "use strict";
@@ -6163,7 +6119,7 @@ var SkeletonBinaryLERPNode = (function (_super) {
      */
     function SkeletonBinaryLERPNode() {
         _super.call(this);
-        this._pStateClass = SkeletonBinaryLERPState_1.default;
+        this._pStateClass = SkeletonBinaryLERPState_1.SkeletonBinaryLERPState;
     }
     /**
      * @inheritDoc
@@ -6172,9 +6128,8 @@ var SkeletonBinaryLERPNode = (function (_super) {
         return animator.getAnimationState(this);
     };
     return SkeletonBinaryLERPNode;
-}(AnimationNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SkeletonBinaryLERPNode;
+}(AnimationNodeBase_1.AnimationNodeBase));
+exports.SkeletonBinaryLERPNode = SkeletonBinaryLERPNode;
 
 },{"../../animators/states/SkeletonBinaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState","awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":[function(require,module,exports){
 "use strict";
@@ -6201,7 +6156,7 @@ var SkeletonClipNode = (function (_super) {
          * of the output skeleton pose. Defaults to false.
          */
         this.highQuality = false;
-        this._pStateClass = SkeletonClipState_1.default;
+        this._pStateClass = SkeletonClipState_1.SkeletonClipState;
     }
     Object.defineProperty(SkeletonClipNode.prototype, "frames", {
         /**
@@ -6258,9 +6213,8 @@ var SkeletonClipNode = (function (_super) {
         }
     };
     return SkeletonClipNode;
-}(AnimationClipNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SkeletonClipNode;
+}(AnimationClipNodeBase_1.AnimationClipNodeBase));
+exports.SkeletonClipNode = SkeletonClipNode;
 
 },{"../../animators/nodes/AnimationClipNodeBase":"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase","../../animators/states/SkeletonClipState":"awayjs-renderergl/lib/animators/states/SkeletonClipState"}],"awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode":[function(require,module,exports){
 "use strict";
@@ -6281,7 +6235,7 @@ var SkeletonDifferenceNode = (function (_super) {
      */
     function SkeletonDifferenceNode() {
         _super.call(this);
-        this._pStateClass = SkeletonDifferenceState_1.default;
+        this._pStateClass = SkeletonDifferenceState_1.SkeletonDifferenceState;
     }
     /**
      * @inheritDoc
@@ -6290,7 +6244,8 @@ var SkeletonDifferenceNode = (function (_super) {
         return animator.getAnimationState(this);
     };
     return SkeletonDifferenceNode;
-}(AnimationNodeBase_1.default));
+}(AnimationNodeBase_1.AnimationNodeBase));
+exports.SkeletonDifferenceNode = SkeletonDifferenceNode;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonDifferenceNode;
 
@@ -6310,7 +6265,7 @@ var SkeletonDirectionalNode = (function (_super) {
     __extends(SkeletonDirectionalNode, _super);
     function SkeletonDirectionalNode() {
         _super.call(this);
-        this._pStateClass = SkeletonDirectionalState_1.default;
+        this._pStateClass = SkeletonDirectionalState_1.SkeletonDirectionalState;
     }
     /**
      * @inheritDoc
@@ -6319,9 +6274,8 @@ var SkeletonDirectionalNode = (function (_super) {
         return animator.getAnimationState(this);
     };
     return SkeletonDirectionalNode;
-}(AnimationNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SkeletonDirectionalNode;
+}(AnimationNodeBase_1.AnimationNodeBase));
+exports.SkeletonDirectionalNode = SkeletonDirectionalNode;
 
 },{"../../animators/states/SkeletonDirectionalState":"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState","awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode":[function(require,module,exports){
 "use strict";
@@ -6343,7 +6297,7 @@ var SkeletonNaryLERPNode = (function (_super) {
     function SkeletonNaryLERPNode() {
         _super.call(this);
         this._iInputs = new Array();
-        this._pStateClass = SkeletonNaryLERPState_1.default;
+        this._pStateClass = SkeletonNaryLERPState_1.SkeletonNaryLERPState;
     }
     Object.defineProperty(SkeletonNaryLERPNode.prototype, "numInputs", {
         get: function () {
@@ -6381,7 +6335,8 @@ var SkeletonNaryLERPNode = (function (_super) {
         return animator.getAnimationState(this);
     };
     return SkeletonNaryLERPNode;
-}(AnimationNodeBase_1.default));
+}(AnimationNodeBase_1.AnimationNodeBase));
+exports.SkeletonNaryLERPNode = SkeletonNaryLERPNode;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonNaryLERPNode;
 
@@ -6407,7 +6362,7 @@ var VertexClipNode = (function (_super) {
         _super.call(this);
         this._frames = new Array();
         this._translations = new Array();
-        this._pStateClass = VertexClipState_1.default;
+        this._pStateClass = VertexClipState_1.VertexClipState;
     }
     Object.defineProperty(VertexClipNode.prototype, "frames", {
         /**
@@ -6430,7 +6385,7 @@ var VertexClipNode = (function (_super) {
         if (translation === void 0) { translation = null; }
         this._frames.push(geometry);
         this._pDurations.push(duration);
-        this._translations.push(translation || new Vector3D_1.default());
+        this._translations.push(translation || new Vector3D_1.Vector3D());
         this._pNumFrames = this._pDurations.length;
         this._pStitchDirty = true;
     };
@@ -6461,9 +6416,8 @@ var VertexClipNode = (function (_super) {
         }
     };
     return VertexClipNode;
-}(AnimationClipNodeBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = VertexClipNode;
+}(AnimationClipNodeBase_1.AnimationClipNodeBase));
+exports.VertexClipNode = VertexClipNode;
 
 },{"../../animators/nodes/AnimationClipNodeBase":"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase","../../animators/states/VertexClipState":"awayjs-renderergl/lib/animators/states/VertexClipState","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/states/AnimationClipState":[function(require,module,exports){
 "use strict";
@@ -6610,13 +6564,12 @@ var AnimationClipState = (function (_super) {
     };
     AnimationClipState.prototype.notifyPlaybackComplete = function () {
         if (this._animationStatePlaybackComplete == null)
-            this._animationStatePlaybackComplete = new AnimationStateEvent_1.default(AnimationStateEvent_1.default.PLAYBACK_COMPLETE, this._pAnimator, this, this._animationClipNode);
+            this._animationStatePlaybackComplete = new AnimationStateEvent_1.AnimationStateEvent(AnimationStateEvent_1.AnimationStateEvent.PLAYBACK_COMPLETE, this._pAnimator, this, this._animationClipNode);
         this._animationClipNode.dispatchEvent(this._animationStatePlaybackComplete);
     };
     return AnimationClipState;
-}(AnimationStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = AnimationClipState;
+}(AnimationStateBase_1.AnimationStateBase));
+exports.AnimationClipState = AnimationClipState;
 
 },{"../../animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase","../../events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent"}],"awayjs-renderergl/lib/animators/states/AnimationStateBase":[function(require,module,exports){
 "use strict";
@@ -6626,7 +6579,7 @@ var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
  */
 var AnimationStateBase = (function () {
     function AnimationStateBase(animator, animationNode) {
-        this._pRootDelta = new Vector3D_1.default();
+        this._pRootDelta = new Vector3D_1.Vector3D();
         this._pPositionDeltaDirty = true;
         this._pStartTime = 0;
         this._pAnimator = animator;
@@ -6690,8 +6643,7 @@ var AnimationStateBase = (function () {
     };
     return AnimationStateBase;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = AnimationStateBase;
+exports.AnimationStateBase = AnimationStateBase;
 
 },{"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/states/IAnimationState":[function(require,module,exports){
 "use strict";
@@ -6745,21 +6697,20 @@ var ParticleAccelerationState = (function (_super) {
      */
     ParticleAccelerationState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleAccelerationState.ACCELERATION_INDEX);
-        if (this._particleAccelerationNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC)
-            animationElements.activateVertexBuffer(index, this._particleAccelerationNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+        if (this._particleAccelerationNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC)
+            animationElements.activateVertexBuffer(index, this._particleAccelerationNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
         else
             shader.setVertexConst(index, this._halfAcceleration.x, this._halfAcceleration.y, this._halfAcceleration.z);
     };
     ParticleAccelerationState.prototype.updateAccelerationData = function () {
-        if (this._particleAccelerationNode.mode == ParticlePropertiesMode_1.default.GLOBAL)
-            this._halfAcceleration = new Vector3D_1.default(this._acceleration.x / 2, this._acceleration.y / 2, this._acceleration.z / 2);
+        if (this._particleAccelerationNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL)
+            this._halfAcceleration = new Vector3D_1.Vector3D(this._acceleration.x / 2, this._acceleration.y / 2, this._acceleration.z / 2);
     };
     /** @private */
     ParticleAccelerationState.ACCELERATION_INDEX = 0;
     return ParticleAccelerationState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleAccelerationState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleAccelerationState = ParticleAccelerationState;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState":[function(require,module,exports){
 "use strict";
@@ -6811,9 +6762,9 @@ var ParticleBezierCurveState = (function (_super) {
     ParticleBezierCurveState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
         var controlIndex = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_CONTROL_INDEX);
         var endIndex = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_END_INDEX);
-        if (this._particleBezierCurveNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
-            animationElements.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
-            animationElements.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+        if (this._particleBezierCurveNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC) {
+            animationElements.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
+            animationElements.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
         }
         else {
             shader.setVertexConst(controlIndex, this._controlPoint.x, this._controlPoint.y, this._controlPoint.z);
@@ -6825,9 +6776,8 @@ var ParticleBezierCurveState = (function (_super) {
     /** @private */
     ParticleBezierCurveState.BEZIER_END_INDEX = 1;
     return ParticleBezierCurveState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleBezierCurveState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleBezierCurveState = ParticleBezierCurveState;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleBillboardState":[function(require,module,exports){
 "use strict";
@@ -6850,7 +6800,7 @@ var ParticleBillboardState = (function (_super) {
      */
     function ParticleBillboardState(animator, particleNode) {
         _super.call(this, animator, particleNode);
-        this._matrix = new Matrix3D_1.default;
+        this._matrix = new Matrix3D_1.Matrix3D;
         this._billboardAxis = particleNode._iBillboardAxis;
     }
     ParticleBillboardState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
@@ -6864,22 +6814,22 @@ var ParticleBillboardState = (function (_super) {
             look.normalize();
             //create a quick inverse projection matrix
             this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
-            comps = this._matrix.decompose(Orientation3D_1.default.AXIS_ANGLE);
+            comps = this._matrix.decompose(Orientation3D_1.Orientation3D.AXIS_ANGLE);
             this._matrix.copyColumnFrom(0, right);
             this._matrix.copyColumnFrom(1, this.billboardAxis);
             this._matrix.copyColumnFrom(2, look);
             this._matrix.copyColumnFrom(3, pos);
-            this._matrix.appendRotation(-comps[1].w * MathConsts_1.default.RADIANS_TO_DEGREES, comps[1]);
+            this._matrix.appendRotation(-comps[1].w * MathConsts_1.MathConsts.RADIANS_TO_DEGREES, comps[1]);
         }
         else {
             //create a quick inverse projection matrix
             this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
             this._matrix.append(camera.inverseSceneTransform);
             //decompose using axis angle rotations
-            comps = this._matrix.decompose(Orientation3D_1.default.AXIS_ANGLE);
+            comps = this._matrix.decompose(Orientation3D_1.Orientation3D.AXIS_ANGLE);
             //recreate the matrix with just the rotation data
             this._matrix.identity();
-            this._matrix.appendRotation(-comps[1].w * MathConsts_1.default.RADIANS_TO_DEGREES, comps[1]);
+            this._matrix.appendRotation(-comps[1].w * MathConsts_1.MathConsts.RADIANS_TO_DEGREES, comps[1]);
         }
         //set a new matrix transform constant
         shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBillboardState.MATRIX_INDEX), this._matrix);
@@ -6902,9 +6852,8 @@ var ParticleBillboardState = (function (_super) {
     /** @private */
     ParticleBillboardState.MATRIX_INDEX = 0;
     return ParticleBillboardState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleBillboardState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleBillboardState = ParticleBillboardState;
 
 },{"../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Orientation3D":undefined}],"awayjs-renderergl/lib/animators/states/ParticleColorState":[function(require,module,exports){
 "use strict";
@@ -6999,10 +6948,10 @@ var ParticleColorState = (function (_super) {
             if (this._usesCycle)
                 shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.CYCLE_INDEX), this._cycleData.x, this._cycleData.y, this._cycleData.z, this._cycleData.w);
             if (this._usesMultiplier) {
-                if (this._particleColorNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
-                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                if (this._particleColorNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC) {
+                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_4);
                     dataOffset += 4;
-                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_4);
                     dataOffset += 4;
                 }
                 else {
@@ -7011,10 +6960,10 @@ var ParticleColorState = (function (_super) {
                 }
             }
             if (this._usesOffset) {
-                if (this._particleColorNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
-                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                if (this._particleColorNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC) {
+                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_4);
                     dataOffset += 4;
-                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_4);
                 }
                 else {
                     shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);
@@ -7027,27 +6976,27 @@ var ParticleColorState = (function (_super) {
         if (this._usesCycle) {
             if (this._cycleDuration <= 0)
                 throw (new Error("the cycle duration must be greater than zero"));
-            this._cycleData = new Vector3D_1.default(Math.PI * 2 / this._cycleDuration, this._cyclePhase * Math.PI / 180, 0, 0);
+            this._cycleData = new Vector3D_1.Vector3D(Math.PI * 2 / this._cycleDuration, this._cyclePhase * Math.PI / 180, 0, 0);
         }
-        if (this._particleColorNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
+        if (this._particleColorNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) {
             if (this._usesCycle) {
                 if (this._usesMultiplier) {
-                    this._startMultiplierData = new Vector3D_1.default((this._startColor.redMultiplier + this._endColor.redMultiplier) / 2, (this._startColor.greenMultiplier + this._endColor.greenMultiplier) / 2, (this._startColor.blueMultiplier + this._endColor.blueMultiplier) / 2, (this._startColor.alphaMultiplier + this._endColor.alphaMultiplier) / 2);
-                    this._deltaMultiplierData = new Vector3D_1.default((this._endColor.redMultiplier - this._startColor.redMultiplier) / 2, (this._endColor.greenMultiplier - this._startColor.greenMultiplier) / 2, (this._endColor.blueMultiplier - this._startColor.blueMultiplier) / 2, (this._endColor.alphaMultiplier - this._startColor.alphaMultiplier) / 2);
+                    this._startMultiplierData = new Vector3D_1.Vector3D((this._startColor.redMultiplier + this._endColor.redMultiplier) / 2, (this._startColor.greenMultiplier + this._endColor.greenMultiplier) / 2, (this._startColor.blueMultiplier + this._endColor.blueMultiplier) / 2, (this._startColor.alphaMultiplier + this._endColor.alphaMultiplier) / 2);
+                    this._deltaMultiplierData = new Vector3D_1.Vector3D((this._endColor.redMultiplier - this._startColor.redMultiplier) / 2, (this._endColor.greenMultiplier - this._startColor.greenMultiplier) / 2, (this._endColor.blueMultiplier - this._startColor.blueMultiplier) / 2, (this._endColor.alphaMultiplier - this._startColor.alphaMultiplier) / 2);
                 }
                 if (this._usesOffset) {
-                    this._startOffsetData = new Vector3D_1.default((this._startColor.redOffset + this._endColor.redOffset) / (255 * 2), (this._startColor.greenOffset + this._endColor.greenOffset) / (255 * 2), (this._startColor.blueOffset + this._endColor.blueOffset) / (255 * 2), (this._startColor.alphaOffset + this._endColor.alphaOffset) / (255 * 2));
-                    this._deltaOffsetData = new Vector3D_1.default((this._endColor.redOffset - this._startColor.redOffset) / (255 * 2), (this._endColor.greenOffset - this._startColor.greenOffset) / (255 * 2), (this._endColor.blueOffset - this._startColor.blueOffset) / (255 * 2), (this._endColor.alphaOffset - this._startColor.alphaOffset) / (255 * 2));
+                    this._startOffsetData = new Vector3D_1.Vector3D((this._startColor.redOffset + this._endColor.redOffset) / (255 * 2), (this._startColor.greenOffset + this._endColor.greenOffset) / (255 * 2), (this._startColor.blueOffset + this._endColor.blueOffset) / (255 * 2), (this._startColor.alphaOffset + this._endColor.alphaOffset) / (255 * 2));
+                    this._deltaOffsetData = new Vector3D_1.Vector3D((this._endColor.redOffset - this._startColor.redOffset) / (255 * 2), (this._endColor.greenOffset - this._startColor.greenOffset) / (255 * 2), (this._endColor.blueOffset - this._startColor.blueOffset) / (255 * 2), (this._endColor.alphaOffset - this._startColor.alphaOffset) / (255 * 2));
                 }
             }
             else {
                 if (this._usesMultiplier) {
-                    this._startMultiplierData = new Vector3D_1.default(this._startColor.redMultiplier, this._startColor.greenMultiplier, this._startColor.blueMultiplier, this._startColor.alphaMultiplier);
-                    this._deltaMultiplierData = new Vector3D_1.default((this._endColor.redMultiplier - this._startColor.redMultiplier), (this._endColor.greenMultiplier - this._startColor.greenMultiplier), (this._endColor.blueMultiplier - this._startColor.blueMultiplier), (this._endColor.alphaMultiplier - this._startColor.alphaMultiplier));
+                    this._startMultiplierData = new Vector3D_1.Vector3D(this._startColor.redMultiplier, this._startColor.greenMultiplier, this._startColor.blueMultiplier, this._startColor.alphaMultiplier);
+                    this._deltaMultiplierData = new Vector3D_1.Vector3D((this._endColor.redMultiplier - this._startColor.redMultiplier), (this._endColor.greenMultiplier - this._startColor.greenMultiplier), (this._endColor.blueMultiplier - this._startColor.blueMultiplier), (this._endColor.alphaMultiplier - this._startColor.alphaMultiplier));
                 }
                 if (this._usesOffset) {
-                    this._startOffsetData = new Vector3D_1.default(this._startColor.redOffset / 255, this._startColor.greenOffset / 255, this._startColor.blueOffset / 255, this._startColor.alphaOffset / 255);
-                    this._deltaOffsetData = new Vector3D_1.default((this._endColor.redOffset - this._startColor.redOffset) / 255, (this._endColor.greenOffset - this._startColor.greenOffset) / 255, (this._endColor.blueOffset - this._startColor.blueOffset) / 255, (this._endColor.alphaOffset - this._startColor.alphaOffset) / 255);
+                    this._startOffsetData = new Vector3D_1.Vector3D(this._startColor.redOffset / 255, this._startColor.greenOffset / 255, this._startColor.blueOffset / 255, this._startColor.alphaOffset / 255);
+                    this._deltaOffsetData = new Vector3D_1.Vector3D((this._endColor.redOffset - this._startColor.redOffset) / 255, (this._endColor.greenOffset - this._startColor.greenOffset) / 255, (this._endColor.blueOffset - this._startColor.blueOffset) / 255, (this._endColor.alphaOffset - this._startColor.alphaOffset) / 255);
                 }
             }
         }
@@ -7063,9 +7012,8 @@ var ParticleColorState = (function (_super) {
     /** @private */
     ParticleColorState.CYCLE_INDEX = 4;
     return ParticleColorState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleColorState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleColorState = ParticleColorState;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleFollowState":[function(require,module,exports){
 "use strict";
@@ -7085,10 +7033,10 @@ var ParticleFollowState = (function (_super) {
     __extends(ParticleFollowState, _super);
     function ParticleFollowState(animator, particleFollowNode) {
         _super.call(this, animator, particleFollowNode, true);
-        this._targetPos = new Vector3D_1.default();
-        this._targetEuler = new Vector3D_1.default();
+        this._targetPos = new Vector3D_1.Vector3D();
+        this._targetEuler = new Vector3D_1.Vector3D();
         //temporary vector3D for calculation
-        this._temp = new Vector3D_1.default();
+        this._temp = new Vector3D_1.Vector3D();
         this._particleFollowNode = particleFollowNode;
         this._smooth = particleFollowNode._iSmooth;
     }
@@ -7126,7 +7074,7 @@ var ParticleFollowState = (function (_super) {
                 this._targetEuler.x = this._followTarget.rotationX;
                 this._targetEuler.y = this._followTarget.rotationY;
                 this._targetEuler.z = this._followTarget.rotationZ;
-                this._targetEuler.scaleBy(MathConsts_1.default.DEGREES_TO_RADIANS);
+                this._targetEuler.scaleBy(MathConsts_1.MathConsts.DEGREES_TO_RADIANS);
             }
         }
         //initialization
@@ -7141,18 +7089,18 @@ var ParticleFollowState = (function (_super) {
         if (this._particleFollowNode._iUsesPosition && this._particleFollowNode._iUsesRotation) {
             if (needProcess)
                 this.processPositionAndRotation(currentTime, deltaTime, animationElements);
-            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
-            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
+            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
         }
         else if (this._particleFollowNode._iUsesPosition) {
             if (needProcess)
                 this.processPosition(currentTime, deltaTime, animationElements);
-            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
         }
         else if (this._particleFollowNode._iUsesRotation) {
             if (needProcess)
                 this.precessRotation(currentTime, deltaTime, animationElements);
-            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
         }
         this._prePos.copyFrom(this._targetPos);
         this._targetEuler.copyFrom(this._targetEuler);
@@ -7283,9 +7231,8 @@ var ParticleFollowState = (function (_super) {
     /** @private */
     ParticleFollowState.FOLLOW_ROTATION_INDEX = 1;
     return ParticleFollowState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleFollowState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleFollowState = ParticleFollowState;
 
 },{"../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleInitialColorState":[function(require,module,exports){
 "use strict";
@@ -7330,14 +7277,14 @@ var ParticleInitialColorState = (function (_super) {
     ParticleInitialColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
         if (shader.usesFragmentAnimation) {
             var index;
-            if (this._particleInitialColorNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
+            if (this._particleInitialColorNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC) {
                 var dataOffset = this._particleInitialColorNode._iDataOffset;
                 if (this._usesMultiplier) {
-                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_4);
                     dataOffset += 4;
                 }
                 if (this._usesOffset)
-                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_4);
             }
             else {
                 if (this._usesMultiplier)
@@ -7348,11 +7295,11 @@ var ParticleInitialColorState = (function (_super) {
         }
     };
     ParticleInitialColorState.prototype.updateColorData = function () {
-        if (this._particleInitialColorNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
+        if (this._particleInitialColorNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) {
             if (this._usesMultiplier)
-                this._multiplierData = new Vector3D_1.default(this._initialColor.redMultiplier, this._initialColor.greenMultiplier, this._initialColor.blueMultiplier, this._initialColor.alphaMultiplier);
+                this._multiplierData = new Vector3D_1.Vector3D(this._initialColor.redMultiplier, this._initialColor.greenMultiplier, this._initialColor.blueMultiplier, this._initialColor.alphaMultiplier);
             if (this._usesOffset)
-                this._offsetData = new Vector3D_1.default(this._initialColor.redOffset / 255, this._initialColor.greenOffset / 255, this._initialColor.blueOffset / 255, this._initialColor.alphaOffset / 255);
+                this._offsetData = new Vector3D_1.Vector3D(this._initialColor.redOffset / 255, this._initialColor.greenOffset / 255, this._initialColor.blueOffset / 255, this._initialColor.alphaOffset / 255);
         }
     };
     /** @private */
@@ -7360,9 +7307,8 @@ var ParticleInitialColorState = (function (_super) {
     /** @private */
     ParticleInitialColorState.OFFSET_INDEX = 1;
     return ParticleInitialColorState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleInitialColorState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleInitialColorState = ParticleInitialColorState;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleOrbitState":[function(require,module,exports){
 "use strict";
@@ -7451,11 +7397,11 @@ var ParticleOrbitState = (function (_super) {
     });
     ParticleOrbitState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.ORBIT_INDEX);
-        if (this._particleOrbitNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
+        if (this._particleOrbitNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC) {
             if (this._usesPhase)
-                animationElements.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                animationElements.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_4);
             else
-                animationElements.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+                animationElements.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
         }
         else
             shader.setVertexConst(index, this._orbitData.x, this._orbitData.y, this._orbitData.z, this._orbitData.w);
@@ -7464,13 +7410,13 @@ var ParticleOrbitState = (function (_super) {
     };
     ParticleOrbitState.prototype.updateOrbitData = function () {
         if (this._usesEulers) {
-            this._eulersMatrix = new Matrix3D_1.default();
-            this._eulersMatrix.appendRotation(this._eulers.x, Vector3D_1.default.X_AXIS);
-            this._eulersMatrix.appendRotation(this._eulers.y, Vector3D_1.default.Y_AXIS);
-            this._eulersMatrix.appendRotation(this._eulers.z, Vector3D_1.default.Z_AXIS);
+            this._eulersMatrix = new Matrix3D_1.Matrix3D();
+            this._eulersMatrix.appendRotation(this._eulers.x, Vector3D_1.Vector3D.X_AXIS);
+            this._eulersMatrix.appendRotation(this._eulers.y, Vector3D_1.Vector3D.Y_AXIS);
+            this._eulersMatrix.appendRotation(this._eulers.z, Vector3D_1.Vector3D.Z_AXIS);
         }
-        if (this._particleOrbitNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
-            this._orbitData = new Vector3D_1.default(this._radius, 0, this._radius * Math.PI * 2, this._cyclePhase * Math.PI / 180);
+        if (this._particleOrbitNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) {
+            this._orbitData = new Vector3D_1.Vector3D(this._radius, 0, this._radius * Math.PI * 2, this._cyclePhase * Math.PI / 180);
             if (this._usesCycle) {
                 if (this._cycleDuration <= 0)
                     throw (new Error("the cycle duration must be greater than zero"));
@@ -7485,9 +7431,8 @@ var ParticleOrbitState = (function (_super) {
     /** @private */
     ParticleOrbitState.EULERS_INDEX = 1;
     return ParticleOrbitState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleOrbitState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleOrbitState = ParticleOrbitState;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleOscillatorState":[function(require,module,exports){
 "use strict";
@@ -7530,17 +7475,17 @@ var ParticleOscillatorState = (function (_super) {
      */
     ParticleOscillatorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOscillatorState.OSCILLATOR_INDEX);
-        if (this._particleOscillatorNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC)
-            animationElements.activateVertexBuffer(index, this._particleOscillatorNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+        if (this._particleOscillatorNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC)
+            animationElements.activateVertexBuffer(index, this._particleOscillatorNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_4);
         else
             shader.setVertexConst(index, this._oscillatorData.x, this._oscillatorData.y, this._oscillatorData.z, this._oscillatorData.w);
     };
     ParticleOscillatorState.prototype.updateOscillatorData = function () {
-        if (this._particleOscillatorNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
+        if (this._particleOscillatorNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) {
             if (this._oscillator.w <= 0)
                 throw (new Error("the cycle duration must greater than zero"));
             if (this._oscillatorData == null)
-                this._oscillatorData = new Vector3D_1.default();
+                this._oscillatorData = new Vector3D_1.Vector3D();
             this._oscillatorData.x = this._oscillator.x;
             this._oscillatorData.y = this._oscillator.y;
             this._oscillatorData.z = this._oscillator.z;
@@ -7550,9 +7495,8 @@ var ParticleOscillatorState = (function (_super) {
     /** @private */
     ParticleOscillatorState.OSCILLATOR_INDEX = 0;
     return ParticleOscillatorState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleOscillatorState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleOscillatorState = ParticleOscillatorState;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticlePositionState":[function(require,module,exports){
 "use strict";
@@ -7602,20 +7546,19 @@ var ParticlePositionState = (function (_super) {
      * @inheritDoc
      */
     ParticlePositionState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
-        if (this._particlePositionNode.mode == ParticlePropertiesMode_1.default.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
+        if (this._particlePositionNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
             this._pUpdateDynamicProperties(animationElements);
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticlePositionState.POSITION_INDEX);
-        if (this._particlePositionNode.mode == ParticlePropertiesMode_1.default.GLOBAL)
+        if (this._particlePositionNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL)
             shader.setVertexConst(index, this._position.x, this._position.y, this._position.z);
         else
-            animationElements.activateVertexBuffer(index, this._particlePositionNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+            animationElements.activateVertexBuffer(index, this._particlePositionNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
     };
     /** @private */
     ParticlePositionState.POSITION_INDEX = 0;
     return ParticlePositionState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticlePositionState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticlePositionState = ParticlePositionState;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState":[function(require,module,exports){
 "use strict";
@@ -7633,7 +7576,7 @@ var ParticleRotateToHeadingState = (function (_super) {
     __extends(ParticleRotateToHeadingState, _super);
     function ParticleRotateToHeadingState(animator, particleNode) {
         _super.call(this, animator, particleNode);
-        this._matrix = new Matrix3D_1.default();
+        this._matrix = new Matrix3D_1.Matrix3D();
     }
     ParticleRotateToHeadingState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
         if (this._pParticleAnimator.animationSet.hasBillboard) {
@@ -7645,9 +7588,8 @@ var ParticleRotateToHeadingState = (function (_super) {
     /** @private */
     ParticleRotateToHeadingState.MATRIX_INDEX = 0;
     return ParticleRotateToHeadingState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleRotateToHeadingState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleRotateToHeadingState = ParticleRotateToHeadingState;
 
 },{"../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Matrix3D":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState":[function(require,module,exports){
 "use strict";
@@ -7667,7 +7609,7 @@ var ParticleRotateToPositionState = (function (_super) {
     __extends(ParticleRotateToPositionState, _super);
     function ParticleRotateToPositionState(animator, particleRotateToPositionNode) {
         _super.call(this, animator, particleRotateToPositionNode);
-        this._matrix = new Matrix3D_1.default();
+        this._matrix = new Matrix3D_1.Matrix3D();
         this._particleRotateToPositionNode = particleRotateToPositionNode;
         this._position = this._particleRotateToPositionNode._iPosition;
     }
@@ -7691,21 +7633,20 @@ var ParticleRotateToPositionState = (function (_super) {
             this._matrix.append(camera.inverseSceneTransform);
             shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.MATRIX_INDEX), this._matrix);
         }
-        if (this._particleRotateToPositionNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
+        if (this._particleRotateToPositionNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) {
             this._offset = renderable.sourceEntity.inverseSceneTransform.transformVector(this._position);
             shader.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
         }
         else
-            animationElements.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+            animationElements.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
     };
     /** @private */
     ParticleRotateToPositionState.MATRIX_INDEX = 0;
     /** @private */
     ParticleRotateToPositionState.POSITION_INDEX = 1;
     return ParticleRotateToPositionState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleRotateToPositionState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleRotateToPositionState = ParticleRotateToPositionState;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState":[function(require,module,exports){
 "use strict";
@@ -7757,16 +7698,16 @@ var ParticleRotationalVelocityState = (function (_super) {
      * @inheritDoc
      */
     ParticleRotationalVelocityState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
-        if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode_1.default.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
+        if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
             this._pUpdateDynamicProperties(animationElements);
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotationalVelocityState.ROTATIONALVELOCITY_INDEX);
-        if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode_1.default.GLOBAL)
+        if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL)
             shader.setVertexConst(index, this._rotationalVelocityData.x, this._rotationalVelocityData.y, this._rotationalVelocityData.z, this._rotationalVelocityData.w);
         else
-            animationElements.activateVertexBuffer(index, this._particleRotationalVelocityNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+            animationElements.activateVertexBuffer(index, this._particleRotationalVelocityNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_4);
     };
     ParticleRotationalVelocityState.prototype.updateRotationalVelocityData = function () {
-        if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
+        if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) {
             if (this._rotationalVelocity.w <= 0)
                 throw (new Error("the cycle duration must greater than zero"));
             var rotation = this._rotationalVelocity.clone();
@@ -7775,15 +7716,14 @@ var ParticleRotationalVelocityState = (function (_super) {
             else
                 rotation.normalize();
             // w is used as angle/2 in agal
-            this._rotationalVelocityData = new Vector3D_1.default(rotation.x, rotation.y, rotation.z, Math.PI / rotation.w);
+            this._rotationalVelocityData = new Vector3D_1.Vector3D(rotation.x, rotation.y, rotation.z, Math.PI / rotation.w);
         }
     };
     /** @private */
     ParticleRotationalVelocityState.ROTATIONALVELOCITY_INDEX = 0;
     return ParticleRotationalVelocityState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleRotationalVelocityState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleRotationalVelocityState = ParticleRotationalVelocityState;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleScaleState":[function(require,module,exports){
 "use strict";
@@ -7870,36 +7810,35 @@ var ParticleScaleState = (function (_super) {
     });
     ParticleScaleState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleScaleState.SCALE_INDEX);
-        if (this._particleScaleNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
+        if (this._particleScaleNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC) {
             if (this._usesCycle) {
                 if (this._usesPhase)
-                    animationElements.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+                    animationElements.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_4);
                 else
-                    animationElements.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+                    animationElements.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
             }
             else
-                animationElements.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_2);
+                animationElements.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_2);
         }
         else
             shader.setVertexConst(index, this._scaleData.x, this._scaleData.y, this._scaleData.z, this._scaleData.w);
     };
     ParticleScaleState.prototype.updateScaleData = function () {
-        if (this._particleScaleNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
+        if (this._particleScaleNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL) {
             if (this._usesCycle) {
                 if (this._cycleDuration <= 0)
                     throw (new Error("the cycle duration must be greater than zero"));
-                this._scaleData = new Vector3D_1.default((this._minScale + this._maxScale) / 2, Math.abs(this._minScale - this._maxScale) / 2, Math.PI * 2 / this._cycleDuration, this._cyclePhase * Math.PI / 180);
+                this._scaleData = new Vector3D_1.Vector3D((this._minScale + this._maxScale) / 2, Math.abs(this._minScale - this._maxScale) / 2, Math.PI * 2 / this._cycleDuration, this._cyclePhase * Math.PI / 180);
             }
             else
-                this._scaleData = new Vector3D_1.default(this._minScale, this._maxScale - this._minScale, 0, 0);
+                this._scaleData = new Vector3D_1.Vector3D(this._minScale, this._maxScale - this._minScale, 0, 0);
         }
     };
     /** @private */
     ParticleScaleState.SCALE_INDEX = 0;
     return ParticleScaleState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleScaleState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleScaleState = ParticleScaleState;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState":[function(require,module,exports){
 "use strict";
@@ -8095,9 +8034,8 @@ var ParticleSegmentedColorState = (function (_super) {
     /** @private */
     ParticleSegmentedColorState.TIME_DATA_INDEX = 2;
     return ParticleSegmentedColorState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleSegmentedColorState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleSegmentedColorState = ParticleSegmentedColorState;
 
 },{"../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase"}],"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState":[function(require,module,exports){
 "use strict";
@@ -8159,11 +8097,11 @@ var ParticleSpriteSheetState = (function (_super) {
             shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
             if (this._usesCycle) {
                 var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_1);
-                if (this._particleSpriteSheetNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
+                if (this._particleSpriteSheetNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC) {
                     if (this._usesPhase)
-                        animationElements.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+                        animationElements.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
                     else
-                        animationElements.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_2);
+                        animationElements.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_2);
                 }
                 else
                     shader.setVertexConst(index, this._spriteSheetData[4], this._spriteSheetData[5]);
@@ -8190,9 +8128,8 @@ var ParticleSpriteSheetState = (function (_super) {
     /** @private */
     ParticleSpriteSheetState.UV_INDEX_1 = 1;
     return ParticleSpriteSheetState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleSpriteSheetState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleSpriteSheetState = ParticleSpriteSheetState;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleStateBase":[function(require,module,exports){
 "use strict";
@@ -8271,9 +8208,8 @@ var ParticleStateBase = (function (_super) {
         animationElements.invalidateBuffer();
     };
     return ParticleStateBase;
-}(AnimationStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleStateBase;
+}(AnimationStateBase_1.AnimationStateBase));
+exports.ParticleStateBase = ParticleStateBase;
 
 },{"../../animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/ParticleTimeState":[function(require,module,exports){
 "use strict";
@@ -8294,7 +8230,7 @@ var ParticleTimeState = (function (_super) {
         this._particleTimeNode = particleTimeNode;
     }
     ParticleTimeState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
-        animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+        animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_4);
         var particleTime = this._pTime / 1000;
         shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_CONSTANT_INDEX), particleTime, particleTime, particleTime, particleTime);
     };
@@ -8303,9 +8239,8 @@ var ParticleTimeState = (function (_super) {
     /** @private */
     ParticleTimeState.TIME_CONSTANT_INDEX = 1;
     return ParticleTimeState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleTimeState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleTimeState = ParticleTimeState;
 
 },{"../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleUVState":[function(require,module,exports){
 "use strict";
@@ -8334,9 +8269,8 @@ var ParticleUVState = (function (_super) {
     /** @private */
     ParticleUVState.UV_INDEX = 0;
     return ParticleUVState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleUVState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleUVState = ParticleUVState;
 
 },{"../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase"}],"awayjs-renderergl/lib/animators/states/ParticleVelocityState":[function(require,module,exports){
 "use strict";
@@ -8382,20 +8316,19 @@ var ParticleVelocityState = (function (_super) {
         this._pDynamicPropertiesDirty = new Object();
     };
     ParticleVelocityState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
-        if (this._particleVelocityNode.mode == ParticlePropertiesMode_1.default.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
+        if (this._particleVelocityNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
             this._pUpdateDynamicProperties(animationElements);
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleVelocityState.VELOCITY_INDEX);
-        if (this._particleVelocityNode.mode == ParticlePropertiesMode_1.default.GLOBAL)
+        if (this._particleVelocityNode.mode == ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL)
             shader.setVertexConst(index, this._velocity.x, this._velocity.y, this._velocity.z);
         else
-            animationElements.activateVertexBuffer(index, this._particleVelocityNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+            animationElements.activateVertexBuffer(index, this._particleVelocityNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.ContextGLVertexBufferFormat.FLOAT_3);
     };
     /** @private */
     ParticleVelocityState.VELOCITY_INDEX = 0;
     return ParticleVelocityState;
-}(ParticleStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleVelocityState;
+}(ParticleStateBase_1.ParticleStateBase));
+exports.ParticleVelocityState = ParticleVelocityState;
 
 },{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState":[function(require,module,exports){
 "use strict";
@@ -8415,7 +8348,7 @@ var SkeletonBinaryLERPState = (function (_super) {
     function SkeletonBinaryLERPState(animator, skeletonAnimationNode) {
         _super.call(this, animator, skeletonAnimationNode);
         this._blendWeight = 0;
-        this._skeletonPose = new SkeletonPose_1.default();
+        this._skeletonPose = new SkeletonPose_1.SkeletonPose();
         this._skeletonPoseDirty = true;
         this._skeletonAnimationNode = skeletonAnimationNode;
         this._inputA = animator.getAnimationState(this._skeletonAnimationNode.inputA);
@@ -8498,7 +8431,7 @@ var SkeletonBinaryLERPState = (function (_super) {
         for (var i = 0; i < numJoints; ++i) {
             endPose = endPoses[i];
             if (endPose == null)
-                endPose = endPoses[i] = new JointPose_1.default();
+                endPose = endPoses[i] = new JointPose_1.JointPose();
             pose1 = poses1[i];
             pose2 = poses2[i];
             p1 = pose1.translation;
@@ -8511,9 +8444,8 @@ var SkeletonBinaryLERPState = (function (_super) {
         }
     };
     return SkeletonBinaryLERPState;
-}(AnimationStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SkeletonBinaryLERPState;
+}(AnimationStateBase_1.AnimationStateBase));
+exports.SkeletonBinaryLERPState = SkeletonBinaryLERPState;
 
 },{"../../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../../animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/SkeletonClipState":[function(require,module,exports){
 "use strict";
@@ -8533,8 +8465,8 @@ var SkeletonClipState = (function (_super) {
     __extends(SkeletonClipState, _super);
     function SkeletonClipState(animator, skeletonClipNode) {
         _super.call(this, animator, skeletonClipNode);
-        this._rootPos = new Vector3D_1.default();
-        this._skeletonPose = new SkeletonPose_1.default();
+        this._rootPos = new Vector3D_1.Vector3D();
+        this._skeletonPose = new SkeletonPose_1.SkeletonPose();
         this._skeletonPoseDirty = true;
         this._skeletonClipNode = skeletonClipNode;
         this._frames = this._skeletonClipNode.frames;
@@ -8618,7 +8550,7 @@ var SkeletonClipState = (function (_super) {
         for (var i = 0; i < numJoints; ++i) {
             endPose = endPoses[i];
             if (endPose == null)
-                endPose = endPoses[i] = new JointPose_1.default();
+                endPose = endPoses[i] = new JointPose_1.JointPose();
             pose1 = currentPose[i];
             pose2 = nextPose[i];
             p1 = pose1.translation;
@@ -8674,9 +8606,8 @@ var SkeletonClipState = (function (_super) {
         this._pOldFrame = this._pNextFrame;
     };
     return SkeletonClipState;
-}(AnimationClipState_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SkeletonClipState;
+}(AnimationClipState_1.AnimationClipState));
+exports.SkeletonClipState = SkeletonClipState;
 
 },{"../../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../../animators/states/AnimationClipState":"awayjs-renderergl/lib/animators/states/AnimationClipState","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState":[function(require,module,exports){
 "use strict";
@@ -8697,7 +8628,7 @@ var SkeletonDifferenceState = (function (_super) {
     function SkeletonDifferenceState(animator, skeletonAnimationNode) {
         _super.call(this, animator, skeletonAnimationNode);
         this._blendWeight = 0;
-        this._skeletonPose = new SkeletonPose_1.default();
+        this._skeletonPose = new SkeletonPose_1.SkeletonPose();
         this._skeletonPoseDirty = true;
         this._skeletonAnimationNode = skeletonAnimationNode;
         this._baseInput = animator.getAnimationState(this._skeletonAnimationNode.baseInput);
@@ -8780,7 +8711,7 @@ var SkeletonDifferenceState = (function (_super) {
         for (var i = 0; i < numJoints; ++i) {
             endPose = endPoses[i];
             if (endPose == null)
-                endPose = endPoses[i] = new JointPose_1.default();
+                endPose = endPoses[i] = new JointPose_1.JointPose();
             base = basePoses[i];
             diff = diffPoses[i];
             basePos = base.translation;
@@ -8793,11 +8724,10 @@ var SkeletonDifferenceState = (function (_super) {
             tr.z = basePos.z + this._blendWeight * diffPos.z;
         }
     };
-    SkeletonDifferenceState._tempQuat = new Quaternion_1.default();
+    SkeletonDifferenceState._tempQuat = new Quaternion_1.Quaternion();
     return SkeletonDifferenceState;
-}(AnimationStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SkeletonDifferenceState;
+}(AnimationStateBase_1.AnimationStateBase));
+exports.SkeletonDifferenceState = SkeletonDifferenceState;
 
 },{"../../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../../animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase","awayjs-core/lib/geom/Quaternion":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState":[function(require,module,exports){
 "use strict";
@@ -8816,7 +8746,7 @@ var SkeletonDirectionalState = (function (_super) {
     __extends(SkeletonDirectionalState, _super);
     function SkeletonDirectionalState(animator, skeletonAnimationNode) {
         _super.call(this, animator, skeletonAnimationNode);
-        this._skeletonPose = new SkeletonPose_1.default();
+        this._skeletonPose = new SkeletonPose_1.SkeletonPose();
         this._skeletonPoseDirty = true;
         this._blendWeight = 0;
         this._direction = 0;
@@ -8912,7 +8842,7 @@ var SkeletonDirectionalState = (function (_super) {
         for (var i = 0; i < numJoints; ++i) {
             endPose = endPoses[i];
             if (endPose == null)
-                endPose = endPoses[i] = new JointPose_1.default();
+                endPose = endPoses[i] = new JointPose_1.JointPose();
             pose1 = poses1[i];
             pose2 = poses2[i];
             p1 = pose1.translation;
@@ -8958,9 +8888,8 @@ var SkeletonDirectionalState = (function (_super) {
         }
     };
     return SkeletonDirectionalState;
-}(AnimationStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SkeletonDirectionalState;
+}(AnimationStateBase_1.AnimationStateBase));
+exports.SkeletonDirectionalState = SkeletonDirectionalState;
 
 },{"../../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../../animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState":[function(require,module,exports){
 "use strict";
@@ -8979,7 +8908,7 @@ var SkeletonNaryLERPState = (function (_super) {
     __extends(SkeletonNaryLERPState, _super);
     function SkeletonNaryLERPState(animator, skeletonAnimationNode) {
         _super.call(this, animator, skeletonAnimationNode);
-        this._skeletonPose = new SkeletonPose_1.default();
+        this._skeletonPose = new SkeletonPose_1.SkeletonPose();
         this._skeletonPoseDirty = true;
         this._blendWeights = new Array();
         this._inputs = new Array();
@@ -9087,7 +9016,7 @@ var SkeletonNaryLERPState = (function (_super) {
                 for (i = 0; i < numJoints; ++i) {
                     endPose = endPoses[i];
                     if (endPose == null)
-                        endPose = endPoses[i] = new JointPose_1.default();
+                        endPose = endPoses[i] = new JointPose_1.JointPose();
                     pose = poses[i];
                     q = pose.orientation;
                     tr = pose.translation;
@@ -9140,9 +9069,8 @@ var SkeletonNaryLERPState = (function (_super) {
             endPoses[i].orientation.normalize();
     };
     return SkeletonNaryLERPState;
-}(AnimationStateBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SkeletonNaryLERPState;
+}(AnimationStateBase_1.AnimationStateBase));
+exports.SkeletonNaryLERPState = SkeletonNaryLERPState;
 
 },{"../../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../../animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/VertexClipState":[function(require,module,exports){
 "use strict";
@@ -9206,9 +9134,8 @@ var VertexClipState = (function (_super) {
         //TODO:implement positiondelta functionality for vertex animations
     };
     return VertexClipState;
-}(AnimationClipState_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = VertexClipState;
+}(AnimationClipState_1.AnimationClipState));
+exports.VertexClipState = VertexClipState;
 
 },{"../../animators/states/AnimationClipState":"awayjs-renderergl/lib/animators/states/AnimationClipState"}],"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode":[function(require,module,exports){
 "use strict";
@@ -9229,12 +9156,11 @@ var CrossfadeTransitionNode = (function (_super) {
      */
     function CrossfadeTransitionNode() {
         _super.call(this);
-        this._pStateClass = CrossfadeTransitionState_1.default;
+        this._pStateClass = CrossfadeTransitionState_1.CrossfadeTransitionState;
     }
     return CrossfadeTransitionNode;
-}(SkeletonBinaryLERPNode_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = CrossfadeTransitionNode;
+}(SkeletonBinaryLERPNode_1.SkeletonBinaryLERPNode));
+exports.CrossfadeTransitionNode = CrossfadeTransitionNode;
 
 },{"../../animators/nodes/SkeletonBinaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode","../../animators/transitions/CrossfadeTransitionState":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState"}],"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState":[function(require,module,exports){
 "use strict";
@@ -9262,15 +9188,14 @@ var CrossfadeTransitionState = (function (_super) {
         if (this.blendWeight >= 1) {
             this.blendWeight = 1;
             if (this._animationStateTransitionComplete == null)
-                this._animationStateTransitionComplete = new AnimationStateEvent_1.default(AnimationStateEvent_1.default.TRANSITION_COMPLETE, this._pAnimator, this, this._crossfadeTransitionNode);
+                this._animationStateTransitionComplete = new AnimationStateEvent_1.AnimationStateEvent(AnimationStateEvent_1.AnimationStateEvent.TRANSITION_COMPLETE, this._pAnimator, this, this._crossfadeTransitionNode);
             this._crossfadeTransitionNode.dispatchEvent(this._animationStateTransitionComplete);
         }
         _super.prototype._pUpdateTime.call(this, time);
     };
     return CrossfadeTransitionState;
-}(SkeletonBinaryLERPState_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = CrossfadeTransitionState;
+}(SkeletonBinaryLERPState_1.SkeletonBinaryLERPState));
+exports.CrossfadeTransitionState = CrossfadeTransitionState;
 
 },{"../../animators/../events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","../../animators/states/SkeletonBinaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState"}],"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition":[function(require,module,exports){
 "use strict";
@@ -9284,7 +9209,7 @@ var CrossfadeTransition = (function () {
         this.blendSpeed = blendSpeed;
     }
     CrossfadeTransition.prototype.getAnimationNode = function (animator, startNode, endNode, startBlend) {
-        var crossFadeTransitionNode = new CrossfadeTransitionNode_1.default();
+        var crossFadeTransitionNode = new CrossfadeTransitionNode_1.CrossfadeTransitionNode();
         crossFadeTransitionNode.inputA = startNode;
         crossFadeTransitionNode.inputB = endNode;
         crossFadeTransitionNode.blendSpeed = this.blendSpeed;
@@ -9293,8 +9218,7 @@ var CrossfadeTransition = (function () {
     };
     return CrossfadeTransition;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = CrossfadeTransition;
+exports.CrossfadeTransition = CrossfadeTransition;
 
 },{"../../animators/transitions/CrossfadeTransitionNode":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode"}],"awayjs-renderergl/lib/animators/transitions/IAnimationTransition":[function(require,module,exports){
 "use strict";
@@ -9302,155 +9226,155 @@ exports.default = CrossfadeTransition;
 },{}],"awayjs-renderergl/lib/animators":[function(require,module,exports){
 "use strict";
 var AnimationElements_1 = require("./animators/data/AnimationElements");
-exports.AnimationElements = AnimationElements_1.default;
+exports.AnimationElements = AnimationElements_1.AnimationElements;
 var AnimationRegisterData_1 = require("./animators/data/AnimationRegisterData");
-exports.AnimationRegisterData = AnimationRegisterData_1.default;
+exports.AnimationRegisterData = AnimationRegisterData_1.AnimationRegisterData;
 var ColorSegmentPoint_1 = require("./animators/data/ColorSegmentPoint");
-exports.ColorSegmentPoint = ColorSegmentPoint_1.default;
+exports.ColorSegmentPoint = ColorSegmentPoint_1.ColorSegmentPoint;
 var JointPose_1 = require("./animators/data/JointPose");
-exports.JointPose = JointPose_1.default;
+exports.JointPose = JointPose_1.JointPose;
 var ParticleAnimationData_1 = require("./animators/data/ParticleAnimationData");
-exports.ParticleAnimationData = ParticleAnimationData_1.default;
+exports.ParticleAnimationData = ParticleAnimationData_1.ParticleAnimationData;
 var ParticleProperties_1 = require("./animators/data/ParticleProperties");
-exports.ParticleProperties = ParticleProperties_1.default;
+exports.ParticleProperties = ParticleProperties_1.ParticleProperties;
 var ParticlePropertiesMode_1 = require("./animators/data/ParticlePropertiesMode");
-exports.ParticlePropertiesMode = ParticlePropertiesMode_1.default;
+exports.ParticlePropertiesMode = ParticlePropertiesMode_1.ParticlePropertiesMode;
 var Skeleton_1 = require("./animators/data/Skeleton");
-exports.Skeleton = Skeleton_1.default;
+exports.Skeleton = Skeleton_1.Skeleton;
 var SkeletonJoint_1 = require("./animators/data/SkeletonJoint");
-exports.SkeletonJoint = SkeletonJoint_1.default;
+exports.SkeletonJoint = SkeletonJoint_1.SkeletonJoint;
 var SkeletonPose_1 = require("./animators/data/SkeletonPose");
-exports.SkeletonPose = SkeletonPose_1.default;
+exports.SkeletonPose = SkeletonPose_1.SkeletonPose;
 var VertexAnimationMode_1 = require("./animators/data/VertexAnimationMode");
-exports.VertexAnimationMode = VertexAnimationMode_1.default;
+exports.VertexAnimationMode = VertexAnimationMode_1.VertexAnimationMode;
 var AnimationClipNodeBase_1 = require("./animators/nodes/AnimationClipNodeBase");
-exports.AnimationClipNodeBase = AnimationClipNodeBase_1.default;
+exports.AnimationClipNodeBase = AnimationClipNodeBase_1.AnimationClipNodeBase;
 var ParticleAccelerationNode_1 = require("./animators/nodes/ParticleAccelerationNode");
-exports.ParticleAccelerationNode = ParticleAccelerationNode_1.default;
+exports.ParticleAccelerationNode = ParticleAccelerationNode_1.ParticleAccelerationNode;
 var ParticleBezierCurveNode_1 = require("./animators/nodes/ParticleBezierCurveNode");
-exports.ParticleBezierCurveNode = ParticleBezierCurveNode_1.default;
+exports.ParticleBezierCurveNode = ParticleBezierCurveNode_1.ParticleBezierCurveNode;
 var ParticleBillboardNode_1 = require("./animators/nodes/ParticleBillboardNode");
-exports.ParticleBillboardNode = ParticleBillboardNode_1.default;
+exports.ParticleBillboardNode = ParticleBillboardNode_1.ParticleBillboardNode;
 var ParticleColorNode_1 = require("./animators/nodes/ParticleColorNode");
-exports.ParticleColorNode = ParticleColorNode_1.default;
+exports.ParticleColorNode = ParticleColorNode_1.ParticleColorNode;
 var ParticleFollowNode_1 = require("./animators/nodes/ParticleFollowNode");
-exports.ParticleFollowNode = ParticleFollowNode_1.default;
+exports.ParticleFollowNode = ParticleFollowNode_1.ParticleFollowNode;
 var ParticleInitialColorNode_1 = require("./animators/nodes/ParticleInitialColorNode");
-exports.ParticleInitialColorNode = ParticleInitialColorNode_1.default;
+exports.ParticleInitialColorNode = ParticleInitialColorNode_1.ParticleInitialColorNode;
 var ParticleNodeBase_1 = require("./animators/nodes/ParticleNodeBase");
-exports.ParticleNodeBase = ParticleNodeBase_1.default;
+exports.ParticleNodeBase = ParticleNodeBase_1.ParticleNodeBase;
 var ParticleOrbitNode_1 = require("./animators/nodes/ParticleOrbitNode");
-exports.ParticleOrbitNode = ParticleOrbitNode_1.default;
+exports.ParticleOrbitNode = ParticleOrbitNode_1.ParticleOrbitNode;
 var ParticleOscillatorNode_1 = require("./animators/nodes/ParticleOscillatorNode");
-exports.ParticleOscillatorNode = ParticleOscillatorNode_1.default;
+exports.ParticleOscillatorNode = ParticleOscillatorNode_1.ParticleOscillatorNode;
 var ParticlePositionNode_1 = require("./animators/nodes/ParticlePositionNode");
-exports.ParticlePositionNode = ParticlePositionNode_1.default;
+exports.ParticlePositionNode = ParticlePositionNode_1.ParticlePositionNode;
 var ParticleRotateToHeadingNode_1 = require("./animators/nodes/ParticleRotateToHeadingNode");
-exports.ParticleRotateToHeadingNode = ParticleRotateToHeadingNode_1.default;
+exports.ParticleRotateToHeadingNode = ParticleRotateToHeadingNode_1.ParticleRotateToHeadingNode;
 var ParticleRotateToPositionNode_1 = require("./animators/nodes/ParticleRotateToPositionNode");
-exports.ParticleRotateToPositionNode = ParticleRotateToPositionNode_1.default;
+exports.ParticleRotateToPositionNode = ParticleRotateToPositionNode_1.ParticleRotateToPositionNode;
 var ParticleRotationalVelocityNode_1 = require("./animators/nodes/ParticleRotationalVelocityNode");
-exports.ParticleRotationalVelocityNode = ParticleRotationalVelocityNode_1.default;
+exports.ParticleRotationalVelocityNode = ParticleRotationalVelocityNode_1.ParticleRotationalVelocityNode;
 var ParticleScaleNode_1 = require("./animators/nodes/ParticleScaleNode");
-exports.ParticleScaleNode = ParticleScaleNode_1.default;
+exports.ParticleScaleNode = ParticleScaleNode_1.ParticleScaleNode;
 var ParticleSegmentedColorNode_1 = require("./animators/nodes/ParticleSegmentedColorNode");
-exports.ParticleSegmentedColorNode = ParticleSegmentedColorNode_1.default;
+exports.ParticleSegmentedColorNode = ParticleSegmentedColorNode_1.ParticleSegmentedColorNode;
 var ParticleSpriteSheetNode_1 = require("./animators/nodes/ParticleSpriteSheetNode");
-exports.ParticleSpriteSheetNode = ParticleSpriteSheetNode_1.default;
+exports.ParticleSpriteSheetNode = ParticleSpriteSheetNode_1.ParticleSpriteSheetNode;
 var ParticleTimeNode_1 = require("./animators/nodes/ParticleTimeNode");
-exports.ParticleTimeNode = ParticleTimeNode_1.default;
+exports.ParticleTimeNode = ParticleTimeNode_1.ParticleTimeNode;
 var ParticleUVNode_1 = require("./animators/nodes/ParticleUVNode");
-exports.ParticleUVNode = ParticleUVNode_1.default;
+exports.ParticleUVNode = ParticleUVNode_1.ParticleUVNode;
 var ParticleVelocityNode_1 = require("./animators/nodes/ParticleVelocityNode");
-exports.ParticleVelocityNode = ParticleVelocityNode_1.default;
+exports.ParticleVelocityNode = ParticleVelocityNode_1.ParticleVelocityNode;
 var SkeletonBinaryLERPNode_1 = require("./animators/nodes/SkeletonBinaryLERPNode");
-exports.SkeletonBinaryLERPNode = SkeletonBinaryLERPNode_1.default;
+exports.SkeletonBinaryLERPNode = SkeletonBinaryLERPNode_1.SkeletonBinaryLERPNode;
 var SkeletonClipNode_1 = require("./animators/nodes/SkeletonClipNode");
-exports.SkeletonClipNode = SkeletonClipNode_1.default;
+exports.SkeletonClipNode = SkeletonClipNode_1.SkeletonClipNode;
 var SkeletonDifferenceNode_1 = require("./animators/nodes/SkeletonDifferenceNode");
-exports.SkeletonDifferenceNode = SkeletonDifferenceNode_1.default;
+exports.SkeletonDifferenceNode = SkeletonDifferenceNode_1.SkeletonDifferenceNode;
 var SkeletonDirectionalNode_1 = require("./animators/nodes/SkeletonDirectionalNode");
-exports.SkeletonDirectionalNode = SkeletonDirectionalNode_1.default;
+exports.SkeletonDirectionalNode = SkeletonDirectionalNode_1.SkeletonDirectionalNode;
 var SkeletonNaryLERPNode_1 = require("./animators/nodes/SkeletonNaryLERPNode");
-exports.SkeletonNaryLERPNode = SkeletonNaryLERPNode_1.default;
+exports.SkeletonNaryLERPNode = SkeletonNaryLERPNode_1.SkeletonNaryLERPNode;
 var VertexClipNode_1 = require("./animators/nodes/VertexClipNode");
-exports.VertexClipNode = VertexClipNode_1.default;
+exports.VertexClipNode = VertexClipNode_1.VertexClipNode;
 var AnimationClipState_1 = require("./animators/states/AnimationClipState");
-exports.AnimationClipState = AnimationClipState_1.default;
+exports.AnimationClipState = AnimationClipState_1.AnimationClipState;
 var AnimationStateBase_1 = require("./animators/states/AnimationStateBase");
-exports.AnimationStateBase = AnimationStateBase_1.default;
+exports.AnimationStateBase = AnimationStateBase_1.AnimationStateBase;
 var ParticleAccelerationState_1 = require("./animators/states/ParticleAccelerationState");
-exports.ParticleAccelerationState = ParticleAccelerationState_1.default;
+exports.ParticleAccelerationState = ParticleAccelerationState_1.ParticleAccelerationState;
 var ParticleBezierCurveState_1 = require("./animators/states/ParticleBezierCurveState");
-exports.ParticleBezierCurveState = ParticleBezierCurveState_1.default;
+exports.ParticleBezierCurveState = ParticleBezierCurveState_1.ParticleBezierCurveState;
 var ParticleBillboardState_1 = require("./animators/states/ParticleBillboardState");
-exports.ParticleBillboardState = ParticleBillboardState_1.default;
+exports.ParticleBillboardState = ParticleBillboardState_1.ParticleBillboardState;
 var ParticleColorState_1 = require("./animators/states/ParticleColorState");
-exports.ParticleColorState = ParticleColorState_1.default;
+exports.ParticleColorState = ParticleColorState_1.ParticleColorState;
 var ParticleFollowState_1 = require("./animators/states/ParticleFollowState");
-exports.ParticleFollowState = ParticleFollowState_1.default;
+exports.ParticleFollowState = ParticleFollowState_1.ParticleFollowState;
 var ParticleInitialColorState_1 = require("./animators/states/ParticleInitialColorState");
-exports.ParticleInitialColorState = ParticleInitialColorState_1.default;
+exports.ParticleInitialColorState = ParticleInitialColorState_1.ParticleInitialColorState;
 var ParticleStateBase_1 = require("./animators/states/ParticleStateBase");
-exports.ParticleStateBase = ParticleStateBase_1.default;
+exports.ParticleStateBase = ParticleStateBase_1.ParticleStateBase;
 var ParticleOrbitState_1 = require("./animators/states/ParticleOrbitState");
-exports.ParticleOrbitState = ParticleOrbitState_1.default;
+exports.ParticleOrbitState = ParticleOrbitState_1.ParticleOrbitState;
 var ParticleOscillatorState_1 = require("./animators/states/ParticleOscillatorState");
-exports.ParticleOscillatorState = ParticleOscillatorState_1.default;
+exports.ParticleOscillatorState = ParticleOscillatorState_1.ParticleOscillatorState;
 var ParticlePositionState_1 = require("./animators/states/ParticlePositionState");
-exports.ParticlePositionState = ParticlePositionState_1.default;
+exports.ParticlePositionState = ParticlePositionState_1.ParticlePositionState;
 var ParticleRotateToHeadingState_1 = require("./animators/states/ParticleRotateToHeadingState");
-exports.ParticleRotateToHeadingState = ParticleRotateToHeadingState_1.default;
+exports.ParticleRotateToHeadingState = ParticleRotateToHeadingState_1.ParticleRotateToHeadingState;
 var ParticleRotateToPositionState_1 = require("./animators/states/ParticleRotateToPositionState");
-exports.ParticleRotateToPositionState = ParticleRotateToPositionState_1.default;
+exports.ParticleRotateToPositionState = ParticleRotateToPositionState_1.ParticleRotateToPositionState;
 var ParticleRotationalVelocityState_1 = require("./animators/states/ParticleRotationalVelocityState");
-exports.ParticleRotationalVelocityState = ParticleRotationalVelocityState_1.default;
+exports.ParticleRotationalVelocityState = ParticleRotationalVelocityState_1.ParticleRotationalVelocityState;
 var ParticleScaleState_1 = require("./animators/states/ParticleScaleState");
-exports.ParticleScaleState = ParticleScaleState_1.default;
+exports.ParticleScaleState = ParticleScaleState_1.ParticleScaleState;
 var ParticleSegmentedColorState_1 = require("./animators/states/ParticleSegmentedColorState");
-exports.ParticleSegmentedColorState = ParticleSegmentedColorState_1.default;
+exports.ParticleSegmentedColorState = ParticleSegmentedColorState_1.ParticleSegmentedColorState;
 var ParticleSpriteSheetState_1 = require("./animators/states/ParticleSpriteSheetState");
-exports.ParticleSpriteSheetState = ParticleSpriteSheetState_1.default;
+exports.ParticleSpriteSheetState = ParticleSpriteSheetState_1.ParticleSpriteSheetState;
 var ParticleTimeState_1 = require("./animators/states/ParticleTimeState");
-exports.ParticleTimeState = ParticleTimeState_1.default;
+exports.ParticleTimeState = ParticleTimeState_1.ParticleTimeState;
 var ParticleUVState_1 = require("./animators/states/ParticleUVState");
-exports.ParticleUVState = ParticleUVState_1.default;
+exports.ParticleUVState = ParticleUVState_1.ParticleUVState;
 var ParticleVelocityState_1 = require("./animators/states/ParticleVelocityState");
-exports.ParticleVelocityState = ParticleVelocityState_1.default;
+exports.ParticleVelocityState = ParticleVelocityState_1.ParticleVelocityState;
 var SkeletonBinaryLERPState_1 = require("./animators/states/SkeletonBinaryLERPState");
-exports.SkeletonBinaryLERPState = SkeletonBinaryLERPState_1.default;
+exports.SkeletonBinaryLERPState = SkeletonBinaryLERPState_1.SkeletonBinaryLERPState;
 var SkeletonClipState_1 = require("./animators/states/SkeletonClipState");
-exports.SkeletonClipState = SkeletonClipState_1.default;
+exports.SkeletonClipState = SkeletonClipState_1.SkeletonClipState;
 var SkeletonDifferenceState_1 = require("./animators/states/SkeletonDifferenceState");
-exports.SkeletonDifferenceState = SkeletonDifferenceState_1.default;
+exports.SkeletonDifferenceState = SkeletonDifferenceState_1.SkeletonDifferenceState;
 var SkeletonDirectionalState_1 = require("./animators/states/SkeletonDirectionalState");
-exports.SkeletonDirectionalState = SkeletonDirectionalState_1.default;
+exports.SkeletonDirectionalState = SkeletonDirectionalState_1.SkeletonDirectionalState;
 var SkeletonNaryLERPState_1 = require("./animators/states/SkeletonNaryLERPState");
-exports.SkeletonNaryLERPState = SkeletonNaryLERPState_1.default;
+exports.SkeletonNaryLERPState = SkeletonNaryLERPState_1.SkeletonNaryLERPState;
 var VertexClipState_1 = require("./animators/states/VertexClipState");
-exports.VertexClipState = VertexClipState_1.default;
+exports.VertexClipState = VertexClipState_1.VertexClipState;
 var CrossfadeTransition_1 = require("./animators/transitions/CrossfadeTransition");
-exports.CrossfadeTransition = CrossfadeTransition_1.default;
+exports.CrossfadeTransition = CrossfadeTransition_1.CrossfadeTransition;
 var CrossfadeTransitionNode_1 = require("./animators/transitions/CrossfadeTransitionNode");
-exports.CrossfadeTransitionNode = CrossfadeTransitionNode_1.default;
+exports.CrossfadeTransitionNode = CrossfadeTransitionNode_1.CrossfadeTransitionNode;
 var CrossfadeTransitionState_1 = require("./animators/transitions/CrossfadeTransitionState");
-exports.CrossfadeTransitionState = CrossfadeTransitionState_1.default;
+exports.CrossfadeTransitionState = CrossfadeTransitionState_1.CrossfadeTransitionState;
 var AnimationSetBase_1 = require("./animators/AnimationSetBase");
-exports.AnimationSetBase = AnimationSetBase_1.default;
+exports.AnimationSetBase = AnimationSetBase_1.AnimationSetBase;
 var AnimatorBase_1 = require("./animators/AnimatorBase");
-exports.AnimatorBase = AnimatorBase_1.default;
+exports.AnimatorBase = AnimatorBase_1.AnimatorBase;
 var ParticleAnimationSet_1 = require("./animators/ParticleAnimationSet");
-exports.ParticleAnimationSet = ParticleAnimationSet_1.default;
+exports.ParticleAnimationSet = ParticleAnimationSet_1.ParticleAnimationSet;
 var ParticleAnimator_1 = require("./animators/ParticleAnimator");
-exports.ParticleAnimator = ParticleAnimator_1.default;
+exports.ParticleAnimator = ParticleAnimator_1.ParticleAnimator;
 var SkeletonAnimationSet_1 = require("./animators/SkeletonAnimationSet");
-exports.SkeletonAnimationSet = SkeletonAnimationSet_1.default;
+exports.SkeletonAnimationSet = SkeletonAnimationSet_1.SkeletonAnimationSet;
 var SkeletonAnimator_1 = require("./animators/SkeletonAnimator");
-exports.SkeletonAnimator = SkeletonAnimator_1.default;
+exports.SkeletonAnimator = SkeletonAnimator_1.SkeletonAnimator;
 var VertexAnimationSet_1 = require("./animators/VertexAnimationSet");
-exports.VertexAnimationSet = VertexAnimationSet_1.default;
+exports.VertexAnimationSet = VertexAnimationSet_1.VertexAnimationSet;
 var VertexAnimator_1 = require("./animators/VertexAnimator");
-exports.VertexAnimator = VertexAnimator_1.default;
+exports.VertexAnimator = VertexAnimator_1.VertexAnimator;
 
 },{"./animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","./animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","./animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","./animators/ParticleAnimator":"awayjs-renderergl/lib/animators/ParticleAnimator","./animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","./animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","./animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","./animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","./animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","./animators/data/AnimationRegisterData":"awayjs-renderergl/lib/animators/data/AnimationRegisterData","./animators/data/ColorSegmentPoint":"awayjs-renderergl/lib/animators/data/ColorSegmentPoint","./animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","./animators/data/ParticleAnimationData":"awayjs-renderergl/lib/animators/data/ParticleAnimationData","./animators/data/ParticleProperties":"awayjs-renderergl/lib/animators/data/ParticleProperties","./animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","./animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","./animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","./animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","./animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","./animators/nodes/AnimationClipNodeBase":"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase","./animators/nodes/ParticleAccelerationNode":"awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode","./animators/nodes/ParticleBezierCurveNode":"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode","./animators/nodes/ParticleBillboardNode":"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode","./animators/nodes/ParticleColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleColorNode","./animators/nodes/ParticleFollowNode":"awayjs-renderergl/lib/animators/nodes/ParticleFollowNode","./animators/nodes/ParticleInitialColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode","./animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","./animators/nodes/ParticleOrbitNode":"awayjs-renderergl/lib/animators/nodes/ParticleOrbitNode","./animators/nodes/ParticleOscillatorNode":"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode","./animators/nodes/ParticlePositionNode":"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode","./animators/nodes/ParticleRotateToHeadingNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode","./animators/nodes/ParticleRotateToPositionNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode","./animators/nodes/ParticleRotationalVelocityNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode","./animators/nodes/ParticleScaleNode":"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode","./animators/nodes/ParticleSegmentedColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode","./animators/nodes/ParticleSpriteSheetNode":"awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode","./animators/nodes/ParticleTimeNode":"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode","./animators/nodes/ParticleUVNode":"awayjs-renderergl/lib/animators/nodes/ParticleUVNode","./animators/nodes/ParticleVelocityNode":"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode","./animators/nodes/SkeletonBinaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode","./animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","./animators/nodes/SkeletonDifferenceNode":"awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode","./animators/nodes/SkeletonDirectionalNode":"awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode","./animators/nodes/SkeletonNaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode","./animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","./animators/states/AnimationClipState":"awayjs-renderergl/lib/animators/states/AnimationClipState","./animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase","./animators/states/ParticleAccelerationState":"awayjs-renderergl/lib/animators/states/ParticleAccelerationState","./animators/states/ParticleBezierCurveState":"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState","./animators/states/ParticleBillboardState":"awayjs-renderergl/lib/animators/states/ParticleBillboardState","./animators/states/ParticleColorState":"awayjs-renderergl/lib/animators/states/ParticleColorState","./animators/states/ParticleFollowState":"awayjs-renderergl/lib/animators/states/ParticleFollowState","./animators/states/ParticleInitialColorState":"awayjs-renderergl/lib/animators/states/ParticleInitialColorState","./animators/states/ParticleOrbitState":"awayjs-renderergl/lib/animators/states/ParticleOrbitState","./animators/states/ParticleOscillatorState":"awayjs-renderergl/lib/animators/states/ParticleOscillatorState","./animators/states/ParticlePositionState":"awayjs-renderergl/lib/animators/states/ParticlePositionState","./animators/states/ParticleRotateToHeadingState":"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState","./animators/states/ParticleRotateToPositionState":"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState","./animators/states/ParticleRotationalVelocityState":"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState","./animators/states/ParticleScaleState":"awayjs-renderergl/lib/animators/states/ParticleScaleState","./animators/states/ParticleSegmentedColorState":"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState","./animators/states/ParticleSpriteSheetState":"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState","./animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","./animators/states/ParticleTimeState":"awayjs-renderergl/lib/animators/states/ParticleTimeState","./animators/states/ParticleUVState":"awayjs-renderergl/lib/animators/states/ParticleUVState","./animators/states/ParticleVelocityState":"awayjs-renderergl/lib/animators/states/ParticleVelocityState","./animators/states/SkeletonBinaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState","./animators/states/SkeletonClipState":"awayjs-renderergl/lib/animators/states/SkeletonClipState","./animators/states/SkeletonDifferenceState":"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState","./animators/states/SkeletonDirectionalState":"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState","./animators/states/SkeletonNaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState","./animators/states/VertexClipState":"awayjs-renderergl/lib/animators/states/VertexClipState","./animators/transitions/CrossfadeTransition":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition","./animators/transitions/CrossfadeTransitionNode":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode","./animators/transitions/CrossfadeTransitionState":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState"}],"awayjs-renderergl/lib/elements/GL_ElementsBase":[function(require,module,exports){
 "use strict";
@@ -9484,21 +9408,21 @@ var GL_ElementsBase = (function (_super) {
         this._onClearIndicesDelegate = function (event) { return _this._onClearIndices(event); };
         this._onInvalidateVerticesDelegate = function (event) { return _this._onInvalidateVertices(event); };
         this._onClearVerticesDelegate = function (event) { return _this._onClearVertices(event); };
-        this._elements.addEventListener(ElementsEvent_1.default.CLEAR_INDICES, this._onClearIndicesDelegate);
-        this._elements.addEventListener(ElementsEvent_1.default.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
-        this._elements.addEventListener(ElementsEvent_1.default.CLEAR_VERTICES, this._onClearVerticesDelegate);
-        this._elements.addEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+        this._elements.addEventListener(ElementsEvent_1.ElementsEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
+        this._elements.addEventListener(ElementsEvent_1.ElementsEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
+        this._elements.addEventListener(ElementsEvent_1.ElementsEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
+        this._elements.addEventListener(ElementsEvent_1.ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
     }
     Object.defineProperty(GL_ElementsBase.prototype, "elementsType", {
         get: function () {
-            throw new AbstractMethodError_1.default();
+            throw new AbstractMethodError_1.AbstractMethodError();
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(GL_ElementsBase.prototype, "elementsClass", {
         get: function () {
-            throw new AbstractMethodError_1.default();
+            throw new AbstractMethodError_1.AbstractMethodError();
         },
         enumerable: true,
         configurable: true
@@ -9571,10 +9495,10 @@ var GL_ElementsBase = (function (_super) {
      */
     GL_ElementsBase.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
-        this._elements.removeEventListener(ElementsEvent_1.default.CLEAR_INDICES, this._onClearIndicesDelegate);
-        this._elements.removeEventListener(ElementsEvent_1.default.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
-        this._elements.removeEventListener(ElementsEvent_1.default.CLEAR_VERTICES, this._onClearVerticesDelegate);
-        this._elements.removeEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+        this._elements.removeEventListener(ElementsEvent_1.ElementsEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
+        this._elements.removeEventListener(ElementsEvent_1.ElementsEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
+        this._elements.removeEventListener(ElementsEvent_1.ElementsEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
+        this._elements.removeEventListener(ElementsEvent_1.ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
         this._elements = null;
         if (this._overflow) {
             this._overflow.onClear(event);
@@ -9591,7 +9515,7 @@ var GL_ElementsBase = (function (_super) {
         // 	this._overflow._iRender(renderable, camera, viewProjection);
     };
     GL_ElementsBase.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     /**
      * //TODO
@@ -9602,7 +9526,7 @@ var GL_ElementsBase = (function (_super) {
         if (indexOffset === void 0) { indexOffset = 0; }
         var indices = this._elements.indices;
         if (indices) {
-            this._indices = this._stage.getAbstraction(ElementsUtils_1.default.getSubIndices(indices, this._elements.numVertices, this._indexMappings, indexOffset));
+            this._indices = this._stage.getAbstraction(ElementsUtils_1.ElementsUtils.getSubIndices(indices, this._elements.numVertices, this._indexMappings, indexOffset));
             this._numIndices = this._indices._attributesBuffer.count * indices.dimensions;
         }
         else {
@@ -9618,7 +9542,7 @@ var GL_ElementsBase = (function (_super) {
             this._overflow._updateIndices(indexOffset);
         }
         else if (this._overflow) {
-            this._overflow.onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, this._elements));
+            this._overflow.onClear(new AssetEvent_1.AssetEvent(AssetEvent_1.AssetEvent.CLEAR, this._elements));
             this._overflow = null;
         }
         this._indicesUpdated = true;
@@ -9636,7 +9560,7 @@ var GL_ElementsBase = (function (_super) {
     GL_ElementsBase.prototype._updateVertices = function (attributesView) {
         this._numVertices = this._elements.numVertices;
         var bufferId = attributesView.buffer.id;
-        this._vertices[bufferId] = this._stage.getAbstraction(ElementsUtils_1.default.getSubVertices(attributesView.buffer, this._indexMappings));
+        this._vertices[bufferId] = this._stage.getAbstraction(ElementsUtils_1.ElementsUtils.getSubVertices(attributesView.buffer, this._indexMappings));
         this._verticesUpdated[bufferId] = true;
     };
     /**
@@ -9659,7 +9583,7 @@ var GL_ElementsBase = (function (_super) {
     GL_ElementsBase.prototype._onClearIndices = function (event) {
         if (!event.attributesView)
             return;
-        this._indices.onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, event.attributesView));
+        this._indices.onClear(new AssetEvent_1.AssetEvent(AssetEvent_1.AssetEvent.CLEAR, event.attributesView));
         this._indices = null;
     };
     /**
@@ -9685,7 +9609,7 @@ var GL_ElementsBase = (function (_super) {
             return;
         var bufferId = event.attributesView.buffer.id;
         if (this._vertices[bufferId]) {
-            this._vertices[bufferId].onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, event.attributesView));
+            this._vertices[bufferId].onClear(new AssetEvent_1.AssetEvent(AssetEvent_1.AssetEvent.CLEAR, event.attributesView));
             delete this._vertices[bufferId];
             delete this._verticesUpdated[bufferId];
         }
@@ -9701,12 +9625,11 @@ var GL_ElementsBase = (function (_super) {
      * @protected
      */
     GL_ElementsBase.prototype._pGetOverflowElements = function () {
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     return GL_ElementsBase;
-}(AbstractionBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_ElementsBase;
+}(AbstractionBase_1.AbstractionBase));
+exports.GL_ElementsBase = GL_ElementsBase;
 
 },{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-display/lib/events/ElementsEvent":undefined,"awayjs-display/lib/utils/ElementsUtils":undefined}],"awayjs-renderergl/lib/elements/GL_LineElements":[function(require,module,exports){
 "use strict";
@@ -9727,7 +9650,7 @@ var GL_LineElements = (function (_super) {
     __extends(GL_LineElements, _super);
     function GL_LineElements(lineElements, stage) {
         _super.call(this, lineElements, stage);
-        this._calcMatrix = new Matrix3D_1.default();
+        this._calcMatrix = new Matrix3D_1.Matrix3D();
         this._thickness = 1.25;
         this._lineElements = lineElements;
     }
@@ -9854,11 +9777,11 @@ var GL_LineElements = (function (_super) {
         this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
         this._calcMatrix.append(camera.inverseSceneTransform);
         this._calcMatrix.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, shader.vertexConstantData);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.ContextGLProgramType.VERTEX, shader.vertexConstantData);
         if (this._indices)
-            this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
+            this.getIndexBufferGL().draw(ContextGLDrawMode_1.ContextGLDrawMode.TRIANGLES, 0, this.numIndices);
         else
-            this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, offset, count || this.numVertices);
+            this._stage.context.drawVertices(ContextGLDrawMode_1.ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
     };
     /**
      * //TODO
@@ -9875,9 +9798,8 @@ var GL_LineElements = (function (_super) {
     };
     GL_LineElements.elementsType = "[elements Line]";
     return GL_LineElements;
-}(GL_ElementsBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_LineElements;
+}(GL_ElementsBase_1.GL_ElementsBase));
+exports.GL_LineElements = GL_LineElements;
 
 },{"../elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/GL_SkyboxElements":[function(require,module,exports){
 "use strict";
@@ -9899,7 +9821,7 @@ var GL_SkyboxElements = (function (_super) {
     __extends(GL_SkyboxElements, _super);
     function GL_SkyboxElements() {
         _super.apply(this, arguments);
-        this._skyboxProjection = new Matrix3D_1.default();
+        this._skyboxProjection = new Matrix3D_1.Matrix3D();
     }
     Object.defineProperty(GL_SkyboxElements.prototype, "elementsType", {
         get: function () {
@@ -9959,7 +9881,7 @@ var GL_SkyboxElements = (function (_super) {
         shader.vertexConstantData[index++] = 1;
         shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = camera.projection.far / Math.sqrt(3);
         shader.vertexConstantData[index] = 1;
-        var near = new Vector3D_1.default();
+        var near = new Vector3D_1.Vector3D();
         this._skyboxProjection.copyFrom(viewProjection);
         this._skyboxProjection.copyRowTo(2, near);
         var camPos = camera.scenePosition;
@@ -9969,13 +9891,13 @@ var GL_SkyboxElements = (function (_super) {
         var cw = -(near.x * camPos.x + near.y * camPos.y + near.z * camPos.z + Math.sqrt(cx * cx + cy * cy + cz * cz));
         var signX = cx >= 0 ? 1 : -1;
         var signY = cy >= 0 ? 1 : -1;
-        var p = new Vector3D_1.default(signX, signY, 1, 1);
+        var p = new Vector3D_1.Vector3D(signX, signY, 1, 1);
         var inverse = this._skyboxProjection.clone();
         inverse.invert();
         var q = inverse.transformVector(p);
         this._skyboxProjection.copyRowTo(3, p);
         var a = (q.x * p.x + q.y * p.y + q.z * p.z + q.w * p.w) / (cx * q.x + cy * q.y + cz * q.z + cw * q.w);
-        this._skyboxProjection.copyRowFrom(2, new Vector3D_1.default(cx * a, cy * a, cz * a, cw * a));
+        this._skyboxProjection.copyRowFrom(2, new Vector3D_1.Vector3D(cx * a, cy * a, cz * a, cw * a));
         //set constants
         if (shader.sceneMatrixIndex >= 0) {
             renderable.renderSceneTransform.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
@@ -9985,18 +9907,17 @@ var GL_SkyboxElements = (function (_super) {
             this._skyboxProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
         }
         var context = this._stage.context;
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, shader.vertexConstantData);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, shader.fragmentConstantData);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.ContextGLProgramType.VERTEX, shader.vertexConstantData);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.ContextGLProgramType.FRAGMENT, shader.fragmentConstantData);
         if (this._indices)
-            this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
+            this.getIndexBufferGL().draw(ContextGLDrawMode_1.ContextGLDrawMode.TRIANGLES, 0, this.numIndices);
         else
-            this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, offset, count || this.numVertices);
+            this._stage.context.drawVertices(ContextGLDrawMode_1.ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
     };
     GL_SkyboxElements.elementsType = "[elements Skybox]";
     return GL_SkyboxElements;
-}(GL_TriangleElements_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_SkyboxElements;
+}(GL_TriangleElements_1.GL_TriangleElements));
+exports.GL_SkyboxElements = GL_SkyboxElements;
 
 },{"../elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/GL_TriangleElements":[function(require,module,exports){
 "use strict";
@@ -10095,18 +10016,18 @@ var GL_TriangleElements = (function (_super) {
             viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
         }
         else {
-            var matrix3D = Matrix3DUtils_1.default.CALCULATION_MATRIX;
+            var matrix3D = Matrix3DUtils_1.Matrix3DUtils.CALCULATION_MATRIX;
             matrix3D.copyFrom(renderable.renderSceneTransform);
             matrix3D.append(viewProjection);
             matrix3D.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
         }
         var context = this._stage.context;
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, shader.vertexConstantData);
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, shader.fragmentConstantData);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.ContextGLProgramType.VERTEX, shader.vertexConstantData);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.ContextGLProgramType.FRAGMENT, shader.fragmentConstantData);
         if (this._indices)
-            this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
+            this.getIndexBufferGL().draw(ContextGLDrawMode_1.ContextGLDrawMode.TRIANGLES, 0, this.numIndices);
         else
-            this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, offset, count || this.numVertices);
+            this._stage.context.drawVertices(ContextGLDrawMode_1.ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
     };
     /**
      * //TODO
@@ -10123,9 +10044,8 @@ var GL_TriangleElements = (function (_super) {
     };
     GL_TriangleElements.elementsType = "[elements Triangle]";
     return GL_TriangleElements;
-}(GL_ElementsBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_TriangleElements;
+}(GL_ElementsBase_1.GL_ElementsBase));
+exports.GL_TriangleElements = GL_TriangleElements;
 
 },{"../elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/IElementsClassGL":[function(require,module,exports){
 "use strict";
@@ -10133,13 +10053,13 @@ exports.default = GL_TriangleElements;
 },{}],"awayjs-renderergl/lib/elements":[function(require,module,exports){
 "use strict";
 var GL_ElementsBase_1 = require("./elements/GL_ElementsBase");
-exports.GL_ElementsBase = GL_ElementsBase_1.default;
+exports.GL_ElementsBase = GL_ElementsBase_1.GL_ElementsBase;
 var GL_LineElements_1 = require("./elements/GL_LineElements");
-exports.GL_LineElements = GL_LineElements_1.default;
+exports.GL_LineElements = GL_LineElements_1.GL_LineElements;
 var GL_SkyboxElements_1 = require("./elements/GL_SkyboxElements");
-exports.GL_SkyboxElements = GL_SkyboxElements_1.default;
+exports.GL_SkyboxElements = GL_SkyboxElements_1.GL_SkyboxElements;
 var GL_TriangleElements_1 = require("./elements/GL_TriangleElements");
-exports.GL_TriangleElements = GL_TriangleElements_1.default;
+exports.GL_TriangleElements = GL_TriangleElements_1.GL_TriangleElements;
 
 },{"./elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","./elements/GL_LineElements":"awayjs-renderergl/lib/elements/GL_LineElements","./elements/GL_SkyboxElements":"awayjs-renderergl/lib/elements/GL_SkyboxElements","./elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements"}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
 "use strict";
@@ -10155,14 +10075,13 @@ var AnimationSetError = (function (_super) {
         _super.call(this, message);
     }
     return AnimationSetError;
-}(ErrorBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = AnimationSetError;
+}(ErrorBase_1.ErrorBase));
+exports.AnimationSetError = AnimationSetError;
 
 },{"awayjs-core/lib/errors/ErrorBase":undefined}],"awayjs-renderergl/lib/errors":[function(require,module,exports){
 "use strict";
 var AnimationSetError_1 = require("./errors/AnimationSetError");
-exports.AnimationSetError = AnimationSetError_1.default;
+exports.AnimationSetError = AnimationSetError_1.AnimationSetError;
 
 },{"./errors/AnimationSetError":"awayjs-renderergl/lib/errors/AnimationSetError"}],"awayjs-renderergl/lib/events/AnimationStateEvent":[function(require,module,exports){
 "use strict";
@@ -10234,9 +10153,8 @@ var AnimationStateEvent = (function (_super) {
     AnimationStateEvent.PLAYBACK_COMPLETE = "playbackComplete";
     AnimationStateEvent.TRANSITION_COMPLETE = "transitionComplete";
     return AnimationStateEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = AnimationStateEvent;
+}(EventBase_1.EventBase));
+exports.AnimationStateEvent = AnimationStateEvent;
 
 },{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-renderergl/lib/events/AnimatorEvent":[function(require,module,exports){
 "use strict";
@@ -10289,9 +10207,8 @@ var AnimatorEvent = (function (_super) {
      */
     AnimatorEvent.CYCLE_COMPLETE = "animatorCycleComplete";
     return AnimatorEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = AnimatorEvent;
+}(EventBase_1.EventBase));
+exports.AnimatorEvent = AnimatorEvent;
 
 },{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-renderergl/lib/events/PassEvent":[function(require,module,exports){
 "use strict";
@@ -10328,9 +10245,8 @@ var PassEvent = (function (_super) {
      */
     PassEvent.INVALIDATE = "invalidatePass";
     return PassEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = PassEvent;
+}(EventBase_1.EventBase));
+exports.PassEvent = PassEvent;
 
 },{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-renderergl/lib/events/RTTEvent":[function(require,module,exports){
 "use strict";
@@ -10367,9 +10283,8 @@ var RTTEvent = (function (_super) {
      */
     RTTEvent.RESIZE = "rttManagerResize";
     return RTTEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = RTTEvent;
+}(EventBase_1.EventBase));
+exports.RTTEvent = RTTEvent;
 
 },{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-renderergl/lib/events/ShadingMethodEvent":[function(require,module,exports){
 "use strict";
@@ -10386,22 +10301,21 @@ var ShadingMethodEvent = (function (_super) {
     }
     ShadingMethodEvent.SHADER_INVALIDATED = "ShaderInvalidated";
     return ShadingMethodEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ShadingMethodEvent;
+}(EventBase_1.EventBase));
+exports.ShadingMethodEvent = ShadingMethodEvent;
 
 },{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-renderergl/lib/events":[function(require,module,exports){
 "use strict";
 var AnimationStateEvent_1 = require("./events/AnimationStateEvent");
-exports.AnimationStateEvent = AnimationStateEvent_1.default;
+exports.AnimationStateEvent = AnimationStateEvent_1.AnimationStateEvent;
 var AnimatorEvent_1 = require("./events/AnimatorEvent");
-exports.AnimatorEvent = AnimatorEvent_1.default;
+exports.AnimatorEvent = AnimatorEvent_1.AnimatorEvent;
 var PassEvent_1 = require("./events/PassEvent");
-exports.PassEvent = PassEvent_1.default;
+exports.PassEvent = PassEvent_1.PassEvent;
 var RTTEvent_1 = require("./events/RTTEvent");
-exports.RTTEvent = RTTEvent_1.default;
+exports.RTTEvent = RTTEvent_1.RTTEvent;
 var ShadingMethodEvent_1 = require("./events/ShadingMethodEvent");
-exports.ShadingMethodEvent = ShadingMethodEvent_1.default;
+exports.ShadingMethodEvent = ShadingMethodEvent_1.ShadingMethodEvent;
 
 },{"./events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","./events/AnimatorEvent":"awayjs-renderergl/lib/events/AnimatorEvent","./events/PassEvent":"awayjs-renderergl/lib/events/PassEvent","./events/RTTEvent":"awayjs-renderergl/lib/events/RTTEvent","./events/ShadingMethodEvent":"awayjs-renderergl/lib/events/ShadingMethodEvent"}],"awayjs-renderergl/lib/filters/BlurFilter3D":[function(require,module,exports){
 "use strict";
@@ -10426,8 +10340,8 @@ var BlurFilter3D = (function (_super) {
         if (blurY === void 0) { blurY = 3; }
         if (stepSize === void 0) { stepSize = -1; }
         _super.call(this);
-        this._hBlurTask = new Filter3DHBlurTask_1.default(blurX, stepSize);
-        this._vBlurTask = new Filter3DVBlurTask_1.default(blurY, stepSize);
+        this._hBlurTask = new Filter3DHBlurTask_1.Filter3DHBlurTask(blurX, stepSize);
+        this._vBlurTask = new Filter3DVBlurTask_1.Filter3DVBlurTask(blurY, stepSize);
         this.addTask(this._hBlurTask);
         this.addTask(this._vBlurTask);
     }
@@ -10471,9 +10385,8 @@ var BlurFilter3D = (function (_super) {
         _super.prototype.setRenderTargets.call(this, mainTarget, stage);
     };
     return BlurFilter3D;
-}(Filter3DBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = BlurFilter3D;
+}(Filter3DBase_1.Filter3DBase));
+exports.BlurFilter3D = BlurFilter3D;
 
 },{"../filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","../filters/tasks/Filter3DHBlurTask":"awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask","../filters/tasks/Filter3DVBlurTask":"awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask"}],"awayjs-renderergl/lib/filters/CompositeFilter3D":[function(require,module,exports){
 "use strict";
@@ -10495,7 +10408,7 @@ var CompositeFilter3D = (function (_super) {
     function CompositeFilter3D(blendMode, exposure) {
         if (exposure === void 0) { exposure = 1; }
         _super.call(this);
-        this._compositeTask = new Filter3DCompositeTask_1.default(blendMode, exposure);
+        this._compositeTask = new Filter3DCompositeTask_1.Filter3DCompositeTask(blendMode, exposure);
         this.addTask(this._compositeTask);
     }
     Object.defineProperty(CompositeFilter3D.prototype, "exposure", {
@@ -10519,9 +10432,8 @@ var CompositeFilter3D = (function (_super) {
         configurable: true
     });
     return CompositeFilter3D;
-}(Filter3DBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = CompositeFilter3D;
+}(Filter3DBase_1.Filter3DBase));
+exports.CompositeFilter3D = CompositeFilter3D;
 
 },{"../filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","../filters/tasks/Filter3DCompositeTask":"awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask"}],"awayjs-renderergl/lib/filters/FXAAFilter3D":[function(require,module,exports){
 "use strict";
@@ -10542,7 +10454,7 @@ var FXAAFilter3D = (function (_super) {
     function FXAAFilter3D(amount, stepSize) {
         if (stepSize === void 0) { stepSize = -1; }
         _super.call(this);
-        this._fxaaTask = new Filter3DFXAATask_1.default(amount, stepSize);
+        this._fxaaTask = new Filter3DFXAATask_1.Filter3DFXAATask(amount, stepSize);
         this.addTask(this._fxaaTask);
     }
     Object.defineProperty(FXAAFilter3D.prototype, "amount", {
@@ -10566,9 +10478,8 @@ var FXAAFilter3D = (function (_super) {
         configurable: true
     });
     return FXAAFilter3D;
-}(Filter3DBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = FXAAFilter3D;
+}(Filter3DBase_1.Filter3DBase));
+exports.FXAAFilter3D = FXAAFilter3D;
 
 },{"../filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","../filters/tasks/Filter3DFXAATask":"awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask"}],"awayjs-renderergl/lib/filters/Filter3DBase":[function(require,module,exports){
 "use strict";
@@ -10646,8 +10557,7 @@ var Filter3DBase = (function () {
     };
     return Filter3DBase;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Filter3DBase;
+exports.Filter3DBase = Filter3DBase;
 
 },{}],"awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask":[function(require,module,exports){
 "use strict";
@@ -10746,16 +10656,15 @@ var Filter3DCompositeTask = (function (_super) {
         this._data[6] = this._scaledTextureWidth / this._overlayWidth;
         this._data[7] = this._scaledTextureHeight / this._overlayHeight;
         var context = stage.context;
-        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._data);
+        context.setProgramConstantsFromArray(ContextGLProgramType_1.ContextGLProgramType.FRAGMENT, this._data);
         stage.getAbstraction(this._overlayTexture).activate(this._overlayTextureIndex, false);
     };
     Filter3DCompositeTask.prototype.deactivate = function (stage) {
         stage.context.setTextureAt(1, null);
     };
     return Filter3DCompositeTask;
-}(Filter3DTaskBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Filter3DCompositeTask;
+}(Filter3DTaskBase_1.Filter3DTaskBase));
+exports.Filter3DCompositeTask = Filter3DCompositeTask;
 
 },{"../../filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask":[function(require,module,exports){
 "use strict";
@@ -10955,7 +10864,7 @@ var Filter3DFXAATask = (function (_super) {
         return code.join(" ");
     };
     Filter3DFXAATask.prototype.activate = function (stage, camera3D, depthTexture) {
-        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._data);
+        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.ContextGLProgramType.FRAGMENT, this._data);
     };
     Filter3DFXAATask.prototype.updateTextures = function (stage) {
         _super.prototype.updateTextures.call(this, stage);
@@ -10974,9 +10883,8 @@ var Filter3DFXAATask = (function (_super) {
     //TODO - remove blur variables and create setters/getters for FXAA
     Filter3DFXAATask.MAX_AUTO_SAMPLES = 15;
     return Filter3DFXAATask;
-}(Filter3DTaskBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Filter3DFXAATask;
+}(Filter3DTaskBase_1.Filter3DTaskBase));
+exports.Filter3DFXAATask = Filter3DFXAATask;
 
 },{"../../filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask":[function(require,module,exports){
 "use strict";
@@ -11049,7 +10957,7 @@ var Filter3DHBlurTask = (function (_super) {
         return code;
     };
     Filter3DHBlurTask.prototype.activate = function (stage, camera3D, depthTexture) {
-        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._data);
+        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.ContextGLProgramType.FRAGMENT, this._data);
     };
     Filter3DHBlurTask.prototype.updateTextures = function (stage) {
         _super.prototype.updateTextures.call(this, stage);
@@ -11066,9 +10974,8 @@ var Filter3DHBlurTask = (function (_super) {
     };
     Filter3DHBlurTask.MAX_AUTO_SAMPLES = 15;
     return Filter3DHBlurTask;
-}(Filter3DTaskBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Filter3DHBlurTask;
+}(Filter3DTaskBase_1.Filter3DTaskBase));
+exports.Filter3DHBlurTask = Filter3DHBlurTask;
 
 },{"../../filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":[function(require,module,exports){
 "use strict";
@@ -11087,7 +10994,7 @@ var Filter3DTaskBase = (function () {
         this._program3DInvalid = true;
         this._textureScale = 0;
         this._requireDepthRender = requireDepthRender;
-        this._registerCache = new ShaderRegisterCache_1.default("baseline");
+        this._registerCache = new ShaderRegisterCache_1.ShaderRegisterCache("baseline");
     }
     ;
     Object.defineProperty(Filter3DTaskBase.prototype, "textureScale", {
@@ -11178,8 +11085,8 @@ var Filter3DTaskBase = (function () {
             this._program3D.dispose();
         this._program3D = stage.context.createProgram();
         this._registerCache.reset();
-        var vertexByteCode = (new AGALMiniAssembler_1.default().assemble("part vertex 1\n" + this.getVertexCode() + "endpart"))['vertex'].data;
-        var fragmentByteCode = (new AGALMiniAssembler_1.default().assemble("part fragment 1\n" + this.getFragmentCode() + "endpart"))['fragment'].data;
+        var vertexByteCode = (new AGALMiniAssembler_1.AGALMiniAssembler().assemble("part vertex 1\n" + this.getVertexCode() + "endpart"))['vertex'].data;
+        var fragmentByteCode = (new AGALMiniAssembler_1.AGALMiniAssembler().assemble("part fragment 1\n" + this.getFragmentCode() + "endpart"))['fragment'].data;
         this._program3D.upload(vertexByteCode, fragmentByteCode);
         this._program3DInvalid = false;
     };
@@ -11195,12 +11102,12 @@ var Filter3DTaskBase = (function () {
         return code;
     };
     Filter3DTaskBase.prototype.getFragmentCode = function () {
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     Filter3DTaskBase.prototype.updateTextures = function (stage) {
         if (this._mainInputTexture)
             this._mainInputTexture.dispose();
-        this._mainInputTexture = new Image2D_1.default(this._scaledTextureWidth, this._scaledTextureHeight);
+        this._mainInputTexture = new Image2D_1.Image2D(this._scaledTextureWidth, this._scaledTextureHeight);
         this._textureDimensionsInvalid = false;
     };
     Filter3DTaskBase.prototype.getProgram = function (stage) {
@@ -11221,8 +11128,7 @@ var Filter3DTaskBase = (function () {
     });
     return Filter3DTaskBase;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Filter3DTaskBase;
+exports.Filter3DTaskBase = Filter3DTaskBase;
 
 },{"../../shaders/ShaderRegisterCache":"awayjs-renderergl/lib/shaders/ShaderRegisterCache","awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask":[function(require,module,exports){
 "use strict";
@@ -11294,7 +11200,7 @@ var Filter3DVBlurTask = (function (_super) {
         return code;
     };
     Filter3DVBlurTask.prototype.activate = function (stage, camera3D, depthTexture) {
-        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._data);
+        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.ContextGLProgramType.FRAGMENT, this._data);
     };
     Filter3DVBlurTask.prototype.updateTextures = function (stage) {
         _super.prototype.updateTextures.call(this, stage);
@@ -11311,30 +11217,29 @@ var Filter3DVBlurTask = (function (_super) {
     };
     Filter3DVBlurTask.MAX_AUTO_SAMPLES = 15;
     return Filter3DVBlurTask;
-}(Filter3DTaskBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Filter3DVBlurTask;
+}(Filter3DTaskBase_1.Filter3DTaskBase));
+exports.Filter3DVBlurTask = Filter3DVBlurTask;
 
 },{"../../filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters":[function(require,module,exports){
 "use strict";
 var Filter3DCompositeTask_1 = require("./filters/tasks/Filter3DCompositeTask");
-exports.Filter3DCompositeTask = Filter3DCompositeTask_1.default;
+exports.Filter3DCompositeTask = Filter3DCompositeTask_1.Filter3DCompositeTask;
 var Filter3DFXAATask_1 = require("./filters/tasks/Filter3DFXAATask");
-exports.Filter3DFXAATask = Filter3DFXAATask_1.default;
+exports.Filter3DFXAATask = Filter3DFXAATask_1.Filter3DFXAATask;
 var Filter3DHBlurTask_1 = require("./filters/tasks/Filter3DHBlurTask");
-exports.Filter3DHBlurTask = Filter3DHBlurTask_1.default;
+exports.Filter3DHBlurTask = Filter3DHBlurTask_1.Filter3DHBlurTask;
 var Filter3DTaskBase_1 = require("./filters/tasks/Filter3DTaskBase");
-exports.Filter3DTaskBase = Filter3DTaskBase_1.default;
+exports.Filter3DTaskBase = Filter3DTaskBase_1.Filter3DTaskBase;
 var Filter3DVBlurTask_1 = require("./filters/tasks/Filter3DVBlurTask");
-exports.Filter3DVBlurTask = Filter3DVBlurTask_1.default;
+exports.Filter3DVBlurTask = Filter3DVBlurTask_1.Filter3DVBlurTask;
 var BlurFilter3D_1 = require("./filters/BlurFilter3D");
-exports.BlurFilter3D = BlurFilter3D_1.default;
+exports.BlurFilter3D = BlurFilter3D_1.BlurFilter3D;
 var CompositeFilter3D_1 = require("./filters/CompositeFilter3D");
-exports.CompositeFilter3D = CompositeFilter3D_1.default;
+exports.CompositeFilter3D = CompositeFilter3D_1.CompositeFilter3D;
 var Filter3DBase_1 = require("./filters/Filter3DBase");
-exports.Filter3DBase = Filter3DBase_1.default;
+exports.Filter3DBase = Filter3DBase_1.Filter3DBase;
 var FXAAFilter3D_1 = require("./filters/FXAAFilter3D");
-exports.FXAAFilter3D = FXAAFilter3D_1.default;
+exports.FXAAFilter3D = FXAAFilter3D_1.FXAAFilter3D;
 
 },{"./filters/BlurFilter3D":"awayjs-renderergl/lib/filters/BlurFilter3D","./filters/CompositeFilter3D":"awayjs-renderergl/lib/filters/CompositeFilter3D","./filters/FXAAFilter3D":"awayjs-renderergl/lib/filters/FXAAFilter3D","./filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","./filters/tasks/Filter3DCompositeTask":"awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask","./filters/tasks/Filter3DFXAATask":"awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask","./filters/tasks/Filter3DHBlurTask":"awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask","./filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","./filters/tasks/Filter3DVBlurTask":"awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask"}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
 "use strict";
@@ -11356,7 +11261,7 @@ var RTTBufferManager = (function (_super) {
         this._textureWidth = -1;
         this._textureHeight = -1;
         this._buffersInvalid = true;
-        this._renderToTextureRect = new Rectangle_1.default();
+        this._renderToTextureRect = new Rectangle_1.Rectangle();
         this._stage = stage;
     }
     RTTBufferManager.getInstance = function (stage) {
@@ -11422,7 +11327,7 @@ var RTTBufferManager = (function (_super) {
                 return;
             this._viewWidth = value;
             this._buffersInvalid = true;
-            this._textureWidth = ImageUtils_1.default.getBestPowerOf2(this._viewWidth);
+            this._textureWidth = ImageUtils_1.ImageUtils.getBestPowerOf2(this._viewWidth);
             if (this._textureWidth > this._viewWidth) {
                 this._renderToTextureRect.x = Math.floor((this._textureWidth - this._viewWidth) * .5);
                 this._renderToTextureRect.width = this._viewWidth;
@@ -11431,7 +11336,7 @@ var RTTBufferManager = (function (_super) {
                 this._renderToTextureRect.x = 0;
                 this._renderToTextureRect.width = this._textureWidth;
             }
-            this.dispatchEvent(new RTTEvent_1.default(RTTEvent_1.default.RESIZE, this));
+            this.dispatchEvent(new RTTEvent_1.RTTEvent(RTTEvent_1.RTTEvent.RESIZE, this));
         },
         enumerable: true,
         configurable: true
@@ -11445,7 +11350,7 @@ var RTTBufferManager = (function (_super) {
                 return;
             this._viewHeight = value;
             this._buffersInvalid = true;
-            this._textureHeight = ImageUtils_1.default.getBestPowerOf2(this._viewHeight);
+            this._textureHeight = ImageUtils_1.ImageUtils.getBestPowerOf2(this._viewHeight);
             if (this._textureHeight > this._viewHeight) {
                 this._renderToTextureRect.y = Math.floor((this._textureHeight - this._viewHeight) * .5);
                 this._renderToTextureRect.height = this._viewHeight;
@@ -11454,7 +11359,7 @@ var RTTBufferManager = (function (_super) {
                 this._renderToTextureRect.y = 0;
                 this._renderToTextureRect.height = this._textureHeight;
             }
-            this.dispatchEvent(new RTTEvent_1.default(RTTEvent_1.default.RESIZE, this));
+            this.dispatchEvent(new RTTEvent_1.RTTEvent(RTTEvent_1.RTTEvent.RESIZE, this));
         },
         enumerable: true,
         configurable: true
@@ -11549,9 +11454,8 @@ var RTTBufferManager = (function (_super) {
         this._buffersInvalid = false;
     };
     return RTTBufferManager;
-}(EventDispatcher_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = RTTBufferManager;
+}(EventDispatcher_1.EventDispatcher));
+exports.RTTBufferManager = RTTBufferManager;
 var RTTBufferManagerVO = (function () {
     function RTTBufferManagerVO() {
     }
@@ -11561,7 +11465,7 @@ var RTTBufferManagerVO = (function () {
 },{"../events/RTTEvent":"awayjs-renderergl/lib/events/RTTEvent","awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/ImageUtils":undefined}],"awayjs-renderergl/lib/managers":[function(require,module,exports){
 "use strict";
 var RTTBufferManager_1 = require("./managers/RTTBufferManager");
-exports.RTTBufferManager = RTTBufferManager_1.default;
+exports.RTTBufferManager = RTTBufferManager_1.RTTBufferManager;
 
 },{"./managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager"}],"awayjs-renderergl/lib/renderables/GL_BillboardRenderable":[function(require,module,exports){
 "use strict";
@@ -11577,19 +11481,19 @@ var GL_RenderableBase_1 = require("../renderables/GL_RenderableBase");
 /**
  * @class away.pool.RenderableListItem
  */
-var GL_Billboard = (function (_super) {
-    __extends(GL_Billboard, _super);
+var GL_BillboardRenderable = (function (_super) {
+    __extends(GL_BillboardRenderable, _super);
     /**
      * //TODO
      *
      * @param pool
      * @param billboard
      */
-    function GL_Billboard(billboard, renderer) {
+    function GL_BillboardRenderable(billboard, renderer) {
         _super.call(this, billboard, renderer);
         this._billboard = billboard;
     }
-    GL_Billboard.prototype.onClear = function (event) {
+    GL_BillboardRenderable.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
         this._billboard = null;
     };
@@ -11598,18 +11502,18 @@ var GL_Billboard = (function (_super) {
      *
      * @returns {away.base.TriangleElements}
      */
-    GL_Billboard.prototype._pGetElements = function () {
+    GL_BillboardRenderable.prototype._pGetElements = function () {
         var texture = this._billboard.material.getTextureAt(0);
         var id = -1;
         if (texture)
-            id = ((this.renderable.style ? this.renderable.style.getSamplerAt(texture) || texture.getSamplerAt(0) : texture.getSamplerAt(0)) || DefaultMaterialManager_1.default.getDefaultSampler()).id;
+            id = ((this.renderable.style ? this.renderable.style.getSamplerAt(texture) || texture.getSamplerAt(0) : texture.getSamplerAt(0)) || DefaultMaterialManager_1.DefaultMaterialManager.getDefaultSampler()).id;
         this._id = id;
-        var elements = GL_Billboard._samplerElements[id];
+        var elements = GL_BillboardRenderable._samplerElements[id];
         var width = this._billboard.billboardWidth;
         var height = this._billboard.billboardHeight;
         var billboardRect = this._billboard.billboardRect;
         if (!elements) {
-            elements = GL_Billboard._samplerElements[id] = new TriangleElements_1.default(new AttributesBuffer_1.default(11, 4));
+            elements = GL_BillboardRenderable._samplerElements[id] = new TriangleElements_1.TriangleElements(new AttributesBuffer_1.AttributesBuffer(11, 4));
             elements.autoDeriveNormals = false;
             elements.autoDeriveTangents = false;
             elements.setIndices(Array(0, 1, 2, 0, 2, 3));
@@ -11623,14 +11527,13 @@ var GL_Billboard = (function (_super) {
         }
         return this._stage.getAbstraction(elements);
     };
-    GL_Billboard.prototype._pGetSurface = function () {
-        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._billboard.material || DefaultMaterialManager_1.default.getDefaultMaterial(this.renderable));
+    GL_BillboardRenderable.prototype._pGetSurface = function () {
+        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._billboard.material || DefaultMaterialManager_1.DefaultMaterialManager.getDefaultMaterial(this.renderable));
     };
-    GL_Billboard._samplerElements = new Object();
-    return GL_Billboard;
-}(GL_RenderableBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_Billboard;
+    GL_BillboardRenderable._samplerElements = new Object();
+    return GL_BillboardRenderable;
+}(GL_RenderableBase_1.GL_RenderableBase));
+exports.GL_BillboardRenderable = GL_BillboardRenderable;
 
 },{"../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/renderables/GL_GraphicRenderable":[function(require,module,exports){
 "use strict";
@@ -11673,12 +11576,11 @@ var GL_GraphicRenderable = (function (_super) {
         return this._stage.getAbstraction((this.renderable.animator) ? this.renderable.animator.getRenderableElements(this, this.graphic.elements) : this.graphic.elements);
     };
     GL_GraphicRenderable.prototype._pGetSurface = function () {
-        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this.graphic.material || DefaultMaterialManager_1.default.getDefaultMaterial(this.renderable));
+        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this.graphic.material || DefaultMaterialManager_1.DefaultMaterialManager.getDefaultMaterial(this.renderable));
     };
     return GL_GraphicRenderable;
-}(GL_RenderableBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_GraphicRenderable;
+}(GL_RenderableBase_1.GL_RenderableBase));
+exports.GL_GraphicRenderable = GL_GraphicRenderable;
 
 },{"../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-display/lib/managers/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable":[function(require,module,exports){
 "use strict";
@@ -11718,7 +11620,7 @@ var GL_LineSegmentRenderable = (function (_super) {
      * @protected
      */
     GL_LineSegmentRenderable.prototype._pGetElements = function () {
-        var elements = GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements_1.default());
+        var elements = GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements_1.LineElements());
         var start = this._lineSegment.startPostion;
         var end = this._lineSegment.endPosition;
         var positions = new Float32Array(6);
@@ -11735,7 +11637,7 @@ var GL_LineSegmentRenderable = (function (_super) {
         return this._stage.getAbstraction(elements);
     };
     GL_LineSegmentRenderable.prototype._pGetSurface = function () {
-        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._lineSegment.material || DefaultMaterialManager_1.default.getDefaultMaterial(this.renderable));
+        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._lineSegment.material || DefaultMaterialManager_1.DefaultMaterialManager.getDefaultMaterial(this.renderable));
     };
     /**
      * //TODO
@@ -11752,9 +11654,8 @@ var GL_LineSegmentRenderable = (function (_super) {
     };
     GL_LineSegmentRenderable._lineGraphics = new Object();
     return GL_LineSegmentRenderable;
-}(GL_RenderableBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_LineSegmentRenderable;
+}(GL_RenderableBase_1.GL_RenderableBase));
+exports.GL_LineSegmentRenderable = GL_LineSegmentRenderable;
 
 },{"../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-display/lib/graphics/LineElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/renderables/GL_RenderableBase":[function(require,module,exports){
 "use strict";
@@ -11794,8 +11695,8 @@ var GL_RenderableBase = (function (_super) {
         this._renderer = renderer;
         this._stage = renderer.stage;
         this.renderable = renderable;
-        this.renderable.addEventListener(RenderableEvent_1.default.INVALIDATE_SURFACE, this._onInvalidateSurfaceDelegate);
-        this.renderable.addEventListener(RenderableEvent_1.default.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
+        this.renderable.addEventListener(RenderableEvent_1.RenderableEvent.INVALIDATE_SURFACE, this._onInvalidateSurfaceDelegate);
+        this.renderable.addEventListener(RenderableEvent_1.RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
     }
     Object.defineProperty(GL_RenderableBase.prototype, "elementsGL", {
         get: function () {
@@ -11823,12 +11724,12 @@ var GL_RenderableBase = (function (_super) {
         this._renderer = null;
         this._stage = null;
         this.sourceEntity = null;
-        this.renderable.removeEventListener(RenderableEvent_1.default.INVALIDATE_SURFACE, this._onInvalidateSurfaceDelegate);
-        this.renderable.removeEventListener(RenderableEvent_1.default.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
+        this.renderable.removeEventListener(RenderableEvent_1.RenderableEvent.INVALIDATE_SURFACE, this._onInvalidateSurfaceDelegate);
+        this.renderable.removeEventListener(RenderableEvent_1.RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
         this.renderable = null;
         this._surfaceGL.usages--;
         if (!this._surfaceGL.usages)
-            this._surfaceGL.onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, this._surfaceGL.surface));
+            this._surfaceGL.onClear(new AssetEvent_1.AssetEvent(AssetEvent_1.AssetEvent.CLEAR, this._surfaceGL.surface));
         this._surfaceGL = null;
         this._elementsGL = null;
     };
@@ -11839,10 +11740,10 @@ var GL_RenderableBase = (function (_super) {
         this._surfaceDirty = true;
     };
     GL_RenderableBase.prototype._pGetElements = function () {
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     GL_RenderableBase.prototype._pGetSurface = function () {
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     /**
      * Renders an object to the current render target.
@@ -11878,7 +11779,7 @@ var GL_RenderableBase = (function (_super) {
                 this._surfaceGL.usages--;
                 //dispose current surfaceGL object
                 if (!this._surfaceGL.usages)
-                    this._surfaceGL.onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, this._surfaceGL.surface));
+                    this._surfaceGL.onClear(new AssetEvent_1.AssetEvent(AssetEvent_1.AssetEvent.CLEAR, this._surfaceGL.surface));
             }
             this._surfaceGL = surfaceGL;
             this._surfaceGL.usages++;
@@ -11908,9 +11809,8 @@ var GL_RenderableBase = (function (_super) {
         this._surfaceDirty = false;
     };
     return GL_RenderableBase;
-}(AbstractionBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_RenderableBase;
+}(AbstractionBase_1.AbstractionBase));
+exports.GL_RenderableBase = GL_RenderableBase;
 
 },{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-display/lib/events/RenderableEvent":undefined}],"awayjs-renderergl/lib/renderables/GL_SkyboxRenderable":[function(require,module,exports){
 "use strict";
@@ -11947,12 +11847,12 @@ var GL_SkyboxRenderable = (function (_super) {
     GL_SkyboxRenderable.prototype._pGetElements = function () {
         var elementsGL = GL_SkyboxRenderable._elementsGL;
         if (!elementsGL) {
-            var elements = new TriangleElements_1.default(new AttributesBuffer_1.default(11, 4));
+            var elements = new TriangleElements_1.TriangleElements(new AttributesBuffer_1.AttributesBuffer(11, 4));
             elements.autoDeriveNormals = false;
             elements.autoDeriveTangents = false;
             elements.setIndices(Array(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2));
             elements.setPositions(Array(-1, 1, -1, 1, 1, -1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1));
-            elementsGL = GL_SkyboxRenderable._elementsGL = new GL_SkyboxElements_1.default(elements, this._stage);
+            elementsGL = GL_SkyboxRenderable._elementsGL = new GL_SkyboxElements_1.GL_SkyboxElements(elements, this._stage);
         }
         return elementsGL;
     };
@@ -11962,22 +11862,21 @@ var GL_SkyboxRenderable = (function (_super) {
     GL_SkyboxRenderable._iIncludeDependencies = function (shader) {
     };
     return GL_SkyboxRenderable;
-}(GL_RenderableBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_SkyboxRenderable;
+}(GL_RenderableBase_1.GL_RenderableBase));
+exports.GL_SkyboxRenderable = GL_SkyboxRenderable;
 
 },{"../elements/GL_SkyboxElements":"awayjs-renderergl/lib/elements/GL_SkyboxElements","../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined}],"awayjs-renderergl/lib/renderables":[function(require,module,exports){
 "use strict";
 var GL_BillboardRenderable_1 = require("./renderables/GL_BillboardRenderable");
-exports.GL_BillboardRenderable = GL_BillboardRenderable_1.default;
+exports.GL_BillboardRenderable = GL_BillboardRenderable_1.GL_BillboardRenderable;
 var GL_GraphicRenderable_1 = require("./renderables/GL_GraphicRenderable");
-exports.GL_GraphicRenderable = GL_GraphicRenderable_1.default;
+exports.GL_GraphicRenderable = GL_GraphicRenderable_1.GL_GraphicRenderable;
 var GL_LineSegmentRenderable_1 = require("./renderables/GL_LineSegmentRenderable");
-exports.GL_LineSegmentRenderable = GL_LineSegmentRenderable_1.default;
+exports.GL_LineSegmentRenderable = GL_LineSegmentRenderable_1.GL_LineSegmentRenderable;
 var GL_RenderableBase_1 = require("./renderables/GL_RenderableBase");
-exports.GL_RenderableBase = GL_RenderableBase_1.default;
+exports.GL_RenderableBase = GL_RenderableBase_1.GL_RenderableBase;
 var GL_SkyboxRenderable_1 = require("./renderables/GL_SkyboxRenderable");
-exports.GL_SkyboxRenderable = GL_SkyboxRenderable_1.default;
+exports.GL_SkyboxRenderable = GL_SkyboxRenderable_1.GL_SkyboxRenderable;
 
 },{"./renderables/GL_BillboardRenderable":"awayjs-renderergl/lib/renderables/GL_BillboardRenderable","./renderables/GL_GraphicRenderable":"awayjs-renderergl/lib/renderables/GL_GraphicRenderable","./renderables/GL_LineSegmentRenderable":"awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable","./renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","./renderables/GL_SkyboxRenderable":"awayjs-renderergl/lib/renderables/GL_SkyboxRenderable"}],"awayjs-renderergl/lib/shaders/LightingShader":[function(require,module,exports){
 "use strict";
@@ -12017,15 +11916,15 @@ var LightingShader = (function (_super) {
         var diffuseLightSources = this._lightingPass._iUsesDiffuse(this) ? this._lightingPass.diffuseLightSources : 0x00;
         var specularLightSources = this._lightingPass._iUsesSpecular(this) ? this._lightingPass.specularLightSources : 0x00;
         var combinedLightSources = diffuseLightSources | specularLightSources;
-        this.usesLightFallOff = this._lightingPass.enableLightFallOff && this.profile != ContextGLProfile_1.default.BASELINE_CONSTRAINED;
+        this.usesLightFallOff = this._lightingPass.enableLightFallOff && this.profile != ContextGLProfile_1.ContextGLProfile.BASELINE_CONSTRAINED;
         this.usesCommonData = this.usesLightFallOff;
         this.numLights = numAllLights + numLightProbes;
-        this.usesLights = numAllLights > 0 && (combinedLightSources & LightSources_1.default.LIGHTS) != 0;
-        this.usesProbes = numLightProbes > 0 && (combinedLightSources & LightSources_1.default.PROBES) != 0;
-        this.usesLightsForSpecular = numAllLights > 0 && (specularLightSources & LightSources_1.default.LIGHTS) != 0;
-        this.usesProbesForSpecular = numLightProbes > 0 && (specularLightSources & LightSources_1.default.PROBES) != 0;
-        this.usesLightsForDiffuse = numAllLights > 0 && (diffuseLightSources & LightSources_1.default.LIGHTS) != 0;
-        this.usesProbesForDiffuse = numLightProbes > 0 && (diffuseLightSources & LightSources_1.default.PROBES) != 0;
+        this.usesLights = numAllLights > 0 && (combinedLightSources & LightSources_1.LightSources.LIGHTS) != 0;
+        this.usesProbes = numLightProbes > 0 && (combinedLightSources & LightSources_1.LightSources.PROBES) != 0;
+        this.usesLightsForSpecular = numAllLights > 0 && (specularLightSources & LightSources_1.LightSources.LIGHTS) != 0;
+        this.usesProbesForSpecular = numLightProbes > 0 && (specularLightSources & LightSources_1.LightSources.PROBES) != 0;
+        this.usesLightsForDiffuse = numAllLights > 0 && (diffuseLightSources & LightSources_1.LightSources.LIGHTS) != 0;
+        this.usesProbesForDiffuse = numLightProbes > 0 && (diffuseLightSources & LightSources_1.LightSources.PROBES) != 0;
         this.usesShadows = this._lightingPass._iUsesShadows(this);
         //IMPORTANT this must occur after shader lighting initialisation above
         _super.prototype._iIncludeDependencies.call(this);
@@ -12037,7 +11936,7 @@ var LightingShader = (function (_super) {
      * @returns {away.materials.LightingCompiler}
      */
     LightingShader.prototype.createCompiler = function (elementsClass, pass) {
-        return new LightingCompiler_1.default(elementsClass, pass, this);
+        return new LightingCompiler_1.LightingCompiler(elementsClass, pass, this);
     };
     /**
      *
@@ -12218,9 +12117,8 @@ var LightingShader = (function (_super) {
             this.fragmentConstantData[this.probeWeightsIndex + i] = weights[this._lightingPass.lightProbesOffset + i];
     };
     return LightingShader;
-}(ShaderBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = LightingShader;
+}(ShaderBase_1.ShaderBase));
+exports.LightingShader = LightingShader;
 
 },{"../shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","../shaders/compilers/LightingCompiler":"awayjs-renderergl/lib/shaders/compilers/LightingCompiler","awayjs-display/lib/materials/LightSources":undefined,"awayjs-stagegl/lib/base/ContextGLProfile":undefined}],"awayjs-renderergl/lib/shaders/RegisterPool":[function(require,module,exports){
 "use strict";
@@ -12349,9 +12247,9 @@ var RegisterPool = (function () {
         ];
         RegisterPool._regCompsPool[hash] = registerComponents;
         for (var i = 0; i < regCount; ++i) {
-            vectorRegisters[i] = new ShaderRegisterElement_1.default(regName, i);
+            vectorRegisters[i] = new ShaderRegisterElement_1.ShaderRegisterElement(regName, i);
             for (var j = 0; j < 4; ++j)
-                registerComponents[j][i] = new ShaderRegisterElement_1.default(regName, i, j);
+                registerComponents[j][i] = new ShaderRegisterElement_1.ShaderRegisterElement(regName, i, j);
         }
         return hash;
     };
@@ -12376,8 +12274,7 @@ var RegisterPool = (function () {
     RegisterPool._regCompsPool = new Object();
     return RegisterPool;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = RegisterPool;
+exports.RegisterPool = RegisterPool;
 
 },{"../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/shaders/ShaderBase":[function(require,module,exports){
 "use strict";
@@ -12401,8 +12298,8 @@ var ShaderBase = (function () {
      */
     function ShaderBase(elementsClass, pass, stage) {
         this._abstractionPool = new Object();
-        this._blendFactorSource = ContextGLBlendFactor_1.default.ONE;
-        this._blendFactorDest = ContextGLBlendFactor_1.default.ZERO;
+        this._blendFactorSource = ContextGLBlendFactor_1.ContextGLBlendFactor.ONE;
+        this._blendFactorDest = ContextGLBlendFactor_1.ContextGLBlendFactor.ZERO;
         this._invalidProgram = true;
         this._animationVertexCode = "";
         this._animationFragmentCode = "";
@@ -12414,12 +12311,12 @@ var ShaderBase = (function () {
          *
          * @see away.stagegl.ContextGLCompareMode
          */
-        this.depthCompareMode = ContextGLCompareMode_1.default.LESS;
+        this.depthCompareMode = ContextGLCompareMode_1.ContextGLCompareMode.LESS;
         /**
          * Indicate whether the shader should write to the depth buffer or not. Ignored when blending is enabled.
          */
         this.writeDepth = true;
-        this._defaultCulling = ContextGLTriangleFace_1.default.BACK;
+        this._defaultCulling = ContextGLTriangleFace_1.ContextGLTriangleFace.BACK;
         this._pInverseSceneMatrix = new Float32Array(16);
         //set ambient values to default
         this.ambientR = 0xFF;
@@ -12539,7 +12436,7 @@ var ShaderBase = (function () {
      * @returns {CompilerBase}
      */
     ShaderBase.prototype.createCompiler = function (elementsClass, pass) {
-        return new CompilerBase_1.default(elementsClass, pass, this);
+        return new CompilerBase_1.CompilerBase(elementsClass, pass, this);
     };
     /**
      * Clears dependency counts for all registers. Called when recompiling a pass.
@@ -12638,40 +12535,40 @@ var ShaderBase = (function () {
      */
     ShaderBase.prototype.setBlendMode = function (value) {
         switch (value) {
-            case BlendMode_1.default.NORMAL:
-                this._blendFactorSource = ContextGLBlendFactor_1.default.ONE;
-                this._blendFactorDest = ContextGLBlendFactor_1.default.ZERO;
+            case BlendMode_1.BlendMode.NORMAL:
+                this._blendFactorSource = ContextGLBlendFactor_1.ContextGLBlendFactor.ONE;
+                this._blendFactorDest = ContextGLBlendFactor_1.ContextGLBlendFactor.ZERO;
                 this.usesBlending = false;
                 break;
-            case BlendMode_1.default.LAYER:
-                this._blendFactorSource = ContextGLBlendFactor_1.default.SOURCE_ALPHA;
-                this._blendFactorDest = ContextGLBlendFactor_1.default.ONE_MINUS_SOURCE_ALPHA;
+            case BlendMode_1.BlendMode.LAYER:
+                this._blendFactorSource = ContextGLBlendFactor_1.ContextGLBlendFactor.SOURCE_ALPHA;
+                this._blendFactorDest = ContextGLBlendFactor_1.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
                 this.usesBlending = true;
                 break;
-            case BlendMode_1.default.MULTIPLY:
-                this._blendFactorSource = ContextGLBlendFactor_1.default.ZERO;
-                this._blendFactorDest = ContextGLBlendFactor_1.default.SOURCE_COLOR;
+            case BlendMode_1.BlendMode.MULTIPLY:
+                this._blendFactorSource = ContextGLBlendFactor_1.ContextGLBlendFactor.ZERO;
+                this._blendFactorDest = ContextGLBlendFactor_1.ContextGLBlendFactor.SOURCE_COLOR;
                 this.usesBlending = true;
                 break;
-            case BlendMode_1.default.ADD:
-                this._blendFactorSource = ContextGLBlendFactor_1.default.SOURCE_ALPHA;
-                this._blendFactorDest = ContextGLBlendFactor_1.default.ONE;
+            case BlendMode_1.BlendMode.ADD:
+                this._blendFactorSource = ContextGLBlendFactor_1.ContextGLBlendFactor.SOURCE_ALPHA;
+                this._blendFactorDest = ContextGLBlendFactor_1.ContextGLBlendFactor.ONE;
                 this.usesBlending = true;
                 break;
-            case BlendMode_1.default.ALPHA:
-                this._blendFactorSource = ContextGLBlendFactor_1.default.ZERO;
-                this._blendFactorDest = ContextGLBlendFactor_1.default.SOURCE_ALPHA;
+            case BlendMode_1.BlendMode.ALPHA:
+                this._blendFactorSource = ContextGLBlendFactor_1.ContextGLBlendFactor.ZERO;
+                this._blendFactorDest = ContextGLBlendFactor_1.ContextGLBlendFactor.SOURCE_ALPHA;
                 this.usesBlending = true;
                 break;
             default:
-                throw new ArgumentError_1.default("Unsupported blend mode!");
+                throw new ArgumentError_1.ArgumentError("Unsupported blend mode!");
         }
     };
     /**
      * @inheritDoc
      */
     ShaderBase.prototype._iActivate = function (camera) {
-        this._stage.context.setCulling(this.useBothSides ? ContextGLTriangleFace_1.default.NONE : this._defaultCulling, camera.projection.coordinateSystem);
+        this._stage.context.setCulling(this.useBothSides ? ContextGLTriangleFace_1.ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
         if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
             var pos = camera.scenePosition;
             this.vertexConstantData[this.cameraPositionIndex] = pos.x;
@@ -12688,7 +12585,7 @@ var ShaderBase = (function () {
      */
     ShaderBase.prototype._iDeactivate = function () {
         //For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
-        this._stage.context.setDepthTest(true, ContextGLCompareMode_1.default.LESS);
+        this._stage.context.setDepthTest(true, ContextGLCompareMode_1.ContextGLCompareMode.LESS);
         this.activeElements = null;
     };
     /**
@@ -12852,8 +12749,7 @@ var ShaderBase = (function () {
     ShaderBase._abstractionClassPool = new Object();
     return ShaderBase;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ShaderBase;
+exports.ShaderBase = ShaderBase;
 
 },{"../shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase","awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/shaders/ShaderRegisterCache":[function(require,module,exports){
 "use strict";
@@ -12881,15 +12777,15 @@ var ShaderRegisterCache = (function () {
      * Resets all registers.
      */
     ShaderRegisterCache.prototype.reset = function () {
-        this._fragmentTempCache = new RegisterPool_1.default("ft", 8, false);
-        this._vertexTempCache = new RegisterPool_1.default("vt", 8, false);
-        this._varyingCache = new RegisterPool_1.default("v", 8);
-        this._textureCache = new RegisterPool_1.default("fs", 8);
-        this._vertexAttributesCache = new RegisterPool_1.default("va", 8);
-        this._fragmentConstantsCache = new RegisterPool_1.default("fc", 28);
-        this._vertexConstantsCache = new RegisterPool_1.default("vc", 128);
-        this._fragmentOutputRegister = new ShaderRegisterElement_1.default("oc", -1);
-        this._vertexOutputRegister = new ShaderRegisterElement_1.default("op", -1);
+        this._fragmentTempCache = new RegisterPool_1.RegisterPool("ft", 8, false);
+        this._vertexTempCache = new RegisterPool_1.RegisterPool("vt", 8, false);
+        this._varyingCache = new RegisterPool_1.RegisterPool("v", 8);
+        this._textureCache = new RegisterPool_1.RegisterPool("fs", 8);
+        this._vertexAttributesCache = new RegisterPool_1.RegisterPool("va", 8);
+        this._fragmentConstantsCache = new RegisterPool_1.RegisterPool("fc", 28);
+        this._vertexConstantsCache = new RegisterPool_1.RegisterPool("vc", 128);
+        this._fragmentOutputRegister = new ShaderRegisterElement_1.ShaderRegisterElement("oc", -1);
+        this._vertexOutputRegister = new ShaderRegisterElement_1.ShaderRegisterElement("op", -1);
         this._numUsedVertexConstants = 0;
         this._numUsedStreams = 0;
         this._numUsedTextures = 0;
@@ -13067,8 +12963,7 @@ var ShaderRegisterCache = (function () {
     });
     return ShaderRegisterCache;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ShaderRegisterCache;
+exports.ShaderRegisterCache = ShaderRegisterCache;
 
 },{"../shaders/RegisterPool":"awayjs-renderergl/lib/shaders/RegisterPool","../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/shaders/ShaderRegisterData":[function(require,module,exports){
 "use strict";
@@ -13083,8 +12978,7 @@ var ShaderRegisterData = (function () {
     }
     return ShaderRegisterData;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ShaderRegisterData;
+exports.ShaderRegisterData = ShaderRegisterData;
 
 },{}],"awayjs-renderergl/lib/shaders/ShaderRegisterElement":[function(require,module,exports){
 "use strict";
@@ -13139,8 +13033,7 @@ var ShaderRegisterElement = (function () {
     ShaderRegisterElement.COMPONENTS = ["x", "y", "z", "w"];
     return ShaderRegisterElement;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ShaderRegisterElement;
+exports.ShaderRegisterElement = ShaderRegisterElement;
 
 },{}],"awayjs-renderergl/lib/shaders/compilers/CompilerBase":[function(require,module,exports){
 "use strict";
@@ -13164,8 +13057,8 @@ var CompilerBase = (function () {
         this._pElementsClass = elementsClass;
         this._pRenderPass = pass;
         this._pShader = shader;
-        this._pSharedRegisters = new ShaderRegisterData_1.default();
-        this._pRegisterCache = new ShaderRegisterCache_1.default(shader.profile);
+        this._pSharedRegisters = new ShaderRegisterData_1.ShaderRegisterData();
+        this._pRegisterCache = new ShaderRegisterCache_1.ShaderRegisterCache(shader.profile);
     }
     /**
      * Compiles the code after all setup on the compiler has finished.
@@ -13498,8 +13391,7 @@ var CompilerBase = (function () {
     });
     return CompilerBase;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = CompilerBase;
+exports.CompilerBase = CompilerBase;
 
 },{"../../shaders/ShaderRegisterCache":"awayjs-renderergl/lib/shaders/ShaderRegisterCache","../../shaders/ShaderRegisterData":"awayjs-renderergl/lib/shaders/ShaderRegisterData"}],"awayjs-renderergl/lib/shaders/compilers/LightingCompiler":[function(require,module,exports){
 "use strict";
@@ -13737,28 +13629,27 @@ var LightingCompiler = (function (_super) {
         }
     };
     return LightingCompiler;
-}(CompilerBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = LightingCompiler;
+}(CompilerBase_1.CompilerBase));
+exports.LightingCompiler = LightingCompiler;
 
 },{"../../shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase"}],"awayjs-renderergl/lib/shaders":[function(require,module,exports){
 "use strict";
 var CompilerBase_1 = require("./shaders/compilers/CompilerBase");
-exports.CompilerBase = CompilerBase_1.default;
+exports.CompilerBase = CompilerBase_1.CompilerBase;
 var LightingCompiler_1 = require("./shaders/compilers/LightingCompiler");
-exports.LightingCompiler = LightingCompiler_1.default;
+exports.LightingCompiler = LightingCompiler_1.LightingCompiler;
 var LightingShader_1 = require("./shaders/LightingShader");
-exports.LightingShader = LightingShader_1.default;
+exports.LightingShader = LightingShader_1.LightingShader;
 var RegisterPool_1 = require("./shaders/RegisterPool");
-exports.RegisterPool = RegisterPool_1.default;
+exports.RegisterPool = RegisterPool_1.RegisterPool;
 var ShaderBase_1 = require("./shaders/ShaderBase");
-exports.ShaderBase = ShaderBase_1.default;
+exports.ShaderBase = ShaderBase_1.ShaderBase;
 var ShaderRegisterCache_1 = require("./shaders/ShaderRegisterCache");
-exports.ShaderRegisterCache = ShaderRegisterCache_1.default;
+exports.ShaderRegisterCache = ShaderRegisterCache_1.ShaderRegisterCache;
 var ShaderRegisterData_1 = require("./shaders/ShaderRegisterData");
-exports.ShaderRegisterData = ShaderRegisterData_1.default;
+exports.ShaderRegisterData = ShaderRegisterData_1.ShaderRegisterData;
 var ShaderRegisterElement_1 = require("./shaders/ShaderRegisterElement");
-exports.ShaderRegisterElement = ShaderRegisterElement_1.default;
+exports.ShaderRegisterElement = ShaderRegisterElement_1.ShaderRegisterElement;
 
 },{"./shaders/LightingShader":"awayjs-renderergl/lib/shaders/LightingShader","./shaders/RegisterPool":"awayjs-renderergl/lib/shaders/RegisterPool","./shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","./shaders/ShaderRegisterCache":"awayjs-renderergl/lib/shaders/ShaderRegisterCache","./shaders/ShaderRegisterData":"awayjs-renderergl/lib/shaders/ShaderRegisterData","./shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","./shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase","./shaders/compilers/LightingCompiler":"awayjs-renderergl/lib/shaders/compilers/LightingCompiler"}],"awayjs-renderergl/lib/sort/IEntitySorter":[function(require,module,exports){
 "use strict";
@@ -13905,8 +13796,7 @@ var RenderableMergeSort = (function () {
     };
     return RenderableMergeSort;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = RenderableMergeSort;
+exports.RenderableMergeSort = RenderableMergeSort;
 
 },{}],"awayjs-renderergl/lib/sort/RenderableNullSort":[function(require,module,exports){
 "use strict";
@@ -13924,15 +13814,14 @@ var RenderableNullSort = (function () {
     };
     return RenderableNullSort;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = RenderableNullSort;
+exports.RenderableNullSort = RenderableNullSort;
 
 },{}],"awayjs-renderergl/lib/sort":[function(require,module,exports){
 "use strict";
 var RenderableMergeSort_1 = require("./sort/RenderableMergeSort");
-exports.RenderableMergeSort = RenderableMergeSort_1.default;
+exports.RenderableMergeSort = RenderableMergeSort_1.RenderableMergeSort;
 var RenderableNullSort_1 = require("./sort/RenderableNullSort");
-exports.RenderableNullSort = RenderableNullSort_1.default;
+exports.RenderableNullSort = RenderableNullSort_1.RenderableNullSort;
 
 },{"./sort/RenderableMergeSort":"awayjs-renderergl/lib/sort/RenderableMergeSort","./sort/RenderableNullSort":"awayjs-renderergl/lib/sort/RenderableNullSort"}],"awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface":[function(require,module,exports){
 "use strict";
@@ -13953,7 +13842,7 @@ var GL_BasicMaterialSurface = (function (_super) {
     function GL_BasicMaterialSurface(material, elementsClass, renderPool) {
         _super.call(this, material, elementsClass, renderPool);
         this._material = material;
-        this._pAddPass(this._pass = new BasicMaterialPass_1.default(this, material, elementsClass, this._stage));
+        this._pAddPass(this._pass = new BasicMaterialPass_1.BasicMaterialPass(this, material, elementsClass, this._stage));
     }
     GL_BasicMaterialSurface.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
@@ -13964,15 +13853,14 @@ var GL_BasicMaterialSurface = (function (_super) {
      */
     GL_BasicMaterialSurface.prototype._pUpdateRender = function () {
         _super.prototype._pUpdateRender.call(this);
-        this._pRequiresBlending = (this._material.blendMode != BlendMode_1.default.NORMAL || this._material.alphaBlending || (this._material.colorTransform && this._material.colorTransform.alphaMultiplier < 1));
+        this._pRequiresBlending = (this._material.blendMode != BlendMode_1.BlendMode.NORMAL || this._material.alphaBlending || (this._material.colorTransform && this._material.colorTransform.alphaMultiplier < 1));
         this._pass.preserveAlpha = this._material.preserveAlpha; //this._pRequiresBlending;
-        this._pass.shader.setBlendMode((this._surface.blendMode == BlendMode_1.default.NORMAL && this._pRequiresBlending) ? BlendMode_1.default.LAYER : this._material.blendMode);
+        this._pass.shader.setBlendMode((this._surface.blendMode == BlendMode_1.BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode_1.BlendMode.LAYER : this._material.blendMode);
         //this._pass.forceSeparateMVP = false;
     };
     return GL_BasicMaterialSurface;
-}(GL_SurfaceBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_BasicMaterialSurface;
+}(GL_SurfaceBase_1.GL_SurfaceBase));
+exports.GL_BasicMaterialSurface = GL_BasicMaterialSurface;
 
 },{"../surfaces/GL_SurfaceBase":"awayjs-renderergl/lib/surfaces/GL_SurfaceBase","../surfaces/passes/BasicMaterialPass":"awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass","awayjs-core/lib/image/BlendMode":undefined}],"awayjs-renderergl/lib/surfaces/GL_DepthSurface":[function(require,module,exports){
 "use strict";
@@ -13998,7 +13886,7 @@ var GL_DepthSurface = (function (_super) {
      */
     function GL_DepthSurface(surface, elementsClass, renderPool) {
         _super.call(this, surface, elementsClass, renderPool);
-        this._shader = new ShaderBase_1.default(elementsClass, this, this._stage);
+        this._shader = new ShaderBase_1.ShaderBase(elementsClass, this, this._stage);
         this._pAddPass(this);
     }
     GL_DepthSurface.prototype.invalidate = function () {
@@ -14066,9 +13954,8 @@ var GL_DepthSurface = (function (_super) {
         }
     };
     return GL_DepthSurface;
-}(GL_SurfacePassBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_DepthSurface;
+}(GL_SurfacePassBase_1.GL_SurfacePassBase));
+exports.GL_DepthSurface = GL_DepthSurface;
 
 },{"../shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","../surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase"}],"awayjs-renderergl/lib/surfaces/GL_DistanceSurface":[function(require,module,exports){
 "use strict";
@@ -14083,26 +13970,26 @@ var ShaderBase_1 = require("../shaders/ShaderBase");
  * DistanceRender is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
  * This is used to render omnidirectional shadow maps.
  */
-var DistanceRender = (function (_super) {
-    __extends(DistanceRender, _super);
+var GL_DistanceSurface = (function (_super) {
+    __extends(GL_DistanceSurface, _super);
     /**
      * Creates a new DistanceRender object.
      *
      * @param material The material to which this pass belongs.
      */
-    function DistanceRender(surface, elementsClass, renderPool) {
+    function GL_DistanceSurface(surface, elementsClass, renderPool) {
         _super.call(this, surface, elementsClass, renderPool);
-        this._shader = new ShaderBase_1.default(elementsClass, this, this._stage);
+        this._shader = new ShaderBase_1.ShaderBase(elementsClass, this, this._stage);
         this._pAddPass(this);
     }
-    DistanceRender.prototype.invalidate = function () {
+    GL_DistanceSurface.prototype.invalidate = function () {
         _super.prototype.invalidate.call(this);
         this._textureVO = this._surface.getTextureAt(0) ? this._shader.getAbstraction(this._surface.getTextureAt(0)) : null;
     };
     /**
      * Initializes the unchanging constant data for this material.
      */
-    DistanceRender.prototype._iInitConstantData = function (shader) {
+    GL_DistanceSurface.prototype._iInitConstantData = function (shader) {
         _super.prototype._iInitConstantData.call(this, shader);
         var index = this._fragmentConstantsIndex;
         var data = shader.fragmentConstantData;
@@ -14111,7 +13998,7 @@ var DistanceRender = (function (_super) {
         data[index + 6] = 1.0 / 255.0;
         data[index + 7] = 0.0;
     };
-    DistanceRender.prototype._iIncludeDependencies = function (shader) {
+    GL_DistanceSurface.prototype._iIncludeDependencies = function (shader) {
         _super.prototype._iIncludeDependencies.call(this, shader);
         shader.projectionDependencies++;
         shader.viewDirDependencies++;
@@ -14123,7 +14010,7 @@ var DistanceRender = (function (_super) {
     /**
      * @inheritDoc
      */
-    DistanceRender.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+    GL_DistanceSurface.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         var code;
         var targetReg = sharedRegisters.shadedTarget;
         var dataReg1 = registerCache.getFreeFragmentConstant();
@@ -14151,7 +14038,7 @@ var DistanceRender = (function (_super) {
     /**
      * @inheritDoc
      */
-    DistanceRender.prototype._iActivate = function (camera) {
+    GL_DistanceSurface.prototype._iActivate = function (camera) {
         _super.prototype._iActivate.call(this, camera);
         var f = camera.projection.far;
         f = 1 / (2 * f * f);
@@ -14167,10 +14054,9 @@ var DistanceRender = (function (_super) {
             data[index + 8] = this._shader.alphaThreshold;
         }
     };
-    return DistanceRender;
-}(GL_SurfacePassBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = DistanceRender;
+    return GL_DistanceSurface;
+}(GL_SurfacePassBase_1.GL_SurfacePassBase));
+exports.GL_DistanceSurface = GL_DistanceSurface;
 
 },{"../shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","../surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase"}],"awayjs-renderergl/lib/surfaces/GL_SkyboxSurface":[function(require,module,exports){
 "use strict";
@@ -14193,13 +14079,13 @@ var GL_SkyboxSurface = (function (_super) {
     function GL_SkyboxSurface(skybox, elementsClass, renderPool) {
         _super.call(this, skybox, elementsClass, renderPool);
         this._skybox = skybox;
-        this._shader = new ShaderBase_1.default(elementsClass, this, this._stage);
+        this._shader = new ShaderBase_1.ShaderBase(elementsClass, this, this._stage);
         this._texture = this._shader.getAbstraction(this._skybox.texture);
         this._pAddPass(this);
     }
     GL_SkyboxSurface.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
-        this._texture.onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, this._skybox.texture));
+        this._texture.onClear(new AssetEvent_1.AssetEvent(AssetEvent_1.AssetEvent.CLEAR, this._skybox.texture));
         this._texture = null;
         this._skybox = null;
     };
@@ -14208,8 +14094,8 @@ var GL_SkyboxSurface = (function (_super) {
      */
     GL_SkyboxSurface.prototype._pUpdateRender = function () {
         _super.prototype._pUpdateRender.call(this);
-        this._pRequiresBlending = (this._surface.blendMode != BlendMode_1.default.NORMAL);
-        this.shader.setBlendMode((this._surface.blendMode == BlendMode_1.default.NORMAL && this._pRequiresBlending) ? BlendMode_1.default.LAYER : this._surface.blendMode);
+        this._pRequiresBlending = (this._surface.blendMode != BlendMode_1.BlendMode.NORMAL);
+        this.shader.setBlendMode((this._surface.blendMode == BlendMode_1.BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode_1.BlendMode.LAYER : this._surface.blendMode);
     };
     GL_SkyboxSurface.prototype._iIncludeDependencies = function (shader) {
         _super.prototype._iIncludeDependencies.call(this, shader);
@@ -14230,13 +14116,12 @@ var GL_SkyboxSurface = (function (_super) {
      */
     GL_SkyboxSurface.prototype._iActivate = function (camera) {
         _super.prototype._iActivate.call(this, camera);
-        this._stage.context.setDepthTest(false, ContextGLCompareMode_1.default.LESS);
+        this._stage.context.setDepthTest(false, ContextGLCompareMode_1.ContextGLCompareMode.LESS);
         this._texture.activate(this);
     };
     return GL_SkyboxSurface;
-}(GL_SurfacePassBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_SkyboxSurface;
+}(GL_SurfacePassBase_1.GL_SurfacePassBase));
+exports.GL_SkyboxSurface = GL_SkyboxSurface;
 
 },{"../shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","../surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase","awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/surfaces/GL_SurfaceBase":[function(require,module,exports){
 "use strict";
@@ -14276,8 +14161,8 @@ var GL_SurfaceBase = (function (_super) {
         this._surface = surface;
         this._elementsClass = elementsClass;
         this._stage = renderPool.stage;
-        this._surface.addEventListener(SurfaceEvent_1.default.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
-        this._surface.addEventListener(SurfaceEvent_1.default.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
+        this._surface.addEventListener(SurfaceEvent_1.SurfaceEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
+        this._surface.addEventListener(SurfaceEvent_1.SurfaceEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
         this._onPassInvalidateDelegate = function (event) { return _this.onPassInvalidate(event); };
     }
     Object.defineProperty(GL_SurfaceBase.prototype, "requiresBlending", {
@@ -14329,7 +14214,7 @@ var GL_SurfaceBase = (function (_super) {
         shader.alphaThreshold = this._surface.alphaThreshold;
         shader.useImageRect = this._surface.imageRect;
         shader.usesCurves = this._surface.curves;
-        if (this._surface instanceof MaterialBase_1.default) {
+        if (this._surface instanceof MaterialBase_1.MaterialBase) {
             var material = this._surface;
             shader.useAlphaPremultiplied = material.alphaPremultiplied;
             shader.useBothSides = material.bothSides;
@@ -14353,7 +14238,7 @@ var GL_SurfaceBase = (function (_super) {
         this._stage = null;
         var len = this._passes.length;
         for (var i = 0; i < len; i++) {
-            this._passes[i].removeEventListener(PassEvent_1.default.INVALIDATE, this._onPassInvalidateDelegate);
+            this._passes[i].removeEventListener(PassEvent_1.PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
             this._passes[i].dispose();
         }
         this._passes = null;
@@ -14424,9 +14309,9 @@ var GL_SurfaceBase = (function (_super) {
             numImages = texture.getNumImages();
             images = this._imageIndices[texture.id] = new Array();
             for (var j = 0; j < numImages; j++) {
-                image = texture.getImageAt(j) || (this._surface.style ? this._surface.style.getImageAt(texture, j) : null) || DefaultMaterialManager_1.default.getDefaultImage2D();
+                image = texture.getImageAt(j) || (this._surface.style ? this._surface.style.getImageAt(texture, j) : null) || DefaultMaterialManager_1.DefaultMaterialManager.getDefaultImage2D();
                 this.images[index] = this._stage.getAbstraction(image);
-                sampler = texture.getSamplerAt(j) || (this._surface.style ? this._surface.style.getSamplerAt(texture, j) : null) || DefaultMaterialManager_1.default.getDefaultSampler();
+                sampler = texture.getSamplerAt(j) || (this._surface.style ? this._surface.style.getSamplerAt(texture, j) : null) || DefaultMaterialManager_1.DefaultMaterialManager.getDefaultSampler();
                 this.samplers[index] = this._stage.getAbstraction(sampler);
                 images[j] = index++;
             }
@@ -14447,7 +14332,7 @@ var GL_SurfaceBase = (function (_super) {
      * @param pass The pass to be removed.
      */
     GL_SurfaceBase.prototype._pRemovePass = function (pass) {
-        pass.removeEventListener(PassEvent_1.default.INVALIDATE, this._onPassInvalidateDelegate);
+        pass.removeEventListener(PassEvent_1.PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
         this._passes.splice(this._passes.indexOf(pass), 1);
     };
     /**
@@ -14456,7 +14341,7 @@ var GL_SurfaceBase = (function (_super) {
     GL_SurfaceBase.prototype._pClearPasses = function () {
         var len = this._passes.length;
         for (var i = 0; i < len; ++i)
-            this._passes[i].removeEventListener(PassEvent_1.default.INVALIDATE, this._onPassInvalidateDelegate);
+            this._passes[i].removeEventListener(PassEvent_1.PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
         this._passes.length = 0;
     };
     /**
@@ -14465,7 +14350,7 @@ var GL_SurfaceBase = (function (_super) {
      */
     GL_SurfaceBase.prototype._pAddPass = function (pass) {
         this._passes.push(pass);
-        pass.addEventListener(PassEvent_1.default.INVALIDATE, this._onPassInvalidateDelegate);
+        pass.addEventListener(PassEvent_1.PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
     };
     /**
      * Listener for when a pass's shader code changes. It recalculates the render order id.
@@ -14498,9 +14383,8 @@ var GL_SurfaceBase = (function (_super) {
         return false;
     };
     return GL_SurfaceBase;
-}(AbstractionBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_SurfaceBase;
+}(AbstractionBase_1.AbstractionBase));
+exports.GL_SurfaceBase = GL_SurfaceBase;
 
 },{"../events/PassEvent":"awayjs-renderergl/lib/events/PassEvent","awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-display/lib/events/SurfaceEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/MaterialBase":undefined}],"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase":[function(require,module,exports){
 "use strict";
@@ -14539,7 +14423,7 @@ var GL_SurfacePassBase = (function (_super) {
      */
     GL_SurfacePassBase.prototype.invalidate = function () {
         this._shader.invalidateProgram();
-        this.dispatchEvent(new PassEvent_1.default(PassEvent_1.default.INVALIDATE, this));
+        this.dispatchEvent(new PassEvent_1.PassEvent(PassEvent_1.PassEvent.INVALIDATE, this));
     };
     GL_SurfacePassBase.prototype.dispose = function () {
         if (this._shader) {
@@ -14601,9 +14485,8 @@ var GL_SurfacePassBase = (function (_super) {
         return "";
     };
     return GL_SurfacePassBase;
-}(GL_SurfaceBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_SurfacePassBase;
+}(GL_SurfaceBase_1.GL_SurfaceBase));
+exports.GL_SurfacePassBase = GL_SurfacePassBase;
 
 },{"../events/PassEvent":"awayjs-renderergl/lib/events/PassEvent","../surfaces/GL_SurfaceBase":"awayjs-renderergl/lib/surfaces/GL_SurfaceBase"}],"awayjs-renderergl/lib/surfaces/ISurfaceClassGL":[function(require,module,exports){
 "use strict";
@@ -14660,8 +14543,7 @@ var SurfacePool = (function () {
     SurfacePool._abstractionClassPool = new Object();
     return SurfacePool;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SurfacePool;
+exports.SurfacePool = SurfacePool;
 
 },{}],"awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass":[function(require,module,exports){
 "use strict";
@@ -14685,7 +14567,7 @@ var BasicMaterialPass = (function (_super) {
         this._diffuseG = 1;
         this._diffuseB = 1;
         this._diffuseA = 1;
-        this._shader = new ShaderBase_1.default(elementsClass, this, this._stage);
+        this._shader = new ShaderBase_1.ShaderBase(elementsClass, this, this._stage);
         this.invalidate();
     }
     BasicMaterialPass.prototype._iIncludeDependencies = function (shader) {
@@ -14699,7 +14581,7 @@ var BasicMaterialPass = (function (_super) {
     };
     BasicMaterialPass.prototype.dispose = function () {
         if (this._textureVO) {
-            this._textureVO.onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, this._surface.getTextureAt(0)));
+            this._textureVO.onClear(new AssetEvent_1.AssetEvent(AssetEvent_1.AssetEvent.CLEAR, this._surface.getTextureAt(0)));
             this._textureVO = null;
         }
         _super.prototype.dispose.call(this);
@@ -14763,9 +14645,8 @@ var BasicMaterialPass = (function (_super) {
         }
     };
     return BasicMaterialPass;
-}(PassBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = BasicMaterialPass;
+}(PassBase_1.PassBase));
+exports.BasicMaterialPass = BasicMaterialPass;
 
 },{"../../shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","../../surfaces/passes/PassBase":"awayjs-renderergl/lib/surfaces/passes/PassBase","awayjs-core/lib/events/AssetEvent":undefined}],"awayjs-renderergl/lib/surfaces/passes/ILightingPass":[function(require,module,exports){
 "use strict";
@@ -14857,7 +14738,7 @@ var PassBase = (function (_super) {
      */
     PassBase.prototype.invalidate = function () {
         this._shader.invalidateProgram();
-        this.dispatchEvent(new PassEvent_1.default(PassEvent_1.default.INVALIDATE, this));
+        this.dispatchEvent(new PassEvent_1.PassEvent(PassEvent_1.PassEvent.INVALIDATE, this));
     };
     /**
      * Cleans up any resources used by the current object.
@@ -14932,30 +14813,29 @@ var PassBase = (function (_super) {
         return "";
     };
     return PassBase;
-}(EventDispatcher_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = PassBase;
+}(EventDispatcher_1.EventDispatcher));
+exports.PassBase = PassBase;
 
 },{"../../events/PassEvent":"awayjs-renderergl/lib/events/PassEvent","awayjs-core/lib/events/EventDispatcher":undefined}],"awayjs-renderergl/lib/surfaces":[function(require,module,exports){
 "use strict";
 var BasicMaterialPass_1 = require("./surfaces/passes/BasicMaterialPass");
-exports.BasicMaterialPass = BasicMaterialPass_1.default;
+exports.BasicMaterialPass = BasicMaterialPass_1.BasicMaterialPass;
 var PassBase_1 = require("./surfaces/passes/PassBase");
-exports.PassBase = PassBase_1.default;
+exports.PassBase = PassBase_1.PassBase;
 var GL_BasicMaterialSurface_1 = require("./surfaces/GL_BasicMaterialSurface");
-exports.GL_BasicMaterialSurface = GL_BasicMaterialSurface_1.default;
+exports.GL_BasicMaterialSurface = GL_BasicMaterialSurface_1.GL_BasicMaterialSurface;
 var GL_DepthSurface_1 = require("./surfaces/GL_DepthSurface");
-exports.GL_DepthSurface = GL_DepthSurface_1.default;
+exports.GL_DepthSurface = GL_DepthSurface_1.GL_DepthSurface;
 var GL_DistanceSurface_1 = require("./surfaces/GL_DistanceSurface");
-exports.GL_DistanceSurface = GL_DistanceSurface_1.default;
+exports.GL_DistanceSurface = GL_DistanceSurface_1.GL_DistanceSurface;
 var GL_SkyboxSurface_1 = require("./surfaces/GL_SkyboxSurface");
-exports.GL_SkyboxSurface = GL_SkyboxSurface_1.default;
+exports.GL_SkyboxSurface = GL_SkyboxSurface_1.GL_SkyboxSurface;
 var GL_SurfaceBase_1 = require("./surfaces/GL_SurfaceBase");
-exports.GL_SurfaceBase = GL_SurfaceBase_1.default;
+exports.GL_SurfaceBase = GL_SurfaceBase_1.GL_SurfaceBase;
 var GL_SurfacePassBase_1 = require("./surfaces/GL_SurfacePassBase");
-exports.GL_SurfacePassBase = GL_SurfacePassBase_1.default;
+exports.GL_SurfacePassBase = GL_SurfacePassBase_1.GL_SurfacePassBase;
 var SurfacePool_1 = require("./surfaces/SurfacePool");
-exports.SurfacePool = SurfacePool_1.default;
+exports.SurfacePool = SurfacePool_1.SurfacePool;
 
 },{"./surfaces/GL_BasicMaterialSurface":"awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface","./surfaces/GL_DepthSurface":"awayjs-renderergl/lib/surfaces/GL_DepthSurface","./surfaces/GL_DistanceSurface":"awayjs-renderergl/lib/surfaces/GL_DistanceSurface","./surfaces/GL_SkyboxSurface":"awayjs-renderergl/lib/surfaces/GL_SkyboxSurface","./surfaces/GL_SurfaceBase":"awayjs-renderergl/lib/surfaces/GL_SurfaceBase","./surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase","./surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","./surfaces/passes/BasicMaterialPass":"awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass","./surfaces/passes/PassBase":"awayjs-renderergl/lib/surfaces/passes/PassBase"}],"awayjs-renderergl/lib/textures/GL_Single2DTexture":[function(require,module,exports){
 "use strict";
@@ -14996,7 +14876,7 @@ var GL_Single2DTexture = (function (_super) {
         var filter = "linear,miplinear";
         var temp;
         //modify depending on mapping mode
-        if (this._single2DTexture.mappingMode == MappingMode_1.default.RADIAL_GRADIENT) {
+        if (this._single2DTexture.mappingMode == MappingMode_1.MappingMode.RADIAL_GRADIENT) {
             temp = regCache.getFreeFragmentVectorTemp();
             code += "mul " + temp + ".xy, " + inputReg + ", " + inputReg + "\n";
             code += "mul " + temp + ".xy, " + inputReg + ", " + inputReg + "\n";
@@ -15067,9 +14947,8 @@ var GL_Single2DTexture = (function (_super) {
         }
     };
     return GL_Single2DTexture;
-}(GL_TextureBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_Single2DTexture;
+}(GL_TextureBase_1.GL_TextureBase));
+exports.GL_Single2DTexture = GL_Single2DTexture;
 
 },{"../textures/GL_TextureBase":"awayjs-renderergl/lib/textures/GL_TextureBase","awayjs-display/lib/textures/MappingMode":undefined}],"awayjs-renderergl/lib/textures/GL_SingleCubeTexture":[function(require,module,exports){
 "use strict";
@@ -15130,9 +15009,8 @@ var GL_SingleCubeTexture = (function (_super) {
             renderable.images[this._imageIndex].activate(this._textureIndex, sampler._sampler.mipmap);
     };
     return GL_SingleCubeTexture;
-}(GL_TextureBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_SingleCubeTexture;
+}(GL_TextureBase_1.GL_TextureBase));
+exports.GL_SingleCubeTexture = GL_SingleCubeTexture;
 
 },{"../textures/GL_TextureBase":"awayjs-renderergl/lib/textures/GL_TextureBase"}],"awayjs-renderergl/lib/textures/GL_TextureBase":[function(require,module,exports){
 "use strict";
@@ -15167,7 +15045,7 @@ var GL_TextureBase = (function (_super) {
     };
     GL_TextureBase.prototype._iGetFragmentCode = function (targetReg, regCache, sharedReg, inputReg) {
         if (inputReg === void 0) { inputReg = null; }
-        throw new AbstractMethodError_1.default();
+        throw new AbstractMethodError_1.AbstractMethodError();
     };
     GL_TextureBase.prototype._setRenderState = function (renderable) {
         //overidden for state logic
@@ -15187,27 +15065,26 @@ var GL_TextureBase = (function (_super) {
     };
     GL_TextureBase.prototype.getFormatString = function (image) {
         switch (image.format) {
-            case ContextGLTextureFormat_1.default.COMPRESSED:
+            case ContextGLTextureFormat_1.ContextGLTextureFormat.COMPRESSED:
                 return "dxt1,";
-            case ContextGLTextureFormat_1.default.COMPRESSED_ALPHA:
+            case ContextGLTextureFormat_1.ContextGLTextureFormat.COMPRESSED_ALPHA:
                 return "dxt5,";
             default:
                 return "";
         }
     };
     return GL_TextureBase;
-}(AbstractionBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = GL_TextureBase;
+}(AbstractionBase_1.AbstractionBase));
+exports.GL_TextureBase = GL_TextureBase;
 
 },{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/textures":[function(require,module,exports){
 "use strict";
 var GL_Single2DTexture_1 = require("./textures/GL_Single2DTexture");
-exports.GL_Single2DTexture = GL_Single2DTexture_1.default;
+exports.GL_Single2DTexture = GL_Single2DTexture_1.GL_Single2DTexture;
 var GL_SingleCubeTexture_1 = require("./textures/GL_SingleCubeTexture");
-exports.GL_SingleCubeTexture = GL_SingleCubeTexture_1.default;
+exports.GL_SingleCubeTexture = GL_SingleCubeTexture_1.GL_SingleCubeTexture;
 var GL_TextureBase_1 = require("./textures/GL_TextureBase");
-exports.GL_TextureBase = GL_TextureBase_1.default;
+exports.GL_TextureBase = GL_TextureBase_1.GL_TextureBase;
 
 },{"./textures/GL_Single2DTexture":"awayjs-renderergl/lib/textures/GL_Single2DTexture","./textures/GL_SingleCubeTexture":"awayjs-renderergl/lib/textures/GL_SingleCubeTexture","./textures/GL_TextureBase":"awayjs-renderergl/lib/textures/GL_TextureBase"}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
 "use strict";
@@ -15339,7 +15216,7 @@ var Merge = (function () {
         // i.e. if there is more than one material available.
         useSubMaterials = (this._graphicVOs.length > 1);
         for (i = 0; i < this._graphicVOs.length; i++) {
-            var elements = new TriangleElements_1.default(new AttributesBuffer_1.default());
+            var elements = new TriangleElements_1.TriangleElements(new AttributesBuffer_1.AttributesBuffer());
             elements.autoDeriveNormals = false;
             elements.autoDeriveTangents = false;
             var data = this._graphicVOs[i];
@@ -15426,8 +15303,8 @@ var Merge = (function () {
             }
             if (!this._objectSpace) {
                 sprite.sceneTransform.transformVectors(vertices, vertices);
-                Matrix3DUtils_1.default.deltaTransformVectors(sprite.sceneTransform, normals, normals);
-                Matrix3DUtils_1.default.deltaTransformVectors(sprite.sceneTransform, tangents, tangents);
+                Matrix3DUtils_1.Matrix3DUtils.deltaTransformVectors(sprite.sceneTransform, normals, normals);
+                Matrix3DUtils_1.Matrix3DUtils.deltaTransformVectors(sprite.sceneTransform, tangents, tangents);
                 // Copy vertex data from temporary (transformed) vectors
                 vIdx = vo.vertices.length;
                 nIdx = vo.normals.length;
@@ -15477,7 +15354,7 @@ var Merge = (function () {
     Merge.prototype.parseContainer = function (receiver, object) {
         var child;
         var i;
-        if (object instanceof Sprite_1.default && object != receiver)
+        if (object instanceof Sprite_1.Sprite && object != receiver)
             this.collect(object, this._disposeSources);
         for (i = 0; i < object.numChildren; ++i) {
             child = object.getChildAt(i);
@@ -15486,13 +15363,13 @@ var Merge = (function () {
     };
     return Merge;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Merge;
+exports.Merge = Merge;
 var GraphicVO = (function () {
     function GraphicVO() {
     }
     return GraphicVO;
 }());
+exports.GraphicVO = GraphicVO;
 
 },{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined}],"awayjs-renderergl/lib/tools/data/ParticleGraphicsTransform":[function(require,module,exports){
 "use strict";
@@ -15534,15 +15411,14 @@ var ParticleGraphicsTransform = (function () {
     });
     return ParticleGraphicsTransform;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleGraphicsTransform;
+exports.ParticleGraphicsTransform = ParticleGraphicsTransform;
 
 },{}],"awayjs-renderergl/lib/tools":[function(require,module,exports){
 "use strict";
 var Merge_1 = require("./tools/commands/Merge");
-exports.Merge = Merge_1.default;
+exports.Merge = Merge_1.Merge;
 var ParticleGraphicsTransform_1 = require("./tools/data/ParticleGraphicsTransform");
-exports.ParticleGraphicsTransform = ParticleGraphicsTransform_1.default;
+exports.ParticleGraphicsTransform = ParticleGraphicsTransform_1.ParticleGraphicsTransform;
 
 },{"./tools/commands/Merge":"awayjs-renderergl/lib/tools/commands/Merge","./tools/data/ParticleGraphicsTransform":"awayjs-renderergl/lib/tools/data/ParticleGraphicsTransform"}],"awayjs-renderergl/lib/utils/ParticleGraphicsHelper":[function(require,module,exports){
 "use strict";
@@ -15581,10 +15457,10 @@ var ParticleGraphicsHelper = (function () {
         var i;
         var j;
         var sub2SubMap = new Array();
-        var tempVertex = new Vector3D_1.default;
-        var tempNormal = new Vector3D_1.default;
-        var tempTangents = new Vector3D_1.default;
-        var tempUV = new Point_1.default;
+        var tempVertex = new Vector3D_1.Vector3D;
+        var tempNormal = new Vector3D_1.Vector3D;
+        var tempTangents = new Vector3D_1.Vector3D;
+        var tempUV = new Point_1.Point;
         for (i = 0; i < numParticles; i++) {
             sourceGraphics = graphicsArray[i];
             numGraphics = sourceGraphics.count;
@@ -15592,12 +15468,12 @@ var ParticleGraphicsHelper = (function () {
                 //create a different particle subgeometry group for each source subgeometry in a particle.
                 if (sub2SubMap.length <= srcIndex) {
                     sub2SubMap.push(elementsArray.length);
-                    indicesVector.push(new Array() /*uint*/);
+                    indicesVector.push(new Array());
                     positionsVector.push(new Array());
                     normalsVector.push(new Array());
                     tangentsVector.push(new Array());
                     uvsVector.push(new Array());
-                    elementsArray.push(new TriangleElements_1.default(new AttributesBuffer_1.default()));
+                    elementsArray.push(new TriangleElements_1.TriangleElements(new AttributesBuffer_1.AttributesBuffer()));
                     vertexCounters.push(0);
                 }
                 sourceElements = sourceGraphics.getGraphicAt(srcIndex).elements;
@@ -15605,12 +15481,12 @@ var ParticleGraphicsHelper = (function () {
                 if (sourceElements.numVertices + vertexCounters[sub2SubMap[srcIndex]] > ParticleGraphicsHelper.MAX_VERTEX) {
                     //update submap and add new subgeom vectors
                     sub2SubMap[srcIndex] = elementsArray.length;
-                    indicesVector.push(new Array() /*uint*/);
+                    indicesVector.push(new Array());
                     positionsVector.push(new Array());
                     normalsVector.push(new Array());
                     tangentsVector.push(new Array());
                     uvsVector.push(new Array());
-                    elementsArray.push(new TriangleElements_1.default(new AttributesBuffer_1.default()));
+                    elementsArray.push(new TriangleElements_1.TriangleElements(new AttributesBuffer_1.AttributesBuffer()));
                     vertexCounters.push(0);
                 }
                 j = sub2SubMap[srcIndex];
@@ -15622,7 +15498,7 @@ var ParticleGraphicsHelper = (function () {
                 uvs = uvsVector[j];
                 vertexCounter = vertexCounters[j];
                 elements = elementsArray[j];
-                var particleData = new ParticleData_1.default();
+                var particleData = new ParticleData_1.ParticleData();
                 particleData.numVertices = sourceElements.numVertices;
                 particleData.startVertexIndex = vertexCounter;
                 particleData.particleIndex = i;
@@ -15720,8 +15596,7 @@ var ParticleGraphicsHelper = (function () {
     ParticleGraphicsHelper.MAX_VERTEX = 65535;
     return ParticleGraphicsHelper;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ParticleGraphicsHelper;
+exports.ParticleGraphicsHelper = ParticleGraphicsHelper;
 
 },{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/animators/data/ParticleData":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined}],"awayjs-renderergl/lib/utils/PerspectiveMatrix3D":[function(require,module,exports){
 "use strict";
@@ -15761,16 +15636,15 @@ var PerspectiveMatrix3D = (function (_super) {
         this.rawData[15] = 0.0;
     };
     return PerspectiveMatrix3D;
-}(Matrix3D_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = PerspectiveMatrix3D;
+}(Matrix3D_1.Matrix3D));
+exports.PerspectiveMatrix3D = PerspectiveMatrix3D;
 
 },{"awayjs-core/lib/geom/Matrix3D":undefined}],"awayjs-renderergl/lib/utils":[function(require,module,exports){
 "use strict";
 var ParticleGraphicsHelper_1 = require("./utils/ParticleGraphicsHelper");
-exports.ParticleGraphicsHelper = ParticleGraphicsHelper_1.default;
+exports.ParticleGraphicsHelper = ParticleGraphicsHelper_1.ParticleGraphicsHelper;
 var PerspectiveMatrix3D_1 = require("./utils/PerspectiveMatrix3D");
-exports.PerspectiveMatrix3D = PerspectiveMatrix3D_1.default;
+exports.PerspectiveMatrix3D = PerspectiveMatrix3D_1.PerspectiveMatrix3D;
 
 },{"./utils/ParticleGraphicsHelper":"awayjs-renderergl/lib/utils/ParticleGraphicsHelper","./utils/PerspectiveMatrix3D":"awayjs-renderergl/lib/utils/PerspectiveMatrix3D"}]},{},[1])
 //# sourceMappingURL=awayjs-renderergl.js.map
