@@ -1,23 +1,23 @@
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import ImageBase					from "awayjs-core/lib/image/ImageBase";
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {ImageBase}					from "awayjs-core/lib/image/ImageBase";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
 
-import Camera						from "awayjs-display/lib/display/Camera";
+import {Camera}						from "awayjs-display/lib/display/Camera";
 
-import AnimationSetBase				from "../animators/AnimationSetBase";
-import PassEvent					from "../events/PassEvent";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import IPass						from "../surfaces/passes/IPass";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
+import {AnimationSetBase}				from "../animators/AnimationSetBase";
+import {PassEvent}					from "../events/PassEvent";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
+import {IPass}						from "../surfaces/passes/IPass";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
 
 /**
  * GL_SurfacePassBase provides an abstract base class for material shader passes. A material pass constitutes at least
  * a render call per required renderable.
  */
-class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
+export class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
 {
 	public _shader:ShaderBase;
 
@@ -34,14 +34,14 @@ class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
 	/**
 	 * Marks the shader program as invalid, so it will be recompiled before the next render.
 	 */
-	public invalidate()
+	public invalidate():void
 	{
 		this._shader.invalidateProgram();
 
 		this.dispatchEvent(new PassEvent(PassEvent.INVALIDATE, this));
 	}
 
-	public dispose()
+	public dispose():void
 	{
 		if (this._shader) {
 			this._shader.dispose();
@@ -60,7 +60,7 @@ class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
 	 *
 	 * @internal
 	 */
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D):void
 	{
 		this._shader._setRenderState(renderable, camera, viewProjection);
 	}
@@ -72,7 +72,7 @@ class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
 	 * @param camera The camera from which the scene is viewed.
 	 * @private
 	 */
-	public _iActivate(camera:Camera)
+	public _iActivate(camera:Camera):void
 	{
 		this._shader._iActivate(camera);
 	}
@@ -83,12 +83,12 @@ class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
 	 *
 	 * @private
 	 */
-	public _iDeactivate()
+	public _iDeactivate():void
 	{
 		this._shader._iDeactivate();
 	}
 
-	public _iInitConstantData(shader:ShaderBase)
+	public _iInitConstantData(shader:ShaderBase):void
 	{
 
 	}
@@ -123,5 +123,3 @@ class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
 		return "";
 	}
 }
-
-export default GL_SurfacePassBase;

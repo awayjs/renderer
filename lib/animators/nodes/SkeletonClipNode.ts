@@ -1,14 +1,14 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import SkeletonPose						from "../../animators/data/SkeletonPose";
-import AnimationClipNodeBase			from "../../animators/nodes/AnimationClipNodeBase";
-import SkeletonClipState				from "../../animators/states/SkeletonClipState";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {SkeletonPose}						from "../../animators/data/SkeletonPose";
+import {AnimationClipNodeBase}			from "../../animators/nodes/AnimationClipNodeBase";
+import {SkeletonClipState}				from "../../animators/states/SkeletonClipState";
 
 /**
  * A skeleton animation node containing time-based animation data as individual skeleton poses.
  */
-class SkeletonClipNode extends AnimationClipNodeBase
+export class SkeletonClipNode extends AnimationClipNodeBase
 {
 	private _frames:Array<SkeletonPose> = new Array<SkeletonPose>();
 
@@ -42,7 +42,7 @@ class SkeletonClipNode extends AnimationClipNodeBase
 	 * @param skeletonPose The skeleton pose object to add to the timeline of the node.
 	 * @param duration The specified duration of the frame in milliseconds.
 	 */
-	public addFrame(skeletonPose:SkeletonPose, duration:number)
+	public addFrame(skeletonPose:SkeletonPose, duration:number):void
 	{
 		this._frames.push(skeletonPose);
 		this._pDurations.push(duration);
@@ -63,7 +63,7 @@ class SkeletonClipNode extends AnimationClipNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateStitch()
+	public _pUpdateStitch():void
 	{
 		super._pUpdateStitch();
 
@@ -90,5 +90,3 @@ class SkeletonClipNode extends AnimationClipNodeBase
 		}
 	}
 }
-
-export default SkeletonClipNode;

@@ -1,48 +1,48 @@
-import AttributesBuffer					from "awayjs-core/lib/attributes/AttributesBuffer";
-import Matrix							from "awayjs-core/lib/geom/Matrix";
-import Matrix3D							from "awayjs-core/lib/geom/Matrix3D";
-import Point							from "awayjs-core/lib/geom/Point";
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {AttributesBuffer}					from "awayjs-core/lib/attributes/AttributesBuffer";
+import {Matrix}							from "awayjs-core/lib/geom/Matrix";
+import {Matrix3D}							from "awayjs-core/lib/geom/Matrix3D";
+import {Point}							from "awayjs-core/lib/geom/Point";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import ParticleData						from "awayjs-display/lib/animators/data/ParticleData";
-import Graphics							from "awayjs-display/lib/graphics/Graphics";
-import TriangleElements					from "awayjs-display/lib/graphics/TriangleElements";
-import Sprite							from "awayjs-display/lib/display/Sprite";
+import {ParticleData}						from "awayjs-display/lib/animators/data/ParticleData";
+import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
+import {TriangleElements}					from "awayjs-display/lib/graphics/TriangleElements";
+import {Sprite}							from "awayjs-display/lib/display/Sprite";
 
-import ParticleGraphicsTransform		from "../tools/data/ParticleGraphicsTransform";
+import {ParticleGraphicsTransform}		from "../tools/data/ParticleGraphicsTransform";
 
 /**
  * ...
  */
-class ParticleGraphicsHelper
+export class ParticleGraphicsHelper
 {
-	public static MAX_VERTEX:number /*int*/ = 65535;
+	public static MAX_VERTEX:number = 65535;
 
-	public static generateGraphics(output:Graphics, graphicsArray:Array<Graphics>, transforms:Array<ParticleGraphicsTransform> = null)
+	public static generateGraphics(output:Graphics, graphicsArray:Array<Graphics>, transforms:Array<ParticleGraphicsTransform> = null):void
 	{
-		var indicesVector:Array<Array<number>> /*uint*/ = new Array<Array<number>>() /*uint*/;
+		var indicesVector:Array<Array<number>> = new Array<Array<number>>();
 		var positionsVector:Array<Array<number>> = new Array<Array<number>>();
 		var normalsVector:Array<Array<number>> = new Array<Array<number>>();
 		var tangentsVector:Array<Array<number>> = new Array<Array<number>>();
 		var uvsVector:Array<Array<number>> = new Array<Array<number>>();
-		var vertexCounters:Array<number> /*uint*/ = new Array<number>() /*uint*/;
+		var vertexCounters:Array<number> = new Array<number>();
 		var particles:Array<ParticleData> = new Array<ParticleData>();
 		var elementsArray:Array<TriangleElements> = new Array<TriangleElements>();
-		var numParticles:number /*uint*/ = graphicsArray.length;
+		var numParticles:number = graphicsArray.length;
 
 		var sourceGraphics:Graphics;
 		var sourceElements:TriangleElements;
-		var numGraphics:number /*uint*/;
-		var indices:Array<number> /*uint*/;
+		var numGraphics:number;
+		var indices:Array<number>;
 		var positions:Array<number>;
 		var normals:Array<number>;
 		var tangents:Array<number>;
 		var uvs:Array<number>;
-		var vertexCounter:number /*uint*/;
+		var vertexCounter:number;
 		var elements:TriangleElements;
-		var i:number /*int*/;
-		var j:number /*int*/;
-		var sub2SubMap:Array<number> /*int*/ = new Array<number>() /*int*/;
+		var i:number;
+		var j:number;
+		var sub2SubMap:Array<number> = new Array<number>();
 
 		var tempVertex:Vector3D = new Vector3D;
 		var tempNormal:Vector3D = new Vector3D;
@@ -52,11 +52,11 @@ class ParticleGraphicsHelper
 		for (i = 0; i < numParticles; i++) {
 			sourceGraphics = graphicsArray[i];
 			numGraphics = sourceGraphics.count;
-			for (var srcIndex:number /*int*/ = 0; srcIndex < numGraphics; srcIndex++) {
+			for (var srcIndex:number = 0; srcIndex < numGraphics; srcIndex++) {
 				//create a different particle subgeometry group for each source subgeometry in a particle.
 				if (sub2SubMap.length <= srcIndex) {
 					sub2SubMap.push(elementsArray.length);
-					indicesVector.push(new Array<number>() /*uint*/);
+					indicesVector.push(new Array<number>());
 					positionsVector.push(new Array<number>());
 					normalsVector.push(new Array<number>());
 					tangentsVector.push(new Array<number>());
@@ -71,7 +71,7 @@ class ParticleGraphicsHelper
 				if (sourceElements.numVertices + vertexCounters[sub2SubMap[srcIndex]] > ParticleGraphicsHelper.MAX_VERTEX) {
 					//update submap and add new subgeom vectors
 					sub2SubMap[srcIndex] = elementsArray.length;
-					indicesVector.push(new Array<number>() /*uint*/);
+					indicesVector.push(new Array<number>());
 					positionsVector.push(new Array<number>());
 					normalsVector.push(new Array<number>());
 					tangentsVector.push(new Array<number>());
@@ -100,10 +100,10 @@ class ParticleGraphicsHelper
 
 				vertexCounters[j] += sourceElements.numVertices;
 
-				var k:number /*int*/;
-				var tempLen:number /*int*/;
+				var k:number;
+				var tempLen:number;
 				var compact:TriangleElements = sourceElements;
-				var product:number /*uint*/;
+				var product:number;
 				var sourcePositions:ArrayBufferView;
 				var sourceNormals:Float32Array;
 				var sourceTangents:Float32Array;
@@ -194,5 +194,3 @@ class ParticleGraphicsHelper
 		}
 	}
 }
-
-export default ParticleGraphicsHelper;

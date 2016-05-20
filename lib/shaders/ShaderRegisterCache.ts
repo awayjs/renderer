@@ -1,10 +1,10 @@
-import RegisterPool					from "../shaders/RegisterPool";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import {RegisterPool}					from "../shaders/RegisterPool";
+import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
 
 /**
  * ShaderRegister Cache provides the usage management system for all registers during shading compilers.
  */
-class ShaderRegisterCache
+export class ShaderRegisterCache
 {
 	private _fragmentTempCache:RegisterPool;
 	private _vertexTempCache:RegisterPool;
@@ -38,7 +38,7 @@ class ShaderRegisterCache
 	/**
 	 * Resets all registers.
 	 */
-	public reset()
+	public reset():void
 	{
 		this._fragmentTempCache = new RegisterPool("ft", 8, false);
 		this._vertexTempCache = new RegisterPool("vt", 8, false);
@@ -59,7 +59,7 @@ class ShaderRegisterCache
 	/**
 	 * Disposes all resources used.
 	 */
-	public dispose()
+	public dispose():void
 	{
 		this._fragmentTempCache.dispose();
 		this._vertexTempCache.dispose();
@@ -82,7 +82,7 @@ class ShaderRegisterCache
 	 * @param register The register to mark as used.
 	 * @param usageCount The amount of usages to add.
 	 */
-	public addFragmentTempUsages(register:ShaderRegisterElement, usageCount:number)
+	public addFragmentTempUsages(register:ShaderRegisterElement, usageCount:number):void
 	{
 		this._fragmentTempCache.addUsage(register, usageCount);
 	}
@@ -91,7 +91,7 @@ class ShaderRegisterCache
 	 * Removes a usage from a fragment temporary register. When usages reach 0, the register is freed again.
 	 * @param register The register for which to remove a usage.
 	 */
-	public removeFragmentTempUsage(register:ShaderRegisterElement)
+	public removeFragmentTempUsage(register:ShaderRegisterElement):void
 	{
 		this._fragmentTempCache.removeUsage(register);
 	}
@@ -102,7 +102,7 @@ class ShaderRegisterCache
 	 * @param register The register to mark as used.
 	 * @param usageCount The amount of usages to add.
 	 */
-	public addVertexTempUsages(register:ShaderRegisterElement, usageCount:number)
+	public addVertexTempUsages(register:ShaderRegisterElement, usageCount:number):void
 	{
 		this._vertexTempCache.addUsage(register, usageCount);
 	}
@@ -111,7 +111,7 @@ class ShaderRegisterCache
 	 * Removes a usage from a vertex temporary register. When usages reach 0, the register is freed again.
 	 * @param register The register for which to remove a usage.
 	 */
-	public removeVertexTempUsage(register:ShaderRegisterElement)
+	public removeVertexTempUsage(register:ShaderRegisterElement):void
 	{
 		this._vertexTempCache.removeUsage(register);
 	}
@@ -242,5 +242,3 @@ class ShaderRegisterCache
 		return this._numUsedVaryings;
 	}
 }
-
-export default ShaderRegisterCache;

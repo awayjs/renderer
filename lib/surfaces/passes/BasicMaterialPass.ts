@@ -1,26 +1,26 @@
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
 
-import Camera						from "awayjs-display/lib/display/Camera";
-import ISurface						from "awayjs-display/lib/base/ISurface";
+import {Camera}						from "awayjs-display/lib/display/Camera";
+import {ISurface}						from "awayjs-display/lib/base/ISurface";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
 
-import GL_RenderableBase			from "../../renderables/GL_RenderableBase";
-import GL_SurfaceBase				from "../../surfaces/GL_SurfaceBase";
-import ShaderBase					from "../../shaders/ShaderBase";
-import ShaderRegisterCache			from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../../shaders/ShaderRegisterElement";
-import IElementsClassGL				from "../../elements/IElementsClassGL";
-import PassBase						from "../../surfaces/passes/PassBase";
-import GL_TextureBase				from "../../textures/GL_TextureBase";
+import {GL_RenderableBase}			from "../../renderables/GL_RenderableBase";
+import {GL_SurfaceBase}				from "../../surfaces/GL_SurfaceBase";
+import {ShaderBase}					from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
+import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
+import {IElementsClassGL}				from "../../elements/IElementsClassGL";
+import {PassBase}						from "../../surfaces/passes/PassBase";
+import {GL_TextureBase}				from "../../textures/GL_TextureBase";
 
 /**
  * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
  */
-class BasicMaterialPass extends PassBase
+export class BasicMaterialPass extends PassBase
 {
 	private _textureVO:GL_TextureBase;
 	private _diffuseR:number = 1;
@@ -39,7 +39,7 @@ class BasicMaterialPass extends PassBase
 		this.invalidate();
 	}
 
-	public _iIncludeDependencies(shader:ShaderBase)
+	public _iIncludeDependencies(shader:ShaderBase):void
 	{
 		super._iIncludeDependencies(shader);
 
@@ -47,14 +47,14 @@ class BasicMaterialPass extends PassBase
 			shader.uvDependencies++;
     }
 
-	public invalidate()
+	public invalidate():void
 	{
 		super.invalidate();
 
 		this._textureVO = this._surface.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._surface.getTextureAt(0)) : null;
 	}
 
-	public dispose()
+	public dispose():void
 	{
 		if (this._textureVO) {
 			this._textureVO.onClear(new AssetEvent(AssetEvent.CLEAR, this._surface.getTextureAt(0)));
@@ -110,7 +110,7 @@ class BasicMaterialPass extends PassBase
 		return code;
 	}
 
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D):void
 	{
 		super._setRenderState(renderable, camera, viewProjection);
 
@@ -120,7 +120,7 @@ class BasicMaterialPass extends PassBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(camera:Camera)
+	public _iActivate(camera:Camera):void
 	{
 		super._iActivate(camera);
 
@@ -139,5 +139,3 @@ class BasicMaterialPass extends PassBase
 		}
 	}
 }
-
-export default BasicMaterialPass;

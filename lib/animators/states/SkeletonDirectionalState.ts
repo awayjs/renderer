@@ -1,17 +1,17 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import JointPose						from "../../animators/data/JointPose";
-import Skeleton							from "../../animators/data/Skeleton";
-import SkeletonPose						from "../../animators/data/SkeletonPose";
-import SkeletonDirectionalNode			from "../../animators/nodes/SkeletonDirectionalNode";
-import AnimationStateBase				from "../../animators/states/AnimationStateBase";
-import ISkeletonAnimationState			from "../../animators/states/ISkeletonAnimationState";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {JointPose}						from "../../animators/data/JointPose";
+import {Skeleton}							from "../../animators/data/Skeleton";
+import {SkeletonPose}						from "../../animators/data/SkeletonPose";
+import {SkeletonDirectionalNode}			from "../../animators/nodes/SkeletonDirectionalNode";
+import {AnimationStateBase}				from "../../animators/states/AnimationStateBase";
+import {ISkeletonAnimationState}			from "../../animators/states/ISkeletonAnimationState";
 
 /**
  *
  */
-class SkeletonDirectionalState extends AnimationStateBase implements ISkeletonAnimationState
+export class SkeletonDirectionalState extends AnimationStateBase implements ISkeletonAnimationState
 {
 	private _skeletonAnimationNode:SkeletonDirectionalNode;
 	private _skeletonPose:SkeletonPose = new SkeletonPose();
@@ -63,7 +63,7 @@ class SkeletonDirectionalState extends AnimationStateBase implements ISkeletonAn
 	/**
 	 * @inheritDoc
 	 */
-	public phase(value:number)
+	public phase(value:number):void
 	{
 		if (this._blendDirty)
 			this.updateBlend();
@@ -79,7 +79,7 @@ class SkeletonDirectionalState extends AnimationStateBase implements ISkeletonAn
 	/**
 	 * @inheritDoc
 	 */
-	public _pUdateTime(time:number)
+	public _pUdateTime(time:number):void
 	{
 		if (this._blendDirty)
 			this.updateBlend();
@@ -106,7 +106,7 @@ class SkeletonDirectionalState extends AnimationStateBase implements ISkeletonAn
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdatePositionDelta()
+	public _pUpdatePositionDelta():void
 	{
 		this._pPositionDeltaDirty = false;
 
@@ -126,7 +126,7 @@ class SkeletonDirectionalState extends AnimationStateBase implements ISkeletonAn
 	 *
 	 * @param skeleton The skeleton used by the animator requesting the ouput pose.
 	 */
-	private updateSkeletonPose(skeleton:Skeleton)
+	private updateSkeletonPose(skeleton:Skeleton):void
 	{
 		this._skeletonPoseDirty = false;
 
@@ -171,7 +171,7 @@ class SkeletonDirectionalState extends AnimationStateBase implements ISkeletonAn
 	 *
 	 * @private
 	 */
-	private updateBlend()
+	private updateBlend():void
 	{
 		this._blendDirty = false;
 
@@ -200,5 +200,3 @@ class SkeletonDirectionalState extends AnimationStateBase implements ISkeletonAn
 		}
 	}
 }
-
-export default SkeletonDirectionalState;

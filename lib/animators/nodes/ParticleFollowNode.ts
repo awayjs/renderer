@@ -1,17 +1,17 @@
-import AnimatorBase						from "../../animators/AnimatorBase";
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import ParticleFollowState				from "../../animators/states/ParticleFollowState";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {ParticleFollowState}				from "../../animators/states/ParticleFollowState";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used to create a follow behaviour on a particle system.
  */
-class ParticleFollowNode extends ParticleNodeBase
+export class ParticleFollowNode extends ParticleNodeBase
 {
 	/** @private */
 	public _iUsesPosition:boolean;
@@ -147,5 +147,3 @@ class ParticleFollowNode extends ParticleNodeBase
 		return <ParticleFollowState> animator.getAnimationState(this);
 	}
 }
-
-export default ParticleFollowNode;

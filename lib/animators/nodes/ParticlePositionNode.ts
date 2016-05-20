@@ -1,20 +1,20 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ParticleProperties				from "../../animators/data/ParticleProperties";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import ParticlePositionState			from "../../animators/states/ParticlePositionState";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ParticleProperties}				from "../../animators/data/ParticleProperties";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {ParticlePositionState}			from "../../animators/states/ParticlePositionState";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used to set the starting position of a particle.
  */
-class ParticlePositionNode extends ParticleNodeBase
+export class ParticlePositionNode extends ParticleNodeBase
 {
 	/** @private */
 	public _iPosition:Vector3D;
@@ -62,7 +62,7 @@ class ParticlePositionNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iGeneratePropertyOfOneParticle(param:ParticleProperties)
+	public _iGeneratePropertyOfOneParticle(param:ParticleProperties):void
 	{
 		var offset:Vector3D = param[ParticlePositionNode.POSITION_VECTOR3D];
 		if (!offset)
@@ -73,5 +73,3 @@ class ParticlePositionNode extends ParticleNodeBase
 		this._pOneData[2] = offset.z;
 	}
 }
-
-export default ParticlePositionNode;

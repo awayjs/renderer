@@ -1,9 +1,9 @@
-import ShaderBase					from "../../shaders/ShaderBase";
-import ShaderRegisterCache			from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../../shaders/ShaderRegisterElement";
-import IPass						from "../../surfaces/passes/IPass";
-import IElementsClassGL				from "../../elements/IElementsClassGL";
+import {ShaderBase}					from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
+import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
+import {IPass}						from "../../surfaces/passes/IPass";
+import {IElementsClassGL}				from "../../elements/IElementsClassGL";
 
 /**
  * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
@@ -11,7 +11,7 @@ import IElementsClassGL				from "../../elements/IElementsClassGL";
  *
  * @see away.materials.ShadingMethodBase
  */
-class CompilerBase
+export class CompilerBase
 {
 	public _pShader:ShaderBase;
 	public _pSharedRegisters:ShaderRegisterData;
@@ -41,7 +41,7 @@ class CompilerBase
 	/**
 	 * Compiles the code after all setup on the compiler has finished.
 	 */
-	public compile()
+	public compile():void
 	{
 		this._pShader.reset();
 
@@ -67,7 +67,7 @@ class CompilerBase
 	/**
 	 * Calculate the transformed colours
 	 */
-	private compileColorTransformCode()
+	private compileColorTransformCode():void
 	{
 		// rm, gm, bm, am - multiplier
 		// ro, go, bo, ao - offset
@@ -80,7 +80,7 @@ class CompilerBase
 	/**
 	 * Compile the code for the methods.
 	 */
-	public pCompileDependencies()
+	public pCompileDependencies():void
 	{
 		this._pSharedRegisters.shadedTarget = this._pRegisterCache.getFreeFragmentVectorTemp();
 		this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.shadedTarget, 1);
@@ -118,7 +118,7 @@ class CompilerBase
 		this._pFragmentCode += this._pRenderPass._iGetPreLightingFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
 	}
 
-	private compileGlobalPositionCode()
+	private compileGlobalPositionCode():void
 	{
 		this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.globalPositionVertex = this._pRegisterCache.getFreeVertexVectorTemp(), this._pShader.globalPosDependencies);
 
@@ -144,7 +144,7 @@ class CompilerBase
     }
 
 
-	private compileCurvesCode()
+	private compileCurvesCode():void
 	{
 		this._pSharedRegisters.curvesInput = this._pRegisterCache.getFreeVertexAttribute();
 		this._pShader.curvesIndex = this._pSharedRegisters.curvesInput.index;
@@ -163,7 +163,7 @@ class CompilerBase
 	/**
 	 * Calculate the (possibly animated) UV coordinates.
 	 */
-	private compileUVCode()
+	private compileUVCode():void
 	{
 		var uvAttributeReg:ShaderRegisterElement = this._pRegisterCache.getFreeVertexAttribute();
 		this._pShader.uvIndex = uvAttributeReg.index;
@@ -190,7 +190,7 @@ class CompilerBase
 	/**
 	 * Provide the secondary UV coordinates.
 	 */
-	private compileSecondaryUVCode()
+	private compileSecondaryUVCode():void
 	{
 		var uvAttributeReg:ShaderRegisterElement = this._pRegisterCache.getFreeVertexAttribute();
 		this._pShader.secondaryUVIndex = uvAttributeReg.index;
@@ -201,7 +201,7 @@ class CompilerBase
 	/**
 	 * Calculate the view direction.
 	 */
-	public compileViewDirCode()
+	public compileViewDirCode():void
 	{
 		var cameraPositionReg:ShaderRegisterElement = this._pRegisterCache.getFreeVertexConstant();
 		this._pSharedRegisters.viewDirVarying = this._pRegisterCache.getFreeVarying();
@@ -228,7 +228,7 @@ class CompilerBase
 	/**
 	 * Calculate the normal.
 	 */
-	public compileNormalCode()
+	public compileNormalCode():void
 	{
 		this._pSharedRegisters.normalFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
 		this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.normalFragment, this._pShader.normalDependencies);
@@ -339,7 +339,7 @@ class CompilerBase
 	/**
 	 * Reset all the indices to "unused".
 	 */
-	public pInitRegisterIndices()
+	public pInitRegisterIndices():void
 	{
 		this._pShader.pInitRegisterIndices();
 
@@ -400,7 +400,7 @@ class CompilerBase
 	/**
 	 * Disposes all resources used by the compiler.
 	 */
-	public dispose()
+	public dispose():void
 	{
 		this._pRegisterCache.dispose();
 		this._pRegisterCache = null;
@@ -439,5 +439,3 @@ class CompilerBase
 		return this._pSharedRegisters.shadedTarget;
 	}
 }
-
-export default CompilerBase;

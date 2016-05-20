@@ -1,20 +1,20 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ParticleProperties				from "../../animators/data/ParticleProperties";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import ParticleVelocityState			from "../../animators/states/ParticleVelocityState";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ParticleProperties}				from "../../animators/data/ParticleProperties";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {ParticleVelocityState}			from "../../animators/states/ParticleVelocityState";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used to set the starting velocity of a particle.
  */
-class ParticleVelocityNode extends ParticleNodeBase
+export class ParticleVelocityNode extends ParticleNodeBase
 {
 	/** @private */
 	public _iVelocity:Vector3D;
@@ -70,7 +70,7 @@ class ParticleVelocityNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iGeneratePropertyOfOneParticle(param:ParticleProperties)
+	public _iGeneratePropertyOfOneParticle(param:ParticleProperties):void
 	{
 		var _tempVelocity:Vector3D = param[ParticleVelocityNode.VELOCITY_VECTOR3D];
 		if (!_tempVelocity)
@@ -81,5 +81,3 @@ class ParticleVelocityNode extends ParticleNodeBase
 		this._pOneData[2] = _tempVelocity.z;
 	}
 }
-
-export default ParticleVelocityNode;

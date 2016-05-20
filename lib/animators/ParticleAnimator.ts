@@ -1,20 +1,20 @@
-import ElementsBase						from "awayjs-display/lib/graphics/ElementsBase";
-import Camera							from "awayjs-display/lib/display/Camera";
-import Graphic							from "awayjs-display/lib/graphics/Graphic";
+import {ElementsBase}						from "awayjs-display/lib/graphics/ElementsBase";
+import {Camera}							from "awayjs-display/lib/display/Camera";
+import {Graphic}							from "awayjs-display/lib/graphics/Graphic";
 
-import ContextGLProgramType				from "awayjs-stagegl/lib/base/ContextGLProgramType";
-import Stage							from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLProgramType}				from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
 
-import AnimatorBase						from "../animators/AnimatorBase";
-import AnimationRegisterData			from "../animators/data/AnimationRegisterData";
-import ParticleAnimationSet				from "../animators/ParticleAnimationSet";
-import AnimationElements				from "../animators/data/AnimationElements";
-import ParticlePropertiesMode			from "../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../animators/nodes/ParticleNodeBase";
-import ParticleStateBase				from "../animators/states/ParticleStateBase";
-import ShaderBase						from "../shaders/ShaderBase";
-import GL_RenderableBase				from "../renderables/GL_RenderableBase";
-import GL_GraphicRenderable			from "../renderables/GL_GraphicRenderable";
+import {AnimatorBase}						from "../animators/AnimatorBase";
+import {AnimationRegisterData}			from "../animators/data/AnimationRegisterData";
+import {ParticleAnimationSet}				from "../animators/ParticleAnimationSet";
+import {AnimationElements}				from "../animators/data/AnimationElements";
+import {ParticlePropertiesMode}			from "../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../animators/nodes/ParticleNodeBase";
+import {ParticleStateBase}				from "../animators/states/ParticleStateBase";
+import {ShaderBase}						from "../shaders/ShaderBase";
+import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
+import {GL_GraphicRenderable}			from "../renderables/GL_GraphicRenderable";
 
 /**
  * Provides an interface for assigning paricle-based animation data sets to sprite-based entity objects
@@ -25,7 +25,7 @@ import GL_GraphicRenderable			from "../renderables/GL_GraphicRenderable";
  *
  * @see away.base.ParticleGraphics
  */
-class ParticleAnimator extends AnimatorBase
+export class ParticleAnimator extends AnimatorBase
 {
 
 	private _particleAnimationSet:ParticleAnimationSet;
@@ -74,7 +74,7 @@ class ParticleAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera):void
 	{
 		var animationRegisterData:AnimationRegisterData = this._particleAnimationSet._iAnimationRegisterData;
 
@@ -100,7 +100,7 @@ class ParticleAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public testGPUCompatibility(shader:ShaderBase)
+	public testGPUCompatibility(shader:ShaderBase):void
 	{
 
 	}
@@ -108,7 +108,7 @@ class ParticleAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public start()
+	public start():void
 	{
 		super.start();
 
@@ -119,7 +119,7 @@ class ParticleAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateDeltaTime(dt:number)
+	public _pUpdateDeltaTime(dt:number):void
 	{
 		this._pAbsoluteTime += dt;
 
@@ -130,14 +130,14 @@ class ParticleAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public resetTime(offset:number = 0)
+	public resetTime(offset:number = 0):void
 	{
 		for (var i:number = 0; i < this._timeParticleStates.length; i++)
 			this._timeParticleStates[i].offset(this._pAbsoluteTime + offset);
 		this.update(this.time);
 	}
 
-	public dispose()
+	public dispose():void
 	{
 		for (var key in this._animatorSubGeometries)
 			(<AnimationElements> this._animatorSubGeometries[key]).dispose();
@@ -158,5 +158,3 @@ class ParticleAnimator extends AnimatorBase
 		animatorElements.animationParticles = this._particleAnimationSet.getAnimationElements(graphic).animationParticles;
 	}
 }
-
-export default ParticleAnimator;

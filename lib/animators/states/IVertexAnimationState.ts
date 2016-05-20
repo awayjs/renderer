@@ -1,13 +1,13 @@
-import Graphics							from "awayjs-display/lib/graphics/Graphics";
+import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
 
-import IAnimationState					from "../../animators/states/IAnimationState";
+import {IAnimationState}					from "../../animators/states/IAnimationState";
 
 /**
  * Provides an interface for animation node classes that hold animation data for use in the Vertex animator class.
  *
  * @see away.animators.VertexAnimator
  */
-interface IVertexAnimationState extends IAnimationState
+export interface IVertexAnimationState extends IAnimationState
 {
 	/**
 	 * Returns the current geometry frame of animation in the clip based on the internal playhead position.
@@ -25,5 +25,3 @@ interface IVertexAnimationState extends IAnimationState
 	 */
 	blendWeight:number; //GET
 }
-
-export default IVertexAnimationState;

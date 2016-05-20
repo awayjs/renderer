@@ -1,21 +1,21 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ParticleProperties				from "../../animators/data/ParticleProperties";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import ParticleSpriteSheetState			from "../../animators/states/ParticleSpriteSheetState";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ParticleProperties}				from "../../animators/data/ParticleProperties";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {ParticleSpriteSheetState}			from "../../animators/states/ParticleSpriteSheetState";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used when a spritesheet texture is required to animate the particle.
  * NB: to enable use of this node, the <code>repeat</code> property on the material has to be set to true.
  */
-class ParticleSpriteSheetNode extends ParticleNodeBase
+export class ParticleSpriteSheetNode extends ParticleNodeBase
 {
 	/** @private */
 	public _iUsesCycle:boolean;
@@ -167,7 +167,7 @@ class ParticleSpriteSheetNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iProcessAnimationSetting(particleAnimationSet:ParticleAnimationSet)
+	public _iProcessAnimationSetting(particleAnimationSet:ParticleAnimationSet):void
 	{
 		particleAnimationSet.hasUVNode = true;
 	}
@@ -175,7 +175,7 @@ class ParticleSpriteSheetNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iGeneratePropertyOfOneParticle(param:ParticleProperties)
+	public _iGeneratePropertyOfOneParticle(param:ParticleProperties):void
 	{
 		if (this._iUsesCycle) {
 			var uvCycle:Vector3D = param[ParticleSpriteSheetNode.UV_VECTOR3D];
@@ -191,5 +191,3 @@ class ParticleSpriteSheetNode extends ParticleNodeBase
 		}
 	}
 }
-
-export default ParticleSpriteSheetNode;

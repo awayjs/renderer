@@ -1,7 +1,7 @@
 /**
  * Options for setting the properties mode of a particle animation node.
  */
-class ParticlePropertiesMode
+export class ParticlePropertiesMode
 {
 	/**
 	 * Mode that defines the particle node as acting on global properties (ie. the properties set in the node constructor or the corresponding animation state).
@@ -18,5 +18,3 @@ class ParticlePropertiesMode
 	 */
 	public static LOCAL_DYNAMIC:number = 2;
 }
-
-export default ParticlePropertiesMode;

@@ -1,19 +1,19 @@
-import IAnimationSet					from "awayjs-display/lib/animators/IAnimationSet";
+import {IAnimationSet}					from "awayjs-display/lib/animators/IAnimationSet";
 
-import AnimationSetBase					from "../animators/AnimationSetBase";
-import AnimationRegisterData			from "../animators/data/AnimationRegisterData";
-import VertexAnimationMode				from "../animators/data/VertexAnimationMode";
-import ShaderBase						from "../shaders/ShaderBase";
-import ShaderRegisterElement			from "../shaders/ShaderRegisterElement";
-import ShaderRegisterCache				from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData				from "../shaders/ShaderRegisterData";
+import {AnimationSetBase}					from "../animators/AnimationSetBase";
+import {AnimationRegisterData}			from "../animators/data/AnimationRegisterData";
+import {VertexAnimationMode}				from "../animators/data/VertexAnimationMode";
+import {ShaderBase}						from "../shaders/ShaderBase";
+import {ShaderRegisterElement}			from "../shaders/ShaderRegisterElement";
+import {ShaderRegisterCache}				from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}				from "../shaders/ShaderRegisterData";
 
 /**
  * The animation data set used by vertex-based animators, containing vertex animation state data.
  *
  * @see VertexAnimator
  */
-class VertexAnimationSet extends AnimationSetBase implements IAnimationSet
+export class VertexAnimationSet extends AnimationSetBase implements IAnimationSet
 {
 	private _iAnimationRegisterData:AnimationRegisterData;
 	
@@ -95,7 +95,7 @@ class VertexAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public doneAGALCode(shader:ShaderBase)
+	public doneAGALCode(shader:ShaderBase):void
 	{
 
 	}
@@ -191,5 +191,3 @@ class VertexAnimationSet extends AnimationSetBase implements IAnimationSet
 		return code;
 	}
 }
-
-export default VertexAnimationSet;

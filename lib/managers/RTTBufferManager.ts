@@ -1,14 +1,14 @@
-import Rectangle					from "awayjs-core/lib/geom/Rectangle";
-import EventDispatcher				from "awayjs-core/lib/events/EventDispatcher";
-import ImageUtils					from "awayjs-core/lib/utils/ImageUtils";
+import {Rectangle}					from "awayjs-core/lib/geom/Rectangle";
+import {EventDispatcher}				from "awayjs-core/lib/events/EventDispatcher";
+import {ImageUtils}					from "awayjs-core/lib/utils/ImageUtils";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
-import IIndexBuffer					from "awayjs-stagegl/lib/base/IIndexBuffer";
-import IVertexBuffer				from "awayjs-stagegl/lib/base/IVertexBuffer";
-import RTTEvent						from "../events/RTTEvent";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
+import {IIndexBuffer}					from "awayjs-stagegl/lib/base/IIndexBuffer";
+import {IVertexBuffer}				from "awayjs-stagegl/lib/base/IVertexBuffer";
+import {RTTEvent}						from "../events/RTTEvent";
 
-class RTTBufferManager extends EventDispatcher
+export class RTTBufferManager extends EventDispatcher
 {
 	private static _instances:Array<RTTBufferManagerVO>;
 
@@ -203,7 +203,7 @@ class RTTBufferManager extends EventDispatcher
 		return this._textureHeight;
 	}
 
-	public dispose()
+	public dispose():void
 	{
 		RTTBufferManager.deleteRTTBufferManager(this._stage);
 
@@ -220,7 +220,7 @@ class RTTBufferManager extends EventDispatcher
 	// todo: place all this in a separate model, since it's used all over the place
 	// maybe it even has a place in the core (together with screenRect etc)?
 	// needs to be stored per view of course
-	private updateRTTBuffers()
+	private updateRTTBuffers():void
 	{
 		var context:IContextGL = this._stage.context;
 		var textureVerts:number[];
@@ -260,8 +260,6 @@ class RTTBufferManager extends EventDispatcher
 		this._buffersInvalid = false;
 	}
 }
-
-export default RTTBufferManager;
 
 class RTTBufferManagerVO
 {

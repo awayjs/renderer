@@ -1,23 +1,23 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import Camera							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "awayjs-display/lib/display/Camera";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
-import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLVertexBufferFormat}		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
-import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import AnimationElements				from "../../animators/data/AnimationElements";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleOscillatorNode			from "../../animators/nodes/ParticleOscillatorNode";
-import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
-import ShaderBase						from "../../shaders/ShaderBase";
+import {ParticleAnimator}					from "../../animators/ParticleAnimator";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {AnimationElements}				from "../../animators/data/AnimationElements";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleOscillatorNode}			from "../../animators/nodes/ParticleOscillatorNode";
+import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
+import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
+import {ShaderBase}						from "../../shaders/ShaderBase";
 
 /**
  * ...
  */
-class ParticleOscillatorState extends ParticleStateBase
+export class ParticleOscillatorState extends ParticleStateBase
 {
 	/** @private */
 	public static OSCILLATOR_INDEX:number = 0;
@@ -54,7 +54,7 @@ class ParticleOscillatorState extends ParticleStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
 	{
 		var index:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOscillatorState.OSCILLATOR_INDEX);
 
@@ -64,7 +64,7 @@ class ParticleOscillatorState extends ParticleStateBase
 			shader.setVertexConst(index, this._oscillatorData.x, this._oscillatorData.y, this._oscillatorData.z, this._oscillatorData.w);
 	}
 
-	private updateOscillatorData()
+	private updateOscillatorData():void
 	{
 		if (this._particleOscillatorNode.mode == ParticlePropertiesMode.GLOBAL) {
 			if (this._oscillator.w <= 0)
@@ -80,5 +80,3 @@ class ParticleOscillatorState extends ParticleStateBase
 		}
 	}
 }
-
-export default ParticleOscillatorState;

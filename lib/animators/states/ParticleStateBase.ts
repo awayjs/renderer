@@ -1,22 +1,22 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import Camera							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "awayjs-display/lib/display/Camera";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
 
-import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import AnimationElements				from "../../animators/data/AnimationElements";
-import ParticleAnimationData			from "../../animators/data/ParticleAnimationData";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import AnimationStateBase				from "../../animators/states/AnimationStateBase";
-import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
-import ShaderBase						from "../../shaders/ShaderBase";
+import {ParticleAnimator}					from "../../animators/ParticleAnimator";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {AnimationElements}				from "../../animators/data/AnimationElements";
+import {ParticleAnimationData}			from "../../animators/data/ParticleAnimationData";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {AnimationStateBase}				from "../../animators/states/AnimationStateBase";
+import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
+import {ShaderBase}						from "../../shaders/ShaderBase";
 
 /**
  * ...
  */
-class ParticleStateBase extends AnimationStateBase
+export class ParticleStateBase extends AnimationStateBase
 {
 	private _particleNode:ParticleNodeBase;
 	public _pParticleAnimator:ParticleAnimator;
@@ -40,12 +40,12 @@ class ParticleStateBase extends AnimationStateBase
 		return this._pNeedUpdateTime;
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
 	{
 
 	}
 
-	public _pUpdateDynamicProperties(animationElements:AnimationElements)
+	public _pUpdateDynamicProperties(animationElements:AnimationElements):void
 	{
 		this._pDynamicPropertiesDirty[animationElements._iUniqueId] = true;
 
@@ -109,5 +109,3 @@ class ParticleStateBase extends AnimationStateBase
 	}
 
 }
-
-export default ParticleStateBase;

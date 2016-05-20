@@ -1,44 +1,44 @@
-import ImageBase					from "awayjs-core/lib/image/ImageBase";
-import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
-import Matrix3DUtils				from "awayjs-core/lib/geom/Matrix3DUtils";
-import Plane3D						from "awayjs-core/lib/geom/Plane3D";
-import Point						from "awayjs-core/lib/geom/Point";
-import Rectangle					from "awayjs-core/lib/geom/Rectangle";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
-import EventDispatcher				from "awayjs-core/lib/events/EventDispatcher";
-import IAssetClass					from "awayjs-core/lib/library/IAssetClass";
-import IAbstractionPool				from "awayjs-core/lib/library/IAbstractionPool";
-import ByteArray					from "awayjs-core/lib/utils/ByteArray";
+import {ImageBase}					from "awayjs-core/lib/image/ImageBase";
+import {BitmapImage2D}				from "awayjs-core/lib/image/BitmapImage2D";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {Matrix3DUtils}				from "awayjs-core/lib/geom/Matrix3DUtils";
+import {Plane3D}						from "awayjs-core/lib/geom/Plane3D";
+import {Point}						from "awayjs-core/lib/geom/Point";
+import {Rectangle}					from "awayjs-core/lib/geom/Rectangle";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {EventDispatcher}				from "awayjs-core/lib/events/EventDispatcher";
+import {IAssetClass}					from "awayjs-core/lib/library/IAssetClass";
+import {IAbstractionPool}				from "awayjs-core/lib/library/IAbstractionPool";
+import {ByteArray}					from "awayjs-core/lib/utils/ByteArray";
 
-import IRenderable					from "awayjs-display/lib/base/IRenderable";
-import IRenderer					from "awayjs-display/lib/IRenderer";
-import INode						from "awayjs-display/lib/partition/INode";
-import DisplayObject				from "awayjs-display/lib/display/DisplayObject";
-import Camera						from "awayjs-display/lib/display/Camera";
-import IEntity						from "awayjs-display/lib/display/IEntity";
-import Scene						from "awayjs-display/lib/display/Scene";
-import RendererEvent				from "awayjs-display/lib/events/RendererEvent";
+import {IRenderable}					from "awayjs-display/lib/base/IRenderable";
+import {IRenderer}					from "awayjs-display/lib/IRenderer";
+import {INode}						from "awayjs-display/lib/partition/INode";
+import {DisplayObject}				from "awayjs-display/lib/display/DisplayObject";
+import {Camera}						from "awayjs-display/lib/display/Camera";
+import {IEntity}						from "awayjs-display/lib/display/IEntity";
+import {Scene}						from "awayjs-display/lib/display/Scene";
+import {RendererEvent}				from "awayjs-display/lib/events/RendererEvent";
 
-import AGALMiniAssembler			from "awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler";
-import ContextGLBlendFactor			from "awayjs-stagegl/lib/base/ContextGLBlendFactor";
-import ContextGLCompareMode			from "awayjs-stagegl/lib/base/ContextGLCompareMode";
-import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-import StageEvent					from "awayjs-stagegl/lib/events/StageEvent";
-import StageManager					from "awayjs-stagegl/lib/managers/StageManager";
-import ProgramData					from "awayjs-stagegl/lib/image/ProgramData";
-import GL_IAssetClass				from "awayjs-stagegl/lib/library/GL_IAssetClass";
+import {AGALMiniAssembler}			from "awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler";
+import {ContextGLBlendFactor}			from "awayjs-stagegl/lib/base/ContextGLBlendFactor";
+import {ContextGLCompareMode}			from "awayjs-stagegl/lib/base/ContextGLCompareMode";
+import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {StageEvent}					from "awayjs-stagegl/lib/events/StageEvent";
+import {StageManager}					from "awayjs-stagegl/lib/managers/StageManager";
+import {ProgramData}					from "awayjs-stagegl/lib/image/ProgramData";
+import {GL_IAssetClass}				from "awayjs-stagegl/lib/library/GL_IAssetClass";
 
-import GL_ElementsBase				from "./elements/GL_ElementsBase";
-import ISurfaceClassGL				from "./surfaces/ISurfaceClassGL";
-import GL_SurfaceBase				from "./surfaces/GL_SurfaceBase";
-import GL_RenderableBase			from "./renderables/GL_RenderableBase";
-import RTTBufferManager				from "./managers/RTTBufferManager";
-import SurfacePool					from "./surfaces/SurfacePool";
-import IPass						from "./surfaces/passes/IPass";
-import IEntitySorter				from "./sort/IEntitySorter";
-import RenderableMergeSort			from "./sort/RenderableMergeSort";
+import {GL_ElementsBase}				from "./elements/GL_ElementsBase";
+import {ISurfaceClassGL}				from "./surfaces/ISurfaceClassGL";
+import {GL_SurfaceBase}				from "./surfaces/GL_SurfaceBase";
+import {GL_RenderableBase}			from "./renderables/GL_RenderableBase";
+import {RTTBufferManager}				from "./managers/RTTBufferManager";
+import {SurfacePool}					from "./surfaces/SurfacePool";
+import {IPass}						from "./surfaces/passes/IPass";
+import {IEntitySorter}				from "./sort/IEntitySorter";
+import {RenderableMergeSort}			from "./sort/RenderableMergeSort";
 
 
 /**
@@ -47,7 +47,7 @@ import RenderableMergeSort			from "./sort/RenderableMergeSort";
  *
  * @class away.render.RendererBase
  */
-class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPool
+export class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPool
 {
 	public static _iCollectionMark = 0;
 	public static _abstractionClassPool:Object = new Object();
@@ -316,7 +316,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 *
 	 * @param image
 	 */
-	public clearAbstraction(renderable:IRenderable)
+	public clearAbstraction(renderable:IRenderable):void
 	{
 		this._abstractionPool[renderable.id] = null;
 	}
@@ -336,12 +336,12 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 *
 	 * @param imageObjectClass
 	 */
-	public static registerAbstraction(renderableClass:GL_IAssetClass, assetClass:IAssetClass)
+	public static registerAbstraction(renderableClass:GL_IAssetClass, assetClass:IAssetClass):void
 	{
 		RendererBase._abstractionClassPool[assetClass.assetType] = renderableClass;
 	}
 
-	public activatePass(pass:IPass, camera:Camera)
+	public activatePass(pass:IPass, camera:Camera):void
 	{
 		//clear unused vertex streams
 		var i:number
@@ -369,7 +369,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		pass._iActivate(camera);
 	}
 
-	public deactivatePass(pass:IPass)
+	public deactivatePass(pass:IPass):void
 	{
 		//deactivate shader object through pass
 		pass._iDeactivate();
@@ -454,7 +454,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	/**
 	 * Disposes the resources used by the RendererBase.
 	 */
-	public dispose()
+	public dispose():void
 	{
 		for (var id in this._abstractionPool)
 			this._abstractionPool[id].clear();
@@ -475,7 +475,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		 */
 	}
 
-	public render(camera:Camera, scene:Scene)
+	public render(camera:Camera, scene:Scene):void
 	{
 		this._viewportDirty = false;
 		this._scissorDirty = false;
@@ -487,7 +487,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public _iRender(camera:Camera, scene:Scene, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public _iRender(camera:Camera, scene:Scene, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
 	{
 		//TODO refactor setTarget so that rendertextures are created before this check
 		if (!this._pStage || !this._pContext)
@@ -530,7 +530,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		}
 	}
 
-	public _iRenderCascades(camera:Camera, scene:Scene, target:ImageBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>)
+	public _iRenderCascades(camera:Camera, scene:Scene, target:ImageBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>):void
 	{
 		this._pStage.setRenderTarget(target, true, 0);
 		this._pContext.clear(1, 1, 1, 1, 1, 0);
@@ -562,7 +562,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public pExecuteRender(camera:Camera, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public pExecuteRender(camera:Camera, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
 	{
 		this._pStage.setRenderTarget(target, true, surfaceSelector);
 
@@ -596,7 +596,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	/*
 	 * Will draw the renderer's output on next render to the provided bitmap data.
 	 * */
-	public queueSnapshot(bmd:BitmapImage2D)
+	public queueSnapshot(bmd:BitmapImage2D):void
 	{
 		this._snapshotRequired = true;
 		this._snapshotBitmapImage2D = bmd;
@@ -605,7 +605,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	/**
 	 * Performs the actual drawing of geometry to the target.
 	 */
-	public pDraw(camera:Camera)
+	public pDraw(camera:Camera):void
 	{
 		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
 
@@ -658,7 +658,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 *
 	 * @param renderables The renderables to draw.
 	 */
-	public drawRenderables(camera:Camera, renderableGL:GL_RenderableBase)
+	public drawRenderables(camera:Camera, renderableGL:GL_RenderableBase):void
 	{
 		var i:number;
 		var len:number;
@@ -737,7 +737,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	/**
 	 * Assign the context once retrieved
 	 */
-	private onContextUpdate(event:StageEvent)
+	private onContextUpdate(event:StageEvent):void
 	{
 		this._pContext = <IContextGL> this._pStage.context;
 	}
@@ -797,7 +797,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	/**
 	 * @private
 	 */
-	private notifyScissorUpdate()
+	private notifyScissorUpdate():void
 	{
 		if (this._scissorDirty)
 			return;
@@ -814,7 +814,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	/**
 	 * @private
 	 */
-	private notifyViewportUpdate()
+	private notifyViewportUpdate():void
 	{
 		if (this._viewportDirty)
 			return;
@@ -830,7 +830,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	/**
 	 *
 	 */
-	public onViewportUpdated(event:StageEvent)
+	public onViewportUpdated(event:StageEvent):void
 	{
 		this._viewPort = this._pStage.viewPort;
 		//TODO stop firing viewport updated for every stagegl viewport change
@@ -847,7 +847,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	/**
 	 *
 	 */
-	public updateGlobalPos()
+	public updateGlobalPos():void
 	{
 		if (this.shareContext) {
 			this._pScissorRect.x = this._globalPos.x - this._viewPort.x;
@@ -876,7 +876,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		return enter;
 	}
 
-	public applyEntity(entity:IEntity)
+	public applyEntity(entity:IEntity):void
 	{
 		this._sourceEntity = entity;
 
@@ -890,7 +890,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		entity._acceptTraverser(this);
 	}
 
-	public applyRenderable(renderable:IRenderable)
+	public applyRenderable(renderable:IRenderable):void
 	{
 		var renderableGL:GL_RenderableBase = this.getAbstraction(renderable);
 		var surfaceGL:GL_SurfaceBase = renderableGL.surfaceGL;
@@ -924,7 +924,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 *
 	 * @param entity
 	 */
-	public applyDirectionalLight(entity:IEntity)
+	public applyDirectionalLight(entity:IEntity):void
 	{
 		//don't do anything here
 	}
@@ -933,7 +933,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 *
 	 * @param entity
 	 */
-	public applyLightProbe(entity:IEntity)
+	public applyLightProbe(entity:IEntity):void
 	{
 		//don't do anything here
 	}
@@ -942,7 +942,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 *
 	 * @param entity
 	 */
-	public applyPointLight(entity:IEntity)
+	public applyPointLight(entity:IEntity):void
 	{
 		//don't do anything here
 	}
@@ -951,18 +951,18 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 	 *
 	 * @param entity
 	 */
-	public applySkybox(entity:IEntity)
+	public applySkybox(entity:IEntity):void
 	{
 		//don't do anything here
 	}
 
-	private _registerMask(obj:GL_RenderableBase)
+	private _registerMask(obj:GL_RenderableBase):void
 	{
 		//console.log("registerMask");
 		this._registeredMasks.push(obj);
 	}
 
-	public _renderMasks(camera:Camera, masks:DisplayObject[][])
+	public _renderMasks(camera:Camera, masks:DisplayObject[][]):void
 	{
 		var gl = this._pContext["_gl"];
 		//var oldRenderTarget = this._stage.renderTarget;
@@ -1015,7 +1015,7 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		//this._stage.setRenderTarget(oldRenderTarget);
 	}
 
-	private _drawMask(camera:Camera, renderableGL:GL_RenderableBase)
+	private _drawMask(camera:Camera, renderableGL:GL_RenderableBase):void
 	{
 		var surfaceGL = renderableGL.surfaceGL;
 		var passes = surfaceGL.passes;
@@ -1056,5 +1056,3 @@ class RendererBase extends EventDispatcher implements IRenderer, IAbstractionPoo
 		return false;
 	}
 }
-
-export default RendererBase;

@@ -1,28 +1,28 @@
-import Graphics							from "awayjs-display/lib/graphics/Graphics";
-import ElementsBase						from "awayjs-display/lib/graphics/ElementsBase";
-import TriangleElements					from "awayjs-display/lib/graphics/TriangleElements";
-import Graphic							from "awayjs-display/lib/graphics/Graphic";
-import Camera							from "awayjs-display/lib/display/Camera";
+import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
+import {ElementsBase}						from "awayjs-display/lib/graphics/ElementsBase";
+import {TriangleElements}					from "awayjs-display/lib/graphics/TriangleElements";
+import {Graphic}							from "awayjs-display/lib/graphics/Graphic";
+import {Camera}							from "awayjs-display/lib/display/Camera";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
 
-import AnimatorBase						from "../animators/AnimatorBase";
-import VertexAnimationSet				from "../animators/VertexAnimationSet";
-import AnimationRegisterData			from "../animators/data/AnimationRegisterData";
-import VertexAnimationMode				from "../animators/data/VertexAnimationMode";
-import IVertexAnimationState			from "../animators/states/IVertexAnimationState";
-import IAnimationTransition				from "../animators/transitions/IAnimationTransition";
-import GL_GraphicRenderable				from "../renderables/GL_GraphicRenderable";
-import GL_RenderableBase				from "../renderables/GL_RenderableBase";
-import ShaderBase						from "../shaders/ShaderBase";
-import GL_ElementsBase					from "../elements/GL_ElementsBase";
+import {AnimatorBase}						from "../animators/AnimatorBase";
+import {VertexAnimationSet}				from "../animators/VertexAnimationSet";
+import {AnimationRegisterData}			from "../animators/data/AnimationRegisterData";
+import {VertexAnimationMode}				from "../animators/data/VertexAnimationMode";
+import {IVertexAnimationState}			from "../animators/states/IVertexAnimationState";
+import {IAnimationTransition}				from "../animators/transitions/IAnimationTransition";
+import {GL_GraphicRenderable}				from "../renderables/GL_GraphicRenderable";
+import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
+import {ShaderBase}						from "../shaders/ShaderBase";
+import {GL_ElementsBase}					from "../elements/GL_ElementsBase";
 
 /**
  * Provides an interface for assigning vertex-based animation data sets to sprite-based entity objects
  * and controlling the various available states of animation through an interative playhead that can be
  * automatically updated or manually triggered.
  */
-class VertexAnimator extends AnimatorBase
+export class VertexAnimator extends AnimatorBase
 {
 	private _vertexAnimationSet:VertexAnimationSet;
 	private _poses:Array<Graphics> = new Array<Graphics>();
@@ -53,7 +53,7 @@ class VertexAnimator extends AnimatorBase
 	 * Plays a sequence with a given name. If the sequence is not found, it may not be loaded yet, and it will retry every frame.
 	 * @param sequenceName The name of the clip to be played.
 	 */
-	public play(name:string, transition:IAnimationTransition = null, offset:number = NaN)
+	public play(name:string, transition:IAnimationTransition = null, offset:number = NaN):void
 	{
 		if (this._pActiveAnimationName == name)
 			return;
@@ -87,7 +87,7 @@ class VertexAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateDeltaTime(dt:number)
+	public _pUpdateDeltaTime(dt:number):void
 	{
 		super._pUpdateDeltaTime(dt);
 
@@ -110,7 +110,7 @@ class VertexAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera):void
 	{
 		// todo: add code for when running on cpu
 		// this type of animation can only be SubSprite
@@ -152,7 +152,7 @@ class VertexAnimator extends AnimatorBase
 		}
 	}
 
-	private setNullPose(shader:ShaderBase, elements:ElementsBase, stage:Stage)
+	private setNullPose(shader:ShaderBase, elements:ElementsBase, stage:Stage):void
 	{
 		var animationRegisterData:AnimationRegisterData = shader.animationRegisterData;
 		
@@ -179,7 +179,7 @@ class VertexAnimator extends AnimatorBase
 	 * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
 	 * Needs to be called if gpu code is potentially required.
 	 */
-	public testGPUCompatibility(shader:ShaderBase)
+	public testGPUCompatibility(shader:ShaderBase):void
 	{
 	}
 
@@ -192,5 +192,3 @@ class VertexAnimator extends AnimatorBase
 		return sourceElements;
 	}
 }
-
-export default VertexAnimator;

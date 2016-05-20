@@ -1,13 +1,13 @@
-import Image2D						from "awayjs-core/lib/image/Image2D";
+import {Image2D}						from "awayjs-core/lib/image/Image2D";
 
-import Camera						from "awayjs-display/lib/display/Camera";
+import {Camera}						from "awayjs-display/lib/display/Camera";
 
-import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLProgramType}			from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
 
-import Filter3DTaskBase				from "../../filters/tasks/Filter3DTaskBase";
+import {Filter3DTaskBase}				from "../../filters/tasks/Filter3DTaskBase";
 
-class Filter3DVBlurTask extends Filter3DTaskBase
+export class Filter3DVBlurTask extends Filter3DTaskBase
 {
 	private static MAX_AUTO_SAMPLES:number = 15;
 	private _amount:number;
@@ -83,19 +83,19 @@ class Filter3DVBlurTask extends Filter3DTaskBase
 		return code;
 	}
 
-	public activate(stage:Stage, camera3D:Camera, depthTexture:Image2D)
+	public activate(stage:Stage, camera3D:Camera, depthTexture:Image2D):void
 	{
 		stage.context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, this._data);
 	}
 
-	public updateTextures(stage:Stage)
+	public updateTextures(stage:Stage):void
 	{
 		super.updateTextures(stage);
 
 		this.updateBlurData();
 	}
 
-	private updateBlurData()
+	private updateBlurData():void
 	{
 		// todo: must be normalized using view size ratio instead of texture
 		var invH:number = 1/this._textureHeight;
@@ -104,10 +104,8 @@ class Filter3DVBlurTask extends Filter3DTaskBase
 		this._data[1] = this._realStepSize*invH;
 	}
 
-	private calculateStepSize()
+	private calculateStepSize():void
 	{
 		this._realStepSize = this._stepSize > 0? this._stepSize : this._amount > Filter3DVBlurTask.MAX_AUTO_SAMPLES? this._amount/Filter3DVBlurTask.MAX_AUTO_SAMPLES : 1;
 	}
 }
-
-export default Filter3DVBlurTask;

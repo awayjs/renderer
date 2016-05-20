@@ -1,12 +1,12 @@
-import AnimatorBase						from "../../animators/AnimatorBase";
-import AnimationClipNodeBase			from "../../animators/nodes/AnimationClipNodeBase";
-import AnimationStateBase				from "../../animators/states/AnimationStateBase";
-import AnimationStateEvent				from "../../events/AnimationStateEvent";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {AnimationClipNodeBase}			from "../../animators/nodes/AnimationClipNodeBase";
+import {AnimationStateBase}				from "../../animators/states/AnimationStateBase";
+import {AnimationStateEvent}				from "../../events/AnimationStateEvent";
 
 /**
  *
  */
-class AnimationClipState extends AnimationStateBase
+export class AnimationClipState extends AnimationStateBase
 {
 	private _animationClipNode:AnimationClipNodeBase;
 	private _animationStatePlaybackComplete:AnimationStateEvent;
@@ -65,7 +65,7 @@ class AnimationClipState extends AnimationStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public update(time:number)
+	public update(time:number):void
 	{
 		if (!this._animationClipNode.looping) {
 			if (time > this._pStartTime + this._animationClipNode.totalDuration)
@@ -82,7 +82,7 @@ class AnimationClipState extends AnimationStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public phase(value:number)
+	public phase(value:number):void
 	{
 		var time:number = value*this._animationClipNode.totalDuration + this._pStartTime;
 
@@ -95,7 +95,7 @@ class AnimationClipState extends AnimationStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateTime(time:number)
+	public _pUpdateTime(time:number):void
 	{
 		this._pFramesDirty = true;
 
@@ -111,7 +111,7 @@ class AnimationClipState extends AnimationStateBase
 	 * @see #nextFrame
 	 * @see #blendWeight
 	 */
-	public _pUpdateFrames()
+	public _pUpdateFrames():void
 	{
 		this._pFramesDirty = false;
 
@@ -163,7 +163,7 @@ class AnimationClipState extends AnimationStateBase
 		}
 	}
 
-	private notifyPlaybackComplete()
+	private notifyPlaybackComplete():void
 	{
 		if (this._animationStatePlaybackComplete == null)
 			this._animationStatePlaybackComplete = new AnimationStateEvent(AnimationStateEvent.PLAYBACK_COMPLETE, this._pAnimator, this, this._animationClipNode);
@@ -171,5 +171,3 @@ class AnimationClipState extends AnimationStateBase
 		this._animationClipNode.dispatchEvent(this._animationStatePlaybackComplete);
 	}
 }
-
-export default AnimationClipState;

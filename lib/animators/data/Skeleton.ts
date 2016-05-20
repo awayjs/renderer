@@ -1,14 +1,14 @@
-import SkeletonJoint					from "../../animators/data/SkeletonJoint";
+import {SkeletonJoint}					from "../../animators/data/SkeletonJoint";
 
-import IAsset							from "awayjs-core/lib/library/IAsset";
-import AssetBase						from "awayjs-core/lib/library/AssetBase";
+import {IAsset}							from "awayjs-core/lib/library/IAsset";
+import {AssetBase}						from "awayjs-core/lib/library/AssetBase";
 
 /**
  * A Skeleton object is a hierarchical grouping of joint objects that can be used for skeletal animation.
  *
  * @see away.animators.SkeletonJoint
  */
-class Skeleton extends AssetBase implements IAsset
+export class Skeleton extends AssetBase implements IAsset
 {
 	public static assetType:string = "[asset Skeleton]";
 
@@ -85,7 +85,7 @@ class Skeleton extends AssetBase implements IAsset
 	/**
 	 * @inheritDoc
 	 */
-	public dispose()
+	public dispose():void
 	{
 		this.joints.length = 0;
 	}
@@ -98,5 +98,3 @@ class Skeleton extends AssetBase implements IAsset
 		return Skeleton.assetType;
 	}
 }
-
-export default Skeleton;

@@ -1,16 +1,16 @@
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
 
-import INode						from "awayjs-display/lib/partition/INode";
+import {INode}						from "awayjs-display/lib/partition/INode";
 
-import RendererBase					from "./RendererBase";
-import GL_DepthSurface				from "./surfaces/GL_DepthSurface";
+import {RendererBase}					from "./RendererBase";
+import {GL_DepthSurface}				from "./surfaces/GL_DepthSurface";
 
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
  *
  * @class away.render.DepthRenderer
  */
-class DepthRenderer extends RendererBase
+export class DepthRenderer extends RendererBase
 {
 	/**
 	 * Creates a new DepthRenderer object.
@@ -43,5 +43,3 @@ class DepthRenderer extends RendererBase
 		return super.enterNode(node);
 	}
 }
-
-export default DepthRenderer;

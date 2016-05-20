@@ -1,18 +1,18 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import SkeletonAnimator					from "../../animators/SkeletonAnimator";
-import JointPose						from "../../animators/data/JointPose";
-import Skeleton							from "../../animators/data/Skeleton";
-import SkeletonPose						from "../../animators/data/SkeletonPose";
-import SkeletonClipNode					from "../../animators/nodes/SkeletonClipNode";
-import AnimationClipState				from "../../animators/states/AnimationClipState";
-import ISkeletonAnimationState			from "../../animators/states/ISkeletonAnimationState";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {SkeletonAnimator}					from "../../animators/SkeletonAnimator";
+import {JointPose}						from "../../animators/data/JointPose";
+import {Skeleton}							from "../../animators/data/Skeleton";
+import {SkeletonPose}						from "../../animators/data/SkeletonPose";
+import {SkeletonClipNode}					from "../../animators/nodes/SkeletonClipNode";
+import {AnimationClipState}				from "../../animators/states/AnimationClipState";
+import {ISkeletonAnimationState}			from "../../animators/states/ISkeletonAnimationState";
 
 /**
  *
  */
-class SkeletonClipState extends AnimationClipState implements ISkeletonAnimationState
+export class SkeletonClipState extends AnimationClipState implements ISkeletonAnimationState
 {
 	private _rootPos:Vector3D = new Vector3D();
 	private _frames:Array<SkeletonPose>;
@@ -66,7 +66,7 @@ class SkeletonClipState extends AnimationClipState implements ISkeletonAnimation
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateTime(time:number)
+	public _pUpdateTime(time:number):void
 	{
 		this._skeletonPoseDirty = true;
 
@@ -76,7 +76,7 @@ class SkeletonClipState extends AnimationClipState implements ISkeletonAnimation
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateFrames()
+	public _pUpdateFrames():void
 	{
 		super._pUpdateFrames();
 
@@ -94,7 +94,7 @@ class SkeletonClipState extends AnimationClipState implements ISkeletonAnimation
 	 *
 	 * @param skeleton The skeleton used by the animator requesting the ouput pose.
 	 */
-	private updateSkeletonPose(skeleton:Skeleton)
+	private updateSkeletonPose(skeleton:Skeleton):void
 	{
 		this._skeletonPoseDirty = false;
 
@@ -147,7 +147,7 @@ class SkeletonClipState extends AnimationClipState implements ISkeletonAnimation
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdatePositionDelta()
+	public _pUpdatePositionDelta():void
 	{
 		this._pPositionDeltaDirty = false;
 
@@ -191,5 +191,3 @@ class SkeletonClipState extends AnimationClipState implements ISkeletonAnimation
 		this._pOldFrame = this._pNextFrame;
 	}
 }
-
-export default SkeletonClipState;

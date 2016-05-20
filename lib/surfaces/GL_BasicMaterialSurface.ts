@@ -1,18 +1,18 @@
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import BlendMode					from "awayjs-core/lib/image/BlendMode";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {BlendMode}					from "awayjs-core/lib/image/BlendMode";
 
-import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
+import {BasicMaterial}				from "awayjs-display/lib/materials/BasicMaterial";
 
-import BasicMaterialPass			from "../surfaces/passes/BasicMaterialPass";
-import IElementsClassGL				from "../elements/IElementsClassGL";
-import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
-import SurfacePool					from "../surfaces/SurfacePool";
+import {BasicMaterialPass}			from "../surfaces/passes/BasicMaterialPass";
+import {IElementsClassGL}				from "../elements/IElementsClassGL";
+import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
+import {SurfacePool}					from "../surfaces/SurfacePool";
 
 /**
  * RenderMaterialObject forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
  */
-class GL_BasicMaterialSurface extends GL_SurfaceBase
+export class GL_BasicMaterialSurface extends GL_SurfaceBase
 {
 	private _material:BasicMaterial;
 	private _pass:BasicMaterialPass;
@@ -27,7 +27,7 @@ class GL_BasicMaterialSurface extends GL_SurfaceBase
 		this._pAddPass(this._pass = new BasicMaterialPass(this, material, elementsClass, this._stage));
 	}
 
-	public onClear(event:AssetEvent)
+	public onClear(event:AssetEvent):void
 	{
 		super.onClear(event);
 
@@ -37,7 +37,7 @@ class GL_BasicMaterialSurface extends GL_SurfaceBase
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateRender()
+	public _pUpdateRender():void
 	{
 		super._pUpdateRender();
 
@@ -47,5 +47,3 @@ class GL_BasicMaterialSurface extends GL_SurfaceBase
 		//this._pass.forceSeparateMVP = false;
 	}
 }
-
-export default GL_BasicMaterialSurface;

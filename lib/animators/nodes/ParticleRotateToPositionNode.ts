@@ -1,20 +1,20 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ParticleProperties				from "../../animators/data/ParticleProperties";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import ParticleRotateToPositionState	from "../../animators/states/ParticleRotateToPositionState";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ParticleProperties}				from "../../animators/data/ParticleProperties";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {ParticleRotateToPositionState}	from "../../animators/states/ParticleRotateToPositionState";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used to control the rotation of a particle to face to a position
  */
-class ParticleRotateToPositionNode extends ParticleNodeBase
+export class ParticleRotateToPositionNode extends ParticleNodeBase
 {
 	/** @private */
 	public _iPosition:Vector3D;
@@ -200,7 +200,7 @@ class ParticleRotateToPositionNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iGeneratePropertyOfOneParticle(param:ParticleProperties)
+	public _iGeneratePropertyOfOneParticle(param:ParticleProperties):void
 	{
 		var offset:Vector3D = param[ParticleRotateToPositionNode.POSITION_VECTOR3D];
 		if (!offset)
@@ -211,5 +211,3 @@ class ParticleRotateToPositionNode extends ParticleNodeBase
 		this._pOneData[2] = offset.z;
 	}
 }
-
-export default ParticleRotateToPositionNode;

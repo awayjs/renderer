@@ -1,8 +1,8 @@
-import EventBase				from "awayjs-core/lib/events/EventBase";
+import {EventBase}				from "awayjs-core/lib/events/EventBase";
 
-import IPass					from "../surfaces/passes/IPass";
+import {IPass}					from "../surfaces/passes/IPass";
 
-class PassEvent extends EventBase
+export class PassEvent extends EventBase
 {
 	/**
 	 *
@@ -34,5 +34,3 @@ class PassEvent extends EventBase
 		return new PassEvent(this.type, this._pass);
 	}
 }
-
-export default PassEvent;

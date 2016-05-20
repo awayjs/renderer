@@ -1,16 +1,16 @@
-import Matrix3D							from "awayjs-core/lib/geom/Matrix3D";
+import {Matrix3D}							from "awayjs-core/lib/geom/Matrix3D";
 
 /**
  *
  */
-class PerspectiveMatrix3D extends Matrix3D
+export class PerspectiveMatrix3D extends Matrix3D
 {
 	constructor(v:Float32Array = null)
 	{
 		super(v);
 	}
 
-	public perspectiveFieldOfViewLH(fieldOfViewY:number, aspectRatio:number, zNear:number, zFar:number)
+	public perspectiveFieldOfViewLH(fieldOfViewY:number, aspectRatio:number, zNear:number, zFar:number):void
 	{
 		var yScale:number = 1/Math.tan(fieldOfViewY/2);
 		var xScale:number = yScale/aspectRatio;
@@ -36,5 +36,3 @@ class PerspectiveMatrix3D extends Matrix3D
 		this.rawData[15] = 0.0;
 	}
 }
-
-export default PerspectiveMatrix3D;

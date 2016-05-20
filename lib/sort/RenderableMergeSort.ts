@@ -1,10 +1,10 @@
-import IEntitySorter				from "../sort/IEntitySorter";
+import {IEntitySorter}				from "../sort/IEntitySorter";
 
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
 /**
  * @class away.sort.RenderableMergeSort
  */
-class RenderableMergeSort implements IEntitySorter
+export class RenderableMergeSort implements IEntitySorter
 {
 	public sortBlendedRenderables(head:GL_RenderableBase):GL_RenderableBase
 	{
@@ -158,5 +158,3 @@ class RenderableMergeSort implements IEntitySorter
 		return result;
 	}
 }
-
-export default RenderableMergeSort;

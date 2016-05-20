@@ -1,23 +1,23 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import Camera							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "awayjs-display/lib/display/Camera";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
-import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLVertexBufferFormat}		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
-import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import AnimationElements				from "../../animators/data/AnimationElements";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleSpriteSheetNode			from "../../animators/nodes/ParticleSpriteSheetNode";
-import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
-import ShaderBase						from "../../shaders/ShaderBase";
+import {ParticleAnimator}					from "../../animators/ParticleAnimator";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {AnimationElements}				from "../../animators/data/AnimationElements";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleSpriteSheetNode}			from "../../animators/nodes/ParticleSpriteSheetNode";
+import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
+import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
+import {ShaderBase}						from "../../shaders/ShaderBase";
 
 /**
  * ...
  */
-class ParticleSpriteSheetState extends ParticleStateBase
+export class ParticleSpriteSheetState extends ParticleStateBase
 {
 	/** @private */
 	public static UV_INDEX_0:number = 0;
@@ -82,7 +82,7 @@ class ParticleSpriteSheetState extends ParticleStateBase
 		this.updateSpriteSheetData();
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
 	{
 		if (!shader.usesUVTransform) {
 			shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
@@ -99,7 +99,7 @@ class ParticleSpriteSheetState extends ParticleStateBase
 		}
 	}
 
-	private updateSpriteSheetData()
+	private updateSpriteSheetData():void
 	{
 		this._spriteSheetData = new Array<number>(8);
 
@@ -119,5 +119,3 @@ class ParticleSpriteSheetState extends ParticleStateBase
 		}
 	}
 }
-
-export default ParticleSpriteSheetState;

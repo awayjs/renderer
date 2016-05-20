@@ -1,16 +1,16 @@
-import AttributesBuffer					from "awayjs-core/lib/attributes/AttributesBuffer";
-import Matrix3DUtils					from "awayjs-core/lib/geom/Matrix3DUtils";
+import {AttributesBuffer}					from "awayjs-core/lib/attributes/AttributesBuffer";
+import {Matrix3DUtils}					from "awayjs-core/lib/geom/Matrix3DUtils";
 
-import DisplayObjectContainer			from "awayjs-display/lib/display/DisplayObjectContainer";
-import Graphics							from "awayjs-display/lib/graphics/Graphics";
-import TriangleElements					from "awayjs-display/lib/graphics/TriangleElements";
-import Sprite							from "awayjs-display/lib/display/Sprite";
-import MaterialBase						from "awayjs-display/lib/materials/MaterialBase";
+import {DisplayObjectContainer}			from "awayjs-display/lib/display/DisplayObjectContainer";
+import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
+import {TriangleElements}					from "awayjs-display/lib/graphics/TriangleElements";
+import {Sprite}							from "awayjs-display/lib/display/Sprite";
+import {MaterialBase}						from "awayjs-display/lib/materials/MaterialBase";
 
 /**
  *  Class Merge merges two or more static sprites into one.<code>Merge</code>
  */
-class Merge
+export class Merge
 {
 
 	//private const LIMIT:uint = 196605;
@@ -81,7 +81,7 @@ class Merge
 	 *
 	 * @return The merged Sprite instance.
 	 */
-	public applyToContainer(receiver:Sprite, objectContainer:DisplayObjectContainer)
+	public applyToContainer(receiver:Sprite, objectContainer:DisplayObjectContainer):void
 	{
 		this.reset();
 
@@ -101,7 +101,7 @@ class Merge
 	 * @param    receiver    The Sprite to receive the merged contents of the sprites.
 	 * @param    sprites      A series of Spritees to be merged with the reciever sprite.
 	 */
-	public applyToSpritees(receiver:Sprite, sprites:Array<Sprite>)
+	public applyToSpritees(receiver:Sprite, sprites:Array<Sprite>):void
 	{
 		this.reset();
 
@@ -126,7 +126,7 @@ class Merge
 	 * @param    receiver    The Sprite to receive the merged contents of both sprites.
 	 * @param    sprite        The Sprite to be merged with the receiver sprite
 	 */
-	public apply(receiver:Sprite, sprite:Sprite)
+	public apply(receiver:Sprite, sprite:Sprite):void
 	{
 		this.reset();
 
@@ -140,13 +140,13 @@ class Merge
 		this.merge(receiver, this._disposeSources);
 	}
 
-	private reset()
+	private reset():void
 	{
 		this._toDispose  = new Array<Sprite>();
 		this._graphicVOs = new Array<GraphicVO>();
 	}
 
-	private merge(destSprite:Sprite, dispose:boolean)
+	private merge(destSprite:Sprite, dispose:boolean):void
 	{
 		var i:number /*uint*/;
 		//var oldGraphics:Graphics;
@@ -190,7 +190,7 @@ class Merge
 		this._toDispose = null;
 	}
 
-	private collect(sprite:Sprite, dispose:boolean)
+	private collect(sprite:Sprite, dispose:boolean):void
 	{
 		var subIdx:number /*uint*/;
 		var calc:number /*uint*/;
@@ -322,7 +322,7 @@ class Merge
 		return data;
 	}
 
-	private parseContainer(receiver:Sprite, object:DisplayObjectContainer)
+	private parseContainer(receiver:Sprite, object:DisplayObjectContainer):void
 	{
 		var child:DisplayObjectContainer;
 		var i:number /*uint*/;
@@ -337,9 +337,7 @@ class Merge
 	}
 }
 
-export default Merge;
-
-class GraphicVO
+export class GraphicVO
 {
 	public uvs:Array<number>;
 	public vertices:Array<number>;

@@ -1,20 +1,20 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ParticleProperties				from "../../animators/data/ParticleProperties";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import ParticleRotationalVelocityState	from "../../animators/states/ParticleRotationalVelocityState";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ParticleProperties}				from "../../animators/data/ParticleProperties";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {ParticleRotationalVelocityState}	from "../../animators/states/ParticleRotationalVelocityState";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used to set the starting rotational velocity of a particle.
  */
-class ParticleRotationalVelocityNode extends ParticleNodeBase
+export class ParticleRotationalVelocityNode extends ParticleNodeBase
 {
 	/** @private */
 	public _iRotationalVelocity:Vector3D;
@@ -132,7 +132,7 @@ class ParticleRotationalVelocityNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iGeneratePropertyOfOneParticle(param:ParticleProperties)
+	public _iGeneratePropertyOfOneParticle(param:ParticleProperties):void
 	{
 		//(Vector3d.x,Vector3d.y,Vector3d.z) is rotation axis,Vector3d.w is cycle duration
 		var rotate:Vector3D = param[ParticleRotationalVelocityNode.ROTATIONALVELOCITY_VECTOR3D];
@@ -153,5 +153,3 @@ class ParticleRotationalVelocityNode extends ParticleNodeBase
 		this._pOneData[3] = Math.PI/rotate.w;
 	}
 }
-
-export default ParticleRotationalVelocityNode;

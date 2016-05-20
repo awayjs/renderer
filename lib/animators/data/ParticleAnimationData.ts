@@ -1,9 +1,9 @@
-import ParticleData						from "awayjs-display/lib/animators/data/ParticleData";
+import {ParticleData}						from "awayjs-display/lib/animators/data/ParticleData";
 
 /**
  * ...
  */
-class ParticleAnimationData
+export class ParticleAnimationData
 {
 	public index:number;
 	public startTime:number;
@@ -24,5 +24,3 @@ class ParticleAnimationData
 		this.numVertices = particle.numVertices;
 	}
 }
-
-export default ParticleAnimationData;

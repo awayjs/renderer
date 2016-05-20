@@ -1,4 +1,4 @@
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
 
 /**
  * RegisterPool is used by the shader compilers process to keep track of which registers of a certain type are
@@ -8,7 +8,7 @@ import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
  *
  * @see away.materials.ShaderRegisterCache
  */
-class RegisterPool
+export class RegisterPool
 {
 	private static _regPool:Object = new Object();
 	private static _regCompsPool:Object = new Object();
@@ -82,7 +82,7 @@ class RegisterPool
 	 * @param register The register to mark as used.
 	 * @param usageCount The amount of usages to add.
 	 */
-	public addUsage(register:ShaderRegisterElement, usageCount:number)
+	public addUsage(register:ShaderRegisterElement, usageCount:number):void
 	{
 		if (register._component > -1)
 			this._usedSingleCount[register._component][register.index] += usageCount;
@@ -94,7 +94,7 @@ class RegisterPool
 	 * Removes a usage from a register. When usages reach 0, the register is freed again.
 	 * @param register The register for which to remove a usage.
 	 */
-	public removeUsage(register:ShaderRegisterElement)
+	public removeUsage(register:ShaderRegisterElement):void
 	{
 		if (register._component > -1) {
 			if (--this._usedSingleCount[register._component][register.index] < 0)
@@ -108,7 +108,7 @@ class RegisterPool
 	/**
 	 * Disposes any resources used by the current RegisterPool object.
 	 */
-	public dispose()
+	public dispose():void
 	{
 		this._vectorRegisters = null;
 		this._registerComponents = null;
@@ -131,7 +131,7 @@ class RegisterPool
 	/**
 	 * Initializes all registers.
 	 */
-	private initRegisters(regName:string, regCount:number)
+	private initRegisters(regName:string, regCount:number):void
 	{
 		var hash:string = RegisterPool._initPool(regName, regCount);
 
@@ -203,5 +203,3 @@ class RegisterPool
 		return a;
 	}
 }
-
-export default RegisterPool;

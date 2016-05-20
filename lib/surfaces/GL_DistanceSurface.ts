@@ -1,20 +1,20 @@
-﻿import ISurface						from "awayjs-display/lib/base/ISurface";
-import Camera						from "awayjs-display/lib/display/Camera";
+﻿import {ISurface}						from "awayjs-display/lib/base/ISurface";
+import {Camera}						from "awayjs-display/lib/display/Camera";
 
-import SurfacePool					from "../surfaces/SurfacePool";
-import GL_SurfacePassBase			from "../surfaces/GL_SurfacePassBase";
-import IElementsClassGL				from "../elements/IElementsClassGL";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
-import GL_TextureBase				from "../textures/GL_TextureBase";
+import {SurfacePool}					from "../surfaces/SurfacePool";
+import {GL_SurfacePassBase}			from "../surfaces/GL_SurfacePassBase";
+import {IElementsClassGL}				from "../elements/IElementsClassGL";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
+import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
+import {GL_TextureBase}				from "../textures/GL_TextureBase";
 
 /**
  * DistanceRender is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
  * This is used to render omnidirectional shadow maps.
  */
-class DistanceRender extends GL_SurfacePassBase
+export class GL_DistanceSurface extends GL_SurfacePassBase
 {
 	private _textureVO:GL_TextureBase;
 	private _fragmentConstantsIndex:number;
@@ -33,7 +33,7 @@ class DistanceRender extends GL_SurfacePassBase
 		this._pAddPass(this);
 	}
 
-	public invalidate()
+	public invalidate():void
 	{
 		super.invalidate();
 
@@ -43,7 +43,7 @@ class DistanceRender extends GL_SurfacePassBase
 	/**
 	 * Initializes the unchanging constant data for this material.
 	 */
-	public _iInitConstantData(shader:ShaderBase)
+	public _iInitConstantData(shader:ShaderBase):void
 	{
 		super._iInitConstantData(shader);
 
@@ -55,7 +55,7 @@ class DistanceRender extends GL_SurfacePassBase
 		data[index + 7] = 0.0;
 	}
 
-	public _iIncludeDependencies(shader:ShaderBase)
+	public _iIncludeDependencies(shader:ShaderBase):void
 	{
 		super._iIncludeDependencies(shader);
 
@@ -111,7 +111,7 @@ class DistanceRender extends GL_SurfacePassBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(camera:Camera)
+	public _iActivate(camera:Camera):void
 	{
 		super._iActivate(camera);
 
@@ -133,5 +133,3 @@ class DistanceRender extends GL_SurfacePassBase
 		}
 	}
 }
-
-export default DistanceRender;

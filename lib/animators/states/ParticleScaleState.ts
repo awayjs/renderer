@@ -1,23 +1,23 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import Camera							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "awayjs-display/lib/display/Camera";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
-import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLVertexBufferFormat}		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
-import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import AnimationElements				from "../../animators/data/AnimationElements";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleScaleNode				from "../../animators/nodes/ParticleScaleNode";
-import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
-import ShaderBase						from "../../shaders/ShaderBase";
+import {ParticleAnimator}					from "../../animators/ParticleAnimator";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {AnimationElements}				from "../../animators/data/AnimationElements";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleScaleNode}				from "../../animators/nodes/ParticleScaleNode";
+import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
+import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
+import {ShaderBase}						from "../../shaders/ShaderBase";
 
 /**
  * ...
  */
-class ParticleScaleState extends ParticleStateBase
+export class ParticleScaleState extends ParticleStateBase
 {
 	/** @private */
 	public static SCALE_INDEX:number = 0;
@@ -106,7 +106,7 @@ class ParticleScaleState extends ParticleStateBase
 		this.updateScaleData();
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
 	{
 		var index:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleScaleState.SCALE_INDEX);
 
@@ -122,7 +122,7 @@ class ParticleScaleState extends ParticleStateBase
 			shader.setVertexConst(index, this._scaleData.x, this._scaleData.y, this._scaleData.z, this._scaleData.w);
 	}
 
-	private updateScaleData()
+	private updateScaleData():void
 	{
 		if (this._particleScaleNode.mode == ParticlePropertiesMode.GLOBAL) {
 			if (this._usesCycle) {
@@ -134,5 +134,3 @@ class ParticleScaleState extends ParticleStateBase
 		}
 	}
 }
-
-export default ParticleScaleState;

@@ -1,21 +1,21 @@
-import AttributesBuffer				from "awayjs-core/lib/attributes/AttributesBuffer";
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import Rectangle					from "awayjs-core/lib/geom/Rectangle";
+import {AttributesBuffer}				from "awayjs-core/lib/attributes/AttributesBuffer";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {Rectangle}					from "awayjs-core/lib/geom/Rectangle";
 
-import TriangleElements				from "awayjs-display/lib/graphics/TriangleElements";
-import Billboard					from "awayjs-display/lib/display/Billboard";
-import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
-import TextureBase					from "awayjs-display/lib/textures/TextureBase";
+import {TriangleElements}				from "awayjs-display/lib/graphics/TriangleElements";
+import {Billboard}					from "awayjs-display/lib/display/Billboard";
+import {DefaultMaterialManager}		from "awayjs-display/lib/managers/DefaultMaterialManager";
+import {TextureBase}					from "awayjs-display/lib/textures/TextureBase";
 
-import RendererBase					from "../RendererBase";
-import GL_ElementsBase				from "../elements/GL_ElementsBase";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
+import {RendererBase}					from "../RendererBase";
+import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
 
 /**
  * @class away.pool.RenderableListItem
  */
-class GL_Billboard extends GL_RenderableBase
+export class GL_BillboardRenderable extends GL_RenderableBase
 {
 	private static _samplerElements:Object = new Object();
 
@@ -39,7 +39,7 @@ class GL_Billboard extends GL_RenderableBase
 		this._billboard = billboard;
 	}
 
-	public onClear(event:AssetEvent)
+	public onClear(event:AssetEvent):void
 	{
 		super.onClear(event);
 
@@ -62,14 +62,14 @@ class GL_Billboard extends GL_RenderableBase
 
 		this._id = id;
 
-		var elements:TriangleElements = GL_Billboard._samplerElements[id];
+		var elements:TriangleElements = GL_BillboardRenderable._samplerElements[id];
 
 		var width:number = this._billboard.billboardWidth;
 		var height:number = this._billboard.billboardHeight;
 		var billboardRect:Rectangle = this._billboard.billboardRect;
 
 		if (!elements) {
-			elements = GL_Billboard._samplerElements[id] = new TriangleElements(new AttributesBuffer(11, 4));
+			elements = GL_BillboardRenderable._samplerElements[id] = new TriangleElements(new AttributesBuffer(11, 4));
 			elements.autoDeriveNormals = false;
 			elements.autoDeriveTangents = false;
 			elements.setIndices(Array<number>(0, 1, 2, 0, 2, 3));
@@ -90,5 +90,3 @@ class GL_Billboard extends GL_RenderableBase
 	}
 
 }
-
-export default GL_Billboard;

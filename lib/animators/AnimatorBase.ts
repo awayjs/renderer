@@ -1,22 +1,22 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
-import AssetBase						from "awayjs-core/lib/library/AssetBase";
-import AbstractMethodError				from "awayjs-core/lib/errors/AbstractMethodError";
-import RequestAnimationFrame			from "awayjs-core/lib/utils/RequestAnimationFrame";
-import getTimer							from "awayjs-core/lib/utils/getTimer";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
+import {AssetBase}						from "awayjs-core/lib/library/AssetBase";
+import {AbstractMethodError}				from "awayjs-core/lib/errors/AbstractMethodError";
+import {RequestAnimationFrame}			from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {getTimer}							from "awayjs-core/lib/utils/getTimer";
 
-import IAnimationSet					from "awayjs-display/lib/animators/IAnimationSet";
-import IAnimator						from "awayjs-display/lib/animators/IAnimator";
-import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
-import ElementsBase						from "awayjs-display/lib/graphics/ElementsBase";
-import Camera							from "awayjs-display/lib/display/Camera";
-import Sprite							from "awayjs-display/lib/display/Sprite";
+import {IAnimationSet}					from "awayjs-display/lib/animators/IAnimationSet";
+import {IAnimator}						from "awayjs-display/lib/animators/IAnimator";
+import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {ElementsBase}						from "awayjs-display/lib/graphics/ElementsBase";
+import {Camera}							from "awayjs-display/lib/display/Camera";
+import {Sprite}							from "awayjs-display/lib/display/Sprite";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
 
-import IAnimationState					from "../animators/states/IAnimationState";
-import GL_RenderableBase				from "../renderables/GL_RenderableBase";
-import AnimatorEvent					from "../events/AnimatorEvent";
-import ShaderBase						from "../shaders/ShaderBase";
+import {IAnimationState}					from "../animators/states/IAnimationState";
+import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
+import {AnimatorEvent}					from "../events/AnimatorEvent";
+import {ShaderBase}						from "../shaders/ShaderBase";
 
 /**
  * Dispatched when playback of an animation inside the animator object starts.
@@ -44,7 +44,7 @@ import ShaderBase						from "../shaders/ShaderBase";
  *
  * @see away.animators.AnimationSetBase
  */
-class AnimatorBase extends AssetBase implements IAnimator
+export class AnimatorBase extends AssetBase implements IAnimator
 {
 	public static assetType:string = "[asset Animator]";
 
@@ -178,7 +178,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	 *
 	 * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
 	 */
-	public phase(value:number)
+	public phase(value:number):void
 	{
 		this._pActiveState.phase(value);
 	}
@@ -210,7 +210,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 		this._playbackSpeed = value;
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera):void
 	{
 		throw new AbstractMethodError();
 	}
@@ -218,7 +218,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	/**
 	 * Resumes the automatic playback clock controling the active state of the animator.
 	 */
-	public start()
+	public start():void
 	{
 		if (this._isPlaying || !this._autoUpdate)
 			return;
@@ -245,7 +245,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	 * @see #time
 	 * @see #update()
 	 */
-	public stop()
+	public stop():void
 	{
 		if (!this._isPlaying)
 			return;
@@ -270,7 +270,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	 * @see #stop()
 	 * @see #autoUpdate
 	 */
-	public update(time:number)
+	public update(time:number):void
 	{
 		var dt:number = (time - this._time)*this.playbackSpeed;
 
@@ -279,7 +279,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 		this._time = time;
 	}
 
-	public reset(name:string, offset:number = 0)
+	public reset(name:string, offset:number = 0):void
 	{
 		this.getAnimationState(this._pAnimationSet.getAnimation(name)).offset(offset + this._pAbsoluteTime);
 	}
@@ -289,7 +289,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	 *
 	 * @private
 	 */
-	public addOwner(sprite:Sprite)
+	public addOwner(sprite:Sprite):void
 	{
 		this._pOwners.push(sprite);
 	}
@@ -299,7 +299,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	 *
 	 * @private
 	 */
-	public removeOwner(sprite:Sprite)
+	public removeOwner(sprite:Sprite):void
 	{
 		this._pOwners.splice(this._pOwners.indexOf(sprite), 1);
 	}
@@ -309,7 +309,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	 *
 	 * @private
 	 */
-	public _pUpdateDeltaTime(dt:number)
+	public _pUpdateDeltaTime(dt:number):void
 	{
 		this._pAbsoluteTime += dt;
 
@@ -322,12 +322,12 @@ class AnimatorBase extends AssetBase implements IAnimator
 	/**
 	 * Enter frame event handler for automatically updating the active state of the animator.
 	 */
-	private onEnterFrame(event:Event = null)
+	private onEnterFrame(event:Event = null):void
 	{
 		this.update(getTimer());
 	}
 
-	private applyPositionDelta()
+	private applyPositionDelta():void
 	{
 		var delta:Vector3D = this._pActiveState.positionDelta;
 		var dist:number = delta.length;
@@ -344,7 +344,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	 *
 	 * @private
 	 */
-	public dispatchCycleEvent()
+	public dispatchCycleEvent():void
 	{
 		if (this.hasEventListener(AnimatorEvent.CYCLE_COMPLETE)) {
 			if (this._cycleEvent == null)
@@ -365,12 +365,12 @@ class AnimatorBase extends AssetBase implements IAnimator
 	/**
 	 * @inheritDoc
 	 */
-	public dispose()
+	public dispose():void
 	{
 	}
 
 
-	public invalidateElements()
+	public invalidateElements():void
 	{
 		var sprite:Sprite;
 		var len:number = this._pOwners.length;
@@ -383,7 +383,7 @@ class AnimatorBase extends AssetBase implements IAnimator
 	/**
 	 * @inheritDoc
 	 */
-	public testGPUCompatibility(shader:ShaderBase)
+	public testGPUCompatibility(shader:ShaderBase):void
 	{
 		throw new AbstractMethodError();
 	}
@@ -403,5 +403,3 @@ class AnimatorBase extends AssetBase implements IAnimator
 		return sourceElements;
 	}
 }
-
-export default AnimatorBase;

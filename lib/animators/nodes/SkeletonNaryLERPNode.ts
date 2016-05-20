@@ -1,12 +1,12 @@
-import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import SkeletonNaryLERPState			from "../../animators/states/SkeletonNaryLERPState";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {SkeletonNaryLERPState}			from "../../animators/states/SkeletonNaryLERPState";
 
 /**
  * A skeleton animation node that uses an n-dimensional array of animation node inputs to blend a lineraly interpolated output of a skeleton pose.
  */
-class SkeletonNaryLERPNode extends AnimationNodeBase
+export class SkeletonNaryLERPNode extends AnimationNodeBase
 {
 	public _iInputs:Array<AnimationNodeBase> = new Array<AnimationNodeBase>();
 
@@ -50,7 +50,7 @@ class SkeletonNaryLERPNode extends AnimationNodeBase
 	/**
 	 * Adds a new skeleton animation node input to the animation node.
 	 */
-	public addInput(input:AnimationNodeBase)
+	public addInput(input:AnimationNodeBase):void
 	{
 		this._iInputs[this._numInputs++] = input;
 	}

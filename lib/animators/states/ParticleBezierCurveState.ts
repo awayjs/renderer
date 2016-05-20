@@ -1,23 +1,23 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import Camera							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "awayjs-display/lib/display/Camera";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
-import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLVertexBufferFormat}		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
-import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import AnimationElements				from "../../animators/data/AnimationElements";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleBezierCurveNode			from "../../animators/nodes/ParticleBezierCurveNode";
-import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
-import ShaderBase						from "../../shaders/ShaderBase";
+import {ParticleAnimator}					from "../../animators/ParticleAnimator";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {AnimationElements}				from "../../animators/data/AnimationElements";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleBezierCurveNode}			from "../../animators/nodes/ParticleBezierCurveNode";
+import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
+import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
+import {ShaderBase}						from "../../shaders/ShaderBase";
 
 /**
  * ...
  */
-class ParticleBezierCurveState extends ParticleStateBase
+export class ParticleBezierCurveState extends ParticleStateBase
 {
 	/** @private */
 	public static BEZIER_CONTROL_INDEX:number = 0;
@@ -64,7 +64,7 @@ class ParticleBezierCurveState extends ParticleStateBase
 		this._endPoint = this._particleBezierCurveNode._iEndPoint;
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
 	{
 		var controlIndex:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_CONTROL_INDEX);
 		var endIndex:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_END_INDEX);
@@ -78,5 +78,3 @@ class ParticleBezierCurveState extends ParticleStateBase
 		}
 	}
 }
-
-export default ParticleBezierCurveState;

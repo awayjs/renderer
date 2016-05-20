@@ -1,17 +1,17 @@
-import AnimatorBase						from "../../animators/AnimatorBase";
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import ParticleRotateToHeadingState		from "../../animators/states/ParticleRotateToHeadingState";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {ParticleRotateToHeadingState}		from "../../animators/states/ParticleRotateToHeadingState";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used to control the rotation of a particle to match its heading vector.
  */
-class ParticleRotateToHeadingNode extends ParticleNodeBase
+export class ParticleRotateToHeadingNode extends ParticleNodeBase
 {
 	/**
 	 * Creates a new <code>ParticleBillboardNode</code>
@@ -181,10 +181,8 @@ class ParticleRotateToHeadingNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iProcessAnimationSetting(particleAnimationSet:ParticleAnimationSet)
+	public _iProcessAnimationSetting(particleAnimationSet:ParticleAnimationSet):void
 	{
 		particleAnimationSet.needVelocity = true;
 	}
 }
-
-export default ParticleRotateToHeadingNode;

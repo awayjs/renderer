@@ -1,27 +1,27 @@
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
-import EventDispatcher				from "awayjs-core/lib/events/EventDispatcher";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {EventDispatcher}				from "awayjs-core/lib/events/EventDispatcher";
 
-import Camera						from "awayjs-display/lib/display/Camera";
-import ISurface						from "awayjs-display/lib/base/ISurface";
-import TextureBase					from "awayjs-display/lib/textures/TextureBase";
+import {Camera}						from "awayjs-display/lib/display/Camera";
+import {ISurface}						from "awayjs-display/lib/base/ISurface";
+import {TextureBase}					from "awayjs-display/lib/textures/TextureBase";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
 
-import AnimationSetBase				from "../../animators/AnimationSetBase";
-import PassEvent					from "../../events/PassEvent";
-import ShaderBase					from "../../shaders/ShaderBase";
-import ShaderRegisterCache			from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../../shaders/ShaderRegisterData";
-import IPass						from "../../surfaces/passes/IPass";
-import IElementsClassGL				from "../../elements/IElementsClassGL";
-import GL_RenderableBase			from "../../renderables/GL_RenderableBase";
-import GL_SurfaceBase				from "../../surfaces/GL_SurfaceBase";
+import {AnimationSetBase}				from "../../animators/AnimationSetBase";
+import {PassEvent}					from "../../events/PassEvent";
+import {ShaderBase}					from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
+import {IPass}						from "../../surfaces/passes/IPass";
+import {IElementsClassGL}				from "../../elements/IElementsClassGL";
+import {GL_RenderableBase}			from "../../renderables/GL_RenderableBase";
+import {GL_SurfaceBase}				from "../../surfaces/GL_SurfaceBase";
 
 /**
  * PassBase provides an abstract base class for material shader passes. A material pass constitutes at least
  * a render call per required renderable.
  */
-class PassBase extends EventDispatcher implements IPass
+export class PassBase extends EventDispatcher implements IPass
 {
 	public _render:GL_SurfaceBase;
 	public _surface:ISurface;
@@ -102,7 +102,7 @@ class PassBase extends EventDispatcher implements IPass
 	/**
 	 * Marks the shader program as invalid, so it will be recompiled before the next render.
 	 */
-	public invalidate()
+	public invalidate():void
 	{
 		this._shader.invalidateProgram();
 
@@ -113,7 +113,7 @@ class PassBase extends EventDispatcher implements IPass
 	 * Cleans up any resources used by the current object.
 	 * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
 	 */
-	public dispose()
+	public dispose():void
 	{
 		this._render = null;
 		this._surface = null;
@@ -137,7 +137,7 @@ class PassBase extends EventDispatcher implements IPass
 	 *
 	 * @internal
 	 */
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D):void
 	{
 		this._shader._setRenderState(renderable, camera, viewProjection);
 	}
@@ -149,7 +149,7 @@ class PassBase extends EventDispatcher implements IPass
 	 * @param camera The camera from which the scene is viewed.
 	 * @private
 	 */
-	public _iActivate(camera:Camera)
+	public _iActivate(camera:Camera):void
 	{
 		this._shader._iActivate(camera);
 	}
@@ -160,12 +160,12 @@ class PassBase extends EventDispatcher implements IPass
 	 *
 	 * @private
 	 */
-	public _iDeactivate()
+	public _iDeactivate():void
 	{
 		this._shader._iDeactivate();
 	}
 
-	public _iIncludeDependencies(shader:ShaderBase)
+	public _iIncludeDependencies(shader:ShaderBase):void
 	{
 		this._render._iIncludeDependencies(shader);
 		
@@ -174,7 +174,7 @@ class PassBase extends EventDispatcher implements IPass
 	}
 
 
-	public _iInitConstantData(shader:ShaderBase)
+	public _iInitConstantData(shader:ShaderBase):void
 	{
 
 	}
@@ -209,5 +209,3 @@ class PassBase extends EventDispatcher implements IPass
 		return "";
 	}
 }
-
-export default PassBase;

@@ -1,31 +1,31 @@
-import Quaternion						from "awayjs-core/lib/geom/Quaternion";
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Quaternion}						from "awayjs-core/lib/geom/Quaternion";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import TriangleElements					from "awayjs-display/lib/graphics/TriangleElements";
-import Camera							from "awayjs-display/lib/display/Camera";
-import ElementsEvent					from "awayjs-display/lib/events/ElementsEvent";
+import {TriangleElements}					from "awayjs-display/lib/graphics/TriangleElements";
+import {Camera}							from "awayjs-display/lib/display/Camera";
+import {ElementsEvent}					from "awayjs-display/lib/events/ElementsEvent";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
 
-import AnimatorBase						from "../animators/AnimatorBase";
-import SkeletonAnimationSet				from "../animators/SkeletonAnimationSet";
-import JointPose						from "../animators/data/JointPose";
-import Skeleton							from "../animators/data/Skeleton";
-import SkeletonJoint					from "../animators/data/SkeletonJoint";
-import SkeletonPose						from "../animators/data/SkeletonPose";
-import ISkeletonAnimationState			from "../animators/states/ISkeletonAnimationState";
-import IAnimationTransition				from "../animators/transitions/IAnimationTransition";
-import AnimationStateEvent				from "../events/AnimationStateEvent";
-import ShaderBase						from "../shaders/ShaderBase";
-import GL_RenderableBase				from "../renderables/GL_RenderableBase";
-import GL_GraphicRenderable				from "../renderables/GL_GraphicRenderable";
+import {AnimatorBase}						from "../animators/AnimatorBase";
+import {SkeletonAnimationSet}				from "../animators/SkeletonAnimationSet";
+import {JointPose}						from "../animators/data/JointPose";
+import {Skeleton}							from "../animators/data/Skeleton";
+import {SkeletonJoint}					from "../animators/data/SkeletonJoint";
+import {SkeletonPose}						from "../animators/data/SkeletonPose";
+import {ISkeletonAnimationState}			from "../animators/states/ISkeletonAnimationState";
+import {IAnimationTransition}				from "../animators/transitions/IAnimationTransition";
+import {AnimationStateEvent}				from "../events/AnimationStateEvent";
+import {ShaderBase}						from "../shaders/ShaderBase";
+import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
+import {GL_GraphicRenderable}				from "../renderables/GL_GraphicRenderable";
 
 /**
  * Provides an interface for assigning skeleton-based animation data sets to sprite-based entity objects
  * and controlling the various available states of animation through an interative playhead that can be
  * automatically updated or manually triggered.
  */
-class SkeletonAnimator extends AnimatorBase
+export class SkeletonAnimator extends AnimatorBase
 {
 	private _globalMatrices:Float32Array;
 	private _globalPose:SkeletonPose = new SkeletonPose();
@@ -160,7 +160,7 @@ class SkeletonAnimator extends AnimatorBase
 	 * @param transition An optional transition object that determines how the animator will transition from the currently active animation state.
 	 * @param offset An option offset time (in milliseconds) that resets the state's internal clock to the absolute time of the animator plus the offset value. Required for non-looping animation states.
 	 */
-	public play(name:string, transition:IAnimationTransition = null, offset:number = NaN)
+	public play(name:string, transition:IAnimationTransition = null, offset:number = NaN):void
 	{
 		if (this._pActiveAnimationName == name)
 			return;
@@ -197,7 +197,7 @@ class SkeletonAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera):void
 	{
 		// do on request of globalProperties
 		if (this._globalPropertiesDirty)
@@ -225,7 +225,7 @@ class SkeletonAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public testGPUCompatibility(shader:ShaderBase)
+	public testGPUCompatibility(shader:ShaderBase):void
 	{
 		if (!this._useCondensedIndices && (this._forceCPU || this._jointsPerVertex > 4 || shader.numUsedVertexConstants + this._numJoints*3 > 128))
 			this._pAnimationSet.cancelGPUCompatibility();
@@ -234,7 +234,7 @@ class SkeletonAnimator extends AnimatorBase
 	/**
 	 * Applies the calculated time delta to the active animation state node or state transition object.
 	 */
-	public _pUpdateDeltaTime(dt:number)
+	public _pUpdateDeltaTime(dt:number):void
 	{
 		super._pUpdateDeltaTime(dt);
 
@@ -246,7 +246,7 @@ class SkeletonAnimator extends AnimatorBase
 			this.invalidateElements();
 	}
 
-	private updateCondensedMatrices(condensedIndexLookUp:Array<number>)
+	private updateCondensedMatrices(condensedIndexLookUp:Array<number>):void
 	{
 		var j:number = 0, k:number = 0;
 		var len:number = condensedIndexLookUp.length;
@@ -263,7 +263,7 @@ class SkeletonAnimator extends AnimatorBase
 		}
 	}
 
-	private updateGlobalProperties()
+	private updateGlobalProperties():void
 	{
 		this._globalPropertiesDirty = false;
 
@@ -386,7 +386,7 @@ class SkeletonAnimator extends AnimatorBase
 	 * @param subGeom The subgeometry containing the weights and joint index data per vertex.
 	 * @param pass The material pass for which we need to transform the vertices
 	 */
-	public morphElements(renderable:GL_GraphicRenderable, sourceElements:TriangleElements)
+	public morphElements(renderable:GL_GraphicRenderable, sourceElements:TriangleElements):void
 	{
 		this._morphedElementsDirty[sourceElements.id] = false;
 
@@ -500,7 +500,7 @@ class SkeletonAnimator extends AnimatorBase
 	 * @param targetPose The SkeletonPose object that will contain the global pose.
 	 * @param skeleton The skeleton containing the joints, and as such, the hierarchical data to transform to global poses.
 	 */
-	private localToGlobalPose(sourcePose:SkeletonPose, targetPose:SkeletonPose, skeleton:Skeleton)
+	private localToGlobalPose(sourcePose:SkeletonPose, targetPose:SkeletonPose, skeleton:Skeleton):void
 	{
 		var globalPoses:Array<JointPose> = targetPose.jointPoses;
 		var globalJointPose:JointPose;
@@ -592,7 +592,7 @@ class SkeletonAnimator extends AnimatorBase
 		}
 	}
 
-	private onTransitionComplete(event:AnimationStateEvent)
+	private onTransitionComplete(event:AnimationStateEvent):void
 	{
 		if (event.type == AnimationStateEvent.TRANSITION_COMPLETE) {
 			event.animationNode.removeEventListener(AnimationStateEvent.TRANSITION_COMPLETE, this._onTransitionCompleteDelegate);
@@ -605,14 +605,14 @@ class SkeletonAnimator extends AnimatorBase
 		}
 	}
 
-	private onIndicesUpdate(event:ElementsEvent)
+	private onIndicesUpdate(event:ElementsEvent):void
 	{
 		var elements:TriangleElements = <TriangleElements> event.target;
 
 		(<TriangleElements> this._morphedElements[elements.id]).setIndices(elements.indices);
 	}
 
-	private onVerticesUpdate(event:ElementsEvent)
+	private onVerticesUpdate(event:ElementsEvent):void
 	{
 		var elements:TriangleElements = <TriangleElements> event.target;
 		var morphGraphics:TriangleElements = <TriangleElements> this._morphedElements[elements.id];
@@ -627,5 +627,3 @@ class SkeletonAnimator extends AnimatorBase
 		}
 	}
 }
-
-export default SkeletonAnimator;

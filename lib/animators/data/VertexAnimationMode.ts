@@ -3,7 +3,7 @@
  *
  * @see away.animators.VertexAnimator
  */
-class VertexAnimationMode
+export class VertexAnimationMode
 {
 	/**
 	 * Animation mode that adds all outputs from active vertex animation state to form the current vertex animation pose.
@@ -15,5 +15,3 @@ class VertexAnimationMode
 	 */
 	public static ABSOLUTE:string = "absolute";
 }
-
-export default VertexAnimationMode;

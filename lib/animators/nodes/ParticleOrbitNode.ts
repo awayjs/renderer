@@ -1,20 +1,20 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ParticleProperties				from "../../animators/data/ParticleProperties";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import ParticleOrbitState				from "../../animators/states/ParticleOrbitState";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ParticleProperties}				from "../../animators/data/ParticleProperties";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {ParticleOrbitState}				from "../../animators/states/ParticleOrbitState";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used to control the position of a particle over time around a circular orbit.
  */
-class ParticleOrbitNode extends ParticleNodeBase
+export class ParticleOrbitNode extends ParticleNodeBase
 {
 	/** @private */
 	public _iUsesEulers:boolean;
@@ -140,7 +140,7 @@ class ParticleOrbitNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iGeneratePropertyOfOneParticle(param:ParticleProperties)
+	public _iGeneratePropertyOfOneParticle(param:ParticleProperties):void
 	{
 		//Vector3D.x is radius, Vector3D.y is cycle duration, Vector3D.z is phase
 		var orbit:Vector3D = param[ParticleOrbitNode.ORBIT_VECTOR3D];
@@ -156,5 +156,3 @@ class ParticleOrbitNode extends ParticleNodeBase
 			this._pOneData[3] = orbit.z*Math.PI/180;
 	}
 }
-
-export default ParticleOrbitNode;

@@ -1,24 +1,24 @@
-import MathConsts						from "awayjs-core/lib/geom/MathConsts";
-import Matrix3D							from "awayjs-core/lib/geom/Matrix3D";
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
-import Orientation3D					from "awayjs-core/lib/geom/Orientation3D";
+import {MathConsts}						from "awayjs-core/lib/geom/MathConsts";
+import {Matrix3D}							from "awayjs-core/lib/geom/Matrix3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
+import {Orientation3D}					from "awayjs-core/lib/geom/Orientation3D";
 
-import Camera							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "awayjs-display/lib/display/Camera";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
 
-import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import AnimationElements				from "../../animators/data/AnimationElements";
-import ParticleBillboardNode			from "../../animators/nodes/ParticleBillboardNode";
-import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
-import ShaderBase						from "../../shaders/ShaderBase";
+import {ParticleAnimator}					from "../../animators/ParticleAnimator";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {AnimationElements}				from "../../animators/data/AnimationElements";
+import {ParticleBillboardNode}			from "../../animators/nodes/ParticleBillboardNode";
+import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
+import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
+import {ShaderBase}						from "../../shaders/ShaderBase";
 
 /**
  * ...
  */
-class ParticleBillboardState extends ParticleStateBase
+export class ParticleBillboardState extends ParticleStateBase
 {
 	/** @private */
 	public static MATRIX_INDEX:number = 0;
@@ -37,7 +37,7 @@ class ParticleBillboardState extends ParticleStateBase
 		this._billboardAxis = particleNode._iBillboardAxis;
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
 	{
 		var comps:Array<Vector3D>;
 		if (this._billboardAxis) {
@@ -89,5 +89,3 @@ class ParticleBillboardState extends ParticleStateBase
 	}
 
 }
-
-export default ParticleBillboardState;

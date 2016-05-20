@@ -1,16 +1,16 @@
-import Image2D						from "awayjs-core/lib/image/Image2D";
+import {Image2D}						from "awayjs-core/lib/image/Image2D";
 
-import Camera						from "awayjs-display/lib/display/Camera";
+import {Camera}						from "awayjs-display/lib/display/Camera";
 
-import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
-import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
+import {ContextGLProgramType}			from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {GL_ImageBase}					from "awayjs-stagegl/lib/image/GL_ImageBase";
 
-import Filter3DTaskBase				from "../../filters/tasks/Filter3DTaskBase";
-import ShaderRegisterElement		from "../../shaders/ShaderRegisterElement";
+import {Filter3DTaskBase}				from "../../filters/tasks/Filter3DTaskBase";
+import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
 
-class Filter3DCompositeTask extends Filter3DTaskBase
+export class Filter3DCompositeTask extends Filter3DTaskBase
 {
 	private _data:Float32Array;
 	private _overlayTexture:Image2D;
@@ -112,7 +112,7 @@ class Filter3DCompositeTask extends Filter3DTaskBase
 		return code;
 	}
 	
-	public activate(stage:Stage, camera3D:Camera, depthTexture:Image2D)
+	public activate(stage:Stage, camera3D:Camera, depthTexture:Image2D):void
 	{
 		this._data[4] = -0.5*(this._scaledTextureWidth - this._overlayWidth)/this._overlayWidth;
 		this._data[5] = -0.5*(this._scaledTextureHeight - this._overlayHeight)/this._overlayHeight;
@@ -126,10 +126,8 @@ class Filter3DCompositeTask extends Filter3DTaskBase
 		(<GL_ImageBase> stage.getAbstraction(this._overlayTexture)).activate(this._overlayTextureIndex, false);
 	}
 	
-	public deactivate(stage:Stage)
+	public deactivate(stage:Stage):void
 	{
 		stage.context.setTextureAt(1, null);
 	}
 }
-
-export default Filter3DCompositeTask;

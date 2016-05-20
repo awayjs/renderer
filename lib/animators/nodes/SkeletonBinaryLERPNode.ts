@@ -1,12 +1,12 @@
-import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import SkeletonBinaryLERPState			from "../../animators/states/SkeletonBinaryLERPState";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {SkeletonBinaryLERPState}			from "../../animators/states/SkeletonBinaryLERPState";
 
 /**
  * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
  */
-class SkeletonBinaryLERPNode extends AnimationNodeBase
+export class SkeletonBinaryLERPNode extends AnimationNodeBase
 {
 	/**
 	 * Defines input node A to use for the blended output.
@@ -36,5 +36,3 @@ class SkeletonBinaryLERPNode extends AnimationNodeBase
 		return <SkeletonBinaryLERPState> animator.getAnimationState(this);
 	}
 }
-
-export default SkeletonBinaryLERPNode;

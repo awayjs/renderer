@@ -1,1 +1,1 @@
-export {default as AnimationSetError}				from "./errors/AnimationSetError";
+export {AnimationSetError}				from "./errors/AnimationSetError";

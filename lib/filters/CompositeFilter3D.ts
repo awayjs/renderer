@@ -1,11 +1,11 @@
-import Image2D						from "awayjs-core/lib/image/Image2D";
+import {Image2D}						from "awayjs-core/lib/image/Image2D";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
 
-import Filter3DCompositeTask		from "../filters/tasks/Filter3DCompositeTask";
-import Filter3DBase					from "../filters/Filter3DBase";
+import {Filter3DCompositeTask}		from "../filters/tasks/Filter3DCompositeTask";
+import {Filter3DBase}					from "../filters/Filter3DBase";
 
-class CompositeFilter3D extends Filter3DBase
+export class CompositeFilter3D extends Filter3DBase
 {
 	private _compositeTask:Filter3DCompositeTask;
 	
@@ -45,5 +45,3 @@ class CompositeFilter3D extends Filter3DBase
 		this._compositeTask.overlayTexture = value;
 	}
 }
-
-export default CompositeFilter3D;

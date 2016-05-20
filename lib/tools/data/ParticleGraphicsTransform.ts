@@ -1,10 +1,10 @@
-import Matrix							from "awayjs-core/lib/geom/Matrix";
-import Matrix3D							from "awayjs-core/lib/geom/Matrix3D";
+import {Matrix}							from "awayjs-core/lib/geom/Matrix";
+import {Matrix3D}							from "awayjs-core/lib/geom/Matrix3D";
 
 /**
  * ...
  */
-class ParticleGraphicsTransform
+export class ParticleGraphicsTransform
 {
 	private _defaultVertexTransform:Matrix3D;
 	private _defaultInvVertexTransform:Matrix3D;
@@ -38,5 +38,3 @@ class ParticleGraphicsTransform
 		return this._defaultInvVertexTransform;
 	}
 }
-
-export default ParticleGraphicsTransform;

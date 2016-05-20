@@ -1,10 +1,10 @@
-import SkeletonBinaryLERPNode			from "../../animators/nodes/SkeletonBinaryLERPNode";
-import CrossfadeTransitionState			from "../../animators/transitions/CrossfadeTransitionState";
+import {SkeletonBinaryLERPNode}			from "../../animators/nodes/SkeletonBinaryLERPNode";
+import {CrossfadeTransitionState}			from "../../animators/transitions/CrossfadeTransitionState";
 
 /**
  * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
  */
-class CrossfadeTransitionNode extends SkeletonBinaryLERPNode
+export class CrossfadeTransitionNode extends SkeletonBinaryLERPNode
 {
 	public blendSpeed:number;
 
@@ -20,5 +20,3 @@ class CrossfadeTransitionNode extends SkeletonBinaryLERPNode
 		this._pStateClass = CrossfadeTransitionState;
 	}
 }
-
-export default CrossfadeTransitionNode;

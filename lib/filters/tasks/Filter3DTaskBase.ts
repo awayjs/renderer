@@ -1,19 +1,19 @@
-import Image2D						from "awayjs-core/lib/image/Image2D";
+import {Image2D}						from "awayjs-core/lib/image/Image2D";
 
-import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
-import ByteArray					from "awayjs-core/lib/utils/ByteArray";
+import {AbstractMethodError}			from "awayjs-core/lib/errors/AbstractMethodError";
+import {ByteArray}					from "awayjs-core/lib/utils/ByteArray";
 
-import Camera						from "awayjs-display/lib/display/Camera";
+import {Camera}						from "awayjs-display/lib/display/Camera";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-import AGALMiniAssembler			from "awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler";
-import IProgram						from "awayjs-stagegl/lib/base/IProgram";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {AGALMiniAssembler}			from "awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler";
+import {IProgram}						from "awayjs-stagegl/lib/base/IProgram";
 
-import RTTBufferManager				from "../../managers/RTTBufferManager";
-import ShaderRegisterCache			from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement		from "../../shaders/ShaderRegisterElement";
+import {RTTBufferManager}				from "../../managers/RTTBufferManager";
+import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
 
-class Filter3DTaskBase
+export class Filter3DTaskBase
 {
 	public _registerCache:ShaderRegisterCache;
 	
@@ -124,7 +124,7 @@ class Filter3DTaskBase
 		return this._mainInputTexture;
 	}
 
-	public dispose()
+	public dispose():void
 	{
 		if (this._mainInputTexture)
 			this._mainInputTexture.dispose();
@@ -133,12 +133,12 @@ class Filter3DTaskBase
 			this._program3D.dispose();
 	}
 
-	public invalidateProgram()
+	public invalidateProgram():void
 	{
 		this._program3DInvalid = true;
 	}
 
-	public updateProgram(stage:Stage)
+	public updateProgram(stage:Stage):void
 	{
 		if (this._program3D)
 			this._program3D.dispose();
@@ -177,7 +177,7 @@ class Filter3DTaskBase
 		throw new AbstractMethodError();
 	}
 
-	public updateTextures(stage:Stage)
+	public updateTextures(stage:Stage):void
 	{
 		if (this._mainInputTexture)
 			this._mainInputTexture.dispose();
@@ -195,11 +195,11 @@ class Filter3DTaskBase
 		return this._program3D;
 	}
 
-	public activate(stage:Stage, camera:Camera, depthTexture:Image2D)
+	public activate(stage:Stage, camera:Camera, depthTexture:Image2D):void
 	{
 	}
 
-	public deactivate(stage:Stage)
+	public deactivate(stage:Stage):void
 	{
 	}
 
@@ -209,5 +209,3 @@ class Filter3DTaskBase
 	}
 
 }
-
-export default Filter3DTaskBase;

@@ -1,14 +1,14 @@
-import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import EventBase						from "awayjs-core/lib/events/EventBase";
+import {EventBase}						from "awayjs-core/lib/events/EventBase";
 
-import AnimatorBase						from "../animators/AnimatorBase";
-import IAnimationState					from "../animators/states/IAnimationState";
+import {AnimatorBase}						from "../animators/AnimatorBase";
+import {IAnimationState}					from "../animators/states/IAnimationState";
 
 /**
  * Dispatched to notify changes in an animation state's state.
  */
-class AnimationStateEvent extends EventBase
+export class AnimationStateEvent extends EventBase
 {
 	/**
 	 * Dispatched when a non-looping clip node inside an animation state reaches the end of its timeline.
@@ -71,5 +71,3 @@ class AnimationStateEvent extends EventBase
 		return new AnimationStateEvent(this.type, this._animator, this._animationState, this._animationNode);
 	}
 }
-
-export default AnimationStateEvent;

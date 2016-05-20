@@ -1,28 +1,28 @@
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import Matrix3DUtils				from "awayjs-core/lib/geom/Matrix3DUtils";
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {Matrix3DUtils}				from "awayjs-core/lib/geom/Matrix3DUtils";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
 
-import ContextGLDrawMode			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
-import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
-import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLDrawMode}			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
+import {ContextGLProgramType}			from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
 
-import Camera						from "awayjs-display/lib/display/Camera";
-import TriangleElements				from "awayjs-display/lib/graphics/TriangleElements";
+import {Camera}						from "awayjs-display/lib/display/Camera";
+import {TriangleElements}				from "awayjs-display/lib/graphics/TriangleElements";
 
-import GL_ElementsBase				from "../elements/GL_ElementsBase";
-import IElementsClassGL				from "../elements/IElementsClassGL";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
+import {IElementsClassGL}				from "../elements/IElementsClassGL";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
+import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
 
 /**
  *
  * @class away.pool.GL_TriangleElements
  */
-class GL_TriangleElements extends GL_ElementsBase
+export class GL_TriangleElements extends GL_ElementsBase
 {
 	public static elementsType:string = "[elements Triangle]";
 
@@ -36,7 +36,7 @@ class GL_TriangleElements extends GL_ElementsBase
 		return GL_TriangleElements;
 	}
 	
-	public static _iIncludeDependencies(shader:ShaderBase)
+	public static _iIncludeDependencies(shader:ShaderBase):void
 	{
 	}
 
@@ -81,14 +81,14 @@ class GL_TriangleElements extends GL_ElementsBase
 		this._triangleElements = triangleElements;
 	}
 
-	public onClear(event:AssetEvent)
+	public onClear(event:AssetEvent):void
 	{
 		super.onClear(event);
 
 		this._triangleElements = null;
 	}
 
-	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D):void
 	{
 		super._setRenderState(renderable, shader, camera, viewProjection);
 
@@ -124,7 +124,7 @@ class GL_TriangleElements extends GL_ElementsBase
 		this.activateVertexBufferVO(0, this._triangleElements.positions);
 	}
 
-	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number):void
 	{
 		//set constants
 		if (shader.sceneMatrixIndex >= 0) {
@@ -164,5 +164,3 @@ class GL_TriangleElements extends GL_ElementsBase
 		return new GL_TriangleElements(this._triangleElements, this._stage);
 	}
 }
-
-export default GL_TriangleElements;

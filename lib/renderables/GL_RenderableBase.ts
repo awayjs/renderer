@@ -1,33 +1,33 @@
-import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import Matrix						from "awayjs-core/lib/geom/Matrix";
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
-import ImageBase					from "awayjs-core/lib/image/ImageBase";
-import SamplerBase					from "awayjs-core/lib/image/SamplerBase";
-import AbstractionBase				from "awayjs-core/lib/library/AbstractionBase";
+import {AbstractMethodError}			from "awayjs-core/lib/errors/AbstractMethodError";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {Matrix}						from "awayjs-core/lib/geom/Matrix";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {ImageBase}					from "awayjs-core/lib/image/ImageBase";
+import {SamplerBase}					from "awayjs-core/lib/image/SamplerBase";
+import {AbstractionBase}				from "awayjs-core/lib/library/AbstractionBase";
 
-import IRenderable					from "awayjs-display/lib/base/IRenderable";
-import ISurface						from "awayjs-display/lib/base/ISurface";
-import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
-import IEntity						from "awayjs-display/lib/display/IEntity";
-import Camera						from "awayjs-display/lib/display/Camera";
-import RenderableEvent				from "awayjs-display/lib/events/RenderableEvent";
-import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
-import TextureBase					from "awayjs-display/lib/textures/TextureBase";
+import {IRenderable}					from "awayjs-display/lib/base/IRenderable";
+import {ISurface}						from "awayjs-display/lib/base/ISurface";
+import {ElementsBase}					from "awayjs-display/lib/graphics/ElementsBase";
+import {IEntity}						from "awayjs-display/lib/display/IEntity";
+import {Camera}						from "awayjs-display/lib/display/Camera";
+import {RenderableEvent}				from "awayjs-display/lib/events/RenderableEvent";
+import {DefaultMaterialManager}		from "awayjs-display/lib/managers/DefaultMaterialManager";
+import {TextureBase}					from "awayjs-display/lib/textures/TextureBase";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
-import GL_SamplerBase				from "awayjs-stagegl/lib/image/GL_SamplerBase";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {GL_ImageBase}					from "awayjs-stagegl/lib/image/GL_ImageBase";
+import {GL_SamplerBase}				from "awayjs-stagegl/lib/image/GL_SamplerBase";
 
-import RendererBase					from "../RendererBase";
-import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
-import IPass						from "../surfaces/passes/IPass";
-import GL_ElementsBase				from "../elements/GL_ElementsBase";
+import {RendererBase}					from "../RendererBase";
+import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
+import {IPass}						from "../surfaces/passes/IPass";
+import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
 
 /**
  * @class RenderableListItem
  */
-class GL_RenderableBase extends AbstractionBase
+export class GL_RenderableBase extends AbstractionBase
 {
 	private _onInvalidateSurfaceDelegate:(event:RenderableEvent) => void;
 	private _onInvalidateElementsDelegate:(event:RenderableEvent) => void;
@@ -148,7 +148,7 @@ class GL_RenderableBase extends AbstractionBase
 		this.renderable.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 	}
 
-	public onClear(event:AssetEvent)
+	public onClear(event:AssetEvent):void
 	{
 		super.onClear(event);
 
@@ -173,12 +173,12 @@ class GL_RenderableBase extends AbstractionBase
 		this._elementsGL = null;
 	}
 
-	public onInvalidateElements(event:RenderableEvent)
+	public onInvalidateElements(event:RenderableEvent):void
 	{
 		this._elementsDirty = true;
 	}
 
-	private _onInvalidateSurface(event:RenderableEvent)
+	private _onInvalidateSurface(event:RenderableEvent):void
 	{
 		this._surfaceDirty = true;
 	}
@@ -198,14 +198,14 @@ class GL_RenderableBase extends AbstractionBase
 	 *
 	 * @private
 	 */
-	public _iRender(pass:IPass, camera:Camera, viewProjection:Matrix3D)
+	public _iRender(pass:IPass, camera:Camera, viewProjection:Matrix3D):void
 	{
 		this._setRenderState(pass, camera, viewProjection);
 
 		this._elementsGL.draw(this, pass.shader, camera, viewProjection, this._count, this._offset)
 	}
 
-	public _setRenderState(pass:IPass, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(pass:IPass, camera:Camera, viewProjection:Matrix3D):void
 	{
 		if (this._elementsDirty)
 			this._updateElements();
@@ -223,14 +223,14 @@ class GL_RenderableBase extends AbstractionBase
 	 *
 	 * @private
 	 */
-	private _updateElements()
+	private _updateElements():void
 	{
 		this._elementsGL = this._pGetElements();
 
 		this._elementsDirty = false;
 	}
 
-	private _updateSurface()
+	private _updateSurface():void
 	{
 		var surfaceGL:GL_SurfaceBase = this._pGetSurface();
 
@@ -278,5 +278,3 @@ class GL_RenderableBase extends AbstractionBase
 		this._surfaceDirty = false;
 	}
 }
-
-export default GL_RenderableBase;

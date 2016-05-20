@@ -1,25 +1,25 @@
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import Image2D						from "awayjs-core/lib/image/Image2D";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {Image2D}						from "awayjs-core/lib/image/Image2D";
 
-import GL_Image2D					from "awayjs-stagegl/lib/image/GL_Image2D";
-import GL_Sampler2D					from "awayjs-stagegl/lib/image/GL_Sampler2D";
+import {GL_Image2D}					from "awayjs-stagegl/lib/image/GL_Image2D";
+import {GL_Sampler2D}					from "awayjs-stagegl/lib/image/GL_Sampler2D";
 
-import MappingMode					from "awayjs-display/lib/textures/MappingMode";
-import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
+import {MappingMode}					from "awayjs-display/lib/textures/MappingMode";
+import {Single2DTexture}				from "awayjs-display/lib/textures/Single2DTexture";
 
-import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
-import GL_TextureBase				from "../textures/GL_TextureBase";
+import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
+import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
+import {GL_TextureBase}				from "../textures/GL_TextureBase";
 
 /**
  *
  * @class away.pool.GL_Single2DTexture
  */
-class GL_Single2DTexture extends GL_TextureBase
+export class GL_Single2DTexture extends GL_TextureBase
 {
 
 	private _single2DTexture:Single2DTexture;
@@ -34,7 +34,7 @@ class GL_Single2DTexture extends GL_TextureBase
 		this._single2DTexture = single2DTexture;
 	}
 
-	public onClear(event:AssetEvent)
+	public onClear(event:AssetEvent):void
 	{
 		super.onClear(event);
 
@@ -91,7 +91,7 @@ class GL_Single2DTexture extends GL_TextureBase
 		return code;
 	}
 
-	public activate(render:GL_SurfaceBase)
+	public activate(render:GL_SurfaceBase):void
 	{
 		var sampler:GL_Sampler2D = <GL_Sampler2D> render.samplers[this._imageIndex];
 		sampler.activate(this._textureIndex);
@@ -118,7 +118,7 @@ class GL_Single2DTexture extends GL_TextureBase
 	}
 
 
-	public _setRenderState(renderable:GL_RenderableBase)
+	public _setRenderState(renderable:GL_RenderableBase):void
 	{
 		var sampler:GL_Sampler2D = <GL_Sampler2D> renderable.samplers[this._imageIndex];
 
@@ -148,5 +148,3 @@ class GL_Single2DTexture extends GL_TextureBase
 		}
 	}
 }
-
-export default GL_Single2DTexture;

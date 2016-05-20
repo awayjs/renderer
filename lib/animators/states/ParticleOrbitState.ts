@@ -1,24 +1,24 @@
-import Matrix3D							from "awayjs-core/lib/geom/Matrix3D";
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Matrix3D}							from "awayjs-core/lib/geom/Matrix3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import Camera							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "awayjs-display/lib/display/Camera";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
-import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLVertexBufferFormat}		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
-import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import AnimationElements				from "../../animators/data/AnimationElements";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleOrbitNode				from "../../animators/nodes/ParticleOrbitNode";
-import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
-import ShaderBase						from "../../shaders/ShaderBase";
+import {ParticleAnimator}					from "../../animators/ParticleAnimator";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {AnimationElements}				from "../../animators/data/AnimationElements";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleOrbitNode}				from "../../animators/nodes/ParticleOrbitNode";
+import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
+import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
+import {ShaderBase}						from "../../shaders/ShaderBase";
 
 /**
  * ...
  */
-class ParticleOrbitState extends ParticleStateBase
+export class ParticleOrbitState extends ParticleStateBase
 {
 	/** @private */
 	public static ORBIT_INDEX:number = 0;
@@ -113,7 +113,7 @@ class ParticleOrbitState extends ParticleStateBase
 		this.updateOrbitData();
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
 	{
 		var index:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.ORBIT_INDEX);
 
@@ -129,7 +129,7 @@ class ParticleOrbitState extends ParticleStateBase
 			shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.EULERS_INDEX), this._eulersMatrix);
 	}
 
-	private updateOrbitData()
+	private updateOrbitData():void
 	{
 		if (this._usesEulers) {
 			this._eulersMatrix = new Matrix3D();
@@ -148,5 +148,3 @@ class ParticleOrbitState extends ParticleStateBase
 		}
 	}
 }
-
-export default ParticleOrbitState;

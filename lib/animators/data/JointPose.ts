@@ -1,6 +1,6 @@
-import Matrix3D							from "awayjs-core/lib/geom/Matrix3D";
-import Quaternion						from "awayjs-core/lib/geom/Quaternion";
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Matrix3D}							from "awayjs-core/lib/geom/Matrix3D";
+import {Quaternion}						from "awayjs-core/lib/geom/Quaternion";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
 /**
  * Contains transformation data for a skeleton joint, used for skeleton animation.
@@ -10,7 +10,7 @@ import Vector3D							from "awayjs-core/lib/geom/Vector3D";
  *
  * todo: support (uniform) scale
  */
-class JointPose
+export class JointPose
 {
 	/**
 	 * The name of the joint to which the pose is associated
@@ -53,7 +53,7 @@ class JointPose
 	 *
 	 * @param pose The source pose to copy from.
 	 */
-	public copyFrom(pose:JointPose)
+	public copyFrom(pose:JointPose):void
 	{
 		var or:Quaternion = pose.orientation;
 		var tr:Vector3D = pose.translation;
@@ -66,5 +66,3 @@ class JointPose
 		this.translation.z = tr.z;
 	}
 }
-
-export default JointPose;

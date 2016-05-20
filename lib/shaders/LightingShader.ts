@@ -1,25 +1,25 @@
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
 
-import Camera						from "awayjs-display/lib/display/Camera";
-import DirectionalLight				from "awayjs-display/lib/display/DirectionalLight";
-import LightProbe					from "awayjs-display/lib/display/LightProbe";
-import PointLight					from "awayjs-display/lib/display/PointLight";
-import LightPickerBase				from "awayjs-display/lib/materials/lightpickers/LightPickerBase";
-import LightSources					from "awayjs-display/lib/materials/LightSources";
+import {Camera}						from "awayjs-display/lib/display/Camera";
+import {DirectionalLight}				from "awayjs-display/lib/display/DirectionalLight";
+import {LightProbe}					from "awayjs-display/lib/display/LightProbe";
+import {PointLight}					from "awayjs-display/lib/display/PointLight";
+import {LightPickerBase}				from "awayjs-display/lib/materials/lightpickers/LightPickerBase";
+import {LightSources}					from "awayjs-display/lib/materials/LightSources";
 
-import ContextGLProfile				from "awayjs-stagegl/lib/base/ContextGLProfile";
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
-import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
+import {ContextGLProfile}				from "awayjs-stagegl/lib/base/ContextGLProfile";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
+import {GL_ImageBase}					from "awayjs-stagegl/lib/image/GL_ImageBase";
 
-import ILightingPass				from "../surfaces/passes/ILightingPass";
+import {ILightingPass}				from "../surfaces/passes/ILightingPass";
 
-import ShaderBase					from "../shaders/ShaderBase";
-import CompilerBase					from "../shaders/compilers/CompilerBase";
-import LightingCompiler				from "../shaders/compilers/LightingCompiler";
-import IElementsClassGL				from "../elements/IElementsClassGL";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {CompilerBase}					from "../shaders/compilers/CompilerBase";
+import {LightingCompiler}				from "../shaders/compilers/LightingCompiler";
+import {IElementsClassGL}				from "../elements/IElementsClassGL";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -29,7 +29,7 @@ import GL_RenderableBase			from "../renderables/GL_RenderableBase";
  *
  * @see RegisterPool.addUsage
  */
-class LightingShader extends ShaderBase
+export class LightingShader extends ShaderBase
 {
 	public _lightingPass:ILightingPass;
 
@@ -108,7 +108,7 @@ class LightingShader extends ShaderBase
 		this._lightingPass = lightingPass;
 	}
 
-	public _iIncludeDependencies()
+	public _iIncludeDependencies():void
 	{
 		this.numPointLights = this._lightingPass.numPointLights;
 		this.numDirectionalLights = this._lightingPass.numDirectionalLights;
@@ -154,7 +154,7 @@ class LightingShader extends ShaderBase
 	 * @param stage
 	 * @param camera
 	 */
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D):void
 	{
 		super._setRenderState(renderable, camera, viewProjection);
 
@@ -171,7 +171,7 @@ class LightingShader extends ShaderBase
 	/**
 	 * Updates constant data render state used by the lights. This method is optional for subclasses to implement.
 	 */
-	private updateLights()
+	private updateLights():void
 	{
 		var dirLight:DirectionalLight;
 		var pointLight:PointLight;
@@ -338,7 +338,7 @@ class LightingShader extends ShaderBase
 	/**
 	 * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
 	 */
-	private updateProbes()
+	private updateProbes():void
 	{
 		var probe:LightProbe;
 		var lightProbes:Array<LightProbe> = this._lightingPass.lightPicker.lightProbes;
@@ -367,5 +367,3 @@ class LightingShader extends ShaderBase
 			this.fragmentConstantData[this.probeWeightsIndex + i] = weights[this._lightingPass.lightProbesOffset + i];
 	}
 }
-
-export default LightingShader;

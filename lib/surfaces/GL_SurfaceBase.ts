@@ -1,38 +1,38 @@
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import ImageBase					from "awayjs-core/lib/image/ImageBase";
-import SamplerBase					from "awayjs-core/lib/image/SamplerBase";
-import Sampler2D					from "awayjs-core/lib/image/Sampler2D";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {ImageBase}					from "awayjs-core/lib/image/ImageBase";
+import {SamplerBase}					from "awayjs-core/lib/image/SamplerBase";
+import {Sampler2D}					from "awayjs-core/lib/image/Sampler2D";
 
-import AbstractionBase				from "awayjs-core/lib/library/AbstractionBase";
+import {AbstractionBase}				from "awayjs-core/lib/library/AbstractionBase";
 
-import ISurface						from "awayjs-display/lib/base/ISurface";
-import Camera						from "awayjs-display/lib/display/Camera";
-import SurfaceEvent					from "awayjs-display/lib/events/SurfaceEvent";
-import IRenderable					from "awayjs-display/lib/base/IRenderable";
-import MaterialBase					from "awayjs-display/lib/materials/MaterialBase";
-import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
-import TextureBase					from "awayjs-display/lib/textures/TextureBase";
+import {ISurface}						from "awayjs-display/lib/base/ISurface";
+import {Camera}						from "awayjs-display/lib/display/Camera";
+import {SurfaceEvent}					from "awayjs-display/lib/events/SurfaceEvent";
+import {IRenderable}					from "awayjs-display/lib/base/IRenderable";
+import {MaterialBase}					from "awayjs-display/lib/materials/MaterialBase";
+import {DefaultMaterialManager}		from "awayjs-display/lib/managers/DefaultMaterialManager";
+import {TextureBase}					from "awayjs-display/lib/textures/TextureBase";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
-import GL_SamplerBase				from "awayjs-stagegl/lib/image/GL_SamplerBase";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {GL_ImageBase}					from "awayjs-stagegl/lib/image/GL_ImageBase";
+import {GL_SamplerBase}				from "awayjs-stagegl/lib/image/GL_SamplerBase";
 
-import AnimatorBase					from "../animators/AnimatorBase";
-import PassEvent					from "../events/PassEvent";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import SurfacePool					from "../surfaces/SurfacePool";
-import IPass						from "../surfaces/passes/IPass";
-import IElementsClassGL				from "../elements/IElementsClassGL";
-import GL_TextureBase				from "../textures/GL_TextureBase";
+import {AnimatorBase}					from "../animators/AnimatorBase";
+import {PassEvent}					from "../events/PassEvent";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
+import {SurfacePool}					from "../surfaces/SurfacePool";
+import {IPass}						from "../surfaces/passes/IPass";
+import {IElementsClassGL}				from "../elements/IElementsClassGL";
+import {GL_TextureBase}				from "../textures/GL_TextureBase";
 
 /**
  *
  * @class away.pool.Passes
  */
-class GL_SurfaceBase extends AbstractionBase
+export class GL_SurfaceBase extends AbstractionBase
 {
 	private _onInvalidateAnimationDelegate:(event:SurfaceEvent) => void;
 	private _onInvalidatePassesDelegate:(event:SurfaceEvent) => void;
@@ -120,7 +120,7 @@ class GL_SurfaceBase extends AbstractionBase
 		this._onPassInvalidateDelegate = (event:PassEvent) => this.onPassInvalidate(event);
 	}
 
-	public _iIncludeDependencies(shader:ShaderBase)
+	public _iIncludeDependencies(shader:ShaderBase):void
 	{
 		this._elementsClass._iIncludeDependencies(shader);
 
@@ -148,7 +148,7 @@ class GL_SurfaceBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public onClear(event:AssetEvent)
+	public onClear(event:AssetEvent):void
 	{
 		super.onClear(event);
 
@@ -168,7 +168,7 @@ class GL_SurfaceBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public onInvalidate(event:AssetEvent)
+	public onInvalidate(event:AssetEvent):void
 	{
 		super.onInvalidate(event);
 
@@ -179,7 +179,7 @@ class GL_SurfaceBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public onInvalidatePasses(event:SurfaceEvent)
+	public onInvalidatePasses(event:SurfaceEvent):void
 	{
 		var len:number = this._passes.length;
 		for (var i:number = 0; i < len; i++)
@@ -192,7 +192,7 @@ class GL_SurfaceBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public onInvalidateAnimation(event:SurfaceEvent)
+	public onInvalidateAnimation(event:SurfaceEvent):void
 	{
 		this._invalidAnimation = true;
 	}
@@ -201,7 +201,7 @@ class GL_SurfaceBase extends AbstractionBase
 	 *
 	 * @param surface
 	 */
-	private _updateAnimation()
+	private _updateAnimation():void
 	{
 		if (this._invalidRender)
 			this._pUpdateRender();
@@ -234,7 +234,7 @@ class GL_SurfaceBase extends AbstractionBase
 		this._renderOrderId = renderOrderId;
 	}
 
-	private _updateImages()
+	private _updateImages():void
 	{
 		this._invalidImages = false;
 
@@ -269,7 +269,7 @@ class GL_SurfaceBase extends AbstractionBase
 	 *
 	 * @private
 	 */
-	public _pUpdateRender()
+	public _pUpdateRender():void
 	{
 		this._invalidRender = false;
 
@@ -280,7 +280,7 @@ class GL_SurfaceBase extends AbstractionBase
 	 * Removes a pass from the surface.
 	 * @param pass The pass to be removed.
 	 */
-	public _pRemovePass(pass:IPass)
+	public _pRemovePass(pass:IPass):void
 	{
 		pass.removeEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
 		this._passes.splice(this._passes.indexOf(pass), 1);
@@ -289,7 +289,7 @@ class GL_SurfaceBase extends AbstractionBase
 	/**
 	 * Removes all passes from the surface
 	 */
-	public _pClearPasses()
+	public _pClearPasses():void
 	{
 		var len:number = this._passes.length;
 		for (var i:number = 0; i < len; ++i)
@@ -302,7 +302,7 @@ class GL_SurfaceBase extends AbstractionBase
 	 * Adds a pass to the surface
 	 * @param pass
 	 */
-	public _pAddPass(pass:IPass)
+	public _pAddPass(pass:IPass):void
 	{
 		this._passes.push(pass);
 		pass.addEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
@@ -311,7 +311,7 @@ class GL_SurfaceBase extends AbstractionBase
 	/**
 	 * Listener for when a pass's shader code changes. It recalculates the render order id.
 	 */
-	private onPassInvalidate(event:PassEvent)
+	private onPassInvalidate(event:PassEvent):void
 	{
 		this._invalidAnimation = true;
 	}
@@ -348,5 +348,3 @@ class GL_SurfaceBase extends AbstractionBase
 		return false;
 	}
 }
-
-export default GL_SurfaceBase;

@@ -1,25 +1,25 @@
-import MathConsts						from "awayjs-core/lib/geom/MathConsts";
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {MathConsts}						from "awayjs-core/lib/geom/MathConsts";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import DisplayObject					from "awayjs-display/lib/display/DisplayObject";
-import Camera							from "awayjs-display/lib/display/Camera";
+import {DisplayObject}					from "awayjs-display/lib/display/DisplayObject";
+import {Camera}							from "awayjs-display/lib/display/Camera";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
-import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLVertexBufferFormat}		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
-import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import AnimationElements				from "../../animators/data/AnimationElements";
-import ParticleAnimationData			from "../../animators/data/ParticleAnimationData";
-import ParticleFollowNode				from "../../animators/nodes/ParticleFollowNode";
-import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
-import ShaderBase						from "../../shaders/ShaderBase";
+import {ParticleAnimator}					from "../../animators/ParticleAnimator";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {AnimationElements}				from "../../animators/data/AnimationElements";
+import {ParticleAnimationData}			from "../../animators/data/ParticleAnimationData";
+import {ParticleFollowNode}				from "../../animators/nodes/ParticleFollowNode";
+import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
+import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
+import {ShaderBase}						from "../../shaders/ShaderBase";
 
 /**
  * ...
  */
-class ParticleFollowState extends ParticleStateBase
+export class ParticleFollowState extends ParticleStateBase
 {
 	/** @private */
 	public static FOLLOW_POSITION_INDEX:number = 0;
@@ -70,7 +70,7 @@ class ParticleFollowState extends ParticleStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
 	{
 		if (this._followTarget) {
 			if (this._particleFollowNode._iUsesPosition) {
@@ -120,7 +120,7 @@ class ParticleFollowState extends ParticleStateBase
 		animationElements.previousTime = currentTime;
 	}
 
-	private processPosition(currentTime:number, deltaTime:number, animationElements:AnimationElements)
+	private processPosition(currentTime:number, deltaTime:number, animationElements:AnimationElements):void
 	{
 		var data:Array<ParticleAnimationData> = animationElements.animationParticles;
 		var vertexData:Array<number> = animationElements.vertexData;
@@ -161,7 +161,7 @@ class ParticleFollowState extends ParticleStateBase
 
 	}
 
-	private precessRotation(currentTime:number, deltaTime:number, animationElements:AnimationElements)
+	private precessRotation(currentTime:number, deltaTime:number, animationElements:AnimationElements):void
 	{
 		var data:Array<ParticleAnimationData> = animationElements.animationParticles;
 		var vertexData:Array<number> = animationElements.vertexData;
@@ -205,7 +205,7 @@ class ParticleFollowState extends ParticleStateBase
 
 	}
 
-	private processPositionAndRotation(currentTime:number, deltaTime:number, animationElements:AnimationElements)
+	private processPositionAndRotation(currentTime:number, deltaTime:number, animationElements:AnimationElements):void
 	{
 		var data:Array<ParticleAnimationData> = animationElements.animationParticles;
 		var vertexData:Array<number> = animationElements.vertexData;
@@ -261,5 +261,3 @@ class ParticleFollowState extends ParticleStateBase
 	}
 
 }
-
-export default ParticleFollowState;

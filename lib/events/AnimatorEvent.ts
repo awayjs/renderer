@@ -1,11 +1,11 @@
-import EventBase					from "awayjs-core/lib/events/EventBase";
+import {EventBase}					from "awayjs-core/lib/events/EventBase";
 
-import AnimatorBase					from "../animators/AnimatorBase";
+import {AnimatorBase}					from "../animators/AnimatorBase";
 
 /**
  * Dispatched to notify changes in an animator's state.
  */
-class AnimatorEvent extends EventBase
+export class AnimatorEvent extends EventBase
 {
 	/**
 	 * Defines the value of the type property of a start event object.
@@ -51,5 +51,3 @@ class AnimatorEvent extends EventBase
 		return new AnimatorEvent(this.type, this._animator);
 	}
 }
-
-export default AnimatorEvent;

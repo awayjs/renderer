@@ -1,7 +1,7 @@
-import IAsset							from "awayjs-core/lib/library/IAsset";
-import AssetBase						from "awayjs-core/lib/library/AssetBase";
+import {IAsset}							from "awayjs-core/lib/library/IAsset";
+import {AssetBase}						from "awayjs-core/lib/library/AssetBase";
 
-import JointPose						from "../../animators/data/JointPose";
+import {JointPose}						from "../../animators/data/JointPose";
 
 
 /**
@@ -13,7 +13,7 @@ import JointPose						from "../../animators/data/JointPose";
  * @see away.animators.Skeleton
  * @see away.animators.JointPose
  */
-class SkeletonPose extends AssetBase implements IAsset
+export class SkeletonPose extends AssetBase implements IAsset
 {
 	public static assetType:string = "[asset SkeletonPose]";
 
@@ -114,10 +114,8 @@ class SkeletonPose extends AssetBase implements IAsset
 	/**
 	 * @inheritDoc
 	 */
-	public dispose()
+	public dispose():void
 	{
 		this.jointPoses.length = 0;
 	}
 }
-
-export default SkeletonPose;

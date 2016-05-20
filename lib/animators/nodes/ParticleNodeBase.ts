@@ -1,15 +1,15 @@
-import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ParticleProperties				from "../../animators/data/ParticleProperties";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ParticleProperties}				from "../../animators/data/ParticleProperties";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
 
 /**
  * Provides an abstract base class for particle animation nodes.
  */
-class ParticleNodeBase extends AnimationNodeBase
+export class ParticleNodeBase extends AnimationNodeBase
 {
 	private _priority:number;
 
@@ -126,7 +126,7 @@ class ParticleNodeBase extends AnimationNodeBase
 	 *
 	 * @see away.animators.ParticleAnimationSet#initParticleFunc
 	 */
-	public _iGeneratePropertyOfOneParticle(param:ParticleProperties)
+	public _iGeneratePropertyOfOneParticle(param:ParticleProperties):void
 	{
 
 	}
@@ -134,10 +134,8 @@ class ParticleNodeBase extends AnimationNodeBase
 	/**
 	 * Called internally by the particle animation set when determining the requirements of the particle animation node AGAL.
 	 */
-	public _iProcessAnimationSetting(particleAnimationSet:ParticleAnimationSet)
+	public _iProcessAnimationSetting(particleAnimationSet:ParticleAnimationSet):void
 	{
 
 	}
 }
-
-export default ParticleNodeBase;

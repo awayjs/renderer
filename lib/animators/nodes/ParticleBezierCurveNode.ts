@@ -1,19 +1,19 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ParticleProperties				from "../../animators/data/ParticleProperties";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import ParticleBezierCurveState			from "../../animators/states/ParticleBezierCurveState";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ParticleProperties}				from "../../animators/data/ParticleProperties";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {ParticleBezierCurveState}			from "../../animators/states/ParticleBezierCurveState";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
 /**
  * A particle animation node used to control the position of a particle over time along a bezier curve.
  */
-class ParticleBezierCurveNode extends ParticleNodeBase
+export class ParticleBezierCurveNode extends ParticleNodeBase
 {
 	/** @private */
 	public _iControlPoint:Vector3D;
@@ -104,7 +104,7 @@ class ParticleBezierCurveNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iGeneratePropertyOfOneParticle(param:ParticleProperties)
+	public _iGeneratePropertyOfOneParticle(param:ParticleProperties):void
 	{
 		var bezierControl:Vector3D = param[ParticleBezierCurveNode.BEZIER_CONTROL_VECTOR3D];
 		if (!bezierControl)
@@ -122,5 +122,3 @@ class ParticleBezierCurveNode extends ParticleNodeBase
 		this._pOneData[5] = bezierEnd.z;
 	}
 }
-
-export default ParticleBezierCurveNode;

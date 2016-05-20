@@ -1,22 +1,22 @@
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
 
-import GL_SamplerCube				from "awayjs-stagegl/lib/image/GL_SamplerCube";
+import {GL_SamplerCube}				from "awayjs-stagegl/lib/image/GL_SamplerCube";
 
-import SingleCubeTexture			from "awayjs-display/lib/textures/SingleCubeTexture";
+import {SingleCubeTexture}			from "awayjs-display/lib/textures/SingleCubeTexture";
 
-import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
-import GL_TextureBase				from "../textures/GL_TextureBase";
+import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
+import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
+import {GL_TextureBase}				from "../textures/GL_TextureBase";
 
 /**
  *
  * @class away.pool.TextureDataBase
  */
-class GL_SingleCubeTexture extends GL_TextureBase
+export class GL_SingleCubeTexture extends GL_TextureBase
 {
 	private _singleCubeTexture:SingleCubeTexture;
 	private _textureIndex:number;
@@ -30,14 +30,14 @@ class GL_SingleCubeTexture extends GL_TextureBase
 	}
 
 
-	public onClear(event:AssetEvent)
+	public onClear(event:AssetEvent):void
 	{
 		super.onClear(event);
 
 		this._singleCubeTexture = null;
 	}
 
-	public _iIncludeDependencies(includeInput:boolean = true)
+	public _iIncludeDependencies(includeInput:boolean = true):void
 	{
 		if (includeInput)
 			this._shader.usesPositionFragment = true;
@@ -66,7 +66,7 @@ class GL_SingleCubeTexture extends GL_TextureBase
 	}
 
 
-	public activate(render:GL_SurfaceBase)
+	public activate(render:GL_SurfaceBase):void
 	{
 		var sampler:GL_SamplerCube = <GL_SamplerCube> render.samplers[this._imageIndex];
 
@@ -78,7 +78,7 @@ class GL_SingleCubeTexture extends GL_TextureBase
 
 	}
 
-	public _setRenderState(renderable:GL_RenderableBase)
+	public _setRenderState(renderable:GL_RenderableBase):void
 	{
 		var sampler:GL_SamplerCube = <GL_SamplerCube> renderable.samplers[this._imageIndex];
 
@@ -89,5 +89,3 @@ class GL_SingleCubeTexture extends GL_TextureBase
 			renderable.images[this._imageIndex].activate(this._textureIndex, sampler._sampler.mipmap);
 	}
 }
-
-export default GL_SingleCubeTexture;

@@ -1,23 +1,23 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import Camera							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "awayjs-display/lib/display/Camera";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
-import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLVertexBufferFormat}		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
-import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import AnimationElements				from "../../animators/data/AnimationElements";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleRotationalVelocityNode	from "../../animators/nodes/ParticleRotationalVelocityNode";
-import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
-import ShaderBase						from "../../shaders/ShaderBase";
+import {ParticleAnimator}					from "../../animators/ParticleAnimator";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {AnimationElements}				from "../../animators/data/AnimationElements";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleRotationalVelocityNode}	from "../../animators/nodes/ParticleRotationalVelocityNode";
+import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
+import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
+import {ShaderBase}						from "../../shaders/ShaderBase";
 
 /**
  * ...
  */
-class ParticleRotationalVelocityState extends ParticleStateBase
+export class ParticleRotationalVelocityState extends ParticleStateBase
 {
 	/** @private */
 	public static ROTATIONALVELOCITY_INDEX:number = 0;
@@ -49,7 +49,7 @@ class ParticleRotationalVelocityState extends ParticleStateBase
 		return this._pDynamicProperties;
 	}
 
-	public setRotationalVelocities(value:Array<Vector3D>)
+	public setRotationalVelocities(value:Array<Vector3D>):void
 	{
 		this._pDynamicProperties = value;
 
@@ -69,7 +69,7 @@ class ParticleRotationalVelocityState extends ParticleStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
 	{
 		if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
 			this._pUpdateDynamicProperties(animationElements);
@@ -82,7 +82,7 @@ class ParticleRotationalVelocityState extends ParticleStateBase
 			animationElements.activateVertexBuffer(index, this._particleRotationalVelocityNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_4);
 	}
 
-	private updateRotationalVelocityData()
+	private updateRotationalVelocityData():void
 	{
 		if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode.GLOBAL) {
 			if (this._rotationalVelocity.w <= 0)
@@ -98,5 +98,3 @@ class ParticleRotationalVelocityState extends ParticleStateBase
 		}
 	}
 }
-
-export default ParticleRotationalVelocityState;

@@ -1,7 +1,7 @@
 /**
  * A single register element (an entire register or a single register's component) used by the RegisterPool.
  */
-class ShaderRegisterElement
+export class ShaderRegisterElement
 {
 	private _regName:string;
 	private _index:number;
@@ -57,5 +57,3 @@ class ShaderRegisterElement
 		return this._index;
 	}
 }
-
-export default ShaderRegisterElement;

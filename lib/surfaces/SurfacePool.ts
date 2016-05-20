@@ -1,18 +1,18 @@
-import IAssetClass					from "awayjs-core/lib/library/IAssetClass";
-import IAbstractionPool				from "awayjs-core/lib/library/IAbstractionPool";
+import {IAssetClass}					from "awayjs-core/lib/library/IAssetClass";
+import {IAbstractionPool}				from "awayjs-core/lib/library/IAbstractionPool";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
 
-import ISurface						from "awayjs-display/lib/base/ISurface";
+import {ISurface}						from "awayjs-display/lib/base/ISurface";
 
-import IElementsClassGL				from "../elements/IElementsClassGL";
-import ISurfaceClassGL				from "../surfaces/ISurfaceClassGL";
-import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
+import {IElementsClassGL}				from "../elements/IElementsClassGL";
+import {ISurfaceClassGL}				from "../surfaces/ISurfaceClassGL";
+import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
 
 /**
  * @class away.pool.SurfacePool
  */
-class SurfacePool implements IAbstractionPool
+export class SurfacePool implements IAbstractionPool
 {
 	private static _abstractionClassPool:Object = new Object();
 
@@ -54,7 +54,7 @@ class SurfacePool implements IAbstractionPool
 	 *
 	 * @param elementsOwner
 	 */
-	public clearAbstraction(surface:ISurface)
+	public clearAbstraction(surface:ISurface):void
 	{
 		delete this._abstractionPool[surface.id];
 	}
@@ -63,10 +63,8 @@ class SurfacePool implements IAbstractionPool
 	 *
 	 * @param imageObjectClass
 	 */
-	public static registerAbstraction(surfaceClassGL:ISurfaceClassGL, assetClass:IAssetClass)
+	public static registerAbstraction(surfaceClassGL:ISurfaceClassGL, assetClass:IAssetClass):void
 	{
 		SurfacePool._abstractionClassPool[assetClass.assetType] = surfaceClassGL;
 	}
 }
-
-export default SurfacePool;

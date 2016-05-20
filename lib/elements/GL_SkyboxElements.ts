@@ -1,26 +1,26 @@
-import Matrix3DUtils				from "awayjs-core/lib/geom/Matrix3DUtils";
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import {Matrix3DUtils}				from "awayjs-core/lib/geom/Matrix3DUtils";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
 
-import Camera						from "awayjs-display/lib/display/Camera";
+import {Camera}						from "awayjs-display/lib/display/Camera";
 
-import ContextGLDrawMode			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
-import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
-import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
+import {ContextGLDrawMode}			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
+import {ContextGLProgramType}			from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
 
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
-import GL_TriangleElements			from "../elements/GL_TriangleElements";
-import IElementsClassGL				from "../elements/IElementsClassGL";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
+import {GL_TriangleElements}			from "../elements/GL_TriangleElements";
+import {IElementsClassGL}				from "../elements/IElementsClassGL";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
 
 /**
  *
  * @class away.pool.GL_SkyboxElements
  */
-class GL_SkyboxElements extends GL_TriangleElements
+export class GL_SkyboxElements extends GL_TriangleElements
 {
 	private _skyboxProjection:Matrix3D = new Matrix3D();
 	
@@ -36,7 +36,7 @@ class GL_SkyboxElements extends GL_TriangleElements
 		return GL_SkyboxElements;
 	}
 	
-	public static _iIncludeDependencies(shader:ShaderBase)
+	public static _iIncludeDependencies(shader:ShaderBase):void
 	{
 	}
 
@@ -84,7 +84,7 @@ class GL_SkyboxElements extends GL_TriangleElements
 		return "";
 	}
 
-	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number):void
 	{
 		var index:number = shader.scenePositionIndex;
 		var pos:Vector3D = camera.scenePosition;
@@ -141,5 +141,3 @@ class GL_SkyboxElements extends GL_TriangleElements
 			this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
 	}
 }
-
-export default GL_SkyboxElements;

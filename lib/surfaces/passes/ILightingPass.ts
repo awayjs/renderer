@@ -1,16 +1,16 @@
-import LightPickerBase				from "awayjs-display/lib/materials/lightpickers/LightPickerBase";
+import {LightPickerBase}				from "awayjs-display/lib/materials/lightpickers/LightPickerBase";
 
-import IPass						from "../../surfaces/passes/IPass";
-import LightingShader				from "../../shaders/LightingShader";
-import ShaderRegisterCache			from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../../shaders/ShaderRegisterElement";
+import {IPass}						from "../../surfaces/passes/IPass";
+import {LightingShader}				from "../../shaders/LightingShader";
+import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
+import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
 
 /**
  *
  * @class away.pool.Passes
  */
-interface ILightingPass extends IPass
+export interface ILightingPass extends IPass
 {
 	enableLightFallOff:boolean;
 
@@ -59,5 +59,3 @@ interface ILightingPass extends IPass
 	 */
 	_iUsesDiffuse(shader:LightingShader):boolean;
 }
-
-export default ILightingPass;

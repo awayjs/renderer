@@ -1,20 +1,20 @@
-import ColorTransform					from "awayjs-core/lib/geom/ColorTransform";
+import {ColorTransform}					from "awayjs-core/lib/geom/ColorTransform";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ParticleProperties				from "../../animators/data/ParticleProperties";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import ParticleColorState				from "../../animators/states/ParticleColorState";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ParticleProperties}				from "../../animators/data/ParticleProperties";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {ParticleColorState}				from "../../animators/states/ParticleColorState";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used to control the color variation of a particle over time.
  */
-class ParticleColorNode extends ParticleNodeBase
+export class ParticleColorNode extends ParticleNodeBase
 {
 	//default values used when creating states
 	/** @private */
@@ -140,7 +140,7 @@ class ParticleColorNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iProcessAnimationSetting(particleAnimationSet:ParticleAnimationSet)
+	public _iProcessAnimationSetting(particleAnimationSet:ParticleAnimationSet):void
 	{
 		if (this._iUsesMultiplier)
 			particleAnimationSet.hasColorMulNode = true;
@@ -151,7 +151,7 @@ class ParticleColorNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iGeneratePropertyOfOneParticle(param:ParticleProperties)
+	public _iGeneratePropertyOfOneParticle(param:ParticleProperties):void
 	{
 		var startColor:ColorTransform = param[ParticleColorNode.COLOR_START_COLORTRANSFORM];
 		if (!startColor)
@@ -215,5 +215,3 @@ class ParticleColorNode extends ParticleNodeBase
 
 	}
 }
-
-export default ParticleColorNode;

@@ -1,19 +1,19 @@
-import ColorTransform					from "awayjs-core/lib/geom/ColorTransform";
+import {ColorTransform}					from "awayjs-core/lib/geom/ColorTransform";
 
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ColorSegmentPoint				from "../../animators/data/ColorSegmentPoint";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import ParticleSegmentedColorState		from "../../animators/states/ParticleSegmentedColorState";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ColorSegmentPoint}				from "../../animators/data/ColorSegmentPoint";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {ParticleSegmentedColorState}		from "../../animators/states/ParticleSegmentedColorState";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
 
 /**
  *
  */
-class ParticleSegmentedColorNode extends ParticleNodeBase
+export class ParticleSegmentedColorNode extends ParticleNodeBase
 {
 	/** @private */
 	public _iUsesMultiplier:boolean;
@@ -48,7 +48,7 @@ class ParticleSegmentedColorNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iProcessAnimationSetting(particleAnimationSet:ParticleAnimationSet)
+	public _iProcessAnimationSetting(particleAnimationSet:ParticleAnimationSet):void
 	{
 		if (this._iUsesMultiplier)
 			particleAnimationSet.hasColorMulNode = true;
@@ -179,5 +179,3 @@ class ParticleSegmentedColorNode extends ParticleNodeBase
 	}
 
 }
-
-export default ParticleSegmentedColorNode;

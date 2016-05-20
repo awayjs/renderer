@@ -1,3 +1,3 @@
-export {default as IEntitySorter}					from "./sort/IEntitySorter";
-export {default as RenderableMergeSort}				from "./sort/RenderableMergeSort";
-export {default as RenderableNullSort}				from "./sort/RenderableNullSort";
+export {IEntitySorter}					from "./sort/IEntitySorter";
+export {RenderableMergeSort}				from "./sort/RenderableMergeSort";
+export {RenderableNullSort}				from "./sort/RenderableNullSort";

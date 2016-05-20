@@ -1,13 +1,13 @@
-import Stage							from "awayjs-stagegl/lib/base/Stage";
-import IContextGL						from "awayjs-stagegl/lib/base/IContextGL";
-import IVertexBuffer					from "awayjs-stagegl/lib/base/IVertexBuffer";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {IContextGL}						from "awayjs-stagegl/lib/base/IContextGL";
+import {IVertexBuffer}					from "awayjs-stagegl/lib/base/IVertexBuffer";
 
-import ParticleAnimationData			from "../../animators/data/ParticleAnimationData";
+import {ParticleAnimationData}			from "../../animators/data/ParticleAnimationData";
 
 /**
  * ...
  */
-class AnimationElements
+export class AnimationElements
 {
 	public static SUBGEOM_ID_COUNT:number = 0;
 
@@ -42,14 +42,14 @@ class AnimationElements
 		this._iUniqueId = AnimationElements.SUBGEOM_ID_COUNT++;
 	}
 
-	public createVertexData(numVertices:number, totalLenOfOneVertex:number)
+	public createVertexData(numVertices:number, totalLenOfOneVertex:number):void
 	{
 		this._numVertices = numVertices;
 		this._totalLenOfOneVertex = totalLenOfOneVertex;
 		this._pVertexData = new Array<number>(numVertices*totalLenOfOneVertex);
 	}
 
-	public activateVertexBuffer(index:number, bufferOffset:number, stage:Stage, format:number)
+	public activateVertexBuffer(index:number, bufferOffset:number, stage:Stage, format:number):void
 	{
 		var contextIndex:number = stage.stageIndex;
 		var context:IContextGL = <IContextGL> stage.context;
@@ -67,7 +67,7 @@ class AnimationElements
 		context.setVertexBufferAt(index, buffer, bufferOffset*4, format);
 	}
 
-	public dispose()
+	public dispose():void
 	{
 		while (this._pVertexBuffer.length) {
 			var vertexBuffer:IVertexBuffer = this._pVertexBuffer.pop()
@@ -77,7 +77,7 @@ class AnimationElements
 		}
 	}
 
-	public invalidateBuffer()
+	public invalidateBuffer():void
 	{
 		for (var i:number = 0; i < 8; i++)
 			this._pBufferDirty[i] = true;
@@ -98,5 +98,3 @@ class AnimationElements
 		return this._totalLenOfOneVertex;
 	}
 }
-
-export default AnimationElements;

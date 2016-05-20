@@ -1,14 +1,14 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import IAnimationState					from "../../animators/states/IAnimationState";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {IAnimationState}					from "../../animators/states/IAnimationState";
 
 /**
  *
  */
-class AnimationStateBase implements IAnimationState
+export class AnimationStateBase implements IAnimationState
 {
 	public _pAnimationNode:AnimationNodeBase;
 	public _pRootDelta:Vector3D = new Vector3D();
@@ -43,7 +43,7 @@ class AnimationStateBase implements IAnimationState
 	 *
 	 * @param startTime The absolute start time (in milliseconds) of the node's starting time.
 	 */
-	public offset(startTime:number)
+	public offset(startTime:number):void
 	{
 		this._pStartTime = startTime;
 
@@ -57,7 +57,7 @@ class AnimationStateBase implements IAnimationState
 	 *
 	 * @see AnimatorBase#update()
 	 */
-	public update(time:number)
+	public update(time:number):void
 	{
 		if (this._pTime == time - this._pStartTime) {
 
@@ -74,7 +74,7 @@ class AnimationStateBase implements IAnimationState
 	 *
 	 * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
 	 */
-	public phase(value:number)
+	public phase(value:number):void
 	{
 
 	}
@@ -84,7 +84,7 @@ class AnimationStateBase implements IAnimationState
 	 *
 	 * @param time The local time (in milliseconds) of the node's playhead position.
 	 */
-	public _pUpdateTime(time:number)
+	public _pUpdateTime(time:number):void
 	{
 		this._pTime = time - this._pStartTime;
 
@@ -94,9 +94,7 @@ class AnimationStateBase implements IAnimationState
 	/**
 	 * Updates the node's root delta position
 	 */
-	public _pUpdatePositionDelta()
+	public _pUpdatePositionDelta():void
 	{
 	}
 }
-
-export default AnimationStateBase;

@@ -1,24 +1,24 @@
-import ColorTransform					from "awayjs-core/lib/geom/ColorTransform";
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {ColorTransform}					from "awayjs-core/lib/geom/ColorTransform";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import Camera							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "awayjs-display/lib/display/Camera";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
-import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLVertexBufferFormat}		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
-import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import AnimationElements				from "../../animators/data/AnimationElements";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleInitialColorNode			from "../../animators/nodes/ParticleInitialColorNode";
-import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
-import ShaderBase						from "../../shaders/ShaderBase";
+import {ParticleAnimator}					from "../../animators/ParticleAnimator";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {AnimationElements}				from "../../animators/data/AnimationElements";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleInitialColorNode}			from "../../animators/nodes/ParticleInitialColorNode";
+import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
+import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
+import {ShaderBase}						from "../../shaders/ShaderBase";
 
 /**
 *
 */
-class ParticleInitialColorState extends ParticleStateBase
+export class ParticleInitialColorState extends ParticleStateBase
 {
 	/** @private */
 	public static MULTIPLIER_INDEX:number = 0;
@@ -60,7 +60,7 @@ class ParticleInitialColorState extends ParticleStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
 	{
 		if (shader.usesFragmentAnimation) {
 			var index:number;
@@ -81,7 +81,7 @@ class ParticleInitialColorState extends ParticleStateBase
 		}
 	}
 
-	private updateColorData()
+	private updateColorData():void
 	{
 		if (this._particleInitialColorNode.mode == ParticlePropertiesMode.GLOBAL) {
 			if (this._usesMultiplier)
@@ -92,5 +92,3 @@ class ParticleInitialColorState extends ParticleStateBase
 	}
 
 }
-
-export default ParticleInitialColorState;

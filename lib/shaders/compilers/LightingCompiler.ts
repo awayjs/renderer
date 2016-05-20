@@ -1,8 +1,8 @@
-import LightingShader				from "../../shaders/LightingShader";
-import CompilerBase					from "../../shaders/compilers/CompilerBase";
-import ShaderRegisterElement		from "../../shaders/ShaderRegisterElement";
-import ILightingPass				from "../../surfaces/passes/ILightingPass";
-import IElementsClassGL				from "../../elements/IElementsClassGL";
+import {LightingShader}				from "../../shaders/LightingShader";
+import {CompilerBase}					from "../../shaders/compilers/CompilerBase";
+import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
+import {ILightingPass}				from "../../surfaces/passes/ILightingPass";
+import {IElementsClassGL}				from "../../elements/IElementsClassGL";
 
 /**
  * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
@@ -10,7 +10,7 @@ import IElementsClassGL				from "../../elements/IElementsClassGL";
  *
  * @see away.materials.ShadingMethodBase
  */
-class LightingCompiler extends CompilerBase
+export class LightingCompiler extends CompilerBase
 {
 	private _shaderLightingObject:LightingShader;
 	private _lightingPass:ILightingPass;
@@ -36,7 +36,7 @@ class LightingCompiler extends CompilerBase
 	/**
 	 * Compile the code for the methods.
 	 */
-	public pCompileDependencies()
+	public pCompileDependencies():void
 	{
 		super.pCompileDependencies();
 
@@ -59,7 +59,7 @@ class LightingCompiler extends CompilerBase
 	/**
 	 * Provides the code to provide shadow mapping.
 	 */
-	public pCompileShadowCode()
+	public pCompileShadowCode():void
 	{
 		if (this._shaderLightingObject.normalDependencies > 0) {
 			this._pSharedRegisters.shadowTarget = this._pSharedRegisters.normalFragment;
@@ -72,7 +72,7 @@ class LightingCompiler extends CompilerBase
 	/**
 	 * Initializes constant registers to contain light data.
 	 */
-	private initLightRegisters()
+	private initLightRegisters():void
 	{
 		// init these first so we're sure they're in sequence
 		var i:number, len:number;
@@ -117,7 +117,7 @@ class LightingCompiler extends CompilerBase
 	/**
 	 * Compiles the shading code for directional and point lights.
 	 */
-	private compileLightCode()
+	private compileLightCode():void
 	{
 		var diffuseColorReg:ShaderRegisterElement;
 		var specularColorReg:ShaderRegisterElement;
@@ -224,7 +224,7 @@ class LightingCompiler extends CompilerBase
 	/**
 	 * Compiles shading code for light probes.
 	 */
-	private compileLightProbeCode()
+	private compileLightProbeCode():void
 	{
 		var weightReg:string;
 		var weightComponents = [ ".x", ".y", ".z", ".w" ];
@@ -267,7 +267,7 @@ class LightingCompiler extends CompilerBase
 	/**
 	 * Reset all the indices to "unused".
 	 */
-	public pInitRegisterIndices()
+	public pInitRegisterIndices():void
 	{
 		super.pInitRegisterIndices();
 
@@ -293,5 +293,3 @@ class LightingCompiler extends CompilerBase
 		}
 	}
 }
-
-export default LightingCompiler;

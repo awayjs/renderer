@@ -1,11 +1,11 @@
-import IEntitySorter				from "../sort/IEntitySorter";
+import {IEntitySorter}				from "../sort/IEntitySorter";
 
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
 
 /**
  * @class away.sort.NullSort
  */
-class RenderableNullSort implements IEntitySorter
+export class RenderableNullSort implements IEntitySorter
 {
 	public sortBlendedRenderables(head:GL_RenderableBase):GL_RenderableBase
 	{
@@ -17,5 +17,3 @@ class RenderableNullSort implements IEntitySorter
 		return head;
 	}
 }
-
-export default RenderableNullSort;

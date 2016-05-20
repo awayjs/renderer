@@ -1,15 +1,15 @@
-import Graphics							from "awayjs-display/lib/graphics/Graphics";
+import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import VertexAnimator					from "../../animators/VertexAnimator";
-import VertexClipNode					from "../../animators/nodes/VertexClipNode";
-import AnimationClipState				from "../../animators/states/AnimationClipState";
-import IVertexAnimationState			from "../../animators/states/IVertexAnimationState";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {VertexAnimator}					from "../../animators/VertexAnimator";
+import {VertexClipNode}					from "../../animators/nodes/VertexClipNode";
+import {AnimationClipState}				from "../../animators/states/AnimationClipState";
+import {IVertexAnimationState}			from "../../animators/states/IVertexAnimationState";
 
 /**
  *
  */
-class VertexClipState extends AnimationClipState implements IVertexAnimationState
+export class VertexClipState extends AnimationClipState implements IVertexAnimationState
 {
 	private _frames:Array<Graphics>;
 	private _vertexClipNode:VertexClipNode;
@@ -49,7 +49,7 @@ class VertexClipState extends AnimationClipState implements IVertexAnimationStat
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateFrames()
+	public _pUpdateFrames():void
 	{
 		super._pUpdateFrames();
 
@@ -65,10 +65,8 @@ class VertexClipState extends AnimationClipState implements IVertexAnimationStat
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdatePositionDelta()
+	public _pUpdatePositionDelta():void
 	{
 		//TODO:implement positiondelta functionality for vertex animations
 	}
 }
-
-export default VertexClipState;

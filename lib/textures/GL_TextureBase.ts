@@ -1,26 +1,26 @@
-import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import ImageBase					from "awayjs-core/lib/image/ImageBase";
-import SamplerBase					from "awayjs-core/lib/image/SamplerBase";
-import AbstractionBase				from "awayjs-core/lib/library/AbstractionBase";
+import {AbstractMethodError}			from "awayjs-core/lib/errors/AbstractMethodError";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {ImageBase}					from "awayjs-core/lib/image/ImageBase";
+import {SamplerBase}					from "awayjs-core/lib/image/SamplerBase";
+import {AbstractionBase}				from "awayjs-core/lib/library/AbstractionBase";
 
-import ContextGLTextureFormat		from "awayjs-stagegl/lib/base/ContextGLTextureFormat";
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLTextureFormat}		from "awayjs-stagegl/lib/base/ContextGLTextureFormat";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
 
-import TextureBase					from "awayjs-display/lib/textures/TextureBase";
+import {TextureBase}					from "awayjs-display/lib/textures/TextureBase";
 
-import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
+import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
+import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
 
 /**
  *
  * @class away.pool.GL_TextureBaseBase
  */
-class GL_TextureBase extends AbstractionBase
+export class GL_TextureBase extends AbstractionBase
 {
 	private _texture:TextureBase;
 	public _shader:ShaderBase;
@@ -38,7 +38,7 @@ class GL_TextureBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public onClear(event:AssetEvent)
+	public onClear(event:AssetEvent):void
 	{
 		super.onClear(event);
 
@@ -52,12 +52,12 @@ class GL_TextureBase extends AbstractionBase
 		throw new AbstractMethodError();
 	}
 
-	public _setRenderState(renderable:GL_RenderableBase)
+	public _setRenderState(renderable:GL_RenderableBase):void
 	{
 		//overidden for state logic
 	}
 
-	public activate(render:GL_SurfaceBase)
+	public activate(render:GL_SurfaceBase):void
 	{
 		//overridden for activation logic
 	}
@@ -89,5 +89,3 @@ class GL_TextureBase extends AbstractionBase
 		}
 	}
 }
-
-export default GL_TextureBase;

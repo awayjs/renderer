@@ -1,19 +1,19 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import ParticleAnimationSet				from "../../animators/ParticleAnimationSet";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../../animators/nodes/ParticleNodeBase";
-import ParticleUVState					from "../../animators/states/ParticleUVState";
-import ShaderBase						from "../../shaders/ShaderBase";
-import ShaderRegisterCache				from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterElement			from "../../shaders/ShaderRegisterElement";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
+import {ParticleUVState}					from "../../animators/states/ParticleUVState";
+import {ShaderBase}						from "../../shaders/ShaderBase";
+import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
 
 /**
  * A particle animation node used to control the UV offset and scale of a particle over time.
  */
-class ParticleUVNode extends ParticleNodeBase
+export class ParticleUVNode extends ParticleNodeBase
 {
 	/** @private */
 	public _iUvData:Vector3D;
@@ -131,7 +131,7 @@ class ParticleUVNode extends ParticleNodeBase
 		return <ParticleUVState> animator.getAnimationState(this);
 	}
 
-	private updateUVData()
+	private updateUVData():void
 	{
 		this._iUvData = new Vector3D(Math.PI*2/this._cycle, this._scale, 0, 0);
 	}
@@ -139,10 +139,8 @@ class ParticleUVNode extends ParticleNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iProcessAnimationSetting(particleAnimationSet:ParticleAnimationSet)
+	public _iProcessAnimationSetting(particleAnimationSet:ParticleAnimationSet):void
 	{
 		particleAnimationSet.hasUVNode = true;
 	}
 }
-
-export default ParticleUVNode;

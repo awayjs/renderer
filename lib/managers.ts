@@ -1,1 +1,1 @@
-export {default as RTTBufferManager}				from "./managers/RTTBufferManager";
+export {RTTBufferManager}				from "./managers/RTTBufferManager";

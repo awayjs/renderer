@@ -1,13 +1,13 @@
-import Image2D						from "awayjs-core/lib/image/Image2D";
+import {Image2D}						from "awayjs-core/lib/image/Image2D";
 
-import Camera						from "awayjs-display/lib/display/Camera";
+import {Camera}						from "awayjs-display/lib/display/Camera";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
 
-import Filter3DTaskBase				from "../filters/tasks/Filter3DTaskBase";
-import RTTBufferManager from "../managers/RTTBufferManager";
+import {Filter3DTaskBase}				from "../filters/tasks/Filter3DTaskBase";
+import {RTTBufferManager}				from "../managers/RTTBufferManager";
 
-class Filter3DBase
+export class Filter3DBase
 {
 	private _tasks:Array<Filter3DTaskBase>;
 	private _requireDepthRender:boolean;
@@ -25,7 +25,7 @@ class Filter3DBase
 		return this._requireDepthRender;
 	}
 
-	public addTask(filter:Filter3DTaskBase)
+	public addTask(filter:Filter3DTaskBase):void
 	{
 		this._tasks.push(filter);
 
@@ -84,21 +84,19 @@ class Filter3DBase
 	}
 
 	// link up the filters correctly with the next filter
-	public setRenderTargets(mainTarget:Image2D, stage:Stage)
+	public setRenderTargets(mainTarget:Image2D, stage:Stage):void
 	{
 		this._tasks[this._tasks.length - 1].target = mainTarget;
 	}
 
-	public dispose()
+	public dispose():void
 	{
 		for (var i:number = 0; i < this._tasks.length; ++i)
 			this._tasks[i].dispose();
 	}
 
-	public update(stage:Stage, camera:Camera)
+	public update(stage:Stage, camera:Camera):void
 	{
 
 	}
 }
-
-export default Filter3DBase;

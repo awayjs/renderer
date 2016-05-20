@@ -1,34 +1,34 @@
-import BlendMode					from "awayjs-core/lib/image/BlendMode";
-import Matrix						from "awayjs-core/lib/geom/Matrix";
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
-import ColorTransform				from "awayjs-core/lib/geom/ColorTransform";
-import ArgumentError				from "awayjs-core/lib/errors/ArgumentError";
-import IAssetClass					from "awayjs-core/lib/library/IAssetClass";
-import IAbstractionPool				from "awayjs-core/lib/library/IAbstractionPool";
+import {BlendMode}					from "awayjs-core/lib/image/BlendMode";
+import {Matrix}						from "awayjs-core/lib/geom/Matrix";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {ColorTransform}				from "awayjs-core/lib/geom/ColorTransform";
+import {ArgumentError}				from "awayjs-core/lib/errors/ArgumentError";
+import {IAssetClass}					from "awayjs-core/lib/library/IAssetClass";
+import {IAbstractionPool}				from "awayjs-core/lib/library/IAbstractionPool";
 
-import Camera						from "awayjs-display/lib/display/Camera";
-import TextureBase					from "awayjs-display/lib/textures/TextureBase";
+import {Camera}						from "awayjs-display/lib/display/Camera";
+import {TextureBase}					from "awayjs-display/lib/textures/TextureBase";
 
-import ContextGLBlendFactor			from "awayjs-stagegl/lib/base/ContextGLBlendFactor";
-import ContextGLCompareMode			from "awayjs-stagegl/lib/base/ContextGLCompareMode";
-import ContextGLTriangleFace		from "awayjs-stagegl/lib/base/ContextGLTriangleFace";
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-import ProgramData					from "awayjs-stagegl/lib/image/ProgramData";
-import GL_IAssetClass				from "awayjs-stagegl/lib/library/GL_IAssetClass";
+import {ContextGLBlendFactor}			from "awayjs-stagegl/lib/base/ContextGLBlendFactor";
+import {ContextGLCompareMode}			from "awayjs-stagegl/lib/base/ContextGLCompareMode";
+import {ContextGLTriangleFace}		from "awayjs-stagegl/lib/base/ContextGLTriangleFace";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {ProgramData}					from "awayjs-stagegl/lib/image/ProgramData";
+import {GL_IAssetClass}				from "awayjs-stagegl/lib/library/GL_IAssetClass";
 
-import AnimationSetBase				from "../animators/AnimationSetBase";
-import AnimatorBase					from "../animators/AnimatorBase";
-import AnimationRegisterData		from "../animators/data/AnimationRegisterData";
-import IPass						from "../surfaces/passes/IPass";
-import IElementsClassGL				from "../elements/IElementsClassGL";
-import GL_ElementsBase				from "../elements/GL_ElementsBase";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import CompilerBase					from "../shaders/compilers/CompilerBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
-import GL_TextureBase				from "../textures/GL_TextureBase";
+import {AnimationSetBase}				from "../animators/AnimationSetBase";
+import {AnimatorBase}					from "../animators/AnimatorBase";
+import {AnimationRegisterData}		from "../animators/data/AnimationRegisterData";
+import {IPass}						from "../surfaces/passes/IPass";
+import {IElementsClassGL}				from "../elements/IElementsClassGL";
+import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {CompilerBase}					from "../shaders/compilers/CompilerBase";
+import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
+import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
+import {GL_TextureBase}				from "../textures/GL_TextureBase";
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -38,7 +38,7 @@ import GL_TextureBase				from "../textures/GL_TextureBase";
  *
  * @see RegisterPool.addUsage
  */
-class ShaderBase implements IAbstractionPool
+export class ShaderBase implements IAbstractionPool
 {
 	public static _abstractionClassPool:Object = new Object();
 
@@ -365,7 +365,7 @@ class ShaderBase implements IAbstractionPool
 	 *
 	 * @param image
 	 */
-	public clearAbstraction(texture:TextureBase)
+	public clearAbstraction(texture:TextureBase):void
 	{
 		this._abstractionPool[texture.id] = null;
 	}
@@ -374,7 +374,7 @@ class ShaderBase implements IAbstractionPool
 	 *
 	 * @param imageObjectClass
 	 */
-	public static registerAbstraction(gl_assetClass:GL_IAssetClass, assetClass:IAssetClass)
+	public static registerAbstraction(gl_assetClass:GL_IAssetClass, assetClass:IAssetClass):void
 	{
 		ShaderBase._abstractionClassPool[assetClass.assetType] = gl_assetClass;
 	}
@@ -384,7 +384,7 @@ class ShaderBase implements IAbstractionPool
 		return this._pass.getImageIndex(texture, index);
 	}
 
-	public _iIncludeDependencies()
+	public _iIncludeDependencies():void
 	{
 		this._pass._iIncludeDependencies(this);
 	}
@@ -405,7 +405,7 @@ class ShaderBase implements IAbstractionPool
 	/**
 	 * Clears dependency counts for all registers. Called when recompiling a pass.
 	 */
-	public reset()
+	public reset():void
 	{
 		this.projectionDependencies = 0;
 		this.normalDependencies = 0;
@@ -424,7 +424,7 @@ class ShaderBase implements IAbstractionPool
 		this.outputsTangentNormals = false;
 	}
 
-	public pInitRegisterIndices()
+	public pInitRegisterIndices():void
 	{
 		this.commonsDataIndex = -1;
 		this.cameraPositionIndex = -1;
@@ -446,7 +446,7 @@ class ShaderBase implements IAbstractionPool
 	/**
 	 * Initializes the unchanging constant data for this shader object.
 	 */
-	public initConstantData(registerCache:ShaderRegisterCache)
+	public initConstantData(registerCache:ShaderRegisterCache):void
 	{
 		//Updates the amount of used register indices.
 		this._numUsedVertexConstants = registerCache.numUsedVertexConstants;
@@ -509,7 +509,7 @@ class ShaderBase implements IAbstractionPool
 	 * <li>BlendMode.ALPHA</li>
 	 * </ul>
 	 */
-	public setBlendMode(value:string)
+	public setBlendMode(value:string):void
 	{
 		switch (value) {
 			case BlendMode.NORMAL:
@@ -551,7 +551,7 @@ class ShaderBase implements IAbstractionPool
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(camera:Camera)
+	public _iActivate(camera:Camera):void
 	{
 		this._stage.context.setCulling(this.useBothSides? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
 
@@ -574,7 +574,7 @@ class ShaderBase implements IAbstractionPool
 	/**
 	 * @inheritDoc
 	 */
-	public _iDeactivate()
+	public _iDeactivate():void
 	{
 		//For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
 		this._stage.context.setDepthTest(true, ContextGLCompareMode.LESS);
@@ -590,7 +590,7 @@ class ShaderBase implements IAbstractionPool
 	 * @param stage
 	 * @param camera
 	 */
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D):void
 	{
 		if (renderable.renderable.animator)
 			(<AnimatorBase> renderable.renderable.animator).setRenderState(this, renderable, this._stage, camera);
@@ -655,18 +655,18 @@ class ShaderBase implements IAbstractionPool
 		}
 	}
 
-	public invalidateProgram()
+	public invalidateProgram():void
 	{
 		this._invalidProgram = true;
 	}
 
-	public dispose()
+	public dispose():void
 	{
 		this._programData.dispose();
 		this._programData = null;
 	}
 
-	private _updateProgram()
+	private _updateProgram():void
 	{
 		this._invalidProgram = false;
 
@@ -691,7 +691,7 @@ class ShaderBase implements IAbstractionPool
 		}
 	}
 
-	private _calcAnimationCode(registerCache:ShaderRegisterCache, shadedTarget:ShaderRegisterElement, sharedRegisters:ShaderRegisterData)
+	private _calcAnimationCode(registerCache:ShaderRegisterCache, shadedTarget:ShaderRegisterElement, sharedRegisters:ShaderRegisterData):void
 	{
 		//reset code
 		this._animationVertexCode = "";
@@ -722,7 +722,7 @@ class ShaderBase implements IAbstractionPool
 	}
 
 
-	public setVertexConst(index:number, x:number = 0, y:number = 0, z:number = 0, w:number = 0)
+	public setVertexConst(index:number, x:number = 0, y:number = 0, z:number = 0, w:number = 0):void
 	{
 		index *= 4;
 		this.vertexConstantData[index++] = x;
@@ -731,14 +731,14 @@ class ShaderBase implements IAbstractionPool
 		this.vertexConstantData[index] = w;
 	}
 
-	public setVertexConstFromArray(index:number, data:Float32Array)
+	public setVertexConstFromArray(index:number, data:Float32Array):void
 	{
 		index *= 4;
 		for (var i:number /*int*/ = 0; i < data.length; i++)
 			this.vertexConstantData[index++] = data[i];
 	}
 
-	public setVertexConstFromMatrix(index:number, matrix:Matrix3D)
+	public setVertexConstFromMatrix(index:number, matrix:Matrix3D):void
 	{
 		index *= 4;
 		var rawData:Float32Array = matrix.rawData;
@@ -761,7 +761,7 @@ class ShaderBase implements IAbstractionPool
 
 	}
 
-	public setFragmentConst(index:number, x:number = 0, y:number = 0, z:number = 0, w:number = 0)
+	public setFragmentConst(index:number, x:number = 0, y:number = 0, z:number = 0, w:number = 0):void
 	{
 		index *= 4;
 		this.fragmentConstantData[index++] = x;
@@ -770,5 +770,3 @@ class ShaderBase implements IAbstractionPool
 		this.fragmentConstantData[index] = w;
 	}
 }
-
-export default ShaderBase;

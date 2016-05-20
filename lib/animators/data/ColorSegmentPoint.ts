@@ -1,6 +1,6 @@
-import ColorTransform					from "awayjs-core/lib/geom/ColorTransform";
+import {ColorTransform}					from "awayjs-core/lib/geom/ColorTransform";
 
-class ColorSegmentPoint
+export class ColorSegmentPoint
 {
 	private _color:ColorTransform;
 	private _life:number;
@@ -25,5 +25,3 @@ class ColorSegmentPoint
 	}
 
 }
-
-export default ColorSegmentPoint;

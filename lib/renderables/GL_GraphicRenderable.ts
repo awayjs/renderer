@@ -1,18 +1,18 @@
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
 
-import Graphic						from "awayjs-display/lib/graphics/Graphic";
-import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
+import {Graphic}						from "awayjs-display/lib/graphics/Graphic";
+import {DefaultMaterialManager}		from "awayjs-display/lib/managers/DefaultMaterialManager";
 
-import RendererBase					from "../RendererBase";
-import AnimatorBase					from "../animators/AnimatorBase";
-import GL_ElementsBase				from "../elements/GL_ElementsBase";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
+import {RendererBase}					from "../RendererBase";
+import {AnimatorBase}					from "../animators/AnimatorBase";
+import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
 
 /**
  * @class away.pool.GL_GraphicRenderable
  */
-class GL_GraphicRenderable extends GL_RenderableBase
+export class GL_GraphicRenderable extends GL_RenderableBase
 {
 	/**
 	 *
@@ -35,7 +35,7 @@ class GL_GraphicRenderable extends GL_RenderableBase
 		this.graphic = graphic;
 	}
 
-	public onClear(event:AssetEvent)
+	public onClear(event:AssetEvent):void
 	{
 		super.onClear(event);
 
@@ -62,5 +62,3 @@ class GL_GraphicRenderable extends GL_RenderableBase
 		return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this.graphic.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
 	}
 }
-
-export default GL_GraphicRenderable;

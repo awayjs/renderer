@@ -1,27 +1,27 @@
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
 
-import ContextGLDrawMode			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
-import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
-import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLDrawMode}			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
+import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
+import {ContextGLProgramType}			from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
 
-import LineElements					from "awayjs-display/lib/graphics/LineElements";
-import Camera						from "awayjs-display/lib/display/Camera";
+import {LineElements}					from "awayjs-display/lib/graphics/LineElements";
+import {Camera}						from "awayjs-display/lib/display/Camera";
 
-import GL_ElementsBase				from "../elements/GL_ElementsBase";
-import IElementsClassGL				from "../elements/IElementsClassGL";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
+import {IElementsClassGL}				from "../elements/IElementsClassGL";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
+import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
 
 /**
  *
  * @class away.pool.GL_LineElements
  */
-class GL_LineElements extends GL_ElementsBase
+export class GL_LineElements extends GL_ElementsBase
 {
 	public static elementsType:string = "[elements Line]";
 	
@@ -35,7 +35,7 @@ class GL_LineElements extends GL_ElementsBase
 		return GL_LineElements;
 	}
 	
-	public static _iIncludeDependencies(shader:ShaderBase)
+	public static _iIncludeDependencies(shader:ShaderBase):void
 	{
 		shader.colorDependencies++;
 	}
@@ -152,14 +152,14 @@ class GL_LineElements extends GL_ElementsBase
 		this._lineElements = lineElements;
 	}
 
-	public onClear(event:AssetEvent)
+	public onClear(event:AssetEvent):void
 	{
 		super.onClear(event);
 
 		this._lineElements = null;
 	}
 
-	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D):void
 	{
 		super._setRenderState(renderable, shader, camera, viewProjection);
 		
@@ -184,7 +184,7 @@ class GL_LineElements extends GL_ElementsBase
 		var context:IContextGL = this._stage.context;
 	}
 
-	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number):void
 	{
 		var context:IContextGL = this._stage.context;
 		
@@ -218,5 +218,3 @@ class GL_LineElements extends GL_ElementsBase
 		return new GL_LineElements(this._lineElements, this._stage);
 	}
 }
-
-export default GL_LineElements;

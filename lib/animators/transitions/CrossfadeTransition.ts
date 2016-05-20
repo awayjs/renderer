@@ -1,13 +1,13 @@
-import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import CrossfadeTransitionNode			from "../../animators/transitions/CrossfadeTransitionNode";
-import IAnimationTransition				from "../../animators/transitions/IAnimationTransition";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {CrossfadeTransitionNode}			from "../../animators/transitions/CrossfadeTransitionNode";
+import {IAnimationTransition}				from "../../animators/transitions/IAnimationTransition";
 
 /**
  *
  */
-class CrossfadeTransition implements IAnimationTransition
+export class CrossfadeTransition implements IAnimationTransition
 {
 	public blendSpeed:number = 0.5;
 
@@ -27,5 +27,3 @@ class CrossfadeTransition implements IAnimationTransition
 		return <AnimationNodeBase> crossFadeTransitionNode;
 	}
 }
-
-export default CrossfadeTransition;

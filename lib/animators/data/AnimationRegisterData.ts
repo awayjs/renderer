@@ -1,16 +1,16 @@
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
 
-import AnimationNodeBase			from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}			from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import ShaderRegisterCache			from "../../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../../shaders/ShaderRegisterElement";
+import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
+import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
 
 
 /**
  * ...
  */
-class AnimationRegisterData
+export class AnimationRegisterData
 {
 	//vertex animation data
 	public weightsIndex:number;
@@ -46,7 +46,7 @@ class AnimationRegisterData
 	{
 	}
 
-	public reset(registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData, needVelocity:boolean)
+	public reset(registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData, needVelocity:boolean):void
 	{
 		this.rotationRegisters = new Array<ShaderRegisterElement>();
 		this.positionAttribute = sharedRegisters.animatableAttributes[0];
@@ -81,7 +81,7 @@ class AnimationRegisterData
 
 	}
 
-	public setUVSourceAndTarget(sharedRegisters:ShaderRegisterData)
+	public setUVSourceAndTarget(sharedRegisters:ShaderRegisterData):void
 	{
 		this.uvVar = sharedRegisters.uvTarget;
 		this.uvAttribute = sharedRegisters.uvSource;
@@ -89,7 +89,7 @@ class AnimationRegisterData
 		this.uvTarget = new ShaderRegisterElement(this.positionTarget.regName, this.positionTarget.index);
 	}
 
-	public setRegisterIndex(node:AnimationNodeBase, parameterIndex:number, registerIndex:number)
+	public setRegisterIndex(node:AnimationNodeBase, parameterIndex:number, registerIndex:number):void
 	{
 		//8 should be enough for any node.
 		var t:Array<number> = this.indexDictionary[node.id];
@@ -105,5 +105,3 @@ class AnimationRegisterData
 		return (<Array<number>> this.indexDictionary[node.id])[parameterIndex];
 	}
 }
-
-export default AnimationRegisterData;

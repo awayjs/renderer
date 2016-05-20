@@ -1,6 +1,6 @@
-import EventBase					from "awayjs-core/lib/events/EventBase";
+import {EventBase}					from "awayjs-core/lib/events/EventBase";
 
-class ShadingMethodEvent extends EventBase
+export class ShadingMethodEvent extends EventBase
 {
 	public static SHADER_INVALIDATED:string = "ShaderInvalidated";
 
@@ -9,5 +9,3 @@ class ShadingMethodEvent extends EventBase
 		super(type);
 	}
 }
-
-export default ShadingMethodEvent;

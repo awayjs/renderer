@@ -1,29 +1,29 @@
-import ElementsBase						from "awayjs-display/lib/graphics/ElementsBase";
-import IAnimationSet					from "awayjs-display/lib/animators/IAnimationSet";
-import ParticleData						from "awayjs-display/lib/animators/data/ParticleData";
-import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
-import Graphic							from "awayjs-display/lib/graphics/Graphic";
-import Graphics							from "awayjs-display/lib/graphics/Graphics";
+import {ElementsBase}						from "awayjs-display/lib/graphics/ElementsBase";
+import {IAnimationSet}					from "awayjs-display/lib/animators/IAnimationSet";
+import {ParticleData}						from "awayjs-display/lib/animators/data/ParticleData";
+import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {Graphic}							from "awayjs-display/lib/graphics/Graphic";
+import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
 
-import AnimationSetBase					from "../animators/AnimationSetBase";
-import AnimationRegisterData			from "../animators/data/AnimationRegisterData";
-import AnimationElements				from "../animators/data/AnimationElements";
-import ParticleAnimationData			from "../animators/data/ParticleAnimationData";
-import ParticleProperties				from "../animators/data/ParticleProperties";
-import ParticlePropertiesMode			from "../animators/data/ParticlePropertiesMode";
-import ParticleNodeBase					from "../animators/nodes/ParticleNodeBase";
-import ParticleTimeNode					from "../animators/nodes/ParticleTimeNode";
-import ShaderBase						from "../shaders/ShaderBase";
-import ShaderRegisterElement			from "../shaders/ShaderRegisterElement";
-import ShaderRegisterCache				from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData				from "../shaders/ShaderRegisterData";
+import {AnimationSetBase}					from "../animators/AnimationSetBase";
+import {AnimationRegisterData}			from "../animators/data/AnimationRegisterData";
+import {AnimationElements}				from "../animators/data/AnimationElements";
+import {ParticleAnimationData}			from "../animators/data/ParticleAnimationData";
+import {ParticleProperties}				from "../animators/data/ParticleProperties";
+import {ParticlePropertiesMode}			from "../animators/data/ParticlePropertiesMode";
+import {ParticleNodeBase}					from "../animators/nodes/ParticleNodeBase";
+import {ParticleTimeNode}					from "../animators/nodes/ParticleTimeNode";
+import {ShaderBase}						from "../shaders/ShaderBase";
+import {ShaderRegisterElement}			from "../shaders/ShaderRegisterElement";
+import {ShaderRegisterCache}				from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}				from "../shaders/ShaderRegisterData";
 
 /**
  * The animation data set used by particle-based animators, containing particle animation data.
  *
  * @see away.animators.ParticleAnimator
  */
-class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
+export class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 {
 	/** @private */
 	public _iAnimationRegisterData:AnimationRegisterData;
@@ -111,7 +111,7 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public addAnimation(node:AnimationNodeBase)
+	public addAnimation(node:AnimationNodeBase):void
 	{
 		var i:number;
 		var n:ParticleNodeBase = <ParticleNodeBase> node;
@@ -239,7 +239,7 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public doneAGALCode(shader:ShaderBase)
+	public doneAGALCode(shader:ShaderBase):void
 	{
 		//set vertexZeroConst,vertexOneConst,vertexTwoConst
 		shader.setVertexConst(this._iAnimationRegisterData.vertexZeroConst.index, 0, 1, 2, 0);
@@ -256,12 +256,12 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public cancelGPUCompatibility()
+	public cancelGPUCompatibility():void
 	{
 
 	}
 
-	public dispose()
+	public dispose():void
 	{
 		for (var key in this._animationElements)
 			(<AnimationElements> this._animationElements[key]).dispose();
@@ -283,7 +283,7 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 
 
 	/** @private */
-	public _iGenerateAnimationElements(graphics:Graphics)
+	public _iGenerateAnimationElements(graphics:Graphics):void
 	{
 		if (this.initParticleFunc == null)
 			throw(new Error("no initParticleFunc set"));
@@ -404,5 +404,3 @@ class ParticleAnimationSet extends AnimationSetBase implements IAnimationSet
 		}
 	}
 }
-
-export default ParticleAnimationSet;

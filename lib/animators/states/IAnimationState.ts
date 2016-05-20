@@ -1,6 +1,6 @@
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
 
-interface IAnimationState
+export interface IAnimationState
 {
 	positionDelta:Vector3D; // GET
 
@@ -15,5 +15,3 @@ interface IAnimationState
 	 */
 	phase(value:number);
 }
-
-export default IAnimationState;

@@ -1,21 +1,21 @@
-import IAsset						from "awayjs-core/lib/library/IAsset";
-import AssetBase					from "awayjs-core/lib/library/AssetBase";
-import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
+import {IAsset}						from "awayjs-core/lib/library/IAsset";
+import {AssetBase}					from "awayjs-core/lib/library/AssetBase";
+import {AbstractMethodError}			from "awayjs-core/lib/errors/AbstractMethodError";
 
-import AnimationNodeBase			from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}			from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
-import AnimationSetError			from "../errors/AnimationSetError";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterElement			from "../shaders/ShaderRegisterElement";
-import ShaderRegisterCache				from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData				from "../shaders/ShaderRegisterData";
+import {AnimationSetError}			from "../errors/AnimationSetError";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {ShaderRegisterElement}			from "../shaders/ShaderRegisterElement";
+import {ShaderRegisterCache}				from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}				from "../shaders/ShaderRegisterData";
 
 /**
  * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
  *
  * @see away.animators.AnimatorBase
  */
-class AnimationSetBase extends AssetBase implements IAsset
+export class AnimationSetBase extends AssetBase implements IAsset
 {
 	public static assetType:string = "[asset AnimationSet]";
 
@@ -65,12 +65,12 @@ class AnimationSetBase extends AssetBase implements IAsset
 	 *
 	 * @private
 	 */
-	public resetGPUCompatibility()
+	public resetGPUCompatibility():void
 	{
 		this._usesCPU = false;
 	}
 
-	public cancelGPUCompatibility()
+	public cancelGPUCompatibility():void
 	{
 		this._usesCPU = true;
 	}
@@ -103,7 +103,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	/**
 	 * @inheritDoc
 	 */
-	public doneAGALCode(shader:ShaderBase)
+	public doneAGALCode(shader:ShaderBase):void
 	{
 		throw new AbstractMethodError();
 	}
@@ -158,7 +158,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	 * @param stateName The name under which the animation state object will be stored.
 	 * @param animationState The animation state object to be staored in the set.
 	 */
-	public addAnimation(node:AnimationNodeBase)
+	public addAnimation(node:AnimationNodeBase):void
 	{
 		if (this._animationDictionary[node.name])
 			throw new AnimationSetError("root node name '" + node.name + "' already exists in the set");
@@ -173,9 +173,7 @@ class AnimationSetBase extends AssetBase implements IAsset
 	/**
 	 * Cleans up any resources used by the current object.
 	 */
-	public dispose()
+	public dispose():void
 	{
 	}
 }
-
-export default AnimationSetBase;

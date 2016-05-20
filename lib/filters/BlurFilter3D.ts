@@ -1,12 +1,12 @@
-import Image2D						from "awayjs-core/lib/image/Image2D";
+import {Image2D}						from "awayjs-core/lib/image/Image2D";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
 
-import Filter3DHBlurTask			from "../filters/tasks/Filter3DHBlurTask";
-import Filter3DVBlurTask			from "../filters/tasks/Filter3DVBlurTask";
-import Filter3DBase					from "../filters/Filter3DBase";
+import {Filter3DHBlurTask}			from "../filters/tasks/Filter3DHBlurTask";
+import {Filter3DVBlurTask}			from "../filters/tasks/Filter3DVBlurTask";
+import {Filter3DBase}					from "../filters/Filter3DBase";
 
-class BlurFilter3D extends Filter3DBase
+export class BlurFilter3D extends Filter3DBase
 {
 	private _hBlurTask:Filter3DHBlurTask;
 	private _vBlurTask:Filter3DVBlurTask;
@@ -63,11 +63,9 @@ class BlurFilter3D extends Filter3DBase
 		this._vBlurTask.stepSize = value;
 	}
 	
-	public setRenderTargets(mainTarget:Image2D, stage:Stage)
+	public setRenderTargets(mainTarget:Image2D, stage:Stage):void
 	{
 		this._hBlurTask.target = this._vBlurTask.getMainInputTexture(stage);
 		super.setRenderTargets(mainTarget, stage);
 	}
 }
-
-export default BlurFilter3D;

@@ -3,7 +3,7 @@
  *
  * @see away.animators.Skeleton
  */
-class SkeletonJoint
+export class SkeletonJoint
 {
 	/**
 	 * The index of the parent joint in the skeleton's joints vector.
@@ -29,5 +29,3 @@ class SkeletonJoint
 	{
 	}
 }
-
-export default SkeletonJoint;

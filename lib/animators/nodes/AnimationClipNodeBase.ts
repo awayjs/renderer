@@ -1,11 +1,11 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimationNodeBase				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
 
 /**
  * Provides an abstract base class for nodes with time-based animation data in an animation blend tree.
  */
-class AnimationClipNodeBase extends AnimationNodeBase
+export class AnimationClipNodeBase extends AnimationNodeBase
 {
 	public _pLooping:boolean = true;
 	public _pTotalDuration:number = 0;
@@ -103,7 +103,7 @@ class AnimationClipNodeBase extends AnimationNodeBase
 	 *
 	 * @see #stitchFinalFrame
 	 */
-	public _pUpdateStitch()
+	public _pUpdateStitch():void
 	{
 		this._pStitchDirty = false;
 
@@ -115,5 +115,3 @@ class AnimationClipNodeBase extends AnimationNodeBase
 		this._pTotalDelta.z = 0;
 	}
 }
-
-export default AnimationClipNodeBase;

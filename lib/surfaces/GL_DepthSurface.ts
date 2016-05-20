@@ -1,20 +1,20 @@
-import ISurface						from "awayjs-display/lib/base/ISurface";
-import Camera						from "awayjs-display/lib/display/Camera";
+import {ISurface}						from "awayjs-display/lib/base/ISurface";
+import {Camera}						from "awayjs-display/lib/display/Camera";
 
-import IElementsClassGL				from "../elements/IElementsClassGL";
-import GL_SurfacePassBase			from "../surfaces/GL_SurfacePassBase";
-import SurfacePool					from "../surfaces/SurfacePool";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
-import GL_TextureBase				from "../textures/GL_TextureBase";
+import {IElementsClassGL}				from "../elements/IElementsClassGL";
+import {GL_SurfacePassBase}			from "../surfaces/GL_SurfacePassBase";
+import {SurfacePool}					from "../surfaces/SurfacePool";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
+import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
+import {GL_TextureBase}				from "../textures/GL_TextureBase";
 
 /**
  * GL_DepthSurface forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
  */
-class GL_DepthSurface extends GL_SurfacePassBase
+export class GL_DepthSurface extends GL_SurfacePassBase
 {
 	private _fragmentConstantsIndex:number;
 	private _textureVO:GL_TextureBase;
@@ -35,14 +35,14 @@ class GL_DepthSurface extends GL_SurfacePassBase
 		this._pAddPass(this);
 	}
 
-	public invalidate()
+	public invalidate():void
 	{
 		super.invalidate();
 
 		this._textureVO = this._surface.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._surface.getTextureAt(0)) : null;
 	}
 
-	public _iIncludeDependencies(shader:ShaderBase)
+	public _iIncludeDependencies(shader:ShaderBase):void
 	{
 		super._iIncludeDependencies(shader);
 
@@ -53,7 +53,7 @@ class GL_DepthSurface extends GL_SurfacePassBase
 	}
 
 
-	public _iInitConstantData(shader:ShaderBase)
+	public _iInitConstantData(shader:ShaderBase):void
 	{
 		super._iInitConstantData(shader);
 
@@ -116,7 +116,7 @@ class GL_DepthSurface extends GL_SurfacePassBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(camera:Camera)
+	public _iActivate(camera:Camera):void
 	{
 		super._iActivate(camera);
 
@@ -127,5 +127,3 @@ class GL_DepthSurface extends GL_SurfacePassBase
 		}
 	}
 }
-
-export default GL_DepthSurface;

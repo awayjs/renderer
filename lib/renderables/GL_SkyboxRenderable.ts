@@ -1,30 +1,30 @@
-import AttributesBuffer				from "awayjs-core/lib/attributes/AttributesBuffer";
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import {AttributesBuffer}				from "awayjs-core/lib/attributes/AttributesBuffer";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
 
-import ISurface						from "awayjs-display/lib/base/ISurface";
-import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
-import TriangleElements				from "awayjs-display/lib/graphics/TriangleElements";
-import Skybox						from "awayjs-display/lib/display/Skybox";
-import Camera						from "awayjs-display/lib/display/Camera";
+import {ISurface}						from "awayjs-display/lib/base/ISurface";
+import {ElementsBase}					from "awayjs-display/lib/graphics/ElementsBase";
+import {TriangleElements}				from "awayjs-display/lib/graphics/TriangleElements";
+import {Skybox}						from "awayjs-display/lib/display/Skybox";
+import {Camera}						from "awayjs-display/lib/display/Camera";
 
-import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
-import ContextGLProgramType			from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
+import {ContextGLProgramType}			from "awayjs-stagegl/lib/base/ContextGLProgramType";
 
-import RendererBase					from "../RendererBase";
-import ShaderBase					from "../shaders/ShaderBase";
-import ShaderRegisterCache			from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData			from "../shaders/ShaderRegisterData";
-import ShaderRegisterElement		from "../shaders/ShaderRegisterElement";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
-import IPass						from "../surfaces/passes/IPass";
-import GL_SkyboxElements			from "../elements/GL_SkyboxElements";
+import {RendererBase}					from "../RendererBase";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
+import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
+import {IPass}						from "../surfaces/passes/IPass";
+import {GL_SkyboxElements}			from "../elements/GL_SkyboxElements";
 
 /**
  * @class away.pool.GL_SkyboxRenderable
  */
-class GL_SkyboxRenderable extends GL_RenderableBase
+export class GL_SkyboxRenderable extends GL_RenderableBase
 {
 	/**
 	 *
@@ -77,10 +77,8 @@ class GL_SkyboxRenderable extends GL_RenderableBase
 		return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._skybox);
 	}
 
-	public static _iIncludeDependencies(shader:ShaderBase)
+	public static _iIncludeDependencies(shader:ShaderBase):void
 	{
 
 	}
 }
-
-export default GL_SkyboxRenderable;

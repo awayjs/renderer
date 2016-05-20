@@ -1,25 +1,25 @@
-import ColorTransform					from "awayjs-core/lib/geom/ColorTransform";
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {ColorTransform}					from "awayjs-core/lib/geom/ColorTransform";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import Camera							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "awayjs-display/lib/display/Camera";
 
-import Stage							from "awayjs-stagegl/lib/base/Stage";
-import ContextGLVertexBufferFormat		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
+import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLVertexBufferFormat}		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
 
-import ParticleAnimator					from "../../animators/ParticleAnimator";
-import AnimationRegisterData			from "../../animators/data/AnimationRegisterData";
-import AnimationElements				from "../../animators/data/AnimationElements";
-import ParticlePropertiesMode			from "../../animators/data/ParticlePropertiesMode";
-import ParticleColorNode				from "../../animators/nodes/ParticleColorNode";
-import ParticleStateBase				from "../../animators/states/ParticleStateBase";
-import GL_RenderableBase				from "../../renderables/GL_RenderableBase";
-import ShaderBase						from "../../shaders/ShaderBase";
+import {ParticleAnimator}					from "../../animators/ParticleAnimator";
+import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
+import {AnimationElements}				from "../../animators/data/AnimationElements";
+import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
+import {ParticleColorNode}				from "../../animators/nodes/ParticleColorNode";
+import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
+import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
+import {ShaderBase}						from "../../shaders/ShaderBase";
 
 /**
  * ...
  * @author ...
  */
-class ParticleColorState extends ParticleStateBase
+export class ParticleColorState extends ParticleStateBase
 {
 	/** @private */
 	public static START_MULTIPLIER_INDEX:number = 0;
@@ -128,7 +128,7 @@ class ParticleColorState extends ParticleStateBase
 		this.updateColorData();
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage)
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
 	{
 		if (shader.usesFragmentAnimation) {
 			var dataOffset:number = this._particleColorNode._iDataOffset;
@@ -160,7 +160,7 @@ class ParticleColorState extends ParticleStateBase
 		}
 	}
 
-	private updateColorData()
+	private updateColorData():void
 	{
 		if (this._usesCycle) {
 			if (this._cycleDuration <= 0)
@@ -192,5 +192,3 @@ class ParticleColorState extends ParticleStateBase
 		}
 	}
 }
-
-export default ParticleColorState;

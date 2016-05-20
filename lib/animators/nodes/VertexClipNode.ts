@@ -1,14 +1,14 @@
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import Graphics							from "awayjs-display/lib/graphics/Graphics";
+import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
 
-import AnimationClipNodeBase			from "../../animators/nodes/AnimationClipNodeBase";
-import VertexClipState					from "../../animators/states/VertexClipState";
+import {AnimationClipNodeBase}			from "../../animators/nodes/AnimationClipNodeBase";
+import {VertexClipState}					from "../../animators/states/VertexClipState";
 
 /**
  * A vertex animation node containing time-based animation data as individual geometry obejcts.
  */
-class VertexClipNode extends AnimationClipNodeBase
+export class VertexClipNode extends AnimationClipNodeBase
 {
 	private _frames:Array<Graphics> = new Array<Graphics>();
 	private _translations:Array<Vector3D> = new Array<Vector3D>();
@@ -38,7 +38,7 @@ class VertexClipNode extends AnimationClipNodeBase
 	 * @param duration The specified duration of the frame in milliseconds.
 	 * @param translation The absolute translation of the frame, used in root delta calculations for sprite movement.
 	 */
-	public addFrame(geometry:Graphics, duration:number, translation:Vector3D = null)
+	public addFrame(geometry:Graphics, duration:number, translation:Vector3D = null):void
 	{
 		this._frames.push(geometry);
 		this._pDurations.push(duration);
@@ -52,7 +52,7 @@ class VertexClipNode extends AnimationClipNodeBase
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateStitch()
+	public _pUpdateStitch():void
 	{
 		super._pUpdateStitch();
 
@@ -79,5 +79,3 @@ class VertexClipNode extends AnimationClipNodeBase
 		}
 	}
 }
-
-export default VertexClipNode;

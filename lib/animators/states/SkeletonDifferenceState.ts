@@ -1,18 +1,18 @@
-import Quaternion						from "awayjs-core/lib/geom/Quaternion";
-import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import {Quaternion}						from "awayjs-core/lib/geom/Quaternion";
+import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
 
-import AnimatorBase						from "../../animators/AnimatorBase";
-import JointPose						from "../../animators/data/JointPose";
-import Skeleton							from "../../animators/data/Skeleton";
-import SkeletonPose						from "../../animators/data/SkeletonPose";
-import SkeletonDifferenceNode			from "../../animators/nodes/SkeletonDifferenceNode";
-import AnimationStateBase				from "../../animators/states/AnimationStateBase";
-import ISkeletonAnimationState			from "../../animators/states/ISkeletonAnimationState";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {JointPose}						from "../../animators/data/JointPose";
+import {Skeleton}							from "../../animators/data/Skeleton";
+import {SkeletonPose}						from "../../animators/data/SkeletonPose";
+import {SkeletonDifferenceNode}			from "../../animators/nodes/SkeletonDifferenceNode";
+import {AnimationStateBase}				from "../../animators/states/AnimationStateBase";
+import {ISkeletonAnimationState}			from "../../animators/states/ISkeletonAnimationState";
 
 /**
  *
  */
-class SkeletonDifferenceState extends AnimationStateBase implements ISkeletonAnimationState
+export class SkeletonDifferenceState extends AnimationStateBase implements ISkeletonAnimationState
 {
 	private _blendWeight:number = 0;
 	private static _tempQuat:Quaternion = new Quaternion();
@@ -55,7 +55,7 @@ class SkeletonDifferenceState extends AnimationStateBase implements ISkeletonAni
 	/**
 	 * @inheritDoc
 	 */
-	public phase(value:number)
+	public phase(value:number):void
 	{
 		this._skeletonPoseDirty = true;
 
@@ -68,7 +68,7 @@ class SkeletonDifferenceState extends AnimationStateBase implements ISkeletonAni
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateTime(time:number)
+	public _pUpdateTime(time:number):void
 	{
 		this._skeletonPoseDirty = true;
 
@@ -92,7 +92,7 @@ class SkeletonDifferenceState extends AnimationStateBase implements ISkeletonAni
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdatePositionDelta()
+	public _pUpdatePositionDelta():void
 	{
 		this._pPositionDeltaDirty = false;
 
@@ -109,7 +109,7 @@ class SkeletonDifferenceState extends AnimationStateBase implements ISkeletonAni
 	 *
 	 * @param skeleton The skeleton used by the animator requesting the ouput pose.
 	 */
-	private updateSkeletonPose(skeleton:Skeleton)
+	private updateSkeletonPose(skeleton:Skeleton):void
 	{
 		this._skeletonPoseDirty = false;
 
@@ -147,5 +147,3 @@ class SkeletonDifferenceState extends AnimationStateBase implements ISkeletonAni
 		}
 	}
 }
-
-export default SkeletonDifferenceState;

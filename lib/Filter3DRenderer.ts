@@ -1,26 +1,26 @@
-import Image2D						from "awayjs-core/lib/image/Image2D";
+import {Image2D}						from "awayjs-core/lib/image/Image2D";
 
-import Camera						from "awayjs-display/lib/display/Camera";
+import {Camera}						from "awayjs-display/lib/display/Camera";
 
-import GL_ImageBase					from "awayjs-stagegl/lib/image/GL_ImageBase";
+import {GL_ImageBase}					from "awayjs-stagegl/lib/image/GL_ImageBase";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-import ContextGLDrawMode			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
-import ContextGLBlendFactor			from "awayjs-stagegl/lib/base/ContextGLBlendFactor";
-import ContextGLVertexBufferFormat	from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
-import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
-import IIndexBuffer					from "awayjs-stagegl/lib/base/IIndexBuffer";
-import IVertexBuffer				from "awayjs-stagegl/lib/base/IVertexBuffer";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLDrawMode}			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
+import {ContextGLBlendFactor}			from "awayjs-stagegl/lib/base/ContextGLBlendFactor";
+import {ContextGLVertexBufferFormat}	from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
+import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
+import {IIndexBuffer}					from "awayjs-stagegl/lib/base/IIndexBuffer";
+import {IVertexBuffer}				from "awayjs-stagegl/lib/base/IVertexBuffer";
 
-import RTTEvent						from "./events/RTTEvent";
-import RTTBufferManager				from "./managers/RTTBufferManager";
-import Filter3DBase					from "./filters/Filter3DBase";
-import Filter3DTaskBase				from "./filters/tasks/Filter3DTaskBase";
+import {RTTEvent}						from "./events/RTTEvent";
+import {RTTBufferManager}				from "./managers/RTTBufferManager";
+import {Filter3DBase}					from "./filters/Filter3DBase";
+import {Filter3DTaskBase}				from "./filters/tasks/Filter3DTaskBase";
 
 /**
  * @class away.render.Filter3DRenderer
  */
-class Filter3DRenderer
+export class Filter3DRenderer
 {
 	private _filters:Array<Filter3DBase>;
 	private _tasks:Array<Filter3DTaskBase>;
@@ -42,7 +42,7 @@ class Filter3DRenderer
 
 	}
 
-	private onRTTResize(event:RTTEvent)
+	private onRTTResize(event:RTTEvent):void
 	{
 		this._filterSizesInvalid = true;
 	}
@@ -83,7 +83,7 @@ class Filter3DRenderer
 		this._filterSizesInvalid = true;
 	}
 
-	private updateFilterTasks(stage:Stage)
+	private updateFilterTasks(stage:Stage):void
 	{
 		var len:number;
 
@@ -116,7 +116,7 @@ class Filter3DRenderer
 
 	}
 
-	public render(stage:Stage, camera:Camera, depthTexture:Image2D)
+	public render(stage:Stage, camera:Camera, depthTexture:Image2D):void
 	{
 		var len:number;
 		var i:number;
@@ -182,7 +182,7 @@ class Filter3DRenderer
 		context.setVertexBufferAt(1, null);
 	}
 
-	private updateFilterSizes()
+	private updateFilterSizes():void
 	{
 		for (var i:number = 0; i < this._filters.length; ++i) {
 			this._filters[i].textureWidth = this._rttManager.textureWidth;
@@ -193,12 +193,10 @@ class Filter3DRenderer
 		this._filterSizesInvalid = true;
 	}
 
-	public dispose()
+	public dispose():void
 	{
 		this._rttManager.removeEventListener(RTTEvent.RESIZE, this._onRTTResizeDelegate);
 		this._rttManager = null;
 		this._stage = null;
 	}
 }
-
-export default Filter3DRenderer;

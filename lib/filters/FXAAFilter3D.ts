@@ -1,11 +1,11 @@
-import Image2D						from "awayjs-core/lib/image/Image2D";
+import {Image2D}						from "awayjs-core/lib/image/Image2D";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
 
-import Filter3DFXAATask				from "../filters/tasks/Filter3DFXAATask";
-import Filter3DBase					from "../filters/Filter3DBase";
+import {Filter3DFXAATask}				from "../filters/tasks/Filter3DFXAATask";
+import {Filter3DBase}					from "../filters/Filter3DBase";
 
-class FXAAFilter3D extends Filter3DBase
+export class FXAAFilter3D extends Filter3DBase
 {
 	private _fxaaTask:Filter3DFXAATask;
 	
@@ -44,5 +44,3 @@ class FXAAFilter3D extends Filter3DBase
 		this._fxaaTask.stepSize = value;
 	}
 }
-
-export default FXAAFilter3D;

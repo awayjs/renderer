@@ -1,19 +1,19 @@
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
 
-import LineElements					from "awayjs-display/lib/graphics/LineElements";
-import LineSegment					from "awayjs-display/lib/display/LineSegment";
-import DefaultMaterialManager		from "awayjs-display/lib/managers/DefaultMaterialManager";
+import {LineElements}					from "awayjs-display/lib/graphics/LineElements";
+import {LineSegment}					from "awayjs-display/lib/display/LineSegment";
+import {DefaultMaterialManager}		from "awayjs-display/lib/managers/DefaultMaterialManager";
 
-import RendererBase					from "../RendererBase";
-import GL_ElementsBase				from "../elements/GL_ElementsBase";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
-import GL_SurfaceBase				from "../surfaces/GL_SurfaceBase";
+import {RendererBase}					from "../RendererBase";
+import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
 
 /**
  * @class away.pool.GL_LineSegmentRenderable
  */
-class GL_LineSegmentRenderable extends GL_RenderableBase
+export class GL_LineSegmentRenderable extends GL_RenderableBase
 {
 	private static _lineGraphics:Object = new Object();
 
@@ -37,7 +37,7 @@ class GL_LineSegmentRenderable extends GL_RenderableBase
 		this._lineSegment = lineSegment;
 	}
 
-	public onClear(event:AssetEvent)
+	public onClear(event:AssetEvent):void
 	{
 		super.onClear(event);
 
@@ -94,5 +94,3 @@ class GL_LineSegmentRenderable extends GL_RenderableBase
 		return new GL_LineSegmentRenderable(<LineSegment> this.renderable, this._renderer);
 	}
 }
-
-export default GL_LineSegmentRenderable;

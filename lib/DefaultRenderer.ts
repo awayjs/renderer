@@ -1,35 +1,35 @@
-import ImageBase					from "awayjs-core/lib/image/ImageBase";
-import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
-import Rectangle					from "awayjs-core/lib/geom/Rectangle";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import {ImageBase}					from "awayjs-core/lib/image/ImageBase";
+import {BitmapImage2D}				from "awayjs-core/lib/image/BitmapImage2D";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {Rectangle}					from "awayjs-core/lib/geom/Rectangle";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
 
-import LightBase					from "awayjs-display/lib/display/LightBase";
-import Camera						from "awayjs-display/lib/display/Camera";
-import DirectionalLight				from "awayjs-display/lib/display/DirectionalLight";
-import PointLight					from "awayjs-display/lib/display/PointLight";
-import IEntity						from "awayjs-display/lib/display/IEntity";
-import LightProbe					from "awayjs-display/lib/display/LightProbe";
-import Skybox						from "awayjs-display/lib/display/Skybox";
-import Scene						from "awayjs-display/lib/display/Scene";
-import ShadowMapperBase				from "awayjs-display/lib/materials/shadowmappers/ShadowMapperBase";
-import INode						from "awayjs-display/lib/partition/INode";
+import {LightBase}					from "awayjs-display/lib/display/LightBase";
+import {Camera}						from "awayjs-display/lib/display/Camera";
+import {DirectionalLight}				from "awayjs-display/lib/display/DirectionalLight";
+import {PointLight}					from "awayjs-display/lib/display/PointLight";
+import {IEntity}						from "awayjs-display/lib/display/IEntity";
+import {LightProbe}					from "awayjs-display/lib/display/LightProbe";
+import {Skybox}						from "awayjs-display/lib/display/Skybox";
+import {Scene}						from "awayjs-display/lib/display/Scene";
+import {ShadowMapperBase}				from "awayjs-display/lib/materials/shadowmappers/ShadowMapperBase";
+import {INode}						from "awayjs-display/lib/partition/INode";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-import ContextGLCompareMode			from "awayjs-stagegl/lib/base/ContextGLCompareMode";
-import ContextGLClearMask			from "awayjs-stagegl/lib/base/ContextGLClearMask";
-import IContextGL					from "awayjs-stagegl/lib/base/IContextGL";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLCompareMode}			from "awayjs-stagegl/lib/base/ContextGLCompareMode";
+import {ContextGLClearMask}			from "awayjs-stagegl/lib/base/ContextGLClearMask";
+import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
 
-import RendererBase					from "./RendererBase";
-import DepthRenderer				from "./DepthRenderer";
-import DistanceRenderer				from "./DistanceRenderer";
-import Filter3DRenderer				from "./Filter3DRenderer";
-import Filter3DBase					from "./filters/Filter3DBase";
-import GL_SkyboxElements			from "./elements/GL_SkyboxElements";
-import GL_RenderableBase			from "./renderables/GL_RenderableBase";
-import RTTBufferManager				from "./managers/RTTBufferManager";
-import IPass						from "./surfaces/passes/IPass";
-import SurfacePool					from "./surfaces/SurfacePool";
+import {RendererBase}					from "./RendererBase";
+import {DepthRenderer}				from "./DepthRenderer";
+import {DistanceRenderer}				from "./DistanceRenderer";
+import {Filter3DRenderer}				from "./Filter3DRenderer";
+import {Filter3DBase}					from "./filters/Filter3DBase";
+import {GL_SkyboxElements}			from "./elements/GL_SkyboxElements";
+import {GL_RenderableBase}			from "./renderables/GL_RenderableBase";
+import {RTTBufferManager}				from "./managers/RTTBufferManager";
+import {IPass}						from "./surfaces/passes/IPass";
+import {SurfacePool}					from "./surfaces/SurfacePool";
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -37,7 +37,7 @@ import SurfacePool					from "./surfaces/SurfacePool";
  *
  * @class away.render.DefaultRenderer
  */
-class DefaultRenderer extends RendererBase
+export class DefaultRenderer extends RendererBase
 {
 	public _pRequireDepthRender:boolean;
 
@@ -156,7 +156,7 @@ class DefaultRenderer extends RendererBase
 		return enter;
 	}
 
-	public render(camera:Camera, scene:Scene)
+	public render(camera:Camera, scene:Scene):void
 	{
 		super.render(camera, scene);
 
@@ -208,14 +208,14 @@ class DefaultRenderer extends RendererBase
 		this._pStage.bufferClear = false;
 	}
 
-	public pExecuteRender(camera:Camera, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0)
+	public pExecuteRender(camera:Camera, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
 	{
 		this.updateLights(camera);
 
 		super.pExecuteRender(camera, target, scissorRect, surfaceSelector);
 	}
 
-	private updateLights(camera:Camera)
+	private updateLights(camera:Camera):void
 	{
 		var len:number, i:number;
 		var light:LightBase;
@@ -233,7 +233,7 @@ class DefaultRenderer extends RendererBase
 
 		len = this._pointLights.length;
 		for (i = 0; i < len; ++i) {
-			light = this._pointLights[i];
+			light = <LightBase> this._pointLights[i];
 
 			shadowMapper = light.shadowMapper;
 
@@ -246,7 +246,7 @@ class DefaultRenderer extends RendererBase
 	 *
 	 * @param entity
 	 */
-	public applyDirectionalLight(entity:IEntity)
+	public applyDirectionalLight(entity:IEntity):void
 	{
 		this._directionalLights.push(<DirectionalLight> entity);
 	}
@@ -255,7 +255,7 @@ class DefaultRenderer extends RendererBase
 	 *
 	 * @param entity
 	 */
-	public applyLightProbe(entity:IEntity)
+	public applyLightProbe(entity:IEntity):void
 	{
 		this._lightProbes.push(<LightProbe> entity);
 	}
@@ -264,12 +264,12 @@ class DefaultRenderer extends RendererBase
 	 *
 	 * @param entity
 	 */
-	public applyPointLight(entity:IEntity)
+	public applyPointLight(entity:IEntity):void
 	{
 		this._pointLights.push(<PointLight> entity);
 	}
 
-	public dispose()
+	public dispose():void
 	{
 		if (!this.shareContext)
 			this._pStage.dispose();
@@ -291,7 +291,7 @@ class DefaultRenderer extends RendererBase
 	/**
 	 *
 	 */
-	public pRenderDepthPrepass(camera:Camera, scene:Scene)
+	public pRenderDepthPrepass(camera:Camera, scene:Scene):void
 	{
 		this._pDepthRenderer.disableColor = true;
 
@@ -312,7 +312,7 @@ class DefaultRenderer extends RendererBase
 	/**
 	 *
 	 */
-	public pRenderSceneDepthToTexture(camera:Camera, scene:Scene)
+	public pRenderSceneDepthToTexture(camera:Camera, scene:Scene):void
 	{
 		if (this._pDepthTextureInvalid || !this._pDepthRender)
 			this.initDepthTexture(<IContextGL> this._pStage.context);
@@ -326,7 +326,7 @@ class DefaultRenderer extends RendererBase
 	/**
 	 * Updates the backbuffer dimensions.
 	 */
-	public pUpdateBackBuffer()
+	public pUpdateBackBuffer():void
 	{
 		// No reason trying to configure back buffer if there is no context available.
 		// Doing this anyway (and relying on _stage to cache width/height for
@@ -352,5 +352,3 @@ class DefaultRenderer extends RendererBase
 		this._pDepthRender = new BitmapImage2D(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
 	}
 }
-
-export default DefaultRenderer;

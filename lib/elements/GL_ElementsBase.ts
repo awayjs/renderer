@@ -1,29 +1,29 @@
-import Short3Attributes				from "awayjs-core/lib/attributes/Short3Attributes";
-import AttributesView				from "awayjs-core/lib/attributes/AttributesView";
-import AttributesBuffer				from "awayjs-core/lib/attributes/AttributesBuffer";
-import AbstractionBase				from "awayjs-core/lib/library/AbstractionBase";
-import IAbstractionPool 			from "awayjs-core/lib/library/IAbstractionPool";
-import AbstractMethodError			from "awayjs-core/lib/errors/AbstractMethodError";
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import Matrix3D						from "awayjs-core/lib/geom/Matrix3D";
+import {Short3Attributes}				from "awayjs-core/lib/attributes/Short3Attributes";
+import {AttributesView}				from "awayjs-core/lib/attributes/AttributesView";
+import {AttributesBuffer}				from "awayjs-core/lib/attributes/AttributesBuffer";
+import {AbstractionBase}				from "awayjs-core/lib/library/AbstractionBase";
+import {IAbstractionPool}				from "awayjs-core/lib/library/IAbstractionPool";
+import {AbstractMethodError}			from "awayjs-core/lib/errors/AbstractMethodError";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
 
-import Stage						from "awayjs-stagegl/lib/base/Stage";
-import GL_AttributesBuffer			from "awayjs-stagegl/lib/attributes/GL_AttributesBuffer";
+import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {GL_AttributesBuffer}			from "awayjs-stagegl/lib/attributes/GL_AttributesBuffer";
 
-import Camera						from "awayjs-display/lib/display/Camera";
-import ElementsBase					from "awayjs-display/lib/graphics/ElementsBase";
-import ElementsEvent				from "awayjs-display/lib/events/ElementsEvent";
-import ElementsUtils				from "awayjs-display/lib/utils/ElementsUtils";
+import {Camera}						from "awayjs-display/lib/display/Camera";
+import {ElementsBase}					from "awayjs-display/lib/graphics/ElementsBase";
+import {ElementsEvent}				from "awayjs-display/lib/events/ElementsEvent";
+import {ElementsUtils}				from "awayjs-display/lib/utils/ElementsUtils";
 
-import IElementsClassGL				from "../elements/IElementsClassGL";
-import ShaderBase					from "../shaders/ShaderBase";
-import GL_RenderableBase			from "../renderables/GL_RenderableBase";
+import {IElementsClassGL}				from "../elements/IElementsClassGL";
+import {ShaderBase}					from "../shaders/ShaderBase";
+import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
 
 /**
  *
  * @class away.pool.GL_ElementsBaseBase
  */
-class GL_ElementsBase extends AbstractionBase
+export class GL_ElementsBase extends AbstractionBase
 {
 	public usages:number = 0;
 	private _elements:ElementsBase;
@@ -54,7 +54,7 @@ class GL_ElementsBase extends AbstractionBase
 		throw new AbstractMethodError();
 	}
 
-	public get elements()
+	public get elements():ElementsBase
 	{
 		return this._elements;
 	}
@@ -137,7 +137,7 @@ class GL_ElementsBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public activateVertexBufferVO(index:number, attributesView:AttributesView, dimensions:number = 0, offset:number = 0)
+	public activateVertexBufferVO(index:number, attributesView:AttributesView, dimensions:number = 0, offset:number = 0):void
 	{
 		this.getVertexBufferGL(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset, attributesView.unsigned);
 	}
@@ -145,7 +145,7 @@ class GL_ElementsBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public onClear(event:AssetEvent)
+	public onClear(event:AssetEvent):void
 	{
 		super.onClear(event);
 
@@ -163,7 +163,7 @@ class GL_ElementsBase extends AbstractionBase
 		}
 	}
 
-	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D)
+	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D):void
 	{
 		if (!this._verticesUpdated)
 			this._updateIndices();
@@ -175,7 +175,7 @@ class GL_ElementsBase extends AbstractionBase
 		// 	this._overflow._iRender(renderable, camera, viewProjection);
 	}
 
-	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number)
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number):void
 	{
 		throw new AbstractMethodError();
 	}
@@ -185,7 +185,7 @@ class GL_ElementsBase extends AbstractionBase
 	 *
 	 * @private
 	 */
-	public _updateIndices(indexOffset:number = 0)
+	public _updateIndices(indexOffset:number = 0):void
 	{
 		var indices:Short3Attributes = this._elements.indices;
 		if (indices) {
@@ -225,7 +225,7 @@ class GL_ElementsBase extends AbstractionBase
 	 * @param attributesView
 	 * @private
 	 */
-	private _updateVertices(attributesView:AttributesView)
+	private _updateVertices(attributesView:AttributesView):void
 	{
 		this._numVertices = this._elements.numVertices;
 
@@ -242,7 +242,7 @@ class GL_ElementsBase extends AbstractionBase
 	 * @param event
 	 * @private
 	 */
-	public _onInvalidateIndices(event:ElementsEvent)
+	public _onInvalidateIndices(event:ElementsEvent):void
 	{
 		if (!event.attributesView)
 			return;
@@ -256,7 +256,7 @@ class GL_ElementsBase extends AbstractionBase
 	 * @param event
 	 * @private
 	 */
-	public _onClearIndices(event:ElementsEvent)
+	public _onClearIndices(event:ElementsEvent):void
 	{
 		if (!event.attributesView)
 			return;
@@ -271,7 +271,7 @@ class GL_ElementsBase extends AbstractionBase
 	 * @param event
 	 * @private
 	 */
-	public _onInvalidateVertices(event:ElementsEvent)
+	public _onInvalidateVertices(event:ElementsEvent):void
 	{
 		if (!event.attributesView)
 			return;
@@ -287,7 +287,7 @@ class GL_ElementsBase extends AbstractionBase
 	 * @param event
 	 * @private
 	 */
-	public _onClearVertices(event:ElementsEvent)
+	public _onClearVertices(event:ElementsEvent):void
 	{
 		if (!event.attributesView)
 			return;
@@ -316,5 +316,3 @@ class GL_ElementsBase extends AbstractionBase
 		throw new AbstractMethodError();
 	}
 }
-
-export default GL_ElementsBase;

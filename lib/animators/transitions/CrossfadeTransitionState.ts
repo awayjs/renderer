@@ -1,13 +1,13 @@
-import AnimatorBase						from "../../animators/AnimatorBase";
-import SkeletonBinaryLERPNode			from "../../animators/nodes/SkeletonBinaryLERPNode";
-import SkeletonBinaryLERPState			from "../../animators/states/SkeletonBinaryLERPState";
-import CrossfadeTransitionNode			from "../../animators/transitions/CrossfadeTransitionNode";
-import AnimationStateEvent				from "../../animators/../events/AnimationStateEvent";
+import {AnimatorBase}						from "../../animators/AnimatorBase";
+import {SkeletonBinaryLERPNode}			from "../../animators/nodes/SkeletonBinaryLERPNode";
+import {SkeletonBinaryLERPState}			from "../../animators/states/SkeletonBinaryLERPState";
+import {CrossfadeTransitionNode}			from "../../animators/transitions/CrossfadeTransitionNode";
+import {AnimationStateEvent}				from "../../animators/../events/AnimationStateEvent";
 
 /**
  *
  */
-class CrossfadeTransitionState extends SkeletonBinaryLERPState
+export class CrossfadeTransitionState extends SkeletonBinaryLERPState
 {
 	private _crossfadeTransitionNode:CrossfadeTransitionNode;
 	private _animationStateTransitionComplete:AnimationStateEvent;
@@ -22,7 +22,7 @@ class CrossfadeTransitionState extends SkeletonBinaryLERPState
 	/**
 	 * @inheritDoc
 	 */
-	public _pUpdateTime(time:number)
+	public _pUpdateTime(time:number):void
 	{
 		this.blendWeight = Math.abs(time - this._crossfadeTransitionNode.startBlend)/(1000*this._crossfadeTransitionNode.blendSpeed);
 
@@ -38,5 +38,3 @@ class CrossfadeTransitionState extends SkeletonBinaryLERPState
 		super._pUpdateTime(time);
 	}
 }
-
-export default CrossfadeTransitionState;

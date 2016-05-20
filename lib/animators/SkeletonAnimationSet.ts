@@ -1,17 +1,17 @@
-import IAnimationSet					from "awayjs-display/lib/animators/IAnimationSet";
+import {IAnimationSet}					from "awayjs-display/lib/animators/IAnimationSet";
 
-import AnimationSetBase					from "../animators/AnimationSetBase";
-import ShaderBase						from "../shaders/ShaderBase";
-import ShaderRegisterElement			from "../shaders/ShaderRegisterElement";
-import ShaderRegisterCache				from "../shaders/ShaderRegisterCache";
-import ShaderRegisterData				from "../shaders/ShaderRegisterData";
+import {AnimationSetBase}					from "../animators/AnimationSetBase";
+import {ShaderBase}						from "../shaders/ShaderBase";
+import {ShaderRegisterElement}			from "../shaders/ShaderRegisterElement";
+import {ShaderRegisterCache}				from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData}				from "../shaders/ShaderRegisterData";
 
 /**
  * The animation data set used by skeleton-based animators, containing skeleton animation data.
  *
  * @see away.animators.SkeletonAnimator
  */
-class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet
+export class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet
 {
 	private _jointsPerVertex:number;
 	private _matricesIndex:number;
@@ -113,10 +113,8 @@ class SkeletonAnimationSet extends AnimationSetBase implements IAnimationSet
 	/**
 	 * @inheritDoc
 	 */
-	public doneAGALCode(shader:ShaderBase)
+	public doneAGALCode(shader:ShaderBase):void
 	{
 
 	}
 }
-
-export default SkeletonAnimationSet;
