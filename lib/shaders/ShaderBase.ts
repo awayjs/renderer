@@ -599,12 +599,14 @@ export class ShaderBase implements IAbstractionPool
 			var uvMatrix:Matrix = renderable.uvMatrix;
 
 			if (uvMatrix) {
-				this.vertexConstantData[this.uvMatrixIndex] = uvMatrix.a;
-				this.vertexConstantData[this.uvMatrixIndex + 1] = uvMatrix.b;
-				this.vertexConstantData[this.uvMatrixIndex + 3] = uvMatrix.tx;
-				this.vertexConstantData[this.uvMatrixIndex + 4] = uvMatrix.c;
-				this.vertexConstantData[this.uvMatrixIndex + 5] = uvMatrix.d;
-				this.vertexConstantData[this.uvMatrixIndex + 7] = uvMatrix.ty;
+				//transpose
+				var rawData:Float32Array = uvMatrix.rawData;
+				this.vertexConstantData[this.uvMatrixIndex] = rawData[0];
+				this.vertexConstantData[this.uvMatrixIndex + 1] = rawData[2];
+				this.vertexConstantData[this.uvMatrixIndex + 3] = rawData[4];
+				this.vertexConstantData[this.uvMatrixIndex + 4] = rawData[1];
+				this.vertexConstantData[this.uvMatrixIndex + 5] = rawData[3];
+				this.vertexConstantData[this.uvMatrixIndex + 7] = rawData[5];
 			} else {
 				this.vertexConstantData[this.uvMatrixIndex] = 1;
 				this.vertexConstantData[this.uvMatrixIndex + 1] = 0;
@@ -619,14 +621,15 @@ export class ShaderBase implements IAbstractionPool
 			var colorTransform:ColorTransform = renderable.sourceEntity._iAssignedColorTransform();
 
 			if (colorTransform) {
-				this.fragmentConstantData[this.colorTransformIndex] = colorTransform.redMultiplier;
-				this.fragmentConstantData[this.colorTransformIndex + 1] = colorTransform.greenMultiplier;
-				this.fragmentConstantData[this.colorTransformIndex + 2] = colorTransform.blueMultiplier;
-				this.fragmentConstantData[this.colorTransformIndex + 3] = colorTransform.alphaMultiplier;
-				this.fragmentConstantData[this.colorTransformIndex + 4] = colorTransform.redOffset/255;
-				this.fragmentConstantData[this.colorTransformIndex + 5] = colorTransform.greenOffset/255;
-				this.fragmentConstantData[this.colorTransformIndex + 6] = colorTransform.blueOffset/255;
-				this.fragmentConstantData[this.colorTransformIndex + 7] = colorTransform.alphaOffset/255;
+				//TODO: AWDParser to write normalised color offsets
+				this.fragmentConstantData[this.colorTransformIndex] = colorTransform.rawData[0];
+				this.fragmentConstantData[this.colorTransformIndex + 1] = colorTransform.rawData[1];
+				this.fragmentConstantData[this.colorTransformIndex + 2] = colorTransform.rawData[2];
+				this.fragmentConstantData[this.colorTransformIndex + 3] = colorTransform.rawData[3];
+				this.fragmentConstantData[this.colorTransformIndex + 4] = colorTransform.rawData[4]/255;
+				this.fragmentConstantData[this.colorTransformIndex + 5] = colorTransform.rawData[5]/255;
+				this.fragmentConstantData[this.colorTransformIndex + 6] = colorTransform.rawData[6]/255;
+				this.fragmentConstantData[this.colorTransformIndex + 7] = colorTransform.rawData[7]/255;
 			} else {
 				this.fragmentConstantData[this.colorTransformIndex] = 1;
 				this.fragmentConstantData[this.colorTransformIndex + 1] = 1;
