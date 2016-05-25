@@ -101,20 +101,33 @@ export class ParticleGraphicsHelper
 				vertexCounters[j] += sourceElements.numVertices;
 
 				var k:number;
+				var index:number;
+				var posIndex:number;
+				var normalIndex:number;
+				var tangentIndex:number;
+				var uvIndex:number;
+
 				var tempLen:number;
 				var compact:TriangleElements = sourceElements;
-				var product:number;
 				var sourcePositions:ArrayBufferView;
+				var posStride:number;
 				var sourceNormals:Float32Array;
+				var normalStride:number;
 				var sourceTangents:Float32Array;
+				var tangentStride:number;
 				var sourceUVs:ArrayBufferView;
+				var uvStride:number;
 
 				if (compact) {
 					tempLen = compact.numVertices;
 					sourcePositions = compact.positions.get(tempLen);
+					posStride = compact.positions.stride;
 					sourceNormals = compact.normals.get(tempLen);
+					normalStride = compact.normals.stride;
 					sourceTangents = compact.tangents.get(tempLen);
+					tangentStride = compact.tangents.stride;
 					sourceUVs = compact.uvs.get(tempLen);
+					uvStride = compact.uvs.stride;
 
 					if (transforms) {
 						var particleGraphicsTransform:ParticleGraphicsTransform = transforms[i];
@@ -129,18 +142,21 @@ export class ParticleGraphicsHelper
 							 * 6 - 8: tangent X, Y, Z
 							 * 9 - 10: U V
 							 * 11 - 12: Secondary U V*/
-							product = k*3;
-							tempVertex.x = sourcePositions[product];
-							tempVertex.y = sourcePositions[product + 1];
-							tempVertex.z = sourcePositions[product + 2];
-							tempNormal.x = sourceNormals[product];
-							tempNormal.y = sourceNormals[product + 1];
-							tempNormal.z = sourceNormals[product + 2];
-							tempTangents.x = sourceTangents[product];
-							tempTangents.y = sourceTangents[product + 1];
-							tempTangents.z = sourceTangents[product + 2];
-							tempUV.x = sourceUVs[k*2];
-							tempUV.y = sourceUVs[k*2 + 1];
+							posIndex = k*posStride;
+							tempVertex.x = sourcePositions[posIndex];
+							tempVertex.y = sourcePositions[posIndex + 1];
+							tempVertex.z = sourcePositions[posIndex + 2];
+							normalIndex = k*normalStride;
+							tempNormal.x = sourceNormals[normalIndex];
+							tempNormal.y = sourceNormals[normalIndex + 1];
+							tempNormal.z = sourceNormals[normalIndex + 2];
+							tangentIndex = k*tangentStride;
+							tempTangents.x = sourceTangents[tangentIndex];
+							tempTangents.y = sourceTangents[tangentIndex + 1];
+							tempTangents.z = sourceTangents[tangentIndex + 2];
+							uvIndex = k*uvStride;
+							tempUV.x = sourceUVs[uvIndex];
+							tempUV.y = sourceUVs[uvIndex + 1];
 							if (vertexTransform) {
 								tempVertex = vertexTransform.transformVector(tempVertex);
 								tempNormal = invVertexTransform.deltaTransformVector(tempNormal);
@@ -156,12 +172,15 @@ export class ParticleGraphicsHelper
 						}
 					} else {
 						for (k = 0; k < tempLen; k++) {
-							product = k*3;
+							posIndex = k*posStride;
+							normalIndex = k*normalStride;
+							tangentIndex = k*tangentStride;
+							uvIndex = k*uvStride;
 							//this is faster than that only push one data
-							positions.push(sourcePositions[product], sourcePositions[product + 1], sourcePositions[product + 2]);
-							normals.push(sourceNormals[product], sourceNormals[product + 1], sourceNormals[product + 2]);
-							tangents.push(sourceTangents[product], sourceTangents[product + 1], sourceTangents[product + 2]);
-							uvs.push(sourceUVs[k*2], sourceUVs[k*2 + 1]);
+							positions.push(sourcePositions[posIndex], sourcePositions[posIndex + 1], sourcePositions[posIndex + 2]);
+							normals.push(sourceNormals[normalIndex], sourceNormals[normalIndex + 1], sourceNormals[normalIndex + 2]);
+							tangents.push(sourceTangents[tangentIndex], sourceTangents[tangentIndex + 1], sourceTangents[tangentIndex + 2]);
+							uvs.push(sourceUVs[uvIndex], sourceUVs[uvIndex + 1]);
 						}
 					}
 				} else {
@@ -171,8 +190,8 @@ export class ParticleGraphicsHelper
 				tempLen = sourceElements.numElements;
 				var sourceIndices:Uint16Array = sourceElements.indices.get(tempLen);
 				for (k = 0; k < tempLen; k++) {
-					product = k*3;
-					indices.push(sourceIndices[product] + vertexCounter, sourceIndices[product + 1] + vertexCounter, sourceIndices[product + 2] + vertexCounter);
+					index = k*3;
+					indices.push(sourceIndices[index] + vertexCounter, sourceIndices[index + 1] + vertexCounter, sourceIndices[index + 2] + vertexCounter);
 				}
 			}
 		}

@@ -126,7 +126,7 @@ export class GL_ElementsBase extends AbstractionBase
 		if (!this._indicesUpdated)
 			this._updateIndices();
 
-		var bufferId:number = attributesView.buffer.id;
+		var bufferId:number = attributesView.attributesBuffer.id;
 
 		if (!this._verticesUpdated[bufferId])
 			this._updateVertices(attributesView);
@@ -229,9 +229,9 @@ export class GL_ElementsBase extends AbstractionBase
 	{
 		this._numVertices = this._elements.numVertices;
 
-		var bufferId:number = attributesView.buffer.id;
+		var bufferId:number = attributesView.attributesBuffer.id;
 
-		this._vertices[bufferId] = <GL_AttributesBuffer> this._stage.getAbstraction(ElementsUtils.getSubVertices(attributesView.buffer, this._indexMappings));
+		this._vertices[bufferId] = <GL_AttributesBuffer> this._stage.getAbstraction(ElementsUtils.getSubVertices(attributesView.attributesBuffer, this._indexMappings));
 
 		this._verticesUpdated[bufferId] = true;
 	}
@@ -276,7 +276,7 @@ export class GL_ElementsBase extends AbstractionBase
 		if (!event.attributesView)
 			return;
 
-		var bufferId:number = event.attributesView.buffer.id;
+		var bufferId:number = event.attributesView.attributesBuffer.id;
 
 		this._verticesUpdated[bufferId] = false;
 	}
@@ -292,7 +292,7 @@ export class GL_ElementsBase extends AbstractionBase
 		if (!event.attributesView)
 			return;
 
-		var bufferId:number = event.attributesView.buffer.id;
+		var bufferId:number = event.attributesView.attributesBuffer.id;
 
 		if (this._vertices[bufferId]) {
 			this._vertices[bufferId].onClear(new AssetEvent(AssetEvent.CLEAR, event.attributesView));

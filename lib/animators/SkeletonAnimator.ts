@@ -396,20 +396,28 @@ export class SkeletonAnimator extends AnimatorBase
 		var sourceTangents:Float32Array = sourceElements.tangents.get(numVertices);
 
 		var posDim:number = sourceElements.positions.dimensions;
+		var posStride:number = sourceElements.positions.stride;
+		var normalStride:number = sourceElements.normals.stride;
+		var tangentStride:number = sourceElements.tangents.stride;
 
 		var jointIndices:Float32Array = <Float32Array> sourceElements.jointIndices.get(numVertices);
 		var jointWeights:Float32Array = <Float32Array> sourceElements.jointWeights.get(numVertices);
+		var jointStride:number = sourceElements.jointIndices.stride;
 
 		var targetElements:TriangleElements = this._morphedElements[sourceElements.id];
 
 		var targetPositions:ArrayBufferView = targetElements.positions.get(numVertices);
 		var targetNormals:Float32Array = targetElements.normals.get(numVertices);
 		var targetTangents:Float32Array = targetElements.tangents.get(numVertices);
+		targetElements.positions.attributesBuffer.invalidate();
+		targetElements.normals.attributesBuffer.invalidate();
+		targetElements.tangents.attributesBuffer.invalidate();
 
 		var index:number = 0;
 		var i0:number = 0;
 		var i1:number = 0;
-		var j:number = 0;
+		var i2:number = 0;
+		var i3:number = 0;
 		var k:number;
 		var vx:number, vy:number, vz:number;
 		var nx:number, ny:number, nz:number;
@@ -423,17 +431,18 @@ export class SkeletonAnimator extends AnimatorBase
 		var m31:number, m32:number, m33:number, m34:number;
 
 		while (index < numVertices) {
-			i0 = index*posDim;
+			i0 = index*posStride;
 			vertX = sourcePositions[i0];
 			vertY = sourcePositions[i0 + 1];
 			vertZ = (posDim == 3)? sourcePositions[i0 + 2] : 0;
-			i1 = index*3;
+			i1 = index*normalStride;
 			normX = sourceNormals[i1];
 			normY = sourceNormals[i1 + 1];
 			normZ = sourceNormals[i1 + 2];
-			tangX = sourceTangents[i1];
-			tangY = sourceTangents[i1 + 1];
-			tangZ = sourceTangents[i1 + 2];
+			i2 = index*tangentStride;
+			tangX = sourceTangents[i2];
+			tangY = sourceTangents[i2 + 1];
+			tangZ = sourceTangents[i2 + 2];
 			vx = 0;
 			vy = 0;
 			vz = 0;
@@ -444,11 +453,12 @@ export class SkeletonAnimator extends AnimatorBase
 			ty = 0;
 			tz = 0;
 			k = 0;
+			i3 = index*jointStride;
 			while (k < this._jointsPerVertex) {
-				weight = jointWeights[j];
+				weight = jointWeights[i3 + k];
 				if (weight > 0) {
 					// implicit /3*12 (/3 because indices are multiplied by 3 for gpu matrix access, *12 because it's the matrix size)
-					var mtxOffset:number = jointIndices[j++] << 2;
+					var mtxOffset:number = jointIndices[i3 + k] << 2;
 					m11 = this._globalMatrices[mtxOffset];
 					m12 = this._globalMatrices[mtxOffset + 1];
 					m13 = this._globalMatrices[mtxOffset + 2];
@@ -470,9 +480,9 @@ export class SkeletonAnimator extends AnimatorBase
 					tx += weight*(m11*tangX + m12*tangY + m13*tangZ);
 					ty += weight*(m21*tangX + m22*tangY + m23*tangZ);
 					tz += weight*(m31*tangX + m32*tangY + m33*tangZ);
-					++k;
+					k++;
 				} else {
-					j += (this._jointsPerVertex - k);
+					//if zero weight encountered, skip to the next vertex
 					k = this._jointsPerVertex;
 				}
 			}
@@ -483,16 +493,12 @@ export class SkeletonAnimator extends AnimatorBase
 			targetNormals[i1] = nx;
 			targetNormals[i1 + 1] = ny;
 			targetNormals[i1 + 2] = nz;
-			targetTangents[i1] = tx;
-			targetTangents[i1 + 1] = ty;
-			targetTangents[i1 + 2] = tz;
+			targetTangents[i2] = tx;
+			targetTangents[i2 + 1] = ty;
+			targetTangents[i2 + 2] = tz;
 
 			index++;
 		}
-
-		targetElements.setPositions(targetPositions);
-		targetElements.setNormals(targetNormals);
-		targetElements.setTangents(targetTangents);
 	}
 
 	/**
@@ -614,16 +620,23 @@ export class SkeletonAnimator extends AnimatorBase
 
 	private onVerticesUpdate(event:ElementsEvent):void
 	{
+		//only update uvs
+		if (event.attributesView != elements.uvs && event.attributesView != elements.getCustomAtributes("secondaryUVs"))
+			return;
+
 		var elements:TriangleElements = <TriangleElements> event.target;
 		var morphGraphics:TriangleElements = <TriangleElements> this._morphedElements[elements.id];
+		var morphUVs:Float32Array = <Float32Array> morphGraphics.uvs.get(elements.numVertices);
 
-		switch(event.attributesView) {
-			case elements.uvs:
-				morphGraphics.setUVs(elements.uvs.get(elements.numVertices));
-				break;
-			case elements.getCustomAtributes("secondaryUVs"):
-				morphGraphics.setCustomAttributes("secondaryUVs", elements.getCustomAtributes("secondaryUVs").get(elements.numVertices));
-				break;
+		morphGraphics.invalidateVertices(morphGraphics.uvs);
+
+		var uvStride:number = morphGraphics.uvs.stride;
+		var uvs:Float32Array = <Float32Array> event.attributesView.get(elements.numVertices);
+
+		var len:number = elements.numVertices*uvStride;
+		for (var i:number = 0; i < len; i+=uvStride) {
+			morphUVs[i] = uvs[i];
+			morphUVs[i + 1] = uvs[i + 1];
 		}
 	}
 }
