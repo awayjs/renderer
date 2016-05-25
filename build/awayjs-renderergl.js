@@ -2739,16 +2739,24 @@ var SkeletonAnimator = (function (_super) {
         var sourceNormals = sourceElements.normals.get(numVertices);
         var sourceTangents = sourceElements.tangents.get(numVertices);
         var posDim = sourceElements.positions.dimensions;
+        var posStride = sourceElements.positions.stride;
+        var normalStride = sourceElements.normals.stride;
+        var tangentStride = sourceElements.tangents.stride;
         var jointIndices = sourceElements.jointIndices.get(numVertices);
         var jointWeights = sourceElements.jointWeights.get(numVertices);
+        var jointStride = sourceElements.jointIndices.stride;
         var targetElements = this._morphedElements[sourceElements.id];
         var targetPositions = targetElements.positions.get(numVertices);
         var targetNormals = targetElements.normals.get(numVertices);
         var targetTangents = targetElements.tangents.get(numVertices);
+        targetElements.positions.attributesBuffer.invalidate();
+        targetElements.normals.attributesBuffer.invalidate();
+        targetElements.tangents.attributesBuffer.invalidate();
         var index = 0;
         var i0 = 0;
         var i1 = 0;
-        var j = 0;
+        var i2 = 0;
+        var i3 = 0;
         var k;
         var vx, vy, vz;
         var nx, ny, nz;
@@ -2761,17 +2769,18 @@ var SkeletonAnimator = (function (_super) {
         var m21, m22, m23, m24;
         var m31, m32, m33, m34;
         while (index < numVertices) {
-            i0 = index * posDim;
+            i0 = index * posStride;
             vertX = sourcePositions[i0];
             vertY = sourcePositions[i0 + 1];
             vertZ = (posDim == 3) ? sourcePositions[i0 + 2] : 0;
-            i1 = index * 3;
+            i1 = index * normalStride;
             normX = sourceNormals[i1];
             normY = sourceNormals[i1 + 1];
             normZ = sourceNormals[i1 + 2];
-            tangX = sourceTangents[i1];
-            tangY = sourceTangents[i1 + 1];
-            tangZ = sourceTangents[i1 + 2];
+            i2 = index * tangentStride;
+            tangX = sourceTangents[i2];
+            tangY = sourceTangents[i2 + 1];
+            tangZ = sourceTangents[i2 + 2];
             vx = 0;
             vy = 0;
             vz = 0;
@@ -2782,11 +2791,12 @@ var SkeletonAnimator = (function (_super) {
             ty = 0;
             tz = 0;
             k = 0;
+            i3 = index * jointStride;
             while (k < this._jointsPerVertex) {
-                weight = jointWeights[j];
+                weight = jointWeights[i3 + k];
                 if (weight > 0) {
                     // implicit /3*12 (/3 because indices are multiplied by 3 for gpu matrix access, *12 because it's the matrix size)
-                    var mtxOffset = jointIndices[j++] << 2;
+                    var mtxOffset = jointIndices[i3 + k] << 2;
                     m11 = this._globalMatrices[mtxOffset];
                     m12 = this._globalMatrices[mtxOffset + 1];
                     m13 = this._globalMatrices[mtxOffset + 2];
@@ -2808,10 +2818,10 @@ var SkeletonAnimator = (function (_super) {
                     tx += weight * (m11 * tangX + m12 * tangY + m13 * tangZ);
                     ty += weight * (m21 * tangX + m22 * tangY + m23 * tangZ);
                     tz += weight * (m31 * tangX + m32 * tangY + m33 * tangZ);
-                    ++k;
+                    k++;
                 }
                 else {
-                    j += (this._jointsPerVertex - k);
+                    //if zero weight encountered, skip to the next vertex
                     k = this._jointsPerVertex;
                 }
             }
@@ -2822,14 +2832,11 @@ var SkeletonAnimator = (function (_super) {
             targetNormals[i1] = nx;
             targetNormals[i1 + 1] = ny;
             targetNormals[i1 + 2] = nz;
-            targetTangents[i1] = tx;
-            targetTangents[i1 + 1] = ty;
-            targetTangents[i1 + 2] = tz;
+            targetTangents[i2] = tx;
+            targetTangents[i2 + 1] = ty;
+            targetTangents[i2 + 2] = tz;
             index++;
         }
-        targetElements.setPositions(targetPositions);
-        targetElements.setNormals(targetNormals);
-        targetElements.setTangents(targetTangents);
     };
     /**
      * Converts a local hierarchical skeleton pose to a global pose
@@ -2931,15 +2938,19 @@ var SkeletonAnimator = (function (_super) {
         this._morphedElements[elements.id].setIndices(elements.indices);
     };
     SkeletonAnimator.prototype.onVerticesUpdate = function (event) {
+        //only update uvs
+        if (event.attributesView != elements.uvs && event.attributesView != elements.getCustomAtributes("secondaryUVs"))
+            return;
         var elements = event.target;
         var morphGraphics = this._morphedElements[elements.id];
-        switch (event.attributesView) {
-            case elements.uvs:
-                morphGraphics.setUVs(elements.uvs.get(elements.numVertices));
-                break;
-            case elements.getCustomAtributes("secondaryUVs"):
-                morphGraphics.setCustomAttributes("secondaryUVs", elements.getCustomAtributes("secondaryUVs").get(elements.numVertices));
-                break;
+        var morphUVs = morphGraphics.uvs.get(elements.numVertices);
+        morphGraphics.invalidateVertices(morphGraphics.uvs);
+        var uvStride = morphGraphics.uvs.stride;
+        var uvs = event.attributesView.get(elements.numVertices);
+        var len = elements.numVertices * uvStride;
+        for (var i = 0; i < len; i += uvStride) {
+            morphUVs[i] = uvs[i];
+            morphUVs[i + 1] = uvs[i + 1];
         }
     };
     return SkeletonAnimator;
@@ -9477,7 +9488,7 @@ var GL_ElementsBase = (function (_super) {
         //first check if indices need updating which may affect vertices
         if (!this._indicesUpdated)
             this._updateIndices();
-        var bufferId = attributesView.buffer.id;
+        var bufferId = attributesView.attributesBuffer.id;
         if (!this._verticesUpdated[bufferId])
             this._updateVertices(attributesView);
         return this._vertices[bufferId];
@@ -9559,8 +9570,8 @@ var GL_ElementsBase = (function (_super) {
      */
     GL_ElementsBase.prototype._updateVertices = function (attributesView) {
         this._numVertices = this._elements.numVertices;
-        var bufferId = attributesView.buffer.id;
-        this._vertices[bufferId] = this._stage.getAbstraction(ElementsUtils_1.ElementsUtils.getSubVertices(attributesView.buffer, this._indexMappings));
+        var bufferId = attributesView.attributesBuffer.id;
+        this._vertices[bufferId] = this._stage.getAbstraction(ElementsUtils_1.ElementsUtils.getSubVertices(attributesView.attributesBuffer, this._indexMappings));
         this._verticesUpdated[bufferId] = true;
     };
     /**
@@ -9595,7 +9606,7 @@ var GL_ElementsBase = (function (_super) {
     GL_ElementsBase.prototype._onInvalidateVertices = function (event) {
         if (!event.attributesView)
             return;
-        var bufferId = event.attributesView.buffer.id;
+        var bufferId = event.attributesView.attributesBuffer.id;
         this._verticesUpdated[bufferId] = false;
     };
     /**
@@ -9607,7 +9618,7 @@ var GL_ElementsBase = (function (_super) {
     GL_ElementsBase.prototype._onClearVertices = function (event) {
         if (!event.attributesView)
             return;
-        var bufferId = event.attributesView.buffer.id;
+        var bufferId = event.attributesView.attributesBuffer.id;
         if (this._vertices[bufferId]) {
             this._vertices[bufferId].onClear(new AssetEvent_1.AssetEvent(AssetEvent_1.AssetEvent.CLEAR, event.attributesView));
             delete this._vertices[bufferId];
@@ -15509,19 +15520,31 @@ var ParticleGraphicsHelper = (function () {
                 particles.push(particleData);
                 vertexCounters[j] += sourceElements.numVertices;
                 var k;
+                var index;
+                var posIndex;
+                var normalIndex;
+                var tangentIndex;
+                var uvIndex;
                 var tempLen;
                 var compact = sourceElements;
-                var product;
                 var sourcePositions;
+                var posStride;
                 var sourceNormals;
+                var normalStride;
                 var sourceTangents;
+                var tangentStride;
                 var sourceUVs;
+                var uvStride;
                 if (compact) {
                     tempLen = compact.numVertices;
                     sourcePositions = compact.positions.get(tempLen);
+                    posStride = compact.positions.stride;
                     sourceNormals = compact.normals.get(tempLen);
+                    normalStride = compact.normals.stride;
                     sourceTangents = compact.tangents.get(tempLen);
+                    tangentStride = compact.tangents.stride;
                     sourceUVs = compact.uvs.get(tempLen);
+                    uvStride = compact.uvs.stride;
                     if (transforms) {
                         var particleGraphicsTransform = transforms[i];
                         var vertexTransform = particleGraphicsTransform.vertexTransform;
@@ -15534,18 +15557,21 @@ var ParticleGraphicsHelper = (function () {
                              * 6 - 8: tangent X, Y, Z
                              * 9 - 10: U V
                              * 11 - 12: Secondary U V*/
-                            product = k * 3;
-                            tempVertex.x = sourcePositions[product];
-                            tempVertex.y = sourcePositions[product + 1];
-                            tempVertex.z = sourcePositions[product + 2];
-                            tempNormal.x = sourceNormals[product];
-                            tempNormal.y = sourceNormals[product + 1];
-                            tempNormal.z = sourceNormals[product + 2];
-                            tempTangents.x = sourceTangents[product];
-                            tempTangents.y = sourceTangents[product + 1];
-                            tempTangents.z = sourceTangents[product + 2];
-                            tempUV.x = sourceUVs[k * 2];
-                            tempUV.y = sourceUVs[k * 2 + 1];
+                            posIndex = k * posStride;
+                            tempVertex.x = sourcePositions[posIndex];
+                            tempVertex.y = sourcePositions[posIndex + 1];
+                            tempVertex.z = sourcePositions[posIndex + 2];
+                            normalIndex = k * normalStride;
+                            tempNormal.x = sourceNormals[normalIndex];
+                            tempNormal.y = sourceNormals[normalIndex + 1];
+                            tempNormal.z = sourceNormals[normalIndex + 2];
+                            tangentIndex = k * tangentStride;
+                            tempTangents.x = sourceTangents[tangentIndex];
+                            tempTangents.y = sourceTangents[tangentIndex + 1];
+                            tempTangents.z = sourceTangents[tangentIndex + 2];
+                            uvIndex = k * uvStride;
+                            tempUV.x = sourceUVs[uvIndex];
+                            tempUV.y = sourceUVs[uvIndex + 1];
                             if (vertexTransform) {
                                 tempVertex = vertexTransform.transformVector(tempVertex);
                                 tempNormal = invVertexTransform.deltaTransformVector(tempNormal);
@@ -15562,12 +15588,15 @@ var ParticleGraphicsHelper = (function () {
                     }
                     else {
                         for (k = 0; k < tempLen; k++) {
-                            product = k * 3;
+                            posIndex = k * posStride;
+                            normalIndex = k * normalStride;
+                            tangentIndex = k * tangentStride;
+                            uvIndex = k * uvStride;
                             //this is faster than that only push one data
-                            positions.push(sourcePositions[product], sourcePositions[product + 1], sourcePositions[product + 2]);
-                            normals.push(sourceNormals[product], sourceNormals[product + 1], sourceNormals[product + 2]);
-                            tangents.push(sourceTangents[product], sourceTangents[product + 1], sourceTangents[product + 2]);
-                            uvs.push(sourceUVs[k * 2], sourceUVs[k * 2 + 1]);
+                            positions.push(sourcePositions[posIndex], sourcePositions[posIndex + 1], sourcePositions[posIndex + 2]);
+                            normals.push(sourceNormals[normalIndex], sourceNormals[normalIndex + 1], sourceNormals[normalIndex + 2]);
+                            tangents.push(sourceTangents[tangentIndex], sourceTangents[tangentIndex + 1], sourceTangents[tangentIndex + 2]);
+                            uvs.push(sourceUVs[uvIndex], sourceUVs[uvIndex + 1]);
                         }
                     }
                 }
@@ -15576,8 +15605,8 @@ var ParticleGraphicsHelper = (function () {
                 tempLen = sourceElements.numElements;
                 var sourceIndices = sourceElements.indices.get(tempLen);
                 for (k = 0; k < tempLen; k++) {
-                    product = k * 3;
-                    indices.push(sourceIndices[product] + vertexCounter, sourceIndices[product + 1] + vertexCounter, sourceIndices[product + 2] + vertexCounter);
+                    index = k * 3;
+                    indices.push(sourceIndices[index] + vertexCounter, sourceIndices[index + 1] + vertexCounter, sourceIndices[index + 2] + vertexCounter);
                 }
             }
         }
