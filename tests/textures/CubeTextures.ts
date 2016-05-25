@@ -1,15 +1,15 @@
-import BitmapImageCube				from "awayjs-core/lib/image/BitmapImageCube";
-import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
-import URLRequest					from "awayjs-core/lib/net/URLRequest";
-import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
-import Loader						from "awayjs-core/lib/library/Loader";
-import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
-import Debug						from "awayjs-core/lib/utils/Debug";
+import {BitmapImageCube}				from "awayjs-core/lib/image/BitmapImageCube";
+import {LoaderEvent}					from "awayjs-core/lib/events/LoaderEvent";
+import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
+import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
+import {Loader}						from "awayjs-core/lib/library/Loader";
+import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {Debug}						from "awayjs-core/lib/utils/Debug";
 
-import View							from "awayjs-display/lib/View";
-import Skybox						from "awayjs-display/lib/display/Skybox";
+import {View}							from "awayjs-display/lib/View";
+import {Skybox}						from "awayjs-display/lib/display/Skybox";
 
-import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
 
 class CubeTextures
 {

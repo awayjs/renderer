@@ -1,23 +1,23 @@
-import BlendMode					from "awayjs-core/lib/image/BlendMode";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
-import URLLoader					from "awayjs-core/lib/net/URLLoader";
-import URLLoaderDataFormat			from "awayjs-core/lib/net/URLLoaderDataFormat";
-import URLRequest					from "awayjs-core/lib/net/URLRequest";
-import URLLoaderEvent				from "awayjs-core/lib/events/URLLoaderEvent";
-import ParserUtils					from "awayjs-core/lib/parsers/ParserUtils";
-import PerspectiveProjection		from "awayjs-core/lib/projections/PerspectiveProjection";
-import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
-import Debug						from "awayjs-core/lib/utils/Debug";
+import {BlendMode}					from "awayjs-core/lib/image/BlendMode";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {URLLoader}					from "awayjs-core/lib/net/URLLoader";
+import {URLLoaderDataFormat}			from "awayjs-core/lib/net/URLLoaderDataFormat";
+import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
+import {URLLoaderEvent}				from "awayjs-core/lib/events/URLLoaderEvent";
+import {ParserUtils}					from "awayjs-core/lib/parsers/ParserUtils";
+import {PerspectiveProjection}		from "awayjs-core/lib/projections/PerspectiveProjection";
+import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {Debug}						from "awayjs-core/lib/utils/Debug";
 
-import View							from "awayjs-display/lib/View";
-import Sprite						from "awayjs-display/lib/display/Sprite";
-import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
-import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
-import PrimitiveCubePrefab			from "awayjs-display/lib/prefabs/PrimitiveCubePrefab";
-import PrimitiveTorusPrefab			from "awayjs-display/lib/prefabs/PrimitiveTorusPrefab";
-import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
+import {View}							from "awayjs-display/lib/View";
+import {Sprite}						from "awayjs-display/lib/display/Sprite";
+import {ElementsType}					from "awayjs-display/lib/graphics/ElementsType";
+import {BasicMaterial}				from "awayjs-display/lib/materials/BasicMaterial";
+import {PrimitiveCubePrefab}			from "awayjs-display/lib/prefabs/PrimitiveCubePrefab";
+import {PrimitiveTorusPrefab}			from "awayjs-display/lib/prefabs/PrimitiveTorusPrefab";
+import {Single2DTexture}				from "awayjs-display/lib/textures/Single2DTexture";
 
-import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
 
 class TorusVortex
 {

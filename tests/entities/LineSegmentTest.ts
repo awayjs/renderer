@@ -1,18 +1,18 @@
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
-import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
-import IAsset						from "awayjs-core/lib/library/IAsset";
-import URLLoader					from "awayjs-core/lib/net/URLLoader";
-import URLRequest					from "awayjs-core/lib/net/URLRequest";
-import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
+import {IAsset}						from "awayjs-core/lib/library/IAsset";
+import {URLLoader}					from "awayjs-core/lib/net/URLLoader";
+import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
+import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import View							from "awayjs-display/lib/View";
-import HoverController				from "awayjs-display/lib/controllers/HoverController";
-import AlignmentMode				from "awayjs-display/lib/base/AlignmentMode";
-import OrientationMode				from "awayjs-display/lib/base/OrientationMode";
-import LineSegment					from "awayjs-display/lib/display/LineSegment";
-import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
+import {View}							from "awayjs-display/lib/View";
+import {HoverController}				from "awayjs-display/lib/controllers/HoverController";
+import {AlignmentMode}				from "awayjs-display/lib/base/AlignmentMode";
+import {OrientationMode}				from "awayjs-display/lib/base/OrientationMode";
+import {LineSegment}					from "awayjs-display/lib/display/LineSegment";
+import {BasicMaterial}				from "awayjs-display/lib/materials/BasicMaterial";
 
-import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
 
 class LineSegmentTest
 {

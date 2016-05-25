@@ -1,19 +1,19 @@
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
-import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
-import Debug						from "awayjs-core/lib/utils/Debug";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {Debug}						from "awayjs-core/lib/utils/Debug";
 
-import View							from "awayjs-display/lib/View";
-import Sprite						from "awayjs-display/lib/display/Sprite";
-import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
-import PrimitivePrefabBase			from "awayjs-display/lib/prefabs/PrimitivePrefabBase";
-import PrimitivePolygonPrefab		from "awayjs-display/lib/prefabs/PrimitivePolygonPrefab";
-import PrimitiveConePrefab			from "awayjs-display/lib/prefabs/PrimitiveConePrefab";
-import PrimitiveCubePrefab			from "awayjs-display/lib/prefabs/PrimitiveCubePrefab";
-import PrimitiveCylinderPrefab		from "awayjs-display/lib/prefabs/PrimitiveCylinderPrefab";
-import PrimitivePlanePrefab			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
-import PrimitiveSpherePrefab		from "awayjs-display/lib/prefabs/PrimitiveSpherePrefab";
+import {View}							from "awayjs-display/lib/View";
+import {Sprite}						from "awayjs-display/lib/display/Sprite";
+import {ElementsType}					from "awayjs-display/lib/graphics/ElementsType";
+import {PrimitivePrefabBase}			from "awayjs-display/lib/prefabs/PrimitivePrefabBase";
+import {PrimitivePolygonPrefab}		from "awayjs-display/lib/prefabs/PrimitivePolygonPrefab";
+import {PrimitiveConePrefab}		from "awayjs-display/lib/prefabs/PrimitiveConePrefab";
+import {PrimitiveCubePrefab}		from "awayjs-display/lib/prefabs/PrimitiveCubePrefab";
+import {PrimitiveCylinderPrefab}		from "awayjs-display/lib/prefabs/PrimitiveCylinderPrefab";
+import {PrimitivePlanePrefab}			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
+import {PrimitiveSpherePrefab}		from "awayjs-display/lib/prefabs/PrimitiveSpherePrefab";
 
-import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
 
 class WireframePrimitiveTest
 {

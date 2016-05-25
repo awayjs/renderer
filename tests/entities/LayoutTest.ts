@@ -1,22 +1,22 @@
-import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
-import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
-import URLLoader					from "awayjs-core/lib/net/URLLoader";
-import URLRequest					from "awayjs-core/lib/net/URLRequest";
-import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
-import CoordinateSystem				from "awayjs-core/lib/projections/CoordinateSystem";
-import PerspectiveProjection		from "awayjs-core/lib/projections/PerspectiveProjection";
-import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {BitmapImage2D}				from "awayjs-core/lib/image/BitmapImage2D";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
+import {URLLoader}					from "awayjs-core/lib/net/URLLoader";
+import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
+import {LoaderEvent}					from "awayjs-core/lib/events/LoaderEvent";
+import {CoordinateSystem}				from "awayjs-core/lib/projections/CoordinateSystem";
+import {PerspectiveProjection}		from "awayjs-core/lib/projections/PerspectiveProjection";
+import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import View							from "awayjs-display/lib/View";
-import HoverController				from "awayjs-display/lib/controllers/HoverController";
-import Billboard					from "awayjs-display/lib/display/Billboard";
-import Sprite						from "awayjs-display/lib/display/Sprite";
-import AwayMouseEvent				from "awayjs-display/lib/events/MouseEvent";
-import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
-import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
+import {View}							from "awayjs-display/lib/View";
+import {HoverController}				from "awayjs-display/lib/controllers/HoverController";
+import {Billboard}					from "awayjs-display/lib/display/Billboard";
+import {Sprite}						from "awayjs-display/lib/display/Sprite";
+import {MouseEvent}				from "awayjs-display/lib/events/MouseEvent";
+import {BasicMaterial}				from "awayjs-display/lib/materials/BasicMaterial";
+import {Single2DTexture}				from "awayjs-display/lib/textures/Single2DTexture";
 
-import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
 
 class LayoutTest
 {
@@ -78,7 +78,7 @@ class LayoutTest
 				billboard.x = j*300;
 				billboard.y = i*300;
 				billboard.z = 0;
-				billboard.addEventListener(AwayMouseEvent.MOUSE_MOVE, this.onMouseEvent);
+				billboard.addEventListener(MouseEvent.MOUSE_MOVE, this.onMouseEvent);
 				//billboard.orientationMode = away.base.OrientationMode.CAMERA_PLANE;
 				//billboard.alignmentMode = away.base.AlignmentMode.PIVOT_POINT;
 				this._billboards.push(billboard);
@@ -89,9 +89,9 @@ class LayoutTest
 
 		this._hoverControl = new HoverController(this._view.camera, null, 180, 0, 1000);
 
-		document.onmousedown = (event:MouseEvent) => this.onMouseDownHandler(event);
-		document.onmouseup = (event:MouseEvent) => this.onMouseUpHandler(event);
-		document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
+		document.onmousedown = (event) => this.onMouseDownHandler(event);
+		document.onmouseup = (event) => this.onMouseUpHandler(event);
+		document.onmousemove = (event) => this.onMouseMove(event);
 
 		window.onresize  = (event:UIEvent) => this.onResize(event);
 
@@ -103,7 +103,7 @@ class LayoutTest
 		this._timer.start();
 	}
 
-	private onMouseEvent(event:AwayMouseEvent)
+	private onMouseEvent(event:MouseEvent)
 	{
 		console.log(event);
 	}
@@ -126,12 +126,12 @@ class LayoutTest
 
 	}
 
-	private onMouseUpHandler(event:MouseEvent)
+	private onMouseUpHandler(event)
 	{
 		this._move = false;
 	}
 
-	private onMouseMove(event:MouseEvent)
+	private onMouseMove(event)
 	{
 		if (this._move) {
 			this._hoverControl.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
@@ -139,7 +139,7 @@ class LayoutTest
 		}
 	}
 
-	private onMouseDownHandler(event:MouseEvent)
+	private onMouseDownHandler(event)
 	{
 		this._lastPanAngle = this._hoverControl.panAngle;
 		this._lastTiltAngle = this._hoverControl.tiltAngle;

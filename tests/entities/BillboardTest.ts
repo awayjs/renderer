@@ -1,22 +1,22 @@
-import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
-import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
-import IAsset						from "awayjs-core/lib/library/IAsset";
-import URLLoader					from "awayjs-core/lib/net/URLLoader";
-import URLRequest					from "awayjs-core/lib/net/URLRequest";
-import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
-import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {BitmapImage2D}				from "awayjs-core/lib/image/BitmapImage2D";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
+import {IAsset}						from "awayjs-core/lib/library/IAsset";
+import {URLLoader}					from "awayjs-core/lib/net/URLLoader";
+import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
+import {LoaderEvent}					from "awayjs-core/lib/events/LoaderEvent";
+import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import View							from "awayjs-display/lib/View";
-import HoverController				from "awayjs-display/lib/controllers/HoverController";
-import AlignmentMode				from "awayjs-display/lib/base/AlignmentMode";
-import OrientationMode				from "awayjs-display/lib/base/OrientationMode";
-import Billboard					from "awayjs-display/lib/display/Billboard";
-import Sprite						from "awayjs-display/lib/display/Sprite";
-import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
-import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
+import {View}							from "awayjs-display/lib/View";
+import {HoverController}				from "awayjs-display/lib/controllers/HoverController";
+import {AlignmentMode}				from "awayjs-display/lib/base/AlignmentMode";
+import {OrientationMode}				from "awayjs-display/lib/base/OrientationMode";
+import {Billboard}					from "awayjs-display/lib/display/Billboard";
+import {Sprite}						from "awayjs-display/lib/display/Sprite";
+import {BasicMaterial}				from "awayjs-display/lib/materials/BasicMaterial";
+import {Single2DTexture}				from "awayjs-display/lib/textures/Single2DTexture";
 
-import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
 
 class BillboardTest
 {
