@@ -15185,9 +15185,9 @@ var Merge = (function () {
      * Merges all the sprites found in the Array&lt;Sprite&gt; into a single Sprite.
      *
      * @param    receiver    The Sprite to receive the merged contents of the sprites.
-     * @param    sprites      A series of Spritees to be merged with the reciever sprite.
+     * @param    sprites      A series of Sprites to be merged with the reciever sprite.
      */
-    Merge.prototype.applyToSpritees = function (receiver, sprites) {
+    Merge.prototype.applyToSprites = function (receiver, sprites) {
         this.reset();
         if (!sprites.length)
             return;
@@ -15201,7 +15201,7 @@ var Merge = (function () {
         this.merge(receiver, this._disposeSources);
     };
     /**
-     *  Merges 2 sprites into one. It is recommand to use apply when 2 sprites are to be merged. If more need to be merged, use either applyToSpritees or applyToContainer methods.
+     *  Merges 2 sprites into one. It is recommand to use apply when 2 sprites are to be merged. If more need to be merged, use either applyToSprites or applyToContainer methods.
      *
      * @param    receiver    The Sprite to receive the merged contents of both sprites.
      * @param    sprite        The Sprite to be merged with the receiver sprite
@@ -15239,9 +15239,10 @@ var Merge = (function () {
             elements.setNormals(data.normals);
             elements.setTangents(data.tangents);
             elements.setUVs(data.uvs);
-            destGraphics.addGraphic(elements);
             if (this._keepMaterial && useSubMaterials)
-                destSprite.graphics[i].material = data.material;
+                destGraphics.addGraphic(elements, data.material);
+            else
+                destGraphics.addGraphic(elements);
         }
         if (this._keepMaterial && !useSubMaterials && this._graphicVOs.length)
             destSprite.material = this._graphicVOs[0].material;
@@ -15249,7 +15250,6 @@ var Merge = (function () {
             var len = this._toDispose.length;
             for (var i; i < len; i++)
                 this._toDispose[i].dispose();
-            ;
         }
         this._toDispose = null;
     };
@@ -15259,19 +15259,15 @@ var Merge = (function () {
         for (subIdx = 0; subIdx < sprite.graphics.count; subIdx++) {
             var i;
             var len;
-            var iIdx /*uint*/, vIdx /*uint*/, nIdx /*uint*/, tIdx /*uint*/, uIdx;
+            var iIdx, vIdx, nIdx, tIdx, uIdx;
             var indexOffset;
             var elements;
             var vo;
             var vertices;
             var normals;
             var tangents;
-            var ind, pd, nd, td, ud;
+            var ind;
             elements = sprite.graphics.getGraphicAt(subIdx).elements;
-            pd = elements.positions.get(elements.numVertices);
-            nd = elements.normals.get(elements.numVertices);
-            td = elements.tangents.get(elements.numVertices);
-            ud = elements.uvs.get(elements.numVertices);
             // Get (or create) a VO for this material
             vo = this.getGraphicData(sprite.graphics.getGraphicAt(subIdx).material);
             // Vertices and normals are copied to temporary vectors, to be transformed
@@ -15285,25 +15281,10 @@ var Merge = (function () {
             nIdx = normals.length;
             tIdx = tangents.length;
             uIdx = vo.uvs.length;
-            len = elements.numVertices;
-            for (i = 0; i < len; i++) {
-                calc = i * 3;
-                // Position
-                vertices[vIdx++] = pd[calc];
-                vertices[vIdx++] = pd[calc + 1];
-                vertices[vIdx++] = pd[calc + 2];
-                // Normal
-                normals[nIdx++] = nd[calc];
-                normals[nIdx++] = nd[calc + 1];
-                normals[nIdx++] = nd[calc + 2];
-                // Tangent
-                tangents[tIdx++] = td[calc];
-                tangents[tIdx++] = td[calc + 1];
-                tangents[tIdx++] = td[calc + 2];
-                // UV
-                vo.uvs[uIdx++] = ud[i * 2];
-                vo.uvs[uIdx++] = ud[i * 2 + 1];
-            }
+            this.copyAttributes(elements.positions, vertices, elements.numVertices, vIdx);
+            this.copyAttributes(elements.normals, normals, elements.numVertices, nIdx);
+            this.copyAttributes(elements.tangents, tangents, elements.numVertices, tIdx);
+            this.copyAttributes(elements.uvs, vo.uvs, elements.numVertices, uIdx);
             // Copy over triangle indices
             indexOffset = (!this._objectSpace) ? vo.vertices.length / 3 : 0;
             iIdx = vo.indices.length;
@@ -15333,6 +15314,15 @@ var Merge = (function () {
         }
         if (dispose)
             this._toDispose.push(sprite);
+    };
+    Merge.prototype.copyAttributes = function (attributes, array, count, startIndex) {
+        var vertices = attributes.get(count);
+        var dim = attributes.dimensions;
+        var stride = attributes.stride;
+        var len = count * stride;
+        for (var i = 0; i < len; i += stride)
+            for (var j = 0; j < dim; j++)
+                array[startIndex++] = vertices[i + j];
     };
     Merge.prototype.getGraphicData = function (material) {
         var data;
