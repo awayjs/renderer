@@ -6,6 +6,7 @@ import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
 import {TriangleElements}					from "awayjs-display/lib/graphics/TriangleElements";
 import {Sprite}							from "awayjs-display/lib/display/Sprite";
 import {MaterialBase}						from "awayjs-display/lib/materials/MaterialBase";
+import {AttributesView} from "awayjs-core/lib/attributes/AttributesView";
 
 /**
  *  Class Merge merges two or more static sprites into one.<code>Merge</code>
@@ -99,9 +100,9 @@ export class Merge
 	 * Merges all the sprites found in the Array&lt;Sprite&gt; into a single Sprite.
 	 *
 	 * @param    receiver    The Sprite to receive the merged contents of the sprites.
-	 * @param    sprites      A series of Spritees to be merged with the reciever sprite.
+	 * @param    sprites      A series of Sprites to be merged with the reciever sprite.
 	 */
-	public applyToSpritees(receiver:Sprite, sprites:Array<Sprite>):void
+	public applyToSprites(receiver:Sprite, sprites:Array<Sprite>):void
 	{
 		this.reset();
 
@@ -109,7 +110,7 @@ export class Merge
 			return;
 
 		//collect sprites in vector
-		for (var i:number /*uint*/ = 0; i < sprites.length; i++)
+		for (var i:number = 0; i < sprites.length; i++)
 			if (sprites[i] != receiver)
 				this.collect(sprites[i], this._disposeSources);
 
@@ -121,7 +122,7 @@ export class Merge
 	}
 
 	/**
-	 *  Merges 2 sprites into one. It is recommand to use apply when 2 sprites are to be merged. If more need to be merged, use either applyToSpritees or applyToContainer methods.
+	 *  Merges 2 sprites into one. It is recommand to use apply when 2 sprites are to be merged. If more need to be merged, use either applyToSprites or applyToContainer methods.
 	 *
 	 * @param    receiver    The Sprite to receive the merged contents of both sprites.
 	 * @param    sprite        The Sprite to be merged with the receiver sprite
@@ -148,7 +149,7 @@ export class Merge
 
 	private merge(destSprite:Sprite, dispose:boolean):void
 	{
-		var i:number /*uint*/;
+		var i:number;
 		//var oldGraphics:Graphics;
 		var destGraphics:Graphics;
 		var useSubMaterials:boolean;
@@ -172,10 +173,10 @@ export class Merge
 			elements.setTangents(data.tangents);
 			elements.setUVs(data.uvs);
 
-			destGraphics.addGraphic(elements);
-
 			if (this._keepMaterial && useSubMaterials)
-				destSprite.graphics[i].material = data.material;
+				destGraphics.addGraphic(elements, data.material);
+			else
+				destGraphics.addGraphic(elements);
 		}
 
 		if (this._keepMaterial && !useSubMaterials && this._graphicVOs.length)
@@ -184,7 +185,7 @@ export class Merge
 		if (dispose) {
 			var len:number = this._toDispose.length;
 			for (var i:number; i < len; i++)
-				this._toDispose[i].dispose();;
+				this._toDispose[i].dispose();
 		}
 
 		this._toDispose = null;
@@ -192,25 +193,21 @@ export class Merge
 
 	private collect(sprite:Sprite, dispose:boolean):void
 	{
-		var subIdx:number /*uint*/;
-		var calc:number /*uint*/;
+		var subIdx:number;
+		var calc:number;
 		for (subIdx = 0; subIdx < sprite.graphics.count; subIdx++) {
-			var i:number /*uint*/;
-			var len:number /*uint*/;
-			var iIdx:number /*uint*/, vIdx:number /*uint*/, nIdx:number /*uint*/, tIdx:number /*uint*/, uIdx:number /*uint*/;
-			var indexOffset:number /*uint*/;
+			var i:number;
+			var len:number;
+			var iIdx:number, vIdx:number, nIdx:number, tIdx:number, uIdx:number;
+			var indexOffset:number;
 			var elements:TriangleElements;
 			var vo:GraphicVO;
 			var vertices:Array<number>;
 			var normals:Array<number>;
 			var tangents:Array<number>;
-			var ind:Uint16Array, pd:ArrayBufferView, nd:Float32Array, td:Float32Array, ud:ArrayBufferView;
+			var ind:Uint16Array;
 
 			elements = <TriangleElements> sprite.graphics.getGraphicAt(subIdx).elements;
-			pd = elements.positions.get(elements.numVertices);
-			nd = elements.normals.get(elements.numVertices);
-			td = elements.tangents.get(elements.numVertices);
-			ud = elements.uvs.get(elements.numVertices);
 
 			// Get (or create) a VO for this material
 			vo = this.getGraphicData(sprite.graphics.getGraphicAt(subIdx).material);
@@ -227,29 +224,11 @@ export class Merge
 			nIdx = normals.length;
 			tIdx = tangents.length;
 			uIdx = vo.uvs.length;
-			len = elements.numVertices;
-			for (i = 0; i < len; i++) {
-				calc = i*3;
-
-				// Position
-				vertices[vIdx++] = pd[calc];
-				vertices[vIdx++] = pd[calc + 1];
-				vertices[vIdx++] = pd[calc + 2];
-
-				// Normal
-				normals[nIdx++] = nd[calc];
-				normals[nIdx++] = nd[calc + 1];
-				normals[nIdx++] = nd[calc + 2];
-
-				// Tangent
-				tangents[tIdx++] = td[calc];
-				tangents[tIdx++] = td[calc + 1];
-				tangents[tIdx++] = td[calc + 2];
-
-				// UV
-				vo.uvs[uIdx++] = ud[i*2];
-				vo.uvs[uIdx++] = ud[i*2 + 1];
-			}
+			
+			this.copyAttributes(elements.positions, vertices, elements.numVertices, vIdx);
+			this.copyAttributes(elements.normals, normals, elements.numVertices, nIdx);
+			this.copyAttributes(elements.tangents, tangents, elements.numVertices, tIdx);
+			this.copyAttributes(elements.uvs, vo.uvs, elements.numVertices, uIdx);
 
 			// Copy over triangle indices
 			indexOffset = (!this._objectSpace)? vo.vertices.length/3 :0;
@@ -284,14 +263,26 @@ export class Merge
 		if (dispose)
 			this._toDispose.push(sprite);
 	}
+	
+	private copyAttributes(attributes:AttributesView, array:Array<number>, count:number, startIndex:number)
+	{
+		var vertices:ArrayBufferView = attributes.get(count);
+		var dim:number = attributes.dimensions;
+		var stride:number = attributes.stride;
+		var len:number = count*stride;
+		
+		for (var i:number = 0; i < len; i += stride)
+			for (var j:number = 0; j < dim; j++)
+				array[startIndex++] = vertices[i + j];
+	}
 
 	private getGraphicData(material:MaterialBase):GraphicVO
 	{
 		var data:GraphicVO;
 
 		if (this._keepMaterial) {
-			var i:number /*uint*/;
-			var len:number /*uint*/;
+			var i:number;
+			var len:number;
 
 			len = this._graphicVOs.length;
 			for (i = 0; i < len; i++) {
@@ -313,7 +304,7 @@ export class Merge
 			data.normals = new Array<number>();
 			data.tangents = new Array<number>();
 			data.uvs = new Array<number>();
-			data.indices = new Array<number /*uint*/>();
+			data.indices = new Array<number>();
 			data.material = material;
 
 			this._graphicVOs.push(data);
@@ -325,7 +316,7 @@ export class Merge
 	private parseContainer(receiver:Sprite, object:DisplayObjectContainer):void
 	{
 		var child:DisplayObjectContainer;
-		var i:number /*uint*/;
+		var i:number;
 
 		if (object instanceof Sprite && object != (<DisplayObjectContainer> receiver))
 			this.collect(<Sprite> object, this._disposeSources);
@@ -343,6 +334,6 @@ export class GraphicVO
 	public vertices:Array<number>;
 	public normals:Array<number>;
 	public tangents:Array<number>;
-	public indices:Array<number /*uint*/>;
+	public indices:Array<number>;
 	public material:MaterialBase;
 }
