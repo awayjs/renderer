@@ -73,12 +73,12 @@ export class GL_BillboardRenderable extends GL_RenderableBase
 			elements.autoDeriveNormals = false;
 			elements.autoDeriveTangents = false;
 			elements.setIndices(Array<number>(0, 1, 2, 0, 2, 3));
-			elements.setPositions(Array<number>(-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
+			elements.setPositions(Array<number>(-billboardRect.x, -billboardRect.y, 0, width-billboardRect.x, -billboardRect.y, 0, width-billboardRect.x, height-billboardRect.y, 0, -billboardRect.x, height-billboardRect.y, 0));
 			elements.setNormals(Array<number>(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
 			elements.setTangents(Array<number>(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
 			elements.setUVs(Array<number>(0, 0, 1, 0, 1, 1, 0, 1));
 		} else {
-			elements.setPositions(Array<number>(-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, height-billboardRect.y, 0, width-billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
+			elements.setPositions(Array<number>(-billboardRect.x, -billboardRect.y, 0, width-billboardRect.x, -billboardRect.y, 0, width-billboardRect.x, height-billboardRect.y, 0, -billboardRect.x, height-billboardRect.y, 0));
 		}
 
 		return <GL_ElementsBase> this._stage.getAbstraction(elements);
