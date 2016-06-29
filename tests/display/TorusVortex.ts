@@ -15,11 +15,10 @@ import {ElementsType}					from "awayjs-display/lib/graphics/ElementsType";
 import {BasicMaterial}				from "awayjs-display/lib/materials/BasicMaterial";
 import {PrimitiveCubePrefab}			from "awayjs-display/lib/prefabs/PrimitiveCubePrefab";
 import {PrimitiveTorusPrefab}			from "awayjs-display/lib/prefabs/PrimitiveTorusPrefab";
-import {Single2DTexture}				from "awayjs-display/lib/textures/Single2DTexture";
 
 import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
 
-class TorusVortex
+export default class TorusVortex
 {
 	private _view:View;
 	private _mesh:Sprite;

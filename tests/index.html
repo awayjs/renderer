@@ -11,69 +11,58 @@
         }
 
     </style>
-
-    <script type="text/javascript" language="javascript" src="AppHarness.js"></script>
-
-    <script type="text/javascript">
-
-
-        window.onload = function ()
-        {
-            var harness = new away.AppHarness();
-
-            //---------------------------------------------------------------------------
-            // Test - Primitives
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator("Primitives");
-            harness.addTest("Primitives.WireframePrimitiveTest", "tests.primitives.WireframePrimitiveTest", "primitives/WireframePrimitiveTest.js", "primitives/WireframePrimitiveTest.ts");
-
-            //---------------------------------------------------------------------------
-            // Test - Textures
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator("Textures");
-            harness.addTest("Textures.CubeTextures", "tests.textures.CubeTextures", "textures/CubeTextures.js", "textures/CubeTextures.ts");
-
-            //---------------------------------------------------------------------------
-            // Test - Entities
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator("Entities");
-            harness.addTest("Billboard", "tests.entities.BillboardTest", "entities/BillboardTest.js", "entities/BillboardTest.ts");
-            harness.addTest("Atlas", "tests.entities.AtlasTest", "entities/AtlasTest.js", "entities/AtlasTest.ts");
-            harness.addTest("LineSegment", "tests.entities.LineSegmentTest", "entities/LineSegmentTest.js", "entities/LineSegmentTest.ts");
-            harness.addTest("Layout Test", "tests.entities.LayoutTest", "entities/LayoutTest.js", "entities/LayoutTest.ts");
-
-            //---------------------------------------------------------------------------
-            // Test - Display
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator("Display");
-            harness.addTest("Display.BitmapDataTest 2", "tests.display.BitmapImage2DReflectionTest", "display/BitmapImage2DReflectionTest.js", "display/BitmapImage2DReflectionTest.ts");
-            harness.addTest("Display.TorusVortex", "tests.display.TorusVortex", "display/TorusVortex.js", "display/TorusVortex.ts");
-            harness.addTest("Display.View3DTest", "tests.display.View3DTest", "display/View3DTest.js", "display/View3DTest.ts");
-
-            //---------------------------------------------------------------------------
-            // Test - Controllers
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator("Controllers");
-            harness.addTest("Controllers.HoverControllerTest", "tests.controllers.HoverControllerTest", "controllers/HoverControllerTest.js", "controllers/HoverControllerTest.ts");
-
-            //---------------------------------------------------------------------------
-            // Load a default
-            harness.load("Display.TorusVortex", "display/TorusVortex.js", "display/TorusVortex.ts");
-            harness.start(); // Start
-
-        }
-
-
-    </script>
+    <script type="text/javascript" language="javascript" src="../jspm_packages/system.src.js"></script>
+    <script type="text/javascript" language="javascript" src="../config.js"></script>
 </head>
 
 </head>
 <body>
+<script type="text/javascript">
 
+    System.import("tests/AppHarness").then(function(tests){
+
+        var harness = new tests.AppHarness();
+        harness.addSeperator("Primitives");
+        harness.addTest("Primitives.WireframePrimitiveTest", "tests.primitives.WireframePrimitiveTest", "primitives/WireframePrimitiveTest.js", "primitives/WireframePrimitiveTest.ts");
+
+        //---------------------------------------------------------------------------
+        // Test - Textures
+        //---------------------------------------------------------------------------
+
+        harness.addSeperator("Textures");
+        harness.addTest("Textures.CubeTextures", "tests.textures.CubeTextures", "textures/CubeTextures.js", "textures/CubeTextures.ts");
+
+        //---------------------------------------------------------------------------
+        // Test - Entities
+        //---------------------------------------------------------------------------
+
+        harness.addSeperator("Entities");
+        harness.addTest("Billboard", "tests.entities.BillboardTest", "entities/BillboardTest.js", "entities/BillboardTest.ts");
+        harness.addTest("Atlas", "tests.entities.AtlasTest", "entities/AtlasTest.js", "entities/AtlasTest.ts");
+        harness.addTest("LineSegment", "tests.entities.LineSegmentTest", "entities/LineSegmentTest.js", "entities/LineSegmentTest.ts");
+        harness.addTest("Layout Test", "tests.entities.LayoutTest", "entities/LayoutTest.js", "entities/LayoutTest.ts");
+
+        //---------------------------------------------------------------------------
+        // Test - Display
+        //---------------------------------------------------------------------------
+
+        harness.addSeperator("Display");
+        harness.addTest("Display.BitmapDataTest 2", "tests.display.BitmapImage2DReflectionTest", "display/BitmapImage2DReflectionTest.js", "display/BitmapImage2DReflectionTest.ts");
+        harness.addTest("Display.TorusVortex", "tests.display.TorusVortex", "display/TorusVortex.js", "display/TorusVortex.ts");
+        harness.addTest("Display.View3DTest", "tests.display.View3DTest", "display/View3DTest.js", "display/View3DTest.ts");
+
+        //---------------------------------------------------------------------------
+        // Test - Controllers
+        //---------------------------------------------------------------------------
+
+        harness.addSeperator("Controllers");
+        harness.addTest("Controllers.HoverControllerTest", "tests.controllers.HoverControllerTest", "controllers/HoverControllerTest.js", "controllers/HoverControllerTest.ts");
+
+        //---------------------------------------------------------------------------
+        // Load a default
+        harness.load("Display.TorusVortex", "display/TorusVortex.ts", "display/TorusVortex.ts");
+        harness.start(); // Start
+    });
+</script>
 </body>
 </html>

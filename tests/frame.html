@@ -12,23 +12,20 @@
         }
     </style>
 
-    <script type="text/javascript" language="javascript" src="AppHarness.js"></script>
-    <script type="text/javascript" language="javascript" src="../node_modules/awayjs-core/build/awayjs-core.js"></script>
-    <script type="text/javascript" language="javascript" src="../node_modules/awayjs-display/build/awayjs-display.js"></script>
-    <script type="text/javascript" language="javascript" src="../node_modules/awayjs-stagegl/build/awayjs-stagegl.js"></script>
-    <script type="text/javascript" language="javascript" src="../build/awayjs-renderergl.js"></script>
-
-    <script type="text/javascript">
-
-        window.onload = function ()
-        {
-            new away.AppFrame();
-        }
-
-    </script>
-
+    <script type="text/javascript" language="javascript" src="../jspm_packages/system.src.js"></script>
+    <script type="text/javascript" language="javascript" src="../config.js"></script>
 </head>
 <body>
+<script type="text/javascript">
 
+    System.import("awayjs-core");
+    System.import("awayjs-display");
+    System.import("awayjs-stagegl");
+    System.import("awayjs-renderergl");
+    System.import("tests/AppHarness").then(function(tests){
+        new tests.AppFrame();
+    });
+
+</script>
 </body>
 </html>
