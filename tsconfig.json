@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "declaration": true,
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@awayjs/core*": ["./node_modules/@awayjs/core/dist*"],
+      "@awayjs/display*": ["./node_modules/@awayjs/display/dist*"],
+      "@awayjs/stage*": ["./node_modules/@awayjs/stage/dist*"]
+    }
+  },
+  "files": [
+    "./index.ts"
+  ]
+}
