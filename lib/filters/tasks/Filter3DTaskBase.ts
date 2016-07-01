@@ -1,13 +1,13 @@
-import {Image2D}						from "awayjs-core/lib/image/Image2D";
+import {Image2D}						from "@awayjs/core/lib/image/Image2D";
 
-import {AbstractMethodError}			from "awayjs-core/lib/errors/AbstractMethodError";
-import {ByteArray}					from "awayjs-core/lib/utils/ByteArray";
+import {AbstractMethodError}			from "@awayjs/core/lib/errors/AbstractMethodError";
+import {ByteArray}					from "@awayjs/core/lib/utils/ByteArray";
 
-import {Camera}						from "awayjs-display/lib/display/Camera";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
 
-import {Stage}						from "awayjs-stagegl/lib/base/Stage";
-import {AGALMiniAssembler}			from "awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler";
-import {IProgram}						from "awayjs-stagegl/lib/base/IProgram";
+import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {AGALMiniAssembler}			from "@awayjs/stage/lib/aglsl/assembler/AGALMiniAssembler";
+import {IProgram}						from "@awayjs/stage/lib/base/IProgram";
 
 import {RTTBufferManager}				from "../../managers/RTTBufferManager";
 import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";

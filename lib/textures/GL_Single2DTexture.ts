@@ -1,11 +1,11 @@
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {Image2D}						from "awayjs-core/lib/image/Image2D";
+import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
+import {Image2D}						from "@awayjs/core/lib/image/Image2D";
 
-import {GL_Image2D}					from "awayjs-stagegl/lib/image/GL_Image2D";
-import {GL_Sampler2D}					from "awayjs-stagegl/lib/image/GL_Sampler2D";
+import {GL_Image2D}					from "@awayjs/stage/lib/image/GL_Image2D";
+import {GL_Sampler2D}					from "@awayjs/stage/lib/image/GL_Sampler2D";
 
-import {MappingMode}					from "awayjs-display/lib/textures/MappingMode";
-import {Single2DTexture}				from "awayjs-display/lib/textures/Single2DTexture";
+import {MappingMode}					from "@awayjs/display/lib/textures/MappingMode";
+import {Single2DTexture}				from "@awayjs/display/lib/textures/Single2DTexture";
 
 import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
 import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";

@@ -1,8 +1,8 @@
-import {IEventDispatcher}				from "awayjs-core/lib/events/IEventDispatcher";
-import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {IEventDispatcher}				from "@awayjs/core/lib/events/IEventDispatcher";
+import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
-import {Camera}						from "awayjs-display/lib/display/Camera";
-import {TextureBase}					from "awayjs-display/lib/textures/TextureBase";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {TextureBase}					from "@awayjs/display/lib/textures/TextureBase";
 
 import {ShaderBase}					from "../../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";

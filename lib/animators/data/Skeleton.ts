@@ -1,7 +1,7 @@
 import {SkeletonJoint}					from "../../animators/data/SkeletonJoint";
 
-import {IAsset}							from "awayjs-core/lib/library/IAsset";
-import {AssetBase}						from "awayjs-core/lib/library/AssetBase";
+import {IAsset}							from "@awayjs/core/lib/library/IAsset";
+import {AssetBase}						from "@awayjs/core/lib/library/AssetBase";
 
 /**
  * A Skeleton object is a hierarchical grouping of joint objects that can be used for skeletal animation.

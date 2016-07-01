@@ -1,5 +1,5 @@
-﻿import {ISurface}						from "awayjs-display/lib/base/ISurface";
-import {Camera}						from "awayjs-display/lib/display/Camera";
+﻿import {ISurface}						from "@awayjs/display/lib/base/ISurface";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
 
 import {SurfacePool}					from "../surfaces/SurfacePool";
 import {GL_SurfacePassBase}			from "../surfaces/GL_SurfacePassBase";

@@ -1,13 +1,13 @@
-import {AttributesBuffer}					from "awayjs-core/lib/attributes/AttributesBuffer";
-import {Matrix}							from "awayjs-core/lib/geom/Matrix";
-import {Matrix3D}							from "awayjs-core/lib/geom/Matrix3D";
-import {Point}							from "awayjs-core/lib/geom/Point";
-import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
+import {AttributesBuffer}					from "@awayjs/core/lib/attributes/AttributesBuffer";
+import {Matrix}							from "@awayjs/core/lib/geom/Matrix";
+import {Matrix3D}							from "@awayjs/core/lib/geom/Matrix3D";
+import {Point}							from "@awayjs/core/lib/geom/Point";
+import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
 
-import {ParticleData}						from "awayjs-display/lib/animators/data/ParticleData";
-import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
-import {TriangleElements}					from "awayjs-display/lib/graphics/TriangleElements";
-import {Sprite}							from "awayjs-display/lib/display/Sprite";
+import {ParticleData}						from "@awayjs/display/lib/animators/data/ParticleData";
+import {Graphics}							from "@awayjs/display/lib/graphics/Graphics";
+import {TriangleElements}					from "@awayjs/display/lib/graphics/TriangleElements";
+import {Sprite}							from "@awayjs/display/lib/display/Sprite";
 
 import {ParticleGraphicsTransform}		from "../tools/data/ParticleGraphicsTransform";
 

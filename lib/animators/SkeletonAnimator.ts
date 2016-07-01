@@ -1,11 +1,11 @@
-import {Quaternion}						from "awayjs-core/lib/geom/Quaternion";
-import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
+import {Quaternion}						from "@awayjs/core/lib/geom/Quaternion";
+import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
 
-import {TriangleElements}					from "awayjs-display/lib/graphics/TriangleElements";
-import {Camera}							from "awayjs-display/lib/display/Camera";
-import {ElementsEvent}					from "awayjs-display/lib/events/ElementsEvent";
+import {TriangleElements}					from "@awayjs/display/lib/graphics/TriangleElements";
+import {Camera}							from "@awayjs/display/lib/display/Camera";
+import {ElementsEvent}					from "@awayjs/display/lib/events/ElementsEvent";
 
-import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {Stage}							from "@awayjs/stage/lib/base/Stage";
 
 import {AnimatorBase}						from "../animators/AnimatorBase";
 import {SkeletonAnimationSet}				from "../animators/SkeletonAnimationSet";

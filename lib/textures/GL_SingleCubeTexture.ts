@@ -1,8 +1,8 @@
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
 
-import {GL_SamplerCube}				from "awayjs-stagegl/lib/image/GL_SamplerCube";
+import {GL_SamplerCube}				from "@awayjs/stage/lib/image/GL_SamplerCube";
 
-import {SingleCubeTexture}			from "awayjs-display/lib/textures/SingleCubeTexture";
+import {SingleCubeTexture}			from "@awayjs/display/lib/textures/SingleCubeTexture";
 
 import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
 import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";

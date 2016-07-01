@@ -1,8 +1,8 @@
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {ImageBase}					from "awayjs-core/lib/image/ImageBase";
-import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
+import {ImageBase}					from "@awayjs/core/lib/image/ImageBase";
+import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
-import {Camera}						from "awayjs-display/lib/display/Camera";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
 
 import {AnimationSetBase}				from "../animators/AnimationSetBase";
 import {PassEvent}					from "../events/PassEvent";

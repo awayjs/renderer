@@ -1,4 +1,4 @@
-import {LightPickerBase}				from "awayjs-display/lib/materials/lightpickers/LightPickerBase";
+import {LightPickerBase}				from "@awayjs/display/lib/materials/lightpickers/LightPickerBase";
 
 import {IPass}						from "../../surfaces/passes/IPass";
 import {LightingShader}				from "../../shaders/LightingShader";

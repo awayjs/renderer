@@ -1,11 +1,11 @@
-import {MathConsts}						from "awayjs-core/lib/geom/MathConsts";
-import {Matrix3D}							from "awayjs-core/lib/geom/Matrix3D";
-import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
-import {Orientation3D}					from "awayjs-core/lib/geom/Orientation3D";
+import {MathConsts}						from "@awayjs/core/lib/geom/MathConsts";
+import {Matrix3D}							from "@awayjs/core/lib/geom/Matrix3D";
+import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
+import {Orientation3D}					from "@awayjs/core/lib/geom/Orientation3D";
 
-import {Camera}							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "@awayjs/display/lib/display/Camera";
 
-import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {Stage}							from "@awayjs/stage/lib/base/Stage";
 
 import {ParticleAnimator}					from "../../animators/ParticleAnimator";
 import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";

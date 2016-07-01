@@ -1,17 +1,17 @@
-import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
-import {AssetBase}						from "awayjs-core/lib/library/AssetBase";
-import {AbstractMethodError}				from "awayjs-core/lib/errors/AbstractMethodError";
-import {RequestAnimationFrame}			from "awayjs-core/lib/utils/RequestAnimationFrame";
-import {getTimer}							from "awayjs-core/lib/utils/getTimer";
+import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
+import {AssetBase}						from "@awayjs/core/lib/library/AssetBase";
+import {AbstractMethodError}				from "@awayjs/core/lib/errors/AbstractMethodError";
+import {RequestAnimationFrame}			from "@awayjs/core/lib/utils/RequestAnimationFrame";
+import {getTimer}							from "@awayjs/core/lib/utils/getTimer";
 
-import {IAnimationSet}					from "awayjs-display/lib/animators/IAnimationSet";
-import {IAnimator}						from "awayjs-display/lib/animators/IAnimator";
-import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
-import {ElementsBase}						from "awayjs-display/lib/graphics/ElementsBase";
-import {Camera}							from "awayjs-display/lib/display/Camera";
-import {Sprite}							from "awayjs-display/lib/display/Sprite";
+import {IAnimationSet}					from "@awayjs/display/lib/animators/IAnimationSet";
+import {IAnimator}						from "@awayjs/display/lib/animators/IAnimator";
+import {AnimationNodeBase}				from "@awayjs/display/lib/animators/nodes/AnimationNodeBase";
+import {ElementsBase}						from "@awayjs/display/lib/graphics/ElementsBase";
+import {Camera}							from "@awayjs/display/lib/display/Camera";
+import {Sprite}							from "@awayjs/display/lib/display/Sprite";
 
-import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {Stage}							from "@awayjs/stage/lib/base/Stage";
 
 import {IAnimationState}					from "../animators/states/IAnimationState";
 import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";

@@ -1,21 +1,21 @@
-import {BlendMode}					from "awayjs-core/lib/image/BlendMode";
-import {Matrix}						from "awayjs-core/lib/geom/Matrix";
-import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
-import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
-import {ColorTransform}				from "awayjs-core/lib/geom/ColorTransform";
-import {ArgumentError}				from "awayjs-core/lib/errors/ArgumentError";
-import {IAssetClass}					from "awayjs-core/lib/library/IAssetClass";
-import {IAbstractionPool}				from "awayjs-core/lib/library/IAbstractionPool";
+import {BlendMode}					from "@awayjs/core/lib/image/BlendMode";
+import {Matrix}						from "@awayjs/core/lib/geom/Matrix";
+import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
+import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
+import {ColorTransform}				from "@awayjs/core/lib/geom/ColorTransform";
+import {ArgumentError}				from "@awayjs/core/lib/errors/ArgumentError";
+import {IAssetClass}					from "@awayjs/core/lib/library/IAssetClass";
+import {IAbstractionPool}				from "@awayjs/core/lib/library/IAbstractionPool";
 
-import {Camera}						from "awayjs-display/lib/display/Camera";
-import {TextureBase}					from "awayjs-display/lib/textures/TextureBase";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {TextureBase}					from "@awayjs/display/lib/textures/TextureBase";
 
-import {ContextGLBlendFactor}			from "awayjs-stagegl/lib/base/ContextGLBlendFactor";
-import {ContextGLCompareMode}			from "awayjs-stagegl/lib/base/ContextGLCompareMode";
-import {ContextGLTriangleFace}		from "awayjs-stagegl/lib/base/ContextGLTriangleFace";
-import {Stage}						from "awayjs-stagegl/lib/base/Stage";
-import {ProgramData}					from "awayjs-stagegl/lib/image/ProgramData";
-import {GL_IAssetClass}				from "awayjs-stagegl/lib/library/GL_IAssetClass";
+import {ContextGLBlendFactor}			from "@awayjs/stage/lib/base/ContextGLBlendFactor";
+import {ContextGLCompareMode}			from "@awayjs/stage/lib/base/ContextGLCompareMode";
+import {ContextGLTriangleFace}		from "@awayjs/stage/lib/base/ContextGLTriangleFace";
+import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {ProgramData}					from "@awayjs/stage/lib/image/ProgramData";
+import {GL_IAssetClass}				from "@awayjs/stage/lib/library/GL_IAssetClass";
 
 import {AnimationSetBase}				from "../animators/AnimationSetBase";
 import {AnimatorBase}					from "../animators/AnimatorBase";

@@ -1,9 +1,9 @@
-import {ElementsBase}						from "awayjs-display/lib/graphics/ElementsBase";
-import {Camera}							from "awayjs-display/lib/display/Camera";
-import {Graphic}							from "awayjs-display/lib/graphics/Graphic";
+import {ElementsBase}						from "@awayjs/display/lib/graphics/ElementsBase";
+import {Camera}							from "@awayjs/display/lib/display/Camera";
+import {Graphic}							from "@awayjs/display/lib/graphics/Graphic";
 
-import {ContextGLProgramType}				from "awayjs-stagegl/lib/base/ContextGLProgramType";
-import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLProgramType}				from "@awayjs/stage/lib/base/ContextGLProgramType";
+import {Stage}							from "@awayjs/stage/lib/base/Stage";
 
 import {AnimatorBase}						from "../animators/AnimatorBase";
 import {AnimationRegisterData}			from "../animators/data/AnimationRegisterData";

@@ -1,6 +1,6 @@
-import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
 
-import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
+import {Graphics}							from "@awayjs/display/lib/graphics/Graphics";
 
 import {AnimationClipNodeBase}			from "../../animators/nodes/AnimationClipNodeBase";
 import {VertexClipState}					from "../../animators/states/VertexClipState";

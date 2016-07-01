@@ -17,17 +17,17 @@ import {DistanceRenderer}				from "./lib/DistanceRenderer";
 import {Filter3DRenderer}				from "./lib/Filter3DRenderer";
 import {RendererBase}					from "./lib/RendererBase";
 
-import {BasicMaterial}				from "awayjs-display/lib/materials/BasicMaterial";
-import {Skybox}						from "awayjs-display/lib/display/Skybox";
-import {Billboard}					from "awayjs-display/lib/display/Billboard";
-import {LineSegment}					from "awayjs-display/lib/display/LineSegment";
-import {LineElements}					from "awayjs-display/lib/graphics/LineElements";
-import {TriangleElements}				from "awayjs-display/lib/graphics/TriangleElements";
-import {Graphic}						from "awayjs-display/lib/graphics/Graphic";
-import {Single2DTexture}				from "awayjs-display/lib/textures/Single2DTexture";
-import {SingleCubeTexture}			from "awayjs-display/lib/textures/SingleCubeTexture";
+import {BasicMaterial}				from "@awayjs/display/lib/materials/BasicMaterial";
+import {Skybox}						from "@awayjs/display/lib/display/Skybox";
+import {Billboard}					from "@awayjs/display/lib/display/Billboard";
+import {LineSegment}					from "@awayjs/display/lib/display/LineSegment";
+import {LineElements}					from "@awayjs/display/lib/graphics/LineElements";
+import {TriangleElements}				from "@awayjs/display/lib/graphics/TriangleElements";
+import {Graphic}						from "@awayjs/display/lib/graphics/Graphic";
+import {Single2DTexture}				from "@awayjs/display/lib/textures/Single2DTexture";
+import {SingleCubeTexture}			from "@awayjs/display/lib/textures/SingleCubeTexture";
 
-import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "@awayjs/stage/lib/base/Stage";
 
 surfaces.SurfacePool.registerAbstraction(surfaces.GL_BasicMaterialSurface, BasicMaterial);
 surfaces.SurfacePool.registerAbstraction(surfaces.GL_SkyboxSurface, Skybox);

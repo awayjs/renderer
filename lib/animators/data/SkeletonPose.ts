@@ -1,5 +1,5 @@
-import {IAsset}							from "awayjs-core/lib/library/IAsset";
-import {AssetBase}						from "awayjs-core/lib/library/AssetBase";
+import {IAsset}							from "@awayjs/core/lib/library/IAsset";
+import {AssetBase}						from "@awayjs/core/lib/library/AssetBase";
 
 import {JointPose}						from "../../animators/data/JointPose";
 

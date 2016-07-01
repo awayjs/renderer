@@ -1,12 +1,12 @@
-import {Matrix3DUtils}				from "awayjs-core/lib/geom/Matrix3DUtils";
-import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
-import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {Matrix3DUtils}				from "@awayjs/core/lib/geom/Matrix3DUtils";
+import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
+import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
 
-import {Camera}						from "awayjs-display/lib/display/Camera";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
 
-import {ContextGLDrawMode}			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
-import {ContextGLProgramType}			from "awayjs-stagegl/lib/base/ContextGLProgramType";
-import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
+import {ContextGLDrawMode}			from "@awayjs/stage/lib/base/ContextGLDrawMode";
+import {ContextGLProgramType}			from "@awayjs/stage/lib/base/ContextGLProgramType";
+import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
 
 import {ShaderBase}					from "../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";

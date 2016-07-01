@@ -1,19 +1,19 @@
-import {Short3Attributes}				from "awayjs-core/lib/attributes/Short3Attributes";
-import {AttributesView}				from "awayjs-core/lib/attributes/AttributesView";
-import {AttributesBuffer}				from "awayjs-core/lib/attributes/AttributesBuffer";
-import {AbstractionBase}				from "awayjs-core/lib/library/AbstractionBase";
-import {IAbstractionPool}				from "awayjs-core/lib/library/IAbstractionPool";
-import {AbstractMethodError}			from "awayjs-core/lib/errors/AbstractMethodError";
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {Short3Attributes}				from "@awayjs/core/lib/attributes/Short3Attributes";
+import {AttributesView}				from "@awayjs/core/lib/attributes/AttributesView";
+import {AttributesBuffer}				from "@awayjs/core/lib/attributes/AttributesBuffer";
+import {AbstractionBase}				from "@awayjs/core/lib/library/AbstractionBase";
+import {IAbstractionPool}				from "@awayjs/core/lib/library/IAbstractionPool";
+import {AbstractMethodError}			from "@awayjs/core/lib/errors/AbstractMethodError";
+import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
+import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
-import {Stage}						from "awayjs-stagegl/lib/base/Stage";
-import {GL_AttributesBuffer}			from "awayjs-stagegl/lib/attributes/GL_AttributesBuffer";
+import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {GL_AttributesBuffer}			from "@awayjs/stage/lib/attributes/GL_AttributesBuffer";
 
-import {Camera}						from "awayjs-display/lib/display/Camera";
-import {ElementsBase}					from "awayjs-display/lib/graphics/ElementsBase";
-import {ElementsEvent}				from "awayjs-display/lib/events/ElementsEvent";
-import {ElementsUtils}				from "awayjs-display/lib/utils/ElementsUtils";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {ElementsBase}					from "@awayjs/display/lib/graphics/ElementsBase";
+import {ElementsEvent}				from "@awayjs/display/lib/events/ElementsEvent";
+import {ElementsUtils}				from "@awayjs/display/lib/utils/ElementsUtils";
 
 import {IElementsClassGL}				from "../elements/IElementsClassGL";
 import {ShaderBase}					from "../shaders/ShaderBase";

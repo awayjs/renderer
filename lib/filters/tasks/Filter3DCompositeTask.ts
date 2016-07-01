@@ -1,11 +1,11 @@
-import {Image2D}						from "awayjs-core/lib/image/Image2D";
+import {Image2D}						from "@awayjs/core/lib/image/Image2D";
 
-import {Camera}						from "awayjs-display/lib/display/Camera";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
 
-import {ContextGLProgramType}			from "awayjs-stagegl/lib/base/ContextGLProgramType";
-import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
-import {Stage}						from "awayjs-stagegl/lib/base/Stage";
-import {GL_ImageBase}					from "awayjs-stagegl/lib/image/GL_ImageBase";
+import {ContextGLProgramType}			from "@awayjs/stage/lib/base/ContextGLProgramType";
+import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
+import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";
 
 import {Filter3DTaskBase}				from "../../filters/tasks/Filter3DTaskBase";
 import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";

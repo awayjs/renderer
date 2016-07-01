@@ -1,4 +1,4 @@
-import {ISurface}						from "awayjs-display/lib/base/ISurface";
+import {ISurface}						from "@awayjs/display/lib/base/ISurface";
 
 import {IElementsClassGL}				from "../elements/IElementsClassGL";
 import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";

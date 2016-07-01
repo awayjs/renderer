@@ -1,7 +1,7 @@
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
 
-import {Graphic}						from "awayjs-display/lib/graphics/Graphic";
-import {DefaultMaterialManager}		from "awayjs-display/lib/managers/DefaultMaterialManager";
+import {Graphic}						from "@awayjs/display/lib/graphics/Graphic";
+import {DefaultMaterialManager}		from "@awayjs/display/lib/managers/DefaultMaterialManager";
 
 import {RendererBase}					from "../RendererBase";
 import {AnimatorBase}					from "../animators/AnimatorBase";

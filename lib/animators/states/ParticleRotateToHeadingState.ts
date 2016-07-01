@@ -1,8 +1,8 @@
-import {Matrix3D}							from "awayjs-core/lib/geom/Matrix3D";
+import {Matrix3D}							from "@awayjs/core/lib/geom/Matrix3D";
 
-import {Camera}							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "@awayjs/display/lib/display/Camera";
 
-import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {Stage}							from "@awayjs/stage/lib/base/Stage";
 
 import {ParticleAnimator}					from "../../animators/ParticleAnimator";
 import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";

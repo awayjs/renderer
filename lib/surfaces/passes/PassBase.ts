@@ -1,11 +1,11 @@
-import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
-import {EventDispatcher}				from "awayjs-core/lib/events/EventDispatcher";
+import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
+import {EventDispatcher}				from "@awayjs/core/lib/events/EventDispatcher";
 
-import {Camera}						from "awayjs-display/lib/display/Camera";
-import {ISurface}						from "awayjs-display/lib/base/ISurface";
-import {TextureBase}					from "awayjs-display/lib/textures/TextureBase";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {ISurface}						from "@awayjs/display/lib/base/ISurface";
+import {TextureBase}					from "@awayjs/display/lib/textures/TextureBase";
 
-import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "@awayjs/stage/lib/base/Stage";
 
 import {AnimationSetBase}				from "../../animators/AnimationSetBase";
 import {PassEvent}					from "../../events/PassEvent";

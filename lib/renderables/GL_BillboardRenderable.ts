@@ -1,11 +1,11 @@
-import {AttributesBuffer}				from "awayjs-core/lib/attributes/AttributesBuffer";
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {Rectangle}					from "awayjs-core/lib/geom/Rectangle";
+import {AttributesBuffer}				from "@awayjs/core/lib/attributes/AttributesBuffer";
+import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
+import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
 
-import {TriangleElements}				from "awayjs-display/lib/graphics/TriangleElements";
-import {Billboard}					from "awayjs-display/lib/display/Billboard";
-import {DefaultMaterialManager}		from "awayjs-display/lib/managers/DefaultMaterialManager";
-import {TextureBase}					from "awayjs-display/lib/textures/TextureBase";
+import {TriangleElements}				from "@awayjs/display/lib/graphics/TriangleElements";
+import {Billboard}					from "@awayjs/display/lib/display/Billboard";
+import {DefaultMaterialManager}		from "@awayjs/display/lib/managers/DefaultMaterialManager";
+import {TextureBase}					from "@awayjs/display/lib/textures/TextureBase";
 
 import {RendererBase}					from "../RendererBase";
 import {GL_ElementsBase}				from "../elements/GL_ElementsBase";

@@ -1,6 +1,6 @@
-import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "@awayjs/stage/lib/base/Stage";
 
-import {INode}						from "awayjs-display/lib/partition/INode";
+import {INode}						from "@awayjs/display/lib/partition/INode";
 
 import {RendererBase}					from "./RendererBase";
 import {GL_DepthSurface}				from "./surfaces/GL_DepthSurface";

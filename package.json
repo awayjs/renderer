@@ -1,32 +1,45 @@
 {
   "name": "awayjs-renderergl",
   "version": "0.8.37",
-  "description": "GL Renderer for AwayJS",
+  "description": "Renderer for AwayJS",
   "url": "http://www.away3d.com",
-  "author": "The Away Foundation <admin@theawayfoundation.org>",
-  "repository": "awayjs/awayjs-renderergl",
-  "license": "Apache version 2.0",
+  "author": "Rob Bateman",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awayjs/renderer.git"
+  },
+  "scripts": {
+    "rimraf": "rimraf",
+    "tsc": "tsc",
+    "clean": "npm cache clean && npm run rimraf -- node_modules dist",
+    "clean:dist": "npm run rimraf -- dist",
+    "watch": "npm run build -- --w",
+    "prebuild": "npm run clean:dist",
+    "build": "tsc",
+    "version": "npm run build",
+    "postversion": "git push && git push --tags && npm publish"
+  },
+  "keywords": [
+    "AwayJS",
+    "WebGL",
+    "2D",
+    "3D",
+    "graphics"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/awayjs/renderer/issues"
+  },
+  "homepage": "https://github.com/awayjs/renderer#readme",
   "dependencies": {
-    "awayjs-core": "^0.6.0",
-    "awayjs-display": "^0.8.0",
-    "awayjs-stagegl": "^0.8.0"
+    "dependencies": {
+      "@awayjs/core": "^0.6.0",
+      "@awayjs/display": "^0.8.0",
+      "@awayjs/stage": "^0.8.0"
+    }
   },
   "devDependencies": {
-    "browserify": "^13.0.0",
-    "exorcist": "^0.4.0",
-    "glob": "^7.0.3",
-    "gulp": "^3.9.1",
-    "gulp-git": "^1.7.1",
-    "gulp-livereload": "^3.8.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-shell": "^0.5.2",
-    "gulp-sourcemaps": "^1.6.0",
-    "gulp-typescript": "^2.12.2",
-    "gulp-uglify": "^1.5.3",
-    "tsify": "^0.14.1",
-    "typescript": "^1.9.0-dev.20160409",
-    "vinyl-source-stream": "^1.1.0",
-    "vinyl-transform": "^1.0.0",
-    "watchify": "^3.7.0"
+    "rimraf": "^2.5.2",
+    "typescript": "^1.9.0-dev.20160603-1.0"
   }
 }

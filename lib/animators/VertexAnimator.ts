@@ -1,10 +1,10 @@
-import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
-import {ElementsBase}						from "awayjs-display/lib/graphics/ElementsBase";
-import {TriangleElements}					from "awayjs-display/lib/graphics/TriangleElements";
-import {Graphic}							from "awayjs-display/lib/graphics/Graphic";
-import {Camera}							from "awayjs-display/lib/display/Camera";
+import {Graphics}							from "@awayjs/display/lib/graphics/Graphics";
+import {ElementsBase}						from "@awayjs/display/lib/graphics/ElementsBase";
+import {TriangleElements}					from "@awayjs/display/lib/graphics/TriangleElements";
+import {Graphic}							from "@awayjs/display/lib/graphics/Graphic";
+import {Camera}							from "@awayjs/display/lib/display/Camera";
 
-import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {Stage}							from "@awayjs/stage/lib/base/Stage";
 
 import {AnimatorBase}						from "../animators/AnimatorBase";
 import {VertexAnimationSet}				from "../animators/VertexAnimationSet";

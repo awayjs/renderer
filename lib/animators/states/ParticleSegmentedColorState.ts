@@ -1,8 +1,8 @@
-import {ColorTransform}					from "awayjs-core/lib/geom/ColorTransform";
+import {ColorTransform}					from "@awayjs/core/lib/geom/ColorTransform";
 
-import {Camera}							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "@awayjs/display/lib/display/Camera";
 
-import {Stage}							from "awayjs-stagegl/lib/base/Stage";
+import {Stage}							from "@awayjs/stage/lib/base/Stage";
 
 import {ParticleAnimator}					from "../../animators/ParticleAnimator";
 import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";

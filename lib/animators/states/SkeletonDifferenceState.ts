@@ -1,5 +1,5 @@
-import {Quaternion}						from "awayjs-core/lib/geom/Quaternion";
-import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
+import {Quaternion}						from "@awayjs/core/lib/geom/Quaternion";
+import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
 
 import {AnimatorBase}						from "../../animators/AnimatorBase";
 import {JointPose}						from "../../animators/data/JointPose";

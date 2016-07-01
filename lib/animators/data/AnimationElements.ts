@@ -1,6 +1,6 @@
-import {Stage}							from "awayjs-stagegl/lib/base/Stage";
-import {IContextGL}						from "awayjs-stagegl/lib/base/IContextGL";
-import {IVertexBuffer}					from "awayjs-stagegl/lib/base/IVertexBuffer";
+import {Stage}							from "@awayjs/stage/lib/base/Stage";
+import {IContextGL}						from "@awayjs/stage/lib/base/IContextGL";
+import {IVertexBuffer}					from "@awayjs/stage/lib/base/IVertexBuffer";
 
 import {ParticleAnimationData}			from "../../animators/data/ParticleAnimationData";
 

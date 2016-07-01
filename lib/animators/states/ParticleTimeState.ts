@@ -1,7 +1,7 @@
-import {Camera}							from "awayjs-display/lib/display/Camera";
+import {Camera}							from "@awayjs/display/lib/display/Camera";
 
-import {Stage}							from "awayjs-stagegl/lib/base/Stage";
-import {ContextGLVertexBufferFormat}		from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
+import {Stage}							from "@awayjs/stage/lib/base/Stage";
+import {ContextGLVertexBufferFormat}		from "@awayjs/stage/lib/base/ContextGLVertexBufferFormat";
 
 import {ParticleAnimator}					from "../../animators/ParticleAnimator";
 import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";

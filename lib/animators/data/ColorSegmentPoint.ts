@@ -1,4 +1,4 @@
-import {ColorTransform}					from "awayjs-core/lib/geom/ColorTransform";
+import {ColorTransform}					from "@awayjs/core/lib/geom/ColorTransform";
 
 export class ColorSegmentPoint
 {

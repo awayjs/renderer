@@ -1,9 +1,9 @@
-import {IAssetClass}					from "awayjs-core/lib/library/IAssetClass";
-import {IAbstractionPool}				from "awayjs-core/lib/library/IAbstractionPool";
+import {IAssetClass}					from "@awayjs/core/lib/library/IAssetClass";
+import {IAbstractionPool}				from "@awayjs/core/lib/library/IAbstractionPool";
 
-import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "@awayjs/stage/lib/base/Stage";
 
-import {ISurface}						from "awayjs-display/lib/base/ISurface";
+import {ISurface}						from "@awayjs/display/lib/base/ISurface";
 
 import {IElementsClassGL}				from "../elements/IElementsClassGL";
 import {ISurfaceClassGL}				from "../surfaces/ISurfaceClassGL";

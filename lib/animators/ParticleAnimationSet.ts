@@ -1,9 +1,9 @@
-import {ElementsBase}						from "awayjs-display/lib/graphics/ElementsBase";
-import {IAnimationSet}					from "awayjs-display/lib/animators/IAnimationSet";
-import {ParticleData}						from "awayjs-display/lib/animators/data/ParticleData";
-import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
-import {Graphic}							from "awayjs-display/lib/graphics/Graphic";
-import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
+import {ElementsBase}						from "@awayjs/display/lib/graphics/ElementsBase";
+import {IAnimationSet}					from "@awayjs/display/lib/animators/IAnimationSet";
+import {ParticleData}						from "@awayjs/display/lib/animators/data/ParticleData";
+import {AnimationNodeBase}				from "@awayjs/display/lib/animators/nodes/AnimationNodeBase";
+import {Graphic}							from "@awayjs/display/lib/graphics/Graphic";
+import {Graphics}							from "@awayjs/display/lib/graphics/Graphics";
 
 import {AnimationSetBase}					from "../animators/AnimationSetBase";
 import {AnimationRegisterData}			from "../animators/data/AnimationRegisterData";

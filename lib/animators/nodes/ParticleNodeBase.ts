@@ -1,4 +1,4 @@
-import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}				from "@awayjs/display/lib/animators/nodes/AnimationNodeBase";
 
 import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
 import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";

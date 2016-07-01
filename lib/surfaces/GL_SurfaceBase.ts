@@ -1,22 +1,22 @@
-import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {ImageBase}					from "awayjs-core/lib/image/ImageBase";
-import {SamplerBase}					from "awayjs-core/lib/image/SamplerBase";
-import {Sampler2D}					from "awayjs-core/lib/image/Sampler2D";
+import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
+import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
+import {ImageBase}					from "@awayjs/core/lib/image/ImageBase";
+import {SamplerBase}					from "@awayjs/core/lib/image/SamplerBase";
+import {Sampler2D}					from "@awayjs/core/lib/image/Sampler2D";
 
-import {AbstractionBase}				from "awayjs-core/lib/library/AbstractionBase";
+import {AbstractionBase}				from "@awayjs/core/lib/library/AbstractionBase";
 
-import {ISurface}						from "awayjs-display/lib/base/ISurface";
-import {Camera}						from "awayjs-display/lib/display/Camera";
-import {SurfaceEvent}					from "awayjs-display/lib/events/SurfaceEvent";
-import {IRenderable}					from "awayjs-display/lib/base/IRenderable";
-import {MaterialBase}					from "awayjs-display/lib/materials/MaterialBase";
-import {DefaultMaterialManager}		from "awayjs-display/lib/managers/DefaultMaterialManager";
-import {TextureBase}					from "awayjs-display/lib/textures/TextureBase";
+import {ISurface}						from "@awayjs/display/lib/base/ISurface";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {SurfaceEvent}					from "@awayjs/display/lib/events/SurfaceEvent";
+import {IRenderable}					from "@awayjs/display/lib/base/IRenderable";
+import {MaterialBase}					from "@awayjs/display/lib/materials/MaterialBase";
+import {DefaultMaterialManager}		from "@awayjs/display/lib/managers/DefaultMaterialManager";
+import {TextureBase}					from "@awayjs/display/lib/textures/TextureBase";
 
-import {Stage}						from "awayjs-stagegl/lib/base/Stage";
-import {GL_ImageBase}					from "awayjs-stagegl/lib/image/GL_ImageBase";
-import {GL_SamplerBase}				from "awayjs-stagegl/lib/image/GL_SamplerBase";
+import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";
+import {GL_SamplerBase}				from "@awayjs/stage/lib/image/GL_SamplerBase";
 
 import {AnimatorBase}					from "../animators/AnimatorBase";
 import {PassEvent}					from "../events/PassEvent";

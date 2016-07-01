@@ -1,14 +1,14 @@
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {Matrix3DUtils}				from "awayjs-core/lib/geom/Matrix3DUtils";
-import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
+import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
+import {Matrix3DUtils}				from "@awayjs/core/lib/geom/Matrix3DUtils";
+import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
-import {ContextGLDrawMode}			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
-import {ContextGLProgramType}			from "awayjs-stagegl/lib/base/ContextGLProgramType";
-import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
-import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {ContextGLDrawMode}			from "@awayjs/stage/lib/base/ContextGLDrawMode";
+import {ContextGLProgramType}			from "@awayjs/stage/lib/base/ContextGLProgramType";
+import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
+import {Stage}						from "@awayjs/stage/lib/base/Stage";
 
-import {Camera}						from "awayjs-display/lib/display/Camera";
-import {TriangleElements}				from "awayjs-display/lib/graphics/TriangleElements";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {TriangleElements}				from "@awayjs/display/lib/graphics/TriangleElements";
 
 import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
 import {IElementsClassGL}				from "../elements/IElementsClassGL";

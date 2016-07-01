@@ -1,4 +1,4 @@
-import {AnimationNodeBase}				from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}				from "@awayjs/display/lib/animators/nodes/AnimationNodeBase";
 
 import {AnimatorBase}						from "../../animators/AnimatorBase";
 import {SkeletonDirectionalState}			from "../../animators/states/SkeletonDirectionalState";

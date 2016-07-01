@@ -1,7 +1,7 @@
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {BlendMode}					from "awayjs-core/lib/image/BlendMode";
+import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
+import {BlendMode}					from "@awayjs/core/lib/image/BlendMode";
 
-import {BasicMaterial}				from "awayjs-display/lib/materials/BasicMaterial";
+import {BasicMaterial}				from "@awayjs/display/lib/materials/BasicMaterial";
 
 import {BasicMaterialPass}			from "../surfaces/passes/BasicMaterialPass";
 import {IElementsClassGL}				from "../elements/IElementsClassGL";

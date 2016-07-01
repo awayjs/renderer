@@ -1,4 +1,4 @@
-import {ColorTransform}					from "awayjs-core/lib/geom/ColorTransform";
+import {ColorTransform}					from "@awayjs/core/lib/geom/ColorTransform";
 
 import {AnimatorBase}						from "../../animators/AnimatorBase";
 import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";

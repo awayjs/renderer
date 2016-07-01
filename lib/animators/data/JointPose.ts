@@ -1,6 +1,6 @@
-import {Matrix3D}							from "awayjs-core/lib/geom/Matrix3D";
-import {Quaternion}						from "awayjs-core/lib/geom/Quaternion";
-import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
+import {Matrix3D}							from "@awayjs/core/lib/geom/Matrix3D";
+import {Quaternion}						from "@awayjs/core/lib/geom/Quaternion";
+import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
 
 /**
  * Contains transformation data for a skeleton joint, used for skeleton animation.

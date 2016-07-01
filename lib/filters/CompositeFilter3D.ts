@@ -1,6 +1,6 @@
-import {Image2D}						from "awayjs-core/lib/image/Image2D";
+import {Image2D}						from "@awayjs/core/lib/image/Image2D";
 
-import {Stage}						from "awayjs-stagegl/lib/base/Stage";
+import {Stage}						from "@awayjs/stage/lib/base/Stage";
 
 import {Filter3DCompositeTask}		from "../filters/tasks/Filter3DCompositeTask";
 import {Filter3DBase}					from "../filters/Filter3DBase";

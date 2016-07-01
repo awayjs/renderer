@@ -1,15 +1,15 @@
-import {AttributesBuffer}				from "awayjs-core/lib/attributes/AttributesBuffer";
-import {Matrix3D}						from "awayjs-core/lib/geom/Matrix3D";
-import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {AttributesBuffer}				from "@awayjs/core/lib/attributes/AttributesBuffer";
+import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
+import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
 
-import {ISurface}						from "awayjs-display/lib/base/ISurface";
-import {ElementsBase}					from "awayjs-display/lib/graphics/ElementsBase";
-import {TriangleElements}				from "awayjs-display/lib/graphics/TriangleElements";
-import {Skybox}						from "awayjs-display/lib/display/Skybox";
-import {Camera}						from "awayjs-display/lib/display/Camera";
+import {ISurface}						from "@awayjs/display/lib/base/ISurface";
+import {ElementsBase}					from "@awayjs/display/lib/graphics/ElementsBase";
+import {TriangleElements}				from "@awayjs/display/lib/graphics/TriangleElements";
+import {Skybox}						from "@awayjs/display/lib/display/Skybox";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
 
-import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
-import {ContextGLProgramType}			from "awayjs-stagegl/lib/base/ContextGLProgramType";
+import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
+import {ContextGLProgramType}			from "@awayjs/stage/lib/base/ContextGLProgramType";
 
 import {RendererBase}					from "../RendererBase";
 import {ShaderBase}					from "../shaders/ShaderBase";

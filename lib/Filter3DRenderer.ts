@@ -1,16 +1,16 @@
-import {Image2D}						from "awayjs-core/lib/image/Image2D";
+import {Image2D}						from "@awayjs/core/lib/image/Image2D";
 
-import {Camera}						from "awayjs-display/lib/display/Camera";
+import {Camera}						from "@awayjs/display/lib/display/Camera";
 
-import {GL_ImageBase}					from "awayjs-stagegl/lib/image/GL_ImageBase";
+import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";
 
-import {Stage}						from "awayjs-stagegl/lib/base/Stage";
-import {ContextGLDrawMode}			from "awayjs-stagegl/lib/base/ContextGLDrawMode";
-import {ContextGLBlendFactor}			from "awayjs-stagegl/lib/base/ContextGLBlendFactor";
-import {ContextGLVertexBufferFormat}	from "awayjs-stagegl/lib/base/ContextGLVertexBufferFormat";
-import {IContextGL}					from "awayjs-stagegl/lib/base/IContextGL";
-import {IIndexBuffer}					from "awayjs-stagegl/lib/base/IIndexBuffer";
-import {IVertexBuffer}				from "awayjs-stagegl/lib/base/IVertexBuffer";
+import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {ContextGLDrawMode}			from "@awayjs/stage/lib/base/ContextGLDrawMode";
+import {ContextGLBlendFactor}			from "@awayjs/stage/lib/base/ContextGLBlendFactor";
+import {ContextGLVertexBufferFormat}	from "@awayjs/stage/lib/base/ContextGLVertexBufferFormat";
+import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
+import {IIndexBuffer}					from "@awayjs/stage/lib/base/IIndexBuffer";
+import {IVertexBuffer}				from "@awayjs/stage/lib/base/IVertexBuffer";
 
 import {RTTEvent}						from "./events/RTTEvent";
 import {RTTBufferManager}				from "./managers/RTTBufferManager";

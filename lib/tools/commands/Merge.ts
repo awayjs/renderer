@@ -1,12 +1,12 @@
-import {AttributesBuffer}					from "awayjs-core/lib/attributes/AttributesBuffer";
-import {Matrix3DUtils}					from "awayjs-core/lib/geom/Matrix3DUtils";
+import {AttributesBuffer}					from "@awayjs/core/lib/attributes/AttributesBuffer";
+import {Matrix3DUtils}					from "@awayjs/core/lib/geom/Matrix3DUtils";
 
-import {DisplayObjectContainer}			from "awayjs-display/lib/display/DisplayObjectContainer";
-import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
-import {TriangleElements}					from "awayjs-display/lib/graphics/TriangleElements";
-import {Sprite}							from "awayjs-display/lib/display/Sprite";
-import {MaterialBase}						from "awayjs-display/lib/materials/MaterialBase";
-import {AttributesView} from "awayjs-core/lib/attributes/AttributesView";
+import {DisplayObjectContainer}			from "@awayjs/display/lib/display/DisplayObjectContainer";
+import {Graphics}							from "@awayjs/display/lib/graphics/Graphics";
+import {TriangleElements}					from "@awayjs/display/lib/graphics/TriangleElements";
+import {Sprite}							from "@awayjs/display/lib/display/Sprite";
+import {MaterialBase}						from "@awayjs/display/lib/materials/MaterialBase";
+import {AttributesView} from "@awayjs/core/lib/attributes/AttributesView";
 
 /**
  *  Class Merge merges two or more static sprites into one.<code>Merge</code>

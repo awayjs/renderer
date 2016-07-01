@@ -1,4 +1,4 @@
-import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
+import {Graphics}							from "@awayjs/display/lib/graphics/Graphics";
 
 import {AnimatorBase}						from "../../animators/AnimatorBase";
 import {VertexAnimator}					from "../../animators/VertexAnimator";

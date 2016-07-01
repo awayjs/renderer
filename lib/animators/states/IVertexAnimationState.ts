@@ -1,4 +1,4 @@
-import {Graphics}							from "awayjs-display/lib/graphics/Graphics";
+import {Graphics}							from "@awayjs/display/lib/graphics/Graphics";
 
 import {IAnimationState}					from "../../animators/states/IAnimationState";
 

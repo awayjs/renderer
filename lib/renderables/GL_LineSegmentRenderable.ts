@@ -1,9 +1,9 @@
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
+import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
 
-import {LineElements}					from "awayjs-display/lib/graphics/LineElements";
-import {LineSegment}					from "awayjs-display/lib/display/LineSegment";
-import {DefaultMaterialManager}		from "awayjs-display/lib/managers/DefaultMaterialManager";
+import {LineElements}					from "@awayjs/display/lib/graphics/LineElements";
+import {LineSegment}					from "@awayjs/display/lib/display/LineSegment";
+import {DefaultMaterialManager}		from "@awayjs/display/lib/managers/DefaultMaterialManager";
 
 import {RendererBase}					from "../RendererBase";
 import {GL_ElementsBase}				from "../elements/GL_ElementsBase";

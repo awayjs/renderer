@@ -1,4 +1,4 @@
-import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
+import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
 
 import {AnimatorBase}						from "../../animators/AnimatorBase";
 import {SkeletonPose}						from "../../animators/data/SkeletonPose";
