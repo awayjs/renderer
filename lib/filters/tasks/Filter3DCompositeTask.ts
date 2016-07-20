@@ -114,11 +114,11 @@ export class Filter3DCompositeTask extends Filter3DTaskBase
 	
 	public activate(stage:Stage, camera3D:Camera, depthTexture:Image2D):void
 	{
-		this._data[4] = -0.5*(this._scaledTextureWidth - this._overlayWidth)/this._overlayWidth;
-		this._data[5] = -0.5*(this._scaledTextureHeight - this._overlayHeight)/this._overlayHeight;
+		this._data[4] = -0.5*(this._textureWidth - this._overlayWidth)/this._overlayWidth;
+		this._data[5] = -0.5*(this._textureHeight - this._overlayHeight)/this._overlayHeight;
 
-		this._data[6] = this._scaledTextureWidth/this._overlayWidth;
-		this._data[7] = this._scaledTextureHeight/this._overlayHeight;
+		this._data[6] = this._textureWidth/this._overlayWidth;
+		this._data[7] = this._textureHeight/this._overlayHeight;
 
 		var context:IContextGL = stage.context;
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, this._data);
