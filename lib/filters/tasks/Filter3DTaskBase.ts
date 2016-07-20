@@ -18,7 +18,7 @@ export class Filter3DTaskBase
 	public _registerCache:ShaderRegisterCache;
 	
 	public _positionIndex:number;
-	public _uvIndex:number;;
+	public _uvIndex:number;
 	public _inputTextureIndex:number;
 	public _uvVarying:ShaderRegisterElement;
 	
@@ -34,7 +34,7 @@ export class Filter3DTaskBase
 	private _program3D:IProgram;
 	private _target:Image2D;
 	private _requireDepthRender:boolean;
-	private _textureScale:number = 0;
+	private _textureScale:number = 1;
 
 	constructor(requireDepthRender:boolean = false)
 	{
@@ -57,8 +57,8 @@ export class Filter3DTaskBase
 			return;
 
 		this._textureScale = value;
-		this._scaledTextureWidth = this._textureWidth >> this._textureScale;
-		this._scaledTextureHeight = this._textureHeight >> this._textureScale;
+		this._scaledTextureWidth = this._textureWidth/this._textureScale;
+		this._scaledTextureHeight = this._textureHeight/this._textureScale;
 		this._textureDimensionsInvalid = true;
 	}
 
@@ -97,7 +97,7 @@ export class Filter3DTaskBase
 			return;
 
 		this._textureWidth = value;
-		this._scaledTextureWidth = this._textureWidth >> this._textureScale;
+		this._scaledTextureWidth = this._textureWidth/this._textureScale;
 		this._textureDimensionsInvalid = true;
 	}
 
@@ -112,7 +112,7 @@ export class Filter3DTaskBase
 			return;
 
 		this._textureHeight = value;
-		this._scaledTextureHeight = this._textureHeight >> this._textureScale;
+		this._scaledTextureHeight = this._textureHeight/this._textureScale;
 		this._textureDimensionsInvalid = true;
 	}
 

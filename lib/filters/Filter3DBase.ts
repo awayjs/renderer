@@ -14,6 +14,7 @@ export class Filter3DBase
 	private _rttManager:RTTBufferManager;
 	private _textureWidth:number;
 	private _textureHeight:number;
+	private _textureScale:number = 1;
 
 	constructor()
 	{
@@ -81,6 +82,20 @@ export class Filter3DBase
 
 		for (var i:number = 0; i < this._tasks.length; ++i)
 			this._tasks[i].textureHeight = value;
+	}
+
+
+	public get textureScale():number
+	{
+		return this._textureScale;
+	}
+
+	public set textureScale(value:number)
+	{
+		this._textureScale = value;
+
+		for (var i:number = 0; i < this._tasks.length; ++i)
+			this._tasks[i].textureScale = value;
 	}
 
 	// link up the filters correctly with the next filter

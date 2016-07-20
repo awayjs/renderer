@@ -191,7 +191,7 @@ export class DefaultRenderer extends RendererBase
 		this._lightProbes.length = 0;
 
 		if (this._pFilter3DRenderer && this._pContext) { //TODO
-			this._iRender(camera, scene, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+			this._iRender(camera, scene, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pFilter3DRenderer.renderToTextureRect);
 			this._pFilter3DRenderer.render(this._pStage, camera, this._pDepthRender);
 		} else {
 

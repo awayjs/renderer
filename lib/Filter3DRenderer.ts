@@ -1,8 +1,11 @@
 import {Image2D}						from "@awayjs/core/lib/image/Image2D";
+import {Sampler2D}						from "@awayjs/core/lib/image/Sampler2D";
+import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
 
 import {Camera}						from "@awayjs/display/lib/display/Camera";
 
 import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";
+import {GL_Sampler2D}					from "@awayjs/stage/lib/image/GL_Sampler2D";
 
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 import {ContextGLDrawMode}			from "@awayjs/stage/lib/base/ContextGLDrawMode";
@@ -31,6 +34,9 @@ export class Filter3DRenderer
 	private _stage:Stage;
 	private _filterSizesInvalid:boolean = true;
 	private _onRTTResizeDelegate:(event:RTTEvent) => void;
+	private _renderToTextureRect:Rectangle;
+
+	private _sampler:Sampler2D;
 
 	constructor(stage:Stage)
 	{
@@ -40,6 +46,8 @@ export class Filter3DRenderer
 		this._rttManager = RTTBufferManager.getInstance(stage);
 		this._rttManager.addEventListener(RTTEvent.RESIZE, this._onRTTResizeDelegate);
 
+		this._sampler = new Sampler2D(false, false, false);
+		this._renderToTextureRect = new Rectangle();
 	}
 
 	private onRTTResize(event:RTTEvent):void
@@ -65,6 +73,11 @@ export class Filter3DRenderer
 		return this._filters;
 	}
 
+	public get sampler():Sampler2D
+	{
+		return this._sampler;
+	}
+
 	public set filters(value:Filter3DBase[])
 	{
 		this._filters = value;
@@ -81,6 +94,14 @@ export class Filter3DRenderer
 				this._requireDepthRender = true;
 
 		this._filterSizesInvalid = true;
+	}
+
+	public get renderToTextureRect():Rectangle
+	{
+		if (this._filterSizesInvalid)
+			this.updateFilterSizes();
+
+		return this._renderToTextureRect;
 	}
 
 	private updateFilterTasks(stage:Stage):void
@@ -156,8 +177,8 @@ export class Filter3DRenderer
 			stage.setRenderTarget(task.target);
 
 			context.setProgram(task.getProgram(stage));
-			(<GL_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(task._inputTextureIndex, false);
-
+			(<GL_Sampler2D> stage.getAbstraction(this._sampler)).activate(task._inputTextureIndex);
+			(<GL_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(task._inputTextureIndex, true);
 
 			if (!task.target) {
 
@@ -190,7 +211,15 @@ export class Filter3DRenderer
 			this._filters[i].rttManager = this._rttManager;
 		}
 
-		this._filterSizesInvalid = true;
+		var scale:number = this._filters[0].textureScale;
+
+		this._renderToTextureRect.x = this._rttManager.renderToTextureRect.x/scale;
+		this._renderToTextureRect.y = this._rttManager.renderToTextureRect.y/scale;
+		this._renderToTextureRect.width = this._rttManager.renderToTextureRect.width/scale;
+		this._renderToTextureRect.height = this._rttManager.renderToTextureRect.height/scale;
+
+
+		this._filterSizesInvalid = false;
 	}
 
 	public dispose():void
