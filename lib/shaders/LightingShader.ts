@@ -121,7 +121,7 @@ export class LightingShader extends ShaderBase
 		var combinedLightSources:number = diffuseLightSources | specularLightSources;
 
 		this.usesLightFallOff = this._lightingPass.enableLightFallOff && this.profile != ContextGLProfile.BASELINE_CONSTRAINED;
-		this.usesCommonData = this.usesLightFallOff;
+		this.usesCommonData = this.usesLightFallOff || this.usesCommonData;
 		this.numLights = numAllLights + numLightProbes;
 		this.usesLights = numAllLights > 0 && (combinedLightSources & LightSources.LIGHTS) != 0;
 		this.usesProbes = numLightProbes > 0 && (combinedLightSources & LightSources.PROBES) != 0;
