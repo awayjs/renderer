@@ -80,7 +80,7 @@ export class ShaderBase implements IAbstractionPool
 	 *
 	 * @see away.stagegl.ContextGLCompareMode
 	 */
-	public depthCompareMode:string = ContextGLCompareMode.LESS;
+	public depthCompareMode:string = ContextGLCompareMode.LESS_EQUAL;
 
 
 	/**
@@ -387,6 +387,8 @@ export class ShaderBase implements IAbstractionPool
 	public _iIncludeDependencies():void
 	{
 		this._pass._iIncludeDependencies(this);
+
+		//this.usesCommonData = this.usesCurves || this.usesCommonData;
 	}
 
 	/**
@@ -577,7 +579,7 @@ export class ShaderBase implements IAbstractionPool
 	public _iDeactivate():void
 	{
 		//For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
-		this._stage.context.setDepthTest(true, ContextGLCompareMode.LESS);
+		this._stage.context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
 
 		this.activeElements = null;
 	}

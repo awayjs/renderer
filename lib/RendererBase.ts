@@ -519,9 +519,9 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 
 		this.pExecuteRender(camera, target, scissorRect, surfaceSelector);
 
-		// generate mip maps on target (if target exists) //TODO
-		//if (target)
-		//	(<Texture>target).generateMipmaps();
+		// invalidate target (if target exists) to regenerate mipmaps (if required)
+		if (target)
+			target.invalidate();
 
 		// clear buffers
 		for (var i:number = 0; i < 8; ++i) {
@@ -607,7 +607,7 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 	 */
 	public pDraw(camera:Camera):void
 	{
-		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
+		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
 
 		if (this._disableColor)
 			this._pContext.setColorMask(false, false, false, false);
@@ -1011,7 +1011,7 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 		gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
 
 		this._pContext.setColorMask(true, true, true, true);
-		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
+		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
 		//this._stage.setRenderTarget(oldRenderTarget);
 	}
 
@@ -1023,7 +1023,7 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 		var pass = passes[len-1];
 
 		this.activatePass(pass, camera);
-		this._pContext.setDepthTest(false, ContextGLCompareMode.LESS); //TODO: setup so as not to override activate
+		this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //TODO: setup so as not to override activate
 		// only render last pass for now
 		renderableGL._iRender(pass, camera, this._pRttViewProjectionMatrix);
 		this.deactivatePass(pass);
