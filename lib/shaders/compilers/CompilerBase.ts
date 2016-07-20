@@ -158,6 +158,21 @@ export class CompilerBase
 							"sub " + temp + ", " + temp + ", " + this._pSharedRegisters.curvesVarying + ".z\n" +
 							"mul " + temp + ", " + temp + ", " + this._pSharedRegisters.curvesVarying + ".x\n" +
 							"kil " + temp + "\n";
+		
+		// var temp:ShaderRegisterElement = this._pRegisterCache.getFreeFragmentVectorTemp();
+		//
+		// this._pPostAnimationFragmentCode += "mul " + temp + ".x, " + this._pSharedRegisters.curvesVarying + ".y, " + this._pSharedRegisters.curvesVarying + ".y\n" +
+		// 					"sub " + temp + ".x, " + temp + ".x, " + this._pSharedRegisters.curvesVarying + ".z\n" +
+		// 					"mul " + temp + ".x, " + temp + ".x, " + this._pSharedRegisters.curvesVarying + ".x\n" +
+		// 					"ddx " + temp + ".y," + temp + ".x\n" +
+		// 					"ddy " + temp + ".z," + temp + ".x\n" +
+		// 					"mul " + temp + ".y, " + temp + ".y, " + temp + ".y\n" +
+		// 					"mul " + temp + ".z, " + temp + ".z, " + temp + ".z\n" +
+		// 					"add " + this._pSharedRegisters.shadedTarget + ".w, " + temp + ".y, " + temp + ".z\n" +
+		// 					"sqt " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w\n" +
+		// 					"div " + this._pSharedRegisters.shadedTarget + ".w, " + temp + ".x, " + this._pSharedRegisters.shadedTarget + ".w\n" +
+		// 					"max " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".y\n" +
+		// 					"min " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".w\n";
 	}
 
 	/**
