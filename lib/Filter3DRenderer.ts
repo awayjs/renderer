@@ -178,7 +178,7 @@ export class Filter3DRenderer
 
 			context.setProgram(task.getProgram(stage));
 			(<GL_Sampler2D> stage.getAbstraction(this._sampler)).activate(task._inputTextureIndex);
-			(<GL_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(task._inputTextureIndex, true);
+			(<GL_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(task._inputTextureIndex, this._sampler.mipmap);
 
 			if (!task.target) {
 
