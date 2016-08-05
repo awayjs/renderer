@@ -144,7 +144,7 @@ export class GL_TriangleElements extends GL_ElementsBase
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, shader.fragmentConstantData);
 
 		if (this._indices)
-			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, idx_offset, idx_count);
+			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, idx_offset, idx_count || this.numIndices);
 		else
 			this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
 	}
