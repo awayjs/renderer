@@ -51,6 +51,8 @@ export class GL_GraphicRenderable extends GL_RenderableBase
 	{
 		this._offset = this.graphic.offset;
 		this._count = this.graphic.count;
+		this._idx_offset = this.graphic.idx_offset;
+		this._idx_count = this.graphic.idx_count;
 
 		
 		return <GL_ElementsBase> this._stage.getAbstraction((this.renderable.animator)? (<AnimatorBase> this.renderable.animator).getRenderableElements(this, this.graphic.elements) : this.graphic.elements);

@@ -203,6 +203,7 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 		if (this.x == value)
 			return;
 
+		this._pStage.x=value;
 		this._globalPos.x = this._localPos.x = value;
 
 		this.updateGlobalPos();
@@ -221,6 +222,7 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 		if (this.y == value)
 			return;
 
+		this._pStage.y=value;
 		this._globalPos.y = this._localPos.y = value;
 
 		this.updateGlobalPos();

@@ -34,6 +34,9 @@ export class GL_RenderableBase extends AbstractionBase
 
 	public _count:number = 0;
 	public _offset:number = 0;
+	public _idx_count:number = 0;
+	public _idx_offset:number = 0;
+	
 	private _elementsGL:GL_ElementsBase;
 	private _surfaceGL:GL_SurfaceBase;
 	private _elementsDirty:boolean = true;
@@ -202,7 +205,7 @@ export class GL_RenderableBase extends AbstractionBase
 	{
 		this._setRenderState(pass, camera, viewProjection);
 
-		this._elementsGL.draw(this, pass.shader, camera, viewProjection, this._count, this._offset)
+		this._elementsGL.draw(this, pass.shader, camera, viewProjection, this._count, this._offset, this._idx_count, this._idx_offset)
 	}
 
 	public _setRenderState(pass:IPass, camera:Camera, viewProjection:Matrix3D):void

@@ -124,7 +124,7 @@ export class GL_TriangleElements extends GL_ElementsBase
 		this.activateVertexBufferVO(0, this._triangleElements.positions);
 	}
 
-	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number):void
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number, idx_count:number=this.numIndices, idx_offset:number=0):void
 	{
 		//set constants
 		if (shader.sceneMatrixIndex >= 0) {
@@ -144,7 +144,7 @@ export class GL_TriangleElements extends GL_ElementsBase
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, shader.fragmentConstantData);
 
 		if (this._indices)
-			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, this.numIndices);
+			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, idx_offset, idx_count);
 		else
 			this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
 	}
