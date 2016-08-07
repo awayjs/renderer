@@ -55,11 +55,6 @@ export class CompilerBase
 		this._pVertexCode += this._pRenderPass._iGetVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
 		this._pPostAnimationFragmentCode += this._pRenderPass._iGetFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
 
-		if (this._pShader.usesColorTransform)
-			this.compileColorTransformCode();
-		else
-			this._pShader.colorTransformIndex = -1;
-
 		//assign the final output color to the output register
 		this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
 		this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
@@ -95,6 +90,9 @@ export class CompilerBase
 
 		if (this._pShader.usesCurves)
 			this.compileCurvesCode();
+
+		if (this._pShader.usesColorTransform)
+			this.compileColorTransformCode();
 
 		//Calculate the (possibly animated) UV coordinates.
 		if (this._pShader.uvDependencies > 0)
