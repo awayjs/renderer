@@ -14,6 +14,7 @@ import {Skybox}						from "@awayjs/display/lib/display/Skybox";
 import {Scene}						from "@awayjs/display/lib/display/Scene";
 import {ShadowMapperBase}				from "@awayjs/display/lib/materials/shadowmappers/ShadowMapperBase";
 import {INode}						from "@awayjs/display/lib/partition/INode";
+import {IView}						from "@awayjs/display/lib/IView";
 
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 import {ContextGLCompareMode}			from "@awayjs/stage/lib/base/ContextGLCompareMode";
@@ -156,9 +157,9 @@ export class DefaultRenderer extends RendererBase
 		return enter;
 	}
 
-	public render(camera:Camera, scene:Scene):void
+	public render(view:IView):void
 	{
-		super.render(camera, scene);
+		super.render(view);
 
 		if (!this._pStage.recoverFromDisposal()) {//if context has Disposed by the OS,don't render at this frame
 			this._pBackBufferInvalid = true;
@@ -180,10 +181,10 @@ export class DefaultRenderer extends RendererBase
 		}
 
 		if (this._pRequireDepthRender)
-			this.pRenderSceneDepthToTexture(camera, scene);
+			this.pRenderSceneDepthToTexture(view);
 
 		if (this._depthPrepass)
-			this.pRenderDepthPrepass(camera, scene);
+			this.pRenderDepthPrepass(view);
 
 		//reset lights
 		this._directionalLights.length = 0;
@@ -191,14 +192,14 @@ export class DefaultRenderer extends RendererBase
 		this._lightProbes.length = 0;
 
 		if (this._pFilter3DRenderer && this._pContext) { //TODO
-			this._iRender(camera, scene, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pFilter3DRenderer.renderToTextureRect);
-			this._pFilter3DRenderer.render(this._pStage, camera, this._pDepthRender);
+			this._iRender(view.camera, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pFilter3DRenderer.renderToTextureRect);
+			this._pFilter3DRenderer.render(this._pStage, view.camera, this._pDepthRender);
 		} else {
 
 			if (this.shareContext)
-				this._iRender(camera, scene, null, this._pScissorRect);
+				this._iRender(view.camera, view, null, this._pScissorRect);
 			else
-				this._iRender(camera, scene);
+				this._iRender(view.camera, view);
 		}
 
 		if (!this.shareContext && this._pContext)
@@ -208,14 +209,14 @@ export class DefaultRenderer extends RendererBase
 		this._pStage.bufferClear = false;
 	}
 
-	public pExecuteRender(camera:Camera, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
+	public pExecuteRender(camera:Camera, view:IView, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
 	{
-		this.updateLights(camera);
+		this.updateLights(camera, view);
 
-		super.pExecuteRender(camera, target, scissorRect, surfaceSelector);
+		super.pExecuteRender(camera, view, target, scissorRect, surfaceSelector);
 	}
 
-	private updateLights(camera:Camera):void
+	private updateLights(camera:Camera, view:IView):void
 	{
 		var len:number, i:number;
 		var light:LightBase;
@@ -228,7 +229,7 @@ export class DefaultRenderer extends RendererBase
 			shadowMapper = light.shadowMapper;
 
 			if (light.shadowsEnabled && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid ))
-				shadowMapper.iRenderDepthMap(camera, light.scene, this._pDepthRenderer);
+				shadowMapper.iRenderDepthMap(view, this._pDepthRenderer);
 		}
 
 		len = this._pointLights.length;
@@ -238,7 +239,7 @@ export class DefaultRenderer extends RendererBase
 			shadowMapper = light.shadowMapper;
 
 			if (light.shadowsEnabled && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid))
-				shadowMapper.iRenderDepthMap(camera, light.scene, this._pDistanceRenderer);
+				shadowMapper.iRenderDepthMap(view, this._pDistanceRenderer);
 		}
 	}
 
@@ -291,18 +292,18 @@ export class DefaultRenderer extends RendererBase
 	/**
 	 *
 	 */
-	public pRenderDepthPrepass(camera:Camera, scene:Scene):void
+	public pRenderDepthPrepass(view:IView):void
 	{
 		this._pDepthRenderer.disableColor = true;
 
 		if (this._pFilter3DRenderer) {
 			this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
 			this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-			this._pDepthRenderer._iRender(camera, scene, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+			this._pDepthRenderer._iRender(view.camera, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
 		} else {
 			this._pDepthRenderer.textureRatioX = 1;
 			this._pDepthRenderer.textureRatioY = 1;
-			this._pDepthRenderer._iRender(camera, scene);
+			this._pDepthRenderer._iRender(view.camera, view);
 		}
 
 		this._pDepthRenderer.disableColor = false;
@@ -312,14 +313,14 @@ export class DefaultRenderer extends RendererBase
 	/**
 	 *
 	 */
-	public pRenderSceneDepthToTexture(camera:Camera, scene:Scene):void
+	public pRenderSceneDepthToTexture(view:IView):void
 	{
 		if (this._pDepthTextureInvalid || !this._pDepthRender)
 			this.initDepthTexture(<IContextGL> this._pStage.context);
 
 		this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
 		this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-		this._pDepthRenderer._iRender(camera, scene, this._pDepthRender);
+		this._pDepthRenderer._iRender(view.camera, view, this._pDepthRender);
 	}
 
 

@@ -18,7 +18,7 @@ import {DisplayObject}				from "@awayjs/display/lib/display/DisplayObject";
 import {Camera}						from "@awayjs/display/lib/display/Camera";
 import {IEntity}						from "@awayjs/display/lib/display/IEntity";
 import {Scene}						from "@awayjs/display/lib/display/Scene";
-import {RendererEvent}				from "@awayjs/display/lib/events/RendererEvent";
+import {IView}						from "@awayjs/display/lib/IView";
 
 import {AGALMiniAssembler}			from "@awayjs/stage/lib/aglsl/assembler/AGALMiniAssembler";
 import {ContextGLBlendFactor}			from "@awayjs/stage/lib/base/ContextGLBlendFactor";
@@ -30,6 +30,7 @@ import {StageManager}					from "@awayjs/stage/lib/managers/StageManager";
 import {ProgramData}					from "@awayjs/stage/lib/image/ProgramData";
 import {GL_IAssetClass}				from "@awayjs/stage/lib/library/GL_IAssetClass";
 
+import {RendererEvent}				from "./events/RendererEvent";
 import {GL_ElementsBase}				from "./elements/GL_ElementsBase";
 import {ISurfaceClassGL}				from "./surfaces/ISurfaceClassGL";
 import {GL_SurfaceBase}				from "./surfaces/GL_SurfaceBase";
@@ -477,7 +478,7 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 		 */
 	}
 
-	public render(camera:Camera, scene:Scene):void
+	public render(view:IView):void
 	{
 		this._viewportDirty = false;
 		this._scissorDirty = false;
@@ -489,7 +490,7 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public _iRender(camera:Camera, scene:Scene, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
+	public _iRender(camera:Camera, view:IView, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
 	{
 		//TODO refactor setTarget so that rendertextures are created before this check
 		if (!this._pStage || !this._pContext)
@@ -508,7 +509,7 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 
 		RendererBase._iCollectionMark++;
 
-		scene.traversePartitions(this);
+		view.traversePartitions(this);
 
 		//sort the resulting renderables
 		if (this.renderableSorter) {
@@ -519,7 +520,7 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 		this._pRttViewProjectionMatrix.copyFrom(camera.viewProjection);
 		this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
 
-		this.pExecuteRender(camera, target, scissorRect, surfaceSelector);
+		this.pExecuteRender(camera, view, target, scissorRect, surfaceSelector);
 
 		// invalidate target (if target exists) to regenerate mipmaps (if required)
 		if (target)
@@ -532,7 +533,7 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 		}
 	}
 
-	public _iRenderCascades(camera:Camera, scene:Scene, target:ImageBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>):void
+	public _iRenderCascades(camera:Camera, view:IView, target:ImageBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>):void
 	{
 		this._pStage.setRenderTarget(target, true, 0);
 		this._pContext.clear(1, 1, 1, 1, 1, 0);
@@ -564,7 +565,7 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public pExecuteRender(camera:Camera, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
+	public pExecuteRender(camera:Camera, view:IView, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
 	{
 		this._pStage.setRenderTarget(target, true, surfaceSelector);
 
@@ -967,6 +968,10 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 	public _renderMasks(camera:Camera, masks:DisplayObject[][]):void
 	{
 		var gl = this._pContext["_gl"];
+
+		if (!gl)
+			return;
+
 		//var oldRenderTarget = this._stage.renderTarget;
 
 		//this._stage.setRenderTarget(this._image);
