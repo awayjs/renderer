@@ -23,6 +23,7 @@ import {IView}						from "@awayjs/display/lib/IView";
 import {AGALMiniAssembler}			from "@awayjs/stage/lib/aglsl/assembler/AGALMiniAssembler";
 import {ContextGLBlendFactor}			from "@awayjs/stage/lib/base/ContextGLBlendFactor";
 import {ContextGLCompareMode}			from "@awayjs/stage/lib/base/ContextGLCompareMode";
+import {ContextGLStencilAction}			from "@awayjs/stage/lib/base/ContextGLStencilAction";
 import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 import {StageEvent}					from "@awayjs/stage/lib/events/StageEvent";
@@ -673,11 +674,11 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 		this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
 
 		this._registeredMasks.length = 0;
-		var gl = this._pContext["_gl"];
-		if(gl) {
-			gl.disable(gl.STENCIL_TEST);
-		}
-
+		//var gl = this._pContext["_gl"];
+		//if(gl) {
+			//gl.disable(gl.STENCIL_TEST);
+		//}
+		this._pContext.disableStencil();
 		this._maskConfig = 0;
 
 		while (renderableGL) {
@@ -697,11 +698,14 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 					this._activeMasksConfig = renderableGL.masksConfig;
 					if (!this._activeMasksConfig.length) {
 						// disable stencil
-						if(gl) {
-							gl.disable(gl.STENCIL_TEST);
-							gl.stencilFunc(gl.ALWAYS, 0, 0xff);
-							gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-						}
+						//if(gl) {
+							//gl.disable(gl.STENCIL_TEST);
+							this._pContext.disableStencil();
+							//gl.stencilFunc(gl.ALWAYS, 0, 0xff);
+							//gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+							this._pContext.setStencilActionsMasks(ContextGLCompareMode.ALWAYS,0, 0xff, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
+
+						//}
 					} else {
 						this._renderMasks(camera, renderableGL.sourceEntity._iAssignedMasks());
 					}
@@ -967,10 +971,9 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 
 	public _renderMasks(camera:Camera, masks:DisplayObject[][]):void
 	{
-		var gl = this._pContext["_gl"];
-
-		if (!gl)
-			return;
+		//var gl = this._pContext["_gl"];
+		//f (!gl)
+		//	return;
 
 		//var oldRenderTarget = this._stage.renderTarget;
 
@@ -979,11 +982,12 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 		this._pContext.setColorMask(false, false, false, false);
 		// TODO: Could we create masks within masks by providing a previous configID, and supply "clear/keep" on stencil fail
 		//context.setStencilActions("frontAndBack", "always", "set", "set", "set");
-		gl.enable(gl.STENCIL_TEST);
+		//gl.enable(gl.STENCIL_TEST);
+		this._pContext.enableStencil();
 		this._maskConfig++;
-		gl.stencilFunc(gl.ALWAYS, this._maskConfig, 0xff);
-		gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
-
+		//gl.stencilFunc(gl.ALWAYS, this._maskConfig, 0xff);
+		//gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
+		this._pContext.setStencilActionsMasks("always",this._maskConfig, 0xff, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.SET);
 		var numLayers:number = masks.length;
 		var numRenderables:number = this._registeredMasks.length;
 		var renderableGL:GL_RenderableBase;
@@ -993,8 +997,9 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 
 		for (var i:number = 0; i < numLayers; ++i) {
 			if (i != 0) {
-				gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
-				gl.stencilOp(gl.KEEP, gl.INCR, gl.INCR);
+				//gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
+				//gl.stencilOp(gl.KEEP, gl.INCR, gl.INCR);
+				this._pContext.setStencilActionsMasks(ContextGLCompareMode.EQUAL,this._maskConfig, 0xff, ContextGLStencilAction.INCREMENT_SATURATE, ContextGLStencilAction.INCREMENT_SATURATE, ContextGLStencilAction.KEEP);
 				this._maskConfig++;
 			}
 
@@ -1014,8 +1019,9 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 			}
 		}
 
-		gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
-		gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+		//gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
+		//gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+		this._pContext.setStencilActionsMasks(ContextGLCompareMode.EQUAL,this._maskConfig, 0xff, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
 
 		this._pContext.setColorMask(true, true, true, true);
 		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
