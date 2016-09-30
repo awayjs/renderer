@@ -124,12 +124,10 @@ export class GL_SkyboxElements extends GL_TriangleElements
 		this._skyboxProjection.copyRowFrom(2, new Vector3D(cx*a, cy*a, cz*a, cw*a));
 		
 		//set constants
-		if (shader.sceneMatrixIndex >= 0) {
-			renderable.renderSceneTransform.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
-			this._skyboxProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
-		} else {
-			this._skyboxProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
-		}
+		if (shader.sceneMatrixIndex >= 0)
+			shader.sceneMatrix.copyFrom(renderable.renderSceneTransform, true);
+
+		shader.viewMatrix.copyFrom(this._skyboxProjection, true);
 
 		var context:IContextGL = this._stage.context;
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, shader.vertexConstantData);

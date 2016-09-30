@@ -249,6 +249,10 @@ export class ShaderBase implements IAbstractionPool
 	public vertexConstantData:Float32Array;
 	public fragmentConstantData:Float32Array;
 
+	public viewMatrix:Matrix3D;
+	public sceneMatrix:Matrix3D;
+	public sceneNormalMatrix:Matrix3D;
+	
 	/**
 	 * The index for the common data register.
 	 */
@@ -459,6 +463,20 @@ export class ShaderBase implements IAbstractionPool
 		this.vertexConstantData = new Float32Array(registerCache.numUsedVertexConstants*4);
 		this.fragmentConstantData = new Float32Array(registerCache.numUsedFragmentConstants*4);
 
+		//Initialies viewMatrix
+		if (this.viewMatrixIndex >= 0) {
+			this.viewMatrix = new Matrix3D(new Float32Array(this.vertexConstantData.buffer, this.viewMatrixIndex*4, 16));
+		} else if (this.viewMatrix) {
+			this.viewMatrix = null;
+		}
+
+		//Initialies sceneMatrix
+		if (this.sceneMatrixIndex >= 0) {
+			this.sceneMatrix = new Matrix3D(new Float32Array(this.vertexConstantData.buffer, this.sceneMatrixIndex*4, 16));
+		} else if (this.sceneMatrix) {
+			this.sceneMatrix = null;
+		}
+		
 		//Initializes commonly required constant values.
 		if (this.commonsDataIndex >= 0) {
 			this.fragmentConstantData[this.commonsDataIndex] = .5;
@@ -490,6 +508,13 @@ export class ShaderBase implements IAbstractionPool
 			this.fragmentConstantData[this.colorTransformIndex + 6] = 0;
 			this.fragmentConstantData[this.colorTransformIndex + 7] = 0;
 		}
+
+		if (this.sceneNormalMatrixIndex >= 0) {
+			this.sceneNormalMatrix = new Matrix3D(new Float32Array(this.vertexConstantData.buffer, this.sceneNormalMatrixIndex*4, 16));
+		} else if (this.sceneNormalMatrix) {
+			this.sceneNormalMatrix = null;
+		}
+
 		if (this.cameraPositionIndex >= 0)
 			this.vertexConstantData[this.cameraPositionIndex + 3] = 1;
 		
@@ -597,12 +622,14 @@ export class ShaderBase implements IAbstractionPool
 		if (renderable.renderable.animator)
 			(<AnimatorBase> renderable.renderable.animator).setRenderState(this, renderable, this._stage, camera);
 
+		var rawData:Float32Array;
+
 		if (this.usesUVTransform) {
 			var uvMatrix:Matrix = renderable.uvMatrix;
 
 			if (uvMatrix) {
 				//transpose
-				var rawData:Float32Array = uvMatrix.rawData;
+				rawData = uvMatrix.rawData;
 				this.vertexConstantData[this.uvMatrixIndex] = rawData[0];
 				this.vertexConstantData[this.uvMatrixIndex + 1] = rawData[2];
 				this.vertexConstantData[this.uvMatrixIndex + 3] = rawData[4];
@@ -624,14 +651,15 @@ export class ShaderBase implements IAbstractionPool
 
 			if (colorTransform) {
 				//TODO: AWDParser to write normalised color offsets
-				this.fragmentConstantData[this.colorTransformIndex] = colorTransform.rawData[0];
-				this.fragmentConstantData[this.colorTransformIndex + 1] = colorTransform.rawData[1];
-				this.fragmentConstantData[this.colorTransformIndex + 2] = colorTransform.rawData[2];
-				this.fragmentConstantData[this.colorTransformIndex + 3] = colorTransform.rawData[3];
-				this.fragmentConstantData[this.colorTransformIndex + 4] = colorTransform.rawData[4]/255;
-				this.fragmentConstantData[this.colorTransformIndex + 5] = colorTransform.rawData[5]/255;
-				this.fragmentConstantData[this.colorTransformIndex + 6] = colorTransform.rawData[6]/255;
-				this.fragmentConstantData[this.colorTransformIndex + 7] = colorTransform.rawData[7]/255;
+				rawData = colorTransform._rawData;
+				this.fragmentConstantData[this.colorTransformIndex] = rawData[0];
+				this.fragmentConstantData[this.colorTransformIndex + 1] = rawData[1];
+				this.fragmentConstantData[this.colorTransformIndex + 2] = rawData[2];
+				this.fragmentConstantData[this.colorTransformIndex + 3] = rawData[3];
+				this.fragmentConstantData[this.colorTransformIndex + 4] = rawData[4]/255;
+				this.fragmentConstantData[this.colorTransformIndex + 5] = rawData[5]/255;
+				this.fragmentConstantData[this.colorTransformIndex + 6] = rawData[6]/255;
+				this.fragmentConstantData[this.colorTransformIndex + 7] = rawData[7]/255;
 			} else {
 				this.fragmentConstantData[this.colorTransformIndex] = 1;
 				this.fragmentConstantData[this.colorTransformIndex + 1] = 1;
@@ -643,8 +671,9 @@ export class ShaderBase implements IAbstractionPool
 				this.fragmentConstantData[this.colorTransformIndex + 7] = 0;
 			}
 		}
-		if (this.sceneNormalMatrixIndex >= 0)
-			renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this.vertexConstantData, this.sceneNormalMatrixIndex, false);
+		if (this.sceneNormalMatrixIndex >= 0) {
+			this.sceneNormalMatrix.copyFrom(renderable.sourceEntity.inverseSceneTransform);
+		}
 
 		if (this.usesTangentSpace && this.cameraPositionIndex >= 0) {
 
@@ -746,7 +775,7 @@ export class ShaderBase implements IAbstractionPool
 	public setVertexConstFromMatrix(index:number, matrix:Matrix3D):void
 	{
 		index *= 4;
-		var rawData:Float32Array = matrix.rawData;
+		var rawData:Float32Array = matrix._rawData;
 		this.vertexConstantData[index++] = rawData[0];
 		this.vertexConstantData[index++] = rawData[4];
 		this.vertexConstantData[index++] = rawData[8];

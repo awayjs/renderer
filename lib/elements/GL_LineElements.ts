@@ -1,5 +1,6 @@
 import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
+import {Matrix3DUtils}				from "@awayjs/core/lib/geom/Matrix3DUtils";
 
 import {ContextGLDrawMode}			from "@awayjs/stage/lib/base/ContextGLDrawMode";
 import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
@@ -189,11 +190,12 @@ export class GL_LineElements extends GL_ElementsBase
 		var context:IContextGL = this._stage.context;
 		
 		// projection matrix
-		camera.projection.matrix.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
-		
-		this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
-		this._calcMatrix.append(camera.inverseSceneTransform);
-		this._calcMatrix.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
+		shader.viewMatrix.copyFrom(camera.projection.matrix, true);
+
+		var matrix3D:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
+		matrix3D.copyFrom(renderable.sourceEntity.sceneTransform);
+		matrix3D.append(camera.inverseSceneTransform);
+		shader.sceneMatrix.copyFrom(matrix3D, true);
 
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, shader.vertexConstantData);
 		

@@ -128,15 +128,13 @@ export class GL_TriangleElements extends GL_ElementsBase
 	{
 		//set constants
 		if (shader.sceneMatrixIndex >= 0) {
-			renderable.renderSceneTransform.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
-			viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+			shader.sceneMatrix.copyFrom(renderable.renderSceneTransform, true);
+			shader.viewMatrix.copyFrom(viewProjection, true);
 		} else {
 			var matrix3D:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
-
 			matrix3D.copyFrom(renderable.renderSceneTransform);
 			matrix3D.append(viewProjection);
-
-			matrix3D.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+			shader.viewMatrix.copyFrom(matrix3D, true);
 		}
 
 		var context:IContextGL = this._stage.context;
