@@ -1,5 +1,4 @@
 import {AttributesBuffer}					from "@awayjs/core/lib/attributes/AttributesBuffer";
-import {Matrix3DUtils}					from "@awayjs/core/lib/geom/Matrix3DUtils";
 
 import {DisplayObjectContainer}			from "@awayjs/display/lib/display/DisplayObjectContainer";
 import {Graphics}							from "@awayjs/display/lib/graphics/Graphics";
@@ -244,8 +243,8 @@ export class Merge
 
 			if (!this._objectSpace) {
 				sprite.sceneTransform.transformVectors(vertices, vertices);
-				Matrix3DUtils.deltaTransformVectors(sprite.sceneTransform, normals, normals);
-				Matrix3DUtils.deltaTransformVectors(sprite.sceneTransform, tangents, tangents);
+				sprite.sceneTransform.deltaTransformVectors(normals, normals);
+				sprite.sceneTransform.deltaTransformVectors(tangents, tangents);
 
 				// Copy vertex data from temporary (transformed) vectors
 				vIdx = vo.vertices.length;

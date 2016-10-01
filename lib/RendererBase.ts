@@ -1,7 +1,6 @@
 import {ImageBase}					from "@awayjs/core/lib/image/ImageBase";
 import {BitmapImage2D}				from "@awayjs/core/lib/image/BitmapImage2D";
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
-import {Matrix3DUtils}				from "@awayjs/core/lib/geom/Matrix3DUtils";
 import {Plane3D}						from "@awayjs/core/lib/geom/Plane3D";
 import {Point}						from "@awayjs/core/lib/geom/Point";
 import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
@@ -506,7 +505,7 @@ export class RendererBase extends EventDispatcher implements IRenderer, IAbstrac
 		this._numCullPlanes = this._cullPlanes? this._cullPlanes.length : 0;
 		this._cameraPosition = camera.scenePosition;
 		this._cameraTransform = camera.sceneTransform;
-		this._cameraForward = Matrix3DUtils.getForward(camera.sceneTransform, this._cameraForward);
+		this._cameraForward = camera.transform.forwardVector;
 
 		RendererBase._iCollectionMark++;
 

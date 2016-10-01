@@ -1,5 +1,4 @@
 import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
-import {Matrix3DUtils}				from "@awayjs/core/lib/geom/Matrix3DUtils";
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
 import {ContextGLDrawMode}			from "@awayjs/stage/lib/base/ContextGLDrawMode";
@@ -131,7 +130,7 @@ export class GL_TriangleElements extends GL_ElementsBase
 			shader.sceneMatrix.copyFrom(renderable.renderSceneTransform, true);
 			shader.viewMatrix.copyFrom(viewProjection, true);
 		} else {
-			var matrix3D:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
+			var matrix3D:Matrix3D = Matrix3D.CALCULATION_MATRIX;
 			matrix3D.copyFrom(renderable.renderSceneTransform);
 			matrix3D.append(viewProjection);
 			shader.viewMatrix.copyFrom(matrix3D, true);
