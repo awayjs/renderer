@@ -1,6 +1,6 @@
 import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
 
-import {AnimationNodeBase}				from "@awayjs/display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
 
 /**
  * Provides an abstract base class for nodes with time-based animation data in an animation blend tree.

@@ -1,4 +1,4 @@
-import {Image2D}						from "@awayjs/core/lib/image/Image2D";
+import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
 
 import {AbstractMethodError}			from "@awayjs/core/lib/errors/AbstractMethodError";
 import {ByteArray}					from "@awayjs/core/lib/utils/ByteArray";

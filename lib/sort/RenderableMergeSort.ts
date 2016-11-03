@@ -116,8 +116,8 @@ export class RenderableMergeSort implements IEntitySorter
 			var bid:number = headB.renderOrderId;
 
 			if (aid == bid) {
-				var ma:number = head.surfaceID;
-				var mb:number = headB.surfaceID;
+				var ma:number = head.materialID;
+				var mb:number = headB.materialID;
 
 				if (ma == mb) {
 					if (head.zIndex < headB.zIndex)

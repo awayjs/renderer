@@ -1,7 +1,7 @@
 import {LightingShader}				from "../../shaders/LightingShader";
 import {CompilerBase}					from "../../shaders/compilers/CompilerBase";
 import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
-import {ILightingPass}				from "../../surfaces/passes/ILightingPass";
+import {ILightingPass}				from "../../materials/passes/ILightingPass";
 import {IElementsClassGL}				from "../../elements/IElementsClassGL";
 
 /**

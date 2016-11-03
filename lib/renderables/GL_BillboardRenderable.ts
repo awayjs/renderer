@@ -2,15 +2,16 @@ import {AttributesBuffer}				from "@awayjs/core/lib/attributes/AttributesBuffer"
 import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
 import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
 
-import {TriangleElements}				from "@awayjs/display/lib/graphics/TriangleElements";
+import {TriangleElements}				from "@awayjs/graphics/lib/elements/TriangleElements";
+import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
+import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
+
 import {Billboard}					from "@awayjs/display/lib/display/Billboard";
-import {DefaultMaterialManager}		from "@awayjs/display/lib/managers/DefaultMaterialManager";
-import {TextureBase}					from "@awayjs/display/lib/textures/TextureBase";
 
 import {RendererBase}					from "../RendererBase";
 import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
 import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
+import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
 
 /**
  * @class away.pool.RenderableListItem
@@ -84,9 +85,9 @@ export class GL_BillboardRenderable extends GL_RenderableBase
 		return <GL_ElementsBase> this._stage.getAbstraction(elements);
 	}
 
-	public _pGetSurface():GL_SurfaceBase
+	public _pGetMaterial():GL_MaterialBase
 	{
-		return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._billboard.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
+		return this._renderer.getMaterialPool(this.elementsGL).getAbstraction(this._billboard.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
 	}
 
 }

@@ -1,5 +1,3 @@
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
-import {ImageBase}					from "@awayjs/core/lib/image/ImageBase";
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
 import {Camera}						from "@awayjs/display/lib/display/Camera";
@@ -9,15 +7,15 @@ import {PassEvent}					from "../events/PassEvent";
 import {ShaderBase}					from "../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
 import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
-import {IPass}						from "../surfaces/passes/IPass";
+import {IPass}						from "../materials/passes/IPass";
 import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
+import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
 
 /**
- * GL_SurfacePassBase provides an abstract base class for material shader passes. A material pass constitutes at least
+ * GL_MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
  * a render call per required renderable.
  */
-export class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
+export class GL_MaterialPassBase extends GL_MaterialBase implements IPass
 {
 	public _shader:ShaderBase;
 
@@ -28,7 +26,7 @@ export class GL_SurfacePassBase extends GL_SurfaceBase implements IPass
 
 	public get animationSet():AnimationSetBase
 	{
-		return <AnimationSetBase> this._surface.animationSet;
+		return <AnimationSetBase> this._material.animationSet;
 	}
 
 	/**

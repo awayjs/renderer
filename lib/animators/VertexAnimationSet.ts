@@ -1,4 +1,4 @@
-import {IAnimationSet}					from "@awayjs/display/lib/animators/IAnimationSet";
+import {IAnimationSet}					from "@awayjs/graphics/lib/animators/IAnimationSet";
 
 import {AnimationSetBase}					from "../animators/AnimationSetBase";
 import {AnimationRegisterData}			from "../animators/data/AnimationRegisterData";

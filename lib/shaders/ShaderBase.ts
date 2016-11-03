@@ -1,4 +1,3 @@
-import {BlendMode}					from "@awayjs/core/lib/image/BlendMode";
 import {Matrix}						from "@awayjs/core/lib/geom/Matrix";
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
@@ -7,8 +6,10 @@ import {ArgumentError}				from "@awayjs/core/lib/errors/ArgumentError";
 import {IAssetClass}					from "@awayjs/core/lib/library/IAssetClass";
 import {IAbstractionPool}				from "@awayjs/core/lib/library/IAbstractionPool";
 
+import {BlendMode}					from "@awayjs/graphics/lib/image/BlendMode";
+import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
+
 import {Camera}						from "@awayjs/display/lib/display/Camera";
-import {TextureBase}					from "@awayjs/display/lib/textures/TextureBase";
 
 import {ContextGLBlendFactor}			from "@awayjs/stage/lib/base/ContextGLBlendFactor";
 import {ContextGLCompareMode}			from "@awayjs/stage/lib/base/ContextGLCompareMode";
@@ -20,7 +21,7 @@ import {GL_IAssetClass}				from "@awayjs/stage/lib/library/GL_IAssetClass";
 import {AnimationSetBase}				from "../animators/AnimationSetBase";
 import {AnimatorBase}					from "../animators/AnimatorBase";
 import {AnimationRegisterData}		from "../animators/data/AnimationRegisterData";
-import {IPass}						from "../surfaces/passes/IPass";
+import {IPass}						from "../materials/passes/IPass";
 import {IElementsClassGL}				from "../elements/IElementsClassGL";
 import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
 import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";

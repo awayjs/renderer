@@ -1,6 +1,7 @@
-import {ElementsBase}						from "@awayjs/display/lib/graphics/ElementsBase";
+import {ElementsBase}						from "@awayjs/graphics/lib/elements/ElementsBase";
+import {Graphic}							from "@awayjs/graphics/lib/Graphic";
+
 import {Camera}							from "@awayjs/display/lib/display/Camera";
-import {Graphic}							from "@awayjs/display/lib/graphics/Graphic";
 
 import {ContextGLProgramType}				from "@awayjs/stage/lib/base/ContextGLProgramType";
 import {Stage}							from "@awayjs/stage/lib/base/Stage";

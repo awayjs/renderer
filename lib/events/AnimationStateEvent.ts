@@ -1,4 +1,4 @@
-import {AnimationNodeBase}				from "@awayjs/display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
 
 import {EventBase}						from "@awayjs/core/lib/events/EventBase";
 

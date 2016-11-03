@@ -1,6 +1,7 @@
-import {Image2D}						from "@awayjs/core/lib/image/Image2D";
-import {Sampler2D}						from "@awayjs/core/lib/image/Sampler2D";
 import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
+
+import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
+import {Sampler2D}						from "@awayjs/graphics/lib/image/Sampler2D";
 
 import {Camera}						from "@awayjs/display/lib/display/Camera";
 

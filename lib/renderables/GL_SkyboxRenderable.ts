@@ -2,9 +2,10 @@ import {AttributesBuffer}				from "@awayjs/core/lib/attributes/AttributesBuffer"
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
 
-import {ISurface}						from "@awayjs/display/lib/base/ISurface";
-import {ElementsBase}					from "@awayjs/display/lib/graphics/ElementsBase";
-import {TriangleElements}				from "@awayjs/display/lib/graphics/TriangleElements";
+import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
+import {ElementsBase}					from "@awayjs/graphics/lib/elements/ElementsBase";
+import {TriangleElements}				from "@awayjs/graphics/lib/elements/TriangleElements";
+
 import {Skybox}						from "@awayjs/display/lib/display/Skybox";
 import {Camera}						from "@awayjs/display/lib/display/Camera";
 
@@ -17,8 +18,8 @@ import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
 import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
 import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
 import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
-import {IPass}						from "../surfaces/passes/IPass";
+import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
+import {IPass}						from "../materials/passes/IPass";
 import {GL_SkyboxElements}			from "../elements/GL_SkyboxElements";
 
 /**
@@ -72,9 +73,9 @@ export class GL_SkyboxRenderable extends GL_RenderableBase
 		return elementsGL;
 	}
 
-	public _pGetSurface():GL_SurfaceBase
+	public _pGetMaterial():GL_MaterialBase
 	{
-		return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._skybox);
+		return this._renderer.getMaterialPool(this.elementsGL).getAbstraction(this._skybox);
 	}
 
 	public static _iIncludeDependencies(shader:ShaderBase):void

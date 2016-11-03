@@ -4,12 +4,13 @@ import {AbstractMethodError}				from "@awayjs/core/lib/errors/AbstractMethodErro
 import {RequestAnimationFrame}			from "@awayjs/core/lib/utils/RequestAnimationFrame";
 import {getTimer}							from "@awayjs/core/lib/utils/getTimer";
 
-import {IAnimationSet}					from "@awayjs/display/lib/animators/IAnimationSet";
-import {IAnimator}						from "@awayjs/display/lib/animators/IAnimator";
-import {AnimationNodeBase}				from "@awayjs/display/lib/animators/nodes/AnimationNodeBase";
-import {ElementsBase}						from "@awayjs/display/lib/graphics/ElementsBase";
+import {IAnimationSet}					from "@awayjs/graphics/lib/animators/IAnimationSet";
+import {IAnimator}						from "@awayjs/graphics/lib/animators/IAnimator";
+import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
+import {ElementsBase}						from "@awayjs/graphics/lib/elements/ElementsBase";
+import {Graphics}						from "@awayjs/graphics/lib/Graphics";
+
 import {Camera}							from "@awayjs/display/lib/display/Camera";
-import {Sprite}							from "@awayjs/display/lib/display/Sprite";
 
 import {Stage}							from "@awayjs/stage/lib/base/Stage";
 
@@ -58,7 +59,7 @@ export class AnimatorBase extends AssetBase implements IAnimator
 	private _playbackSpeed:number = 1;
 
 	public _pAnimationSet:IAnimationSet;
-	public _pOwners:Array<Sprite> = new Array<Sprite>();
+	public _pOwners:Array<Graphics> = new Array<Graphics>();
 	public _pActiveNode:AnimationNodeBase;
 	public _pActiveState:IAnimationState;
 	public _pActiveAnimationName:string;
@@ -67,7 +68,7 @@ export class AnimatorBase extends AssetBase implements IAnimator
 	private _animationStates:Object = new Object();
 
 	/**
-	 * Enables translation of the animated sprite from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
+	 * Enables translation of the animated graphics from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
 	 *
 	 * @see away.animators.IAnimationState#positionDelta
 	 */
@@ -285,23 +286,23 @@ export class AnimatorBase extends AssetBase implements IAnimator
 	}
 
 	/**
-	 * Used by the sprite object to which the animator is applied, registers the owner for internal use.
+	 * Used by the graphics object to which the animator is applied, registers the owner for internal use.
 	 *
 	 * @private
 	 */
-	public addOwner(sprite:Sprite):void
+	public addOwner(graphics:Graphics):void
 	{
-		this._pOwners.push(sprite);
+		this._pOwners.push(graphics);
 	}
 
 	/**
-	 * Used by the sprite object from which the animator is removed, unregisters the owner for internal use.
+	 * Used by the graphics object from which the animator is removed, unregisters the owner for internal use.
 	 *
 	 * @private
 	 */
-	public removeOwner(sprite:Sprite):void
+	public removeOwner(graphics:Graphics):void
 	{
-		this._pOwners.splice(this._pOwners.indexOf(sprite), 1);
+		this._pOwners.splice(this._pOwners.indexOf(graphics), 1);
 	}
 
 	/**
@@ -372,11 +373,11 @@ export class AnimatorBase extends AssetBase implements IAnimator
 
 	public invalidateElements():void
 	{
-		var sprite:Sprite;
+		var graphics:Graphics;
 		var len:number = this._pOwners.length;
 		for (var i:number = 0; i < len; i++) {
-			sprite = this._pOwners[i];
-			sprite.graphics.invalidateElements();
+			graphics = this._pOwners[i];
+			graphics.invalidateElements();
 		}
 	}
 	

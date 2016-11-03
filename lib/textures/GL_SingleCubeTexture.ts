@@ -2,9 +2,9 @@ import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
 
 import {GL_SamplerCube}				from "@awayjs/stage/lib/image/GL_SamplerCube";
 
-import {SingleCubeTexture}			from "@awayjs/display/lib/textures/SingleCubeTexture";
+import {SingleCubeTexture}			from "@awayjs/graphics/lib/textures/SingleCubeTexture";
 
-import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
+import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
 import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
 import {ShaderBase}					from "../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
@@ -66,7 +66,7 @@ export class GL_SingleCubeTexture extends GL_TextureBase
 	}
 
 
-	public activate(render:GL_SurfaceBase):void
+	public activate(render:GL_MaterialBase):void
 	{
 		var sampler:GL_SamplerCube = <GL_SamplerCube> render.samplers[this._imageIndex];
 

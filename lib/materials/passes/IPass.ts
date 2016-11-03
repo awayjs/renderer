@@ -1,8 +1,9 @@
 import {IEventDispatcher}				from "@awayjs/core/lib/events/IEventDispatcher";
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
+import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
+
 import {Camera}						from "@awayjs/display/lib/display/Camera";
-import {TextureBase}					from "@awayjs/display/lib/textures/TextureBase";
 
 import {ShaderBase}					from "../../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
@@ -38,7 +39,7 @@ export interface IPass extends IEventDispatcher
 
 
 	/**
-	 * Sets the surface state for the pass that is independent of the rendered object. This needs to be called before
+	 * Sets the material state for the pass that is independent of the rendered object. This needs to be called before
 	 * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
 	 * @param stage The Stage object which is currently used for rendering.
 	 * @param camera The camera from which the scene is viewed.

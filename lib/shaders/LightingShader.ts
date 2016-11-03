@@ -5,15 +5,15 @@ import {Camera}						from "@awayjs/display/lib/display/Camera";
 import {DirectionalLight}				from "@awayjs/display/lib/display/DirectionalLight";
 import {LightProbe}					from "@awayjs/display/lib/display/LightProbe";
 import {PointLight}					from "@awayjs/display/lib/display/PointLight";
-import {LightPickerBase}				from "@awayjs/display/lib/materials/lightpickers/LightPickerBase";
-import {LightSources}					from "@awayjs/display/lib/materials/LightSources";
+import {LightPickerBase}				from "@awayjs/display/lib/lightpickers/LightPickerBase";
+import {LightSources}					from "@awayjs/display/lib/lightpickers/LightSources";
 
 import {ContextGLProfile}				from "@awayjs/stage/lib/base/ContextGLProfile";
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
 import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";
 
-import {ILightingPass}				from "../surfaces/passes/ILightingPass";
+import {ILightingPass}				from "../materials/passes/ILightingPass";
 
 import {ShaderBase}					from "../shaders/ShaderBase";
 import {CompilerBase}					from "../shaders/compilers/CompilerBase";

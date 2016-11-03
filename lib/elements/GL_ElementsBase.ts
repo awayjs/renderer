@@ -10,10 +10,11 @@ import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 import {GL_AttributesBuffer}			from "@awayjs/stage/lib/attributes/GL_AttributesBuffer";
 
+import {ElementsBase}					from "@awayjs/graphics/lib/elements/ElementsBase";
+import {ElementsEvent}				from "@awayjs/graphics/lib/events/ElementsEvent";
+import {ElementsUtils}				from "@awayjs/graphics/lib/utils/ElementsUtils";
+
 import {Camera}						from "@awayjs/display/lib/display/Camera";
-import {ElementsBase}					from "@awayjs/display/lib/graphics/ElementsBase";
-import {ElementsEvent}				from "@awayjs/display/lib/events/ElementsEvent";
-import {ElementsUtils}				from "@awayjs/display/lib/utils/ElementsUtils";
 
 import {IElementsClassGL}				from "../elements/IElementsClassGL";
 import {ShaderBase}					from "../shaders/ShaderBase";

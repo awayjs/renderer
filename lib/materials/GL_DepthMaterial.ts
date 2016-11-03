@@ -1,9 +1,10 @@
-﻿import {ISurface}						from "@awayjs/display/lib/base/ISurface";
+import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
+
 import {Camera}						from "@awayjs/display/lib/display/Camera";
 
-import {SurfacePool}					from "../surfaces/SurfacePool";
-import {GL_SurfacePassBase}			from "../surfaces/GL_SurfacePassBase";
 import {IElementsClassGL}				from "../elements/IElementsClassGL";
+import {GL_MaterialPassBase}			from "../materials/GL_MaterialPassBase";
+import {MaterialPool}					from "../materials/MaterialPool";
 import {ShaderBase}					from "../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
 import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
@@ -11,22 +12,24 @@ import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
 import {GL_TextureBase}				from "../textures/GL_TextureBase";
 
 /**
- * DistanceRender is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
- * This is used to render omnidirectional shadow maps.
+ * GL_DepthMaterial forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
  */
-export class GL_DistanceSurface extends GL_SurfacePassBase
+export class GL_DepthMaterial extends GL_MaterialPassBase
 {
-	private _textureVO:GL_TextureBase;
 	private _fragmentConstantsIndex:number;
+	private _textureVO:GL_TextureBase;
 
 	/**
-	 * Creates a new DistanceRender object.
 	 *
-	 * @param material The material to which this pass belongs.
+	 * @param pool
+	 * @param surface
+	 * @param elementsClass
+	 * @param stage
 	 */
-	constructor(surface:ISurface, elementsClass:IElementsClassGL, renderPool:SurfacePool)
+	constructor(material:IMaterial, elementsClass:IElementsClassGL, renderPool:MaterialPool)
 	{
-		super(surface, elementsClass, renderPool);
+		super(material, elementsClass, renderPool);
 
 		this._shader = new ShaderBase(elementsClass, this, this._stage);
 
@@ -37,22 +40,7 @@ export class GL_DistanceSurface extends GL_SurfacePassBase
 	{
 		super.invalidate();
 
-		this._textureVO = this._surface.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._surface.getTextureAt(0)) : null;
-	}
-
-	/**
-	 * Initializes the unchanging constant data for this material.
-	 */
-	public _iInitConstantData(shader:ShaderBase):void
-	{
-		super._iInitConstantData(shader);
-
-		var index:number = this._fragmentConstantsIndex;
-		var data:Float32Array = shader.fragmentConstantData;
-		data[index + 4] = 1.0/255.0;
-		data[index + 5] = 1.0/255.0;
-		data[index + 6] = 1.0/255.0;
-		data[index + 7] = 0.0;
+		this._textureVO = this._material.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._material.getTextureAt(0)) : null;
 	}
 
 	public _iIncludeDependencies(shader:ShaderBase):void
@@ -60,13 +48,26 @@ export class GL_DistanceSurface extends GL_SurfacePassBase
 		super._iIncludeDependencies(shader);
 
 		shader.projectionDependencies++;
-		shader.viewDirDependencies++;
 
 		if (shader.alphaThreshold > 0)
 			shader.uvDependencies++;
+	}
 
-		if (shader.viewDirDependencies > 0)
-			shader.globalPosDependencies++;
+
+	public _iInitConstantData(shader:ShaderBase):void
+	{
+		super._iInitConstantData(shader);
+
+		var index:number = this._fragmentConstantsIndex;
+		var data:Float32Array = shader.fragmentConstantData;
+		data[index] = 1.0;
+		data[index + 1] = 255.0;
+		data[index + 2] = 65025.0;
+		data[index + 3] = 16581375.0;
+		data[index + 4] = 1.0/255.0;
+		data[index + 5] = 1.0/255.0;
+		data[index + 6] = 1.0/255.0;
+		data[index + 7] = 0.0;
 	}
 
 	/**
@@ -74,7 +75,7 @@ export class GL_DistanceSurface extends GL_SurfacePassBase
 	 */
 	public _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
-		var code:string;
+		var code:string = "";
 		var targetReg:ShaderRegisterElement = sharedRegisters.shadedTarget;
 		var dataReg1:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 		var dataReg2:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
@@ -86,11 +87,13 @@ export class GL_DistanceSurface extends GL_SurfacePassBase
 		var temp2:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
 		registerCache.addFragmentTempUsages(temp2, 1);
 
-		// squared distance to view
-		code = "dp3 " + temp1 + ".z, " + sharedRegisters.viewDirVarying + ".xyz, " + sharedRegisters.viewDirVarying + ".xyz\n" +
+		code += "div " + temp1 + ", " + sharedRegisters.projectionFragment + ", " + sharedRegisters.projectionFragment + ".w\n" + //"sub ft2.z, fc0.x, ft2.z\n" +    //invert
 			"mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" +
 			"frc " + temp1 + ", " + temp1 + "\n" +
 			"mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
+
+		//codeF += "mov ft1.w, fc1.w	\n" +
+		//    "mov ft0.w, fc0.x	\n";
 
 		if (this._textureVO && shader.alphaThreshold > 0) {
 
@@ -105,6 +108,9 @@ export class GL_DistanceSurface extends GL_SurfacePassBase
 
 		code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
 
+		registerCache.removeFragmentTempUsage(temp1);
+		registerCache.removeFragmentTempUsage(temp2);
+
 		return code;
 	}
 
@@ -115,21 +121,10 @@ export class GL_DistanceSurface extends GL_SurfacePassBase
 	{
 		super._iActivate(camera);
 
-		var f:number = camera.projection.far;
-
-		f = 1/(2*f*f);
-		// sqrt(f*f+f*f) is largest possible distance for any frustum, so we need to divide by it. Rarely a tight fit, but with 32 bits precision, it's enough.
-		var index:number = this._fragmentConstantsIndex;
-		var data:Float32Array = this._shader.fragmentConstantData;
-		data[index] = 1.0*f;
-		data[index + 1] = 255.0*f;
-		data[index + 2] = 65025.0*f;
-		data[index + 3] = 16581375.0*f;
-
 		if (this._textureVO && this._shader.alphaThreshold > 0) {
 			this._textureVO.activate(this);
 
-			data[index + 8] = this._shader.alphaThreshold;
+			this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
 		}
 	}
 }

@@ -1,10 +1,11 @@
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 
+import {ElementsBase}					from "@awayjs/graphics/lib/elements/ElementsBase";
+
 import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
 import {ShaderBase}					from "../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
 import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
-import {ElementsBase}					from "@awayjs/display/lib/graphics/ElementsBase";
 
 /**
  * IElementsClassGL is an interface for the constructable class definition IRenderable that is used to

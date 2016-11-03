@@ -1,15 +1,15 @@
 import {AbstractMethodError}			from "@awayjs/core/lib/errors/AbstractMethodError";
 import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
-import {ImageBase}					from "@awayjs/core/lib/image/ImageBase";
-import {SamplerBase}					from "@awayjs/core/lib/image/SamplerBase";
 import {AbstractionBase}				from "@awayjs/core/lib/library/AbstractionBase";
+
+import {ImageBase}					from "@awayjs/graphics/lib/image/ImageBase";
+import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
 
 import {ContextGLTextureFormat}		from "@awayjs/stage/lib/base/ContextGLTextureFormat";
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 
-import {TextureBase}					from "@awayjs/display/lib/textures/TextureBase";
 
-import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
+import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
 import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
 import {ShaderBase}					from "../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
@@ -57,7 +57,7 @@ export class GL_TextureBase extends AbstractionBase
 		//overidden for state logic
 	}
 
-	public activate(render:GL_SurfaceBase):void
+	public activate(render:GL_MaterialBase):void
 	{
 		//overridden for activation logic
 	}

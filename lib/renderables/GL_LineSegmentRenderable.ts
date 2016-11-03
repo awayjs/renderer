@@ -1,14 +1,15 @@
 import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
 import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
 
-import {LineElements}					from "@awayjs/display/lib/graphics/LineElements";
+import {LineElements}					from "@awayjs/graphics/lib/elements/LineElements";
+import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
+
 import {LineSegment}					from "@awayjs/display/lib/display/LineSegment";
-import {DefaultMaterialManager}		from "@awayjs/display/lib/managers/DefaultMaterialManager";
 
 import {RendererBase}					from "../RendererBase";
 import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
 import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {GL_SurfaceBase}				from "../surfaces/GL_SurfaceBase";
+import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
 
 /**
  * @class away.pool.GL_LineSegmentRenderable
@@ -74,9 +75,9 @@ export class GL_LineSegmentRenderable extends GL_RenderableBase
 		return <GL_ElementsBase> this._stage.getAbstraction(elements);
 	}
 
-	public _pGetSurface():GL_SurfaceBase
+	public _pGetMaterial():GL_MaterialBase
 	{
-		return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._lineSegment.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
+		return this._renderer.getMaterialPool(this.elementsGL).getAbstraction(this._lineSegment.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
 	}
 
 	/**

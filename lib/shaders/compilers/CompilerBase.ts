@@ -2,7 +2,7 @@ import {ShaderBase}					from "../../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
 import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
 import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
-import {IPass}						from "../../surfaces/passes/IPass";
+import {IPass}						from "../../materials/passes/IPass";
 import {IElementsClassGL}				from "../../elements/IElementsClassGL";
 
 /**

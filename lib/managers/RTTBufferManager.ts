@@ -1,6 +1,7 @@
 import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
 import {EventDispatcher}				from "@awayjs/core/lib/events/EventDispatcher";
-import {ImageUtils}					from "@awayjs/core/lib/utils/ImageUtils";
+
+import {ImageUtils}					from "@awayjs/graphics/lib/utils/ImageUtils";
 
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";

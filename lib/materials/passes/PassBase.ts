@@ -1,9 +1,10 @@
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 import {EventDispatcher}				from "@awayjs/core/lib/events/EventDispatcher";
 
+import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
+import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
+
 import {Camera}						from "@awayjs/display/lib/display/Camera";
-import {ISurface}						from "@awayjs/display/lib/base/ISurface";
-import {TextureBase}					from "@awayjs/display/lib/textures/TextureBase";
 
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 
@@ -12,10 +13,10 @@ import {PassEvent}					from "../../events/PassEvent";
 import {ShaderBase}					from "../../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
 import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
-import {IPass}						from "../../surfaces/passes/IPass";
+import {IPass}						from "../../materials/passes/IPass";
 import {IElementsClassGL}				from "../../elements/IElementsClassGL";
 import {GL_RenderableBase}			from "../../renderables/GL_RenderableBase";
-import {GL_SurfaceBase}				from "../../surfaces/GL_SurfaceBase";
+import {GL_MaterialBase}				from "../../materials/GL_MaterialBase";
 
 /**
  * PassBase provides an abstract base class for material shader passes. A material pass constitutes at least
@@ -23,8 +24,8 @@ import {GL_SurfaceBase}				from "../../surfaces/GL_SurfaceBase";
  */
 export class PassBase extends EventDispatcher implements IPass
 {
-	public _render:GL_SurfaceBase;
-	public _surface:ISurface;
+	public _render:GL_MaterialBase;
+	public _material:IMaterial;
 	public _elementsClass:IElementsClassGL;
 	public _stage:Stage;
 	
@@ -40,7 +41,7 @@ export class PassBase extends EventDispatcher implements IPass
 
 	public get animationSet():AnimationSetBase
 	{
-		return <AnimationSetBase> this._surface.animationSet;
+		return <AnimationSetBase> this._material.animationSet;
 	}
 
 	/**
@@ -84,12 +85,12 @@ export class PassBase extends EventDispatcher implements IPass
 	/**
 	 * Creates a new PassBase object.
 	 */
-	constructor(render:GL_SurfaceBase, surface:ISurface, elementsClass:IElementsClassGL, stage:Stage)
+	constructor(render:GL_MaterialBase, material:IMaterial, elementsClass:IElementsClassGL, stage:Stage)
 	{
 		super();
 
 		this._render = render;
-		this._surface = surface;
+		this._material = material;
 		this._elementsClass = elementsClass;
 		this._stage = stage;
 	}
@@ -116,7 +117,7 @@ export class PassBase extends EventDispatcher implements IPass
 	public dispose():void
 	{
 		this._render = null;
-		this._surface = null;
+		this._material = null;
 		this._elementsClass = null;
 		this._stage = null;
 

@@ -1,18 +1,16 @@
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
-import {ImageBase}					from "@awayjs/core/lib/image/ImageBase";
-import {SamplerBase}					from "@awayjs/core/lib/image/SamplerBase";
-import {Sampler2D}					from "@awayjs/core/lib/image/Sampler2D";
-
 import {AbstractionBase}				from "@awayjs/core/lib/library/AbstractionBase";
 
-import {ISurface}						from "@awayjs/display/lib/base/ISurface";
-import {Camera}						from "@awayjs/display/lib/display/Camera";
-import {SurfaceEvent}					from "@awayjs/display/lib/events/SurfaceEvent";
-import {IRenderable}					from "@awayjs/display/lib/base/IRenderable";
-import {MaterialBase}					from "@awayjs/display/lib/materials/MaterialBase";
-import {DefaultMaterialManager}		from "@awayjs/display/lib/managers/DefaultMaterialManager";
-import {TextureBase}					from "@awayjs/display/lib/textures/TextureBase";
+import {ImageBase}					from "@awayjs/graphics/lib/image/ImageBase";
+import {SamplerBase}					from "@awayjs/graphics/lib/image/SamplerBase";
+import {Sampler2D}					from "@awayjs/graphics/lib/image/Sampler2D";
+import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
+import {MaterialEvent}					from "@awayjs/graphics/lib/events/MaterialEvent";
+import {IRenderable}					from "@awayjs/graphics/lib/base/IRenderable";
+import {MaterialBase}					from "@awayjs/graphics/lib/materials/MaterialBase";
+import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
+import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
 
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";
@@ -23,8 +21,8 @@ import {PassEvent}					from "../events/PassEvent";
 import {ShaderBase}					from "../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
 import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
-import {SurfacePool}					from "../surfaces/SurfacePool";
-import {IPass}						from "../surfaces/passes/IPass";
+import {MaterialPool}					from "../materials/MaterialPool";
+import {IPass}						from "../materials/passes/IPass";
 import {IElementsClassGL}				from "../elements/IElementsClassGL";
 import {GL_TextureBase}				from "../textures/GL_TextureBase";
 
@@ -32,15 +30,15 @@ import {GL_TextureBase}				from "../textures/GL_TextureBase";
  *
  * @class away.pool.Passes
  */
-export class GL_SurfaceBase extends AbstractionBase
+export class GL_MaterialBase extends AbstractionBase
 {
-	private _onInvalidateAnimationDelegate:(event:SurfaceEvent) => void;
-	private _onInvalidatePassesDelegate:(event:SurfaceEvent) => void;
+	private _onInvalidateAnimationDelegate:(event:MaterialEvent) => void;
+	private _onInvalidatePassesDelegate:(event:MaterialEvent) => void;
 
 	public usages:number = 0;
 	public _forceSeparateMVP:boolean = false;
 
-	public _surface:ISurface;
+	public _material:IMaterial;
 	public _elementsClass:IElementsClassGL;
 	public _stage:Stage;
 
@@ -60,7 +58,7 @@ export class GL_SurfaceBase extends AbstractionBase
 
 	private _onPassInvalidateDelegate:(event:PassEvent) => void;
 
-	public surfaceID:number;
+	public materialID:number;
 
 	public images:Array<GL_ImageBase> = new Array<GL_ImageBase>();
 	public samplers:Array<GL_SamplerBase> = new Array<GL_SamplerBase>();
@@ -89,9 +87,9 @@ export class GL_SurfaceBase extends AbstractionBase
 		return this._passes;
 	}
 
-	public get surface():ISurface
+	public get material():IMaterial
 	{
-		return this._surface;
+		return this._material;
 	}
 
 	public get numImages():number
@@ -102,20 +100,20 @@ export class GL_SurfaceBase extends AbstractionBase
 		return this._numImages;
 	}
 
-	constructor(surface:ISurface, elementsClass:IElementsClassGL, renderPool:SurfacePool)
+	constructor(material:IMaterial, elementsClass:IElementsClassGL, renderPool:MaterialPool)
 	{
-		super(surface, renderPool);
+		super(material, renderPool);
 
-		this._onInvalidateAnimationDelegate = (event:SurfaceEvent) => this.onInvalidateAnimation(event);
-		this._onInvalidatePassesDelegate = (event:SurfaceEvent) => this.onInvalidatePasses(event);
+		this._onInvalidateAnimationDelegate = (event:MaterialEvent) => this.onInvalidateAnimation(event);
+		this._onInvalidatePassesDelegate = (event:MaterialEvent) => this.onInvalidatePasses(event);
 
-		this.surfaceID = surface.id;
-		this._surface = surface;
+		this.materialID = material.id;
+		this._material = material;
 		this._elementsClass = elementsClass;
 		this._stage = renderPool.stage;
 
-		this._surface.addEventListener(SurfaceEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
-		this._surface.addEventListener(SurfaceEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
+		this._material.addEventListener(MaterialEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
+		this._material.addEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
 
 		this._onPassInvalidateDelegate = (event:PassEvent) => this.onPassInvalidate(event);
 	}
@@ -124,12 +122,12 @@ export class GL_SurfaceBase extends AbstractionBase
 	{
 		this._elementsClass._iIncludeDependencies(shader);
 
-		shader.alphaThreshold = this._surface.alphaThreshold;
-		shader.useImageRect = this._surface.imageRect;
-		shader.usesCurves = this._surface.curves;
+		shader.alphaThreshold = this._material.alphaThreshold;
+		shader.useImageRect = this._material.imageRect;
+		shader.usesCurves = this._material.curves;
 
-		if (this._surface instanceof MaterialBase) {
-			var material:MaterialBase = <MaterialBase> this._surface;
+		if (this._material instanceof MaterialBase) {
+			var material:MaterialBase = <MaterialBase> this._material;
 			shader.useAlphaPremultiplied = material.alphaPremultiplied;
 			shader.useBothSides = material.bothSides;
 			shader.usesUVTransform = material.animateUVs;
@@ -152,7 +150,7 @@ export class GL_SurfaceBase extends AbstractionBase
 	{
 		super.onClear(event);
 
-		this._surface = null;
+		this._material = null;
 		this._elementsClass = null;
 		this._stage = null;
 
@@ -179,7 +177,7 @@ export class GL_SurfaceBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public onInvalidatePasses(event:SurfaceEvent):void
+	public onInvalidatePasses(event:MaterialEvent):void
 	{
 		var len:number = this._passes.length;
 		for (var i:number = 0; i < len; i++)
@@ -192,7 +190,7 @@ export class GL_SurfaceBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public onInvalidateAnimation(event:SurfaceEvent):void
+	public onInvalidateAnimation(event:MaterialEvent):void
 	{
 		this._invalidAnimation = true;
 	}
@@ -225,7 +223,7 @@ export class GL_SurfaceBase extends AbstractionBase
 		if (this._usesAnimation != usesAnimation) {
 			this._usesAnimation = usesAnimation;
 
-			var renderables:Array<IRenderable> = this._surface.iOwners;
+			var renderables:Array<IRenderable> = this._material.iOwners;
 			var numOwners:number = renderables.length;
 			for (var j:number = 0; j < numOwners; j++)
 				renderables[j].invalidateElements();
@@ -238,7 +236,7 @@ export class GL_SurfaceBase extends AbstractionBase
 	{
 		this._invalidImages = false;
 
-		var numTextures:number = this._surface.getNumTextures();
+		var numTextures:number = this._material.getNumTextures();
 		var texture:TextureBase;
 		var numImages:number;
 		var images:Array<number>;
@@ -247,14 +245,14 @@ export class GL_SurfaceBase extends AbstractionBase
 		var index:number = 0;
 
 		for (var i:number = 0; i < numTextures; i++) {
-			texture = this._surface.getTextureAt(i);
+			texture = this._material.getTextureAt(i);
 			numImages = texture.getNumImages();
 			images = this._imageIndices[texture.id] = new Array<number>();
 			for (var j:number = 0; j < numImages; j++) {
-				image = texture.getImageAt(j) || (this._surface.style? this._surface.style.getImageAt(texture, j) : null) || DefaultMaterialManager.getDefaultImage2D();
+				image = texture.getImageAt(j) || (this._material.style? this._material.style.getImageAt(texture, j) : null) || DefaultMaterialManager.getDefaultImage2D();
 				this.images[index] = <GL_ImageBase> this._stage.getAbstraction(image);
 
-				sampler = texture.getSamplerAt(j) || (this._surface.style? this._surface.style.getSamplerAt(texture, j) : null) || DefaultMaterialManager.getDefaultSampler();
+				sampler = texture.getSamplerAt(j) || (this._material.style? this._material.style.getSamplerAt(texture, j) : null) || DefaultMaterialManager.getDefaultSampler();
 				this.samplers[index] = <GL_SamplerBase> this._stage.getAbstraction(sampler);
 
 				images[j] = index++;
@@ -325,10 +323,10 @@ export class GL_SurfaceBase extends AbstractionBase
 	 */
 	private _getEnabledGPUAnimation():boolean
 	{
-		if (this._surface.animationSet) {
-			this._surface.animationSet.resetGPUCompatibility();
+		if (this._material.animationSet) {
+			this._material.animationSet.resetGPUCompatibility();
 
-			var renderables:Array<IRenderable> = this._surface.iOwners;
+			var renderables:Array<IRenderable> = this._material.iOwners;
 			var numOwners:number = renderables.length;
 
 			var len:number = this._passes.length;
@@ -342,7 +340,7 @@ export class GL_SurfaceBase extends AbstractionBase
 			}
 
 
-			return !this._surface.animationSet.usesCPU;
+			return !this._material.animationSet.usesCPU;
 		}
 
 		return false;

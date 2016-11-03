@@ -1,4 +1,4 @@
-import {Image2D}						from "@awayjs/core/lib/image/Image2D";
+import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
 
 import {Camera}						from "@awayjs/display/lib/display/Camera";
 

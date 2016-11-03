@@ -1,6 +1,7 @@
 import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
-import {BlendMode}					from "@awayjs/core/lib/image/BlendMode";
+
+import {BlendMode}					from "@awayjs/graphics/lib/image/BlendMode";
 
 import {Camera}						from "@awayjs/display/lib/display/Camera";
 import {Skybox}						from "@awayjs/display/lib/display/Skybox";
@@ -9,23 +10,23 @@ import {ContextGLCompareMode}			from "@awayjs/stage/lib/base/ContextGLCompareMod
 
 import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
 import {IElementsClassGL}				from "../elements/IElementsClassGL";
-import {GL_SurfacePassBase}			from "../surfaces/GL_SurfacePassBase";
-import {SurfacePool}					from "../surfaces/SurfacePool";
+import {GL_MaterialPassBase}			from "../materials/GL_MaterialPassBase";
+import {MaterialPool}					from "../materials/MaterialPool";
 import {ShaderBase}					from "../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
 import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
 import {GL_TextureBase}				from "../textures/GL_TextureBase";
 
 /**
- * GL_SkyboxSurface forms an abstract base class for the default shaded materials provided by Stage,
+ * GL_SkyboxMaterial forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
  */
-export class GL_SkyboxSurface extends GL_SurfacePassBase
+export class GL_SkyboxMaterial extends GL_MaterialPassBase
 {
 	public _skybox:Skybox;
 	public _texture:GL_TextureBase;
 
-	constructor(skybox:Skybox, elementsClass:IElementsClassGL, renderPool:SurfacePool)
+	constructor(skybox:Skybox, elementsClass:IElementsClassGL, renderPool:MaterialPool)
 	{
 		super(skybox, elementsClass, renderPool);
 
@@ -55,9 +56,9 @@ export class GL_SkyboxSurface extends GL_SurfacePassBase
 	{
 		super._pUpdateRender();
 
-		this._pRequiresBlending = (this._surface.blendMode != BlendMode.NORMAL);
+		this._pRequiresBlending = (this._material.blendMode != BlendMode.NORMAL);
 
-		this.shader.setBlendMode((this._surface.blendMode == BlendMode.NORMAL && this._pRequiresBlending)? BlendMode.LAYER : this._surface.blendMode);
+		this.shader.setBlendMode((this._material.blendMode == BlendMode.NORMAL && this._pRequiresBlending)? BlendMode.LAYER : this._material.blendMode);
 	}
 
 	public _iIncludeDependencies(shader:ShaderBase):void

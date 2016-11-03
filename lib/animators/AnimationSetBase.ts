@@ -2,7 +2,7 @@ import {IAsset}						from "@awayjs/core/lib/library/IAsset";
 import {AssetBase}					from "@awayjs/core/lib/library/AssetBase";
 import {AbstractMethodError}			from "@awayjs/core/lib/errors/AbstractMethodError";
 
-import {AnimationNodeBase}			from "@awayjs/display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}			from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
 
 import {AnimationSetError}			from "../errors/AnimationSetError";
 import {ShaderBase}					from "../shaders/ShaderBase";

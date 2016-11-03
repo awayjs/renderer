@@ -1,9 +1,10 @@
 import {Quaternion}						from "@awayjs/core/lib/geom/Quaternion";
 import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
 
-import {TriangleElements}					from "@awayjs/display/lib/graphics/TriangleElements";
+import {TriangleElements}					from "@awayjs/graphics/lib/elements/TriangleElements";
+import {ElementsEvent}					from "@awayjs/graphics/lib/events/ElementsEvent";
+
 import {Camera}							from "@awayjs/display/lib/display/Camera";
-import {ElementsEvent}					from "@awayjs/display/lib/events/ElementsEvent";
 
 import {Stage}							from "@awayjs/stage/lib/base/Stage";
 

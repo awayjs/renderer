@@ -1,19 +1,20 @@
 import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
+import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
+
 import {Camera}						from "@awayjs/display/lib/display/Camera";
-import {ISurface}						from "@awayjs/display/lib/base/ISurface";
 
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 
 import {GL_RenderableBase}			from "../../renderables/GL_RenderableBase";
-import {GL_SurfaceBase}				from "../../surfaces/GL_SurfaceBase";
+import {GL_MaterialBase}				from "../../materials/GL_MaterialBase";
 import {ShaderBase}					from "../../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
 import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
 import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
 import {IElementsClassGL}				from "../../elements/IElementsClassGL";
-import {PassBase}						from "../../surfaces/passes/PassBase";
+import {PassBase}						from "../../materials/passes/PassBase";
 import {GL_TextureBase}				from "../../textures/GL_TextureBase";
 
 /**
@@ -30,9 +31,9 @@ export class BasicMaterialPass extends PassBase
 
 	private _fragmentConstantsIndex:number;
 
-	constructor(render:GL_SurfaceBase, surface:ISurface, elementsClass:IElementsClassGL, stage:Stage)
+	constructor(render:GL_MaterialBase, material:IMaterial, elementsClass:IElementsClassGL, stage:Stage)
 	{
-		super(render, surface, elementsClass, stage);
+		super(render, material, elementsClass, stage);
 
 		this._shader = new ShaderBase(elementsClass, this, this._stage);
 
@@ -51,13 +52,13 @@ export class BasicMaterialPass extends PassBase
 	{
 		super.invalidate();
 
-		this._textureVO = this._surface.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._surface.getTextureAt(0)) : null;
+		this._textureVO = this._material.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._material.getTextureAt(0)) : null;
 	}
 
 	public dispose():void
 	{
 		if (this._textureVO) {
-			this._textureVO.onClear(new AssetEvent(AssetEvent.CLEAR, this._surface.getTextureAt(0)));
+			this._textureVO.onClear(new AssetEvent(AssetEvent.CLEAR, this._material.getTextureAt(0)));
 			this._textureVO = null;
 		}
 

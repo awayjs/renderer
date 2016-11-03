@@ -1,9 +1,9 @@
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 
-import {INode}						from "@awayjs/display/lib/partition/INode";
+import {INode}						from "@awayjs/graphics/lib/base/INode";
 
 import {RendererBase}					from "./RendererBase";
-import {GL_DepthSurface}				from "./surfaces/GL_DepthSurface";
+import {GL_DepthMaterial}				from "./materials/GL_DepthMaterial";
 
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
@@ -19,7 +19,7 @@ export class DepthRenderer extends RendererBase
 	 */
 	constructor(stage:Stage = null)
 	{
-		super(stage, GL_DepthSurface);
+		super(stage, GL_DepthMaterial);
 
 		this._iBackgroundR = 1;
 		this._iBackgroundG = 1;

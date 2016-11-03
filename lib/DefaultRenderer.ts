@@ -1,23 +1,19 @@
-import {ImageBase}					from "@awayjs/core/lib/image/ImageBase";
-import {BitmapImage2D}				from "@awayjs/core/lib/image/BitmapImage2D";
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
-import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
+
+import {ImageBase}					from "@awayjs/graphics/lib/image/ImageBase";
+import {BitmapImage2D}				from "@awayjs/graphics/lib/image/BitmapImage2D";
+import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
+import {INode}						from "@awayjs/graphics/lib/base/INode";
 
 import {LightBase}					from "@awayjs/display/lib/display/LightBase";
 import {Camera}						from "@awayjs/display/lib/display/Camera";
 import {DirectionalLight}				from "@awayjs/display/lib/display/DirectionalLight";
 import {PointLight}					from "@awayjs/display/lib/display/PointLight";
-import {IEntity}						from "@awayjs/display/lib/display/IEntity";
 import {LightProbe}					from "@awayjs/display/lib/display/LightProbe";
-import {Skybox}						from "@awayjs/display/lib/display/Skybox";
-import {Scene}						from "@awayjs/display/lib/display/Scene";
-import {ShadowMapperBase}				from "@awayjs/display/lib/materials/shadowmappers/ShadowMapperBase";
-import {INode}						from "@awayjs/display/lib/partition/INode";
+import {ShadowMapperBase}				from "@awayjs/display/lib/shadowmappers/ShadowMapperBase";
 import {IView}						from "@awayjs/display/lib/IView";
 
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
-import {ContextGLCompareMode}			from "@awayjs/stage/lib/base/ContextGLCompareMode";
 import {ContextGLClearMask}			from "@awayjs/stage/lib/base/ContextGLClearMask";
 import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
 
@@ -26,11 +22,7 @@ import {DepthRenderer}				from "./DepthRenderer";
 import {DistanceRenderer}				from "./DistanceRenderer";
 import {Filter3DRenderer}				from "./Filter3DRenderer";
 import {Filter3DBase}					from "./filters/Filter3DBase";
-import {GL_SkyboxElements}			from "./elements/GL_SkyboxElements";
-import {GL_RenderableBase}			from "./renderables/GL_RenderableBase";
 import {RTTBufferManager}				from "./managers/RTTBufferManager";
-import {IPass}						from "./surfaces/passes/IPass";
-import {SurfacePool}					from "./surfaces/SurfacePool";
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -152,7 +144,7 @@ export class DefaultRenderer extends RendererBase
 		var enter:boolean = super.enterNode(node);
 
 		if (enter && node.debugVisible)
-			this.applyEntity(node.bounds.boundsPrimitive);
+			node.renderBounds(this);
 
 		return enter;
 	}

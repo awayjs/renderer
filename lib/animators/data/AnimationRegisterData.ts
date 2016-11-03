@@ -1,6 +1,6 @@
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
-import {AnimationNodeBase}			from "@awayjs/display/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}			from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
 
 import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
 import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
