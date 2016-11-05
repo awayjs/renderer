@@ -208,6 +208,11 @@ export class DefaultRenderer extends RendererBase
 		super.pExecuteRender(camera, view, target, scissorRect, surfaceSelector);
 	}
 
+	// TODO: remove software renderToTexture
+	public getDepthRenderer():DepthRenderer {
+		return this._pDepthRenderer;
+	}
+
 	private updateLights(camera:Camera, view:IView):void
 	{
 		var len:number, i:number;
