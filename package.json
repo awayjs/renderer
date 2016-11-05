@@ -34,7 +34,7 @@
   "dependencies": {
     "@awayjs/core": "^0.6.0",
     "@awayjs/graphics": "^0.1.0",
-    "@awayjs/display": "^0.8.0",
+    "@awayjs/scene": "^0.8.0",
     "@awayjs/stage": "^0.8.0"
   },
   "devDependencies": {
