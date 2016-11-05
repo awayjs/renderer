@@ -8,7 +8,7 @@ import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
 import {ContextGLProgramType}			from "@awayjs/stage/lib/base/ContextGLProgramType";
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
 import {IElementsClassGL}				from "../elements/IElementsClassGL";

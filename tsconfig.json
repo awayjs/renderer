@@ -8,7 +8,8 @@
     "baseUrl": ".",
     "paths": {
       "@awayjs/core*": ["./node_modules/@awayjs/core/dist*"],
-      "@awayjs/display*": ["./node_modules/@awayjs/display/dist*"],
+      "@awayjs/graphics*": ["./node_modules/@awayjs/graphics/dist*"],
+      "@awayjs/scene*": ["./node_modules/@awayjs/scene/dist*"],
       "@awayjs/stage*": ["./node_modules/@awayjs/stage/dist*"]
     }
   },

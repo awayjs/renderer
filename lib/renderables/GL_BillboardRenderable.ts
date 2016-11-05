@@ -6,7 +6,7 @@ import {TriangleElements}				from "@awayjs/graphics/lib/elements/TriangleElement
 import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
 import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
 
-import {Billboard}					from "@awayjs/display/lib/display/Billboard";
+import {Billboard}					from "@awayjs/scene/lib/display/Billboard";
 
 import {RendererBase}					from "../RendererBase";
 import {GL_ElementsBase}				from "../elements/GL_ElementsBase";

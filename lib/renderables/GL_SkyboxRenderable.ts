@@ -6,8 +6,8 @@ import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
 import {ElementsBase}					from "@awayjs/graphics/lib/elements/ElementsBase";
 import {TriangleElements}				from "@awayjs/graphics/lib/elements/TriangleElements";
 
-import {Skybox}						from "@awayjs/display/lib/display/Skybox";
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Skybox}						from "@awayjs/scene/lib/display/Skybox";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
 import {ContextGLProgramType}			from "@awayjs/stage/lib/base/ContextGLProgramType";

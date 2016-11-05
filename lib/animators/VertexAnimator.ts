@@ -3,7 +3,7 @@ import {TriangleElements}					from "@awayjs/graphics/lib/elements/TriangleElemen
 import {Graphic}							from "@awayjs/graphics/lib/Graphic";
 import {Graphics}							from "@awayjs/graphics/lib/Graphics";
 
-import {Camera}							from "@awayjs/display/lib/display/Camera";
+import {Camera}							from "@awayjs/scene/lib/display/Camera";
 
 import {Stage}							from "@awayjs/stage/lib/base/Stage";
 

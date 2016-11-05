@@ -14,7 +14,7 @@ import {ElementsBase}					from "@awayjs/graphics/lib/elements/ElementsBase";
 import {ElementsEvent}				from "@awayjs/graphics/lib/events/ElementsEvent";
 import {ElementsUtils}				from "@awayjs/graphics/lib/utils/ElementsUtils";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {IElementsClassGL}				from "../elements/IElementsClassGL";
 import {ShaderBase}					from "../shaders/ShaderBase";

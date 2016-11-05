@@ -3,7 +3,7 @@ import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
 import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {ShaderBase}					from "../../shaders/ShaderBase";
 import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";

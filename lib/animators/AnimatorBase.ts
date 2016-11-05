@@ -10,7 +10,7 @@ import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/Animati
 import {ElementsBase}						from "@awayjs/graphics/lib/elements/ElementsBase";
 import {Graphics}						from "@awayjs/graphics/lib/Graphics";
 
-import {Camera}							from "@awayjs/display/lib/display/Camera";
+import {Camera}							from "@awayjs/scene/lib/display/Camera";
 
 import {Stage}							from "@awayjs/stage/lib/base/Stage";
 

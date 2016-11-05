@@ -1,12 +1,12 @@
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
-import {DirectionalLight}				from "@awayjs/display/lib/display/DirectionalLight";
-import {LightProbe}					from "@awayjs/display/lib/display/LightProbe";
-import {PointLight}					from "@awayjs/display/lib/display/PointLight";
-import {LightPickerBase}				from "@awayjs/display/lib/lightpickers/LightPickerBase";
-import {LightSources}					from "@awayjs/display/lib/lightpickers/LightSources";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {DirectionalLight}				from "@awayjs/scene/lib/display/DirectionalLight";
+import {LightProbe}					from "@awayjs/scene/lib/display/LightProbe";
+import {PointLight}					from "@awayjs/scene/lib/display/PointLight";
+import {LightPickerBase}				from "@awayjs/scene/lib/lightpickers/LightPickerBase";
+import {LightSources}					from "@awayjs/scene/lib/lightpickers/LightSources";
 
 import {ContextGLProfile}				from "@awayjs/stage/lib/base/ContextGLProfile";
 import {Stage}						from "@awayjs/stage/lib/base/Stage";

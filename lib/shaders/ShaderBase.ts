@@ -9,7 +9,7 @@ import {IAbstractionPool}				from "@awayjs/core/lib/library/IAbstractionPool";
 import {BlendMode}					from "@awayjs/graphics/lib/image/BlendMode";
 import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {ContextGLBlendFactor}			from "@awayjs/stage/lib/base/ContextGLBlendFactor";
 import {ContextGLCompareMode}			from "@awayjs/stage/lib/base/ContextGLCompareMode";

@@ -14,9 +14,9 @@ import {IRenderable}					from "@awayjs/graphics/lib/base/IRenderable";
 import {INode}						from "@awayjs/graphics/lib/base/INode";
 import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
 
-import {IRenderer}					from "@awayjs/display/lib/IRenderer";
-import {Camera}						from "@awayjs/display/lib/display/Camera";
-import {IView}						from "@awayjs/display/lib/IView";
+import {IRenderer}					from "@awayjs/scene/lib/IRenderer";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {IView}						from "@awayjs/scene/lib/IView";
 
 import {AGALMiniAssembler}			from "@awayjs/stage/lib/aglsl/assembler/AGALMiniAssembler";
 import {ContextGLBlendFactor}			from "@awayjs/stage/lib/base/ContextGLBlendFactor";

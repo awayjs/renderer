@@ -3,8 +3,8 @@ import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
 import {BlendMode}					from "@awayjs/graphics/lib/image/BlendMode";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
-import {Skybox}						from "@awayjs/display/lib/display/Skybox";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Skybox}						from "@awayjs/scene/lib/display/Skybox";
 
 import {ContextGLCompareMode}			from "@awayjs/stage/lib/base/ContextGLCompareMode";
 

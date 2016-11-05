@@ -15,7 +15,7 @@ import {RenderableEvent}				from "@awayjs/graphics/lib/events/RenderableEvent";
 import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
 import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";

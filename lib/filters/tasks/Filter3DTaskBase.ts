@@ -3,7 +3,7 @@ import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
 import {AbstractMethodError}			from "@awayjs/core/lib/errors/AbstractMethodError";
 import {ByteArray}					from "@awayjs/core/lib/utils/ByteArray";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 import {AGALMiniAssembler}			from "@awayjs/stage/lib/aglsl/assembler/AGALMiniAssembler";

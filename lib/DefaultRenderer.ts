@@ -5,13 +5,13 @@ import {BitmapImage2D}				from "@awayjs/graphics/lib/image/BitmapImage2D";
 import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
 import {INode}						from "@awayjs/graphics/lib/base/INode";
 
-import {LightBase}					from "@awayjs/display/lib/display/LightBase";
-import {Camera}						from "@awayjs/display/lib/display/Camera";
-import {DirectionalLight}				from "@awayjs/display/lib/display/DirectionalLight";
-import {PointLight}					from "@awayjs/display/lib/display/PointLight";
-import {LightProbe}					from "@awayjs/display/lib/display/LightProbe";
-import {ShadowMapperBase}				from "@awayjs/display/lib/shadowmappers/ShadowMapperBase";
-import {IView}						from "@awayjs/display/lib/IView";
+import {LightBase}					from "@awayjs/scene/lib/display/LightBase";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {DirectionalLight}				from "@awayjs/scene/lib/display/DirectionalLight";
+import {PointLight}					from "@awayjs/scene/lib/display/PointLight";
+import {LightProbe}					from "@awayjs/scene/lib/display/LightProbe";
+import {ShadowMapperBase}				from "@awayjs/scene/lib/shadowmappers/ShadowMapperBase";
+import {IView}						from "@awayjs/scene/lib/IView";
 
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 import {ContextGLClearMask}			from "@awayjs/stage/lib/base/ContextGLClearMask";

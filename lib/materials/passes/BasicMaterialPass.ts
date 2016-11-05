@@ -3,7 +3,7 @@ import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
 import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {Stage}						from "@awayjs/stage/lib/base/Stage";
 

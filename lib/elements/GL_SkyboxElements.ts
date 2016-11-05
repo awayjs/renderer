@@ -1,7 +1,7 @@
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {ContextGLDrawMode}			from "@awayjs/stage/lib/base/ContextGLDrawMode";
 import {ContextGLProgramType}			from "@awayjs/stage/lib/base/ContextGLProgramType";

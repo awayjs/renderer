@@ -1,6 +1,6 @@
 import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {AnimationSetBase}				from "../animators/AnimationSetBase";
 import {PassEvent}					from "../events/PassEvent";

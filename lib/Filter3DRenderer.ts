@@ -3,7 +3,7 @@ import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
 import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
 import {Sampler2D}						from "@awayjs/graphics/lib/image/Sampler2D";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";
 import {GL_Sampler2D}					from "@awayjs/stage/lib/image/GL_Sampler2D";

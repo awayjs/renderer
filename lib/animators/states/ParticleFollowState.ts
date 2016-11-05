@@ -1,8 +1,8 @@
 import {MathConsts}						from "@awayjs/core/lib/geom/MathConsts";
 import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
 
-import {DisplayObject}					from "@awayjs/display/lib/display/DisplayObject";
-import {Camera}							from "@awayjs/display/lib/display/Camera";
+import {DisplayObject}					from "@awayjs/scene/lib/display/DisplayObject";
+import {Camera}							from "@awayjs/scene/lib/display/Camera";
 
 import {Stage}							from "@awayjs/stage/lib/base/Stage";
 import {ContextGLVertexBufferFormat}		from "@awayjs/stage/lib/base/ContextGLVertexBufferFormat";

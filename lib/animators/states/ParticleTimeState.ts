@@ -1,4 +1,4 @@
-import {Camera}							from "@awayjs/display/lib/display/Camera";
+import {Camera}							from "@awayjs/scene/lib/display/Camera";
 
 import {Stage}							from "@awayjs/stage/lib/base/Stage";
 import {ContextGLVertexBufferFormat}		from "@awayjs/stage/lib/base/ContextGLVertexBufferFormat";

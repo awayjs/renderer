@@ -4,7 +4,7 @@ import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
 import {LineElements}					from "@awayjs/graphics/lib/elements/LineElements";
 import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
 
-import {LineSegment}					from "@awayjs/display/lib/display/LineSegment";
+import {LineSegment}					from "@awayjs/scene/lib/display/LineSegment";
 
 import {RendererBase}					from "../RendererBase";
 import {GL_ElementsBase}				from "../elements/GL_ElementsBase";

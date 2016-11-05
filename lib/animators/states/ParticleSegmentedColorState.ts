@@ -1,6 +1,6 @@
 import {ColorTransform}					from "@awayjs/core/lib/geom/ColorTransform";
 
-import {Camera}							from "@awayjs/display/lib/display/Camera";
+import {Camera}							from "@awayjs/scene/lib/display/Camera";
 
 import {Stage}							from "@awayjs/stage/lib/base/Stage";
 

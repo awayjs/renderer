@@ -1,6 +1,6 @@
 import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {ContextGLProgramType}			from "@awayjs/stage/lib/base/ContextGLProgramType";
 import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";

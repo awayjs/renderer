@@ -1,6 +1,6 @@
 ﻿import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
 
-import {Camera}						from "@awayjs/display/lib/display/Camera";
+import {Camera}						from "@awayjs/scene/lib/display/Camera";
 
 import {MaterialPool}					from "../materials/MaterialPool";
 import {GL_MaterialPassBase}			from "../materials/GL_MaterialPassBase";
