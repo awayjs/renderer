@@ -19,7 +19,7 @@ import {IAnimationTransition}				from "../animators/transitions/IAnimationTransi
 import {AnimationStateEvent}				from "../events/AnimationStateEvent";
 import {ShaderBase}						from "../shaders/ShaderBase";
 import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
-import {GL_GraphicRenderable}				from "../renderables/GL_GraphicRenderable";
+import {GL_ShapeRenderable}				from "../renderables/GL_ShapeRenderable";
 
 /**
  * Provides an interface for assigning skeleton-based animation data sets to sprite-based entity objects
@@ -204,7 +204,7 @@ export class SkeletonAnimator extends AnimatorBase
 		if (this._globalPropertiesDirty)
 			this.updateGlobalProperties();
 
-		var elements:TriangleElements = <TriangleElements> (<GL_GraphicRenderable> renderable).graphic.elements;
+		var elements:TriangleElements = <TriangleElements> (<GL_ShapeRenderable> renderable).shape.elements;
 
 		elements.useCondensedIndices = this._useCondensedIndices;
 
@@ -215,7 +215,7 @@ export class SkeletonAnimator extends AnimatorBase
 		} else {
 			if (this._pAnimationSet.usesCPU) {
 				if (this._morphedElementsDirty[elements.id])
-					this.morphElements(<GL_GraphicRenderable> renderable, elements);
+					this.morphElements(<GL_ShapeRenderable> renderable, elements);
 
 				return
 			}
@@ -356,7 +356,7 @@ export class SkeletonAnimator extends AnimatorBase
 		}
 	}
 
-	public getRenderableElements(renderable:GL_GraphicRenderable, sourceElements:TriangleElements):TriangleElements
+	public getRenderableElements(renderable:GL_ShapeRenderable, sourceElements:TriangleElements):TriangleElements
 	{
 		this._morphedElementsDirty[sourceElements.id] = true;
 
@@ -387,7 +387,7 @@ export class SkeletonAnimator extends AnimatorBase
 	 * @param subGeom The subgeometry containing the weights and joint index data per vertex.
 	 * @param pass The material pass for which we need to transform the vertices
 	 */
-	public morphElements(renderable:GL_GraphicRenderable, sourceElements:TriangleElements):void
+	public morphElements(renderable:GL_ShapeRenderable, sourceElements:TriangleElements):void
 	{
 		this._morphedElementsDirty[sourceElements.id] = false;
 

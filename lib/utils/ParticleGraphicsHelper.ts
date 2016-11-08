@@ -64,7 +64,7 @@ export class ParticleGraphicsHelper
 					vertexCounters.push(0);
 				}
 
-				sourceElements = <TriangleElements> sourceGraphics.getGraphicAt(srcIndex).elements;
+				sourceElements = <TriangleElements> sourceGraphics.getShapeAt(srcIndex).elements;
 
 				//add a new particle subgeometry if this source subgeometry will take us over the maxvertex limit
 				if (sourceElements.numVertices + vertexCounters[sub2SubMap[srcIndex]] > ParticleGraphicsHelper.MAX_VERTEX) {
@@ -208,7 +208,7 @@ export class ParticleGraphicsHelper
 			elements.setNormals(normalsVector[i]);
 			elements.setTangents(tangentsVector[i]);
 			elements.setUVs(uvsVector[i]);
-			output.addGraphic(elements);
+			output.addShape(elements);
 		}
 	}
 }

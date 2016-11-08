@@ -200,7 +200,7 @@ export class GL_LineElements extends GL_ElementsBase
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, shader.vertexConstantData);
 		
 		if (this._indices)
-			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, this.numIndices);
+			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, offset*3, count*3 || this.numIndices);
 		else
 			this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
 	}

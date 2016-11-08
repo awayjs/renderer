@@ -114,7 +114,7 @@ export {FXAAFilter3D}					from "./lib/filters/FXAAFilter3D";
 export {RTTBufferManager}				from "./lib/managers/RTTBufferManager";
 
 export {GL_BillboardRenderable}			from "./lib/renderables/GL_BillboardRenderable";
-export {GL_GraphicRenderable}			from "./lib/renderables/GL_GraphicRenderable";
+export {GL_ShapeRenderable}			from "./lib/renderables/GL_ShapeRenderable";
 export {GL_LineSegmentRenderable}		from "./lib/renderables/GL_LineSegmentRenderable";
 export {GL_RenderableBase}				from "./lib/renderables/GL_RenderableBase";
 export {GL_SkyboxRenderable}				from "./lib/renderables/GL_SkyboxRenderable";

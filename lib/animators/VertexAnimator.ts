@@ -1,6 +1,6 @@
 import {ElementsBase}						from "@awayjs/graphics/lib/elements/ElementsBase";
 import {TriangleElements}					from "@awayjs/graphics/lib/elements/TriangleElements";
-import {Graphic}							from "@awayjs/graphics/lib/Graphic";
+import {Shape}							from "@awayjs/graphics/lib/base/Shape";
 import {Graphics}							from "@awayjs/graphics/lib/Graphics";
 
 import {Camera}							from "@awayjs/scene/lib/display/Camera";
@@ -13,7 +13,7 @@ import {AnimationRegisterData}			from "../animators/data/AnimationRegisterData";
 import {VertexAnimationMode}				from "../animators/data/VertexAnimationMode";
 import {IVertexAnimationState}			from "../animators/states/IVertexAnimationState";
 import {IAnimationTransition}				from "../animators/transitions/IAnimationTransition";
-import {GL_GraphicRenderable}				from "../renderables/GL_GraphicRenderable";
+import {GL_ShapeRenderable}				from "../renderables/GL_ShapeRenderable";
 import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
 import {ShaderBase}						from "../shaders/ShaderBase";
 import {GL_ElementsBase}					from "../elements/GL_ElementsBase";
@@ -115,8 +115,8 @@ export class VertexAnimator extends AnimatorBase
 	{
 		// todo: add code for when running on cpu
 		// this type of animation can only be SubSprite
-		var graphic:Graphic = <Graphic> (<GL_GraphicRenderable> renderable).graphic;
-		var elements:ElementsBase = graphic.elements;
+		var shape:Shape = <Shape> (<GL_ShapeRenderable> renderable).shape;
+		var elements:ElementsBase = shape.elements;
 
 		// if no poses defined, set temp data
 		if (!this._poses.length) {
@@ -139,10 +139,10 @@ export class VertexAnimator extends AnimatorBase
 		var k:number = 0;
 
 		for (; i < len; ++i) {
-			elements = this._poses[i].getGraphicAt(graphic._iIndex).elements || graphic.elements;
+			elements = this._poses[i].getShapeAt(shape._iIndex).elements || shape.elements;
 
 			elementsGL = <GL_ElementsBase> stage.getAbstraction(elements);
-			elementsGL._indexMappings = (<GL_ElementsBase> stage.getAbstraction(graphic.elements)).getIndexMappings();
+			elementsGL._indexMappings = (<GL_ElementsBase> stage.getAbstraction(shape.elements)).getIndexMappings();
 
 			if (elements.isAsset(TriangleElements)) {
 				elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], (<TriangleElements> elements).positions);
@@ -184,10 +184,10 @@ export class VertexAnimator extends AnimatorBase
 	{
 	}
 
-	public getRenderableElements(renderable:GL_GraphicRenderable, sourceElements:TriangleElements):TriangleElements
+	public getRenderableElements(renderable:GL_ShapeRenderable, sourceElements:TriangleElements):TriangleElements
 	{
 		if (this._vertexAnimationSet.blendMode == VertexAnimationMode.ABSOLUTE && this._poses.length)
-			return <TriangleElements> this._poses[0].getGraphicAt(renderable.graphic._iIndex).elements || sourceElements;
+			return <TriangleElements> this._poses[0].getShapeAt(renderable.shape._iIndex).elements || sourceElements;
 
 		//nothing to do here
 		return sourceElements;

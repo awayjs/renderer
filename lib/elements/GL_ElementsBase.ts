@@ -176,7 +176,7 @@ export class GL_ElementsBase extends AbstractionBase
 		// 	this._overflow._iRender(renderable, camera, viewProjection);
 	}
 
-	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number, idx_count:number=0, idx_offset:number=0):void
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number):void
 	{
 		throw new AbstractMethodError();
 	}
@@ -309,7 +309,7 @@ export class GL_ElementsBase extends AbstractionBase
 	 * @param renderable
 	 * @param level
 	 * @param indexOffset
-	 * @returns {away.pool.GL_GraphicRenderable}
+	 * @returns {away.pool.GL_ShapeRenderable}
 	 * @protected
 	 */
 	public _pGetOverflowElements():GL_ElementsBase

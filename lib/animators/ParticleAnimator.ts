@@ -1,5 +1,5 @@
 import {ElementsBase}						from "@awayjs/graphics/lib/elements/ElementsBase";
-import {Graphic}							from "@awayjs/graphics/lib/Graphic";
+import {Shape}							from "@awayjs/graphics/lib/base/Shape";
 
 import {Camera}							from "@awayjs/scene/lib/display/Camera";
 
@@ -15,7 +15,7 @@ import {ParticleNodeBase}					from "../animators/nodes/ParticleNodeBase";
 import {ParticleStateBase}				from "../animators/states/ParticleStateBase";
 import {ShaderBase}						from "../shaders/ShaderBase";
 import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
-import {GL_GraphicRenderable}			from "../renderables/GL_GraphicRenderable";
+import {GL_ShapeRenderable}			from "../renderables/GL_ShapeRenderable";
 
 /**
  * Provides an interface for assigning paricle-based animation data sets to sprite-based entity objects
@@ -79,20 +79,20 @@ export class ParticleAnimator extends AnimatorBase
 	{
 		var animationRegisterData:AnimationRegisterData = this._particleAnimationSet._iAnimationRegisterData;
 
-		var graphic:Graphic = (<GL_GraphicRenderable> renderable).graphic;
+		var shape:Shape = (<GL_ShapeRenderable> renderable).shape;
 
-		if (!graphic)
-			throw(new Error("Must be graphic"));
+		if (!shape)
+			throw(new Error("Must be shape"));
 
 		//process animation sub geometries
-		var animationElements:AnimationElements = this._particleAnimationSet.getAnimationElements(graphic);
+		var animationElements:AnimationElements = this._particleAnimationSet.getAnimationElements(shape);
 		var i:number;
 		
 		for (i = 0; i < this._animationParticleStates.length; i++)
 			this._animationParticleStates[i].setRenderState(shader, renderable, animationElements, animationRegisterData, camera, stage);
 
 		//process animator subgeometries
-		var animatorElements:AnimationElements = this.getAnimatorElements(graphic);
+		var animatorElements:AnimationElements = this.getAnimatorElements(shape);
 
 		for (i = 0; i < this._animatorParticleStates.length; i++)
 			this._animatorParticleStates[i].setRenderState(shader, renderable, animatorElements, animationRegisterData, camera, stage);
@@ -144,18 +144,18 @@ export class ParticleAnimator extends AnimatorBase
 			(<AnimationElements> this._animatorSubGeometries[key]).dispose();
 	}
 
-	private getAnimatorElements(graphic:Graphic):AnimationElements
+	private getAnimatorElements(shape:Shape):AnimationElements
 	{
 		if (!this._animatorParticleStates.length)
 			return;
 
-		var elements:ElementsBase = graphic.elements;
+		var elements:ElementsBase = shape.elements;
 		var animatorElements:AnimationElements = this._animatorSubGeometries[elements.id] = new AnimationElements();
 
 		//create the vertexData vector that will be used for local state data
 		animatorElements.createVertexData(elements.numVertices, this._totalLenOfOneVertex);
 
 		//pass the particles data to the animator elements
-		animatorElements.animationParticles = this._particleAnimationSet.getAnimationElements(graphic).animationParticles;
+		animatorElements.animationParticles = this._particleAnimationSet.getAnimationElements(shape).animationParticles;
 	}
 }

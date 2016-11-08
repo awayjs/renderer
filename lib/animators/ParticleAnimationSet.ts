@@ -2,7 +2,7 @@ import {ElementsBase}						from "@awayjs/graphics/lib/elements/ElementsBase";
 import {IAnimationSet}					from "@awayjs/graphics/lib/animators/IAnimationSet";
 import {ParticleData}						from "@awayjs/graphics/lib/animators/data/ParticleData";
 import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
-import {Graphic}							from "@awayjs/graphics/lib/Graphic";
+import {Shape}							from "@awayjs/graphics/lib/base/Shape";
 import {Graphics}							from "@awayjs/graphics/lib/Graphics";
 
 import {AnimationSetBase}					from "../animators/AnimationSetBase";
@@ -269,16 +269,16 @@ export class ParticleAnimationSet extends AnimationSetBase implements IAnimation
 		super.dispose();
 	}
 
-	public getAnimationElements(graphic:Graphic):AnimationElements
+	public getAnimationElements(shape:Shape):AnimationElements
 	{
-		var animationElements:AnimationElements = (this.shareAnimationGraphics)? this._animationElements[graphic.elements.id] : this._animationElements[graphic.id];
+		var animationElements:AnimationElements = (this.shareAnimationGraphics)? this._animationElements[shape.elements.id] : this._animationElements[shape.id];
 
 		if (animationElements)
 			return animationElements;
 
-		this._iGenerateAnimationElements(graphic.parent);
+		this._iGenerateAnimationElements(shape.parent);
 
-		return (this.shareAnimationGraphics)? this._animationElements[graphic.elements.id] : this._animationElements[graphic.id];
+		return (this.shareAnimationGraphics)? this._animationElements[shape.elements.id] : this._animationElements[shape.id];
 	}
 
 
@@ -292,12 +292,12 @@ export class ParticleAnimationSet extends AnimationSetBase implements IAnimation
 		var animationElements:AnimationElements;
 		var newAnimationElements:boolean = false;
 		var elements:ElementsBase;
-		var graphic:Graphic;
+		var shape:Shape;
 		var localNode:ParticleNodeBase;
 
 		for (i = 0; i < graphics.count; i++) {
-			graphic = graphics.getGraphicAt(i);
-			elements = graphic.elements;
+			shape = graphics.getShapeAt(i);
+			elements = shape.elements;
 			if (this.shareAnimationGraphics) {
 				animationElements = this._animationElements[elements.id];
 
@@ -310,7 +310,7 @@ export class ParticleAnimationSet extends AnimationSetBase implements IAnimation
 			if (this.shareAnimationGraphics)
 				this._animationElements[elements.id] = animationElements;
 			else
-				this._animationElements[graphic.id] = animationElements;
+				this._animationElements[shape.id] = animationElements;
 
 			newAnimationElements = true;
 
@@ -360,9 +360,9 @@ export class ParticleAnimationSet extends AnimationSetBase implements IAnimation
 			while (j < particlesLength && (particle = particles[j]).particleIndex == i) {
 				//find the target animationElements
 				for (k = 0; k < graphics.count; k++) {
-					graphic = graphics.getGraphicAt(k);
-					if (graphic.elements == particle.elements) {
-						animationElements = (this.shareAnimationGraphics)? this._animationElements[graphic.elements.id] : this._animationElements[graphic.id];
+					shape = graphics.getShapeAt(k);
+					if (shape.elements == particle.elements) {
+						animationElements = (this.shareAnimationGraphics)? this._animationElements[shape.elements.id] : this._animationElements[shape.id];
 						break;
 					}
 				}

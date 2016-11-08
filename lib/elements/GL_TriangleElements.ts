@@ -124,7 +124,7 @@ export class GL_TriangleElements extends GL_ElementsBase
 		this.activateVertexBufferVO(0, this._triangleElements.positions);
 	}
 
-	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number, idx_count:number=this.numIndices, idx_offset:number=0):void
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number):void
 	{
 		//set constants
 		if (shader.sceneMatrixIndex >= 0) {
@@ -142,7 +142,7 @@ export class GL_TriangleElements extends GL_ElementsBase
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, shader.fragmentConstantData);
 
 		if (this._indices)
-			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, idx_offset, idx_count || this.numIndices);
+			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, offset*3, count*3 || this.numIndices);
 		else
 			this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
 	}
@@ -154,7 +154,7 @@ export class GL_TriangleElements extends GL_ElementsBase
 	 * @param renderable
 	 * @param level
 	 * @param indexOffset
-	 * @returns {away.pool.GL_GraphicRenderable}
+	 * @returns {away.pool.GL_ShapeRenderable}
 	 * @protected
 	 */
 	public _pGetOverflowElements():GL_ElementsBase
