@@ -10,9 +10,8 @@ import {SamplerBase}					from "@awayjs/graphics/lib/image/SamplerBase";
 import {IRenderable}					from "@awayjs/graphics/lib/base/IRenderable";
 import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
 import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
-import {ElementsBase}					from "@awayjs/graphics/lib/elements/ElementsBase";
+import {Style}							from "@awayjs/graphics/lib/base/Style";
 import {RenderableEvent}				from "@awayjs/graphics/lib/events/RenderableEvent";
-import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
 import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
 
 import {Camera}						from "@awayjs/scene/lib/display/Camera";
@@ -25,6 +24,7 @@ import {RendererBase}					from "../RendererBase";
 import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
 import {IPass}						from "../materials/passes/IPass";
 import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
+import {RenderablePool}					from "../renderables/RenderablePool";
 
 /**
  * @class RenderableListItem
@@ -134,20 +134,21 @@ export class GL_RenderableBase extends AbstractionBase
 	 * @param surface
 	 * @param renderer
 	 */
-	constructor(renderable:IRenderable, renderer:RendererBase)
+	constructor(renderable:IRenderable, entity:IEntity, renderer:RendererBase, pool:RenderablePool)
 	{
-		super(renderable, renderer);
+		super(renderable, pool);
 
 		this._onInvalidateMaterialDelegate = (event:RenderableEvent) => this._onInvalidateMaterial(event);
 		this._onInvalidateElementsDelegate = (event:RenderableEvent) => this.onInvalidateElements(event);
 
-		//store a reference to the pool for later disposal
+		//store references
+		this.sourceEntity = entity;
 		this._renderer = renderer;
 		this._stage = renderer.stage;
 
 		this.renderable = renderable;
 
-		this.renderable.addEventListener(RenderableEvent.INVALIDATE_SURFACE, this._onInvalidateMaterialDelegate);
+		this.renderable.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
 		this.renderable.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 	}
 
@@ -159,11 +160,11 @@ export class GL_RenderableBase extends AbstractionBase
 		this.masksConfig = null;
 		this.renderSceneTransform = null;
 
+		this.sourceEntity = null;
 		this._renderer = null;
 		this._stage = null;
-		this.sourceEntity = null;
 
-		this.renderable.removeEventListener(RenderableEvent.INVALIDATE_SURFACE, this._onInvalidateMaterialDelegate);
+		this.renderable.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
 		this.renderable.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 		this.renderable = null;
 
@@ -254,10 +255,12 @@ export class GL_RenderableBase extends AbstractionBase
 
 		//create a cache of image & sampler objects for the renderable
 		var numImages:number = materialGL.numImages;
+		var style:Style = this.renderable.style || this.sourceEntity.style;
+		var material:IMaterial = this._materialGL.material;
 
 		this.images.length = numImages;
 		this.samplers.length = numImages;
-		this.uvMatrix = this.renderable.style? this.renderable.style.uvMatrix : this._materialGL.material.style? this._materialGL.material.style.uvMatrix : null;
+		this.uvMatrix = style? style.uvMatrix : material.style? material.style.uvMatrix : null;
 
 		var numTextures:number = this._materialGL.material.getNumTextures();
 		var texture:TextureBase;
@@ -267,13 +270,13 @@ export class GL_RenderableBase extends AbstractionBase
 		var index:number;
 
 		for (var i:number = 0; i < numTextures; i++) {
-			texture = this._materialGL.material.getTextureAt(i);
+			texture = material.getTextureAt(i);
 			numImages = texture.getNumImages();
 			for (var j:number = 0; j < numImages; j++) {
 				index = materialGL.getImageIndex(texture, j);
-				image =  this.renderable.style? this.renderable.style.getImageAt(texture, j) : null;
+				image =  style? style.getImageAt(texture, j) : null;
 				this.images[index] = image? <GL_ImageBase> this._stage.getAbstraction(image) : null;
-				sampler = this.renderable.style? this.renderable.style.getSamplerAt(texture, j) : null;
+				sampler = style? style.getSamplerAt(texture, j) : null;
 				this.samplers[index] = sampler? <GL_SamplerBase> this._stage.getAbstraction(sampler) : null;
 			}
 		}

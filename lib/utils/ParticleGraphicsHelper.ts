@@ -5,6 +5,7 @@ import {Point}							from "@awayjs/core/lib/geom/Point";
 import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
 
 import {Graphics}							from "@awayjs/graphics/lib/Graphics";
+import {Shape}							from "@awayjs/graphics/lib/base/Shape";
 import {TriangleElements}					from "@awayjs/graphics/lib/elements/TriangleElements";
 import {ParticleData}						from "@awayjs/graphics/lib/animators/data/ParticleData";
 
@@ -208,7 +209,7 @@ export class ParticleGraphicsHelper
 			elements.setNormals(normalsVector[i]);
 			elements.setTangents(tangentsVector[i]);
 			elements.setUVs(uvsVector[i]);
-			output.addShape(elements);
+			output.addShape(Shape.getShape(elements));
 		}
 	}
 }

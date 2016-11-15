@@ -2,6 +2,7 @@ import {AttributesBuffer}				from "@awayjs/core/lib/attributes/AttributesBuffer"
 import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
 import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
 
+import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
 import {TriangleElements}				from "@awayjs/graphics/lib/elements/TriangleElements";
 import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
 import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
@@ -12,6 +13,7 @@ import {RendererBase}					from "../RendererBase";
 import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
 import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
 import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
+import {RenderablePool}					from "../renderables/RenderablePool";
 
 /**
  * @class away.pool.RenderableListItem
@@ -33,9 +35,9 @@ export class GL_BillboardRenderable extends GL_RenderableBase
 	 * @param pool
 	 * @param billboard
 	 */
-	constructor(billboard:Billboard, renderer:RendererBase)
+	constructor(billboard:Billboard, entity:IEntity, renderer:RendererBase, pool:RenderablePool)
 	{
-		super(billboard, renderer);
+		super(billboard, entity, renderer, pool);
 
 		this._billboard = billboard;
 	}

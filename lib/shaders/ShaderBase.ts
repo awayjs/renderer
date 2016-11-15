@@ -620,8 +620,8 @@ export class ShaderBase implements IAbstractionPool
 	 */
 	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D):void
 	{
-		if (renderable.renderable.animator)
-			(<AnimatorBase> renderable.renderable.animator).setRenderState(this, renderable, this._stage, camera);
+		if (renderable.sourceEntity.animator)
+			(<AnimatorBase> renderable.sourceEntity.animator).setRenderState(this, renderable, this._stage, camera);
 
 		var rawData:Float32Array;
 

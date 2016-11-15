@@ -118,6 +118,8 @@ export {GL_ShapeRenderable}			from "./lib/renderables/GL_ShapeRenderable";
 export {GL_LineSegmentRenderable}		from "./lib/renderables/GL_LineSegmentRenderable";
 export {GL_RenderableBase}				from "./lib/renderables/GL_RenderableBase";
 export {GL_SkyboxRenderable}				from "./lib/renderables/GL_SkyboxRenderable";
+export {IRenderableClassGL}					from "./lib/renderables/IRenderableClassGL";
+export {RenderablePool}						from "./lib/renderables/RenderablePool";
 
 export {RendererBase}					from "./lib/RendererBase";
 

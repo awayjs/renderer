@@ -4,6 +4,7 @@ import {Shape}							from "@awayjs/graphics/lib/base/Shape";
 import {Graphics}							from "@awayjs/graphics/lib/Graphics";
 
 import {Camera}							from "@awayjs/scene/lib/display/Camera";
+import {Sprite}							from "@awayjs/scene/lib/display/Sprite";
 
 import {Stage}							from "@awayjs/stage/lib/base/Stage";
 
@@ -111,11 +112,12 @@ export class VertexAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera):void
+	public setRenderState(shader:ShaderBase, renderable:GL_ShapeRenderable, stage:Stage, camera:Camera):void
 	{
 		// todo: add code for when running on cpu
-		// this type of animation can only be SubSprite
-		var shape:Shape = <Shape> (<GL_ShapeRenderable> renderable).shape;
+		// this type of animation can only be Shape
+		var shape:Shape = <Shape> renderable.shape;
+		var sprite:Sprite = <Sprite> renderable.sourceEntity;
 		var elements:ElementsBase = shape.elements;
 
 		// if no poses defined, set temp data
@@ -137,9 +139,10 @@ export class VertexAnimator extends AnimatorBase
 
 		var elementsGL:GL_ElementsBase;
 		var k:number = 0;
+		var shapeIndex:number = sprite.graphics.getShapeIndex(shape);
 
 		for (; i < len; ++i) {
-			elements = this._poses[i].getShapeAt(shape._iIndex).elements || shape.elements;
+			elements = this._poses[i].getShapeAt(shapeIndex).elements || shape.elements;
 
 			elementsGL = <GL_ElementsBase> stage.getAbstraction(elements);
 			elementsGL._indexMappings = (<GL_ElementsBase> stage.getAbstraction(shape.elements)).getIndexMappings();
@@ -187,7 +190,7 @@ export class VertexAnimator extends AnimatorBase
 	public getRenderableElements(renderable:GL_ShapeRenderable, sourceElements:TriangleElements):TriangleElements
 	{
 		if (this._vertexAnimationSet.blendMode == VertexAnimationMode.ABSOLUTE && this._poses.length)
-			return <TriangleElements> this._poses[0].getShapeAt(renderable.shape._iIndex).elements || sourceElements;
+			return <TriangleElements> this._poses[0].getShapeAt((<Sprite> renderable.sourceEntity).graphics.getShapeIndex(renderable.shape)).elements || sourceElements;
 
 		//nothing to do here
 		return sourceElements;

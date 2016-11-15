@@ -7,7 +7,7 @@ import {SamplerBase}					from "@awayjs/graphics/lib/image/SamplerBase";
 import {Sampler2D}					from "@awayjs/graphics/lib/image/Sampler2D";
 import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
 import {MaterialEvent}					from "@awayjs/graphics/lib/events/MaterialEvent";
-import {IRenderable}					from "@awayjs/graphics/lib/base/IRenderable";
+import {IEntity}					from "@awayjs/graphics/lib/base/IEntity";
 import {MaterialBase}					from "@awayjs/graphics/lib/materials/MaterialBase";
 import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
 import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
@@ -223,7 +223,7 @@ export class GL_MaterialBase extends AbstractionBase
 		if (this._usesAnimation != usesAnimation) {
 			this._usesAnimation = usesAnimation;
 
-			var renderables:Array<IRenderable> = this._material.iOwners;
+			var renderables:Array<IEntity> = this._material.iOwners;
 			var numOwners:number = renderables.length;
 			for (var j:number = 0; j < numOwners; j++)
 				renderables[j].invalidateElements();
@@ -326,8 +326,8 @@ export class GL_MaterialBase extends AbstractionBase
 		if (this._material.animationSet) {
 			this._material.animationSet.resetGPUCompatibility();
 
-			var renderables:Array<IRenderable> = this._material.iOwners;
-			var numOwners:number = renderables.length;
+			var entities:Array<IEntity> = this._material.iOwners;
+			var numOwners:number = entities.length;
 
 			var len:number = this._passes.length;
 			var shader:ShaderBase;
@@ -335,8 +335,8 @@ export class GL_MaterialBase extends AbstractionBase
 				shader = this._passes[i].shader;
 				shader.usesAnimation = false;
 				for (var j:number = 0; j < numOwners; j++)
-					if (renderables[j].animator)
-						(<AnimatorBase> renderables[j].animator).testGPUCompatibility(shader);
+					if (entities[j].animator)
+						(<AnimatorBase> entities[j].animator).testGPUCompatibility(shader);
 			}
 
 

@@ -3,7 +3,6 @@ import {Plane3D}						from "@awayjs/core/lib/geom/Plane3D";
 import {Point}						from "@awayjs/core/lib/geom/Point";
 import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
 import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
-import {IAssetClass}					from "@awayjs/core/lib/library/IAssetClass";
 import {IAbstractionPool}				from "@awayjs/core/lib/library/IAbstractionPool";
 import {ByteArray}					from "@awayjs/core/lib/utils/ByteArray";
 
@@ -27,13 +26,13 @@ import {Stage}						from "@awayjs/stage/lib/base/Stage";
 import {StageEvent}					from "@awayjs/stage/lib/events/StageEvent";
 import {StageManager}					from "@awayjs/stage/lib/managers/StageManager";
 import {ProgramData}					from "@awayjs/stage/lib/image/ProgramData";
-import {GL_IAssetClass}				from "@awayjs/stage/lib/library/GL_IAssetClass";
 
 import {RendererEvent}				from "./events/RendererEvent";
 import {GL_ElementsBase}				from "./elements/GL_ElementsBase";
 import {IMaterialClassGL}				from "./materials/IMaterialClassGL";
 import {GL_MaterialBase}				from "./materials/GL_MaterialBase";
 import {GL_RenderableBase}			from "./renderables/GL_RenderableBase";
+import {RenderablePool}					from "./renderables/RenderablePool";
 import {RTTBufferManager}				from "./managers/RTTBufferManager";
 import {MaterialPool}					from "./materials/MaterialPool";
 import {IPass}						from "./materials/passes/IPass";
@@ -52,8 +51,8 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	public static _iCollectionMark = 0;
 	public static _abstractionClassPool:Object = new Object();
 
-	private _objectPools:Object = new Object();
-	private _abstractionPool:Object = new Object();
+	private _renderablePools:Object = new Object();
+	private _materialPools:Object = new Object();
 
 	private _maskConfig:number;
 	private _activeMasksDirty:boolean;
@@ -115,6 +114,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	private _customCullPlanes:Array<Plane3D>;
 	private _numCullPlanes:number = 0;
 	private _sourceEntity:IEntity;
+	private _renderablePool:RenderablePool;
 	private _zIndex:number;
 	private _renderSceneTransform:Matrix3D;
 
@@ -309,20 +309,21 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	}
 
 
-	public getAbstraction(renderable:IRenderable):GL_RenderableBase
+	public getAbstraction(entity:IEntity):RenderablePool
 	{
-		return this._abstractionPool[renderable.id] || (this._abstractionPool[renderable.id] = new (<GL_IAssetClass> RendererBase._abstractionClassPool[renderable.assetType])(renderable, this));
+		return this._renderablePools[entity.id] || (this._renderablePools[entity.id] = new RenderablePool(entity, this));
 	}
 
 	/**
 	 *
-	 * @param image
+	 * @param elementsClass
+	 * @returns MaterialPool
 	 */
-	public clearAbstraction(renderable:IRenderable):void
+	public clearAbstraction(entity:IEntity):void
 	{
-		this._abstractionPool[renderable.id] = null;
+		this._renderablePools[entity.id] = null;
 	}
-
+	
 	/**
 	 * //TODO
 	 *
@@ -331,16 +332,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	 */
 	public getMaterialPool(elements:GL_ElementsBase):MaterialPool
 	{
-		return this._objectPools[elements.elementsType] || (this._objectPools[elements.elementsType] = new MaterialPool(elements.elementsClass, this._pStage, this._materialClassGL));
-	}
-
-	/**
-	 *
-	 * @param imageObjectClass
-	 */
-	public static registerAbstraction(renderableClass:GL_IAssetClass, assetClass:IAssetClass):void
-	{
-		RendererBase._abstractionClassPool[assetClass.assetType] = renderableClass;
+		return this._materialPools[elements.elementsType] || (this._materialPools[elements.elementsType] = new MaterialPool(elements.elementsClass, this._pStage, this._materialClassGL));
 	}
 
 	public activatePass(pass:IPass, camera:Camera):void
@@ -458,10 +450,6 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	 */
 	public dispose():void
 	{
-		for (var id in this._abstractionPool)
-			this._abstractionPool[id].clear();
-
-		this._abstractionPool = null;
 
 		this._pStage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._pStage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
@@ -892,6 +880,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	public applyEntity(entity:IEntity):void
 	{
 		this._sourceEntity = entity;
+		this._renderablePool = this.getAbstraction(entity);
 
 		// project onto camera's z-axis
 		this._zIndex = entity.zOffset + this._cameraPosition.subtract(entity.scenePosition).dotProduct(this._cameraForward);
@@ -905,19 +894,19 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 
 	public applyRenderable(renderable:IRenderable):void
 	{
-		var renderableGL:GL_RenderableBase = this.getAbstraction(renderable);
-		var materialGL:GL_MaterialBase = renderableGL.materialGL;
+		var renderableGL:GL_RenderableBase = this._renderablePool.getAbstraction(renderable);
+
 
 		//set local vars for faster referencing
-		renderableGL.materialID = materialGL.materialID;
-		renderableGL.renderOrderId = materialGL.renderOrderId;
-
 		renderableGL.cascaded = false;
-
-		renderableGL.sourceEntity = this._sourceEntity;
+		
 		renderableGL.zIndex = this._zIndex;
 		renderableGL.maskId = this._sourceEntity._iAssignedMaskId();
 		renderableGL.masksConfig = this._sourceEntity._iMasksConfig();
+
+		var materialGL:GL_MaterialBase = renderableGL.materialGL;
+		renderableGL.materialID = materialGL.materialID;
+		renderableGL.renderOrderId = materialGL.renderOrderId;
 
 		//store reference to scene transform
 		renderableGL.renderSceneTransform = this._renderSceneTransform;

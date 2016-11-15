@@ -8,7 +8,7 @@ import {IAnimationSet}					from "@awayjs/graphics/lib/animators/IAnimationSet";
 import {IAnimator}						from "@awayjs/graphics/lib/animators/IAnimator";
 import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
 import {ElementsBase}						from "@awayjs/graphics/lib/elements/ElementsBase";
-import {Graphics}						from "@awayjs/graphics/lib/Graphics";
+import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
 
 import {Camera}							from "@awayjs/scene/lib/display/Camera";
 
@@ -59,7 +59,7 @@ export class AnimatorBase extends AssetBase implements IAnimator
 	private _playbackSpeed:number = 1;
 
 	public _pAnimationSet:IAnimationSet;
-	public _pOwners:Array<Graphics> = new Array<Graphics>();
+	public _pOwners:Array<IEntity> = new Array<IEntity>();
 	public _pActiveNode:AnimationNodeBase;
 	public _pActiveState:IAnimationState;
 	public _pActiveAnimationName:string;
@@ -290,9 +290,9 @@ export class AnimatorBase extends AssetBase implements IAnimator
 	 *
 	 * @private
 	 */
-	public addOwner(graphics:Graphics):void
+	public addOwner(entity:IEntity):void
 	{
-		this._pOwners.push(graphics);
+		this._pOwners.push(entity);
 	}
 
 	/**
@@ -300,9 +300,9 @@ export class AnimatorBase extends AssetBase implements IAnimator
 	 *
 	 * @private
 	 */
-	public removeOwner(graphics:Graphics):void
+	public removeOwner(entity:IEntity):void
 	{
-		this._pOwners.splice(this._pOwners.indexOf(graphics), 1);
+		this._pOwners.splice(this._pOwners.indexOf(entity), 1);
 	}
 
 	/**
@@ -373,11 +373,11 @@ export class AnimatorBase extends AssetBase implements IAnimator
 
 	public invalidateElements():void
 	{
-		var graphics:Graphics;
+		var entity:IEntity;
 		var len:number = this._pOwners.length;
 		for (var i:number = 0; i < len; i++) {
-			graphics = this._pOwners[i];
-			graphics.invalidateElements();
+			entity = this._pOwners[i];
+			entity.invalidateElements();
 		}
 	}
 	

@@ -1,7 +1,9 @@
 import {ElementsBase}						from "@awayjs/graphics/lib/elements/ElementsBase";
+import {Graphics}							from "@awayjs/graphics/lib/Graphics";
 import {Shape}							from "@awayjs/graphics/lib/base/Shape";
 
 import {Camera}							from "@awayjs/scene/lib/display/Camera";
+import {Sprite}							from "@awayjs/scene/lib/display/Sprite";
 
 import {ContextGLProgramType}				from "@awayjs/stage/lib/base/ContextGLProgramType";
 import {Stage}							from "@awayjs/stage/lib/base/Stage";
@@ -79,20 +81,21 @@ export class ParticleAnimator extends AnimatorBase
 	{
 		var animationRegisterData:AnimationRegisterData = this._particleAnimationSet._iAnimationRegisterData;
 
+		var graphics:Graphics = (<Sprite> renderable.sourceEntity).graphics;
 		var shape:Shape = (<GL_ShapeRenderable> renderable).shape;
 
 		if (!shape)
 			throw(new Error("Must be shape"));
 
 		//process animation sub geometries
-		var animationElements:AnimationElements = this._particleAnimationSet.getAnimationElements(shape);
+		var animationElements:AnimationElements = this._particleAnimationSet.getAnimationElements(graphics, shape);
 		var i:number;
 		
 		for (i = 0; i < this._animationParticleStates.length; i++)
 			this._animationParticleStates[i].setRenderState(shader, renderable, animationElements, animationRegisterData, camera, stage);
 
 		//process animator subgeometries
-		var animatorElements:AnimationElements = this.getAnimatorElements(shape);
+		var animatorElements:AnimationElements = this.getAnimatorElements(graphics, shape);
 
 		for (i = 0; i < this._animatorParticleStates.length; i++)
 			this._animatorParticleStates[i].setRenderState(shader, renderable, animatorElements, animationRegisterData, camera, stage);
@@ -144,7 +147,7 @@ export class ParticleAnimator extends AnimatorBase
 			(<AnimationElements> this._animatorSubGeometries[key]).dispose();
 	}
 
-	private getAnimatorElements(shape:Shape):AnimationElements
+	private getAnimatorElements(graphics:Graphics, shape:Shape):AnimationElements
 	{
 		if (!this._animatorParticleStates.length)
 			return;
@@ -156,6 +159,6 @@ export class ParticleAnimator extends AnimatorBase
 		animatorElements.createVertexData(elements.numVertices, this._totalLenOfOneVertex);
 
 		//pass the particles data to the animator elements
-		animatorElements.animationParticles = this._particleAnimationSet.getAnimationElements(shape).animationParticles;
+		animatorElements.animationParticles = this._particleAnimationSet.getAnimationElements(graphics, shape).animationParticles;
 	}
 }

@@ -269,14 +269,14 @@ export class ParticleAnimationSet extends AnimationSetBase implements IAnimation
 		super.dispose();
 	}
 
-	public getAnimationElements(shape:Shape):AnimationElements
+	public getAnimationElements(graphics:Graphics, shape:Shape):AnimationElements
 	{
 		var animationElements:AnimationElements = (this.shareAnimationGraphics)? this._animationElements[shape.elements.id] : this._animationElements[shape.id];
 
 		if (animationElements)
 			return animationElements;
 
-		this._iGenerateAnimationElements(shape.parent);
+		this._iGenerateAnimationElements(graphics);
 
 		return (this.shareAnimationGraphics)? this._animationElements[shape.elements.id] : this._animationElements[shape.id];
 	}

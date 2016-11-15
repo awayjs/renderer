@@ -1,26 +1,15 @@
 import {AttributesBuffer}				from "@awayjs/core/lib/attributes/AttributesBuffer";
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
-import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
-
-import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
-import {ElementsBase}					from "@awayjs/graphics/lib/elements/ElementsBase";
+import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
 import {TriangleElements}				from "@awayjs/graphics/lib/elements/TriangleElements";
 
 import {Skybox}						from "@awayjs/scene/lib/display/Skybox";
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
-
-import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
-import {ContextGLProgramType}			from "@awayjs/stage/lib/base/ContextGLProgramType";
 
 import {RendererBase}					from "../RendererBase";
 import {ShaderBase}					from "../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
-import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
 import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
 import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
-import {IPass}						from "../materials/passes/IPass";
 import {GL_SkyboxElements}			from "../elements/GL_SkyboxElements";
+import {RenderablePool}					from "../renderables/RenderablePool";
 
 /**
  * @class away.pool.GL_SkyboxRenderable
@@ -43,9 +32,9 @@ export class GL_SkyboxRenderable extends GL_RenderableBase
 	 * @param pool
 	 * @param skybox
 	 */
-	constructor(skybox:Skybox, renderer:RendererBase)
+	constructor(skybox:Skybox, entity:IEntity, renderer:RendererBase, pool:RenderablePool)
 	{
-		super(skybox, renderer);
+		super(skybox, entity, renderer, pool);
 
 		this._skybox = skybox;
 	}
