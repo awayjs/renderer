@@ -1,7 +1,10 @@
-import {AnimatorBase}						from "../../animators/AnimatorBase";
-import {AnimationClipNodeBase}			from "../../animators/nodes/AnimationClipNodeBase";
-import {AnimationStateBase}				from "../../animators/states/AnimationStateBase";
-import {AnimationStateEvent}				from "../../events/AnimationStateEvent";
+import {AnimationStateEvent} from "../../events/AnimationStateEvent";
+
+import {AnimationClipNodeBase} from "../nodes/AnimationClipNodeBase";
+
+import {AnimatorBase} from "../AnimatorBase";
+
+import {AnimationStateBase} from "./AnimationStateBase";
 
 /**
  *

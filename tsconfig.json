@@ -1,17 +1,13 @@
 {
   "compilerOptions": {
     "target": "ES5",
-    "module": "commonjs",
+    "module": "ES2015",
     "moduleResolution": "node",
+    "noImplicitUseStrict": true,
+    "noEmitHelpers": true,
+    "importHelpers": true,
     "declaration": true,
-    "outDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "@awayjs/core*": ["./node_modules/@awayjs/core/dist*"],
-      "@awayjs/graphics*": ["./node_modules/@awayjs/graphics/dist*"],
-      "@awayjs/scene*": ["./node_modules/@awayjs/scene/dist*"],
-      "@awayjs/stage*": ["./node_modules/@awayjs/stage/dist*"]
-    }
+    "outDir": "./dist"
   },
   "files": [
     "./index.ts"

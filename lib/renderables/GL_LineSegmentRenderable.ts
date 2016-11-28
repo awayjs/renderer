@@ -1,17 +1,16 @@
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
-import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
+import {AssetEvent, Vector3D} from "@awayjs/core";
 
-import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
-import {LineElements}					from "@awayjs/graphics/lib/elements/LineElements";
-import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
+import {IEntity, LineElements, DefaultMaterialManager} from "@awayjs/graphics";
 
-import {LineSegment}					from "@awayjs/scene/lib/display/LineSegment";
+import {LineSegment} from "@awayjs/scene";
 
-import {RendererBase}					from "../RendererBase";
-import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
-import {RenderablePool}					from "../renderables/RenderablePool";
+import {GL_ElementsBase} from "../elements/GL_ElementsBase";
+import {GL_MaterialBase} from "../materials/GL_MaterialBase";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+
+import {RendererBase} from "../RendererBase";
+
+import {RenderablePool} from "./RenderablePool";
 
 /**
  * @class away.pool.GL_LineSegmentRenderable

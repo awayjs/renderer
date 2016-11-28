@@ -1,11 +1,10 @@
-import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
+import {Image2D} from "@awayjs/graphics";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {ContextGLProgramType}			from "@awayjs/stage/lib/base/ContextGLProgramType";
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {ContextGLProgramType, Stage} from "@awayjs/stage";
 
-import {Filter3DTaskBase}				from "../../filters/tasks/Filter3DTaskBase";
+import {Filter3DTaskBase} from "./Filter3DTaskBase";
 
 export class Filter3DVBlurTask extends Filter3DTaskBase
 {

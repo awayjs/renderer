@@ -1,15 +1,16 @@
-import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
+import {IMaterial} from "@awayjs/graphics";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {IElementsClassGL}				from "../elements/IElementsClassGL";
-import {GL_MaterialPassBase}			from "../materials/GL_MaterialPassBase";
-import {MaterialPool}					from "../materials/MaterialPool";
-import {ShaderBase}					from "../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
-import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
-import {GL_TextureBase}				from "../textures/GL_TextureBase";
+import {IElementsClassGL} from "../elements/IElementsClassGL";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
+import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
+import {GL_TextureBase} from "../textures/GL_TextureBase";
+
+import {GL_MaterialPassBase} from "./GL_MaterialPassBase";
+import {MaterialPool} from "./MaterialPool";
 
 /**
  * GL_DepthMaterial forms an abstract base class for the default shaded materials provided by Stage,

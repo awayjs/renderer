@@ -1,35 +1,25 @@
-import {Matrix}						from "@awayjs/core/lib/geom/Matrix";
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
-import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
-import {ColorTransform}				from "@awayjs/core/lib/geom/ColorTransform";
-import {ArgumentError}				from "@awayjs/core/lib/errors/ArgumentError";
-import {IAssetClass}					from "@awayjs/core/lib/library/IAssetClass";
-import {IAbstractionPool}				from "@awayjs/core/lib/library/IAbstractionPool";
+import {Matrix, Matrix3D, Vector3D, ColorTransform, ArgumentError, IAssetClass, IAbstractionPool} from "@awayjs/core";
 
-import {BlendMode}					from "@awayjs/graphics/lib/image/BlendMode";
-import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
+import {BlendMode, TextureBase} from "@awayjs/graphics";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {ContextGLBlendFactor}			from "@awayjs/stage/lib/base/ContextGLBlendFactor";
-import {ContextGLCompareMode}			from "@awayjs/stage/lib/base/ContextGLCompareMode";
-import {ContextGLTriangleFace}		from "@awayjs/stage/lib/base/ContextGLTriangleFace";
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
-import {ProgramData}					from "@awayjs/stage/lib/image/ProgramData";
-import {GL_IAssetClass}				from "@awayjs/stage/lib/library/GL_IAssetClass";
+import {ContextGLBlendFactor, ContextGLCompareMode, ContextGLTriangleFace, Stage, ProgramData, GL_IAssetClass} from "@awayjs/stage";
 
-import {AnimationSetBase}				from "../animators/AnimationSetBase";
-import {AnimatorBase}					from "../animators/AnimatorBase";
-import {AnimationRegisterData}		from "../animators/data/AnimationRegisterData";
-import {IPass}						from "../materials/passes/IPass";
-import {IElementsClassGL}				from "../elements/IElementsClassGL";
-import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {CompilerBase}					from "../shaders/compilers/CompilerBase";
-import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
-import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
-import {GL_TextureBase}				from "../textures/GL_TextureBase";
+import {AnimationSetBase} from "../animators/AnimationSetBase";
+import {AnimatorBase} from "../animators/AnimatorBase";
+import {AnimationRegisterData} from "../animators/data/AnimationRegisterData";
+import {IElementsClassGL} from "../elements/IElementsClassGL";
+import {GL_ElementsBase} from "../elements/GL_ElementsBase";
+import {IPass} from "../materials/passes/IPass";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+import {GL_TextureBase} from "../textures/GL_TextureBase";
+
+import {CompilerBase} from "./compilers/CompilerBase";
+
+import {ShaderRegisterCache} from "./ShaderRegisterCache";
+import {ShaderRegisterData} from "./ShaderRegisterData";
+import {ShaderRegisterElement} from "./ShaderRegisterElement";
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.

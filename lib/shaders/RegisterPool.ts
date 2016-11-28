@@ -1,4 +1,4 @@
-import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
+import {ShaderRegisterElement} from "./ShaderRegisterElement";
 
 /**
  * RegisterPool is used by the shader compilers process to keep track of which registers of a certain type are

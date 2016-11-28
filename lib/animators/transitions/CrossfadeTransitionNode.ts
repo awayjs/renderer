@@ -1,5 +1,6 @@
-import {SkeletonBinaryLERPNode}			from "../../animators/nodes/SkeletonBinaryLERPNode";
-import {CrossfadeTransitionState}			from "../../animators/transitions/CrossfadeTransitionState";
+import {SkeletonBinaryLERPNode} from "../nodes/SkeletonBinaryLERPNode";
+
+import {CrossfadeTransitionState} from "./CrossfadeTransitionState";
 
 /**
  * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.

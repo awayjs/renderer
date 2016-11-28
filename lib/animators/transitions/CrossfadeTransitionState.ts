@@ -1,8 +1,11 @@
-import {AnimatorBase}						from "../../animators/AnimatorBase";
-import {SkeletonBinaryLERPNode}			from "../../animators/nodes/SkeletonBinaryLERPNode";
-import {SkeletonBinaryLERPState}			from "../../animators/states/SkeletonBinaryLERPState";
-import {CrossfadeTransitionNode}			from "../../animators/transitions/CrossfadeTransitionNode";
-import {AnimationStateEvent}				from "../../animators/../events/AnimationStateEvent";
+import {AnimationStateEvent} from "../../events/AnimationStateEvent";
+
+import {SkeletonBinaryLERPNode} from "../nodes/SkeletonBinaryLERPNode";
+import {SkeletonBinaryLERPState} from "../states/SkeletonBinaryLERPState";
+
+import {AnimatorBase} from "../AnimatorBase";
+
+import {CrossfadeTransitionNode} from "./CrossfadeTransitionNode";
 
 /**
  *

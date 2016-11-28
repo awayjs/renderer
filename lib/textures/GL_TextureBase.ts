@@ -1,20 +1,15 @@
-import {AbstractMethodError}			from "@awayjs/core/lib/errors/AbstractMethodError";
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
-import {AbstractionBase}				from "@awayjs/core/lib/library/AbstractionBase";
+import {AbstractMethodError, AssetEvent, AbstractionBase} from "@awayjs/core";
 
-import {ImageBase}					from "@awayjs/graphics/lib/image/ImageBase";
-import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
+import {ImageBase, TextureBase} from "@awayjs/graphics";
 
-import {ContextGLTextureFormat}		from "@awayjs/stage/lib/base/ContextGLTextureFormat";
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {ContextGLTextureFormat, Stage} from "@awayjs/stage";
 
-
-import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {ShaderBase}					from "../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
-import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
+import {GL_MaterialBase} from "../materials/GL_MaterialBase";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
+import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
 
 /**
  *

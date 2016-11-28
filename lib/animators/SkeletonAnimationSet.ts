@@ -1,10 +1,11 @@
-import {IAnimationSet}					from "@awayjs/graphics/lib/animators/IAnimationSet";
+import {IAnimationSet} from "@awayjs/graphics";
 
-import {AnimationSetBase}					from "../animators/AnimationSetBase";
-import {ShaderBase}						from "../shaders/ShaderBase";
-import {ShaderRegisterElement}			from "../shaders/ShaderRegisterElement";
-import {ShaderRegisterCache}				from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}				from "../shaders/ShaderRegisterData";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
+import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
+
+import {AnimationSetBase} from "./AnimationSetBase";
 
 /**
  * The animation data set used by skeleton-based animators, containing skeleton animation data.

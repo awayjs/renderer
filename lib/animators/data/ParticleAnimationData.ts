@@ -1,4 +1,4 @@
-import {ParticleData}						from "@awayjs/graphics/lib/animators/data/ParticleData";
+import {ParticleData} from "@awayjs/graphics";
 
 /**
  * ...

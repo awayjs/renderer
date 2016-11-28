@@ -1,21 +1,22 @@
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
+import {AssetEvent, Matrix3D} from "@awayjs/core";
 
-import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
+import {IMaterial} from "@awayjs/graphics";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {GL_RenderableBase}			from "../../renderables/GL_RenderableBase";
-import {GL_MaterialBase}				from "../../materials/GL_MaterialBase";
-import {ShaderBase}					from "../../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
-import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
-import {IElementsClassGL}				from "../../elements/IElementsClassGL";
-import {PassBase}						from "../../materials/passes/PassBase";
-import {GL_TextureBase}				from "../../textures/GL_TextureBase";
+import {GL_RenderableBase} from "../../renderables/GL_RenderableBase";
+import {ShaderBase} from "../../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../../shaders/ShaderRegisterData";
+import {ShaderRegisterElement} from "../../shaders/ShaderRegisterElement";
+import {IElementsClassGL} from "../../elements/IElementsClassGL";
+import {GL_TextureBase} from "../../textures/GL_TextureBase";
+
+import {GL_MaterialBase} from "../GL_MaterialBase";
+
+import {PassBase} from "./PassBase";
 
 /**
  * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,

@@ -1,23 +1,21 @@
-import {ElementsBase}						from "@awayjs/graphics/lib/elements/ElementsBase";
-import {Graphics}							from "@awayjs/graphics/lib/Graphics";
-import {Shape}							from "@awayjs/graphics/lib/base/Shape";
+import {ElementsBase, Graphics, Shape} from "@awayjs/graphics";
 
-import {Camera}							from "@awayjs/scene/lib/display/Camera";
-import {Sprite}							from "@awayjs/scene/lib/display/Sprite";
+import {Camera, Sprite} from "@awayjs/scene";
 
-import {ContextGLProgramType}				from "@awayjs/stage/lib/base/ContextGLProgramType";
-import {Stage}							from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {AnimatorBase}						from "../animators/AnimatorBase";
-import {AnimationRegisterData}			from "../animators/data/AnimationRegisterData";
-import {ParticleAnimationSet}				from "../animators/ParticleAnimationSet";
-import {AnimationElements}				from "../animators/data/AnimationElements";
-import {ParticlePropertiesMode}			from "../animators/data/ParticlePropertiesMode";
-import {ParticleNodeBase}					from "../animators/nodes/ParticleNodeBase";
-import {ParticleStateBase}				from "../animators/states/ParticleStateBase";
-import {ShaderBase}						from "../shaders/ShaderBase";
-import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
-import {GL_ShapeRenderable}			from "../renderables/GL_ShapeRenderable";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+import {GL_ShapeRenderable} from "../renderables/GL_ShapeRenderable";
+
+import {AnimationRegisterData} from "./data/AnimationRegisterData";
+import {AnimationElements} from "./data/AnimationElements";
+import {ParticlePropertiesMode} from "./data/ParticlePropertiesMode";
+import {ParticleNodeBase} from "./nodes/ParticleNodeBase";
+import {ParticleStateBase} from "./states/ParticleStateBase";
+
+import {AnimatorBase} from "./AnimatorBase";
+import {ParticleAnimationSet} from "./ParticleAnimationSet";
 
 /**
  * Provides an interface for assigning paricle-based animation data sets to sprite-based entity objects

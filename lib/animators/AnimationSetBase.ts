@@ -1,14 +1,12 @@
-import {IAsset}						from "@awayjs/core/lib/library/IAsset";
-import {AssetBase}					from "@awayjs/core/lib/library/AssetBase";
-import {AbstractMethodError}			from "@awayjs/core/lib/errors/AbstractMethodError";
+import {IAsset, AssetBase, AbstractMethodError} from "@awayjs/core";
 
-import {AnimationNodeBase}			from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase}			from "@awayjs/graphics";
 
-import {AnimationSetError}			from "../errors/AnimationSetError";
-import {ShaderBase}					from "../shaders/ShaderBase";
-import {ShaderRegisterElement}			from "../shaders/ShaderRegisterElement";
-import {ShaderRegisterCache}				from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}				from "../shaders/ShaderRegisterData";
+import {AnimationSetError} from "../errors/AnimationSetError";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
+import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
 
 /**
  * Provides an abstract base class for data set classes that hold animation data for use in animator classes.

@@ -1,23 +1,16 @@
-import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
-import {AssetBase}						from "@awayjs/core/lib/library/AssetBase";
-import {AbstractMethodError}				from "@awayjs/core/lib/errors/AbstractMethodError";
-import {RequestAnimationFrame}			from "@awayjs/core/lib/utils/RequestAnimationFrame";
-import {getTimer}							from "@awayjs/core/lib/utils/getTimer";
+import {Vector3D, AssetBase, AbstractMethodError, RequestAnimationFrame, getTimer} from "@awayjs/core";
 
-import {IAnimationSet}					from "@awayjs/graphics/lib/animators/IAnimationSet";
-import {IAnimator}						from "@awayjs/graphics/lib/animators/IAnimator";
-import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
-import {ElementsBase}						from "@awayjs/graphics/lib/elements/ElementsBase";
-import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
+import {IAnimationSet, IAnimator, AnimationNodeBase, ElementsBase, IEntity} from "@awayjs/graphics";
 
-import {Camera}							from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {Stage}							from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {IAnimationState}					from "../animators/states/IAnimationState";
-import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
-import {AnimatorEvent}					from "../events/AnimatorEvent";
-import {ShaderBase}						from "../shaders/ShaderBase";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+import {AnimatorEvent} from "../events/AnimatorEvent";
+import {ShaderBase} from "../shaders/ShaderBase";
+
+import {IAnimationState} from "./states/IAnimationState";
 
 /**
  * Dispatched when playback of an animation inside the animator object starts.

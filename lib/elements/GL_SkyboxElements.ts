@@ -1,19 +1,17 @@
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
-import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
+import {Matrix3D, Vector3D} from "@awayjs/core";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {ContextGLDrawMode}			from "@awayjs/stage/lib/base/ContextGLDrawMode";
-import {ContextGLProgramType}			from "@awayjs/stage/lib/base/ContextGLProgramType";
-import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
+import {ContextGLDrawMode, ContextGLProgramType, IContextGL} from "@awayjs/stage";
 
-import {ShaderBase}					from "../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
-import {GL_TriangleElements}			from "../elements/GL_TriangleElements";
-import {IElementsClassGL}				from "../elements/IElementsClassGL";
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
+import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
+
+import {GL_TriangleElements} from "./GL_TriangleElements";
+import {IElementsClassGL} from "./IElementsClassGL";
 
 /**
  *

@@ -1,13 +1,13 @@
-import {IAssetClass}					from "@awayjs/core/lib/library/IAssetClass";
-import {IAbstractionPool}				from "@awayjs/core/lib/library/IAbstractionPool";
+import {IAssetClass, IAbstractionPool} from "@awayjs/core";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
+import {IMaterial} from "@awayjs/graphics";
 
-import {IElementsClassGL}				from "../elements/IElementsClassGL";
-import {IMaterialClassGL}				from "../materials/IMaterialClassGL";
-import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
+import {IElementsClassGL} from "../elements/IElementsClassGL";
+
+import {IMaterialClassGL} from "./IMaterialClassGL";
+import {GL_MaterialBase} from "./GL_MaterialBase";
 
 /**
  * @class away.pool.MaterialPool

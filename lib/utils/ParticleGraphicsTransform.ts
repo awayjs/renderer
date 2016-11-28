@@ -1,5 +1,4 @@
-import {Matrix}							from "@awayjs/core/lib/geom/Matrix";
-import {Matrix3D}							from "@awayjs/core/lib/geom/Matrix3D";
+import {Matrix, Matrix3D} from "@awayjs/core";
 
 /**
  * ...

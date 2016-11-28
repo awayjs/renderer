@@ -1,14 +1,12 @@
-import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
+import {Image2D} from "@awayjs/graphics";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {ContextGLProgramType}			from "@awayjs/stage/lib/base/ContextGLProgramType";
-import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
-import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";
+import {ContextGLProgramType, IContextGL, Stage, GL_ImageBase} from "@awayjs/stage";
 
-import {Filter3DTaskBase}				from "../../filters/tasks/Filter3DTaskBase";
-import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
+import {ShaderRegisterElement} from "../../shaders/ShaderRegisterElement";
+
+import {Filter3DTaskBase} from "./Filter3DTaskBase";
 
 export class Filter3DCompositeTask extends Filter3DTaskBase
 {

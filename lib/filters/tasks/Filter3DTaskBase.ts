@@ -1,17 +1,14 @@
-import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
+import {AbstractMethodError, ByteArray} from "@awayjs/core";
 
-import {AbstractMethodError}			from "@awayjs/core/lib/errors/AbstractMethodError";
-import {ByteArray}					from "@awayjs/core/lib/utils/ByteArray";
+import {Image2D} from "@awayjs/graphics";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
-import {AGALMiniAssembler}			from "@awayjs/stage/lib/aglsl/assembler/AGALMiniAssembler";
-import {IProgram}						from "@awayjs/stage/lib/base/IProgram";
+import {IProgram, AGALMiniAssembler, Stage} from "@awayjs/stage";
 
-import {RTTBufferManager}				from "../../managers/RTTBufferManager";
-import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
-import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
+import {RTTBufferManager} from "../../managers/RTTBufferManager";
+import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement} from "../../shaders/ShaderRegisterElement";
 
 export class Filter3DTaskBase
 {

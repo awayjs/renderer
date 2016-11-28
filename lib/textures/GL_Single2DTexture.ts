@@ -1,18 +1,17 @@
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
+import {AssetEvent} from "@awayjs/core";
 
-import {MappingMode}					from "@awayjs/graphics/lib/textures/MappingMode";
-import {Single2DTexture}				from "@awayjs/graphics/lib/textures/Single2DTexture";
+import {MappingMode, Single2DTexture} from "@awayjs/graphics";
 
-import {GL_Image2D}					from "@awayjs/stage/lib/image/GL_Image2D";
-import {GL_Sampler2D}					from "@awayjs/stage/lib/image/GL_Sampler2D";
+import {GL_Image2D, GL_Sampler2D} from "@awayjs/stage";
 
-import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {ShaderBase}					from "../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
-import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
-import {GL_TextureBase}				from "../textures/GL_TextureBase";
+import {GL_MaterialBase} from "../materials/GL_MaterialBase";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
+import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
+
+import {GL_TextureBase} from "./GL_TextureBase";
 
 /**
  *

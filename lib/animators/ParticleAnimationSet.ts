@@ -1,22 +1,19 @@
-import {ElementsBase}						from "@awayjs/graphics/lib/elements/ElementsBase";
-import {IAnimationSet}					from "@awayjs/graphics/lib/animators/IAnimationSet";
-import {ParticleData}						from "@awayjs/graphics/lib/animators/data/ParticleData";
-import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
-import {Shape}							from "@awayjs/graphics/lib/base/Shape";
-import {Graphics}							from "@awayjs/graphics/lib/Graphics";
+import {ElementsBase, IAnimationSet, ParticleData, AnimationNodeBase, Shape, Graphics} from "@awayjs/graphics";
 
-import {AnimationSetBase}					from "../animators/AnimationSetBase";
-import {AnimationRegisterData}			from "../animators/data/AnimationRegisterData";
-import {AnimationElements}				from "../animators/data/AnimationElements";
-import {ParticleAnimationData}			from "../animators/data/ParticleAnimationData";
-import {ParticleProperties}				from "../animators/data/ParticleProperties";
-import {ParticlePropertiesMode}			from "../animators/data/ParticlePropertiesMode";
-import {ParticleNodeBase}					from "../animators/nodes/ParticleNodeBase";
-import {ParticleTimeNode}					from "../animators/nodes/ParticleTimeNode";
-import {ShaderBase}						from "../shaders/ShaderBase";
-import {ShaderRegisterElement}			from "../shaders/ShaderRegisterElement";
-import {ShaderRegisterCache}				from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}				from "../shaders/ShaderRegisterData";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
+import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
+
+import {AnimationRegisterData} from "./data/AnimationRegisterData";
+import {AnimationElements} from "./data/AnimationElements";
+import {ParticleAnimationData} from "./data/ParticleAnimationData";
+import {ParticleProperties} from "./data/ParticleProperties";
+import {ParticlePropertiesMode} from "./data/ParticlePropertiesMode";
+import {ParticleNodeBase} from "./nodes/ParticleNodeBase";
+import {ParticleTimeNode} from "./nodes/ParticleTimeNode";
+
+import {AnimationSetBase} from "./AnimationSetBase";
 
 /**
  * The animation data set used by particle-based animators, containing particle animation data.

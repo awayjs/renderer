@@ -1,30 +1,18 @@
-import {AbstractMethodError}			from "@awayjs/core/lib/errors/AbstractMethodError";
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
-import {Matrix}						from "@awayjs/core/lib/geom/Matrix";
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
-import {AbstractionBase}				from "@awayjs/core/lib/library/AbstractionBase";
+import {AbstractMethodError, AssetEvent, Matrix, Matrix3D, AbstractionBase} from "@awayjs/core";
 
-import {ImageBase}					from "@awayjs/graphics/lib/image/ImageBase";
-import {SamplerBase}					from "@awayjs/graphics/lib/image/SamplerBase";
+import {ImageBase, SamplerBase, IRenderable, IEntity, IMaterial, Style, RenderableEvent, TextureBase} from "@awayjs/graphics";
 
-import {IRenderable}					from "@awayjs/graphics/lib/base/IRenderable";
-import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
-import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
-import {Style}							from "@awayjs/graphics/lib/base/Style";
-import {RenderableEvent}				from "@awayjs/graphics/lib/events/RenderableEvent";
-import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
+import {Camera} from "@awayjs/scene";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Stage, GL_ImageBase, GL_SamplerBase} from "@awayjs/stage";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
-import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";
-import {GL_SamplerBase}				from "@awayjs/stage/lib/image/GL_SamplerBase";
+import {GL_ElementsBase} from "../elements/GL_ElementsBase";
+import {GL_MaterialBase} from "../materials/GL_MaterialBase";
+import {IPass} from "../materials/passes/IPass";
 
-import {RendererBase}					from "../RendererBase";
-import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
-import {IPass}						from "../materials/passes/IPass";
-import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
-import {RenderablePool}					from "../renderables/RenderablePool";
+import {RendererBase} from "../RendererBase";
+
+import {RenderablePool} from "./RenderablePool";
 
 /**
  * @class RenderableListItem

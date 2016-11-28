@@ -1,7 +1,7 @@
-import {IAnimationState}					from "../../animators/states/IAnimationState";
+import {Skeleton} from "../data/Skeleton";
+import {SkeletonPose} from "../data/SkeletonPose";
 
-import {Skeleton}							from "../../animators/data/Skeleton";
-import {SkeletonPose}						from "../../animators/data/SkeletonPose";
+import {IAnimationState} from "./IAnimationState";
 
 export interface ISkeletonAnimationState extends IAnimationState
 {

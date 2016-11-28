@@ -1,10 +1,11 @@
-import {LightPickerBase}				from "@awayjs/scene/lib/lightpickers/LightPickerBase";
+import {LightPickerBase} from "@awayjs/scene";
 
-import {IPass}						from "../../materials/passes/IPass";
-import {LightingShader}				from "../../shaders/LightingShader";
-import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
-import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
+import {LightingShader} from "../../shaders/LightingShader";
+import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../../shaders/ShaderRegisterData";
+import {ShaderRegisterElement} from "../../shaders/ShaderRegisterElement";
+
+import {IPass} from "./IPass";
 
 /**
  *

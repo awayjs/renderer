@@ -1,19 +1,15 @@
-import {AttributesBuffer}				from "@awayjs/core/lib/attributes/AttributesBuffer";
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
-import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
+import {AttributesBuffer, AssetEvent, Rectangle} from "@awayjs/core";
 
-import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
-import {TriangleElements}				from "@awayjs/graphics/lib/elements/TriangleElements";
-import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
-import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
+import {IEntity, TriangleElements, TextureBase, DefaultMaterialManager} from "@awayjs/graphics";
 
-import {Billboard}					from "@awayjs/scene/lib/display/Billboard";
+import {Billboard} from "@awayjs/scene";
 
-import {RendererBase}					from "../RendererBase";
-import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
-import {RenderablePool}					from "../renderables/RenderablePool";
+import {GL_ElementsBase} from "../elements/GL_ElementsBase";
+import {GL_MaterialBase} from "../materials/GL_MaterialBase";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+import {RenderablePool} from "../renderables/RenderablePool";
+
+import {RendererBase} from "../RendererBase";
 
 /**
  * @class away.pool.RenderableListItem

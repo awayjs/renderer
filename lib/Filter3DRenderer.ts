@@ -1,25 +1,15 @@
-import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
+import {Rectangle} from "@awayjs/core";
 
-import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
-import {Sampler2D}						from "@awayjs/graphics/lib/image/Sampler2D";
+import {Image2D, Sampler2D} from "@awayjs/graphics";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";
-import {GL_Sampler2D}					from "@awayjs/stage/lib/image/GL_Sampler2D";
+import {GL_ImageBase, GL_Sampler2D, Stage, ContextGLDrawMode, ContextGLBlendFactor, ContextGLVertexBufferFormat, IContextGL, IIndexBuffer, IVertexBuffer} from "@awayjs/stage";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
-import {ContextGLDrawMode}			from "@awayjs/stage/lib/base/ContextGLDrawMode";
-import {ContextGLBlendFactor}			from "@awayjs/stage/lib/base/ContextGLBlendFactor";
-import {ContextGLVertexBufferFormat}	from "@awayjs/stage/lib/base/ContextGLVertexBufferFormat";
-import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
-import {IIndexBuffer}					from "@awayjs/stage/lib/base/IIndexBuffer";
-import {IVertexBuffer}				from "@awayjs/stage/lib/base/IVertexBuffer";
-
-import {RTTEvent}						from "./events/RTTEvent";
-import {RTTBufferManager}				from "./managers/RTTBufferManager";
-import {Filter3DBase}					from "./filters/Filter3DBase";
-import {Filter3DTaskBase}				from "./filters/tasks/Filter3DTaskBase";
+import {RTTEvent} from "./events/RTTEvent";
+import {Filter3DBase} from "./filters/Filter3DBase";
+import {Filter3DTaskBase} from "./filters/tasks/Filter3DTaskBase";
+import {RTTBufferManager} from "./managers/RTTBufferManager";
 
 /**
  * @class away.render.Filter3DRenderer

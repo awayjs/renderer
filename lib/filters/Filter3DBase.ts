@@ -1,11 +1,12 @@
-import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
+import {Image2D} from "@awayjs/graphics";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {Filter3DTaskBase}				from "../filters/tasks/Filter3DTaskBase";
-import {RTTBufferManager}				from "../managers/RTTBufferManager";
+import {RTTBufferManager} from "../managers/RTTBufferManager";
+
+import {Filter3DTaskBase} from "./tasks/Filter3DTaskBase";
 
 export class Filter3DBase
 {

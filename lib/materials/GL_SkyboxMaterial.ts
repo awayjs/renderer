@@ -1,21 +1,20 @@
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
+import {AssetEvent, Matrix3D} from "@awayjs/core";
 
-import {BlendMode}					from "@awayjs/graphics/lib/image/BlendMode";
+import {BlendMode} from "@awayjs/graphics";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
-import {Skybox}						from "@awayjs/scene/lib/display/Skybox";
+import {Camera, Skybox} from "@awayjs/scene";
 
-import {ContextGLCompareMode}			from "@awayjs/stage/lib/base/ContextGLCompareMode";
+import {ContextGLCompareMode} from "@awayjs/stage";
 
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {IElementsClassGL}				from "../elements/IElementsClassGL";
-import {GL_MaterialPassBase}			from "../materials/GL_MaterialPassBase";
-import {MaterialPool}					from "../materials/MaterialPool";
-import {ShaderBase}					from "../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
-import {GL_TextureBase}				from "../textures/GL_TextureBase";
+import {IElementsClassGL} from "../elements/IElementsClassGL";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
+import {GL_TextureBase} from "../textures/GL_TextureBase";
+
+import {GL_MaterialPassBase} from "./GL_MaterialPassBase";
+import {MaterialPool} from "./MaterialPool";
 
 /**
  * GL_SkyboxMaterial forms an abstract base class for the default shaded materials provided by Stage,

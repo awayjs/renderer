@@ -1,9 +1,10 @@
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {INode}						from "@awayjs/graphics/lib/base/INode";
+import {INode} from "@awayjs/graphics";
 
-import {RendererBase}					from "./RendererBase";
-import {GL_DepthMaterial}				from "./materials/GL_DepthMaterial";
+import {GL_DepthMaterial} from "./materials/GL_DepthMaterial";
+
+import {RendererBase} from "./RendererBase";
 
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA

@@ -1,13 +1,14 @@
-import {Quaternion}						from "@awayjs/core/lib/geom/Quaternion";
-import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
+import {Quaternion, Vector3D} from "@awayjs/core";
 
-import {AnimatorBase}						from "../../animators/AnimatorBase";
-import {JointPose}						from "../../animators/data/JointPose";
-import {Skeleton}							from "../../animators/data/Skeleton";
-import {SkeletonPose}						from "../../animators/data/SkeletonPose";
-import {SkeletonNaryLERPNode}				from "../../animators/nodes/SkeletonNaryLERPNode";
-import {AnimationStateBase}				from "../../animators/states/AnimationStateBase";
-import {ISkeletonAnimationState}			from "../../animators/states/ISkeletonAnimationState";
+import {JointPose} from "../data/JointPose";
+import {Skeleton} from "../data/Skeleton";
+import {SkeletonPose} from "../data/SkeletonPose";
+import {SkeletonNaryLERPNode} from "../nodes/SkeletonNaryLERPNode";
+
+import {AnimatorBase} from "../AnimatorBase";
+
+import {AnimationStateBase} from "./AnimationStateBase";
+import {ISkeletonAnimationState} from "./ISkeletonAnimationState";
 
 /**
  *

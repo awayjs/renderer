@@ -1,9 +1,10 @@
-import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
+import {Vector3D} from "@awayjs/core";
 
-import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase} from "@awayjs/graphics";
 
-import {AnimatorBase}						from "../../animators/AnimatorBase";
-import {IAnimationState}					from "../../animators/states/IAnimationState";
+import {AnimatorBase} from "../AnimatorBase";
+
+import {IAnimationState} from "./IAnimationState";
 
 /**
  *

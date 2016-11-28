@@ -1,19 +1,19 @@
-import {MathConsts}						from "@awayjs/core/lib/geom/MathConsts";
-import {Matrix3D}							from "@awayjs/core/lib/geom/Matrix3D";
-import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
-import {Orientation3D}					from "@awayjs/core/lib/geom/Orientation3D";
+import {Matrix3D, Orientation3D, Vector3D, MathConsts} from "@awayjs/core";
 
-import {Camera}							from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {Stage}							from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {ParticleAnimator}					from "../../animators/ParticleAnimator";
-import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
-import {AnimationElements}				from "../../animators/data/AnimationElements";
-import {ParticleBillboardNode}			from "../../animators/nodes/ParticleBillboardNode";
-import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
-import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
-import {ShaderBase}						from "../../shaders/ShaderBase";
+import {GL_RenderableBase} from "../../renderables/GL_RenderableBase";
+import {ShaderBase} from "../../shaders/ShaderBase";
+
+import {AnimationRegisterData} from "../data/AnimationRegisterData";
+import {AnimationElements} from "../data/AnimationElements";
+import {ParticleBillboardNode} from "../nodes/ParticleBillboardNode";
+
+import {ParticleAnimator} from "../ParticleAnimator";
+
+import {ParticleStateBase} from "./ParticleStateBase";
 
 /**
  * ...

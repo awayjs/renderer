@@ -1,25 +1,18 @@
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
-import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
+import {Matrix3D, Vector3D}	 from "@awayjs/core";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
-import {DirectionalLight}				from "@awayjs/scene/lib/display/DirectionalLight";
-import {LightProbe}					from "@awayjs/scene/lib/display/LightProbe";
-import {PointLight}					from "@awayjs/scene/lib/display/PointLight";
-import {LightPickerBase}				from "@awayjs/scene/lib/lightpickers/LightPickerBase";
-import {LightSources}					from "@awayjs/scene/lib/lightpickers/LightSources";
+import {Camera, DirectionalLight, LightProbe, PointLight, LightSources} from "@awayjs/scene";
 
-import {ContextGLProfile}				from "@awayjs/stage/lib/base/ContextGLProfile";
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
-import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
-import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";
+import {ContextGLProfile, Stage, GL_ImageBase} from "@awayjs/stage";
 
-import {ILightingPass}				from "../materials/passes/ILightingPass";
+import {ILightingPass} from "../materials/passes/ILightingPass";
+import {IElementsClassGL} from "../elements/IElementsClassGL";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
 
-import {ShaderBase}					from "../shaders/ShaderBase";
-import {CompilerBase}					from "../shaders/compilers/CompilerBase";
-import {LightingCompiler}				from "../shaders/compilers/LightingCompiler";
-import {IElementsClassGL}				from "../elements/IElementsClassGL";
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {CompilerBase} from "./compilers/CompilerBase";
+import {LightingCompiler} from "./compilers/LightingCompiler";
+
+import {ShaderBase} from "./ShaderBase";
+
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.

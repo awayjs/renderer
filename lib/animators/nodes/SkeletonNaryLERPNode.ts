@@ -1,7 +1,7 @@
-import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase} from "@awayjs/graphics";
 
-import {AnimatorBase}						from "../../animators/AnimatorBase";
-import {SkeletonNaryLERPState}			from "../../animators/states/SkeletonNaryLERPState";
+import {AnimatorBase} from "../AnimatorBase";
+import {SkeletonNaryLERPState} from "../states/SkeletonNaryLERPState";
 
 /**
  * A skeleton animation node that uses an n-dimensional array of animation node inputs to blend a lineraly interpolated output of a skeleton pose.

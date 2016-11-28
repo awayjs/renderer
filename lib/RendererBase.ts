@@ -1,43 +1,22 @@
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
-import {Plane3D}						from "@awayjs/core/lib/geom/Plane3D";
-import {Point}						from "@awayjs/core/lib/geom/Point";
-import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
-import {Vector3D}						from "@awayjs/core/lib/geom/Vector3D";
-import {IAbstractionPool}				from "@awayjs/core/lib/library/IAbstractionPool";
-import {ByteArray}					from "@awayjs/core/lib/utils/ByteArray";
+import {Matrix3D, Plane3D, Point, Rectangle, Vector3D, IAbstractionPool, ByteArray} from "@awayjs/core";
 
-import {ImageBase}					from "@awayjs/graphics/lib/image/ImageBase";
-import {BitmapImage2D}				from "@awayjs/graphics/lib/image/BitmapImage2D";
-import {TraverserBase}				from "@awayjs/graphics/lib/base/TraverserBase";
-import {IRenderable}					from "@awayjs/graphics/lib/base/IRenderable";
-import {INode}						from "@awayjs/graphics/lib/base/INode";
-import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
+import {ImageBase, BitmapImage2D, TraverserBase, IRenderable, INode, IEntity} from "@awayjs/graphics";
 
-import {IRenderer}					from "@awayjs/scene/lib/IRenderer";
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
-import {IView}						from "@awayjs/scene/lib/IView";
+import {IRenderer, Camera, IView} from "@awayjs/scene";
 
-import {AGALMiniAssembler}			from "@awayjs/stage/lib/aglsl/assembler/AGALMiniAssembler";
-import {ContextGLBlendFactor}			from "@awayjs/stage/lib/base/ContextGLBlendFactor";
-import {ContextGLCompareMode}			from "@awayjs/stage/lib/base/ContextGLCompareMode";
-import {ContextGLStencilAction}			from "@awayjs/stage/lib/base/ContextGLStencilAction";
-import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
-import {StageEvent}					from "@awayjs/stage/lib/events/StageEvent";
-import {StageManager}					from "@awayjs/stage/lib/managers/StageManager";
-import {ProgramData}					from "@awayjs/stage/lib/image/ProgramData";
+import {AGALMiniAssembler, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, IContextGL, Stage, StageEvent, StageManager, ProgramData} from "@awayjs/stage";
 
-import {RendererEvent}				from "./events/RendererEvent";
-import {GL_ElementsBase}				from "./elements/GL_ElementsBase";
-import {IMaterialClassGL}				from "./materials/IMaterialClassGL";
-import {GL_MaterialBase}				from "./materials/GL_MaterialBase";
-import {GL_RenderableBase}			from "./renderables/GL_RenderableBase";
-import {RenderablePool}					from "./renderables/RenderablePool";
-import {RTTBufferManager}				from "./managers/RTTBufferManager";
-import {MaterialPool}					from "./materials/MaterialPool";
-import {IPass}						from "./materials/passes/IPass";
-import {IEntitySorter}				from "./sort/IEntitySorter";
-import {RenderableMergeSort}			from "./sort/RenderableMergeSort";
+import {RendererEvent} from "./events/RendererEvent";
+import {GL_ElementsBase} from "./elements/GL_ElementsBase";
+import {RTTBufferManager} from "./managers/RTTBufferManager";
+import {IMaterialClassGL} from "./materials/IMaterialClassGL";
+import {MaterialPool} from "./materials/MaterialPool";
+import {IPass} from "./materials/passes/IPass";
+import {GL_MaterialBase} from "./materials/GL_MaterialBase";
+import {GL_RenderableBase} from "./renderables/GL_RenderableBase";
+import {RenderablePool} from "./renderables/RenderablePool";
+import {IEntitySorter} from "./sort/IEntitySorter";
+import {RenderableMergeSort} from "./sort/RenderableMergeSort";
 
 
 /**

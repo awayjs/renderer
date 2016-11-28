@@ -1,9 +1,9 @@
-import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
+import {EventBase} from "@awayjs/core";
 
-import {EventBase}						from "@awayjs/core/lib/events/EventBase";
+import {AnimationNodeBase} from "@awayjs/graphics";
 
-import {AnimatorBase}						from "../animators/AnimatorBase";
-import {IAnimationState}					from "../animators/states/IAnimationState";
+import {AnimatorBase} from "../animators/AnimatorBase";
+import {IAnimationState} from "../animators/states/IAnimationState";
 
 /**
  * Dispatched to notify changes in an animation state's state.

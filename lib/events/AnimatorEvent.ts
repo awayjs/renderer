@@ -1,6 +1,6 @@
-import {EventBase}					from "@awayjs/core/lib/events/EventBase";
+import {EventBase} from "@awayjs/core";
 
-import {AnimatorBase}					from "../animators/AnimatorBase";
+import {AnimatorBase} from "../animators/AnimatorBase";
 
 /**
  * Dispatched to notify changes in an animator's state.

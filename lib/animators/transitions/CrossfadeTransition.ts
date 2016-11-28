@@ -1,8 +1,10 @@
-import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase} from "@awayjs/graphics";
 
-import {AnimatorBase}						from "../../animators/AnimatorBase";
-import {CrossfadeTransitionNode}			from "../../animators/transitions/CrossfadeTransitionNode";
-import {IAnimationTransition}				from "../../animators/transitions/IAnimationTransition";
+import {CrossfadeTransitionNode} from "../transitions/CrossfadeTransitionNode";
+
+import {AnimatorBase} from "../AnimatorBase";
+
+import {IAnimationTransition} from "./IAnimationTransition";
 
 /**
  *

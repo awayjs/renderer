@@ -1,15 +1,14 @@
-import {IEventDispatcher}				from "@awayjs/core/lib/events/IEventDispatcher";
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
+import {IEventDispatcher, Matrix3D} from "@awayjs/core";
 
-import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
+import {TextureBase} from "@awayjs/graphics";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {ShaderBase}					from "../../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
-import {GL_RenderableBase}			from "../../renderables/GL_RenderableBase";
-import {AnimationSetBase}				from "../../animators/AnimationSetBase";
+import {GL_RenderableBase} from "../../renderables/GL_RenderableBase";
+import {AnimationSetBase} from "../../animators/AnimationSetBase";
+import {ShaderBase} from "../../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../../shaders/ShaderRegisterData";
 
 /**
  *

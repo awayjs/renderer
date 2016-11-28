@@ -1,25 +1,25 @@
-import {Quaternion}						from "@awayjs/core/lib/geom/Quaternion";
-import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
+import {Quaternion, Vector3D} from "@awayjs/core";
 
-import {TriangleElements}					from "@awayjs/graphics/lib/elements/TriangleElements";
-import {ElementsEvent}					from "@awayjs/graphics/lib/events/ElementsEvent";
+import {TriangleElements, ElementsEvent} from "@awayjs/graphics";
 
-import {Camera}							from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {Stage}							from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {AnimatorBase}						from "../animators/AnimatorBase";
-import {SkeletonAnimationSet}				from "../animators/SkeletonAnimationSet";
-import {JointPose}						from "../animators/data/JointPose";
-import {Skeleton}							from "../animators/data/Skeleton";
-import {SkeletonJoint}					from "../animators/data/SkeletonJoint";
-import {SkeletonPose}						from "../animators/data/SkeletonPose";
-import {ISkeletonAnimationState}			from "../animators/states/ISkeletonAnimationState";
-import {IAnimationTransition}				from "../animators/transitions/IAnimationTransition";
-import {AnimationStateEvent}				from "../events/AnimationStateEvent";
-import {ShaderBase}						from "../shaders/ShaderBase";
-import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
-import {GL_ShapeRenderable}				from "../renderables/GL_ShapeRenderable";
+import {AnimationStateEvent} from "../events/AnimationStateEvent";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+import {GL_ShapeRenderable} from "../renderables/GL_ShapeRenderable";
+
+import {JointPose} from "./data/JointPose";
+import {Skeleton} from "./data/Skeleton";
+import {SkeletonJoint} from "./data/SkeletonJoint";
+import {SkeletonPose} from "./data/SkeletonPose";
+import {ISkeletonAnimationState} from "./states/ISkeletonAnimationState";
+import {IAnimationTransition} from "./transitions/IAnimationTransition";
+
+import {AnimatorBase} from "./AnimatorBase";
+import {SkeletonAnimationSet} from "./SkeletonAnimationSet";
 
 /**
  * Provides an interface for assigning skeleton-based animation data sets to sprite-based entity objects

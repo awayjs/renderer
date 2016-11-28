@@ -1,8 +1,6 @@
-import {IAsset}							from "@awayjs/core/lib/library/IAsset";
-import {AssetBase}						from "@awayjs/core/lib/library/AssetBase";
+import {IAsset, AssetBase} from "@awayjs/core";
 
-import {JointPose}						from "../../animators/data/JointPose";
-
+import {JointPose} from "./JointPose";
 
 /**
  * A collection of pose objects, determining the pose for an entire skeleton.

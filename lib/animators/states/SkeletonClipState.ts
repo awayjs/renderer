@@ -1,13 +1,15 @@
-import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
+import {Vector3D} from "@awayjs/core";
 
-import {AnimatorBase}						from "../../animators/AnimatorBase";
-import {SkeletonAnimator}					from "../../animators/SkeletonAnimator";
-import {JointPose}						from "../../animators/data/JointPose";
-import {Skeleton}							from "../../animators/data/Skeleton";
-import {SkeletonPose}						from "../../animators/data/SkeletonPose";
-import {SkeletonClipNode}					from "../../animators/nodes/SkeletonClipNode";
-import {AnimationClipState}				from "../../animators/states/AnimationClipState";
-import {ISkeletonAnimationState}			from "../../animators/states/ISkeletonAnimationState";
+import {JointPose} from "../data/JointPose";
+import {Skeleton} from "../data/Skeleton";
+import {SkeletonPose} from "../data/SkeletonPose";
+import {SkeletonClipNode} from "../nodes/SkeletonClipNode";
+
+import {AnimatorBase} from "../AnimatorBase";
+import {SkeletonAnimator} from "../SkeletonAnimator";
+
+import {AnimationClipState} from "./AnimationClipState";
+import {ISkeletonAnimationState} from "./ISkeletonAnimationState";
 
 /**
  *

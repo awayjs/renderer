@@ -1,4 +1,4 @@
-import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
 
 /**
  * @interface away.sort.IEntitySorter

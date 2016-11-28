@@ -1,10 +1,12 @@
-import {Graphics}							from "@awayjs/graphics/lib/Graphics";
+import {Graphics} from "@awayjs/graphics";
 
-import {AnimatorBase}						from "../../animators/AnimatorBase";
-import {VertexAnimator}					from "../../animators/VertexAnimator";
-import {VertexClipNode}					from "../../animators/nodes/VertexClipNode";
-import {AnimationClipState}				from "../../animators/states/AnimationClipState";
-import {IVertexAnimationState}			from "../../animators/states/IVertexAnimationState";
+import {VertexAnimator} from "../VertexAnimator";
+import {VertexClipNode} from "../nodes/VertexClipNode";
+
+import {AnimationClipState} from "./AnimationClipState";
+import {IVertexAnimationState} from "./IVertexAnimationState";
+
+import {AnimatorBase} from "../AnimatorBase";
 
 /**
  *

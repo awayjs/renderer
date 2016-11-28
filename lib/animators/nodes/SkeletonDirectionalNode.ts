@@ -1,7 +1,7 @@
-import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase} from "@awayjs/graphics";
 
-import {AnimatorBase}						from "../../animators/AnimatorBase";
-import {SkeletonDirectionalState}			from "../../animators/states/SkeletonDirectionalState";
+import {AnimatorBase} from "../AnimatorBase";
+import {SkeletonDirectionalState} from "../states/SkeletonDirectionalState";
 
 /**
  * A skeleton animation node that uses four directional input poses with an input direction to blend a linearly interpolated output of a skeleton pose.

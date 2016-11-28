@@ -1,20 +1,20 @@
-import {MathConsts}						from "@awayjs/core/lib/geom/MathConsts";
-import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
+import {Vector3D, MathConsts} from "@awayjs/core";
 
-import {DisplayObject}					from "@awayjs/scene/lib/display/DisplayObject";
-import {Camera}							from "@awayjs/scene/lib/display/Camera";
+import {Camera, DisplayObject} from "@awayjs/scene";
 
-import {Stage}							from "@awayjs/stage/lib/base/Stage";
-import {ContextGLVertexBufferFormat}		from "@awayjs/stage/lib/base/ContextGLVertexBufferFormat";
+import {Stage, ContextGLVertexBufferFormat} from "@awayjs/stage";
 
-import {ParticleAnimator}					from "../../animators/ParticleAnimator";
-import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
-import {AnimationElements}				from "../../animators/data/AnimationElements";
-import {ParticleAnimationData}			from "../../animators/data/ParticleAnimationData";
-import {ParticleFollowNode}				from "../../animators/nodes/ParticleFollowNode";
-import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
-import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
-import {ShaderBase}						from "../../shaders/ShaderBase";
+import {GL_RenderableBase} from "../../renderables/GL_RenderableBase";
+import {ShaderBase} from "../../shaders/ShaderBase";
+
+import {AnimationRegisterData} from "../data/AnimationRegisterData";
+import {ParticleAnimationData} from "../data/ParticleAnimationData";
+import {AnimationElements} from "../data/AnimationElements";
+import {ParticleFollowNode} from "../nodes/ParticleFollowNode";
+
+import {ParticleAnimator} from "../ParticleAnimator";
+
+import {ParticleStateBase} from "./ParticleStateBase";
 
 /**
  * ...

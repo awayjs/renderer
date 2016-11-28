@@ -1,15 +1,18 @@
-import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
+import {Vector3D} from "@awayjs/core";
 
-import {AnimatorBase}						from "../../animators/AnimatorBase";
-import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
-import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
-import {ParticleProperties}				from "../../animators/data/ParticleProperties";
-import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
-import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
-import {ParticleOscillatorState}			from "../../animators/states/ParticleOscillatorState";
-import {ShaderBase}						from "../../shaders/ShaderBase";
-import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
-import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
+import {ShaderBase} from "../../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement} from "../../shaders/ShaderRegisterElement";
+
+import {AnimationRegisterData} from "../data/AnimationRegisterData";
+import {ParticleProperties} from "../data/ParticleProperties";
+import {ParticlePropertiesMode} from "../data/ParticlePropertiesMode";
+import {ParticleOscillatorState} from "../states/ParticleOscillatorState";
+
+import {AnimatorBase} from "../AnimatorBase";
+import {ParticleAnimationSet} from "../ParticleAnimationSet";
+
+import {ParticleNodeBase} from "./ParticleNodeBase";
 
 /**
  * A particle animation node used to control the position of a particle over time using simple harmonic motion.

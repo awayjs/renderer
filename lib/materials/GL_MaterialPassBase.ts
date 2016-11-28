@@ -1,15 +1,17 @@
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
+import {Matrix3D} from "@awayjs/core";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {AnimationSetBase}				from "../animators/AnimationSetBase";
-import {PassEvent}					from "../events/PassEvent";
-import {ShaderBase}					from "../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
-import {IPass}						from "../materials/passes/IPass";
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
+import {AnimationSetBase} from "../animators/AnimationSetBase";
+import {PassEvent} from "../events/PassEvent";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+
+import {IPass} from "./passes/IPass";
+
+import {GL_MaterialBase} from "./GL_MaterialBase";
 
 /**
  * GL_MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least

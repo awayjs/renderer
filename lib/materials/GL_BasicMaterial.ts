@@ -1,12 +1,13 @@
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
+import {AssetEvent} from "@awayjs/core";
 
-import {BlendMode}					from "@awayjs/graphics/lib/image/BlendMode";
-import {BasicMaterial}				from "@awayjs/graphics/lib/materials/BasicMaterial";
+import {BlendMode, BasicMaterial} from "@awayjs/graphics";
 
-import {BasicMaterialPass}			from "../materials/passes/BasicMaterialPass";
-import {IElementsClassGL}				from "../elements/IElementsClassGL";
-import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
-import {MaterialPool}					from "../materials/MaterialPool";
+import {IElementsClassGL} from "../elements/IElementsClassGL";
+
+import {BasicMaterialPass} from "./passes/BasicMaterialPass";
+
+import {GL_MaterialBase} from "./GL_MaterialBase";
+import {MaterialPool} from "./MaterialPool";
 
 /**
  * RenderMaterialObject forms an abstract base class for the default shaded materials provided by Stage,

@@ -1,23 +1,20 @@
-import {ElementsBase}						from "@awayjs/graphics/lib/elements/ElementsBase";
-import {TriangleElements}					from "@awayjs/graphics/lib/elements/TriangleElements";
-import {Shape}							from "@awayjs/graphics/lib/base/Shape";
-import {Graphics}							from "@awayjs/graphics/lib/Graphics";
+import {ElementsBase, TriangleElements, Shape, Graphics} from "@awayjs/graphics";
 
-import {Camera}							from "@awayjs/scene/lib/display/Camera";
-import {Sprite}							from "@awayjs/scene/lib/display/Sprite";
+import {Camera, Sprite} from "@awayjs/scene";
 
-import {Stage}							from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {AnimatorBase}						from "../animators/AnimatorBase";
-import {VertexAnimationSet}				from "../animators/VertexAnimationSet";
-import {AnimationRegisterData}			from "../animators/data/AnimationRegisterData";
-import {VertexAnimationMode}				from "../animators/data/VertexAnimationMode";
-import {IVertexAnimationState}			from "../animators/states/IVertexAnimationState";
-import {IAnimationTransition}				from "../animators/transitions/IAnimationTransition";
-import {GL_ShapeRenderable}				from "../renderables/GL_ShapeRenderable";
-import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
-import {ShaderBase}						from "../shaders/ShaderBase";
-import {GL_ElementsBase}					from "../elements/GL_ElementsBase";
+import {GL_ShapeRenderable} from "../renderables/GL_ShapeRenderable";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {GL_ElementsBase} from "../elements/GL_ElementsBase";
+
+import {AnimationRegisterData} from "./data/AnimationRegisterData";
+import {VertexAnimationMode} from "./data/VertexAnimationMode";
+import {IVertexAnimationState} from "./states/IVertexAnimationState";
+import {IAnimationTransition} from "./transitions/IAnimationTransition";
+
+import {AnimatorBase} from "./AnimatorBase";
+import {VertexAnimationSet} from "./VertexAnimationSet";
 
 /**
  * Provides an interface for assigning vertex-based animation data sets to sprite-based entity objects

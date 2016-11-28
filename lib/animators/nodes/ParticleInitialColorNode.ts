@@ -1,14 +1,17 @@
-import {ColorTransform}					from "@awayjs/core/lib/geom/ColorTransform";
+import {ColorTransform} from "@awayjs/core";
 
-import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
-import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
-import {ParticleProperties}				from "../../animators/data/ParticleProperties";
-import {ParticlePropertiesMode}			from "../../animators/data/ParticlePropertiesMode";
-import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
-import {ParticleInitialColorState}		from "../../animators/states/ParticleInitialColorState";
-import {ShaderBase}						from "../../shaders/ShaderBase";
-import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
-import {ShaderRegisterElement}			from "../../shaders/ShaderRegisterElement";
+import {ShaderBase} from "../../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterElement} from "../../shaders/ShaderRegisterElement";
+
+import {AnimationRegisterData} from "../data/AnimationRegisterData";
+import {ParticleProperties} from "../data/ParticleProperties";
+import {ParticlePropertiesMode} from "../data/ParticlePropertiesMode";
+import {ParticleInitialColorState} from "../states/ParticleInitialColorState";
+
+import {ParticleAnimationSet} from "../ParticleAnimationSet";
+
+import {ParticleNodeBase} from "./ParticleNodeBase";
 
 /**
  *

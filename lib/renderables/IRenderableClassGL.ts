@@ -1,9 +1,9 @@
-import {IRenderable}						from "@awayjs/graphics/lib/base/IRenderable";
-import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
+import {IRenderable, IEntity} from "@awayjs/graphics";
 
-import {GL_RenderableBase}				from "../renderables/GL_RenderableBase";
-import {RenderablePool}					from "../renderables/RenderablePool";
-import {RendererBase}				from "../RendererBase";
+import {RendererBase} from "../RendererBase";
+
+import {GL_RenderableBase} from "./GL_RenderableBase";
+import {RenderablePool} from "./RenderablePool";
 
 /**
  * IMaterialClassGL is an interface for the constructable class definition GL_MaterialBase that is used to

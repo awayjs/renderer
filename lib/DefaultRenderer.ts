@@ -1,28 +1,18 @@
-import {Rectangle}					from "@awayjs/core/lib/geom/Rectangle";
+import {Rectangle} from "@awayjs/core";
 
-import {ImageBase}					from "@awayjs/graphics/lib/image/ImageBase";
-import {BitmapImage2D}				from "@awayjs/graphics/lib/image/BitmapImage2D";
-import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
-import {INode}						from "@awayjs/graphics/lib/base/INode";
+import {ImageBase, BitmapImage2D, IEntity, INode} from "@awayjs/graphics";
 
-import {LightBase}					from "@awayjs/scene/lib/display/LightBase";
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
-import {DirectionalLight}				from "@awayjs/scene/lib/display/DirectionalLight";
-import {PointLight}					from "@awayjs/scene/lib/display/PointLight";
-import {LightProbe}					from "@awayjs/scene/lib/display/LightProbe";
-import {ShadowMapperBase}				from "@awayjs/scene/lib/shadowmappers/ShadowMapperBase";
-import {IView}						from "@awayjs/scene/lib/IView";
+import {LightBase, Camera, DirectionalLight, PointLight, LightProbe, ShadowMapperBase, IView} from "@awayjs/scene";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
-import {ContextGLClearMask}			from "@awayjs/stage/lib/base/ContextGLClearMask";
-import {IContextGL}					from "@awayjs/stage/lib/base/IContextGL";
+import {Stage, ContextGLClearMask, IContextGL} from "@awayjs/stage";
 
-import {RendererBase}					from "./RendererBase";
-import {DepthRenderer}				from "./DepthRenderer";
-import {DistanceRenderer}				from "./DistanceRenderer";
-import {Filter3DRenderer}				from "./Filter3DRenderer";
-import {Filter3DBase}					from "./filters/Filter3DBase";
-import {RTTBufferManager}				from "./managers/RTTBufferManager";
+import {Filter3DBase} from "./filters/Filter3DBase";
+import {RTTBufferManager} from "./managers/RTTBufferManager";
+
+import {DepthRenderer} from "./DepthRenderer";
+import {DistanceRenderer} from "./DistanceRenderer";
+import {Filter3DRenderer} from "./Filter3DRenderer";
+import {RendererBase} from "./RendererBase";
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the

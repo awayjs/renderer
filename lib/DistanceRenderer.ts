@@ -1,9 +1,10 @@
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {INode}						from "@awayjs/graphics/lib/base/INode";
+import {INode} from "@awayjs/graphics";
 
-import {RendererBase}					from "./RendererBase";
-import {GL_DistanceMaterial}			from "./materials/GL_DistanceMaterial";
+import {GL_DistanceMaterial} from "./materials/GL_DistanceMaterial";
+
+import {RendererBase} from "./RendererBase";
 
 /**
  * The DistanceRenderer class renders 32-bit depth information encoded as RGBA

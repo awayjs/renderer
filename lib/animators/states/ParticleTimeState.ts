@@ -1,15 +1,17 @@
-import {Camera}							from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {Stage}							from "@awayjs/stage/lib/base/Stage";
-import {ContextGLVertexBufferFormat}		from "@awayjs/stage/lib/base/ContextGLVertexBufferFormat";
+import {Stage, ContextGLVertexBufferFormat} from "@awayjs/stage";
 
-import {ParticleAnimator}					from "../../animators/ParticleAnimator";
-import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
-import {AnimationElements}				from "../../animators/data/AnimationElements";
-import {ParticleTimeNode}					from "../../animators/nodes/ParticleTimeNode";
-import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
-import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
-import {ShaderBase}						from "../../shaders/ShaderBase";
+import {GL_RenderableBase} from "../../renderables/GL_RenderableBase";
+import {ShaderBase} from "../../shaders/ShaderBase";
+
+import {AnimationRegisterData} from "../data/AnimationRegisterData";
+import {AnimationElements} from "../data/AnimationElements";
+import {ParticleTimeNode} from "../nodes/ParticleTimeNode";
+
+import {ParticleAnimator} from "../ParticleAnimator";
+
+import {ParticleStateBase} from "./ParticleStateBase";
 
 /**
  * ...

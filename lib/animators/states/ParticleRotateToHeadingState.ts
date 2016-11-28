@@ -1,18 +1,20 @@
-import {Matrix3D}							from "@awayjs/core/lib/geom/Matrix3D";
+import {Matrix3D} from "@awayjs/core";
 
-import {Camera}							from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {Stage}							from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {ParticleAnimator}					from "../../animators/ParticleAnimator";
-import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
-import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
-import {AnimationElements}				from "../../animators/data/AnimationElements";
-import {ParticleNodeBase}					from "../../animators/nodes/ParticleNodeBase";
-import {ParticleStateBase}				from "../../animators/states/ParticleStateBase";
-import {GL_RenderableBase}				from "../../renderables/GL_RenderableBase";
-import {ShaderBase}						from "../../shaders/ShaderBase";
+import {GL_RenderableBase} from "../../renderables/GL_RenderableBase";
+import {ShaderBase} from "../../shaders/ShaderBase";
 
+import {AnimationRegisterData} from "../data/AnimationRegisterData";
+import {AnimationElements} from "../data/AnimationElements";
+import {ParticleRotateToHeadingNode} from "../nodes/ParticleRotateToHeadingNode";
+
+import {ParticleAnimator} from "../ParticleAnimator";
+import {ParticleAnimationSet} from "../ParticleAnimationSet";
+
+import {ParticleStateBase} from "./ParticleStateBase";
 /**
  * ...
  */
@@ -23,7 +25,7 @@ export class ParticleRotateToHeadingState extends ParticleStateBase
 
 	private _matrix:Matrix3D = new Matrix3D();
 
-	constructor(animator:ParticleAnimator, particleNode:ParticleNodeBase)
+	constructor(animator:ParticleAnimator, particleNode:ParticleRotateToHeadingNode)
 	{
 		super(animator, particleNode);
 	}

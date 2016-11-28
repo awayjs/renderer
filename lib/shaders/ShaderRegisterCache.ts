@@ -1,5 +1,5 @@
-import {RegisterPool}					from "../shaders/RegisterPool";
-import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
+import {RegisterPool} from "./RegisterPool";
+import {ShaderRegisterElement} from "./ShaderRegisterElement";
 
 /**
  * ShaderRegister Cache provides the usage management system for all registers during shading compilers.

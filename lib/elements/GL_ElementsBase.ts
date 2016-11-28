@@ -1,24 +1,15 @@
-import {Short3Attributes}				from "@awayjs/core/lib/attributes/Short3Attributes";
-import {AttributesView}				from "@awayjs/core/lib/attributes/AttributesView";
-import {AttributesBuffer}				from "@awayjs/core/lib/attributes/AttributesBuffer";
-import {AbstractionBase}				from "@awayjs/core/lib/library/AbstractionBase";
-import {IAbstractionPool}				from "@awayjs/core/lib/library/IAbstractionPool";
-import {AbstractMethodError}			from "@awayjs/core/lib/errors/AbstractMethodError";
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
+import {Short3Attributes, AttributesView, AbstractionBase, AbstractMethodError, AssetEvent, Matrix3D} from "@awayjs/core";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
-import {GL_AttributesBuffer}			from "@awayjs/stage/lib/attributes/GL_AttributesBuffer";
+import {ElementsBase, ElementsEvent, ElementsUtils} from "@awayjs/graphics";
 
-import {ElementsBase}					from "@awayjs/graphics/lib/elements/ElementsBase";
-import {ElementsEvent}				from "@awayjs/graphics/lib/events/ElementsEvent";
-import {ElementsUtils}				from "@awayjs/graphics/lib/utils/ElementsUtils";
+import {Camera} from "@awayjs/scene";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Stage, GL_AttributesBuffer} from "@awayjs/stage";
 
-import {IElementsClassGL}				from "../elements/IElementsClassGL";
-import {ShaderBase}					from "../shaders/ShaderBase";
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+import {ShaderBase} from "../shaders/ShaderBase";
+
+import {IElementsClassGL} from "./IElementsClassGL";
 
 /**
  *

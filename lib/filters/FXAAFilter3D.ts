@@ -1,9 +1,6 @@
-import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
+import {Filter3DFXAATask} from "./tasks/Filter3DFXAATask";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
-
-import {Filter3DFXAATask}				from "../filters/tasks/Filter3DFXAATask";
-import {Filter3DBase}					from "../filters/Filter3DBase";
+import {Filter3DBase} from "./Filter3DBase";
 
 export class FXAAFilter3D extends Filter3DBase
 {

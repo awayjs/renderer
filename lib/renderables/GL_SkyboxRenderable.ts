@@ -1,15 +1,17 @@
-import {AttributesBuffer}				from "@awayjs/core/lib/attributes/AttributesBuffer";
-import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
-import {TriangleElements}				from "@awayjs/graphics/lib/elements/TriangleElements";
+import {AttributesBuffer} from "@awayjs/core";
 
-import {Skybox}						from "@awayjs/scene/lib/display/Skybox";
+import {IEntity, TriangleElements} from "@awayjs/graphics";
 
-import {RendererBase}					from "../RendererBase";
-import {ShaderBase}					from "../shaders/ShaderBase";
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
-import {GL_SkyboxElements}			from "../elements/GL_SkyboxElements";
-import {RenderablePool}					from "../renderables/RenderablePool";
+import {Skybox} from "@awayjs/scene";
+
+import {GL_SkyboxElements} from "../elements/GL_SkyboxElements";
+import {GL_MaterialBase} from "../materials/GL_MaterialBase";
+import {ShaderBase} from "../shaders/ShaderBase";
+
+import {RendererBase} from "../RendererBase";
+
+import {GL_RenderableBase} from "./GL_RenderableBase";
+import {RenderablePool} from "./RenderablePool";
 
 /**
  * @class away.pool.GL_SkyboxRenderable

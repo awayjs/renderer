@@ -1,30 +1,17 @@
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
-import {AbstractionBase}				from "@awayjs/core/lib/library/AbstractionBase";
+import {AssetEvent, AbstractionBase} from "@awayjs/core";
 
-import {ImageBase}					from "@awayjs/graphics/lib/image/ImageBase";
-import {SamplerBase}					from "@awayjs/graphics/lib/image/SamplerBase";
-import {Sampler2D}					from "@awayjs/graphics/lib/image/Sampler2D";
-import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
-import {MaterialEvent}					from "@awayjs/graphics/lib/events/MaterialEvent";
-import {IEntity}					from "@awayjs/graphics/lib/base/IEntity";
-import {MaterialBase}					from "@awayjs/graphics/lib/materials/MaterialBase";
-import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
-import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
+import {ImageBase, SamplerBase, IMaterial, MaterialEvent, IEntity, MaterialBase, DefaultMaterialManager, TextureBase} from "@awayjs/graphics";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
-import {GL_ImageBase}					from "@awayjs/stage/lib/image/GL_ImageBase";
-import {GL_SamplerBase}				from "@awayjs/stage/lib/image/GL_SamplerBase";
+import {Stage, GL_ImageBase, GL_SamplerBase} from "@awayjs/stage";
 
-import {AnimatorBase}					from "../animators/AnimatorBase";
-import {PassEvent}					from "../events/PassEvent";
-import {ShaderBase}					from "../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
-import {MaterialPool}					from "../materials/MaterialPool";
-import {IPass}						from "../materials/passes/IPass";
-import {IElementsClassGL}				from "../elements/IElementsClassGL";
-import {GL_TextureBase}				from "../textures/GL_TextureBase";
+import {AnimatorBase} from "../animators/AnimatorBase";
+import {IElementsClassGL} from "../elements/IElementsClassGL";
+import {PassEvent} from "../events/PassEvent";
+import {ShaderBase} from "../shaders/ShaderBase";
+
+import {IPass} from "./passes/IPass";
+
+import {MaterialPool} from "./MaterialPool";
 
 /**
  *

@@ -1,10 +1,11 @@
-import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
+import {Image2D} from "@awayjs/graphics";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {Filter3DHBlurTask}			from "../filters/tasks/Filter3DHBlurTask";
-import {Filter3DVBlurTask}			from "../filters/tasks/Filter3DVBlurTask";
-import {Filter3DBase}					from "../filters/Filter3DBase";
+import {Filter3DHBlurTask} from "./tasks/Filter3DHBlurTask";
+import {Filter3DVBlurTask} from "./tasks/Filter3DVBlurTask";
+
+import {Filter3DBase} from "./Filter3DBase";
 
 export class BlurFilter3D extends Filter3DBase
 {

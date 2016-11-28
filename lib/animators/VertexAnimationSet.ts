@@ -1,12 +1,14 @@
-import {IAnimationSet}					from "@awayjs/graphics/lib/animators/IAnimationSet";
+import {IAnimationSet} from "@awayjs/graphics";
 
-import {AnimationSetBase}					from "../animators/AnimationSetBase";
-import {AnimationRegisterData}			from "../animators/data/AnimationRegisterData";
-import {VertexAnimationMode}				from "../animators/data/VertexAnimationMode";
-import {ShaderBase}						from "../shaders/ShaderBase";
-import {ShaderRegisterElement}			from "../shaders/ShaderRegisterElement";
-import {ShaderRegisterCache}				from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}				from "../shaders/ShaderRegisterData";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
+import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
+
+import {AnimationRegisterData} from "./data/AnimationRegisterData";
+import {VertexAnimationMode} from "./data/VertexAnimationMode";
+
+import {AnimationSetBase} from "./AnimationSetBase";
 
 /**
  * The animation data set used by vertex-based animators, containing vertex animation state data.

@@ -1,9 +1,10 @@
-import {Vector3D}							from "@awayjs/core/lib/geom/Vector3D";
+import {Vector3D} from "@awayjs/core";
 
-import {Graphics}							from "@awayjs/graphics/lib/Graphics";
+import {Graphics} from "@awayjs/graphics";
 
-import {AnimationClipNodeBase}			from "../../animators/nodes/AnimationClipNodeBase";
-import {VertexClipState}					from "../../animators/states/VertexClipState";
+import {VertexClipState} from "../states/VertexClipState";
+
+import {AnimationClipNodeBase} from "./AnimationClipNodeBase";
 
 /**
  * A vertex animation node containing time-based animation data as individual geometry obejcts.

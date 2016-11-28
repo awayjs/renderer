@@ -1,9 +1,10 @@
-import {ShaderBase}					from "../../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
-import {ShaderRegisterElement}		from "../../shaders/ShaderRegisterElement";
-import {IPass}						from "../../materials/passes/IPass";
-import {IElementsClassGL}				from "../../elements/IElementsClassGL";
+import {IPass} from "../../materials/passes/IPass";
+import {IElementsClassGL} from "../../elements/IElementsClassGL";
+
+import {ShaderBase} from "../ShaderBase";
+import {ShaderRegisterCache} from "../ShaderRegisterCache";
+import {ShaderRegisterData} from "../ShaderRegisterData";
+import {ShaderRegisterElement} from "../ShaderRegisterElement";
 
 /**
  * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a

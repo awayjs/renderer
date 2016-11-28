@@ -1,16 +1,17 @@
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
+import {AssetEvent} from "@awayjs/core";
 
-import {GL_SamplerCube}				from "@awayjs/stage/lib/image/GL_SamplerCube";
+import {SingleCubeTexture} from "@awayjs/graphics";
 
-import {SingleCubeTexture}			from "@awayjs/graphics/lib/textures/SingleCubeTexture";
+import {GL_SamplerCube} from "@awayjs/stage";
 
-import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {ShaderBase}					from "../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../shaders/ShaderRegisterData";
-import {ShaderRegisterElement}		from "../shaders/ShaderRegisterElement";
-import {GL_TextureBase}				from "../textures/GL_TextureBase";
+import {GL_MaterialBase} from "../materials/GL_MaterialBase";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
+import {ShaderBase} from "../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
+import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
+
+import {GL_TextureBase} from "./GL_TextureBase";
 
 /**
  *

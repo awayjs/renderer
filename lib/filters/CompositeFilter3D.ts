@@ -1,9 +1,8 @@
-import {Image2D}						from "@awayjs/graphics/lib/image/Image2D";
+import {Image2D} from "@awayjs/graphics";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {Filter3DCompositeTask} from "./tasks/Filter3DCompositeTask";
 
-import {Filter3DCompositeTask}		from "../filters/tasks/Filter3DCompositeTask";
-import {Filter3DBase}					from "../filters/Filter3DBase";
+import {Filter3DBase} from "./Filter3DBase";
 
 export class CompositeFilter3D extends Filter3DBase
 {

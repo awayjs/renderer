@@ -1,6 +1,6 @@
-import {IEntitySorter}				from "../sort/IEntitySorter";
+import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
 
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
+import {IEntitySorter} from "./IEntitySorter";
 
 /**
  * @class away.sort.NullSort

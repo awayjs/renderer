@@ -1,22 +1,22 @@
-import {Matrix3D}						from "@awayjs/core/lib/geom/Matrix3D";
-import {EventDispatcher}				from "@awayjs/core/lib/events/EventDispatcher";
+import {Matrix3D, EventDispatcher} from "@awayjs/core";
 
-import {IMaterial}						from "@awayjs/graphics/lib/base/IMaterial";
-import {TextureBase}					from "@awayjs/graphics/lib/textures/TextureBase";
+import {IMaterial, TextureBase} from "@awayjs/graphics";
 
-import {Camera}						from "@awayjs/scene/lib/display/Camera";
+import {Camera} from "@awayjs/scene";
 
-import {Stage}						from "@awayjs/stage/lib/base/Stage";
+import {Stage} from "@awayjs/stage";
 
-import {AnimationSetBase}				from "../../animators/AnimationSetBase";
-import {PassEvent}					from "../../events/PassEvent";
-import {ShaderBase}					from "../../shaders/ShaderBase";
-import {ShaderRegisterCache}			from "../../shaders/ShaderRegisterCache";
-import {ShaderRegisterData}			from "../../shaders/ShaderRegisterData";
-import {IPass}						from "../../materials/passes/IPass";
-import {IElementsClassGL}				from "../../elements/IElementsClassGL";
-import {GL_RenderableBase}			from "../../renderables/GL_RenderableBase";
-import {GL_MaterialBase}				from "../../materials/GL_MaterialBase";
+import {AnimationSetBase} from "../../animators/AnimationSetBase";
+import {IElementsClassGL} from "../../elements/IElementsClassGL";
+import {PassEvent} from "../../events/PassEvent";
+import {GL_RenderableBase} from "../../renderables/GL_RenderableBase";
+import {ShaderBase} from "../../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
+import {ShaderRegisterData} from "../../shaders/ShaderRegisterData";
+
+import {GL_MaterialBase} from "../GL_MaterialBase";
+
+import {IPass} from "./IPass";
 
 /**
  * PassBase provides an abstract base class for material shader passes. A material pass constitutes at least

@@ -1,10 +1,12 @@
-import {AnimationNodeBase}				from "@awayjs/graphics/lib/animators/nodes/AnimationNodeBase";
+import {AnimationNodeBase} from "@awayjs/graphics";
 
-import {ParticleAnimationSet}				from "../../animators/ParticleAnimationSet";
-import {AnimationRegisterData}			from "../../animators/data/AnimationRegisterData";
-import {ParticleProperties}				from "../../animators/data/ParticleProperties";
-import {ShaderBase}						from "../../shaders/ShaderBase";
-import {ShaderRegisterCache}				from "../../shaders/ShaderRegisterCache";
+import {ShaderBase} from "../../shaders/ShaderBase";
+import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
+
+import {AnimationRegisterData} from "../data/AnimationRegisterData";
+import {ParticleProperties} from "../data/ParticleProperties";
+
+import {ParticleAnimationSet} from "../ParticleAnimationSet";
 
 /**
  * Provides an abstract base class for particle animation nodes.

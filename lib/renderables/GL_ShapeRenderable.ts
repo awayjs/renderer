@@ -1,15 +1,15 @@
-import {AssetEvent}					from "@awayjs/core/lib/events/AssetEvent";
+import {AssetEvent} from "@awayjs/core";
 
-import {IEntity}						from "@awayjs/graphics/lib/base/IEntity";
-import {Shape}						from "@awayjs/graphics/lib/base/Shape";
-import {DefaultMaterialManager}		from "@awayjs/graphics/lib/managers/DefaultMaterialManager";
+import {IEntity, Shape, DefaultMaterialManager} from "@awayjs/graphics";
 
-import {RendererBase}					from "../RendererBase";
-import {AnimatorBase}					from "../animators/AnimatorBase";
-import {GL_ElementsBase}				from "../elements/GL_ElementsBase";
-import {GL_RenderableBase}			from "../renderables/GL_RenderableBase";
-import {GL_MaterialBase}				from "../materials/GL_MaterialBase";
-import {RenderablePool}					from "../renderables/RenderablePool";
+import {AnimatorBase} from "../animators/AnimatorBase";
+import {GL_ElementsBase} from "../elements/GL_ElementsBase";
+import {GL_MaterialBase} from "../materials/GL_MaterialBase";
+
+import {RendererBase} from "../RendererBase";
+
+import {GL_RenderableBase} from "./GL_RenderableBase";
+import {RenderablePool} from "./RenderablePool";
 
 /**
  * @class away.pool.GL_ShapeRenderable

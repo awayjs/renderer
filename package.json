@@ -2,6 +2,8 @@
   "name": "@awayjs/renderer",
   "version": "0.8.53",
   "description": "Renderer for AwayJS",
+  "main": "bundle/awayjs-renderer.umd.js",
+  "types": "dist/index.d.ts",
   "url": "http://www.away3d.com",
   "author": "Rob Bateman",
   "repository": {
@@ -10,12 +12,14 @@
   },
   "scripts": {
     "rimraf": "rimraf",
+    "rollup": "rollup -c",
+    "uglifyjs": "uglifyjs ./bundle/awayjs-renderer.umd.js -o ./bundle/awayjs-renderer.umd.min.js --in-source-map ./bundle/awayjs-renderer.umd.js.map --source-map ./bundle/awayjs-renderer.umd.min.js.map --mangle",
     "tsc": "tsc",
-    "clean": "npm cache clean && npm run rimraf -- node_modules dist",
-    "clean:dist": "npm run rimraf -- dist",
-    "watch": "npm run build -- --w",
+    "clean": "npm cache clean && npm run rimraf -- node_modules dist bundle",
+    "clean:dist": "npm run rimraf -- dist bundle",
+    "watch": "npm run tsc -- --w",
     "prebuild": "npm run clean:dist",
-    "build": "tsc",
+    "build": "npm run tsc && npm run rollup && npm run uglifyjs",
     "version": "npm run build",
     "postversion": "git push && git push --tags && npm publish"
   },
@@ -35,10 +39,14 @@
     "@awayjs/core": "^0.6.0",
     "@awayjs/graphics": "^0.1.0",
     "@awayjs/scene": "^0.8.0",
-    "@awayjs/stage": "^0.8.0"
+    "@awayjs/stage": "^0.8.0",
+    "tslib": "github:microsoft/tslib"
   },
   "devDependencies": {
     "rimraf": "^2.5.2",
-    "typescript": "^1.9.0-dev.20160603-1.0"
+    "rollup": "^0.36.4",
+    "rollup-plugin-includepaths": "^0.1.6",
+    "typescript": "^2.2.0-dev.20161123",
+    "uglifyjs": "^2.4.10"
   }
 }
