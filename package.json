@@ -46,7 +46,7 @@
     "rimraf": "^2.5.2",
     "rollup": "^0.36.4",
     "rollup-plugin-includepaths": "^0.2.1",
-    "typescript": "^2.2.0-dev.20161123",
+    "typescript": "2.2.0-dev.20161123",
     "uglifyjs": "^2.4.10"
   }
 }
