@@ -24,8 +24,8 @@ export class DefaultRenderer extends RendererBase
 {
 	public _pRequireDepthRender:boolean;
 
-	private _pDistanceRenderer:DepthRenderer;
-	private _pDepthRenderer:DepthRenderer;
+	private _distanceRenderer:DistanceRenderer;
+	private _depthRenderer:DepthRenderer;
 	public _pFilter3DRenderer:Filter3DRenderer;
 
 	public _pDepthRender:BitmapImage2D;
@@ -35,6 +35,17 @@ export class DefaultRenderer extends RendererBase
 	private _pointLights:Array<PointLight> = new Array<PointLight>();
 	private _lightProbes:Array<LightProbe> = new Array<LightProbe>();
 
+
+	public get distanceRenderer():DistanceRenderer
+	{
+		return this._distanceRenderer;
+	}
+
+	public get depthRenderer():DepthRenderer
+	{
+		return this._depthRenderer;
+	}
+	
 	public get antiAlias():number
 	{
 		return this._antiAlias;
@@ -112,8 +123,8 @@ export class DefaultRenderer extends RendererBase
 
 		this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
 
-		this._pDepthRenderer = new DepthRenderer(this._pStage);
-		this._pDistanceRenderer = new DistanceRenderer(this._pStage);
+		this._depthRenderer = new DepthRenderer(this._pStage);
+		this._distanceRenderer = new DistanceRenderer(this._pStage);
 
 		if (this._width == 0)
 			this.width = window.innerWidth;
@@ -198,11 +209,6 @@ export class DefaultRenderer extends RendererBase
 		super.pExecuteRender(camera, view, target, scissorRect, surfaceSelector);
 	}
 
-	// TODO: remove software renderToTexture
-	public getDepthRenderer():DepthRenderer {
-		return this._pDepthRenderer;
-	}
-
 	private updateLights(camera:Camera, view:IView):void
 	{
 		var len:number, i:number;
@@ -216,7 +222,7 @@ export class DefaultRenderer extends RendererBase
 			shadowMapper = light.shadowMapper;
 
 			if (light.shadowsEnabled && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid ))
-				shadowMapper.iRenderDepthMap(view, this._pDepthRenderer);
+				shadowMapper.iRenderDepthMap(view, this._depthRenderer);
 		}
 
 		len = this._pointLights.length;
@@ -226,7 +232,7 @@ export class DefaultRenderer extends RendererBase
 			shadowMapper = light.shadowMapper;
 
 			if (light.shadowsEnabled && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid))
-				shadowMapper.iRenderDepthMap(view, this._pDistanceRenderer);
+				shadowMapper.iRenderDepthMap(view, this._distanceRenderer);
 		}
 	}
 
@@ -265,10 +271,10 @@ export class DefaultRenderer extends RendererBase
 		this._pRttBufferManager.dispose();
 		this._pRttBufferManager = null;
 
-		this._pDepthRenderer.dispose();
-		this._pDistanceRenderer.dispose();
-		this._pDepthRenderer = null;
-		this._pDistanceRenderer = null;
+		this._depthRenderer.dispose();
+		this._distanceRenderer.dispose();
+		this._depthRenderer = null;
+		this._distanceRenderer = null;
 
 		this._pDepthRender = null;
 
@@ -281,19 +287,19 @@ export class DefaultRenderer extends RendererBase
 	 */
 	public pRenderDepthPrepass(view:IView):void
 	{
-		this._pDepthRenderer.disableColor = true;
+		this._depthRenderer.disableColor = true;
 
 		if (this._pFilter3DRenderer) {
-			this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
-			this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-			this._pDepthRenderer._iRender(view.camera, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+			this._depthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
+			this._depthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
+			this._depthRenderer._iRender(view.camera, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
 		} else {
-			this._pDepthRenderer.textureRatioX = 1;
-			this._pDepthRenderer.textureRatioY = 1;
-			this._pDepthRenderer._iRender(view.camera, view);
+			this._depthRenderer.textureRatioX = 1;
+			this._depthRenderer.textureRatioY = 1;
+			this._depthRenderer._iRender(view.camera, view);
 		}
 
-		this._pDepthRenderer.disableColor = false;
+		this._depthRenderer.disableColor = false;
 	}
 
 
@@ -305,9 +311,9 @@ export class DefaultRenderer extends RendererBase
 		if (this._pDepthTextureInvalid || !this._pDepthRender)
 			this.initDepthTexture(<IContextGL> this._pStage.context);
 
-		this._pDepthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
-		this._pDepthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-		this._pDepthRenderer._iRender(view.camera, view, this._pDepthRender);
+		this._depthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
+		this._depthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
+		this._depthRenderer._iRender(view.camera, view, this._pDepthRender);
 	}
 
 
