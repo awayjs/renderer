@@ -524,9 +524,6 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		this._pStage.scissorRect = null;
 	}
 
-	// TODO: remove software renderToTexture
-	public drawCallback:any;
-
 	/**
 	 * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
 	 *
@@ -563,11 +560,6 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		}
 
 		this._pStage.scissorRect = null;
-
-		// TODO: remove software renderToTexture
-		if (this.drawCallback != null && target != null) {
-			this.drawCallback();
-		}
 	}
 
 	/*
