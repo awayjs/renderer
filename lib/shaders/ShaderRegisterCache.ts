@@ -1,3 +1,5 @@
+import {ContextGLProfile} from "@awayjs/stage";
+
 import {RegisterPool} from "./RegisterPool";
 import {ShaderRegisterElement} from "./ShaderRegisterElement";
 
@@ -21,14 +23,14 @@ export class ShaderRegisterCache
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
 	private _numUsedVaryings:number = 0;
-	private _profile:string;
+	private _profile:ContextGLProfile;
 
 	/**
 	 * Create a new ShaderRegisterCache object.
 	 *
 	 * @param profile The compatibility profile used by the renderer.
 	 */
-	constructor(profile:string)
+	constructor(profile:ContextGLProfile)
 	{
 		this._profile = profile;
 		

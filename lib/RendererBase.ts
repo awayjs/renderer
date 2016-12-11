@@ -4,7 +4,7 @@ import {ImageBase, BitmapImage2D, TraverserBase, IRenderable, INode, IEntity} fr
 
 import {IRenderer, Camera, IView} from "@awayjs/scene";
 
-import {AGALMiniAssembler, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, IContextGL, Stage, StageEvent, StageManager, ProgramData} from "@awayjs/stage";
+import {ContextGLProfile, ContextMode, AGALMiniAssembler, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, StageManager, ProgramData} from "@awayjs/stage";
 
 import {RendererEvent} from "./events/RendererEvent";
 import {GL_ElementsBase} from "./elements/GL_ElementsBase";
@@ -260,7 +260,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(stage:Stage = null, materialClassGL:IMaterialClassGL = null, forceSoftware:boolean = false, profile:string = "baseline", mode:string = "auto")
+	constructor(stage:Stage = null, materialClassGL:IMaterialClassGL = null, forceSoftware:boolean = false, profile:ContextGLProfile = ContextGLProfile.BASELINE, mode:ContextMode = ContextMode.AUTO)
 	{
 		super();
 
@@ -636,7 +636,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		var passes:Array<IPass>;
 		var pass:IPass;
 
-		this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
+		this._pContext.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
 
 		this._registeredMasks.length = 0;
 		//var gl = this._pContext["_gl"];
@@ -668,7 +668,8 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 							this._pContext.disableStencil();
 							//gl.stencilFunc(gl.ALWAYS, 0, 0xff);
 							//gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-							this._pContext.setStencilActionsMasks(ContextGLCompareMode.ALWAYS,0, 0xff, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
+							this._pContext.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
+							this._pContext.setStencilReferenceValue(0);
 
 						//}
 					} else {
@@ -944,7 +945,8 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		this._maskConfig++;
 		//gl.stencilFunc(gl.ALWAYS, this._maskConfig, 0xff);
 		//gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
-		this._pContext.setStencilActionsMasks("always",this._maskConfig, 0xff, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.SET);
+		this._pContext.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.SET);
+		this._pContext.setStencilReferenceValue(this._maskConfig);
 		var numLayers:number = masks.length;
 		var numRenderables:number = this._registeredMasks.length;
 		var renderableGL:GL_RenderableBase;
@@ -956,7 +958,8 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 			if (i != 0) {
 				//gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
 				//gl.stencilOp(gl.KEEP, gl.INCR, gl.INCR);
-				this._pContext.setStencilActionsMasks(ContextGLCompareMode.EQUAL,this._maskConfig, 0xff, ContextGLStencilAction.INCREMENT_SATURATE, ContextGLStencilAction.INCREMENT_SATURATE, ContextGLStencilAction.KEEP);
+				this._pContext.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.INCREMENT_SATURATE, ContextGLStencilAction.INCREMENT_SATURATE, ContextGLStencilAction.KEEP);
+				this._pContext.setStencilReferenceValue(this._maskConfig);
 				this._maskConfig++;
 			}
 
@@ -978,7 +981,8 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 
 		//gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
 		//gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-		this._pContext.setStencilActionsMasks(ContextGLCompareMode.EQUAL,this._maskConfig, 0xff, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
+		this._pContext.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
+		this._pContext.setStencilReferenceValue(this._maskConfig);
 
 		this._pContext.setColorMask(true, true, true, true);
 		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);

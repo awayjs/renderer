@@ -4,7 +4,7 @@ import {BlendMode, TextureBase} from "@awayjs/graphics";
 
 import {Camera} from "@awayjs/scene";
 
-import {ContextGLBlendFactor, ContextGLCompareMode, ContextGLTriangleFace, Stage, ProgramData, GL_IAssetClass} from "@awayjs/stage";
+import {ContextGLProfile, ContextGLBlendFactor, ContextGLCompareMode, ContextGLTriangleFace, Stage, ProgramData, GL_IAssetClass} from "@awayjs/stage";
 
 import {AnimationSetBase} from "../animators/AnimationSetBase";
 import {AnimatorBase} from "../animators/AnimatorBase";
@@ -40,8 +40,8 @@ export class ShaderBase implements IAbstractionPool
 	public _stage:Stage;
 	private _programData:ProgramData;
 
-	private _blendFactorSource:string = ContextGLBlendFactor.ONE;
-	private _blendFactorDest:string = ContextGLBlendFactor.ZERO;
+	private _blendFactorSource:ContextGLBlendFactor = ContextGLBlendFactor.ONE;
+	private _blendFactorDest:ContextGLBlendFactor = ContextGLBlendFactor.ZERO;
 	
 	private _invalidProgram:boolean = true;
 	private _animationVertexCode:string = "";
@@ -71,7 +71,7 @@ export class ShaderBase implements IAbstractionPool
 	 *
 	 * @see away.stagegl.ContextGLCompareMode
 	 */
-	public depthCompareMode:string = ContextGLCompareMode.LESS_EQUAL;
+	public depthCompareMode:ContextGLCompareMode = ContextGLCompareMode.LESS_EQUAL;
 
 
 	/**
@@ -79,7 +79,7 @@ export class ShaderBase implements IAbstractionPool
 	 */
 	public writeDepth:boolean = true;
 
-	public profile:string;
+	public profile:ContextGLProfile;
 
 	public get usesAnimation():boolean
 	{
@@ -96,7 +96,7 @@ export class ShaderBase implements IAbstractionPool
 		this.invalidateProgram();
 	}
 
-	private _defaultCulling:string = ContextGLTriangleFace.BACK;
+	private _defaultCulling:ContextGLTriangleFace = ContextGLTriangleFace.BACK;
 
 	public _pInverseSceneMatrix:Float32Array = new Float32Array(16);
 

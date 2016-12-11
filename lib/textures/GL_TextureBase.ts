@@ -71,16 +71,4 @@ export class GL_TextureBase extends AbstractionBase
 
 		return sharedReg.textures[index];
 	}
-
-	public getFormatString(image:ImageBase):string
-	{
-		switch (image.format) {
-			case ContextGLTextureFormat.COMPRESSED:
-				return "dxt1,";
-			case ContextGLTextureFormat.COMPRESSED_ALPHA:
-				return "dxt5,";
-			default:
-				return "";
-		}
-	}
 }

@@ -4,7 +4,7 @@ import {Image2D} from "@awayjs/graphics";
 
 import {Camera} from "@awayjs/scene";
 
-import {IProgram, AGALMiniAssembler, Stage} from "@awayjs/stage";
+import {IProgram, AGALMiniAssembler, Stage, ContextGLProfile} from "@awayjs/stage";
 
 import {RTTBufferManager} from "../../managers/RTTBufferManager";
 import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
@@ -37,7 +37,7 @@ export class Filter3DTaskBase
 	{
 		this._requireDepthRender = requireDepthRender;
 
-		this._registerCache = new ShaderRegisterCache("baseline");
+		this._registerCache = new ShaderRegisterCache(ContextGLProfile.BASELINE);
 	}
 
 	/**

@@ -4,7 +4,7 @@ import {ImageBase, BitmapImage2D, IEntity, INode} from "@awayjs/graphics";
 
 import {LightBase, Camera, DirectionalLight, PointLight, LightProbe, ShadowMapperBase, IView} from "@awayjs/scene";
 
-import {Stage, ContextGLClearMask, IContextGL} from "@awayjs/stage";
+import {ContextGLProfile, ContextMode, Stage, ContextGLClearMask, IContextGL} from "@awayjs/stage";
 
 import {Filter3DBase} from "./filters/Filter3DBase";
 import {RTTBufferManager} from "./managers/RTTBufferManager";
@@ -114,7 +114,7 @@ export class DefaultRenderer extends RendererBase
 	 * @param antiAlias The amount of anti-aliasing to use.
 	 * @param renderMode The render mode to use.
 	 */
-	constructor(stage:Stage = null, forceSoftware:boolean = false, profile:string = "baseline", mode:string = "auto")
+	constructor(stage:Stage = null, forceSoftware:boolean = false, profile:ContextGLProfile = ContextGLProfile.BASELINE, mode:ContextMode = ContextMode.AUTO)
 	{
 		super(stage, null, forceSoftware, profile, mode);
 
