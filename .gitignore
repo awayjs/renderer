@@ -2,10 +2,10 @@
 node_modules/
 dist/
 bundle/
+docs/bin/
 
 # Dev files
 npm-debug.log
-
 
 # Project property files
 .actionScriptProperties
@@ -15,3 +15,7 @@ npm-debug.log
 .project
 .DS_Store
 *.iml
+
+# Misc
+deploy_key
+deploy_key.pub

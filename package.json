@@ -21,7 +21,8 @@
     "prebuild": "npm run clean:dist",
     "build": "npm run tsc && npm run rollup && npm run uglifyjs",
     "version": "npm run build",
-    "postversion": "git push && git push --tags && npm publish"
+    "postversion": "git push && git push --tags && npm publish",
+    "docs": "npm run rimraf -- docs/bin && node node_modules/@awayjs/typedoc-theme/awaydoc.js --name=renderer"
   },
   "keywords": [
     "AwayJS",
@@ -43,9 +44,11 @@
     "tslib": "github:microsoft/tslib"
   },
   "devDependencies": {
+    "@awayjs/typedoc-theme": "^0.1.7",
     "rimraf": "^2.5.2",
     "rollup": "^0.36.4",
     "rollup-plugin-includepaths": "^0.2.1",
+    "typedoc": "^0.5.7",
     "typescript": "2.2.0-dev.20161123",
     "uglifyjs": "^2.4.10"
   }
