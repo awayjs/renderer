@@ -58,13 +58,13 @@ export class ParticleRotateToPositionState extends ParticleStateBase
 		var index:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.POSITION_INDEX);
 
 		if ((<ParticleAnimationSet> this._pParticleAnimator.animationSet).hasBillboard) {
-			this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
-			this._matrix.append(camera.inverseSceneTransform);
+			this._matrix.copyFrom(renderable.sourceEntity.transform.concatenatedMatrix3D);
+			this._matrix.append(camera.transform.inverseConcatenatedMatrix3D);
 			shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.MATRIX_INDEX), this._matrix);
 		}
 
 		if (this._particleRotateToPositionNode.mode == ParticlePropertiesMode.GLOBAL) {
-			this._offset = renderable.sourceEntity.inverseSceneTransform.transformVector(this._position);
+			this._offset = renderable.sourceEntity.transform.inverseConcatenatedMatrix3D.transformVector(this._position);
 			shader.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
 		} else
 			animationElements.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stage, ContextGLVertexBufferFormat.FLOAT_3);

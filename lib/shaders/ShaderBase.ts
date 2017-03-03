@@ -663,12 +663,12 @@ export class ShaderBase implements IAbstractionPool
 			}
 		}
 		if (this.sceneNormalMatrixIndex >= 0) {
-			this.sceneNormalMatrix.copyFrom(renderable.sourceEntity.inverseSceneTransform);
+			this.sceneNormalMatrix.copyFrom(renderable.sourceEntity.transform.inverseConcatenatedMatrix3D);
 		}
 
 		if (this.usesTangentSpace && this.cameraPositionIndex >= 0) {
 
-			renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this._pInverseSceneMatrix);
+			renderable.sourceEntity.transform.inverseConcatenatedMatrix3D.copyRawDataTo(this._pInverseSceneMatrix);
 			var pos:Vector3D = camera.scenePosition;
 			var x:number = pos.x;
 			var y:number = pos.y;

@@ -187,11 +187,11 @@ export class GL_LineElements extends GL_ElementsBase
 		var context:IContextGL = this._stage.context;
 		
 		// projection matrix
-		shader.viewMatrix.copyFrom(camera.projection.matrix, true);
+		shader.viewMatrix.copyFrom(camera.projection.frustumMatrix3D, true);
 
 		var matrix3D:Matrix3D = Matrix3D.CALCULATION_MATRIX;
-		matrix3D.copyFrom(renderable.sourceEntity.sceneTransform);
-		matrix3D.append(camera.inverseSceneTransform);
+		matrix3D.copyFrom(renderable.sourceEntity.transform.concatenatedMatrix3D);
+		matrix3D.append(camera.transform.inverseConcatenatedMatrix3D);
 		shader.sceneMatrix.copyFrom(matrix3D, true);
 
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, shader.vertexConstantData);

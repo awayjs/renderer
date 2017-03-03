@@ -467,11 +467,11 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		this._pOpaqueRenderableHead = null;
 		this._pNumElements = 0;
 
-		this._cullPlanes = this._customCullPlanes? this._customCullPlanes : camera.frustumPlanes;
-		this._numCullPlanes = this._cullPlanes? this._cullPlanes.length : 0;
 		this._cameraPosition = camera.scenePosition;
-		this._cameraTransform = camera.sceneTransform;
+		this._cameraTransform = camera.transform.concatenatedMatrix3D;
 		this._cameraForward = camera.transform.forwardVector;
+		this._cullPlanes = this._customCullPlanes? this._customCullPlanes : camera.projection.frustumPlanes;
+		this._numCullPlanes = this._cullPlanes? this._cullPlanes.length : 0;
 
 		RendererBase._iCollectionMark++;
 
@@ -483,7 +483,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 			this._pBlendedRenderableHead = <GL_RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
 		}
 
-		this._pRttViewProjectionMatrix.copyFrom(camera.viewProjection);
+		this._pRttViewProjectionMatrix.copyFrom(camera.projection.viewMatrix3D);
 		this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
 
 		this.pExecuteRender(camera, view, target, scissorRect, surfaceSelector);

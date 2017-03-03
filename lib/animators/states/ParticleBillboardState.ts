@@ -41,15 +41,15 @@ export class ParticleBillboardState extends ParticleStateBase
 	{
 		var comps:Array<Vector3D>;
 		if (this._billboardAxis) {
-			var pos:Vector3D = renderable.sourceEntity.sceneTransform.position;
-			var look:Vector3D = camera.sceneTransform.position.subtract(pos);
+			var pos:Vector3D = renderable.sourceEntity.transform.concatenatedMatrix3D.position;
+			var look:Vector3D = camera.transform.concatenatedMatrix3D.position.subtract(pos);
 			var right:Vector3D = look.crossProduct(this._billboardAxis);
 			right.normalize();
 			look = this.billboardAxis.crossProduct(right);
 			look.normalize();
 
 			//create a quick inverse projection matrix
-			this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
+			this._matrix.copyFrom(renderable.sourceEntity.transform.concatenatedMatrix3D);
 			comps = this._matrix.decompose(Orientation3D.AXIS_ANGLE);
 			this._matrix.copyColumnFrom(0, right);
 			this._matrix.copyColumnFrom(1, this.billboardAxis);
@@ -58,8 +58,8 @@ export class ParticleBillboardState extends ParticleStateBase
 			this._matrix.appendRotation(-comps[1].w*MathConsts.RADIANS_TO_DEGREES, comps[1]);
 		} else {
 			//create a quick inverse projection matrix
-			this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
-			this._matrix.append(camera.inverseSceneTransform);
+			this._matrix.copyFrom(renderable.sourceEntity.transform.concatenatedMatrix3D);
+			this._matrix.append(camera.transform.inverseConcatenatedMatrix3D);
 
 			//decompose using axis angle rotations
 			comps = this._matrix.decompose(Orientation3D.AXIS_ANGLE);
