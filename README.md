@@ -1,8 +1,8 @@
-# Awayjs Renderer
+# AwayJS Renderer
 
 Interface for scene and material modules, providing simpified rendering for complex heriarchies.
 
-## Awayjs Dependencies
+## AwayJS Dependencies
 
 * core
 * graphics
