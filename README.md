@@ -1,4 +1,5 @@
 # AwayJS Renderer
+[![Build Status](https://travis-ci.org/awayjs/renderer.svg?branch=dev)](https://travis-ci.org/awayjs/renderer)
 
 Interface for scene and material modules, providing simpified rendering for complex heriarchies.
 
