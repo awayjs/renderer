@@ -1,8 +1,11 @@
 language: node_js
 node_js:
 - stable
+script:
+  - bash scripts/build.sh
 after_success:
-  - bash gendocs.sh
+  - bash scripts/gendocs.sh
+  - bash scripts/genexamples.sh
 env:
   global:
   - ENCRYPTION_LABEL: a34ff6591ac8
