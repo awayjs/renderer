@@ -6,6 +6,7 @@ script:
 after_success:
   - bash scripts/gendocs.sh
   - bash scripts/genexamples.sh
+  - bash scripts/genfull.sh
 env:
   global:
   - ENCRYPTION_LABEL: a34ff6591ac8
