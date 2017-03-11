@@ -3,6 +3,10 @@
 
 Interface for scene and material modules, providing simpified rendering for complex heriarchies.
 
+## Documentation
+
+[Official AwayJS Documentation](https://awayjs.github.io/docs/renderer)
+
 ## AwayJS Dependencies
 
 * core
